@@ -1,0 +1,11 @@
+To build do:
+0) export JAVA_HOME=/usr/lib/jvm/java-1.17.0-openjdk-amd64
+0) npm i
+1) npm run build
+2) npx cap add android (not needed if its already there?)
+3) npx cap copy android OR npx cap sync android
+4) cd android && ./gradlew assembleDebug && ./gradlew installDebug && cd ..
+    manually install app from android/app/build/outputs/debug/
+
+OR JUST DO:
+npx cap run android (instead of step 4)
