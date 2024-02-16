@@ -8,5 +8,6 @@ import { Component } from '@angular/core';
   styleUrl: './config.component.css'
 })
 export class ConfigComponent {
-
+  title = 'config';
+  
 }
