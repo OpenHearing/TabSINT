@@ -14,16 +14,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have the 'angular-tour-of-heroes' title`, () => {
+  it(`should have the 'tabsint' title`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('angular-tour-of-heroes');
+    expect(app.title).toEqual('tabsint');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, angular-tour-of-heroes');
+    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, tabsint');
   });
 });
