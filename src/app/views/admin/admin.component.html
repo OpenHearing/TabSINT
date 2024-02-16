@@ -1,0 +1,30 @@
+<header i18n>'Admin View'</header>
+
+<!-- Body -->
+<main id="maincontent">
+<div class="has-header admin">
+
+  <div class="questionbox admin-page">
+
+    <nav mat-tab-nav-bar [tabPanel]="tabPanel">
+        <!-- @for (link of links; track link) {
+          <a mat-tab-link
+            (click)="activeLink = link"
+            [active]="activeLink == link"> {{link}} </a>
+        } -->
+      <a mat-tab-link  routerLink="/config" routerLinkActive="active" i18n class="nav-tabs-alignment">Setup</a>
+      <a mat-tab-link routerLink="/protocols" routerLinkActive="active"  i18n class="nav-tabs-alignment">Protocols</a>
+      <a mat-tab-link routerLink="/results" routerLinkActive="active"  i18n class="nav-tabs-alignment">Results</a>
+      <a mat-tab-link i18n ng-click="examLogic.switchToExamView()" class="nav-tabs-alignment">Exam View</a>
+    </nav>
+    <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
+
+    <!-- add space for keyboard -->
+    <div class="keyboard-spacer" ng-style="admin.keyboardStyle"></div>
+  </div>
+</div>
+</main>
+
+<!-- Active Task Footer -->
+<!-- <active-tasks></active-tasks> -->
+
