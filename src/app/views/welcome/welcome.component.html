@@ -18,7 +18,7 @@
         <span class="welcome" i18n>Exam View</span>
       </a>
   
-      <a href="#" class="welcome-row" ng-if="config.build !== 'heartrack'" ng-click="switchToAdminView()">
+      <a routerLink="/config" routerLinkActive="active" class="welcome-row" ng-if="config.build !== 'heartrack'" ng-click="switchToAdminView()">
         <span><mat-icon>settings</mat-icon></span>
         <span class="welcome" i18n>Admin View</span>
       </a>

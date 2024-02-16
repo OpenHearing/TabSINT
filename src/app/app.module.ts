@@ -10,12 +10,12 @@ import { WelcomeComponent } from './views/welcome/welcome.component';
 @NgModule({
   declarations: [
     AppComponent,
-    WelcomeComponent
+    WelcomeComponent,
+    ConfigComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    ConfigComponent,
     MatIconModule 
   ],
   providers: [
