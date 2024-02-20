@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { PageM } from '../../models/page/page-m.service';
+import { PageM } from '../../models/page/page.service';
 
 @Component({
   selector: 'config-view',

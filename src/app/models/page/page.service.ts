@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { PageModel } from './page-m.interface';
+import { PageModel } from './page.interface';
 
 @Injectable({
     providedIn: 'root',

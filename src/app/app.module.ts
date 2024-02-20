@@ -11,7 +11,32 @@ import { AdminComponent } from './views/admin/admin.component';
 import { ProtocolsComponent } from './views/protocols/protocols.component';
 import { ResultsComponent } from './views/results/results.component';
 
-import { PageM } from './models/page/page-m.service';
+// Models
+import { AppM } from './models/app/app.service';
+import { DevicesM } from './models/devices/devices.service';
+import { DiskM } from './models/disk/disk.service';
+import { PageM } from './models/page/page.service';
+import { ProtocolM } from './models/protocol/protocol.service';
+import { ResultsM } from './models/results/results.service';
+import { StateModel } from './models/state/state.interface';
+
+// Utilities
+import { Json } from './utilities/json.service';
+import { SqLite } from './utilities/sqLite.service';
+import { Logger } from './utilities/logger.service';
+import { Paths } from './utilities/paths.service';
+import { FileChooser } from './utilities/file-chooser.service';
+
+// Controllers
+import { File } from './controllers/file.service';
+import { Config } from './controllers/config.service';
+import { Version } from './controllers/version.service';
+import { Protocol } from './controllers/protocol.service';
+import { LocalServer } from './controllers/local-server.service';
+import { Results } from './controllers/results.service';
+import { Exam } from './controllers/exam.service';
+import { Admin } from './controllers/admin.service';
+import { StateM } from './models/state/state.service';
 
 @NgModule({
   declarations: [
@@ -30,7 +55,26 @@ import { PageM } from './models/page/page-m.service';
   ],
   providers: [
     provideClientHydration(),
-    PageM
+    AppM,
+    DevicesM,
+    DiskM,
+    PageM,
+    ProtocolM,
+    ResultsM,
+    StateM,
+    Json,
+    SqLite,
+    Logger,
+    Paths,
+    FileChooser,
+    File,
+    Config,
+    Version,
+    Protocol,
+    LocalServer,
+    Results,
+    Exam,
+    Admin
   ],
   bootstrap: [AppComponent]
 })
