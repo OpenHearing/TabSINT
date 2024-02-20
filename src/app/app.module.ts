@@ -11,6 +11,8 @@ import { AdminComponent } from './views/admin/admin.component';
 import { ProtocolsComponent } from './views/protocols/protocols.component';
 import { ResultsComponent } from './views/results/results.component';
 
+import { PageM } from './models/page/page-m.service';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -27,7 +29,8 @@ import { ResultsComponent } from './views/results/results.component';
     MatTabsModule
   ],
   providers: [
-    provideClientHydration()
+    provideClientHydration(),
+    PageM
   ],
   bootstrap: [AppComponent]
 })

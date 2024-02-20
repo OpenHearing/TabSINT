@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { PageM } from '../../models/page/page-m.service';
 
 @Component({
   selector: 'config-view',
@@ -6,6 +7,13 @@ import { Component } from '@angular/core';
   styleUrl: './config.component.css'
 })
 export class ConfigComponent {
+
+  constructor(public pageM:PageM) {  }
+
   title = 'config';
+
+  logTest() {
+    console.log("pageM: "+JSON.stringify(this.pageM.pageM));
+  }
   
 }
