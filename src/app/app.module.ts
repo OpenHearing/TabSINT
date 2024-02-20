@@ -18,7 +18,7 @@ import { DiskM } from './models/disk/disk.service';
 import { PageM } from './models/page/page.service';
 import { ProtocolM } from './models/protocol/protocol.service';
 import { ResultsM } from './models/results/results.service';
-import { StateModel } from './models/state/state.interface';
+import { StateM } from './models/state/state.service';
 
 // Utilities
 import { Json } from './utilities/json.service';
@@ -36,7 +36,6 @@ import { LocalServer } from './controllers/local-server.service';
 import { Results } from './controllers/results.service';
 import { Exam } from './controllers/exam.service';
 import { Admin } from './controllers/admin.service';
-import { StateM } from './models/state/state.service';
 
 @NgModule({
   declarations: [
