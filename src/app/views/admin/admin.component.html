@@ -1,4 +1,5 @@
-<header i18n>'Admin View'</header>
+<a href="#maincontent" class="skip-to-content">Skip to main content</a>
+<header-view>Admin View</header-view>
 
 <!-- Body -->
 <main id="maincontent">
@@ -6,21 +7,43 @@
 
   <div class="questionbox admin-page">
 
-    <nav mat-tab-nav-bar [tabPanel]="tabPanel">
-        <!-- @for (link of links; track link) {
-          <a mat-tab-link
-            (click)="activeLink = link"
-            [active]="activeLink == link"> {{link}} </a>
-        } -->
-      <a mat-tab-link routerLink="/config" routerLinkActive="active" i18n class="nav-tabs-alignment">Setup</a>
-      <a mat-tab-link routerLink="/protocols" routerLinkActive="active"  i18n class="nav-tabs-alignment">Protocols</a>
-      <a mat-tab-link routerLink="/results" routerLinkActive="active"  i18n class="nav-tabs-alignment">Results</a>
-      <a mat-tab-link i18n ng-click="examLogic.switchToExamView()" class="nav-tabs-alignment">Exam View</a>
-    </nav>
-    <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
-
-    <!-- add space for keyboard -->
-    <div class="keyboard-spacer" ng-style="admin.keyboardStyle"></div>
+    <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
+      <li [ngbNavItem]="1">
+        <button ngbNavLink>Setup</button>
+        <ng-template ngbNavContent>
+          <p>
+            <config-view></config-view>
+          </p>
+        </ng-template>
+      </li>
+      <li [ngbNavItem]="2">
+        <button ngbNavLink>Protocols</button>
+        <ng-template ngbNavContent>
+          <p>
+            <protocols-view></protocols-view>
+          </p>
+        </ng-template>
+      </li>
+      <li [ngbNavItem]="3">
+        <button ngbNavLink>Results</button>
+        <ng-template ngbNavContent>
+          <p>
+            <results-view></results-view>
+          </p>
+        </ng-template>
+      </li>
+      <li [ngbNavItem]="4">
+        <button ngbNavLink>Exam View</button>
+        <ng-template ngbNavContent>
+          <p>
+            <exam-view></exam-view>
+          </p>
+        </ng-template>
+      </li>
+    </ul>
+    
+    <div [ngbNavOutlet]="nav" class="mt-2"></div>
+  
   </div>
 </div>
 </main>

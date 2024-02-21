@@ -1,12 +1,9 @@
 import { Component } from '@angular/core';
-
 @Component({
   selector: 'app-admin',
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.css'
 })
 export class AdminComponent {
-  links = ['Setup', 'Protocols', 'Results', 'Exam View'];
-  activeLink = this.links[0];
-
+  active = 1;
 }

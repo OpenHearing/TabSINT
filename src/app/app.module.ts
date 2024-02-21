@@ -2,14 +2,19 @@ import { NgModule } from '@angular/core';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
 import {MatIconModule} from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+
+// Views
 import { ConfigComponent } from './views/config/config.component';
 import { WelcomeComponent } from './views/welcome/welcome.component';
 import { AdminComponent } from './views/admin/admin.component';
 import { ProtocolsComponent } from './views/protocols/protocols.component';
 import { ResultsComponent } from './views/results/results.component';
+import { HeaderComponent } from './views/header/header.component';
+import { ExamComponent } from './views/exam/exam.component';
 
 // Models
 import { AppM } from './models/app/app.service';
@@ -44,13 +49,16 @@ import { Admin } from './controllers/admin.service';
     ConfigComponent,
     AdminComponent,
     ProtocolsComponent,
-    ResultsComponent
+    ResultsComponent,
+    HeaderComponent,
+    ExamComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    MatIconModule ,
-    MatTabsModule
+    MatIconModule,
+    MatTabsModule,
+    NgbModule
   ],
   providers: [
     provideClientHydration(),

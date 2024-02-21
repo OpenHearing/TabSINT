@@ -1,0 +1,10 @@
+Things that have been added to get tabsint up and running but we could revisit
+
+Style sheets:
+- jsonformatter@0.7.0
+- ionicons@2.0.1
+
+Also we could revisit all the css in src/styles.css
+
+
+OTHER: I did upgrade our bootstrap (now ng-bootstrap) which comes with popperjs and bootstrap
