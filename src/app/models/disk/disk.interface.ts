@@ -1,3 +1,3 @@
 export interface DiskModel {
-    name: string;
+    disableLogs: boolean;
 }

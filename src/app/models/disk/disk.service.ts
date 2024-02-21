@@ -8,7 +8,7 @@ import { DiskModel } from './disk.interface';
 export class DiskM {
 
     diskM: DiskModel = {
-        name: "name"
+        disableLogs: false
     }
 
 }

@@ -1,5 +1,10 @@
 import { Component } from '@angular/core';
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+
 import { PageM } from '../../models/page/page.service';
+import { DiskM } from '../../models/disk/disk.service';
+import { Logger } from '../../utilities/logger.service';
+import { File } from '../../controllers/file.service';
 
 @Component({
   selector: 'config-view',
@@ -8,12 +13,13 @@ import { PageM } from '../../models/page/page.service';
 })
 export class ConfigComponent {
 
-  constructor(public pageM:PageM) {  }
+  constructor(public pageM:PageM, public diskM:DiskM, public logger:Logger, public file:File) {  }
 
   title = 'config';
 
   logTest() {
-    console.log("pageM: "+JSON.stringify(this.pageM.pageM));
+    this.logger.debug("pageM: "+JSON.stringify(this.pageM.pageM));
+    this.logger.debug("diskM: "+JSON.stringify(this.diskM.diskM));
   }
   
 }

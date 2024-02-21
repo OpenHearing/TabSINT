@@ -1,4 +1,17 @@
 <div id="config">
     <p>{{title}}</p>
+
+
+    
+    <!-- The below buttons are just to verify file functions are working -->
     <button (click)="logTest()"> log page-m </button>
+
+    <button (click)="file.checkPermissions()"> Check Permissions </button>
+    <button (click)="file.requestPermissions()"> Request Permissions </button>
+    
+    <button (click)="file.writeFile('testing/test.txt','This is a test')"> Write File </button>
+    <button (click)="file.readFile('testing/test.txt')"> Read File </button>
+    <button (click)="file.createDirectory('testing2')"> Create Dir </button>
+    <button (click)="file.listDirectory('testing')"> Read Dir </button>
+
 </div>

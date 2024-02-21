@@ -1,4 +1,8 @@
 import { Injectable } from '@angular/core';
+import { Filesystem } from '@capacitor/filesystem';
+
+import { DiskM } from '../models/disk/disk.service';
+import { SqLite } from './sqLite.service';
 
 @Injectable({
     providedIn: 'root',
@@ -6,6 +10,12 @@ import { Injectable } from '@angular/core';
 
 export class Logger {
 
-    
+    constructor(public diskM:DiskM) {  }
+
+    debug(msg:string) {
+        if (!this.diskM.diskM.disableLogs) {
+            console.log("Debug: "+msg);
+        }
+    }
     
 }
