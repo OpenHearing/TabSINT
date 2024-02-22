@@ -8,7 +8,8 @@ import { DiskModel } from './disk.interface';
 export class DiskM {
 
     diskM: DiskModel = {
-        disableLogs: false
+        disableLogs: false,
+        disableAudioStreaming: true
     }
 
 }

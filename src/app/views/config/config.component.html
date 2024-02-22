@@ -1,7 +1,11 @@
 <div id="config">
     <p>{{title}}</p>
     
-    <!-- The below buttons are just to verify file functions are working -->
+    
+    <p>example of file service</p>
+
+
+
     <button (click)="logTest()"> log page-m </button>
 
     <button (click)="file.checkPermissions()"> Check Permissions </button>
@@ -11,5 +15,31 @@
     <button (click)="file.readFile('testing/test.txt')"> Read File </button>
     <button (click)="file.createDirectory('testing2')"> Create Dir </button>
     <button (click)="file.listDirectory('testing')"> Read Dir </button>
+
+
+    <p>example of accordion boxes</p>
+
+    <div ngbAccordion #accordion="ngbAccordion">
+        <div ngbAccordionItem="first">
+            <h2 ngbAccordionHeader>
+                <button ngbAccordionButton>First panel</button>
+            </h2>
+            <div ngbAccordionCollapse>
+                <div ngbAccordionBody>
+                    Stuff goes here
+                </div>
+            </div>
+        </div>
+        <div ngbAccordionItem="second">
+            <h2 ngbAccordionHeader>
+                <button ngbAccordionButton>Second panel</button>
+            </h2>
+            <div ngbAccordionCollapse>
+                <div ngbAccordionBody>
+                    Stuff goes here
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div>
