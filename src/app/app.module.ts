@@ -15,6 +15,7 @@ import { ProtocolsComponent } from './views/protocols/protocols.component';
 import { ResultsComponent } from './views/results/results.component';
 import { HeaderComponent } from './views/header/header.component';
 import { ExamComponent } from './views/exam/exam.component';
+import { IndicatorComponent } from './views/indicator/indicator.component';
 
 // Models
 import { AppM } from './models/app/app.service';
@@ -51,7 +52,8 @@ import { Admin } from './controllers/admin.service';
     ProtocolsComponent,
     ResultsComponent,
     HeaderComponent,
-    ExamComponent
+    ExamComponent,
+    IndicatorComponent
   ],
   imports: [
     BrowserModule,

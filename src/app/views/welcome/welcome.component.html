@@ -18,12 +18,12 @@
         <span class="welcome" i18n>Exam View</span>
       </a>
   
-      <a routerLink="/admin" routerLinkActive="active" class="welcome-row" ng-if="config.build !== 'heartrack'" ng-click="switchToAdminView()">
+      <a routerLink="/admin" routerLinkActive="active" class="welcome-row" *ngIf="config.build !== 'heartrack'" ng-click="switchToAdminView()">
         <span><mat-icon>settings</mat-icon></span>
         <span class="welcome" i18n>Admin View</span>
       </a>
   
-      <a href="#" class="welcome-row" ng-if="config.build !== 'heartrack'" ng-click="router.goto('DOCS')">
+      <a href="#" class="welcome-row" *ngIf="config.build !== 'heartrack'" ng-click="router.goto('DOCS')">
         <span><mat-icon>help_outline</mat-icon></span>
         <span class="welcome" i18n>Documentation</span>
       </a>

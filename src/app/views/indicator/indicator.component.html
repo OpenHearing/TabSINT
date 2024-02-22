@@ -1,0 +1,45 @@
+<!-- plugin indicators -->
+<a href="#" class="header-text" ng-repeat="navbar in plugins.elems.navbar" title="Plugin indicator">
+    <!-- <ng-include src="navbar.templateUrl"/> -->
+    navbar
+</a>
+  
+<!-- CHA status -->
+<a href="#" class="header-text" *ngIf="bluetoothStatus.state" title="CHA status">
+    <!-- <cha-indicator></cha-indicator> -->
+    cha
+</a>
+
+<!-- Streaming Status -->
+<a href="#" class="header-text" *ngIf="!disk.disableAudioStreaming" title="Streaming status">
+    <span *ngIf="chaStreaming.streaming" uib-popover="Streaming Connection Established" popover-placement="bottom" popover-trigger="'outsideClick'">
+        <i class="ion-radio-waves"></i>
+    </span>
+</a>
+  
+<!-- Svantek status -->
+<a href="#" class="header-text" title="Svantek status">
+    <span *ngIf="svantek.state === 'connected' || svantek.state === 'recording'" uib-popover="Dosimeter Connected" popover-placement="bottom" popover-trigger="'outsideClick'">
+        <img src="../../../assets/img/svantek-indicator.png" style="height:25px" alt="Svantek indicator" />
+    </span>
+</a>
+  
+  
+<!-- bluetooth status -->
+<a href="#" class="header-text" *ngIf="bluetoothStatus.state" title="Bluetooth status">
+    <span uib-popover="Bluetooth Connected" popover-placement="bottom" popover-trigger="'outsideClick'">
+      <i class="ion-bluetooth"></i>
+    </span>
+</a>
+  
+<!-- network status -->
+<a href="#" class="header-text" *ngIf="networkModel.status" title="Network status: Connected">
+    <span uib-popover="WiFi Connected" popover-placement="bottom" popover-trigger="'outsideClick'">
+      <i class="ion-wifi" ></i>
+    </span>
+</a>
+  
+<a href="#" class="header-text" *ngIf="!networkModel.status" title="Network status: Not connected">
+    <span uib-popover="WiFi Not Connected" popover-placement="bottom" popover-trigger="'outsideClick'" class="glyphicon glyphicon-ban-circle"></span>
+</a>
+  
