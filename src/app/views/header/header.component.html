@@ -1,9 +1,9 @@
 <!-- Exam Mode View -->
 
 <!-- Header -->
-<nav class="navbar navbar-default navbar-fixed-top tablet-interface">
+<nav class="navbar navbar-default navbar-fixed-top tablet-interface" style="display: flex; flex-direction: row;">
     <div class="container-fluid">
-      <div class="row">
+      <!-- <div class="row"> -->
   
         <!-- Exam Header -->
         <div ng-if="isexam" style="overflow:auto;flex: 1 1 auto;">
@@ -29,36 +29,30 @@
           <a href="#" class="surveytitle task-toggle" ng-if="tasks.numOngoing() > 0 && tasks.hidden">
             <span ng-click="tasks.unhide()"><i class="ion-clipboard"></i></span>
           </a>
-  
+
           <!-- dropdown -->
-          <span class="dropdown menu-center" uib-dropdown>
-            <a href="#" class="surveytitle dropdown-toggle">
-              <span class="glyphicon glyphicon-align-justify"></span>
-            </a>
-            <ul class="dropdown-menu dropdown-nav dropdown-pull-right" uib-dropdown-menu>
-              <li><a href="#" ng-click="scanQrCodeandAutoConfig()"><img src="img/QR_code.png" style="max-width: 20px;margin: 0 auto;" alt="{{'QR Code logo'}}" /> {{'Scan Configuration'}}</a></li>
-              <li><a href="#" ng-click="switchToExamView()"><i class="ion-edit"></i> {{'Exam View'}}</a></li>
-              <li ng-if="build !== 'heartrack'"><a href="#" ng-click="switchToAdminView()"><i class="ion-ios-gear"></i> {{'Admin View'}}</a></li>
-              <li ng-if="build !== 'heartrack'"><a href="#" ng-click="router.goto('DOCS')"><i class="ion-help-buoy"></i> {{'Documentation'}} </a></li>
-  
-              <li ng-if="isexam && build !== 'heartrack'" class="divider"></li>
-  
-              <li ng-if="isexam && build !== 'heartrack'"><a href="#" ng-click="resetExam()"><i class="ion-close"></i> {{'Reset Exam and Discard Results'}}</a></li>
-  
-              <li ng-if="isexam && build !== 'heartrack'" class="divider"></li>
-  
-              <li ng-if="isexam && build !== 'heartrack'"><a href="#" ng-click="submitPartialExam()"><i class="ion-refresh"></i> {{'Reset Exam and Submit Partial Results'}}</a></li>
-  
-              <li ng-if="isexam" ng-if="page.dm.navMenu" class="divider"></li>
-              <!-- <li ng-if="isexam" ng-repeat="navOption in page.dm.navMenu">
-                <a href="#" ng-click="navigateToTarget(navOption)">
-                  <span></span>
-                  {{navOption.text}}
-                </a>
-              </li> -->
-            </ul>
-          </span>
-        </div>
+
+          <style>
+            .dropdown-toggle::after{
+              display:none;
+            }
+          </style>
+
+          <div class="col">
+            <div ngbDropdown display="dynamic" class="d-inline-block">
+              <button type="button" class="btn btn-outline-primary" id="header-dropdown-menu" ngbDropdownToggle>
+                <i class="bi bi-justify"></i>
+              </button>
+              <div ngbDropdownMenu aria-labelledby="header-dropdown-menu">
+                <button ngbDropdownItem>Scan Configuration</button>
+                <button ngbDropdownItem>Exam View</button>
+                <button ngbDropdownItem>Admin View</button>
+                <button ngbDropdownItem>Documentation</button>
+              </div>
+            </div>
+          </div>
+
+        <!-- </div> -->
       </div>
     </div>
   </nav>
