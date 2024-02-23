@@ -9,7 +9,8 @@ export class DiskM {
 
     diskM: DiskModel = {
         disableLogs: false,
-        disableAudioStreaming: true
+        disableAudioStreaming: true,
+        headset: "None"
     }
 
 }

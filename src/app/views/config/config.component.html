@@ -2,7 +2,7 @@
     <p>{{title}}</p>
     
     
-    <p>example of file service</p>
+    <p>example buttons to test file service</p>
 
 
 
@@ -16,13 +16,58 @@
     <button (click)="file.createDirectory('testing2')"> Create Dir </button>
     <button (click)="file.listDirectory('testing')"> Read Dir </button>
 
-
-    <p>example of accordion boxes</p>
-
     <div ngbAccordion #accordion="ngbAccordion">
-        <div ngbAccordionItem="first">
+        <div ngbAccordionItem="tabsint-accordian">
             <h2 ngbAccordionHeader>
-                <button ngbAccordionButton>First panel</button>
+                <button ngbAccordionButton>TabSINT</button>
+            </h2>
+            <div ngbAccordionCollapse>
+                <div ngbAccordionBody>
+                    
+                    <!-- Headset -->
+                    <div class="row pad-top">
+                        <div class="col-xs-5">
+                            <label for="defaultHeadset">Default Headset:</label>
+                        </div>
+                        <div ngbDropdown display="dynamic" style="display: flex; flex-direction: row;">
+                            
+                            <button id="defaultHeadset" type="button" class="btn btn-default btn-block dropdown-toggle" id="test1" ngbDropdownToggle *ngIf="headsets[diskM.diskM.headset]!='None'">
+                                {{headsets[diskM.diskM.headset]}} 
+                            </button>
+
+                            <button id="defaultHeadset" type="button" class="btn btn-default btn-block dropdown-toggle" id="test1" ngbDropdownToggle *ngIf="headsets[diskM.diskM.headset]=='None'">
+                                None 
+                            </button>
+
+                            <div ngbDropdownMenu aria-labelledby="test1">
+                                <li *ngFor="let headset of headsets | keyvalue">
+                                    <a href="#" (click)="changeHeadset(headset.key, true)" ngbDropdownItem>{{headset.value}}</a>
+                                </li>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div ngbDropdown display="dynamic" class="d-inline-block">
+                        <button type="button" class="btn btn-outline-primary" id="test2" ngbDropdownToggle>
+                          Text
+                        </button>
+                        <div ngbDropdownMenu aria-labelledby="test2">
+                          <button ngbDropdownItem>a</button>
+                          <button ngbDropdownItem>b</button>
+                          <button ngbDropdownItem>c</button>
+                          <button ngbDropdownItem>d</button>
+                        </div>
+                    </div>
+
+                    
+
+                </div>
+            </div>
+        </div>
+        <div ngbAccordionItem="wahts-accordion">
+            <h2 ngbAccordionHeader>
+                <button ngbAccordionButton>WAHTS</button>
             </h2>
             <div ngbAccordionCollapse>
                 <div ngbAccordionBody>
@@ -30,9 +75,29 @@
                 </div>
             </div>
         </div>
-        <div ngbAccordionItem="second">
+        <div ngbAccordionItem="dosimeter-accordion">
             <h2 ngbAccordionHeader>
-                <button ngbAccordionButton>Second panel</button>
+                <button ngbAccordionButton>Dosimeter</button>
+            </h2>
+            <div ngbAccordionCollapse>
+                <div ngbAccordionBody>
+                    Stuff goes here
+                </div>
+            </div>
+        </div>
+        <div ngbAccordionItem="software-and-hardware-accordion">
+            <h2 ngbAccordionHeader>
+                <button ngbAccordionButton>Software and Hardware</button>
+            </h2>
+            <div ngbAccordionCollapse>
+                <div ngbAccordionBody>
+                    Stuff goes here
+                </div>
+            </div>
+        </div>
+        <div ngbAccordionItem="application-log-accordion">
+            <h2 ngbAccordionHeader>
+                <button ngbAccordionButton>Application Log</button>
             </h2>
             <div ngbAccordionCollapse>
                 <div ngbAccordionBody>

@@ -21,5 +21,19 @@ export class ConfigComponent {
     this.logger.debug("pageM: "+JSON.stringify(this.pageM.pageM));
     this.logger.debug("diskM: "+JSON.stringify(this.diskM.diskM));
   }
+
+  headsets: { [index: string]: string } = {
+    None: "None",
+    HDA200: "HDA200",
+    VicFirth: "VicFirth",
+    VicFirthS2: "VicFirthS2",
+    WAHTS: "WAHTS",
+    EPHD1: "EPHD1",
+    Audiometer: "Audiometer"
+  };
+
+  changeHeadset(headset:string, overwrite:boolean) {
+
+  }
   
 }
