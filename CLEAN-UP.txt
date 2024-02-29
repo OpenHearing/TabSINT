@@ -4,7 +4,7 @@ Style sheets:
 - jsonformatter@0.7.0
 - ionicons@2.0.1
 
-Also we could revisit all the css in src/styles.css
+Also we could revisit all the css in src/styles.scss
 
 
 OTHER: I did upgrade our bootstrap (now ng-bootstrap) which comes with popperjs and bootstrap
