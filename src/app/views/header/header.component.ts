@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { StateM } from '../../models/state/state.service';
+import { AppState } from '../../utilities/constants';
 
 @Component({
   selector: 'header-view',
@@ -6,5 +8,12 @@ import { Component } from '@angular/core';
   styleUrl: './header.component.css'
 })
 export class HeaderComponent {
- isexam:boolean = true;
+  isExam: Boolean = false;
+  
+  constructor(private stateM: StateM) {}
+
+  ngOnInit(): void {
+    this.isExam = this.stateM.getState().appState === AppState.Exam;
+  }
+
 }

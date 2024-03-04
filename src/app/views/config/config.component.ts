@@ -5,6 +5,8 @@ import { PageM } from '../../models/page/page.service';
 import { DiskM } from '../../models/disk/disk.service';
 import { Logger } from '../../utilities/logger.service';
 import { File } from '../../controllers/file.service';
+import { AppState } from '../../utilities/constants';
+import { StateM } from '../../models/state/state.service';
 
 @Component({
   selector: 'config-view',
@@ -13,7 +15,17 @@ import { File } from '../../controllers/file.service';
 })
 export class ConfigComponent {
 
-  constructor(public pageM:PageM, public diskM:DiskM, public logger:Logger, public file:File) {  }
+  constructor(
+    public diskM:DiskM, 
+    public file:File,
+    public logger:Logger, 
+    public pageM:PageM,
+    public stateM: StateM 
+  ) {  }
+
+  ngOnInit(): void {
+    this.stateM.setAppState(AppState.Admin);
+  }
 
   title = 'config';
 

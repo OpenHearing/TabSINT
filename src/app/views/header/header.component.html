@@ -6,17 +6,17 @@
       <!-- <div class="row"> -->
   
         <!-- Exam Header -->
-        <div *ngIf="isexam" style="overflow:auto;flex: 1 1 auto;">
+        <div *ngIf="isExam" style="overflow:auto;flex: 1 1 auto;">
           <!-- <h1 *ngIf="page.dm.title && dm.state.mode !== 'READY'" class="surveytitle truncate">
             {{page.dm.title}}
           </h1> -->
-          Title
         </div>
   
         <!-- Admin Header -->
-        <div *ngIf="!isexam" style="overflow:auto;flex: 1 1 auto;">
+        <div *ngIf="!isExam" style="overflow:auto;flex: 1 1 auto;">
           <h1 class="surveytitle truncate">
             <!-- <ng-transclude></ng-transclude> -->
+            Admin View
           </h1>
         </div>
   
@@ -45,9 +45,9 @@
               </button>
               <div ngbDropdownMenu aria-labelledby="header-dropdown-menu">
                 <button ngbDropdownItem>Scan Configuration</button>
-                <button ngbDropdownItem>Exam View</button>
-                <button ngbDropdownItem>Admin View</button>
-                <button ngbDropdownItem>Documentation</button>
+                <button routerLink="/exam" ngbDropdownItem>Exam View</button>
+                <button routerLink="/admin" ngbDropdownItem>Admin View</button>
+                <a href="https://tabsint.org/"><button ngbDropdownItem>Documentation</button></a> 
               </div>
             </div>
           </div>

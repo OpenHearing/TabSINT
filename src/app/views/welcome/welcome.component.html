@@ -13,7 +13,7 @@
         <span i18n class="welcome">Scan Configurations</span>
       </a>
   
-      <a href="#" class="welcome-row" ng-click="switchToExamView()">
+      <a routerLink="/exam" class="welcome-row" ng-click="switchToExamView()">
         <span><mat-icon>edit</mat-icon></span>
         <span class="welcome" i18n>Exam View</span>
       </a>
@@ -23,7 +23,7 @@
         <span class="welcome" i18n>Admin View</span>
       </a>
   
-      <a href="#" class="welcome-row" *ngIf="config.build !== 'heartrack'" ng-click="router.goto('DOCS')">
+      <a href="https://tabsint.org/" class="welcome-row" *ngIf="config.build !== 'heartrack'">
         <span><mat-icon>help_outline</mat-icon></span>
         <span class="welcome" i18n>Documentation</span>
       </a>
