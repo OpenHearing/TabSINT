@@ -4,6 +4,7 @@ import { Logger } from '../../utilities/logger.service';
 import _ from 'lodash';
 import { ProtocolModel } from '../../models/protocol/protocol.interface';
 import { Protocol } from '../../controllers/protocol.service';
+import { ProtocolServer, Server } from '../../utilities/constants';
 
 @Component({
   selector: 'protocols-view',
@@ -16,7 +17,7 @@ export class ProtocolsComponent {
   constructor (
     public diskM: DiskM,
     private logger: Logger,
-    private protocol: Protocol
+    public protocol: Protocol
   ) {}
 
   ngOnInit(): void {
@@ -40,5 +41,29 @@ export class ProtocolsComponent {
     }
   };
 
+  isButtonDisabled(): Boolean {
+    return !this.selected; // || tasks.disabled;
+  };
+
+  showUpdateButton(): Boolean {
+    if (!this.selected) {
+      return false;
+    } else if (this.selected.server === ProtocolServer.Gitlab) {
+      return true;
+    } else if (this.selected.server === ProtocolServer.LocalServer) {
+      return false;
+    } else if (this.selected.server === ProtocolServer.Developer) {
+      return false;
+    } else {
+      return false;
+    }
+  };
+
+  showDeleteButton(): Boolean {
+    if (!this.selected) {
+      return false;
+    }
+    return this.selected.server !== ProtocolServer.Developer;
+  };
 
 }

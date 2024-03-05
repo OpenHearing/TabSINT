@@ -21,3 +21,9 @@ export enum ResultsMode {
     ExportOnly = "Export Only",
     UploadAndExport = "Upload and Export"
 }
+
+export enum ProtocolServer {
+    LocalServer,
+    Gitlab,
+    Developer
+}

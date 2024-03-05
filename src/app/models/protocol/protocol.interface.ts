@@ -1,3 +1,5 @@
+import { ProtocolServer } from "../../utilities/constants";
+
 export interface ProtocolModel {
     group?: string;
     name?: string;
@@ -6,7 +8,7 @@ export interface ProtocolModel {
     date?: string;
     version?: string;
     creator?: string;
-    server?: string;
+    server: ProtocolServer;
     admin?: boolean;
     contentURI?: string;
 }

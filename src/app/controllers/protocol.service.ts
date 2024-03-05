@@ -5,7 +5,7 @@ import { Logger } from '../utilities/logger.service';
 import { DiskM } from '../models/disk/disk.service';
 import { ProtocolM } from '../models/protocol/protocol.service';
 import { ProtocolModel } from '../models/protocol/protocol.interface';
-import { Server } from '../utilities/constants';
+import { ProtocolServer, Server } from '../utilities/constants';
 import { AppM } from '../models/app/app.service';
 import { FileService } from './file.service';
 import { Paths } from '../utilities/paths.service';
@@ -27,7 +27,7 @@ export class Protocol {
     
     init(): void  {
         _.remove(this.diskM.diskM.loadedProtocols, {
-                server: "developer"
+                server: ProtocolServer.Developer
         });
     
         let localProtocols = [
@@ -35,34 +35,34 @@ export class Protocol {
                 name: "Audiometry",
                 path: this.paths.www("res/protocol/edare-audiometry"),
                 creator: "Edare",
-                server: "developer"
+                server: ProtocolServer.Developer
             }),
             this.define({
                 name: "Creare Audiometry",
                 path: this.paths.www("res/protocol/creare-audiometry"),
                 creator: "creare",
-                server: "developer",
+                server: ProtocolServer.Developer,
                 admin: true
             }),
             this.define({
                 name: "tabsint-test",
                 path: this.paths.www("res/protocol/TabSINT-Test"),
                 creator: "creare",
-                server: "developer",
+                server: ProtocolServer.Developer,
                 admin: true
             }),
             this.define({
                 name: "wahts-device-test",
                 path: this.paths.www("res/protocol/wahts-device-test"),
                 creator: "creare",
-                server: "developer",
+                server: ProtocolServer.Developer,
                 admin: true
             }),
             this.define({
                 name: "wahts-software-test",
                 path: this.paths.www("res/protocol/wahts-software-test"),
                 creator: "creare",
-                server: "developer",
+                server: ProtocolServer.Developer,
                 admin: true
             })
         ];
@@ -107,7 +107,7 @@ export class Protocol {
         }
     };
 
-    define(obj: ProtocolModel): Object {
+    define(obj: ProtocolModel): ProtocolModel {
 
         // if (obj.server === "developer") {
         //     obj.version = version.dm.tabsint;
@@ -145,7 +145,7 @@ export class Protocol {
         }
     };
     
-    isActive(p: ProtocolModel) {
+    isActive(p: ProtocolModel | undefined) {
         if (this.diskM.diskM.activeProtocol && p && this.diskM.diskM.activeProtocol.name == p.name && this.diskM.diskM.activeProtocol.path == p.path) {
           return true;
         } else {

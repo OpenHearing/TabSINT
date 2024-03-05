@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ProtocolModel } from './protocol.interface';
+import { ProtocolServer } from '../../utilities/constants';
 
 @Injectable({
     providedIn: 'root',
@@ -8,7 +9,8 @@ import { ProtocolModel } from './protocol.interface';
 export class ProtocolM {
 
     protocolM: ProtocolModel = {
-        admin: false
+        admin: false,
+        server: ProtocolServer.LocalServer
     }
 
 }
