@@ -8,7 +8,7 @@ import { ProtocolModel } from './protocol.interface';
 export class ProtocolM {
 
     protocolM: ProtocolModel = {
-        name: "name"
+        admin: false
     }
 
 }

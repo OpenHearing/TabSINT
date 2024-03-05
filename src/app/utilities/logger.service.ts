@@ -14,7 +14,13 @@ export class Logger {
 
     debug(msg:string) {
         if (!this.diskM.diskM.disableLogs) {
-            console.log("Debug: "+msg);
+            console.log("Debug: "+ msg);
+        }
+    }
+    
+    error(msg:string) {
+        if (!this.diskM.diskM.disableLogs) {
+            console.log("ERROR: "+ msg);
         }
     }
     

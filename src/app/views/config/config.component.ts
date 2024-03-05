@@ -4,7 +4,7 @@ import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { PageM } from '../../models/page/page.service';
 import { DiskM } from '../../models/disk/disk.service';
 import { Logger } from '../../utilities/logger.service';
-import { File } from '../../controllers/file.service';
+import { FileService } from '../../controllers/file.service';
 import { AppState } from '../../utilities/constants';
 import { StateM } from '../../models/state/state.service';
 
@@ -17,7 +17,7 @@ export class ConfigComponent {
 
   constructor(
     public diskM:DiskM, 
-    public file:File,
+    public file:FileService,
     public logger:Logger, 
     public pageM:PageM,
     public stateM: StateM 

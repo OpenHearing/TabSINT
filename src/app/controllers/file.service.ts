@@ -6,7 +6,7 @@ import { Logger } from '../utilities/logger.service';
     providedIn: 'root',
 })
 
-export class File {
+export class FileService {
 
     constructor(public logger:Logger) {  }
 

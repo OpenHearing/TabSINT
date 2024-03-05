@@ -34,7 +34,7 @@ import { Paths } from './utilities/paths.service';
 import { FileChooser } from './utilities/file-chooser.service';
 
 // Controllers
-import { File } from './controllers/file.service';
+import { FileService } from './controllers/file.service';
 import { Config } from './controllers/config.service';
 import { Version } from './controllers/version.service';
 import { Protocol } from './controllers/protocol.service';
@@ -76,7 +76,7 @@ import { Admin } from './controllers/admin.service';
     Logger,
     Paths,
     FileChooser,
-    File,
+    FileService,
     Config,
     Version,
     Protocol,

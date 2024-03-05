@@ -1,3 +1,5 @@
 export interface AppModel {
-    name: string;
+    tablet: Boolean;
+    test: Boolean;
+    browser: Boolean;
 }

@@ -1,1 +1,239 @@
-<p>protocols works!</p>
+
+<br />
+
+<div ngbAccordion #accordion="ngbAccordion">
+  <div ngbAccordionItem="protocol-table" class="panel panel-default"  is-open="isOpenProtocol">
+    <!---->
+    <h2 ngbAccordionHeader i18n>
+      <button ngbAccordionButton>Protocols</button>
+      <i class='pull-right glyphicon'></i>
+    </h2>
+    <div ngbAccordionCollapse>
+        <div ngbAccordionBody>
+            
+    <div class="panel-body text-left">
+
+      <!-- <div *ngIf="devices.diskM.diskMSpace < 200" i18n>
+        <span class="glyphicon glyphicon-exclamation-sign warn-red"></span>
+        The device has less than 200 MB of diskM.diskM space left. Please make more diskM.diskM space available before adding more protocols.
+      </div> -->
+
+      <table class="table fixed">
+        <thead>
+          <tr>
+            <th scope="col" class="row-Name" i18n>Name</th>
+            <th scope="col" class="row-Version" i18n>Version</th>
+            <th scope="col" class="row-Date" i18n>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <div *ngFor="let p of diskM.diskM.loadedProtocols; index as i">
+          <!-- <tr *ngFor="let p of diskM.diskM.loadedProtocols; index as i" *ngIf="!p.admin" [ngClass]="pclass(p)" (click)="select(p)">
+            <td class="row-Name" scope="row">{{p.name}}</td>
+            <td class="row-Version">{{p.version}}</td>
+            <td class="row-Date">{{p.server === 'gitlab' ? p.date?.replace('T', ' ')?.split('.')![0] : p.date}} </td>
+          </tr> -->
+
+          <tr></tr>
+
+            <tr *ngIf="p !== undefined" [ngClass]="pclass(p)" (click)="select(p)">
+               <!-- *ngIf="p.admin && diskM.diskM.debugMode"  -->
+              <td class="row-Name" scope="row">{{p.name}}</td> 
+              <td class="row-Version">{{p.version}}</td>
+              <td class="row-Date">{{p.date}}</td>
+            </tr>
+          </div>
+        </tbody>
+      </table>
+<!-- 
+      <div class="row">
+        <div class="col-xs-6"><label for="validateProtocols" i18n>'Validate protocols:'</label></div>
+        <div class="col-xs-2"><input id="validateProtocols" type="checkbox" ng-model="diskM.diskM.validateProtocols" /></div>
+        <div class="col-xs-2"></div>
+        <div class="col-xs-1"><a href="#" title="'Protocols help' " uib-popover-html="validatePopover" popover-placement="left" popover-trigger="'outsideClick'"><i class="ion-help-circled"></i></a></div>
+      </div>
+
+      <div class="row pad-top">
+        <div class="col-xs-4">
+          <button ng-disabled="!selected || tasks.disabled" *ngIf="!protocol.isRoot(selected)" class="btn btn-primary btn-block" (click)="load()" i18n> <i class="ion-compose"></i> 'Load'</button>
+          <button ng-disabled="!selected || tasks.disabled" *ngIf="protocol.isRoot(selected)" class="btn btn-default btn-block" (click)="load()" i18n> <i class="ion-refresh"></i> 'Reload'</button>
+        </div>
+        <div class="col-xs-4">
+          <button *ngIf="!(selected.server === 'localServer' || selected.server === 'developer')" ng-disabled="!selected || tasks.disabled" class="btn btn-success btn-block" (click)="update()"><i class="ion-android-sync"></i> Update</button>
+        </div>
+        <div class="col-xs-4">
+          <button *ngIf="selected.server !== 'developer'" ng-disabled="!selected || tasks.disabled" class="btn btn-danger btn-block" (click)="delete()" i18n><i class="ion-trash-a"></i> 'Delete' </button>
+        </div>
+      </div>
+    </div> -->
+  </div>
+</div>
+  </div>
+
+<!-- 
+  <div ngbAccordionItem="media-repo-table" class="panel panel-default" is-open="isOpenMedia" *ngIf="diskM.diskM.mediaRepos.length > 0">
+    <h2 ngbAccordionHeader i18n>
+      Media<i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": isOpenMedia, "glyphicon-chevron-down": !isOpenMedia}'></i>
+    </h2>
+    <div class="panel-body text-left">
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th></th>
+            <th scope="col" i18n>Name</th>
+            <th scope="col" i18n>Version</th>
+            <th scope="col" i18n>Date</th>
+            <th scope="col"><a title="Media help" uib-popover-html="mediaTablePopover" popover-placement="left" popover-trigger="'outsideClick'" i18n><i class="ion-help-circled"></i></a></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let m of diskM.diskM.mediaRepos; index as i" [ngClass]="mclass(m) ? 'active-row': ''">
+            <td>
+              <button *ngIf="m.server === 'gitlab'" ng-disabled="tasks.disabled" class="btn btn-success btn-sm" (click)="updateMedia(m)"><i class="ion-android-sync"></i></button>
+            </td>
+            <td>{{m.name}}</td>
+            <td>{{m.version}}</td>
+            <td>{{m.date.replace('T', ' ').split('.')[0]}}</td>
+            <td>
+              <button class="btn btn-danger btn-sm" ng-disabled="tasks.disabled" (click)="deleteMedia(m)"><i class="ion-trash-a"></i></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+
+  <div ngbAccordionItem="local-protocols" class="panel panel-default" is-open="isOpenSource">
+    <h2 ngbAccordionHeader i18n>
+      Source <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": isOpenSource, "glyphicon-chevron-down": !isOpenSource}'></i>
+    </h2>
+    <div class="panel-body text-left">
+
+      <div class="row pad-top">
+        <div class="col-xs-4 admin-labels" translate> Server: </div>
+        <div class="col-xs-6"></div>
+        <div class="col-xs-1"><a href="#" title="'Server help' " uib-popover-html="serverPopover" popover-placement="left" popover-trigger="'outsideClick'"><i class="ion-help-circled"></i></a></div>
+      </div>
+      <div class="row pad-top">
+        <div class="col-xs-4">
+          <button class="btn btn-primary btn-block"  [ngClass]="diskM.diskM.server === 'gitlab' ? 'active' : '' " (click)="changeServer('gitlab')">Gitlab</button>
+        </div>
+        <div class="col-xs-4">
+          <button class="btn btn-primary btn-block"  [ngClass]="diskM.diskM.server === 'localServer' ? 'active' : '' " (click)="changeServer('localServer')" translate>Device Storage</button>
+        </div>
+      </div>
+      <br /><br />
+
+      <div *ngIf="diskM.diskM.server === 'localServer'">
+        <div class="row pad-top">
+          <div class="col-xs-3"><label for="directory">'Directory':</label></div>
+          <div class="col-xs-3">
+            <button class="btn btn-default btn-block" ng-disabled="tasks.disabled" (click)="add()"> <i class="ion-plus-round"></i> 'Add'</button>
+          </div>
+          <div class="col-xs-1"><a href="#" title="'Directory help' " uib-popover-html="localAddPopover" popover-placement="left" popover-trigger="'outsideClick'"><i class="ion-help-circled"></i></a></div>
+        </div>
+      </div>
+
+      <div *ngIf="diskM.diskM.server === 'gitlab'">
+
+        <div class="row pad-top">
+          <div class="col-xs-3"><label for="repository2">'Repository:'</label></div>
+          <div class="col-xs-6 admin-input"><input id="repository2" type="text" enter-close class="form-control" placeholder="Name" ng-model="diskM.diskM.servers.gitlab.repository" /></div>
+          <div class="col-xs-1"></div>
+          <div class="col-xs-1"><a href="#" title="'Repository help' " uib-popover-html="gitlabAddPopover" popover-placement="left" popover-trigger="'outsideClick'"><i class="ion-help-circled"></i></a></div>
+        </div>
+
+        <div class="row pad-top">
+          <div class="col-xs-3"><label for="version2">'Version:'</label></div>
+          <div class="col-xs-6 admin-input"><input id="version2" type="text" enter-close class="form-control" placeholder="Latest" ng-model="diskM.diskM.servers.gitlab.version" /></div>
+          <div class="col-xs-1"></div>
+          <div class="col-xs-1"><a href="#" title="'Version help' " uib-popover-html="gitlabAddVersionPopover" popover-placement="left" popover-trigger="'outsideClick'"><i class="ion-help-circled"></i></a></div>
+        </div>
+
+        <div class="row tags-shift">
+          <div class="col-xs-3"></div>
+          <div class="col-xs-6">
+              <i>'Tracking by '</i><i *ngIf="diskM.diskM.gitlab.useTagsOnly"><strong>'tags'</strong></i><i *ngIf="!diskM.diskM.gitlab.useTagsOnly"><strong>'commits'</strong></i>
+          </div>
+        </div>
+
+        <div class="row pad-top">
+          <div class="col-xs-3"></div>
+          <div class="col-xs-5 admin-input">
+            <button class="btn btn-default btn-block" ng-disabled="!diskM.diskM.servers.gitlab.repository" (click)="add()"><i class="ion-plus-round"></i> 'Add'</button>
+          </div>
+        </div>
+        <br />
+
+        <div class="row showhideSection">
+          <div class="col-xs-12 text-center">
+            <a href="#" (click)="panes.protocols.advancedGitlab = !panes.protocols.advancedGitlab">
+              <span *ngIf="panes.protocols.advancedGitlab" translate>Hide Advanced Settings <i class="ion-chevron-up"></i></span>
+              <span *ngIf="!panes.protocols.advancedGitlab" translate>Show Advanced Settings <i class="ion-chevron-down"></i></span>
+            </a>
+          </div>
+        </div>
+
+        <div *ngIf="panes.protocols.advancedGitlab">
+          
+          <div class="row pad-top">
+            <div class="col-xs-4 protocol-tag-alignment protocol-advanced-labels"><label for="host" translate>Host:</label></div>
+            <div class="col-xs-6"><input id="host" type="text" enter-close class="form-control" placeholder="Host" ng-model="diskM.diskM.servers.gitlab.host" /></div>
+            <div class="col-xs-1"><a href="#" title="'Host help' " uib-popover-html="gitlabHostPopover" popover-placement="left" popover-trigger="'outsideClick'"><i class="ion-help-circled"></i></a></div>
+          </div>
+
+          <div class="row pad-top">
+            <div class="col-xs-4 protocol-tag-alignment protocol-advanced-labels"><label for="token" translate>Token:</label></div>
+            <div class="col-xs-6"><input id="token" type="text" enter-close class="form-control" placeholder="Token" ng-model="diskM.diskM.servers.gitlab.token" /></div>
+            <div class="col-xs-1"><a href="#" title="'Token help' " uib-popover-html="gitlabTokenPopover" popover-placement="left" popover-trigger="'outsideClick'"><i class="ion-help-circled"></i></a></div>
+          </div>
+
+          <div class="row pad-top">
+            <div class="col-xs-4 protocol-tag-alignment protocol-advanced-labels"><label for="group" translate>Group:</label></div>
+            <div class="col-xs-6"><input id="group" type="text" enter-close class="form-control" placeholder="Group" ng-model="diskM.diskM.servers.gitlab.group" /></div>
+            <div class="col-xs-1"><a href="#" title="'Group help' " uib-popover-html="gitlabNamespacePopover" popover-placement="left" popover-trigger="'outsideClick'"><i class="ion-help-circled"></i></a></div>
+          </div>
+
+          <div class="row pad-top">
+            <div class="col-xs-4"></div>
+            <div class="col-xs-6" class="text-right"><small><a href="#" (click)="gitlab.initDefault()" translate>Reset to Default</a></small></div>
+            <div class="col-xs-1"><a href="#" title="'Reset to Default help' " uib-popover-html="serverDefaultPopover" popover-placement="left" popover-trigger="'outsideClick'"><i class="ion-help-circled"></i></a></div>
+          </div>
+
+          <hr />
+
+          <div class="row pad-top">
+            <div class="col-xs-6"><label for="onlyTrack" translate>Only Track <b>Tags:</b></label></div>
+            <div class="col-xs-2"><input id="onlyTrack" type="checkbox" ng-model="diskM.diskM.gitlab.useTagsOnly" /></div>
+            <div class="col-xs-2"></div>
+            <div class="col-xs-1"><a href="#" title="'Only Track Tags help' " uib-popover-html="gitlabUseTagsPopover" popover-placement="left" popover-trigger="'outsideClick'"><i class="ion-help-circled"></i></a></div>
+          </div>
+
+          <div class="row pad-top">
+            <div class="col-xs-6"><label for="changeResultsLocation" translate>Change Results Location:</label></div>
+            <div class="col-xs-2"><input id="changeResultsLocation" type="checkbox" ng-model="diskM.diskM.gitlab.useSeparateResultsRepo" ng-change="gitlab.toggleSeparateResultsRepo()" /></div>
+            <div class="col-xs-2"></div>
+            <div class="col-xs-1"><a href="#" title="'Change Results Location help' " uib-popover-html="gitlabUseSeperateResultsRepoPopover" popover-placement="left" popover-trigger="'outsideClick'"><i class="ion-help-circled"></i></a></div>
+          </div>
+
+          <div class="row pad-top" *ngIf="diskM.diskM.gitlab.useSeparateResultsRepo">
+            <div class="col-xs-4"><label for="resultsGroup" translate>Results Group:</label></div>
+            <div class="col-xs-6"><input id="resultsGroup" type="text" enter-close class="form-control" placeholder="Namespace" ng-model="diskM.diskM.servers.gitlab.resultsGroup" /></div>
+            <div class="col-xs-1"><a href="#" title="'Results Group help' " uib-popover-html="gitlabResultsGroupPopover" popover-placement="left" popover-trigger="'outsideClick'"><i class="ion-help-circled"></i></a></div>
+          </div>
+
+          <div class="row pad-top" *ngIf="diskM.diskM.gitlab.useSeparateResultsRepo">
+            <div class="col-xs-4"><label for="resultsRepository" translate>Results Repository:</label></div>
+            <div class="col-xs-6"><input id="resultsRepository" type="text" enter-close class="form-control" placeholder="Repository" ng-model="diskM.diskM.servers.gitlab.resultsRepo" /></div>
+            <div class="col-xs-1"><a href="#" title="'Results Repository help' " uib-popover-html="gitlabResultsRepoPopover" popover-placement="left" popover-trigger="'outsideClick'"><i class="ion-help-circled"></i></a></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div> -->
+
+</div>
