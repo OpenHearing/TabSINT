@@ -1,28 +1,28 @@
 import { Injectable } from '@angular/core';
-import { StateModel } from './state.interface';
+import { StateInterface } from './state.interface';
 import { AppState, ProtocolState } from "../../utilities/constants";
 
 @Injectable({
     providedIn: 'root',
 })
 
-export class StateM {
+export class StateModel {
 
-    stateM: StateModel = {
+    stateModel: StateInterface = {
         appState: AppState.Welcome,
         protocolState: ProtocolState.null
     }
 
-    getState(): StateModel {
-        return this.stateM;
+    getState(): StateInterface {
+        return this.stateModel;
     }
 
     setAppState(_appState: AppState) {
-        this.stateM.appState = _appState;
+        this.stateModel.appState = _appState;
     }
 
     setProtocolState(_protocolState: ProtocolState) {
-        this.stateM.protocolState = _protocolState;
+        this.stateModel.protocolState = _protocolState;
     }
 
 }

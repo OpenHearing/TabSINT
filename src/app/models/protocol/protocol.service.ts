@@ -1,16 +1,19 @@
 import { Injectable } from '@angular/core';
-import { ProtocolModel } from './protocol.interface';
+import { ProtocolInterface } from './protocol.interface';
 import { ProtocolServer } from '../../utilities/constants';
 
 @Injectable({
     providedIn: 'root',
 })
 
-export class ProtocolM {
+export class ProtocolModel {
 
-    protocolM: ProtocolModel = {
+    protocolModel: ProtocolInterface = {
         admin: false,
         server: ProtocolServer.LocalServer
     }
 
+    getProtocol(): ProtocolInterface {
+        return this.protocolModel;
+    }
 }

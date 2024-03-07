@@ -1,6 +1,6 @@
 import { ProtocolServer } from "../../utilities/constants";
 
-export interface ProtocolModel {
+export interface ProtocolInterface {
     group?: string;
     name?: string;
     path?: string;

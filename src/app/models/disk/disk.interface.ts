@@ -1,6 +1,6 @@
-import { MediaRepos } from "../../interfaces/media-repos.interface"
+import { MediaReposInterface } from "../../interfaces/media-repos.interface"
 import { ResultsMode, Server } from "../../utilities/constants"
-import { ProtocolModel } from "../protocol/protocol.interface"
+import { ProtocolInterface } from "../protocol/protocol.interface"
 
 export interface DiskInterface {
     qrcodeConfig?: Object,
@@ -46,9 +46,9 @@ export interface DiskInterface {
       useTagsOnly: boolean,
       useSeperateResultsRepo: boolean
     },
-    activeProtocol: ProtocolModel, 
-    loadedProtocols: Array<ProtocolModel>, 
-    mediaRepos: Array<MediaRepos>, 
+    activeProtocol: ProtocolInterface, 
+    loadedProtocols: Array<ProtocolInterface>, 
+    mediaRepos: Array<MediaReposInterface>, 
     servers: {
       localServer?: {
         resultsDir: string,

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { Protocol } from './controllers/protocol.service';
+import { ProtocolService } from './controllers/protocol.service';
 
 @Component({
   selector: 'app-root',
@@ -11,12 +11,12 @@ export class AppComponent {
   title = 'tabsint';
   
   constructor(
-    private protocol: Protocol,
+    private protocolService: ProtocolService,
     private router: Router
   ) {}
 
   ngOnInit() {
-    this.protocol.init();
+    this.protocolService.init();
     this.router.navigate([''])
   }
 }

@@ -1,4 +1,4 @@
-export interface MediaRepos {
+export interface MediaReposInterface {
     name: string;
     version: string;
     date: string;

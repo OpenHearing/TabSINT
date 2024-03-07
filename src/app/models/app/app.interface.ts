@@ -1,4 +1,4 @@
-export interface AppModel {
+export interface AppInterface {
     tablet: Boolean;
     test: Boolean;
     browser: Boolean;

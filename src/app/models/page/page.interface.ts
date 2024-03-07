@@ -1,4 +1,4 @@
-export interface PageModel {
+export interface PageInterface {
     name: string;
     filename: string;
     units: string;

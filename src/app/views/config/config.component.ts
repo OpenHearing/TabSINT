@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 
-import { PageM } from '../../models/page/page.service';
+import { PageModel } from '../../models/page/page.service';
 import { DiskModel } from '../../models/disk/disk.service';
 import { Logger } from '../../utilities/logger.service';
 import { FileService } from '../../controllers/file.service';
 import { AppState } from '../../utilities/constants';
-import { StateM } from '../../models/state/state.service';
+import { StateModel } from '../../models/state/state.service';
 import { DiskInterface } from '../../models/disk/disk.interface';
+import { PageInterface } from '../../models/page/page.interface';
 
 @Component({
   selector: 'config-view',
@@ -16,24 +17,27 @@ import { DiskInterface } from '../../models/disk/disk.interface';
 })
 export class ConfigComponent {
   disk: DiskInterface;
+  page: PageInterface;
 
   constructor(
     public diskModel:DiskModel, 
-    public file:FileService,
+    public fileService:FileService,
     public logger:Logger, 
-    public pageM:PageM,
-    public stateM: StateM 
+    public pageModel:PageModel,
+    public stateModel: StateModel 
   ) { 
-    this.disk = this.diskModel.getDisk(); }
+    this.disk = this.diskModel.getDisk();
+    this.page = this.pageModel.getPage();
+  }
 
   ngOnInit(): void {
-    this.stateM.setAppState(AppState.Admin);
+    this.stateModel.setAppState(AppState.Admin);
   }
 
   title = 'config';
 
   logTest() {
-    this.logger.debug("pageM: "+JSON.stringify(this.pageM.pageM));
+    this.logger.debug("pageM: "+JSON.stringify(this.page));
     this.logger.debug("diskM: "+JSON.stringify(this.disk));
   }
 

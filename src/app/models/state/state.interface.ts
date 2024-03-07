@@ -1,6 +1,6 @@
 import { AppState, ProtocolState } from "../../utilities/constants";
 
-export interface StateModel {
+export interface StateInterface {
     appState: AppState;
     protocolState: ProtocolState
 }

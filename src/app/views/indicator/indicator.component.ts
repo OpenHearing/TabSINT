@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { DiskM } from '../../models/disk/disk.service';
+import { DiskModel } from '../../models/disk/disk.service';
 
 @Component({
   selector: 'indicator-view',
@@ -8,7 +8,7 @@ import { DiskM } from '../../models/disk/disk.service';
 })
 export class IndicatorComponent {
 
-  constructor(public diskM:DiskM) {  }
+  constructor(public diskModel:DiskModel) {  }
 
   bluetoothStatus:any = {};
   networkModel:any = {};

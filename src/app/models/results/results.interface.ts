@@ -1,3 +1,3 @@
-export interface ResultsModel {
+export interface ResultsInterface {
     name: string;
 }

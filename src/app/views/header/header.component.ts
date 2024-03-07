@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { StateM } from '../../models/state/state.service';
+import { StateModel } from '../../models/state/state.service';
 import { AppState } from '../../utilities/constants';
 
 @Component({
@@ -10,10 +10,10 @@ import { AppState } from '../../utilities/constants';
 export class HeaderComponent {
   isExam: Boolean = false;
   
-  constructor(private stateM: StateM) {}
+  constructor(private stateModel: StateModel) {}
 
   ngOnInit(): void {
-    this.isExam = this.stateM.getState().appState === AppState.Exam;
+    this.isExam = this.stateModel.getState().appState === AppState.Exam;
   }
 
 }

@@ -1,9 +1,9 @@
-import { ProtocolModel } from "../models/protocol/protocol.interface";
+import { ProtocolInterface } from "../models/protocol/protocol.interface";
 
-export interface LoadingProtocolObject {
+export interface LoadingProtocolInterface {
     protocol?: string;
     calibration?: string;
-    meta?: ProtocolModel;
+    meta?: ProtocolInterface;
     notify: Boolean;
     validate: Boolean;
     reload: Boolean;

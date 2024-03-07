@@ -1,14 +1,17 @@
 import { Injectable } from '@angular/core';
-import { DevicesModel } from './devices.interface';
+import { DevicesInterface } from './devices.interface';
 
 @Injectable({
     providedIn: 'root',
 })
 
-export class DevicesM {
+export class DevicesModel {
 
-    devicesM: DevicesModel = {
+    devicesModel: DevicesInterface = {
         name: "name"
     }
 
+    getDevices(): DevicesInterface {
+        return this.devicesModel;
+    }
 }

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { StateM } from '../../models/state/state.service';
+import { StateModel } from '../../models/state/state.service';
 import { AppState } from '../../utilities/constants';
 
 @Component({
@@ -10,13 +10,13 @@ import { AppState } from '../../utilities/constants';
 
 export class ExamComponent {
 
-  constructor(private stateM: StateM) {}
+  constructor(private stateModel: StateModel) {}
 
   ngOnInit(): void {
-    this.stateM.setAppState(AppState.Exam);
+    this.stateModel.setAppState(AppState.Exam);
   }
 
   ngOnDestroy(): void {
-    this.stateM.setAppState(AppState.null);
+    this.stateModel.setAppState(AppState.null);
   }
 }

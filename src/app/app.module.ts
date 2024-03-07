@@ -18,13 +18,13 @@ import { ExamComponent } from './views/exam/exam.component';
 import { IndicatorComponent } from './views/indicator/indicator.component';
 
 // Models
-import { AppM } from './models/app/app.service';
-import { DevicesM } from './models/devices/devices.service';
+import { AppModel } from './models/app/app.service';
+import { DevicesModel } from './models/devices/devices.service';
 import { DiskModel } from './models/disk/disk.service';
-import { PageM } from './models/page/page.service';
-import { ProtocolM } from './models/protocol/protocol.service';
-import { ResultsM } from './models/results/results.service';
-import { StateM } from './models/state/state.service';
+import { PageModel } from './models/page/page.service';
+import { ProtocolModel } from './models/protocol/protocol.service';
+import { ResultsModel } from './models/results/results.service';
+import { StateModel } from './models/state/state.service';
 
 // Utilities
 import { Json } from './utilities/json.service';
@@ -36,13 +36,13 @@ import { FileChooser } from './utilities/file-chooser.service';
 
 // Controllers
 import { FileService } from './controllers/file.service';
-import { Config } from './controllers/config.service';
-import { Version } from './controllers/version.service';
-import { Protocol } from './controllers/protocol.service';
-import { LocalServer } from './controllers/local-server.service';
-import { Results } from './controllers/results.service';
-import { Exam } from './controllers/exam.service';
-import { Admin } from './controllers/admin.service';
+import { ConfigService } from './controllers/config.service';
+import { VersionService } from './controllers/version.service';
+import { ProtocolService } from './controllers/protocol.service';
+import { LocalServerService } from './controllers/local-server.service';
+import { ResultsService } from './controllers/results.service';
+import { ExamService } from './controllers/exam.service';
+import { AdminService } from './controllers/admin.service';
 
 @NgModule({
   declarations: [
@@ -65,26 +65,26 @@ import { Admin } from './controllers/admin.service';
   ],
   providers: [
     provideClientHydration(),
-    AppM,
-    DevicesM,
+    AppModel,
+    DevicesModel,
     DiskModel,
-    PageM,
-    ProtocolM,
-    ResultsM,
-    StateM,
+    PageModel,
+    ProtocolModel,
+    ResultsModel,
+    StateModel,
     Json,
     SqLite,
     Logger,
     Paths,
     FileChooser,
     FileService,
-    Config,
-    Version,
-    Protocol,
-    LocalServer,
-    Results,
-    Exam,
-    Admin
+    ConfigService,
+    VersionService,
+    ProtocolService,
+    LocalServerService,
+    ResultsService,
+    ExamService,
+    AdminService
   ],
   bootstrap: [AppComponent]
 })

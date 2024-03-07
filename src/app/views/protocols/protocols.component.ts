@@ -2,10 +2,11 @@ import { Component } from '@angular/core';
 import { DiskModel } from '../../models/disk/disk.service';
 import { Logger } from '../../utilities/logger.service';
 import _ from 'lodash';
-import { ProtocolModel } from '../../models/protocol/protocol.interface';
-import { Protocol } from '../../controllers/protocol.service';
+import { ProtocolInterface } from '../../models/protocol/protocol.interface';
 import { ProtocolServer, Server } from '../../utilities/constants';
 import { DiskInterface } from '../../models/disk/disk.interface';
+import { ProtocolModel } from '../../models/protocol/protocol.service';
+import { ProtocolService } from '../../controllers/protocol.service';
 
 @Component({
   selector: 'protocols-view',
@@ -13,15 +14,19 @@ import { DiskInterface } from '../../models/disk/disk.interface';
   styleUrl: './protocols.component.css'
 })
 export class ProtocolsComponent {
-  selected?: ProtocolModel;
+  selected?: ProtocolInterface;
   disk: DiskInterface;
+  protocol: ProtocolInterface;
 
   constructor (
     public diskModel: DiskModel,
+    public protocolService: ProtocolService,
+    public protocolModel: ProtocolModel,
     private logger: Logger,
-    public protocol: Protocol
+
   ) {
     this.disk = this.diskModel.getDisk();
+    this.protocol = this.protocolModel.getProtocol();
   }
 
   ngOnInit(): void {
@@ -29,12 +34,12 @@ export class ProtocolsComponent {
     // sort protocols by name here
   }
 
-  select(p: ProtocolModel): void {
+  select(p: ProtocolInterface): void {
     this.selected = p;
   }
 
-  pclass(p: ProtocolModel): string {
-    if (this.protocol.isActive(p)) {
+  pclass(p: ProtocolInterface): string {
+    if (this.protocolService.isActive(p)) {
       return "active-row";
     } else if (this.selected === null || this.selected === undefined) {
       return "";
@@ -74,7 +79,7 @@ export class ProtocolsComponent {
     if (!this.selected) {
         return;
     }
-    this.protocol.load(this.selected, this.disk.validateProtocols, true, true);
+    this.protocolService.load(this.selected, this.disk.validateProtocols, true, true);
     // if no protocol is available, load it
     // if (!pm.root) {
     //     loadAndReset(false);
@@ -120,7 +125,7 @@ export class ProtocolsComponent {
           return;
       }
 
-      this.protocol.delete(this.selected);
+      this.protocolService.delete(this.selected);
       this.selected = undefined;
       // notifications.confirm(
       //     gettextCatalog.getString("Delete protocol ") +

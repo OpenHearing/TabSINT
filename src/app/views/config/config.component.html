@@ -8,13 +8,13 @@
 
     <button (click)="logTest()"> log page-m </button>
 
-    <button (click)="file.checkPermissions()"> Check Permissions </button>
-    <button (click)="file.requestPermissions()"> Request Permissions </button>
+    <button (click)="fileService.checkPermissions()"> Check Permissions </button>
+    <button (click)="fileService.requestPermissions()"> Request Permissions </button>
     
-    <button (click)="file.writeFile('testing/test.txt','This is a test')"> Write File </button>
-    <button (click)="file.readFile('testing/test.txt')"> Read File </button>
-    <button (click)="file.createDirectory('testing2')"> Create Dir </button>
-    <button (click)="file.listDirectory('testing')"> Read Dir </button>
+    <button (click)="fileService.writeFile('testing/test.txt','This is a test')"> Write File </button>
+    <button (click)="fileService.readFile('testing/test.txt')"> Read File </button>
+    <button (click)="fileService.createDirectory('testing2')"> Create Dir </button>
+    <button (click)="fileService.listDirectory('testing')"> Read Dir </button>
 
     <div ngbAccordion #accordion="ngbAccordion">
         <div ngbAccordionItem="tabsint-accordian">
@@ -31,11 +31,11 @@
                         </div>
                         <div ngbDropdown display="dynamic" style="display: flex; flex-direction: row;">
                             
-                            <button type="button" class="btn btn-default btn-block dropdown-toggle" id="test1" ngbDropdownToggle *ngIf="headsets[diskM.diskM.headset]!='None'">
-                                {{headsets[diskM.diskM.headset]}} 
+                            <button type="button" class="btn btn-default btn-block dropdown-toggle" id="test1" ngbDropdownToggle *ngIf="headsets[disk.headset]!='None'">
+                                {{headsets[disk.headset]}} 
                             </button>
 
-                            <button type="button" class="btn btn-default btn-block dropdown-toggle" id="test1" ngbDropdownToggle *ngIf="headsets[diskM.diskM.headset]=='None'">
+                            <button type="button" class="btn btn-default btn-block dropdown-toggle" id="test1" ngbDropdownToggle *ngIf="headsets[disk.headset]=='None'">
                                 None 
                             </button>
 

@@ -1,14 +1,18 @@
 import { Injectable } from '@angular/core';
-import { ResultsModel } from './results.interface';
+import { ResultsInterface } from './results.interface';
 
 @Injectable({
     providedIn: 'root',
 })
 
-export class ResultsM {
+export class ResultsModel {
 
-    resultsM: ResultsModel = {
+    resultsModel: ResultsInterface = {
         name: "name"
+    }
+
+    getResults(): ResultsInterface {
+        return this.resultsModel;
     }
 
 }

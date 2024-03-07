@@ -1,17 +1,20 @@
 import { Injectable } from '@angular/core';
-import { AppModel } from './app.interface';
+import { AppInterface } from './app.interface';
 import { Capacitor } from '@capacitor/core';
 
 @Injectable({
     providedIn: 'root',
 })
 
-export class AppM {
+export class AppModel {
 
-    appM: AppModel = {
+    appModel: AppInterface = {
         tablet: Capacitor.getPlatform() === 'android',
         test: false,
         browser: Capacitor.getPlatform() === 'web'
     }
 
+    getApp(): AppInterface {
+        return this.appModel;
+    }
 }

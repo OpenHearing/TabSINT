@@ -1,3 +1,3 @@
-export interface DevicesModel {
+export interface DevicesInterface {
     name: string;
 }

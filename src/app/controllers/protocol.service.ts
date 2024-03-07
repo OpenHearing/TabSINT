@@ -3,32 +3,37 @@ import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
 import { Logger } from '../utilities/logger.service';
 import { DiskModel } from '../models/disk/disk.service';
-import { ProtocolM } from '../models/protocol/protocol.service';
-import { ProtocolModel } from '../models/protocol/protocol.interface';
+import { ProtocolModel } from '../models/protocol/protocol.service';
+import { ProtocolInterface } from '../models/protocol/protocol.interface';
 import { ProtocolServer, Server } from '../utilities/constants';
-import { AppM } from '../models/app/app.service';
+import { AppModel } from '../models/app/app.service';
 import { FileService } from './file.service';
 import { Paths } from '../utilities/paths.service';
-import { LoadingProtocolObject } from '../interfaces/loading-object.interface';
+import { LoadingProtocolInterface } from '../interfaces/loading-object.interface';
 import { DiskInterface } from '../models/disk/disk.interface';
+import { AppInterface } from '../models/app/app.interface';
 
 @Injectable({
     providedIn: 'root',
 })
 
-export class Protocol {
+export class ProtocolService {
     disk: DiskInterface;
-    loading: LoadingProtocolObject;
+    app: AppInterface;
+    loading: LoadingProtocolInterface;
+    protocol: ProtocolInterface;
 
     constructor(
-        public appM: AppM,
+        public appModel: AppModel,
         public diskModel: DiskModel,
         public file: FileService,
         public logger:Logger,
         public paths: Paths,
-        public protocolM: ProtocolM
+        public protocolModel: ProtocolModel
     ) { 
         this.disk = this.diskModel.getDisk(); 
+        this.app = this.appModel.getApp();
+        this.protocol = this.protocolModel.getProtocol();
         
         this.loading = {
             protocol: undefined,
@@ -108,7 +113,7 @@ export class Protocol {
         // });
     
         // select the source to start
-        if (!this.appM.appM.tablet) {
+        if (!this.app.tablet) {
             // config.load();
         }
         this.disk.server = Server.Local;
@@ -117,12 +122,12 @@ export class Protocol {
         // protocolSchema = addSchema("protocol_schema");
     
         // add 'tabsint-protocols' directory next to 'tabsint-results' to store local server TabSINT protocols
-        if (this.appM.appM.tablet) {
+        if (this.app.tablet) {
             this.file.createDirectory("tabsint-protocols");
         }
     };
 
-    define(obj: ProtocolModel): ProtocolModel {
+    define(obj: ProtocolInterface): ProtocolInterface {
 
         // if (obj.server === "developer") {
         //     obj.version = version.dm.tabsint;
@@ -145,7 +150,7 @@ export class Protocol {
         );
     };
 
-    store(p: ProtocolModel): void {
+    store(p: ProtocolInterface): void {
         const duplicates = _.filter(this.disk.loadedProtocols, {
             name: p.name,
             path: p.path,
@@ -261,27 +266,27 @@ export class Protocol {
             // });
     };
 
-    delete(protocol: ProtocolModel): void {
-        const idx = _.findIndex(this.disk.loadedProtocols, protocol);
+    delete(p: ProtocolInterface): void {
+        const idx = _.findIndex(this.disk.loadedProtocols, p);
     
         if (idx === -1) {
-            this.logger.error("Trying to delete protocol " + protocol.name + ", but it does not exist");
+            this.logger.error("Trying to delete protocol " + p.name + ", but it does not exist");
             return;
         }
     
-        if (_.includes(["app", "developer"], protocol.group)) {
-            this.logger.error("Trying to delete app or developer protocol " + protocol.name + ", but this is not allowed");
+        if (_.includes(["app", "developer"], p.group)) {
+            this.logger.error("Trying to delete app or developer protocol " + p.name + ", but this is not allowed");
             return;
         }
     
-        if (this.appM.appM.tablet && this.protocolM.protocolM.server === ProtocolServer.Gitlab) {
+        if (this.app.tablet && this.protocol.server === ProtocolServer.Gitlab) {
             try {
-                this.logger.debug("Removing protocol files for protocol: " + protocol.name + " at path: " + protocol.path);
-                const root = protocol.path!
+                this.logger.debug("Removing protocol files for protocol: " + p.name + " at path: " + p.path);
+                const root = p.path!
                     .split("/")
                     .slice(0, -2)
                     .join("/");
-                const dir = protocol.path!.split("/").slice(-2, -1)[0];
+                const dir = p.path!.split("/").slice(-2, -1)[0];
                 this.logger.debug('Delete protocol in development');
                 // this.file.removeRecursively(root, dir).catch(function(e: Error) {
                 //     this.logger.error(
@@ -296,7 +301,7 @@ export class Protocol {
                 //     );
                 // });
             } catch (e) {
-                this.logger.debug("Failed to remove protocol directory " + protocol.name + " from path " + protocol.path);
+                this.logger.debug("Failed to remove protocol directory " + p.name + " from path " + p.path);
             }
         }
     
@@ -304,7 +309,7 @@ export class Protocol {
         this.disk.loadedProtocols.splice(idx, 1);
     
         // if protocol is active, remove it
-        if (this.isActive(protocol)) {
+        if (this.isActive(p)) {
             // pm.root = undefined;
             this.disk.activeProtocol = {};
         }
@@ -319,7 +324,7 @@ export class Protocol {
         }
     };
     
-    isActive(p: ProtocolModel | undefined): Boolean {
+    isActive(p: ProtocolInterface | undefined): Boolean {
         if (this.disk.activeProtocol && p && this.disk.activeProtocol.name == p.name && this.disk.activeProtocol.path == p.path) {
           return true;
         } else {
