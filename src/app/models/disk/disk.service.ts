@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
-import { DiskModel } from './disk.interface';
+import { DiskInterface } from './disk.interface';
 import { ResultsMode } from '../../utilities/constants';
 
 @Injectable({
     providedIn: 'root',
 })
 
-export class DiskM {
+export class DiskModel {
 
-    diskM: DiskModel = {
+    diskModel: DiskInterface = {
         headset: "None",
         disableAudioStreaming: true,
         externalMode: false,
@@ -49,6 +49,10 @@ export class DiskM {
             dataOut: ''
         },
         audhere: ''
+    }
+
+    getDisk(): DiskInterface {
+        return this.diskModel;
     }
 
 }

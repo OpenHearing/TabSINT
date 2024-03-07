@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 
 import { Injectable } from '@angular/core';
 import { Logger } from '../utilities/logger.service';
-import { DiskM } from '../models/disk/disk.service';
+import { DiskModel } from '../models/disk/disk.service';
 import { ProtocolM } from '../models/protocol/protocol.service';
 import { ProtocolModel } from '../models/protocol/protocol.interface';
 import { ProtocolServer, Server } from '../utilities/constants';
@@ -10,33 +10,38 @@ import { AppM } from '../models/app/app.service';
 import { FileService } from './file.service';
 import { Paths } from '../utilities/paths.service';
 import { LoadingProtocolObject } from '../interfaces/loading-object.interface';
+import { DiskInterface } from '../models/disk/disk.interface';
 
 @Injectable({
     providedIn: 'root',
 })
 
 export class Protocol {
-
-    loading: LoadingProtocolObject = {
-        protocol: undefined,
-        calibration: undefined,
-        validate: this.diskM.diskM.validateProtocols,
-        meta: undefined,
-        reload: false,
-        notify: false
-      };
+    disk: DiskInterface;
+    loading: LoadingProtocolObject;
 
     constructor(
         public appM: AppM,
-        public diskM: DiskM,
+        public diskModel: DiskModel,
         public file: FileService,
         public logger:Logger,
         public paths: Paths,
         public protocolM: ProtocolM
-    ) {  }
+    ) { 
+        this.disk = this.diskModel.getDisk(); 
+        
+        this.loading = {
+            protocol: undefined,
+            calibration: undefined,
+            validate: this.disk.validateProtocols,
+            meta: undefined,
+            reload: false,
+            notify: false
+        };
+    }
     
     init(): void  {
-        _.remove(this.diskM.diskM.loadedProtocols, {
+        _.remove(this.disk.loadedProtocols, {
                 server: ProtocolServer.Developer
         });
     
@@ -106,7 +111,7 @@ export class Protocol {
         if (!this.appM.appM.tablet) {
             // config.load();
         }
-        this.diskM.diskM.server = Server.Local;
+        this.disk.server = Server.Local;
     
         // add root, recursively will add all dependent schemas
         // protocolSchema = addSchema("protocol_schema");
@@ -141,7 +146,7 @@ export class Protocol {
     };
 
     store(p: ProtocolModel): void {
-        const duplicates = _.filter(this.diskM.diskM.loadedProtocols, {
+        const duplicates = _.filter(this.disk.loadedProtocols, {
             name: p.name,
             path: p.path,
             date: p.date,
@@ -149,21 +154,21 @@ export class Protocol {
         });
     
         if (duplicates.length === 0) {
-            this.diskM.diskM.loadedProtocols.push(p);
+            this.disk.loadedProtocols.push(p);
         } else {
-            this.logger.error("Protocol meta data already in this.diskM.diskM.protocols");
+            this.logger.error("Protocol meta data already in this.disk.protocols");
         }
     };
 
     load(meta: any, validate: boolean, notify: boolean, reload: boolean): void { //Promise<any> {
         this.loading.meta = meta;
-        this.loading.validate = validate || this.diskM.diskM.validateProtocols; // if validate is a boolean, use it, otherwise default to this.diskM.diskM.validateProtocols
+        this.loading.validate = validate || this.disk.validateProtocols; // if validate is a boolean, use it, otherwise default to this.disk.validateProtocols
         this.loading.notify = notify || false;
         this.loading.reload = reload || false;
     
-        if (!this.loading.meta && this.diskM.diskM.activeProtocol.path) {
-            this.loading.meta = this.diskM.diskM.activeProtocol;
-        } else if (!meta && !this.diskM.diskM.activeProtocol.path) {
+        if (!this.loading.meta && this.disk.activeProtocol.path) {
+            this.loading.meta = this.disk.activeProtocol;
+        } else if (!meta && !this.disk.activeProtocol.path) {
             this.logger.debug("No protocol available");
             //return Promise.reject();
         }
@@ -257,7 +262,7 @@ export class Protocol {
     };
 
     delete(protocol: ProtocolModel): void {
-        const idx = _.findIndex(this.diskM.diskM.loadedProtocols, protocol);
+        const idx = _.findIndex(this.disk.loadedProtocols, protocol);
     
         if (idx === -1) {
             this.logger.error("Trying to delete protocol " + protocol.name + ", but it does not exist");
@@ -296,12 +301,12 @@ export class Protocol {
         }
     
         // remove metadata from disk
-        this.diskM.diskM.loadedProtocols.splice(idx, 1);
+        this.disk.loadedProtocols.splice(idx, 1);
     
         // if protocol is active, remove it
         if (this.isActive(protocol)) {
             // pm.root = undefined;
-            this.diskM.diskM.activeProtocol = {};
+            this.disk.activeProtocol = {};
         }
     
         //try to erase the files copied to internal storage
@@ -315,7 +320,7 @@ export class Protocol {
     };
     
     isActive(p: ProtocolModel | undefined): Boolean {
-        if (this.diskM.diskM.activeProtocol && p && this.diskM.diskM.activeProtocol.name == p.name && this.diskM.diskM.activeProtocol.path == p.path) {
+        if (this.disk.activeProtocol && p && this.disk.activeProtocol.name == p.name && this.disk.activeProtocol.path == p.path) {
           return true;
         } else {
           return false;

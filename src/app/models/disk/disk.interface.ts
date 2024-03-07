@@ -2,7 +2,7 @@ import { MediaRepos } from "../../interfaces/media-repos.interface"
 import { ResultsMode, Server } from "../../utilities/constants"
 import { ProtocolModel } from "../protocol/protocol.interface"
 
-export interface DiskModel {
+export interface DiskInterface {
     qrcodeConfig?: Object,
     debugMode?: boolean,
     disableLogs?: boolean,

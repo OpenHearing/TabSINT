@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
-import { DiskM } from '../../models/disk/disk.service';
+import { DiskModel } from '../../models/disk/disk.service';
 import { Logger } from '../../utilities/logger.service';
 import _ from 'lodash';
 import { ProtocolModel } from '../../models/protocol/protocol.interface';
 import { Protocol } from '../../controllers/protocol.service';
 import { ProtocolServer, Server } from '../../utilities/constants';
+import { DiskInterface } from '../../models/disk/disk.interface';
 
 @Component({
   selector: 'protocols-view',
@@ -13,12 +14,15 @@ import { ProtocolServer, Server } from '../../utilities/constants';
 })
 export class ProtocolsComponent {
   selected?: ProtocolModel;
+  disk: DiskInterface;
 
   constructor (
-    public diskM: DiskM,
+    public diskModel: DiskModel,
     private logger: Logger,
     public protocol: Protocol
-  ) {}
+  ) {
+    this.disk = this.diskModel.getDisk();
+  }
 
   ngOnInit(): void {
     this.logger.debug("protocols");
@@ -70,7 +74,7 @@ export class ProtocolsComponent {
     if (!this.selected) {
         return;
     }
-    this.protocol.load(this.selected, this.diskM.diskM.validateProtocols, true, true);
+    this.protocol.load(this.selected, this.disk.validateProtocols, true, true);
     // if no protocol is available, load it
     // if (!pm.root) {
     //     loadAndReset(false);

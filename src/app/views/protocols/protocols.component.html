@@ -27,7 +27,7 @@
           </tr>
         </thead>
         <tbody>
-          <div *ngFor="let p of diskM.diskM.loadedProtocols; index as i">
+          <div *ngFor="let p of disk.loadedProtocols; index as i">
           <!-- <tr *ngFor="let p of diskM.diskM.loadedProtocols; index as i" *ngIf="!p.admin" [ngClass]="pclass(p)" (click)="select(p)">
             <td class="row-Name" scope="row">{{p.name}}</td>
             <td class="row-Version">{{p.version}}</td>

@@ -20,7 +20,7 @@ import { IndicatorComponent } from './views/indicator/indicator.component';
 // Models
 import { AppM } from './models/app/app.service';
 import { DevicesM } from './models/devices/devices.service';
-import { DiskM } from './models/disk/disk.service';
+import { DiskModel } from './models/disk/disk.service';
 import { PageM } from './models/page/page.service';
 import { ProtocolM } from './models/protocol/protocol.service';
 import { ResultsM } from './models/results/results.service';
@@ -67,7 +67,7 @@ import { Admin } from './controllers/admin.service';
     provideClientHydration(),
     AppM,
     DevicesM,
-    DiskM,
+    DiskModel,
     PageM,
     ProtocolM,
     ResultsM,
