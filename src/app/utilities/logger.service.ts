@@ -18,6 +18,12 @@ export class Logger {
         }
     }
     
+    warning(msg:string) {
+        if (!this.diskM.diskM.disableLogs) {
+            console.log("WARNING: "+ msg);
+        }
+    }
+    
     error(msg:string) {
         if (!this.diskM.diskM.disableLogs) {
             console.log("ERROR: "+ msg);

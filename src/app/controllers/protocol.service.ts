@@ -9,12 +9,22 @@ import { ProtocolServer, Server } from '../utilities/constants';
 import { AppM } from '../models/app/app.service';
 import { FileService } from './file.service';
 import { Paths } from '../utilities/paths.service';
+import { LoadingProtocolObject } from '../interfaces/loading-object.interface';
 
 @Injectable({
     providedIn: 'root',
 })
 
 export class Protocol {
+
+    loading: LoadingProtocolObject = {
+        protocol: undefined,
+        calibration: undefined,
+        validate: this.diskM.diskM.validateProtocols,
+        meta: undefined,
+        reload: false,
+        notify: false
+      };
 
     constructor(
         public appM: AppM,
@@ -141,11 +151,170 @@ export class Protocol {
         if (duplicates.length === 0) {
             this.diskM.diskM.loadedProtocols.push(p);
         } else {
-            this.logger.error("Protocol meta data already in disk.protocols");
+            this.logger.error("Protocol meta data already in this.diskM.diskM.protocols");
+        }
+    };
+
+    load(meta: any, validate: boolean, notify: boolean, reload: boolean): void { //Promise<any> {
+        this.loading.meta = meta;
+        this.loading.validate = validate || this.diskM.diskM.validateProtocols; // if validate is a boolean, use it, otherwise default to this.diskM.diskM.validateProtocols
+        this.loading.notify = notify || false;
+        this.loading.reload = reload || false;
+    
+        if (!this.loading.meta && this.diskM.diskM.activeProtocol.path) {
+            this.loading.meta = this.diskM.diskM.activeProtocol;
+        } else if (!meta && !this.diskM.diskM.activeProtocol.path) {
+            this.logger.debug("No protocol available");
+            //return Promise.reject();
+        }
+    
+        // fix path
+        // this.loading.meta.path = paths.dir(this.loading.meta.path);
+    
+        // const validateIfCalledFor = (): Promise<any> => {
+        //     const deferred = $q.defer();
+    
+        //     if (this.loading.validate) {
+        //         const validationResult = this.validate(loading.p);
+        //         if (validationResult.valid) {
+        //             deferred.resolve();
+        //         } else {
+        //             deferred.reject("Validation Errors: " + JSON.stringify(validationResult.error));
+        //         }
+        //     } else {
+        //         deferred.resolve();
+        //     }
+    
+        //     return deferred.promise;
+        // }
+    
+        // function addTask(taskName: string, taskMessage: string): Promise<any> {
+        //     if (loading.notify) {
+        //         return tasks.register(taskName, taskMessage);
+        //     } else {
+        //         return Promise.resolve();
+        //     }
+        // }
+    
+        let errorCopying: Boolean = false;
+        return this.logger.debug('Protocol loading in development');
+        // this.file.copyDirectory(this.loading.meta!.contentURI, this.loading.meta!.name)
+        // addTask("updating protocol", "Loading Protocol Files...")
+            //check if we need to re-copy directory
+            // .then(() => {
+            //     logger.debug("loading.meta" + JSON.stringify(loading.meta));
+            //     if (loading.meta.contentURI && loading.reload) {
+            //         logger.debug("re-loading protocol - copying directory");
+            //         return file.copyDirectory(loading.meta.contentURI, loading.meta.name);
+            //     }
+            // })
+            //catch error
+            // .catch(() => {
+            //     errorCopying = true;
+            // })
+            //propagate error down promise chain
+            // .then(() => {
+            //     const promise = new Promise((resolve, reject) => void {
+            //         if (errorCopying) {
+            //             reject({
+            //                 code: 606,
+            //                 msg: "Error reloading protocol"
+            //             });
+            //         } else: {
+            //             resolve();
+            //         }
+            //     });
+            //     return promise;
+            // })
+            // .then(loadFiles) // uses loading.meta, sets loading.p, loading.c
+            // .then(() => {
+            //     return addTask("updating protocol", "Validating Protocol... This process could take several minutes");
+            // })
+            // .then(validateIfCalledFor) // uses loading.p, loading.validate
+            // .then(() => {
+            //     return addTask("updating protocol", "Initializing Protocol...");
+            // })
+            // .then(initializeProtocol) // sets loading.p to pm.root
+            // .then(() => {
+            //     return addTask("updating protocol", "Checking Protocol Files...");
+            // })
+            // .then(loadCustomJs)
+            // .then(validateCustomJsIfCalledFor)
+            // .then(handleLoadErrors) // uses pm.root, loading.notify
+            // .catch((e: Error) => {
+            //     // tasks.deregister("updating protocol");
+            //     this.logger.error("Could not load protocol.  " + JSON.stringify(e));
+            //     // if (e.code == 606 && meta !== undefined) {
+            //     //     notifications.alert("Error reloading protocol. Please delete and re-add.");
+            //     // }
+            // })
+            // .finally(() => {
+            //     // this.tasks.deregister("updating protocol");
+            //     if (errorCopying) {
+            //         throw "Error loading protocol";
+            //     }
+            // });
+    };
+
+    delete(protocol: ProtocolModel): void {
+        const idx = _.findIndex(this.diskM.diskM.loadedProtocols, protocol);
+    
+        if (idx === -1) {
+            this.logger.error("Trying to delete protocol " + protocol.name + ", but it does not exist");
+            return;
+        }
+    
+        if (_.includes(["app", "developer"], protocol.group)) {
+            this.logger.error("Trying to delete app or developer protocol " + protocol.name + ", but this is not allowed");
+            return;
+        }
+    
+        if (this.appM.appM.tablet && this.protocolM.protocolM.server === ProtocolServer.Gitlab) {
+            try {
+                this.logger.debug("Removing protocol files for protocol: " + protocol.name + " at path: " + protocol.path);
+                const root = protocol.path!
+                    .split("/")
+                    .slice(0, -2)
+                    .join("/");
+                const dir = protocol.path!.split("/").slice(-2, -1)[0];
+                this.logger.debug('Delete protocol in development');
+                // this.file.removeRecursively(root, dir).catch(function(e: Error) {
+                //     this.logger.error(
+                //         "Failed to remove protocol files in directory " +
+                //         dir +
+                //         " within root " +
+                //         root +
+                //         " for protocol " +
+                //         protocol.name +
+                //         " with error: " +
+                //         angular.toJson(e)
+                //     );
+                // });
+            } catch (e) {
+                this.logger.debug("Failed to remove protocol directory " + protocol.name + " from path " + protocol.path);
+            }
+        }
+    
+        // remove metadata from disk
+        this.diskM.diskM.loadedProtocols.splice(idx, 1);
+    
+        // if protocol is active, remove it
+        if (this.isActive(protocol)) {
+            // pm.root = undefined;
+            this.diskM.diskM.activeProtocol = {};
+        }
+    
+        //try to erase the files copied to internal storage
+        try {
+            console.log("attempting to delete files in development");
+            // this.file.deleteCopiedInternalDir(p.path, p.name);
+        } catch (error) {
+            console.log("Error trying to delete files");
+            console.log(error);
         }
     };
     
-    isActive(p: ProtocolModel | undefined) {
+    isActive(p: ProtocolModel | undefined): Boolean {
         if (this.diskM.diskM.activeProtocol && p && this.diskM.diskM.activeProtocol.name == p.name && this.diskM.diskM.activeProtocol.path == p.path) {
           return true;
         } else {

@@ -8,7 +8,7 @@ export interface ProtocolModel {
     date?: string;
     version?: string;
     creator?: string;
-    server: ProtocolServer;
+    server?: ProtocolServer;
     admin?: boolean;
     contentURI?: string;
 }

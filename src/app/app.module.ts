@@ -28,6 +28,7 @@ import { StateM } from './models/state/state.service';
 
 // Utilities
 import { Json } from './utilities/json.service';
+import { Notifications } from './utilities/notifications.service';
 import { SqLite } from './utilities/sqLite.service';
 import { Logger } from './utilities/logger.service';
 import { Paths } from './utilities/paths.service';
