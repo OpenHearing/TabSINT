@@ -43,8 +43,15 @@ export class FileService {
         await Filesystem.mkdir({
             path: dir,
             directory: Directory.Documents,
-        });
-        this.logger.debug('Created directory: '+JSON.stringify(dir));
+        }).then( () => {
+            this.logger.debug('Created directory: '+JSON.stringify(dir));
+        }).catch( (error) => {
+            if (error.message=='Directory exists') {
+                this.logger.debug('Directory: '+JSON.stringify(dir)+' already exists');
+            } else {
+                this.logger.debug('Error creating directory '+JSON.stringify(dir));
+            }
+        })
     }
 
     async deleteDirectory(dir:string) {

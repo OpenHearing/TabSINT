@@ -2,50 +2,50 @@
 <header-view></header-view>
 
 <!-- Body -->
-<main id="maincontent">
-<div class="has-header admin">
+<main id="maincontent" style="display: block;">
+  <div class="has-header admin">
 
-  <div class="questionbox admin-page">
+    <div class="questionbox admin-page">
 
-    <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
-      <li [ngbNavItem]="1">
-        <button ngbNavLink>Setup</button>
-        <ng-template ngbNavContent>
-          <p>
-            <config-view></config-view>
-          </p>
-        </ng-template>
-      </li>
-      <li [ngbNavItem]="2">
-        <button ngbNavLink>Protocols</button>
-        <ng-template ngbNavContent>
-          <p>
-            <protocols-view></protocols-view>
-          </p>
-        </ng-template>
-      </li>
-      <li [ngbNavItem]="3">
-        <button ngbNavLink>Results</button>
-        <ng-template ngbNavContent>
-          <p>
-            <results-view></results-view>
-          </p>
-        </ng-template>
-      </li>
-      <li [ngbNavItem]="4">
-        <button routerLink="/exam" ngbNavLink>Exam View</button>
-        <ng-template ngbNavContent>
-          <p>
-            <!-- <exam-view></exam-view> -->
-          </p>
-        </ng-template>
-      </li>
-    </ul>
+      <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
+        <li [ngbNavItem]="1">
+          <button ngbNavLink>Setup</button>
+          <ng-template ngbNavContent>
+            <p>
+              <config-view></config-view>
+            </p>
+          </ng-template>
+        </li>
+        <li [ngbNavItem]="2">
+          <button ngbNavLink>Protocols</button>
+          <ng-template ngbNavContent>
+            <p>
+              <protocols-view></protocols-view>
+            </p>
+          </ng-template>
+        </li>
+        <li [ngbNavItem]="3">
+          <button ngbNavLink>Results</button>
+          <ng-template ngbNavContent>
+            <p>
+              <results-view></results-view>
+            </p>
+          </ng-template>
+        </li>
+        <li [ngbNavItem]="4">
+          <button routerLink="/exam" ngbNavLink>Exam View</button>
+          <ng-template ngbNavContent>
+            <p>
+              <!-- <exam-view></exam-view> -->
+            </p>
+          </ng-template>
+        </li>
+      </ul>
+      
+      <div [ngbNavOutlet]="nav" class="mt-2"></div>
     
-    <div [ngbNavOutlet]="nav" class="mt-2"></div>
-  
+    </div>
   </div>
-</div>
 </main>
 
 <!-- Active Task Footer -->
