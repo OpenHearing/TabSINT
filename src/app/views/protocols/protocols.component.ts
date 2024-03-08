@@ -23,7 +23,6 @@ export class ProtocolsComponent {
     public protocolService: ProtocolService,
     public protocolModel: ProtocolModel,
     private logger: Logger,
-
   ) {
     this.disk = this.diskModel.getDisk();
     this.protocol = this.protocolModel.getProtocol();
@@ -163,7 +162,7 @@ export class ProtocolsComponent {
       //                 tasks.register("updating", "Updating Protocol");
       //                 updateProtocol()
       //                     .then(function() {
-      //                         return protocol.load(this.selected, this.diskM.diskM.validateProtocols, false);
+      //                         return protocol.load(this.selected, this.disk.validateProtocols, false);
       //                     })
       //                     .then(examLogic.reset)
       //                     .finally(function() {
@@ -191,11 +190,11 @@ export class ProtocolsComponent {
       //             .pull(this.selected!.repo)
       //             .then((repo) => {
       //                 // update protocols on disk
-      //                 const pidx = _.findIndex(this.diskM.diskM.loadedProtocols, {
+      //                 const pidx = _.findIndex(this.disk.loadedProtocols, {
       //                     path: paths.data(paths.gitlab(repo))
       //                 });
       //                 if (pidx !== -1) {
-      //                     this.diskM.diskM.loadedProtocols[pidx] = gitlab.defineProtocol(repo);
+      //                     this.disk.loadedProtocols[pidx] = gitlab.defineProtocol(repo);
       //                     return autoConfig.checkMedia(this.selected);
       //                 } else {
       //                   this.logger.error("Protocol path was not found in disk.protocols");
