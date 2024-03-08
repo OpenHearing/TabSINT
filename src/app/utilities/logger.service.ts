@@ -13,7 +13,8 @@ export class Logger {
     disk: DiskInterface;
 
     constructor(public diskModel:DiskModel) { 
-        this.disk = this.diskModel.getDisk(); }
+        this.disk = this.diskModel.getDisk(); 
+    }
 
     debug(msg:string) {
         if (!this.disk.disableLogs) {
