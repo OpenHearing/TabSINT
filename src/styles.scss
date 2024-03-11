@@ -620,16 +620,17 @@
     height: calc(100vh - 60px - 4em); 
     //commenting: causing layering issues
   }*/
-  .exam-page .row .col-xs-6:first-of-type,
-  .exam-page .row .col-xs-7:first-of-type {
+  .exam-page .row .col-6:first-of-type,
+  .exam-page .row .col-7:first-of-type {
     display: flex;
     align-items: center;
     min-height: 34px;
     justify-content: flex-end;
     text-align: right;
+    flex-direction: row;
   }
-  .exam-page .col-xs-5 label,
-  .exam-page .col-xs-6 label {
+  .exam-page .col-5 label,
+  .exam-page .col-6 label {
     margin-bottom: 0;
     margin-right: 0;
   }
@@ -1905,7 +1906,7 @@
     padding-right: 10px;
   }
   
-  .col-xs-4 {
+  .col-4 {
     display: flex;
     align-self: stretch;
     padding-left: 5px;
@@ -1919,12 +1920,12 @@
     padding-right: 5px;
   }
   
-  .col-xs-2 {
+  .col-2 {
     display: flex;
     justify-content: center;
   }
   
-  .col-xs-1 {
+  .col-1 {
     padding-right: unset;
   }
   

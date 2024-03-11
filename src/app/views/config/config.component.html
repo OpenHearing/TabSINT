@@ -17,7 +17,8 @@
     <button (click)="fileService.listDirectory('testing')"> Read Dir </button>
 
     <div ngbAccordion #accordion="ngbAccordion">
-        <div ngbAccordionItem="tabsint-accordian">
+
+        <div ngbAccordionItem="tabsint-accordian" [collapsed]="false">
             <h2 ngbAccordionHeader>
                 <button ngbAccordionButton>TabSINT</button>
             </h2>
@@ -26,45 +27,24 @@
                     
                     <!-- Headset -->
                     <div class="row pad-top">
-                        <div class="col-xs-5">
+                        <div class="col-5">
                             <label for="defaultHeadset">Default Headset:</label>
                         </div>
-                        <div ngbDropdown display="dynamic" style="display: flex; flex-direction: row;">
-                            
-                            <button type="button" class="btn btn-default btn-block dropdown-toggle" id="test1" ngbDropdownToggle *ngIf="headsets[disk.headset]!='None'">
+                        <div ngbDropdown display="dynamic" style="display: flex; flex-direction: row;">                            
+                            <button type="button" class="btn btn-default btn-block dropdown-toggle" id="defaultHeadset" ngbDropdownToggle *ngIf="headsets[disk.headset]!='None'">
                                 {{headsets[disk.headset]}} 
                             </button>
-
-                            <button type="button" class="btn btn-default btn-block dropdown-toggle" id="test1" ngbDropdownToggle *ngIf="headsets[disk.headset]=='None'">
-                                None 
-                            </button>
-
-                            <div ngbDropdownMenu aria-labelledby="test1">
+                            <div ngbDropdownMenu aria-labelledby="defaultHeadset">
                                 <li *ngFor="let headset of headsets | keyvalue">
                                     <a href="#" (click)="changeHeadset(headset.key, true)" ngbDropdownItem>{{headset.value}}</a>
                                 </li>
                             </div>
-
                         </div>
                     </div>
-
-                    <div ngbDropdown display="dynamic" class="d-inline-block">
-                        <button type="button" class="btn btn-outline-primary" id="test2" ngbDropdownToggle>
-                          Text
-                        </button>
-                        <div ngbDropdownMenu aria-labelledby="test2">
-                          <button ngbDropdownItem>a</button>
-                          <button ngbDropdownItem>b</button>
-                          <button ngbDropdownItem>c</button>
-                          <button ngbDropdownItem>d</button>
-                        </div>
-                    </div>
-
-                    
-
                 </div>
             </div>
         </div>
+
         <div ngbAccordionItem="wahts-accordion">
             <h2 ngbAccordionHeader>
                 <button ngbAccordionButton>WAHTS</button>
@@ -75,6 +55,7 @@
                 </div>
             </div>
         </div>
+
         <div ngbAccordionItem="dosimeter-accordion">
             <h2 ngbAccordionHeader>
                 <button ngbAccordionButton>Dosimeter</button>
@@ -85,6 +66,7 @@
                 </div>
             </div>
         </div>
+
         <div ngbAccordionItem="software-and-hardware-accordion">
             <h2 ngbAccordionHeader>
                 <button ngbAccordionButton>Software and Hardware</button>
@@ -95,6 +77,7 @@
                 </div>
             </div>
         </div>
+        
         <div ngbAccordionItem="application-log-accordion">
             <h2 ngbAccordionHeader>
                 <button ngbAccordionButton>Application Log</button>
