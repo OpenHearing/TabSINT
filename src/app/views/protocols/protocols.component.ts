@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
+import _ from 'lodash';
+
 import { DiskModel } from '../../models/disk/disk.service';
 import { Logger } from '../../utilities/logger.service';
-import _ from 'lodash';
 import { ProtocolInterface } from '../../models/protocol/protocol.interface';
-import { ProtocolServer, Server } from '../../utilities/constants';
+import { ProtocolServer, ValidateProtocolTooltip } from '../../utilities/constants';
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { ProtocolModel } from '../../models/protocol/protocol.service';
 import { ProtocolService } from '../../controllers/protocol.service';
@@ -17,6 +18,7 @@ export class ProtocolsComponent {
   selected?: ProtocolInterface;
   disk: DiskInterface;
   protocol: ProtocolInterface;
+  validateProtocolTooltip: String = ValidateProtocolTooltip;
 
   constructor (
     public diskModel: DiskModel,

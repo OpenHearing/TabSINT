@@ -9,6 +9,30 @@
 // Be sure that you only ever include this mixin once!
 @include mat.core();
 
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$tabsint-training-site-primary: mat.define-palette(mat.$indigo-palette);
+$tabsint-training-site-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$tabsint-training-site-warn: mat.define-palette(mat.$red-palette);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$tabsint-training-site-theme: mat.define-light-theme((
+  color: (
+    primary: $tabsint-training-site-primary,
+    accent: $tabsint-training-site-accent,
+    warn: $tabsint-training-site-warn,
+  )
+));
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include mat.all-component-themes($tabsint-training-site-theme);
+
 @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css");
 
 @import "../node_modules/bootstrap/dist/css/bootstrap.css";
@@ -210,6 +234,12 @@
     100% {
       transform: rotate(360deg);
     }
+  }
+  .help-tooltips {
+    font-size: 16px; 
+    size: 16px; 
+    color: rgb(0, 102, 204); 
+    padding: 6px;
   }
   
   /* ----------

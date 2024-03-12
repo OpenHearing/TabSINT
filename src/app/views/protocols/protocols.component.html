@@ -50,7 +50,12 @@
         <div class="col-6"><label for="validateProtocols" i18n>Validate protocols:</label></div>
         <div class="col-2"><input id="validateProtocols" type="checkbox" ngModel="diskService.validateProtocols" /></div>
         <div class="col-2"></div>
-        <div class="col-1"><a href="#" title="'Protocols help' " uib-popover-html="validatePopover" popover-placement="left" popover-trigger="'outsideClick'"><i class="ion-help-circled"></i></a></div>
+        <div class="col-1"><mat-icon [matMenuTriggerFor]= "menu" class="help-tooltips">help_outline</mat-icon></div>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item>
+          <div [innerHTML]="validateProtocolTooltip">
+          </div></button>
+        </mat-menu>
       </div>
 
  
