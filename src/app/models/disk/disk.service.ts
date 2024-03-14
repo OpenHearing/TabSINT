@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DiskInterface } from './disk.interface';
-import { ResultsMode } from '../../utilities/constants';
+import { ProtocolServer, ResultsMode } from '../../utilities/constants';
 
 @Injectable({
     providedIn: 'root',
@@ -11,6 +11,7 @@ export class DiskModel {
     diskModel: DiskInterface = {
         headset: "None",
         disableAudioStreaming: true,
+        server: ProtocolServer.LocalServer,
         externalMode: false,
         appDeveloperMode: false,
         appDeveloperModeCount: 0,

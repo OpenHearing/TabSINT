@@ -5,7 +5,7 @@ import { Logger } from '../utilities/logger.service';
 import { DiskModel } from '../models/disk/disk.service';
 import { ProtocolModel } from '../models/protocol/protocol.service';
 import { ProtocolInterface } from '../models/protocol/protocol.interface';
-import { ProtocolServer, Server } from '../utilities/constants';
+import { ProtocolServer} from '../utilities/constants';
 import { AppModel } from '../models/app/app.service';
 import { FileService } from './file.service';
 import { Paths } from '../utilities/paths.service';
@@ -116,7 +116,7 @@ export class ProtocolService {
         if (!this.app.tablet) {
             // config.load();
         }
-        this.disk.server = Server.Local;
+        this.disk.server = ProtocolServer.LocalServer;
     
         // add root, recursively will add all dependent schemas
         // protocolSchema = addSchema("protocol_schema");
