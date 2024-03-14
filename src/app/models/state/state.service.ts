@@ -10,7 +10,11 @@ export class StateModel {
 
     stateModel: StateInterface = {
         appState: AppState.Welcome,
-        protocolState: ProtocolState.null
+        protocolState: ProtocolState.null,
+        paneState: {
+            general: true,
+            cha: true
+        }
     }
 
     getState(): StateInterface {

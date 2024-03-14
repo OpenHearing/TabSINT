@@ -18,7 +18,8 @@
 
     <div ngbAccordion #accordion="ngbAccordion">
 
-        <div ngbAccordionItem="tabsint-accordian" [collapsed]="false">
+        <!-- General Configuration  -->
+        <div ngbAccordionItem="tabsint-accordian" class="panel panel-default" [collapsed]="!state.paneState.general">
             <h2 ngbAccordionHeader>
                 <button ngbAccordionButton>TabSINT</button>
             </h2>
@@ -28,19 +29,45 @@
                     <!-- Headset -->
                     <div class="row pad-top">
                         <div class="col-5">
-                            <label for="defaultHeadset">Default Headset:</label>
+                            <label translate for="defaultHeadset">Default Headset:</label>
                         </div>
-                        <div ngbDropdown display="dynamic" style="display: flex; flex-direction: row;">                            
-                            <button type="button" class="btn btn-default btn-block dropdown-toggle" id="defaultHeadset" ngbDropdownToggle *ngIf="headsets[disk.headset]!='None'">
-                                {{headsets[disk.headset]}} 
+                        <div ngbDropdown class="col-5 dropdown-width" display="dynamic">                            
+                            <button type="button" class="btn btn-default btn-block dropdown-toggle" id="defaultHeadset" ngbDropdownToggle>
+                                {{disk.headset}}
                             </button>
                             <div ngbDropdownMenu aria-labelledby="defaultHeadset">
-                                <li *ngFor="let headset of headsets | keyvalue">
-                                    <a href="#" (click)="changeHeadset(headset.key, true)" ngbDropdownItem>{{headset.value}}</a>
-                                </li>
+                                <button *ngFor="let headset of headsets" ngbDropdownItem (click)="changeHeadset(headset)">{{headset}}</button>
                             </div>
                         </div>
+                        <div class="col-1">
+                            <a href="#" title="{{'Default Headset help' | translate}}" uib-popover-html="headsetPopover" popover-placement="left" popover-trigger="'outsideClick'">
+                                <i class="ion-help-circled"></i>
+                            </a>
+                        </div>
                     </div>
+
+                    <!-- Select Language -->
+                    <div class="row pad-top">
+                        <div class="col-5">
+                            <label translate for="selectLanguage">Select Language:</label>
+                        </div>
+                        <div ngbDropdown class="col-5 dropdown-width" display="dynamic">                            
+                            <button type="button" class="btn btn-default btn-block dropdown-toggle" id="selectLanguage" ngbDropdownToggle>
+                                {{disk.language}}
+                            </button>
+                            <div ngbDropdownMenu aria-labelledby="selectLanguage">
+                                <button *ngFor="let language of languages" ngbDropdownItem (click)="changeLanguage(language)">{{language | translate}}</button>
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <a href="#" title="{{'Default Language help' | translate}}" uib-popover-html="languagePopover" popover-placement="left" popover-trigger="'outsideClick'">
+                                <i class="ion-help-circled"></i>
+                            </a>
+                        </div>
+                    </div>
+
+
+
                 </div>
             </div>
         </div>
