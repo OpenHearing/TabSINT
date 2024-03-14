@@ -76,7 +76,7 @@ export class ConfigComponent {
   }
 
   onPopoverShow($event:any) {
-    console.log('sdf');
+    console.log($event);
   }
   
 }
