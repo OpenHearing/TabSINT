@@ -10,6 +10,11 @@ import { NgbModule, NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
+// import ngx-translate and the http loader
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+
 // Views
 import { ConfigComponent } from './views/config/config.component';
 import { WelcomeComponent } from './views/welcome/welcome.component';
@@ -47,6 +52,10 @@ import { ResultsService } from './controllers/results.service';
 import { ExamService } from './controllers/exam.service';
 import { AdminService } from './controllers/admin.service';
 
+// required for AOT compilation
+export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
+  return new TranslateHttpLoader(http);
+}
 @NgModule({
   declarations: [
     AppComponent,
@@ -61,6 +70,7 @@ import { AdminService } from './controllers/admin.service';
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     BrowserAnimationsModule,
     AppRoutingModule,
     MatIconModule,
@@ -68,7 +78,13 @@ import { AdminService } from './controllers/admin.service';
     MatButtonModule,
     MatMenuModule,
     NgbModule,
-    NgbAccordionModule
+    TranslateModule.forRoot({
+      loader: {
+          provide: TranslateLoader,
+          useFactory: HttpLoaderFactory,
+          deps: [HttpClient]
+      }
+    })
   ],
   providers: [
     provideClientHydration(),

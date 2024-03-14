@@ -43,7 +43,7 @@ export class DiskModel {
         activeProtocol: {},
         loadedProtocols: [],
         mediaRepos: [],
-        language: '',
+        language: 'English',
         interApp: {
             appName: '',
             dataIn: '',
