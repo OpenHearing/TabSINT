@@ -11,11 +11,6 @@ export enum ProtocolState {
     InProgress
 }
 
-export enum Server {
-    Gitlab,
-    Local
-}
-
 export enum ResultsMode {
     UploadOnly = "Upload Only",
     ExportOnly = "Export Only",

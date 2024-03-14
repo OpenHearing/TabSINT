@@ -1,5 +1,5 @@
 import { MediaReposInterface } from "../../interfaces/media-repos.interface"
-import { ResultsMode, Server } from "../../utilities/constants"
+import { ResultsMode, ProtocolServer } from "../../utilities/constants"
 import { ProtocolInterface } from "../protocol/protocol.interface"
 
 export interface DiskInterface {
@@ -13,7 +13,7 @@ export interface DiskInterface {
     adminSkipMode?: boolean,
     autoUpload?: boolean,
     disableAudioStreaming?: boolean,
-    server?: Server,
+    server: ProtocolServer,
     tabletGain?: number,
     extStorageRootDir?: string,
     extStorageUuidDir?: string,

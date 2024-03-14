@@ -19,6 +19,7 @@ export class ProtocolsComponent {
   disk: DiskInterface;
   protocol: ProtocolInterface;
   validateProtocolTooltip: String = ValidateProtocolTooltip;
+  localServer: ProtocolServer = ProtocolServer.LocalServer;
 
   constructor (
     public diskModel: DiskModel,

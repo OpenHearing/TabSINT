@@ -235,11 +235,8 @@ $tabsint-training-site-theme: mat.define-light-theme((
       transform: rotate(360deg);
     }
   }
-  .help-tooltips {
-    font-size: 16px; 
-    size: 16px; 
+  .ion-help-circled {
     color: rgb(0, 102, 204); 
-    padding: 6px;
   }
   
   /* ----------
@@ -499,8 +496,9 @@ $tabsint-training-site-theme: mat.define-light-theme((
   }
   /* initial padding - overridden by different sizes */
   .btn:not(.dropdown-toggle) { 
-    padding: 10px 12px;
-    min-width: 100px;
+    // padding: 10px 12px;
+    text-wrap: nowrap;
+    min-width: 130px;
   }
   /* reset border to actual border line : looked weird inside of button */
   .btn:focus, 
@@ -1872,27 +1870,12 @@ $tabsint-training-site-theme: mat.define-light-theme((
   
   /* Protocol Table */
   table.fixed .row-Name {
-    /*width: 30%;*/
     padding-left: 0px;
   }
-  /*
-  table.fixed .row-Version {
-    width: 25%;
-  }
-  table.fixed .row-Date {
-    width: 25%;
-  }
-  table.fixed .row-Server {
-    width: 20%;
-  }
-  */
   table.fixed .row-Counts {
     width: 20%;
   }
   
-  /* table.fixed .row-Date.results {
-    width: 25%;
-  } */
   table.fixed .row-Server.results {
     width: 23%;
   }
@@ -1920,6 +1903,11 @@ $tabsint-training-site-theme: mat.define-light-theme((
   .nav-tabs-alignment {
     align-items: center;
   }
+
+  .row .col-5,
+  .row .col-6 {
+    text-align: left;
+  }
   
   
   /* --------
@@ -1930,6 +1918,10 @@ $tabsint-training-site-theme: mat.define-light-theme((
     align-items: center;
   }
   
+  .td .tr {
+    border-style: none;
+  }
+
   .dropdown-width {
     display: block;
     padding-left: 0px;
@@ -2253,6 +2245,10 @@ $tabsint-training-site-theme: mat.define-light-theme((
     padding-left: 3px;
     padding-right: 3px;
   }
+  .no-border {
+    border-style: none;
+  }
+
   .table {
     text-align: left; /* reset */
   }
