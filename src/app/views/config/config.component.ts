@@ -56,26 +56,12 @@ export class ConfigComponent {
     "Audiometer"
   ];
 
-  // languages: Object = {
-  //   en: this.translate.instant("English"),
-  //   ja: this.translate.instant("Japanese"),
-  //   fr: this.translate.instant("French"),
-  //   sp: this.translate.instant("Spanish"),
-  // };
-
   languages:Array<string> = [
     this.translate.instant("English"),
     this.translate.instant("Japanese"),
     this.translate.instant("French"),
     this.translate.instant("Spanish"),
   ];
-
-  // languages:Array<string> = [
-  //   "English",
-  //   "Japanese",
-  //   "French",
-  //   "Spanish",
-  // ];
 
   changeHeadset(headset:string) {
     this.disk.headset = headset;
@@ -87,6 +73,10 @@ export class ConfigComponent {
     // need to update the language here
     this.translate.setDefaultLang(language);
     this.logger.debug("Language changed to: "+language);
+  }
+
+  onPopoverShow($event:any) {
+    console.log('sdf');
   }
   
 }

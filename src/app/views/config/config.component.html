@@ -40,7 +40,12 @@
                             </div>
                         </div>
                         <div class="col-1">
-                            <a href="#" title="{{'Default Headset help' | translate}}" uib-popover-html="headsetPopover" popover-placement="left" popover-trigger="'outsideClick'">
+                            <a href="javascript:" 
+                                title="{{'Default Headset help' | translate}}" 
+                                mdbPopover="Popover content"
+                                trigger="click"
+                                mdbPopoverTitle="Popover title"
+                                (popoverShow)="onPopoverShow($event)">
                                 <i class="ion-help-circled"></i>
                             </a>
                         </div>
@@ -60,7 +65,12 @@
                             </div>
                         </div>
                         <div class="col-1">
-                            <a href="#" title="{{'Default Language help' | translate}}" uib-popover-html="languagePopover" popover-placement="left" popover-trigger="'outsideClick'">
+                            <a href="javascript:" 
+                                title="{{'Default Language help' | translate}}" 
+                                mdbPopover="Popover content"
+                                trigger="click"
+                                mdbPopoverTitle="Popover title"
+                                (popoverShow)="onPopoverShow($event)">
                                 <i class="ion-help-circled"></i>
                             </a>
                         </div>
