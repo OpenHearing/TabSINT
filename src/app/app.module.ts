@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
 import { NgbModule, NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -80,6 +81,8 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     MatTabsModule,
     MatButtonModule,
     MatMenuModule,
+    MatExpansionModule,
+    MatAccordion,
     NgbModule,
     TranslateModule.forRoot({
       loader: {
