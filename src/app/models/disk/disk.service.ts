@@ -11,6 +11,7 @@ export class DiskModel {
     diskModel: DiskInterface = {
         headset: "None",
         debugMode: false,
+        pin: "7114",
         disableAudioStreaming: true,
         server: ProtocolServer.LocalServer,
         externalMode: false,
