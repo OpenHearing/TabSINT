@@ -10,9 +10,12 @@ export class DiskModel {
 
     diskModel: DiskInterface = {
         headset: "None",
-        debugMode: false,
+        debugMode: true,
         pin: "7114",
+        disableLogs: false,
+        maxLogRows: 1000,
         disableAudioStreaming: true,
+        tabletGain: 12.34,
         server: ProtocolServer.LocalServer,
         externalMode: false,
         appDeveloperMode: false,
@@ -35,6 +38,10 @@ export class DiskModel {
             useSeperateResultsRepo: false
         },
         servers: {
+            localServer: {
+                resultsDir: "tabsint-results",
+                protocolDir: "tabsint-protocols",
+            },
             gitlab: {
                 resultsRepo: "results"
             }

@@ -6,6 +6,10 @@ import { Injectable } from '@angular/core';
 
 export class ConfigService {
 
-    
+    qRCodeUrl = false;
+
+    generateQRCode() {
+        console.log("generateQRCode button pressed");
+    }
     
 }

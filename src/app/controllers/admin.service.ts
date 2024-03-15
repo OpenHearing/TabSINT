@@ -15,9 +15,28 @@ export class AdminService {
         this.disk = this.diskModel.getDisk();
     }
 
-    toggleDebugMode(value:boolean) {
-        this.disk.debugMode = !value;
-        this.logger.debug("Admin mode set to: "+this.disk.debugMode);
+    toggleDebugMode() {
+        console.log("toggleDebugMode");
+    }
+
+    toggleDisableLogs() {
+        console.log("toggleDisableLogs");
+    }
+
+    toggleDisableVolume() {
+        console.log("toggleDisableVolume");
+    }
+
+    toggleAdminSkipMode() {
+        console.log("toggleAdminSkipMode");
+    }
+
+    toggleRequireEncryptedResults() {
+        console.log("toggleRequireEncryptedResults");
+    }
+
+    toggleRecordTestLocation() {
+        console.log("toggleRecordTestLocation");
     }
     
 }

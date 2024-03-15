@@ -40,7 +40,7 @@
                     </div>
                 </div>
 
-                <div class="col-1">
+                <div class="col-1" href="javascript:" title="{{'Default Headset help' | translate}}">
                     <i [matMenuTriggerFor]= "headsetMenu" class="ion-help-circled"></i>
                 </div>
                 <mat-menu #headsetMenu="matMenu">
@@ -65,7 +65,7 @@
                     </div>
                 </div>
 
-                <div class="col-1">
+                <div class="col-1" href="javascript:" title="{{'Select Language help' | translate}}">
                     <i [matMenuTriggerFor]= "languageMenu" class="ion-help-circled"></i>
                 </div>
                 <mat-menu #languageMenu="matMenu">
@@ -103,9 +103,9 @@
                 <!-- Admin Mode -->
                 <div class="row pad-top">
                     <div class="col-6"><label translate for="adminMode">Admin Mode:</label></div>
-                    <div class="col-2"><input id="adminMode" type="checkbox" [checked]="disk.debugMode" (change)="adminService.toggleDebugMode(disk.debugMode)" /></div>
+                    <div class="col-2"><input id="adminMode" type="checkbox" [(ngModel)]="disk.debugMode" (change)="adminService.toggleDebugMode()"/></div>
                     <div class="col-2"></div>
-                    <div class="col-1">
+                    <div class="col-1" title="{{'Admin Mode help' | translate}}">
                         <i [matMenuTriggerFor]= "adminHelpMenu" class="ion-help-circled"></i>
                     </div>
                     <mat-menu #adminHelpMenu="matMenu">
@@ -123,11 +123,11 @@
                         (click)="changePin.editAdminPin()"><i class="ion-edit"></i></a>
                     </div> -->
                     <div class="col-1"><a href="javascript:" title="{{'Admin PIN edit' | translate}}"
-                        (click)="changePin()"><i class="ion-edit"></i></a>
+                        (click)="editAdminPin()"><i class="ion-edit"></i></a>
                     </div>
 
                     <div class="col-1"></div>
-                    <div class="col-1">
+                    <div class="col-1" title="{{'Admin PIN help' | translate}}">
                         <i [matMenuTriggerFor]= "adminPinMenu" class="ion-help-circled"></i>
                     </div>
                     <mat-menu #adminPinMenu="matMenu">
@@ -135,6 +135,256 @@
                             <div [innerHTML]="adminPinPopover"></div>
                         </button>
                     </mat-menu>
+                </div>
+
+                <!-- Disable Logs -->
+                <div class="row pad-top">
+                    <div class="col-6"><label translate for="disableLogs">Disable Logs:</label></div>
+                    <div class="col-2"><input id="disableLogsID" type="checkbox" [(ngModel)]="disk.disableLogs" (change)="adminService.toggleDisableLogs()"/></div>
+                    <div class="col-2"></div>
+                    <div class="col-1" title="{{'Disable Logs help' | translate}}">
+                        <i [matMenuTriggerFor]= "disableLogsMenu" class="ion-help-circled"></i>
+                    </div>
+                    <mat-menu #disableLogsMenu="matMenu">
+                        <button mat-menu-item>
+                            <div [innerHTML]="disableLogsPopover"></div>
+                        </button>
+                    </mat-menu>
+                </div>
+
+                <!-- Set the Maximum number of log records -->
+                <div class="row pad-top">
+                    <div class="col-6" translate>Max Log Length:</div>
+                    <div class="col-2">{{disk.maxLogRows}}</div>
+
+                    <!-- <div class="col-1"><a href="javascript:" title="{{'Max Log Length edit' | translate}}"
+                        (click)="changeLog.editMaxLogRows()"><i class="ion-edit"></i></a>
+                    </div> -->
+                    <div class="col-1"><a href="javascript:" title="{{'Max Log Length edit' | translate}}"
+                        (click)="editMaxLogRows()"><i class="ion-edit"></i></a>
+                    </div>
+
+                    <div class="col-1"> </div>
+                    <div class="col-1" href="javascript:" title="{{'Max Log Length help' | translate}}">
+                        <i [matMenuTriggerFor]= "setMaxLogRowsMenu" class="ion-help-circled"></i>
+                    </div>
+                    <mat-menu #setMaxLogRowsMenu="matMenu">
+                        <button mat-menu-item>
+                            <div [innerHTML]="setMaxLogRowsPopover"></div>
+                        </button>
+                    </mat-menu>
+                </div>
+
+                <!-- Disable Automatic Volume Control -->
+                <div class="row pad-top">
+                    <div class="col-6"><label translate for="automaticVolControl"> Disable Automatic Volume Control:</label>
+                    </div>
+                    <div class="col-2"><input id="automaticVolControl" type="checkbox" [(ngModel)]="disk.disableVolume" (change)="adminService.toggleDisableVolume()"/></div>
+                    <div class="col-2"></div>
+                    <div class="col-1" href="javascript:" title="{{'Automatic Volume Control help' | translate}}">
+                        <i [matMenuTriggerFor]= "disableVolumeMenu" class="ion-help-circled"></i>
+                    </div>
+                    <mat-menu #disableVolumeMenu="matMenu">
+                        <button mat-menu-item>
+                            <div [innerHTML]="disableVolumePopover"></div>
+                        </button>
+                    </mat-menu>
+                </div>
+
+                <!-- Enable Admin Skip -->
+                <div class="row pad-top">
+                    <div class="col-6"><label translate for="enableSkip">Enable Skip in Exams:</label></div>
+                    <div class="col-2"><input id="enableSkip" type="checkbox" [(ngModel)]="disk.adminSkipMode" (change)="adminService.toggleAdminSkipMode()"/></div>
+                    <div class="col-2"></div>
+                    <div class="col-1" href="javascript:" title="{{'Enable Skip in Exams help' | translate}}">
+                        <i [matMenuTriggerFor]= "adminSkipModeMenu" class="ion-help-circled"></i>
+                    </div>
+                    <mat-menu #adminSkipModeMenu="matMenu">
+                        <button mat-menu-item>
+                            <div [innerHTML]="adminSkipModePopover"></div>
+                        </button>
+                    </mat-menu>
+                </div>
+
+                <!-- Enforce Results Encryption -->
+                <div class="row pad-top">
+                    <div class="col-6"><label translate for="requireEncryption">Require Encryption:</label></div>
+                    <div class="col-2"><input id="requireEncryption" type="checkbox" [(ngModel)]="disk.requireEncryptedResults" (change)="adminService.toggleRequireEncryptedResults()"/></div>
+                    <div class="col-2"></div>
+                    <div class="col-1" href="javascript:" title="{{'Require Encription help' | translate}}">
+                        <i [matMenuTriggerFor]= "requireEncryptedResultsPopoverMenu" class="ion-help-circled"></i>
+                    </div>
+                    <mat-menu #requireEncryptedResultsPopoverMenu="matMenu">
+                        <button mat-menu-item>
+                            <div [innerHTML]="requireEncryptedResultsPopover"></div>
+                        </button>
+                    </mat-menu>
+                </div>
+
+                <!-- Record Test Location -->
+                <div class="row pad-top">
+                    <div class="col-6"><label translate for="recordTestLocation">Record Test Location:</label></div>
+                    <div class="col-2"><input id="recordTestLocation" type="checkbox" [(ngModel)]="disk.recordTestLocation" (change)="adminService.toggleRecordTestLocation()"/></div>
+                    <div class="col-2"></div>
+                    <div class="col-1" href="javascript:" title="{{'Record Test Location help' | translate}}">
+                        <i [matMenuTriggerFor]= "recordTestLocationPopoverMenu" class="ion-help-circled"></i>
+                    </div>
+                    <mat-menu #recordTestLocationPopoverMenu="matMenu">
+                        <button mat-menu-item>
+                            <div [innerHTML]="recordTestLocationPopover"></div>
+                        </button>
+                    </mat-menu>
+                </div>
+
+                <!-- QR Code Generation -->
+                <div class="row pad-top">
+                    <div class="col-6"><label translate for="QRCode">QR Code:</label></div>
+                    <div class="col-4">
+                        <button id="QRCode" class="btn btn-default btn-block"
+                            (click)="configService.generateQRCode()">{{'Generate' | translate}}</button>
+                    </div>
+                    <div class="col-1" href="javascript:" title="{{'QR Code help' | translate}}">
+                        <i [matMenuTriggerFor]= "qrCodePopoverMenu" class="ion-help-circled"></i>
+                    </div>
+                    <mat-menu #qrCodePopoverMenu="matMenu">
+                        <button mat-menu-item>
+                            <div [innerHTML]="qrCodePopover"></div>
+                        </button>
+                    </mat-menu>
+                </div>
+
+                <!-- Display QR Code -->
+                <div *ngIf="configService.qRCodeUrl">
+                    <div class="row pad-top">
+                        <div class="col-11">
+                            <!-- <img ng-src="{{config.qRCodeUrl}}" alt="{{'Generated QR Code'|translate}}" /> -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reset -->
+                <div class="row pad-top">
+                    <div class="col-6"><label translate for="resetConfig">Reset configuration:</label></div>
+                    <div class="col-4">
+                        <button id="resetConfig" type="button" ng-disabled="tasks.disabled"
+                            class="btn btn-block btn-danger" (click)="resetConfig()">
+                            Reset
+                        </button>
+                    </div>
+                    <div class="col-1" href="javascript:" title="{{'Reset configuration help' | translate}}">
+                        <i [matMenuTriggerFor]= "resetConfigurationPopoverMenu" class="ion-help-circled"></i>
+                    </div>
+                    <mat-menu #resetConfigurationPopoverMenu="matMenu">
+                        <button mat-menu-item>
+                            <div [innerHTML]="resetConfigurationPopover"></div>
+                        </button>
+                    </mat-menu>
+                </div>
+
+                <br />
+
+                <div class="row pad-top">
+                    <div class="col-12">
+                        <h5>Results Preferences</h5>
+                    </div>
+                </div>
+
+                <!-- Automatically Output Test Results -->
+                <div class="row pad-top">
+                    <div class="col-6"><label for="outputResults">{{'Automatically output test results' | translate}}:</label></div>
+                    <div class="col-2"><input id="outputResults" type="checkbox" [(ngModel)]="disk.autoUpload" (change)="toggleAutoUpload()"/></div>
+                    <div class="col-2"> </div>
+                    <div class="col-1" href="javascript:" title="{{'Automatically output test results help' | translate}}">
+                        <i [matMenuTriggerFor]= "automaticallyOutputResultsPopoverMenu" class="ion-help-circled"></i>
+                    </div>
+                    <mat-menu #automaticallyOutputResultsPopoverMenu="matMenu">
+                        <button mat-menu-item>
+                            <div [innerHTML]="automaticallyOutputResultsPopover"></div>
+                        </button>
+                    </mat-menu>
+                </div>
+
+                <!-- Results Mode -->
+                <div class="row pad-top">
+                    <div class="col-6"><label for="resultsMode">Results Mode:</label></div>
+                    
+                    <div ngbDropdown class="col-6 dropdown-width" display="dynamic">                            
+                        <button type="button" class="btn btn-default btn-block dropdown-toggle" id="resultsMode" ngbDropdownToggle>
+                            {{disk.resultsMode}}
+                        </button>
+                        <div ngbDropdownMenu aria-labelledby="resultsMode">
+                            <button *ngFor="let resultsMode of resultsModeOptions | keyvalue" ngbDropdownItem (click)="changeResultsMode(resultsMode.value)">{{resultsMode.value}}</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Local Results Directory -->
+                <div class="row pad-top">
+                    <div class="col-6"><label for="localResultsDir">{{'Local Results Directory' | translate}}:</label></div>
+                    <div class="col-5"><em>{{disk.servers.localServer.resultsDir}}</em></div>
+                </div>
+                <div class="row pad-top">
+                    <div class="col-6"></div>
+                    <div class="col-6">
+                        <!-- <button id="localResultsDir" class="btn btn-default btn-block" (click)="localServer.changeResultsDirectory()">{{'Change Directory' | translate}}</button> -->
+                        <button id="localResultsDir" class="btn btn-default btn-block">{{'Change Directory' | translate}}</button>
+                    </div>
+                </div>
+
+                <br />
+                <br />
+
+                <div class="row pad-top">
+                    <div class="col-12">
+                        <h5>Calibration</h5>
+                    </div>
+                </div>
+
+                <!-- Tablet Gain -->
+                <div class="row pad-top">
+                    <div class="col-6"><label translate for="tabletGain">Tablet Gain</label></div>
+                    <div class="col-2"><input id="tabletGain" type="number" enter-close class="form-control" [(ngModel)]="disk.tabletGain" /></div>
+                    <div class="col-1">
+                        <a href="javascript:" title="{{'Minus' | translate}}" (click)="disk.tabletGain = -disk.tabletGain">
+                            <i class="ion-minus"></i>
+                        </a>
+                    </div>
+                    <div class="col-1">
+                        <a href="javascript:" title="{{'Refresh' | translate}}" (click)="gainReset()">
+                            <i class="ion-refresh"></i>
+                        </a>
+                    </div>
+                    
+                    <div class="col-1" href="javascript:" title="{{'Tablet Gain help' | translate}}">
+                        <i [matMenuTriggerFor]= "gainPopoverMenu" class="ion-help-circled"></i>
+                    </div>
+                    <mat-menu #gainPopoverMenu="matMenu">
+                        <button mat-menu-item>
+                            <div [innerHTML]="gainPopover"></div>
+                        </button>
+                    </mat-menu>
+                </div>
+
+                <!-- Calibration -->
+                <div class="row pad-top" *ngIf="disk.debugMode">
+                    <div class="col-4">
+                        <button type="button" ng-disabled="tasks.disabled" class="btn btn-block btn-primary"
+                            (click)="play1kHz94dB()">
+                            1 kHz <wbr> 94 dB
+                        </button>
+                    </div>
+                    <div class="col-4">
+                        <button type="button" ng-disabled="tasks.disabled" class="btn btn-block btn-primary"
+                            (click)="playCompAudio()">
+                            Comp. Log
+                        </button>
+                    </div>
+                    <div class="col-4">
+                        <button type="button" ng-disabled="tasks.disabled" class="btn btn-block btn-primary"
+                            (click)="playCompAudioLinear()">
+                            Comp. Linear
+                        </button>
+                    </div>
                 </div>
 
 

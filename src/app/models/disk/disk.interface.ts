@@ -5,8 +5,9 @@ import { ProtocolInterface } from "../protocol/protocol.interface"
 export interface DiskInterface {
     qrcodeConfig?: Object,
     debugMode: boolean,
-    disableLogs?: boolean,
-    pin?: string,
+    disableLogs: boolean,
+    maxLogRows: number,
+    pin: string,
     disableVolume?: boolean,
     requireEncryptedResults?: boolean,
     recordTestLocation?: boolean,
@@ -14,7 +15,7 @@ export interface DiskInterface {
     autoUpload?: boolean,
     disableAudioStreaming?: boolean,
     server: ProtocolServer,
-    tabletGain?: number,
+    tabletGain: number,
     extStorageRootDir?: string,
     extStorageUuidDir?: string,
     cha?: {
@@ -27,7 +28,7 @@ export interface DiskInterface {
     uploadSummary: Array<string>,
     suppressAlerts: boolean,
     showUploadSummary: boolean,
-    resultsMode: ResultsMode,
+    resultsMode: string,
     preventUploads: boolean,
     preventExports: boolean,
     reloadingBrowser: boolean,
@@ -50,7 +51,7 @@ export interface DiskInterface {
     loadedProtocols: Array<ProtocolInterface>, 
     mediaRepos: Array<MediaReposInterface>, 
     servers: {
-      localServer?: {
+      localServer: {
         resultsDir: string,
         protocolDir: string
       },
