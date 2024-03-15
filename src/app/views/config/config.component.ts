@@ -6,6 +6,7 @@ import { PageModel } from '../../models/page/page.service';
 import { DiskModel } from '../../models/disk/disk.service';
 import { Logger } from '../../utilities/logger.service';
 import { FileService } from '../../controllers/file.service';
+import { AdminService } from '../../controllers/admin.service';
 import { AppState } from '../../utilities/constants';
 import { StateModel } from '../../models/state/state.service';
 import { DiskInterface } from '../../models/disk/disk.interface';
@@ -20,13 +21,14 @@ import { StateInterface } from '../../models/state/state.interface';
 export class ConfigComponent {
   disk: DiskInterface;
   page: PageInterface;
-  state: StateInterface
+  state: StateInterface;
 
   constructor(
-    public diskModel:DiskModel, 
-    public fileService:FileService,
-    public logger:Logger, 
-    public pageModel:PageModel,
+    public diskModel: DiskModel, 
+    public fileService: FileService,
+    public adminService: AdminService,
+    public logger: Logger, 
+    public pageModel: PageModel,
     public stateModel: StateModel,
     public translate: TranslateService
   ) { 
@@ -75,6 +77,13 @@ export class ConfigComponent {
     this.logger.debug("Language changed to: "+language);
   }
 
+  changePin() {
+
+  }
+
+
+
+
   headsetPopover = this.translate.instant(
     "Select the deafult headset used to adminster hearing tests. " +
     "This selection is overridden by the <code>headset</code> parameter in protocols. <br /><br /> If the protocol does not specify a <code>headset</code>, " +
@@ -83,6 +92,14 @@ export class ConfigComponent {
 
   languagePopover = this.translate.instant(
     "Select preferred language for the application. This language will be used where supported. Otherwise, English will be used. Note this cannot change any text configured in protocols."
+  );
+
+  adminPopover = this.translate.instant(
+    "Includes additional configuration options, displays expandable <b>debug</b> menus showing program state at the bottom of exam pages, and suppresses Admin Password prompts"
+  );
+
+  adminPinPopover = this.translate.instant(
+    "Change the Admin PIN to any numerical value.  This PIN is required to switch to Admin View and to reset exams when Admin Mode is off."
   );
   
 }

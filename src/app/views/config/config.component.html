@@ -16,7 +16,7 @@
     <button (click)="fileService.createDirectory('testing2')"> Create Dir </button>
     <button (click)="fileService.listDirectory('testing')"> Read Dir </button>
 
-    <mat-expansion-panel class="panel panel-default" [expanded]="state.paneState.general">
+    <mat-expansion-panel class="panel panel-default" [(expanded)]="state.paneState.general">
         <mat-expansion-panel-header>
             <mat-panel-title>
                 {{'TabSINT'| translate}}
@@ -103,12 +103,36 @@
                 <!-- Admin Mode -->
                 <div class="row pad-top">
                     <div class="col-6"><label translate for="adminMode">Admin Mode:</label></div>
-                    <div class="col-2"><input id="adminMode" type="checkbox" ng-model="disk.debugMode"
-                            ng-change="adminLogic.toggleDebugMode()" /></div>
+                    <div class="col-2"><input id="adminMode" type="checkbox" [checked]="disk.debugMode" (change)="adminService.toggleDebugMode(disk.debugMode)" /></div>
                     <div class="col-2"></div>
-                    <div class="col-1"><a href="#" title="{{'Admin Mode help' | translate}}"
-                            uib-popover-html="adminPopover" popover-placement="left" popover-trigger="'outsideClick'"><i
-                                class="ion-help-circled"></i></a></div>
+                    <div class="col-1">
+                        <i [matMenuTriggerFor]= "adminHelpMenu" class="ion-help-circled"></i>
+                    </div>
+                    <mat-menu #adminHelpMenu="matMenu">
+                        <button mat-menu-item>
+                            <div [innerHTML]="adminPopover"></div>
+                        </button>
+                    </mat-menu>
+                </div>
+
+                <div class="row pad-top">
+                    <div class="col-6">Admin PIN:</div>
+                    <div class="col-2">{{disk.pin}}</div>
+                    <!-- <div class="col-1"><a href="javascript:" title="{{'Admin PIN edit' | translate}}"
+                        (click)="changePin.editAdminPin()"><i class="ion-edit"></i></a>
+                    </div> -->
+                    <div class="col-1"><a href="javascript:" title="{{'Admin PIN edit' | translate}}"
+                        (click)="changePin()"><i class="ion-edit"></i></a>
+                    </div>
+                    <div class="col-1"></div>
+                    <div class="col-1">
+                        <i [matMenuTriggerFor]= "adminPinMenu" class="ion-help-circled"></i>
+                    </div>
+                    <mat-menu #adminPinMenu="matMenu">
+                        <button mat-menu-item>
+                            <div [innerHTML]="adminPinPopover"></div>
+                        </button>
+                    </mat-menu>
                 </div>
 
 
@@ -121,7 +145,7 @@
 
 
     <!-- WAHTS -->
-    <mat-expansion-panel class="panel panel-default" [expanded]="!state.paneState.cha">
+    <mat-expansion-panel class="panel panel-default" [(expanded)]="!state.paneState.cha">
         <mat-expansion-panel-header>
             <mat-panel-title>
                 {{'WAHTS'| translate}}
@@ -138,7 +162,7 @@
 
 
     <!-- Svantek Dosimeter -->
-    <mat-expansion-panel class="panel panel-default" [expanded]="false">
+    <mat-expansion-panel class="panel panel-default" [(expanded)]="false">
         <mat-expansion-panel-header>
             <mat-panel-title>
                 {{'Dosimeter'| translate}}
@@ -153,41 +177,8 @@
     </mat-expansion-panel>
 
 
-    <!-- Inter-App Communication -->
-    <mat-expansion-panel class="panel panel-default" [expanded]="false">
-        <mat-expansion-panel-header>
-            <mat-panel-title>
-                {{'Communicate With Other Apps'| translate}}
-                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.paneState.general, "glyphicon-chevron-down": !state.paneState.general}'></i> -->
-            </mat-panel-title>
-        </mat-expansion-panel-header>
-           
-        <div class="panel-body text-left">
-
-        </div>
-
-    </mat-expansion-panel>
-
-
-    <!-- Plugins -->
-    <mat-expansion-panel class="panel panel-default" [expanded]="false">
-        <mat-expansion-panel-header>
-            <mat-panel-title>
-                {{'Plugins'| translate}}
-                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.paneState.general, "glyphicon-chevron-down": !state.paneState.general}'></i> -->
-            </mat-panel-title>
-        </mat-expansion-panel-header>
-           
-        <div class="panel-body text-left">
-
-        </div>
-
-    </mat-expansion-panel>
-
-
-
     <!-- Software and Hardware Status -->
-    <mat-expansion-panel class="panel panel-default" [expanded]="false">
+    <mat-expansion-panel class="panel panel-default" [(expanded)]="false">
         <mat-expansion-panel-header>
             <mat-panel-title>
                 {{'Software and Hardware'| translate}}
@@ -202,9 +193,8 @@
     </mat-expansion-panel>
 
 
-
     <!-- Log view -->
-    <mat-expansion-panel class="panel panel-default" [expanded]="false">
+    <mat-expansion-panel class="panel panel-default" [(expanded)]="false">
         <mat-expansion-panel-header>
             <mat-panel-title>
                 {{'Application Log'| translate}}

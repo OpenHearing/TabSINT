@@ -4,7 +4,7 @@ import { ProtocolInterface } from "../protocol/protocol.interface"
 
 export interface DiskInterface {
     qrcodeConfig?: Object,
-    debugMode?: boolean,
+    debugMode: boolean,
     disableLogs?: boolean,
     pin?: string,
     disableVolume?: boolean,

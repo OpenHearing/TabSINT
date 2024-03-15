@@ -10,6 +10,7 @@ export class DiskModel {
 
     diskModel: DiskInterface = {
         headset: "None",
+        debugMode: false,
         disableAudioStreaming: true,
         server: ProtocolServer.LocalServer,
         externalMode: false,
