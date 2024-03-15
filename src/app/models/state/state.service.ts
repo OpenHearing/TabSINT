@@ -11,10 +11,12 @@ export class StateModel {
     stateModel: StateInterface = {
         appState: AppState.Welcome,
         protocolState: ProtocolState.null,
-        paneState: {
+        isPaneOpen: {
             general: true,
-            cha: true,
-            advanced: false
+            wahts: true,
+            advanced: false,
+            protocols: true,
+            protocolsSource: true
         }
     }
 

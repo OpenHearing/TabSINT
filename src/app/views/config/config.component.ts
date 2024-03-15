@@ -20,7 +20,7 @@ import { StateInterface } from '../../models/state/state.interface';
 export class ConfigComponent {
   disk: DiskInterface;
   page: PageInterface;
-  state: StateInterface
+  state: StateInterface;
 
   constructor(
     public diskModel:DiskModel, 

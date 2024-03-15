@@ -22,5 +22,3 @@ export enum ProtocolServer {
     Gitlab,
     Developer
 }
-
-export const ValidateProtocolTooltip = $localize`Validate protocols against the <b>Protocol Schema</b> before loading into the application. <br /><br /> The protocol schema defines the allowable inputs for use in protocols.`
