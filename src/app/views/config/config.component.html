@@ -16,7 +16,7 @@
     <button (click)="fileService.createDirectory('testing2')"> Create Dir </button>
     <button (click)="fileService.listDirectory('testing')"> Read Dir </button>
 
-    <mat-expansion-panel class="panel panel-default" [expanded]="state.isPaneOpen.general">
+    <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.general">
         <mat-expansion-panel-header>
             <mat-panel-title>
                 {{'TabSINT'| translate}}
@@ -118,12 +118,14 @@
                 <div class="row pad-top">
                     <div class="col-6">Admin PIN:</div>
                     <div class="col-2">{{disk.pin}}</div>
+                    
                     <!-- <div class="col-1"><a href="javascript:" title="{{'Admin PIN edit' | translate}}"
                         (click)="changePin.editAdminPin()"><i class="ion-edit"></i></a>
                     </div> -->
                     <div class="col-1"><a href="javascript:" title="{{'Admin PIN edit' | translate}}"
                         (click)="changePin()"><i class="ion-edit"></i></a>
                     </div>
+
                     <div class="col-1"></div>
                     <div class="col-1">
                         <i [matMenuTriggerFor]= "adminPinMenu" class="ion-help-circled"></i>
@@ -145,7 +147,7 @@
 
 
     <!-- WAHTS -->
-    <mat-expansion-panel class="panel panel-default" [expanded]="!state.isPaneOpen.wahts">
+    <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.wahts">
         <mat-expansion-panel-header>
             <mat-panel-title>
                 {{'WAHTS'| translate}}
@@ -162,7 +164,7 @@
 
 
     <!-- Svantek Dosimeter -->
-    <mat-expansion-panel class="panel panel-default" [(expanded)]="false">
+    <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.dosimeter">
         <mat-expansion-panel-header>
             <mat-panel-title>
                 {{'Dosimeter'| translate}}
@@ -176,42 +178,8 @@
 
     </mat-expansion-panel>
 
-
-    <!-- Inter-App Communication -->
-    <mat-expansion-panel class="panel panel-default" [expanded]="false">
-        <mat-expansion-panel-header>
-            <mat-panel-title>
-                {{'Communicate With Other Apps'| translate}}
-                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.isPaneOpen.general, "glyphicon-chevron-down": !state.isPaneOpen.general}'></i> -->
-            </mat-panel-title>
-        </mat-expansion-panel-header>
-           
-        <div class="panel-body text-left">
-
-        </div>
-
-    </mat-expansion-panel>
-
-
-    <!-- Plugins -->
-    <mat-expansion-panel class="panel panel-default" [expanded]="false">
-        <mat-expansion-panel-header>
-            <mat-panel-title>
-                {{'Plugins'| translate}}
-                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.isPaneOpen.general, "glyphicon-chevron-down": !state.isPaneOpen.general}'></i> -->
-            </mat-panel-title>
-        </mat-expansion-panel-header>
-           
-        <div class="panel-body text-left">
-
-        </div>
-
-    </mat-expansion-panel>
-
-
-
     <!-- Software and Hardware Status -->
-    <mat-expansion-panel class="panel panel-default" [(expanded)]="false">
+    <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.softwareHardware">
         <mat-expansion-panel-header>
             <mat-panel-title>
                 {{'Software and Hardware'| translate}}
@@ -227,7 +195,7 @@
 
 
     <!-- Log view -->
-    <mat-expansion-panel class="panel panel-default" [(expanded)]="false">
+    <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.appLog">
         <mat-expansion-panel-header>
             <mat-panel-title>
                 {{'Application Log'| translate}}

@@ -13,8 +13,11 @@ export class StateModel {
         protocolState: ProtocolState.null,
         isPaneOpen: {
             general: true,
-            wahts: true,
             advanced: false,
+            wahts: false,
+            dosimeter: false,
+            softwareHardware: false,
+            appLog: false,
             protocols: true,
             protocolsSource: true
         }

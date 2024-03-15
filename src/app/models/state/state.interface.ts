@@ -5,8 +5,11 @@ export interface StateInterface {
     protocolState: ProtocolState
     isPaneOpen: {
         general: boolean,
-        wahts: boolean,
         advanced: boolean,
+        wahts: boolean,
+        dosimeter: boolean,
+        softwareHardware: boolean,
+        appLog: boolean,
         protocols: boolean,
         protocolsSource: boolean
     };
