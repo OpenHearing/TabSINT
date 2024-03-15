@@ -16,115 +16,207 @@
     <button (click)="fileService.createDirectory('testing2')"> Create Dir </button>
     <button (click)="fileService.listDirectory('testing')"> Read Dir </button>
 
-    <div ngbAccordion #accordion="ngbAccordion">
+    <mat-expansion-panel class="panel panel-default" [expanded]="state.paneState.general">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                {{'TabSINT'| translate}}
+                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.paneState.general, "glyphicon-chevron-down": !state.paneState.general}'></i> -->
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+           
+        <div class="panel-body text-left">
 
-        <!-- General Configuration  -->
-        <div ngbAccordionItem="tabsint-accordian" class="panel panel-default" [collapsed]="!state.paneState.general">
-            <h2 ngbAccordionHeader>
-                <button ngbAccordionButton>TabSINT</button>
-            </h2>
-            <div ngbAccordionCollapse>
-                <div ngbAccordionBody>
-                    
-                    <!-- Headset -->
-                    <div class="row pad-top">
-                        <div class="col-5">
-                            <label translate for="defaultHeadset">Default Headset:</label>
-                        </div>
-                        <div ngbDropdown class="col-5 dropdown-width" display="dynamic">                            
-                            <button type="button" class="btn btn-default btn-block dropdown-toggle" id="defaultHeadset" ngbDropdownToggle>
-                                {{disk.headset}}
-                            </button>
-                            <div ngbDropdownMenu aria-labelledby="defaultHeadset">
-                                <button *ngFor="let headset of headsets" ngbDropdownItem (click)="changeHeadset(headset)">{{headset}}</button>
-                            </div>
-                        </div>
-                        <div class="col-1">
-                            <a href="javascript:" 
-                                title="{{'Default Headset help' | translate}}" 
-                                mdbPopover="Popover content"
-                                trigger="focus"
-                                mdbPopoverTitle="Popover title"
-                                (popoverShow)="onPopoverShow($event)">
-                                <i class="ion-help-circled"></i>
-                            </a>
-                        </div>
+            <!-- Headset -->
+            <div class="row pad-top">
+                <div class="col-5">
+                    <label translate for="defaultHeadset">Default Headset:</label>
+                </div>
+                <div ngbDropdown class="col-5 dropdown-width" display="dynamic">                            
+                    <button type="button" class="btn btn-default btn-block dropdown-toggle" id="defaultHeadset" ngbDropdownToggle>
+                        {{disk.headset}}
+                    </button>
+                    <div ngbDropdownMenu aria-labelledby="defaultHeadset">
+                        <button *ngFor="let headset of headsets" ngbDropdownItem (click)="changeHeadset(headset)">{{headset}}</button>
                     </div>
+                </div>
 
-                    <!-- Select Language -->
-                    <div class="row pad-top">
-                        <div class="col-5">
-                            <label translate for="selectLanguage">Select Language:</label>
-                        </div>
-                        <div ngbDropdown class="col-5 dropdown-width" display="dynamic">                            
-                            <button type="button" class="btn btn-default btn-block dropdown-toggle" id="selectLanguage" ngbDropdownToggle>
-                                {{disk.language}}
-                            </button>
-                            <div ngbDropdownMenu aria-labelledby="selectLanguage">
-                                <button *ngFor="let language of languages" ngbDropdownItem (click)="changeLanguage(language)">{{language | translate}}</button>
-                            </div>
-                        </div>
-                        <div class="col-1">
-                            <a href="javascript:" 
-                                title="{{'Default Language help' | translate}}" 
-                                mdbPopover="Popover content"
-                                trigger="focus"
-                                mdbPopoverTitle="Popover title"
-                                (popoverShow)="onPopoverShow($event)">
-                                <i class="ion-help-circled"></i>
-                            </a>
-                        </div>
+                <div class="col-1">
+                    <i [matMenuTriggerFor]= "headsetMenu" class="ion-help-circled"></i>
+                </div>
+                <mat-menu #headsetMenu="matMenu">
+                    <button mat-menu-item>
+                        <div [innerHTML]="headsetPopover"></div>
+                    </button>
+                </mat-menu>
+
+            </div>
+
+            <!-- Select Language -->
+            <div class="row pad-top">
+                <div class="col-5">
+                    <label translate for="selectLanguage">Select Language:</label>
+                </div>
+                <div ngbDropdown class="col-5 dropdown-width" display="dynamic">                            
+                    <button type="button" class="btn btn-default btn-block dropdown-toggle" id="selectLanguage" ngbDropdownToggle>
+                        {{disk.language}}
+                    </button>
+                    <div ngbDropdownMenu aria-labelledby="selectLanguage">
+                        <button *ngFor="let language of languages" ngbDropdownItem (click)="changeLanguage(language)">{{language | translate}}</button>
                     </div>
+                </div>
 
+                <div class="col-1">
+                    <i [matMenuTriggerFor]= "languageMenu" class="ion-help-circled"></i>
+                </div>
+                <mat-menu #languageMenu="matMenu">
+                    <button mat-menu-item>
+                        <div [innerHTML]="languagePopover"></div>
+                    </button>
+                </mat-menu>
 
+            </div>
 
+            <!-- Show Advanced -->
+            <div class="row showhideSection">
+                <div class="col-12 text-center">
+                    <a href="javascript:" (click)="state.paneState.advanced = !state.paneState.advanced">
+                        <span *ngIf="state.paneState.advanced" translate>
+                            Hide Advanced Settings 
+                            <i class="ion-chevron-up"></i>
+                        </span>
+                        <span *ngIf="!state.paneState.advanced" translate>
+                            Show Advanced Settings 
+                            <i class="ion-chevron-down"></i>
+                        </span>
+                    </a>
                 </div>
             </div>
+
+            <div #collapse="ngbCollapse" [(ngbCollapse)]="!state.paneState.advanced">
+                
+                <div class="row pad-top">
+                    <div class="col-12">
+                        <h5>Preferences</h5>
+                    </div>
+                </div>
+
+                <!-- Admin Mode -->
+                <div class="row pad-top">
+                    <div class="col-6"><label translate for="adminMode">Admin Mode:</label></div>
+                    <div class="col-2"><input id="adminMode" type="checkbox" ng-model="disk.debugMode"
+                            ng-change="adminLogic.toggleDebugMode()" /></div>
+                    <div class="col-2"></div>
+                    <div class="col-1"><a href="#" title="{{'Admin Mode help' | translate}}"
+                            uib-popover-html="adminPopover" popover-placement="left" popover-trigger="'outsideClick'"><i
+                                class="ion-help-circled"></i></a></div>
+                </div>
+
+
+            </div>
+
+
         </div>
 
-        <div ngbAccordionItem="wahts-accordion">
-            <h2 ngbAccordionHeader>
-                <button ngbAccordionButton>WAHTS</button>
-            </h2>
-            <div ngbAccordionCollapse>
-                <div ngbAccordionBody>
-                    Stuff goes here
-                </div>
-            </div>
+    </mat-expansion-panel>
+
+
+    <!-- WAHTS -->
+    <mat-expansion-panel class="panel panel-default" [expanded]="!state.paneState.cha">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                {{'WAHTS'| translate}}
+                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.paneState.general, "glyphicon-chevron-down": !state.paneState.general}'></i> -->
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+           
+        <div class="panel-body text-left">
+
         </div>
 
-        <div ngbAccordionItem="dosimeter-accordion">
-            <h2 ngbAccordionHeader>
-                <button ngbAccordionButton>Dosimeter</button>
-            </h2>
-            <div ngbAccordionCollapse>
-                <div ngbAccordionBody>
-                    Stuff goes here
-                </div>
-            </div>
+    </mat-expansion-panel>
+
+
+
+    <!-- Svantek Dosimeter -->
+    <mat-expansion-panel class="panel panel-default" [expanded]="false">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                {{'Dosimeter'| translate}}
+                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.paneState.general, "glyphicon-chevron-down": !state.paneState.general}'></i> -->
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+           
+        <div class="panel-body text-left">
+
         </div>
 
-        <div ngbAccordionItem="software-and-hardware-accordion">
-            <h2 ngbAccordionHeader>
-                <button ngbAccordionButton>Software and Hardware</button>
-            </h2>
-            <div ngbAccordionCollapse>
-                <div ngbAccordionBody>
-                    Stuff goes here
-                </div>
-            </div>
+    </mat-expansion-panel>
+
+
+    <!-- Inter-App Communication -->
+    <mat-expansion-panel class="panel panel-default" [expanded]="false">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                {{'Communicate With Other Apps'| translate}}
+                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.paneState.general, "glyphicon-chevron-down": !state.paneState.general}'></i> -->
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+           
+        <div class="panel-body text-left">
+
         </div>
-        
-        <div ngbAccordionItem="application-log-accordion">
-            <h2 ngbAccordionHeader>
-                <button ngbAccordionButton>Application Log</button>
-            </h2>
-            <div ngbAccordionCollapse>
-                <div ngbAccordionBody>
-                    Stuff goes here
-                </div>
-            </div>
+
+    </mat-expansion-panel>
+
+
+    <!-- Plugins -->
+    <mat-expansion-panel class="panel panel-default" [expanded]="false">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                {{'Plugins'| translate}}
+                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.paneState.general, "glyphicon-chevron-down": !state.paneState.general}'></i> -->
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+           
+        <div class="panel-body text-left">
+
         </div>
-    </div>
+
+    </mat-expansion-panel>
+
+
+
+    <!-- Software and Hardware Status -->
+    <mat-expansion-panel class="panel panel-default" [expanded]="false">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                {{'Software and Hardware'| translate}}
+                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.paneState.general, "glyphicon-chevron-down": !state.paneState.general}'></i> -->
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+           
+        <div class="panel-body text-left">
+
+        </div>
+
+    </mat-expansion-panel>
+
+
+
+    <!-- Log view -->
+    <mat-expansion-panel class="panel panel-default" [expanded]="false">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                {{'Application Log'| translate}}
+                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.paneState.general, "glyphicon-chevron-down": !state.paneState.general}'></i> -->
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+           
+        <div class="panel-body text-left">
+
+        </div>
+
+    </mat-expansion-panel>
+
 
 </div>

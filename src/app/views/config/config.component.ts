@@ -75,8 +75,14 @@ export class ConfigComponent {
     this.logger.debug("Language changed to: "+language);
   }
 
-  onPopoverShow($event:any) {
-    console.log($event);
-  }
+  headsetPopover = this.translate.instant(
+    "Select the deafult headset used to adminster hearing tests. " +
+    "This selection is overridden by the <code>headset</code> parameter in protocols. <br /><br /> If the protocol does not specify a <code>headset</code>, " +
+    "this value must match the value in the protocol's <code>calibration.json</code> file."
+  );
+
+  languagePopover = this.translate.instant(
+    "Select preferred language for the application. This language will be used where supported. Otherwise, English will be used. Note this cannot change any text configured in protocols."
+  );
   
 }

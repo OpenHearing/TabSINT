@@ -5,6 +5,7 @@ export interface StateInterface {
     protocolState: ProtocolState
     paneState: {
         general: boolean,
-        cha: boolean
+        cha: boolean,
+        advanced: boolean
     };
 }

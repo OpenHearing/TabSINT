@@ -16,9 +16,6 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 
-// Popovers
-import { MdbPopoverModule } from 'mdb-angular-ui-kit/popover';
-
 // Views
 import { ConfigComponent } from './views/config/config.component';
 import { WelcomeComponent } from './views/welcome/welcome.component';
@@ -90,8 +87,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
           useFactory: HttpLoaderFactory,
           deps: [HttpClient]
       }
-  }),
-  MdbPopoverModule
+    })
   ],
   providers: [
     provideClientHydration(),

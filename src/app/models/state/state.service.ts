@@ -13,7 +13,8 @@ export class StateModel {
         protocolState: ProtocolState.null,
         paneState: {
             general: true,
-            cha: true
+            cha: true,
+            advanced: false
         }
     }
 
