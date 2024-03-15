@@ -16,11 +16,11 @@
     <button (click)="fileService.createDirectory('testing2')"> Create Dir </button>
     <button (click)="fileService.listDirectory('testing')"> Read Dir </button>
 
-    <mat-expansion-panel class="panel panel-default" [(expanded)]="state.paneState.general">
+    <mat-expansion-panel class="panel panel-default" [expanded]="state.isPaneOpen.general">
         <mat-expansion-panel-header>
             <mat-panel-title>
                 {{'TabSINT'| translate}}
-                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.paneState.general, "glyphicon-chevron-down": !state.paneState.general}'></i> -->
+                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.isPaneOpen.general, "glyphicon-chevron-down": !state.isPaneOpen.general}'></i> -->
             </mat-panel-title>
         </mat-expansion-panel-header>
            
@@ -79,12 +79,12 @@
             <!-- Show Advanced -->
             <div class="row showhideSection">
                 <div class="col-12 text-center">
-                    <a href="javascript:" (click)="state.paneState.advanced = !state.paneState.advanced">
-                        <span *ngIf="state.paneState.advanced" translate>
+                    <a href="javascript:" (click)="state.isPaneOpen.advanced = !state.isPaneOpen.advanced">
+                        <span *ngIf="state.isPaneOpen.advanced" translate>
                             Hide Advanced Settings 
                             <i class="ion-chevron-up"></i>
                         </span>
-                        <span *ngIf="!state.paneState.advanced" translate>
+                        <span *ngIf="!state.isPaneOpen.advanced" translate>
                             Show Advanced Settings 
                             <i class="ion-chevron-down"></i>
                         </span>
@@ -92,7 +92,7 @@
                 </div>
             </div>
 
-            <div #collapse="ngbCollapse" [(ngbCollapse)]="!state.paneState.advanced">
+            <div #collapse="ngbCollapse" [(ngbCollapse)]="!state.isPaneOpen.advanced">
                 
                 <div class="row pad-top">
                     <div class="col-12">
@@ -145,11 +145,11 @@
 
 
     <!-- WAHTS -->
-    <mat-expansion-panel class="panel panel-default" [(expanded)]="!state.paneState.cha">
+    <mat-expansion-panel class="panel panel-default" [expanded]="!state.isPaneOpen.wahts">
         <mat-expansion-panel-header>
             <mat-panel-title>
                 {{'WAHTS'| translate}}
-                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.paneState.general, "glyphicon-chevron-down": !state.paneState.general}'></i> -->
+                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.isPaneOpen.general, "glyphicon-chevron-down": !state.isPaneOpen.general}'></i> -->
             </mat-panel-title>
         </mat-expansion-panel-header>
            
@@ -166,7 +166,7 @@
         <mat-expansion-panel-header>
             <mat-panel-title>
                 {{'Dosimeter'| translate}}
-                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.paneState.general, "glyphicon-chevron-down": !state.paneState.general}'></i> -->
+                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.isPaneOpen.general, "glyphicon-chevron-down": !state.isPaneOpen.general}'></i> -->
             </mat-panel-title>
         </mat-expansion-panel-header>
            
@@ -177,12 +177,45 @@
     </mat-expansion-panel>
 
 
+    <!-- Inter-App Communication -->
+    <mat-expansion-panel class="panel panel-default" [expanded]="false">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                {{'Communicate With Other Apps'| translate}}
+                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.isPaneOpen.general, "glyphicon-chevron-down": !state.isPaneOpen.general}'></i> -->
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+           
+        <div class="panel-body text-left">
+
+        </div>
+
+    </mat-expansion-panel>
+
+
+    <!-- Plugins -->
+    <mat-expansion-panel class="panel panel-default" [expanded]="false">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                {{'Plugins'| translate}}
+                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.isPaneOpen.general, "glyphicon-chevron-down": !state.isPaneOpen.general}'></i> -->
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+           
+        <div class="panel-body text-left">
+
+        </div>
+
+    </mat-expansion-panel>
+
+
+
     <!-- Software and Hardware Status -->
     <mat-expansion-panel class="panel panel-default" [(expanded)]="false">
         <mat-expansion-panel-header>
             <mat-panel-title>
                 {{'Software and Hardware'| translate}}
-                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.paneState.general, "glyphicon-chevron-down": !state.paneState.general}'></i> -->
+                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.isPaneOpen.general, "glyphicon-chevron-down": !state.isPaneOpen.general}'></i> -->
             </mat-panel-title>
         </mat-expansion-panel-header>
            
@@ -198,7 +231,7 @@
         <mat-expansion-panel-header>
             <mat-panel-title>
                 {{'Application Log'| translate}}
-                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.paneState.general, "glyphicon-chevron-down": !state.paneState.general}'></i> -->
+                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.isPaneOpen.general, "glyphicon-chevron-down": !state.isPaneOpen.general}'></i> -->
             </mat-panel-title>
         </mat-expansion-panel-header>
            

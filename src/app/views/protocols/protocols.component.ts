@@ -1,13 +1,16 @@
 import { Component } from '@angular/core';
 import _ from 'lodash';
+import { TranslateService } from '@ngx-translate/core';
 
 import { DiskModel } from '../../models/disk/disk.service';
 import { Logger } from '../../utilities/logger.service';
 import { ProtocolInterface } from '../../models/protocol/protocol.interface';
-import { ProtocolServer, ValidateProtocolTooltip } from '../../utilities/constants';
+import { ProtocolServer } from '../../utilities/constants';
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { ProtocolModel } from '../../models/protocol/protocol.service';
 import { ProtocolService } from '../../controllers/protocol.service';
+import { StateModel } from '../../models/state/state.service';
+import { StateInterface } from '../../models/state/state.interface';
 
 @Component({
   selector: 'protocols-view',
@@ -18,17 +21,20 @@ export class ProtocolsComponent {
   selected?: ProtocolInterface;
   disk: DiskInterface;
   protocol: ProtocolInterface;
-  validateProtocolTooltip: String = ValidateProtocolTooltip;
   localServer: ProtocolServer = ProtocolServer.LocalServer;
+  state: StateInterface;
 
   constructor (
     public diskModel: DiskModel,
     public protocolService: ProtocolService,
     public protocolModel: ProtocolModel,
+    public stateModel: StateModel,
+    private translate: TranslateService,
     private logger: Logger,
   ) {
     this.disk = this.diskModel.getDisk();
     this.protocol = this.protocolModel.getProtocol();
+    this.state = this.stateModel.getState();
   }
 
   ngOnInit(): void {
@@ -130,9 +136,9 @@ export class ProtocolsComponent {
       this.protocolService.delete(this.selected);
       this.selected = undefined;
       // notifications.confirm(
-      //     gettextCatalog.getString("Delete protocol ") +
+      //     "Delete protocol ") +
       //     this.selected.name +
-      //     gettextCatalog.getString(" and remove protocol files from disk?"),
+      //     " and remove protocol files from disk?"),
       //     (buttonIndex) => {
       //         if (buttonIndex === 1) {
       //             protocol.delete(this.selected);
@@ -150,16 +156,16 @@ export class ProtocolsComponent {
       // check to see if task is already running (shouldn't even be able to get to this state)
       // if (tasks.isOngoing("updating")) {
       //   this.logger.warn("Task still in progress...");
-      //     notifications.alert(gettextCatalog.getString("Task still in progress..."));
+      //     notifications.alert("Task still in progress..."));
       //     return;
       // }
 
       // if (protocol.isActive(selected)) {
       //     notifications.confirm(
-      //         gettextCatalog.getString("Update protocol ") +
+      //         "Update protocol ") +
       //         this.selected.name +
       //         "? " +
-      //         gettextCatalog.getString("The current test will be reset"),
+      //         "The current test will be reset"),
       //         function(buttonIndex) {
       //             if (buttonIndex === 1) {
       //                 tasks.register("updating", "Updating Protocol");
@@ -175,7 +181,7 @@ export class ProtocolsComponent {
       //         }
       //     );
       // } else {
-      //     notifications.confirm(gettextCatalog.getString("Update protocol ") + this.selected.name + "?", function(
+      //     notifications.confirm("Update protocol ") + this.selected.name + "?", function(
       //         buttonIndex
       //     ) {
       //         if (buttonIndex === 1) {
@@ -216,7 +222,7 @@ export class ProtocolsComponent {
       //                         } with error: ${angular.toJson(e)}`
       //                     );
       //                     notifications.alert(
-      //                         gettextCatalog.getString(
+      //                         
       //                             "TabSINT encountered an issue while updating the repository. Please verify the repository location and version and upload the application logs if the issue persists."
       //                         )
       //                     );
@@ -228,5 +234,98 @@ export class ProtocolsComponent {
       //     }
       // }
   };
+
+  validateProtocolPopover = this.translate.instant(
+    "Validate protocols against the <b>Protocol Schema</b> before loading into the application. <br /><br /> The protocol schema defines the allowable inputs for use in protocols."
+  );
+
+  protocolServerPopover = this.translate.instant(
+    "Choose the data store to use as the protocol source and results output. <br /><br />Additional configuration for the <b>TabSINT Server</b> and <b>Gitlab</b> will become active below this box when a server is selected"
+  );
+
+  protocolTablePopover = this.translate.instant(
+    "The table below shows a list of the available test protocols within TabSINT. You can select a protocol by pressing on the table row, then <b>load</b>, <b>update</b>, or <b>delete</b> the protocol using the buttons below. <br /><br />" +
+      "Protocols can be added from each of the servers listed on the <i>Configuration</i> page using the pane below this one. The input area will change depending on the server selected."
+  );
+
+  mediaTablePopover = this.translate.instant(
+    "This table shows a list of the downloaded media repositories. " +
+      "These repositories can be referenced by any protocols using the <code>mediaRepository</code> key in the top level of the protocol. <br /><br />" +
+      "Media repositories will be downloaded from the Gitlab Server defined in the <b>Gitlab Configuration</b> pane under the <i>Configuration</i> tab."
+  );
+
+  mediaAddPopover = this.translate.instant(
+    "Type in the name of a repository to use as a common media repository. <br /><br />" +
+      "The repository must be located on the host in the group defined in the <b>Gitlab Configuration</b> pane under the <i>Configuration</i> tab."
+  );
+
+  serverDefaultPopover = this.translate.instant(      
+    "Reset all configuration values to the defaults set in the build configuaration file. This file can only be edited when TabSINT is built from source code."
+  );
+
+  gitlabAddPopover = this.translate.instant(
+    "Type in the name of the protocol repository located on the host and group defined in the <b>Advanced Gitlab Settings</b>"
+  );
+
+  gitlabAddVersionPopover = this.translate.instant(
+    "<strong>OPTIONAL:</strong> Type in the repository tag for the version of the repository you would like to download. Leave blank to download the latest tag/commit from the repository."
+  );
+
+  gitlabHostPopover = this.translate.instant(
+    'Hostname of the gitlab server instance you are running. Generally this will be "https://gitlab.com/"'
+  );
+
+  gitlabTokenPopover = this.translate.instant(
+    "The secret token used to access your gitlab repositories. See the user guide for more information about finding the Token."
+  );
+
+  gitlabNamespacePopover = this.translate.instant(
+    "The group where protocol, media, and result repositories are stored."
+  );
+
+  gitlabUseTagsPopover = this.translate.instant(
+    "By default, TabSINT will track changes to protocol files based on the <b>tags</b> to a repository.<br /><br />" +
+      "Uncheck this box if you would only like to download changes that are associated with repository <b>commits</b>."
+  );
+
+  gitlabUseSeperateResultsRepoPopover = this.translate.instant(
+    "Select this option to choose a different gitlab group or repository for results upload.  <br /><br />By default, results are uploaded to a <code>results</code> repository in the same group that contains the protocol."
+  );
+
+  gitlabResultsGroupPopover = this.translate.instant(
+    "Type the group that contains the <b>Results Repository</b> specified below. <br /><br /> <i>Note: This group must use the same <b>Host</b> and <b>Token</b> above.</i>"
+  );
+
+  gitlabResultsRepoPopover = this.translate.instant(
+    "Type the name of the repository where results will be uploaded. To avoid errors, please create the repository before trying to upload results to it.<br /><br /> <i>Note: This repository must use the same <b>Host</b> and <b>Token</b> above.</i>"
+  );
+
+  downloadCreareProtocolsPopover = this.translate.instant(
+    "Select this option to download standard protocols from Creare.  Results will still go to the gitlab host, group, and repository defined in <b>Gitlab Configuration</b> on the <i>Configuration</i> tab.  When this option is not selected, protocols are downloaded from the host and group defined in <b>Gitlab Configuration</b> on the <i>Configuration</i> tab."
+  );
+    
+  localAddPopover = this.translate.instant(
+    "The local directory under <code>Documents/tabsint-protocols</code> where the protocol is stored on the tablet. Press <b>Add</b> to select a protocol directory via a file chooser."
+  );
+
+  tabsintAddPopover = this.translate.instant(
+    "Type in the <b>Site Name</b> to download from the TabSINT Server defined in the <b>TabSINT Server Configuration</b> advanced settings below."
+  );
+
+  tabsintUrlPopover = this.translate.instant(
+    'Host URL of the TabSINT server. Generally this will be "https://hffd.crearecomputing.com/"'
+  );
+
+  tabsintUsernamePopover = this.translate.instant(
+    "The username used to access the TabSINT server"
+  );
+
+  tabsintPasswordPopover = this.translate.instant(
+    "The password used to access the TabSINT server"
+  );
+
+  serverAuthorizePopover = this.translate.instant(
+    "If TabSINT Server configuration values are not valid, TabSINT will not be able to download protocols or upload results. Tap <strong>Validate Now</strong> to ensure configuration parameters are valid. <br /><br /> Validation may take up to 15 seconds."
+  );
 
 }

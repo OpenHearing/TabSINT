@@ -2,7 +2,7 @@
 <br />
 
 <div mat-accordion multi>
-  <mat-expansion-panel class="panel panel-default">
+  <mat-expansion-panel class="panel panel-default" [expanded]="state.isPaneOpen.protocols">
     <!---->
     <mat-expansion-panel-header>
       <mat-panel-title>Protocols</mat-panel-title>
@@ -48,22 +48,14 @@
         <div class="col-2"><input id="validateProtocols" type="checkbox" ngModel="diskService.validateProtocols" /></div>
         <div class="col-2"></div>
         <div class="col-1">
-          <!-- <a href="javascript:" 
-              title="{{'Default Language help' | translate}}" 
-              mdbPopover='[innerHTML]="validateProtocolTooltip"'
-              trigger="focus">
-              <i class="ion-help-circled"></i>
-          </a> -->
-          
-          
-          <i [matMenuTriggerFor]= "menu" class="ion-help-circled"></i></div>
-        <mat-menu #menu="matMenu">
+          <i [matMenuTriggerFor]= "validatProtocolMenu" class="ion-help-circled"></i>
+        </div>
+        <mat-menu #validatProtocolMenu="matMenu">
           <button mat-menu-item>
-          <div [innerHTML]="validateProtocolTooltip">
-          </div></button>
+            <div [innerHTML]="validateProtocolPopover"></div>
+          </button>
         </mat-menu>
       </div>
-
 
       <div class="row pad-top">
         <div class="col-4">
@@ -115,7 +107,7 @@
     </div>
   </div> -->
 
-  <mat-expansion-panel class="protocol-source" class="panel panel-default">
+  <mat-expansion-panel class="protocol-source" class="panel panel-default" [expanded]="state.isPaneOpen.protocolsSource">
     <mat-expansion-panel-header>
       <!-- Source <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": isOpenSource, "glyphicon-chevron-down": !isOpenSource}'></i> -->
       <mat-panel-title>Source</mat-panel-title>
@@ -125,7 +117,14 @@
       <div class="row pad-top">
         <div class="col-4 admin-labels" translate> Server: </div>
         <div class="col-6"></div>
-        <div class="col-1"><a href="#" title="'Server help' " uib-popover-html="serverPopover" popover-placement="left" popover-trigger="'outsideClick'"><i class="ion-help-circled"></i></a></div>
+        <div class="col-1">
+          <i [matMenuTriggerFor]= "protocolServerMenu" class="ion-help-circled"></i>
+        </div>
+        <mat-menu #protocolServerMenu="matMenu">
+          <button mat-menu-item>
+            <div [innerHTML]="protocolServerPopover"></div>
+          </button>
+        </mat-menu>
       </div>
 
       <div class="row pad-top">
@@ -146,7 +145,14 @@
           <!-- <button class="btn btn-default btn-block" [disabled]="tasks.disabled" (click)="add()"> <i class="ion-plus-round"></i> 'Add'</button> -->
           <button class="btn btn-default btn-block"> <i class="ion-plus-round"></i> Add</button>
         </div>
-        <div class="col-1"><a href="#" title="'Directory help' " uib-popover-html="localAddPopover" popover-placement="left" popover-trigger="'outsideClick'"><i class="ion-help-circled"></i></a></div>
+        <div class="col-1">
+          <i [matMenuTriggerFor]= "localAddMenu" class="ion-help-circled"></i>
+        </div>
+        <mat-menu #localAddMenu="matMenu">
+          <button mat-menu-item>
+            <div [innerHTML]="localAddPopover"></div>
+          </button>
+        </mat-menu>
       </div>
 
 <!--    <div *ngIf="disk.server === 'gitlab'">

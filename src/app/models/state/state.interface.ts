@@ -3,9 +3,11 @@ import { AppState, ProtocolState } from "../../utilities/constants";
 export interface StateInterface {
     appState: AppState;
     protocolState: ProtocolState
-    paneState: {
+    isPaneOpen: {
         general: boolean,
-        cha: boolean,
-        advanced: boolean
+        wahts: boolean,
+        advanced: boolean,
+        protocols: boolean,
+        protocolsSource: boolean
     };
 }
