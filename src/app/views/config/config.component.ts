@@ -50,6 +50,66 @@ export class ConfigComponent {
 
   title = 'config';
 
+  // VARIABLES - PROBABLY SHOULD BE MOVED?
+  headsets: Array<string> = [
+    "None",
+    "HDA200",
+    "VicFirth",
+    "VicFirthS2",
+    "WAHTS",
+    "EPHD1",
+    "Audiometer"
+  ];
+
+  devices = {
+    name: "Browser",
+    cordova: "Browser",
+    platform: "Browser",
+    UUID: "Browser",
+    shortUUID: "Browser",
+    tabsintUUID: undefined,
+    version: "Browser",
+    model: "Browser",
+    diskSpace: "Broswer",
+    load: undefined
+  };
+
+  networkModel: any = {
+    "status": false,
+    "type": "???"
+  };
+
+  languages: Array<string> = [
+    this.translate.instant("English"),
+    this.translate.instant("Japanese"),
+    this.translate.instant("French"),
+    this.translate.instant("Spanish"),
+  ];
+
+  resultsModeOptions = ResultsMode;
+
+  config = {
+    build: "placeholder",
+    tabsintPlugins: {
+      "???": {version:"???"}
+    }
+  }
+
+  logs = {
+    count: {
+      newlogs:"???"
+    },
+    show: false,
+    nLogs: 50,
+    disp: []
+  };
+
+  tasks = {
+    disabled: true
+  }
+  
+  
+  // TEST FUNCTIONS
   logTest() {
     this.logger.debug("pageM: "+JSON.stringify(this.page));
     this.logger.debug("diskM: "+JSON.stringify(this.disk));
@@ -125,55 +185,7 @@ export class ConfigComponent {
     });
   }
 
-  headsets: Array<string> = [
-    "None",
-    "HDA200",
-    "VicFirth",
-    "VicFirthS2",
-    "WAHTS",
-    "EPHD1",
-    "Audiometer"
-  ];
-
-  devices = {
-    name: "Browser",
-    cordova: "Browser",
-    platform: "Browser",
-    UUID: "Browser",
-    shortUUID: "Browser",
-    tabsintUUID: undefined,
-    version: "Browser",
-    model: "Browser",
-    diskSpace: "Broswer",
-    load: undefined
-  };
-
-  networkModel: any = {
-    "status": false,
-    "type": "???"
-  };
-
-  languages: Array<string> = [
-    this.translate.instant("English"),
-    this.translate.instant("Japanese"),
-    this.translate.instant("French"),
-    this.translate.instant("Spanish"),
-  ];
-
-  // resultsModeOptions: Array<string> = [
-  //   "Upload/Export",
-  //   "Upload Only",
-  //   "Export Only",
-  // ];
-
-  resultsModeOptions = ResultsMode;
-
-  config = {
-    build: "placeholder",
-    tabsintPlugins: {
-      "???": {version:"???"}
-    }
-  }
+  // Real functions
 
   changeHeadset(headset: string) {
     this.disk.headset = headset;
@@ -208,6 +220,10 @@ export class ConfigComponent {
     console.log("toggleAutoUpload pressed");
   }
 
+  displayLogs() {
+    console.log("displayLogs pressed");
+  }
+
   gainReset() {
     console.log("gainReset pressed");
   }
@@ -222,6 +238,14 @@ export class ConfigComponent {
 
   playCompAudioLinear() {
     console.log("playCompAudioLinear pressed");
+  }
+
+  logExportUpload(param:boolean) {
+    console.log("logExport pressed");
+  }
+
+  logExportSave(param:boolean) {
+    console.log("logExport pressed");
   }
 
 

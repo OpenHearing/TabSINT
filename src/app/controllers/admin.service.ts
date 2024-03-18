@@ -38,5 +38,9 @@ export class AdminService {
     toggleRecordTestLocation() {
         console.log("toggleRecordTestLocation");
     }
+
+    toggleAppDeveloperMode() {
+        console.log("toggleAppDeveloperMode");
+    }
     
 }

@@ -459,13 +459,13 @@
                     <b>TabSINT:</b>
                     <span>{{version.dm.tabsint}}</span>
                 </li>
-                <li ng-click="adminLogic.toggleAppDeveloperMode()">
+                <li (click)="adminService.toggleAppDeveloperMode()">
                     <b>{{'Build Name' | translate}}:</b>
                     <span>
                         {{config.build}}
                         <span *ngIf="disk.appDeveloperMode">
                             - App-Developer Mode is on <button class="btn btn-default"
-                                ng-click="adminLogic.toggleAppDeveloperMode()">Turn Off</button>
+                                (click)="adminService.toggleAppDeveloperMode()">Turn Off</button>
                         </span>
                         <span *ngIf="!disk.appDeveloperMode && disk.appDeveloperModeCount > 1">
                             - Tap {{5-disk.appDeveloperModeCount}} more times to turn on App-Developer Mode
@@ -573,6 +573,43 @@
         </mat-expansion-panel-header>
            
         <div class="panel-body text-left">
+
+            <div class="row">
+                <div class="col-12">{{'Number of log messages' | translate}}: {{logs.count.newlogs}}</div>
+            </div>
+            <div class="row pad-top">
+                <div class="col-4">
+                    <button [disabled]="tasks.disabled" class="btn btn-block btn-success"
+                        (click)="logExportUpload(true)"><i class="ion-upload"></i> {{'Upload' | translate}}</button>
+                </div>
+                <div class="col-4">
+                    <button [disabled]="tasks.disabled" class="btn btn-block btn-primary"
+                        (click)="logExportSave(true)"><span class="glyphicon glyphicon-floppy-disk"></span>
+                        {{'Export' | translate}}</button>
+                </div>
+                <div class="col-4">
+                    <button [disabled]="tasks.disabled" class="btn btn-block btn-default" (click)="displayLogs()"><i
+                            class="ion-document-text"></i> {{'Display' | translate}}</button>
+                </div>
+            </div>
+
+            <div class="row pad-top" *ngIf="logs.show">
+                <div class="col-12">
+                    <div class="well admin-log-display">
+                        <!-- <div *ngFor="log in logs.disp.slice(0, logs.nLogs)">
+                            <div class="row">
+                                <div class="col-12"><strong>[{{log.date.split(' ')[1]}}]</strong>: {{log.data}}
+                                </div>
+                            </div>
+                        </div> -->
+                        <!-- <div class="row" *ngIf="logs.disp.length - logs.nLogs > 0">
+                            <div class="col-6">({{logs.disp.length - logs.nLogs}} not shown) </div>
+                            <div class="col-6"><button type="button" class="btn btn-default btn-block"
+                                    (click)="logs.nLogs = logs.nLogs+50"> + 50</button></div>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
 
         </div>
 
