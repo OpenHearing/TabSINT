@@ -238,6 +238,14 @@ $tabsint-training-site-theme: mat.define-light-theme((
   .ion-help-circled {
     color: rgb(0, 102, 204); 
   }
+
+  /*-----------
+  * .mat components
+  * -----------*/
+
+  .mat-expansion-panel-body {
+    border: 1px #ddd solid;
+  }
   
   /* ----------
   * Welcome Page
@@ -1855,11 +1863,15 @@ $tabsint-training-site-theme: mat.define-light-theme((
     font-family: monospace;
   }
   
-  /* this is a hack to make the whole panel title clickable */
   .panel-heading {
     padding: 0;
     font-size: 1.2rem;
   }
+  .mat-expansion-panel-header {
+    background-color: #f5f5f5;
+    border: 1px #ddd solid;
+  }
+
   .panel-title a {
     font-size: 1.1rem;
     display: block;
@@ -1884,9 +1896,6 @@ $tabsint-training-site-theme: mat.define-light-theme((
     background-color: rgba(0, 169, 242, 0.1);
   }
   
-  .panel-heading {
-    text-align: left !important;
-  }
   .panel-default > .panel-heading.panel-title {
     padding: 5px 15px;
   }
@@ -2262,6 +2271,7 @@ $tabsint-training-site-theme: mat.define-light-theme((
     padding-bottom: 8px;
     font-size: 18px;
     width: 100%;
+    display: flex;
   }
   
   /* need to find out what this was doing before
