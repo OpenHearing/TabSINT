@@ -462,13 +462,13 @@
                     <b>TabSINT:</b>
                     <span>{{version.dm.tabsint}}</span>
                 </li>
-                <li ng-click="adminLogic.toggleAppDeveloperMode()">
+                <li (click)="adminService.toggleAppDeveloperMode()">
                     <b>{{'Build Name' | translate}}:</b>
                     <span>
                         {{config.build}}
                         <span *ngIf="disk.appDeveloperMode">
                             - App-Developer Mode is on <button class="btn btn-default"
-                                ng-click="adminLogic.toggleAppDeveloperMode()">Turn Off</button>
+                                (click)="adminService.toggleAppDeveloperMode()">Turn Off</button>
                         </span>
                         <span *ngIf="!disk.appDeveloperMode && disk.appDeveloperModeCount > 1">
                             - Tap {{5-disk.appDeveloperModeCount}} more times to turn on App-Developer Mode
@@ -480,6 +480,85 @@
                     <span>{{version.dm.date | date: 'yyyy-MM-dd HH:mm:ss'}}</span>
                 </li>
             </ul>
+
+            <br />
+
+            <div class="row">
+                <div class="col-12">
+                    <h5>{{'Device' | translate}}</h5>
+                </div>
+            </div>
+            <ul class="admin-info">
+                <li>
+                    <b>{{'Device UUID' | translate}}:</b>
+                    <span>{{devices.UUID}}</span>
+                </li>
+                <li>
+                    <b>{{'TabSINT UUID' | translate}}:</b>
+                    <span>{{devices.tabsintUUID}}</span>
+                </li>
+                <li>
+                    <b>{{'Device Model' | translate}}:</b>
+                    <span>{{devices.model}}</span>
+                </li>
+                <li>
+                    <b>{{'Operating System' | translate}}:</b>
+                    <span>{{devices.platform}} {{devices.version}}</span>
+                </li>
+                <li>
+                    <b>{{'Free Disk Space' | translate}}:</b>
+                    <span>{{devices.diskSpace}} MB</span>
+                </li>
+                <li>
+                    <b>{{'Network Status' | translate}}:</b>
+                    <span *ngIf="networkModel.status">{{'Online' | translate}}</span>
+                    <span *ngIf="!networkModel.status">{{'Offline' | translate}}</span>
+                </li>
+                <li>
+                    <b>{{'Network Type' | translate}}:</b>
+                    <span>{{networkModel.type}}</span>
+                </li>
+            </ul>
+
+            <br />
+
+            <div class="row">
+                <div class="col-12">
+                    <h5>{{'Plugins' | translate}}</h5>
+                </div>
+            </div>
+            <ul class="admin-info">
+                <div *ngFor="let plugin of config.tabsintPlugins | keyvalue">
+                    <li>
+                        <b>{{plugin.key}}:</b>
+                        <span>{{plugin.value.version}}</span>
+                    </li>
+                </div>
+            </ul>
+
+            <br />
+
+            <div class="row">
+                <div class="col-12">
+                    <h5>{{'Build Details' | translate}}</h5>
+                </div>
+            </div>
+            <ul class="admin-info">
+                <li>
+                    <b>{{'Cordova Version' | translate}}:</b>
+                    <span>{{version.dm?.deps?.cordova}}</span>
+                </li>
+                <li>
+                    <b>{{'Node Version' | translate}}:</b>
+                    <span>{{version.dm?.deps?.node}}</span>
+                </li>
+                <li>
+                    <b>{{'Build System' | translate}}:</b>
+                    <span>{{version.dm?.deps?.user_agent}}</span>
+                </li>
+            </ul>
+
+            <br />
 
 
         </div>
@@ -498,6 +577,43 @@
         </mat-expansion-panel-header>
            
         <div class="panel-body text-left">
+
+            <div class="row">
+                <div class="col-12">{{'Number of log messages' | translate}}: {{logs.count.newlogs}}</div>
+            </div>
+            <div class="row pad-top">
+                <div class="col-4">
+                    <button [disabled]="tasks.disabled" class="btn btn-block btn-success"
+                        (click)="logExportUpload(true)"><i class="ion-upload"></i> {{'Upload' | translate}}</button>
+                </div>
+                <div class="col-4">
+                    <button [disabled]="tasks.disabled" class="btn btn-block btn-primary"
+                        (click)="logExportSave(true)"><span class="glyphicon glyphicon-floppy-disk"></span>
+                        {{'Export' | translate}}</button>
+                </div>
+                <div class="col-4">
+                    <button [disabled]="tasks.disabled" class="btn btn-block btn-default" (click)="displayLogs()"><i
+                            class="ion-document-text"></i> {{'Display' | translate}}</button>
+                </div>
+            </div>
+
+            <div class="row pad-top" *ngIf="logs.show">
+                <div class="col-12">
+                    <div class="well admin-log-display">
+                        <!-- <div *ngFor="log in logs.disp.slice(0, logs.nLogs)">
+                            <div class="row">
+                                <div class="col-12"><strong>[{{log.date.split(' ')[1]}}]</strong>: {{log.data}}
+                                </div>
+                            </div>
+                        </div> -->
+                        <!-- <div class="row" *ngIf="logs.disp.length - logs.nLogs > 0">
+                            <div class="col-6">({{logs.disp.length - logs.nLogs}} not shown) </div>
+                            <div class="col-6"><button type="button" class="btn btn-default btn-block"
+                                    (click)="logs.nLogs = logs.nLogs+50"> + 50</button></div>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
 
         </div>
 
