@@ -478,6 +478,85 @@
                 </li>
             </ul>
 
+            <br />
+
+            <div class="row">
+                <div class="col-12">
+                    <h5>{{'Device' | translate}}</h5>
+                </div>
+            </div>
+            <ul class="admin-info">
+                <li>
+                    <b>{{'Device UUID' | translate}}:</b>
+                    <span>{{devices.UUID}}</span>
+                </li>
+                <li>
+                    <b>{{'TabSINT UUID' | translate}}:</b>
+                    <span>{{devices.tabsintUUID}}</span>
+                </li>
+                <li>
+                    <b>{{'Device Model' | translate}}:</b>
+                    <span>{{devices.model}}</span>
+                </li>
+                <li>
+                    <b>{{'Operating System' | translate}}:</b>
+                    <span>{{devices.platform}} {{devices.version}}</span>
+                </li>
+                <li>
+                    <b>{{'Free Disk Space' | translate}}:</b>
+                    <span>{{devices.diskSpace}} MB</span>
+                </li>
+                <li>
+                    <b>{{'Network Status' | translate}}:</b>
+                    <span *ngIf="networkModel.status">{{'Online' | translate}}</span>
+                    <span *ngIf="!networkModel.status">{{'Offline' | translate}}</span>
+                </li>
+                <li>
+                    <b>{{'Network Type' | translate}}:</b>
+                    <span>{{networkModel.type}}</span>
+                </li>
+            </ul>
+
+            <br />
+
+            <div class="row">
+                <div class="col-12">
+                    <h5>{{'Plugins' | translate}}</h5>
+                </div>
+            </div>
+            <ul class="admin-info">
+                <div *ngFor="let plugin of config.tabsintPlugins | keyvalue">
+                    <li>
+                        <b>{{plugin.key}}:</b>
+                        <span>{{plugin.value.version}}</span>
+                    </li>
+                </div>
+            </ul>
+
+            <br />
+
+            <div class="row">
+                <div class="col-12">
+                    <h5>{{'Build Details' | translate}}</h5>
+                </div>
+            </div>
+            <ul class="admin-info">
+                <li>
+                    <b>{{'Cordova Version' | translate}}:</b>
+                    <span>{{version.dm?.deps?.cordova}}</span>
+                </li>
+                <li>
+                    <b>{{'Node Version' | translate}}:</b>
+                    <span>{{version.dm?.deps?.node}}</span>
+                </li>
+                <li>
+                    <b>{{'Build System' | translate}}:</b>
+                    <span>{{version.dm?.deps?.user_agent}}</span>
+                </li>
+            </ul>
+
+            <br />
+
 
         </div>
 

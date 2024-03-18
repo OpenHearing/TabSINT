@@ -135,6 +135,24 @@ export class ConfigComponent {
     "Audiometer"
   ];
 
+  devices = {
+    name: "Browser",
+    cordova: "Browser",
+    platform: "Browser",
+    UUID: "Browser",
+    shortUUID: "Browser",
+    tabsintUUID: undefined,
+    version: "Browser",
+    model: "Browser",
+    diskSpace: "Broswer",
+    load: undefined
+  };
+
+  networkModel: any = {
+    "status": false,
+    "type": "???"
+  };
+
   languages: Array<string> = [
     this.translate.instant("English"),
     this.translate.instant("Japanese"),
@@ -151,7 +169,10 @@ export class ConfigComponent {
   resultsModeOptions = ResultsMode;
 
   config = {
-    build: "placeholder"
+    build: "placeholder",
+    tabsintPlugins: {
+      "???": {version:"???"}
+    }
   }
 
   changeHeadset(headset: string) {
