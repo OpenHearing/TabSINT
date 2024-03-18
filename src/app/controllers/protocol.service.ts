@@ -129,7 +129,7 @@ export class ProtocolService {
 
     define(obj: ProtocolInterface): ProtocolInterface {
 
-        // if (obj.server === "developer") {
+        // if (obj.server === ProtocolServer.Developer) {
         //     obj.version = version.dm.tabsint;
         // }
     
@@ -165,7 +165,7 @@ export class ProtocolService {
         }
     };
 
-    load(meta: any, validate: boolean, notify: boolean, reload: boolean): void { //Promise<any> {
+    load(meta: any, validate: boolean, notify: boolean, reload: boolean) { //Promise<any> {
         this.loading.meta = meta;
         this.loading.validate = validate || this.disk.validateProtocols; // if validate is a boolean, use it, otherwise default to this.disk.validateProtocols
         this.loading.notify = notify || false;
@@ -305,12 +305,9 @@ export class ProtocolService {
             }
         }
     
-        // remove metadata from disk
         this.disk.loadedProtocols.splice(idx, 1);
     
-        // if protocol is active, remove it
         if (this.isActive(p)) {
-            // pm.root = undefined;
             this.disk.activeProtocol = {};
         }
     

@@ -11,6 +11,10 @@ import { ProtocolModel } from '../../models/protocol/protocol.service';
 import { ProtocolService } from '../../controllers/protocol.service';
 import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
+import { Observable } from 'rxjs';
+import { DialogData } from '../../interfaces/dialog-data.interface';
+import { Notifications } from '../../utilities/notifications.service';
+import { Tasks } from '../../utilities/tasks.service';
 
 @Component({
   selector: 'protocols-view',
@@ -31,6 +35,8 @@ export class ProtocolsComponent {
     public stateModel: StateModel,
     private translate: TranslateService,
     private logger: Logger,
+    private notifications: Notifications,
+    private tasks: Tasks
   ) {
     this.disk = this.diskModel.getDisk();
     this.protocol = this.protocolModel.getProtocol();
@@ -83,49 +89,57 @@ export class ProtocolsComponent {
     return this.selected.server !== ProtocolServer.Developer;
   };
 
-  load(): void {
+  load() {
     if (!this.selected) {
         return;
     }
-    this.protocolService.load(this.selected, this.disk.validateProtocols, true, true);
-    // if no protocol is available, load it
-    // if (!pm.root) {
-    //     loadAndReset(false);
-    // } else {
-        // otherwise, notify user appropriately and loadAndReset()
-        // let msg =
-        //     $localize `Switch to protocol ${this.selected.name} and reset the current test? The current test results will be deleted`;
-        // if (this.protocol.isActive(this.selected)) {
-        //     msg =
-        //         $localize `Reload protocol ${this.selected.name} and reset the current test? The current test will be reset`;
-        // }
-
-        // notifications.confirm(msg, function(buttonIndex) {
-        //     if (buttonIndex === 1) {
-        //         if (!this.protocol.isActive(this.selected)) {
-        //             loadAndReset(false);
-        //         } else if (this.protocol.isActive(sthis.elected)) {
-        //             loadAndReset(true);
-        //         }
-        //     }
+    
+    let loadAndReset = (reload: boolean) => {
+        // const observable = new Observable<number>(observer => {
+        this.tasks.register("updating", "Loading Protocol...");
         // });
-    // }
+        this.protocolService.load(this.selected, this.disk.validateProtocols, true, reload);
+        // observable.subscribe({
+        //   next: () => {
+        //     this.protocolService.load(this.selected, this.disk.validateProtocols, true, reload);
+        //   },
+        //   error: (err) => {
+        //       console.log("error: observable error (private loadAndReset)");
+        //       console.log(err)
+        //   },
+        //   complete() {
+        //       console.log("complete: observable completed. this will only appear after protocol is loaded if there is no error.");
+        //   }
+        // })
+        
+        if (this.protocolService.isActive(this.selected)) {
+            // examLogic.reset();
+            console.log("reset examLogic");
+        }
+        this.tasks.deregister("updating");
+    }
 
-    // function loadAndReset(reload: boolean): void {
-    //     tasks
-    //         .register("updating", "Loading Protocol...")
-    //         .then(function() {
-    //             return protocol.load(selected, disk.validateProtocols, true, reload);
-    //         })
-    //         .then(function() {
-    //             if (protocol.isActive(selected)) {
-    //                 examLogic.reset();
-    //             }
-    //         })
-    //         .finally(function() {
-    //             tasks.deregister("updating");
-    //         });
-    // }
+    if (!this.disk.activeProtocol) {
+        loadAndReset(false);
+    } else {
+        let msg: DialogData = {
+          title: "Confirm",
+          content: `Switch to protocol ${this.selected.name} and reset the current test? The current test results will be deleted`
+          };
+        if (this.protocolService.isActive(this.selected)) {
+            msg.content = `Reload protocol ${this.selected.name} and reset the current test? The current test will be reset`;
+        }
+
+        this.notifications.confirm(msg).subscribe(result => {
+            if (result === "OK") {
+                if (!this.protocolService.isActive(this.selected)) {
+                    loadAndReset(false);
+                } else if (this.protocolService.isActive(this.selected)) {
+                    loadAndReset(true);
+                }
+            }
+        });
+    }
   };
 
   delete(): void {

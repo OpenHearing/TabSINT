@@ -108,6 +108,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     StateModel,
     Json,
     SqLite,
+    Notifications,
     Logger,
     Paths,
     FileChooser,

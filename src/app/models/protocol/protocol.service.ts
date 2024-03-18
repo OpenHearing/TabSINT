@@ -16,9 +16,4 @@ export class ProtocolModel {
     getProtocol(): ProtocolInterface {
         return this.protocolModel;
     }
-
-    isActive(p: ProtocolInterface) {
-        // need to update this function
-        return true;
-    }
 }

@@ -2,7 +2,7 @@
 <br />
 
 <div mat-accordion multi>
-  <mat-expansion-panel class="panel panel-default" [expanded]="state.isPaneOpen.protocols">
+  <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.protocols">
     <!---->
     <mat-expansion-panel-header>
       <mat-panel-title>Protocols</mat-panel-title>
@@ -35,7 +35,7 @@
 
             <tr *ngIf="p !== undefined" [ngClass]="pclass(p)" (click)="select(p)" class="no-border">
               <!-- *ngIf="p.admin && disk.debugMode"  -->
-              <td scope="row">{{p.name}}</td> 
+              <td [ngClass]="pclass(p)" scope="row">{{p.name}}</td> 
               <td >{{p.version}}</td>
               <td >{{p.date}}</td>
             </tr>
@@ -109,7 +109,7 @@
 
   <br />
 
-  <mat-expansion-panel class="protocol-source" class="panel panel-default" [expanded]="state.isPaneOpen.protocolsSource">
+  <mat-expansion-panel class="protocol-source" class="panel panel-default" [(expanded)]="state.isPaneOpen.protocolsSource">
     <mat-expansion-panel-header>
       <!-- Source <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": isOpenSource, "glyphicon-chevron-down": !isOpenSource}'></i> -->
       <mat-panel-title>Source</mat-panel-title>
