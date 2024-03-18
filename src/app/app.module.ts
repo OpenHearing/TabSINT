@@ -53,6 +53,9 @@ import { LocalServerService } from './controllers/local-server.service';
 import { ResultsService } from './controllers/results.service';
 import { ExamService } from './controllers/exam.service';
 import { AdminService } from './controllers/admin.service';
+import { TabsintConfigComponent } from './views/tabsint-config/tabsint-config.component';
+import { SoftwareConfigComponent } from './views/software-config/software-config.component';
+import { LogConfigComponent } from './views/log-config/log-config.component';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -68,7 +71,10 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     ResultsComponent,
     HeaderComponent,
     ExamComponent,
-    IndicatorComponent
+    IndicatorComponent,
+    TabsintConfigComponent,
+    SoftwareConfigComponent,
+    LogConfigComponent
   ],
   imports: [
     BrowserModule,
