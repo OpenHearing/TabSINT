@@ -20,7 +20,8 @@ export interface DiskInterface {
     extStorageUuidDir?: string,
     cha?: {
       embeddedFirmwareBuildDate: string,
-      embeddedFirmwareTag: string
+      embeddedFirmwareTag: string,
+      myCha: string,
     },
     externalMode: boolean,
     appDeveloperMode: boolean,
