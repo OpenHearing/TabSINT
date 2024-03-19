@@ -33,7 +33,7 @@ export class FileService {
             this.logger.debug("Invalid dirLoc in directoryHandler, defaulting to Documents");
             directory = Directory.Documents;
         }
-        return directory
+        return directory;
     }
 
     async checkPermissions() {
@@ -61,7 +61,7 @@ export class FileService {
             return res
         }).catch( (err)=> {
             this.logger.error("Error writing to "+filepath+" - "+err);
-        })
+        });
     };
       
     async readFile(filepath:string, dirLoc?:string) {
@@ -76,7 +76,7 @@ export class FileService {
             return res
         }).catch( (err)=> {
             this.logger.error("Error reading "+filepath+" - "+err);
-        })
+        });
     };
 
     async createDirectory(dir:string, dirLoc?:string) {
@@ -89,7 +89,7 @@ export class FileService {
             this.logger.debug("Created dir: "+dir);
         }).catch( (err)=> {
             this.logger.error("Error creating dir "+dir+" - "+err);
-        })
+        });
     }
 
     async deleteDirectory(dir:string, dirLoc?:string) {
@@ -103,7 +103,7 @@ export class FileService {
             return res
         }).catch( (err)=> {
             this.logger.error("Error deleting dir "+dir+" - "+err);
-        })
+        });
     }
 
     async listDirectory(dir:string, dirLoc?:string) {
@@ -117,7 +117,7 @@ export class FileService {
             return res
         }).catch( (err)=> {
             this.logger.error("Error listing dir "+dir+" - "+err);
-        })
+        });
     }
     
 }

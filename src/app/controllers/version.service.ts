@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { FileService } from '../controllers/file.service';
-import { from, map, of, mergeMap } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
