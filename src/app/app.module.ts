@@ -57,6 +57,7 @@ import { TabsintConfigComponent } from './views/tabsint-config/tabsint-config.co
 import { SoftwareConfigComponent } from './views/software-config/software-config.component';
 import { LogConfigComponent } from './views/log-config/log-config.component';
 import { ChaConfigComponent } from './views/cha-config/cha-config.component';
+import { ChaInfoComponent } from './views/cha-info/cha-info.component';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -76,7 +77,8 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     TabsintConfigComponent,
     SoftwareConfigComponent,
     LogConfigComponent,
-    ChaConfigComponent
+    ChaConfigComponent,
+    ChaInfoComponent
   ],
   imports: [
     BrowserModule,

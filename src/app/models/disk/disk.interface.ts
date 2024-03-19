@@ -18,10 +18,11 @@ export interface DiskInterface {
     tabletGain: number,
     extStorageRootDir?: string,
     extStorageUuidDir?: string,
-    cha?: {
+    cha: {
       embeddedFirmwareBuildDate: string,
       embeddedFirmwareTag: string,
       myCha: string,
+      bluetoothType: string
     },
     externalMode: boolean,
     appDeveloperMode: boolean,

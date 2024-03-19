@@ -41,13 +41,20 @@ export class ChaConfigComponent {
 
   bluetoothStatus = {
     state: true
-  }
+  };
 
   cha = {
     state: "disconnected",
     connect: function() {console.log("connect pressed");},
     cancelConnect: function() {console.log("cancelConnect pressed");},
-    disconnect: function() {console.log("disconnect pressed");}
+    disconnect: function() {console.log("disconnect pressed");},
+    bluetoothType: "Bluetooth 2.0"
+  };
+
+  bluetoothTypes:any = {
+    BLUETOOTH: "Bluetooth 2.0",
+    BLUETOOTH_LE: "Bluetooth 3.0",
+    USB: "USB Host"
   };
 
 
@@ -57,5 +64,31 @@ export class ChaConfigComponent {
     console.log("removeCha pressed");
   }
 
+  changeBluetoothType(type:any) {
+    console.log("changeBluetoothType pressed");
+    if (type === "BLUETOOTH_LE" || type === "BLUETOOTH" || type === "USB") {
+      if (this.cha.bluetoothType !== type) {
+        this.logger.debug("set cha bluetooth type to " + type);
+        this.cha.bluetoothType = type;
+        this.cha.disconnect();
+        this.disk.cha.bluetoothType = type;
+        this.disk.cha.myCha = "";
+      }
+    } else {
+      this.logger.debug("attempting to set cha bluetooth type to " + type);
+    }
+  }
+
+  getBluetoothType() {
+    return this.cha.bluetoothType
+  }
+
+
+  // Popovers
+
+  bluetoothTypePopover = this.translate.instant(
+    "Set the bluetooth type for connecting to the WAHTS. <br /><br /><b>Bluetooth 2.0</b> is used for the handheld WAHTS <br /><b>Bluetooth 3.0</b> is used for the Creare Wireless Headset"
+  );
+  
 
 }

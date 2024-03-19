@@ -39,3 +39,59 @@
       <button *ngSwitchCase="'disconnected'" class="btn btn-primary btn-block disabled custom-disabled">Cancel</button>
     </div>
 </div>
+
+<!-- Connected Cha -->
+<div *ngIf="cha.state === 'connected'">
+    <hr />
+    <cha-info-view></cha-info-view>
+</div>
+
+<!-- Show Advanced -->
+<div class="row showhideSection">
+    <div class="col-12 text-center">
+        <a href="javascript:" (click)="state.isPaneOpen.chaAdvanced = !state.isPaneOpen.chaAdvanced">
+            <span *ngIf="state.isPaneOpen.chaAdvanced" translate>
+                Hide Advanced Settings 
+                <i class="ion-chevron-up"></i>
+            </span>
+            <span *ngIf="!state.isPaneOpen.chaAdvanced" translate>
+                Show Advanced Settings 
+                <i class="ion-chevron-down"></i>
+            </span>
+        </a>
+    </div>
+</div>
+
+<div #collapse="ngbCollapse" [(ngbCollapse)]="!state.isPaneOpen.chaAdvanced">
+    
+    <div class="row pad-top">
+        <div class="col-12">
+            <h5>Preferences</h5>
+        </div>
+    </div>
+
+    <!-- Bluetooth Choice -->
+    <div class="row pad-top">
+        <div class="col-5"><label for="type">Type:</label></div>
+        <div class="col-5">
+            <div ngbDropdown display="dynamic">                            
+                <button type="button" class="btn btn-default btn-block dropdown-toggle" id="bluetooth-type-dropdown" ngbDropdownToggle>
+                    {{bluetoothTypes[getBluetoothType()] || "None"}}
+                </button>
+                <div ngbDropdownMenu aria-labelledby="resultsMode">
+                    <button *ngFor="let bluetoothType of bluetoothTypes | keyvalue" ngbDropdownItem (click)="changeBluetoothType(bluetoothType.key)">{{bluetoothType.value}}</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-1" href="javascript:" title="{{'Type help' | translate}}">
+            <i [matMenuTriggerFor]= "bluetoothTypePopoverMenu" class="ion-help-circled"></i>
+        </div>
+        <mat-menu #bluetoothTypePopoverMenu="matMenu">
+            <button mat-menu-item>
+                <div [innerHTML]="bluetoothTypePopover"></div>
+            </button>
+        </mat-menu>
+    </div>
+
+
+</div>

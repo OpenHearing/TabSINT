@@ -10,6 +10,12 @@ export class DiskModel {
 
     diskModel: DiskInterface = {
         headset: "None",
+        cha: {
+            embeddedFirmwareBuildDate: "",
+            embeddedFirmwareTag: "",
+            myCha: "",
+            bluetoothType: ""
+        },
         debugMode: true,
         pin: "7114",
         disableLogs: false,

@@ -19,7 +19,8 @@ export class StateModel {
             softwareHardware: false,
             appLog: false,
             protocols: true,
-            protocolsSource: true
+            protocolsSource: true,
+            chaAdvanced: false
         }
     }
 

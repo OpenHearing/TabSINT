@@ -11,6 +11,7 @@ export interface StateInterface {
         softwareHardware: boolean,
         appLog: boolean,
         protocols: boolean,
-        protocolsSource: boolean
+        protocolsSource: boolean,
+        chaAdvanced: boolean
     };
 }
