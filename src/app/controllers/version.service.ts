@@ -32,14 +32,11 @@ export class VersionService {
             ]
         };
 
-        fileService.writeFile('version.json',JSON.stringify(v),'Data').subscribe({
-            next: () => fileService.readFile('version.json', 'Data').subscribe({
-                next: (res:any) => {
-                    this.version.dm = JSON.parse(JSON.parse(JSON.stringify(res?.data)));
-                }
+        fileService.writeFile('version.json',JSON.stringify(v),'Data').then( (res)=> {
+            fileService.readFile('version.json', 'Data').then( (res)=> {
+                this.version.dm = JSON.parse(JSON.parse(JSON.stringify(res?.data)));
             })
-        })
-        
+        });
     }
 
     getVersion(): any {

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Filesystem, Directory, Encoding, ReadFileResult } from '@capacitor/filesystem';
 import { Logger } from '../utilities/logger.service';
-import { from, map } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -30,162 +29,95 @@ export class FileService {
             directory = Directory.ExternalStorage;
         } else if (dirLoc==undefined) {
             directory = Directory.Documents;
+        } else {
+            this.logger.debug("Invalid dirLoc in directoryHandler, defaulting to Documents");
+            directory = Directory.Documents;
         }
         return directory
     }
 
     async checkPermissions() {
-        const requestPermissionsObs = from(Filesystem.checkPermissions());
-        requestPermissionsObs.subscribe({
-            next: (res) => {
-                this.logger.debug("Checked file permissions: "+JSON.stringify(res));
-                console.log("next: observable worked");
-            }, 
-            error: (err) => {
-                console.log("error: observable error (checkPermisions)");
-                console.log(err)
-            },
-            complete() {
-                console.log("complete: observable completed. this will only appear after directory created if there is no error.");
-            }
+        return Filesystem.checkPermissions().then( (res)=> {
+            this.logger.debug("Checked file permissions: "+JSON.stringify(res));
         });
     }
     
-    async requestPermissions() {        
-        const requestPermissionsObs = from(Filesystem.requestPermissions());
-        requestPermissionsObs.subscribe({
-            next: (res) => {
-                this.logger.debug("Requested file permissions: "+JSON.stringify(res));
-                console.log("next: observable worked");
-            }, 
-            error: (err) => {
-                console.log("error: observable error (requestPermisions)");
-                console.log(err)
-            },
-            complete() {
-                console.log("complete: observable completed. this will only appear after directory created if there is no error.");
-            }
+    async requestPermissions() {
+        return Filesystem.requestPermissions().then( (res)=> {
+            this.logger.debug("Requested file permissions: "+JSON.stringify(res));
         });
     }
 
-    writeFile(filepath:string, data:string, dirLoc?:string) {
+    async writeFile(filepath:string, data:string, dirLoc?:string) {
         let directory = this.directoryHandler(dirLoc);
-        const writeFileObs = from(Filesystem.writeFile({
+        this.logger.debug("Writing to: "+filepath);
+        return Filesystem.writeFile({
             path: filepath,
             data: data,
             directory: directory,
             encoding: Encoding.UTF8,
-        }));
-        // writeFileObs.subscribe({
-        //     next: () => {
-        //         this.logger.debug('Wrote data to '+JSON.stringify(filepath));
-        //         console.log("next: observable worked");
-        //     }, 
-        //     error: (err) => {
-        //         console.log("error: observable error (writeFile)");
-        //         console.log(err)
-        //     },
-        //     complete() {
-        //         console.log("complete: observable completed. this will only appear after directory created if there is no error.");
-        //     }
-        // });
-        return writeFileObs
+        }).then( (res)=> {
+            this.logger.debug("Wrote to: "+filepath);
+            return res
+        }).catch( (err)=> {
+            this.logger.error("Error writing to "+filepath+" - "+err);
+        })
     };
       
-    readFile(filepath:string, dirLoc?:string) {
-        // let fileContents: any;
+    async readFile(filepath:string, dirLoc?:string) {
         let directory = this.directoryHandler(dirLoc);
-        const readFileObs = from(Filesystem.readFile({
+        this.logger.debug("Reading from: "+filepath);
+        return Filesystem.readFile({
             path: filepath,
             directory: directory,
             encoding: Encoding.UTF8,
-        }));
-        // readFileObs.subscribe({
-        //     next: (contents) => {
-        //         this.logger.debug('Reading '+JSON.stringify(filepath)+', file contents: '+JSON.stringify(contents));
-        //         fileContents = contents;
-        //         console.log("next: observable worked");
-        //     }, 
-        //     error: (err) => {
-        //         console.log("error: observable error (readFile)");
-        //         console.log(err)
-        //     },
-        //     complete() {
-        //         console.log("complete: observable completed. this will only appear after directory created if there is no error.");
-        //     }
-        // });
-        // return fileContents
-        return readFileObs
+        }).then( (res)=> {
+            this.logger.debug("Read file: "+filepath);
+            return res
+        }).catch( (err)=> {
+            this.logger.error("Error reading "+filepath+" - "+err);
+        })
     };
 
-    createDirectory(dir:string, dirLoc?:string) {
+    async createDirectory(dir:string, dirLoc?:string) {
         let directory = this.directoryHandler(dirLoc);
-        const createDirObs = from(Filesystem.mkdir({
+        this.logger.debug("Creating dir: "+dir);
+        return Filesystem.mkdir({
             path: dir,
             directory: directory,
-        }));
-        // createDirObs.subscribe({
-        //     next: () => {
-        //         this.logger.debug('Directory: '+JSON.stringify(dir)+' created');
-        //         console.log("next: observable worked");
-        //     }, 
-        //     error: (err) => {
-        //         console.log("error: observable error");
-        //         if (err.message=='Directory exists') {
-        //             this.logger.debug('Directory: '+JSON.stringify(dir)+' already exists');
-        //         } else {
-        //             this.logger.debug('Error creating directory '+JSON.stringify(dir));
-        //         }
-        //     },
-        //     complete() {
-        //         console.log("complete: observable completed. this will only appear after directory created if there is no error.");
-        //     }
-        // });
-        return createDirObs
+        }).then( (res)=> {
+            this.logger.debug("Created dir: "+dir);
+        }).catch( (err)=> {
+            this.logger.error("Error creating dir "+dir+" - "+err);
+        })
     }
 
-    deleteDirectory(dir:string, dirLoc?:string) {
+    async deleteDirectory(dir:string, dirLoc?:string) {
         let directory = this.directoryHandler(dirLoc);
-        const deleteDirObs = from(Filesystem.rmdir({
+        this.logger.debug("Deleting dir: "+dir);
+        return Filesystem.rmdir({
             path: dir,
             directory: directory,
-        }));
-        // deleteDirObs.subscribe({
-        //     next: () => {
-        //         this.logger.debug('Deleted directory: '+JSON.stringify(dir));
-        //         console.log("next: observable worked");
-        //     }, 
-        //     error: (err) => {
-        //         console.log("error: observable error (deleteDirectory)");
-        //         console.log(err);
-        //     },
-        //     complete() {
-        //         console.log("complete: observable completed. this will only appear after directory created if there is no error.");
-        //     }
-        // });
-        return deleteDirObs
+        }).then( (res)=> {
+            this.logger.debug("Deleted dir: "+dir);
+            return res
+        }).catch( (err)=> {
+            this.logger.error("Error deleting dir "+dir+" - "+err);
+        })
     }
 
-    listDirectory(dir:string, dirLoc?:string) {
+    async listDirectory(dir:string, dirLoc?:string) {
         let directory = this.directoryHandler(dirLoc);
-        const listDirObs = from(Filesystem.readdir({
+        this.logger.debug("Listing dir: "+dir);
+        return Filesystem.readdir({
             path: dir,
             directory: directory,
-        }));
-        // listDirObs.subscribe({
-        //     next: (files) => {
-        //         this.logger.debug('List of files in dir: '+JSON.stringify(files));
-        //         console.log("next: observable worked");
-        //     }, 
-        //     error: (err) => {
-        //         console.log("error: observable error (listDirectory)");
-        //         console.log(err);
-        //     },
-        //     complete() {
-        //         console.log("complete: observable completed. this will only appear after directory created if there is no error.");
-        //     }
-        // });
-        return listDirObs
+        }).then( (res)=> {
+            this.logger.debug("Listed dir: "+dir);
+            return res
+        }).catch( (err)=> {
+            this.logger.error("Error listing dir "+dir+" - "+err);
+        })
     }
     
 }
