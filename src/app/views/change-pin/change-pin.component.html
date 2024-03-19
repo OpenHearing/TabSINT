@@ -1,0 +1,11 @@
+<div class="modal-header">
+    Change Admin PIN
+</div>
+<div class="modal-body">
+    <label for="pin">Please enter a new numerical PIN:</label>
+    <input id="pin" type="number" [(ngModel)]="pin" pattern="[0-9]*" autofocus="true"/><br />
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="save(pin)">{{'Save' | translate}}</button>
+    <button type="button" class="btn btn-warning" (click)="cancel()">{{'Cancel' | translate}}</button>
+</div>

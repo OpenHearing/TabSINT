@@ -14,6 +14,8 @@ import { DiskInterface } from '../../models/disk/disk.interface';
 import { PageInterface } from '../../models/page/page.interface';
 import { StateInterface } from '../../models/state/state.interface';
 import { ResultsMode } from '../../utilities/constants';
+import { ChangePinComponent } from '../change-pin/change-pin.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'tabsint-config-view',
@@ -35,7 +37,8 @@ export class TabsintConfigComponent {
     public logger: Logger, 
     public pageModel: PageModel,
     public stateModel: StateModel,
-    public translate: TranslateService
+    public translate: TranslateService,
+    public dialog: MatDialog
   ) { 
     this.disk = this.diskModel.getDisk();
     this.version = this.versionService.getVersion();
@@ -89,7 +92,7 @@ export class TabsintConfigComponent {
   }
 
   editAdminPin() {
-    console.log("editAdminPin pressed");
+    this.dialog.open(ChangePinComponent).afterClosed().subscribe();
   }
 
   editMaxLogRows() {
