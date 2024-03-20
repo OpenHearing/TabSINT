@@ -14,6 +14,7 @@ import { StateInterface } from '../../models/state/state.interface';
 import { Notifications } from '../../utilities/notifications.service';
 import { Tasks } from '../../utilities/tasks.service';
 import { AdminService } from '../../controllers/admin.service';
+import { ProtocolModelInterface } from '../../models/protocol/protocol-model.interface';
 @Component({
   selector: 'exam-view',
   templateUrl: './exam.component.html',
@@ -22,14 +23,14 @@ import { AdminService } from '../../controllers/admin.service';
 
 export class ExamComponent {
   disk: DiskInterface;
-  protocol: ProtocolInterface;
+  protocolModel: ProtocolModelInterface;
   localServer: ProtocolServer = ProtocolServer.LocalServer;
   state: StateInterface;
 
   constructor (
     public diskModel: DiskModel,
     public protocolService: ProtocolService,
-    public protocolModel: ProtocolModel,
+    public protocolM: ProtocolModel,
     public stateModel: StateModel,
     private translate: TranslateService,
     private logger: Logger,
@@ -38,7 +39,7 @@ export class ExamComponent {
     public adminService: AdminService
   ) {
     this.disk = this.diskModel.getDisk();
-    this.protocol = this.protocolModel.getProtocol();
+    this.protocolModel = this.protocolM.getProtocolModel();
     this.state = this.stateModel.getState();
   }
 
