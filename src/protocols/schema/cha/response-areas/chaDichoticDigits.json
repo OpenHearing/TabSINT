@@ -1,0 +1,55 @@
+{
+  "description": "CHA - Dichotic Digits Test",
+  "properties": {
+    "type": {
+      "enum": ["chaDichoticDigits"]
+    },
+    "autoBegin": {
+      "type": "boolean",
+      "description": "Go straight into exam, without having to press the 'Begin' button",
+      "default": false
+    },
+    "keypadDelay": {
+      "type": "number",
+      "description": "Number of milliseconds to wait before activating the keypad",
+      "default": 10
+    },
+    "feedback": {
+      "type": "boolean",
+      "description": "Shows the user which digits were correct after each set of digits is entered",
+      "default": true
+    },
+    "feedbackDelay": {
+      "type": "number",
+      "description": "Number of milliseconds to show the digits after the presentation before clearing the keypad. This field can be used even when `feedback` is set to `false`",
+      "default": 1000
+    },
+    "examInstructions": {
+      "type": "string",
+      "description": "Replaces the top-level instruction text on the CHA exam pages (each page after starting page)"
+    },
+    "examProperties": {
+      "type": "object",
+      "properties": {
+        "NumberOfPresentations": {
+          "type": "number",
+          "description": "Number of presentations in an exam",
+          "default": 20,
+          "maximum": 50,
+          "minimum": 1
+        },
+        "Level": {
+          "type": "number",
+          "description": "Level of presentations",
+          "default": 50
+        },
+        "Language": {
+          "type": "string",
+          "description": "Language to use for the test media",
+          "enum": ["spanish", "english"],
+          "default": "spanish"
+        }
+      }
+    }
+  }
+}

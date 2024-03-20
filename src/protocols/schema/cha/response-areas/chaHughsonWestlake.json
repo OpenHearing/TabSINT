@@ -1,0 +1,19 @@
+{
+  "description": "CHA - Hughson-Westlake Level Audiometry",
+  "allOf": [
+    { "$ref": "/cha/definitions/audiometryPageProperties.json" },
+    { 
+      "properties": {
+        "type": {
+          "enum": [ "chaHughsonWestlake"]
+        },
+        "exportToCSV": {
+          "type": "boolean",
+          "description": "Whether result should be exported to CSV upon submitting exam results.",
+          "default": false
+        },
+        "examProperties": { "$ref": "/cha/definitions/hughsonWestlakeExamProperties.json" }
+      }
+    }
+  ]
+}

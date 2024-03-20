@@ -1,0 +1,42 @@
+{
+  "description": "Allows user to select more than one choice using checkbox controls.",
+  "allOf": [
+    {"$ref": "/response-areas/definitions/commonResponseAreaProperties.json"},
+    {
+      "properties": {
+        "type": {
+          "enum": [ "checkboxResponseArea" ]
+        },
+        "buttonScheme": {
+          "type": "string",
+          "enum": [ "markIncorrect", "markCorrect"],
+          "description": "markIncorrect: Green = not selected, RED = selected.  markCorrect: does the opposite. blank: default checkbox behavior."
+        },
+        "choices": {
+          "type": "array",
+          "items": {
+            "$ref": "/response-areas/definitions/choice.json"
+          }
+        },
+        "responseRequired": {
+          "type": "boolean",
+          "description": "Whether response is required to activate submit button on a page.  Setting to true requires response for submission. This is also a 'commonResponseAreaProperties', which defaults to 'true' for other response areas.",
+          "default": false
+        },
+        "other": {
+          "type": "string",
+          "description": "Text label for an 'other' choice. E.g., 'Other', or 'Somewhere else'. If selected, the user will be prompted for an optional text value which will be stored in an 'otherResponse' field in the Results structure. If this field is not defined, the 'Other' choice is not presented."
+        },
+        "verticalSpacing": {
+          "type": "integer",
+          "description": "Vertical spacing between buttons, given in [px]"
+        },
+        "feedback": {
+          "type": "string",
+          "enum": ["gradeResponse", "showCorrect" ],
+          "description": "Provide feedback after submit.  'gradeResponse' will mark answers correct/incorrect(green/red).  'showCorrect' will grade AND show the correct choices."
+        }
+      }
+    }
+  ]
+}

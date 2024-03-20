@@ -1,0 +1,52 @@
+{
+  "description": "CHA - Manual Screener.",
+  "properties": {
+    "type": {
+      "enum": [ "chaManualScreener"]
+    },
+    "examInstructions": {
+      "type": "string",
+      "description": "Replaces the top-level instruction text on the CHA exam pages (each page after starting page)"
+    },
+    "audiometryType":{
+      "type": "string",
+      "enum": ["HughsonWestlake"],
+      "description": "Type of audiometry exam to run",
+      "default": "HughsonWestlake"
+    },
+    "onlySubmitFrequenciesTested":{
+      "type": "boolean",
+      "Description": "If true, only generate results for frequencies tested.  Default: false, submit all",
+      "default": false
+    },
+    "levels": {
+      "type": "array",
+      "description": "Array of levels to run in manual screener. Does not support DynamicStartLevel. Maximum length of array is 3.",
+      "default": [25, 40, 60],
+      "items": {
+        "type": "number",
+        "description": "Levels, in dB HL, to present the tones at."
+      }
+    },
+    "presentationList": {
+      "type": "array",
+      "description": "Array of frequencies to run in manual screener. Does not support DynamicStartLevel.",
+      "items": {
+        "type": "object",
+        "allOf": [
+          {"$ref": "/cha/definitions/audiometryLevelProperties.json"},
+          {
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Custom presentationId to use for each frequency.  Optional - if not provided, parent id + Frequency will be used",
+                "default": "[parent id] + [frequency]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "examProperties": { "$ref":"/cha/definitions/hughsonWestlakeExamProperties.json" }
+  }
+}

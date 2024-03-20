@@ -1,0 +1,210 @@
+{
+  "description": "CHA - Gap Detection Test",
+  "properties": {
+    "type": {
+      "enum": ["chaGAP"]
+    },
+    "skip": {
+      "type": "boolean",
+      "description": "Allows user to skip the response area",
+      "default": false
+    },
+    "autoSubmit": {
+      "type": "boolean",
+      "description": "Go straight to next page once this page is complete",
+      "default": false
+    },
+    "autoBegin": {
+      "type": "boolean",
+      "description": "Go straight into exam, without having to press the 'Begin' button",
+      "default": true
+    },
+    "feedback": {
+      "type": "boolean",
+      "description": "Shows the user which blocks contain the signal during the presentation",
+      "default": false
+    },
+    "feedbackDelay": {
+      "type": "number",
+      "description": "Number of milliseconds to show the digits after the presentation before clearing the keypad. This field can be used even when `feedback` is set to `false`",
+      "default": 1000
+    },
+    "training": {
+      "type": "boolean",
+      "desctiption": "Whether or not this represents a training exam.",
+      "default": false
+    },
+    "trainingAllowableGapLengths": {
+      "type": "array",
+      "description": "A 5 items long list of allowable gap lengths f, in msec. The user will have the ability to select from these gap lengths during training.",
+      "default": [40,20,12,6,0],
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 100
+      }
+    },
+    "examInstructions": {
+      "type": "string",
+      "description": "Replaces the top-level instruction text on the CHA exam pages (each page after starting page)"
+    },
+    "measureBackground": {
+      "type": "string",
+      "description": "Select a method from the list below to measure background noise after an exam",
+      "enum": ["ThirdOctaveBands"]
+    },
+    "examProperties": {
+      "type": "object",
+      "properties": {
+        "Channel": {
+          "type": "number",
+          "description": "Channel to be used. 0=Left, 1=Right, 2=Both.",
+          "enum": [0,1,2],
+          "default": 0
+        },
+        "TimePres": {
+          "type": "number",
+          "description": "Total length of each noise presentation in msec.",
+          "default": 4000,
+          "minimum": 0,
+          "maximum": 40000
+        },
+        "LNoise": {
+          "type": "number",
+          "description": "Presentation level in dBA, see scale factor note.",
+          "default": 65,
+          "minimum": 0,
+          "maximum": 85
+        },
+        "AllowableGapLengths": {
+          "type": "array",
+          "description": "A list of allowable gap lengths, in msec, up to 30 items long.",
+          "default": [70,60,50,45,40,35,30,25,20,16,13,10,7,4,2,1],
+          "minItems": 1,
+          "maxItems": 30,
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          }
+        },
+        "TimeLead": {
+          "type": "number",
+          "description": "Length of leading delay before gap can be inserted, in msec.",
+          "default": 1000,
+          "minimum": 0,
+          "maximum": 2000
+        },
+        "TimeTrail": {
+          "type": "number",
+          "description": "Length of trailing delay needed after gap, in msec.",
+          "default": 1000,
+          "minimum": 0,
+          "maximum": 2000
+        },
+        "TimeWindow": {
+          "type": "number",
+          "description": "Length of window during which response can be accepted, in msec.",
+          "default": 850,
+          "minimum": 0,
+          "maximum": 2000
+        },
+        "TimeNoResp": {
+          "type": "number",
+          "description": "Delay between beginning of gap and beginning of response window, in msec.",
+          "default": 100,
+          "minimum": 0,
+          "maximum": 200
+        },
+        "TimePause": {
+          "type": "number",
+          "description": "Elapsed time between presentation, in msec.",
+          "default": 1000,
+          "minimum": 0,
+          "maximum": 5000
+        },
+        "GapLengthStartIndex": {
+          "type": "number",
+          "description": "Index into AllowableGapLengths for initial gap length value.",
+          "default": 8,
+          "minimum": 0,
+          "maximum": 29
+        },
+        "NReversalsCalc": {
+          "type": "number",
+          "description": "Number of reversals to use in computation of threshold.",
+          "default": 8,
+          "minimum": 1,
+          "maximum": 10
+        },
+        "NReversals": {
+          "type": "number",
+          "description": "Number of reversals before test ends.",
+          "default": 10,
+          "minimum": 1,
+          "maximum": 20
+        },
+        "NLowestReversals": {
+          "type": "number",
+          "description": "Number of lowest pairwise reversal averages to track for second threshold computation.",
+          "default": 3,
+          "minimum": 0,
+          "maximum": 10
+        },
+        "NPresMax": {
+          "type": "number",
+          "description": "Maximum number of presentations to use before aborting the exam.",
+          "default": 120,
+          "minimum": 1,
+          "maximum": 200
+        },
+        "NHits": {
+          "type": "number",
+          "description": "Number of consecutive hits (correct answers) necessary before reducing gap length.",
+          "default": 2,
+          "minimum": 1,
+          "maximum": 3
+        },
+        "NMiss": {
+          "type": "number",
+          "description": "Number of consecutive misses (incorrect or no answers) necessary before increasing gap length.",
+          "default": 2,
+          "minimum": 1,
+          "maximum": 3
+        },
+        "NPresCheck": {
+          "type": "number",
+          "description": "Number of consecutive presentations with same gap length allowed.",
+          "default": 5,
+          "minimum": 1,
+          "maximum": 8
+        },
+        "MaxFreq": {
+          "type": "number",
+          "description": "Maximum frequency used to generate the white noise, in Hz. When calibration loaded to create filter coefficients, the table is truncated to include only those rows whose frequencies are less than or equal to MaxFreq.",
+          "default": 16000,
+          "minimum": 4000,
+          "maximum": 16000
+        },
+        "UseSoftwareButton": {
+          "type": "boolean",
+          "description": "Uses a software submission instead of the mechanical Button.",
+          "default": false
+        },
+        "SendFullResults": {
+          "type": "number",
+          "description": "When to transmit thresholds and array results. 0=Always, 1=Sometimes, 2=Never.",
+          "enum": [0, 1, 2],
+          "default": 0
+        },
+        "SemiAutomaticMode": {
+          "type": "boolean",
+          "description": "If true, pause after each pulse train to wait for a response. If false, proceed in a fully automated fashion.",
+          "default": false
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "description": "CHA - tone generation properties",
+  "allOf": [
+    { "$ref": "/cha/definitions/toneGenerationBaseProperties.json"},
+    {
+      "properties": {
+        "ToneDuration": {
+          "type": "integer",
+          "description": "Length of tone, in ms",
+          "default": 225,
+          "minimum": 0
+        },
+        "Level": {
+          "type": "number",
+          "description": "Level of tone, set by calibration, in dB SPL",
+          "default": 65
+        }
+      }
+    }
+  ]
+}

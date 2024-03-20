@@ -1,0 +1,35 @@
+{
+  "description": "Allows multiple inputs of text or numeric type on the same page.",
+  "allOf": [{
+      "$ref": "/response-areas/definitions/commonResponseAreaProperties.json"
+    },
+    {
+      "properties": {
+        "type": {
+          "enum": ["resultsViewResponseArea"]
+        },
+        "displayResults": {
+          "description": "An array of objects with page IDs and display names to include in the results view.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string",
+                "description": "Title of results view section."
+              },
+              "displayIds": {
+                "type": "array",
+                "description": "Array of IDs of response areas to include in this section.",
+                "items": {
+                  "type": "string",
+                  "description": "Ids of response areas to include. Currently supported response areas are multipleInputResponseArea, textboxResponseArea, chaThreeDigit, likertResponseArea, chaAudiometryResultsPlot, chaAudiometryResultsTable, mpanlResponseArea, chaCalibrationCheck, and chaDPOAE."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

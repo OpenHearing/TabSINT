@@ -1,0 +1,16 @@
+{
+  "description": "CHA - Calibration Check",
+  "properties": {
+    "type": {
+      "enum": ["chaCalibrationCheck"]
+    },
+    "exportToCSV": {
+      "type": "boolean",
+      "description": "Whether result should be exported to CSV upon submitting exam results.",
+      "default": false
+    },
+    "examProperties": {
+      "type": "object"
+    }
+  }
+}

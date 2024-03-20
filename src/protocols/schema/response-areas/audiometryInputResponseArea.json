@@ -1,0 +1,35 @@
+{
+  "description": "Audiometry input response area.",
+  "allOf": [
+    {"$ref": "/response-areas/definitions/commonResponseAreaProperties.json"},
+    {
+      "properties": {
+        "type": {
+          "enum": [ "audiometryInputResponseArea" ]
+        },
+        "fieldsToSkip": {
+          "description": "Fields to omit from GUI",
+          "type": "object",
+          "properties": {
+            "skipAge": {
+              "type": "boolean",
+              "description": "Skips age if True"
+            },
+            "skipGender": {
+              "type": "boolean",
+              "description": "Skips gender if True"
+            },
+            "skipDate":{
+              "type": "boolean",
+              "description": "Skips date if True"
+            }
+          }
+        },
+        "audiogramFrequencies": {
+          "type": "array",
+          "description": "Array of audiogram frequencies to poll the user for"
+        }
+      }
+    }
+  ]
+}

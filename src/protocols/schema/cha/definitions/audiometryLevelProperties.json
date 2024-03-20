@@ -1,0 +1,67 @@
+{
+  "description": "CHA - common properties supported across audiometry level exams",
+  "type": "object",
+  "allOf": [
+    {"$ref": "/cha/definitions/audiometryProperties.json"},
+    {"$ref": "/cha/definitions/toneGenerationProperties.json"},
+    {
+      "properties": {
+        "F": {
+          "description": "test frequency, in Hz",
+          "default": 1000
+        },
+        "Lstart": {
+          "type": "number",
+          "description": "Starting level of test, in level units",
+          "default": 40
+        },
+        "DynamicStartLevel": {
+          "type": "object",
+          "description": "Calculate starting level based on prior threshold results. The new start level, 'newLstart', is the sum of 'baseLevel' and an 'offset'. Not supported for chaManualAudiometry and chaManualScreener exams.",
+          "properties":{
+            "offset": {
+              "type": "number",
+              "description": "add-on level value for calculation of new Lstart.",
+              "default": 15
+            },
+            "baseIdList": {
+              "description": "An array of ids to search for a threshold to use as the 'baseLevel'. The list is searched in *reverse* order. The search stops when the first valid 'threshold' is found. This threshold becomes the 'baseLevel' used to calculate the new start level ('newLstart'). If a valid threshold is not found, the start level will default to the 'Lstart' defined in the protocol.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "minStartLevel": {
+              "type": "number",
+              "description": "Minimum starting level, in level units. ",
+              "default": 0
+            },
+            "maxStartLevel": {
+              "type": "number",
+              "description": "Maximum starting level, in level units. ",
+              "default": 60
+            },
+            "dependencies": {
+
+            }
+          }
+        },
+        "MaximumOutputLevel": {
+          "type": "number",
+          "description": "Maximum output level, in level units",
+          "default": "set by calibration"
+        },
+        "MinimumOutputLevel": {
+          "type": "number",
+          "description": "Minimum output level, in level units",
+          "default": "set by calibration"
+        },
+        "RelativeF": {
+          "type": "array",
+          "description": "Calculates an output frequency relative to input Frequency. Syntax is ['above' or 'below', numerator, denominator, calculation method], i.e. ['below', 1, 6, 'lut'].  Calculation method default is actual math.",
+          "minItems": 3
+        }
+      }
+    }
+  ]
+}

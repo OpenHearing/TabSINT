@@ -1,0 +1,19 @@
+{
+  "description":"A simple yes/no answer. Returns true (Yes) or false (No).",
+  "allOf": [
+    {"$ref": "/response-areas/definitions/commonResponseAreaProperties.json"},
+    {
+      "properties": {
+        "type": {
+          "enum": [
+            "yesNoResponseArea"
+          ]
+        },
+        "verticalSpacing": {
+          "type": "integer",
+          "description": "Vertical spacing between buttons, given in [px]"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "description": "Hughson-Westlake Frequency Exam Properties",
+  "allOf": [
+    {"$ref":"/cha/definitions/audiometryFrequencyProperties.json"},
+    {
+      "properties": {
+        "StepSize": {
+          "type": "integer",
+          "description": "Smallest frequency increment. Similar to OctaveBandSize, this property is the denominator",
+          "default": 12,
+          "maximum": 24,
+          "minimum": 1
+        },
+        "TonePulseNumber": {
+          "type": "integer",
+          "description": "Total number of tones played for each pulse train",
+          "default": 3,
+          "maximum": 5,
+          "minimum": 1
+        },
+        "PollingOffset": {
+          "type": "integer",
+          "description": "Period beyond last pulse where subject response still accepted, in ms",
+          "defaut": 600,
+          "maximum": 1000,
+          "minimum": 0
+        }
+      }
+    }
+  ]
+}

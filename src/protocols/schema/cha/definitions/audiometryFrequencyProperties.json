@@ -1,0 +1,27 @@
+{
+  "description": "CHA - common properties supported across audiometry frequency exams",
+  "type": "object",
+  "allOf": [
+    {"$ref": "/cha/definitions/audiometryProperties.json"},
+    {"$ref": "/cha/definitions/toneGenerationLevelProperties.json"},
+    {
+      "properties": {
+        "Fstart": {
+          "type": "number",
+          "description": "Start Frequency, constrain to nearest octave, in Hz",
+          "default": 1000
+        },
+        "MaximumOutputFrequency": {
+          "type": "number",
+          "description": "Maximum output frequency, in Hz",
+          "default": "set by calibration"
+        },
+        "MinimumOutputFrequency": {
+          "type": "number",
+          "description": "Minimum output frequency, in Hz",
+          "default": "set by calibration"
+        }
+      }
+    }
+  ]
+}

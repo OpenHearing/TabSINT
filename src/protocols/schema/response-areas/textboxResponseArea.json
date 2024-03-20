@@ -1,0 +1,26 @@
+{
+  "description": "Allows for the user to input a text string",
+  "allOf": [
+    {"$ref": "/response-areas/definitions/commonResponseAreaProperties.json"},
+    {
+      "properties": {
+        "type": {
+          "enum": [ "textboxResponseArea" ]
+        },
+        "rows": {
+          "type": "integer",
+          "description": "number of rows in text box (1 = one line of text). Default: 1."
+        },
+        "exportToCSV": {
+          "type": "boolean",
+          "description": "Whether result should be exported to CSV upon submitting exam results.",
+          "default": false
+        },
+        "submitEmpty": {
+          "type": "boolean",
+          "description": "DEPRECATED - please use responseRequired from commonResponseAreaProperties.json. "
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,274 @@
+{
+  "description": "CHA - Masking Level Difference (MLD) exam",
+  "properties": {
+    "type": {
+      "enum": [ "chaMLD" ]
+    },
+    "skip": {
+      "type": "boolean",
+      "description": "Allows user to skip the response area.",
+      "default": false
+    },
+    "pause": {
+      "type": "boolean",
+      "description": "Allows user to pause the current CHA presentation.  Takes user back to beginning of the page, with the 'start' button.",
+      "default": false
+    },
+    "autoSubmit": {
+      "type": "boolean",
+      "description": "Go straight to next page once this page is complete.",
+      "default": false
+    },
+    "autoBegin": {
+      "type": "boolean",
+      "description": "Go straight into exam, without having to press the 'Begin' button.",
+      "default": false
+    },
+    "examInstructions": {
+      "type": "string",
+      "description": "Replaces the top-level instruction text on the CHA exam pages (each page after starting page)"
+    },
+    "hideExamProperties": {
+      "type": "string",
+      "enum": ["before", "during", "always", "never"],
+      "description": "Hide the parameters of the audiometry test (i.e. Frequency, Level, Ear) before and/or during a test.",
+      "default": "never"
+    },
+    "measureBackground": {
+        "type": "string",
+        "description": "Select a method from the list below to measure background noise after an audiometry exam",
+        "enum": ["ThirdOctaveBands"]
+    },
+    "examProperties": {
+      "type": "object",
+      "properties": {
+        "Frequency": {
+          "type": "number",
+          "description": "Frequency of the target tone (Hz), range is set by calibration.",
+          "default": 500
+        },
+        "ToneDuration": {
+          "type": "number",
+          "description": "Duration of each burst (ms) of the target tone in the pulse train.",
+          "default": 300,
+          "minimum": 100,
+          "maximum": 500
+        },
+        "ToneRamp": {
+          "type": "number",
+          "description": "Duration of target tone (ms) and masker noise ramp up and down",
+          "default": 20,
+          "minimum": 20,
+          "maximum": 50
+        },
+        "TonePulseNumber": {
+          "type": "number",
+          "description": "Number of tones in a pulse train.",
+          "default": 5,
+          "minimum": 1,
+          "maximum": 5
+        },
+        "InterToneDuration": {
+          "type": "number",
+          "description": "Duration of the periods of silence (ms) in the signal portion before the first tone burst, between subsequant tone bursts, and after the last tone burst. DE in tone diagram.",
+          "default": 300,
+          "minimum": 100,
+          "maximum": 500
+        },
+        "FixedSignal": {
+          "type": "boolean",
+          "description": "If TRUE, the level of the signal is fixed and the desired SNR is achieved by adjusting the level of the masker. If FALSE, the masker is fixed instead.",
+          "default": false
+        },
+        "FixedLevel": {
+          "type": "number",
+          "description": "Sound Pressure Level (db SPL) of the fixed material; the SPL of the other material is set by the SNR.",
+          "default": 70,
+          "minimum": 20,
+          "maximum": 85
+        },
+        "Adaptive": {
+          "type": "boolean",
+          "description": "If TRUE use the Adaptive Algorithm",
+          "default": false
+        },
+        "UseSoftwareButton": {
+          "type": "boolean",
+          "description": "If TRUE use a host-generated submission in response to a presentation",
+          "default": true
+        },
+        "RequireResponse": {
+          "type": "boolean",
+          "description": "If true, wait for user response, otherwise, assume a negative response if no response during the presentation",
+          "default": true
+        },
+        "StopOnResponse": {
+          "type": "boolean",
+          "description": "If TRUE presentation playback ceases once a positive response is obtained (similar to HW)",
+          "default": false
+        },
+        "TimePause": {
+          "type": "number",
+          "description": "Amount of time (ms) before the next presentation after a response",
+          "default": 1000,
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "ResponseWindow": {
+          "type": "number",
+          "description": "Amount of time (ms) to wait for a response when `RequireResponse` is FALSE before moving on.",
+          "default": 1000,
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "UseNoTone": {
+          "type": "boolean",
+          "description": "If TRUE randomly presents presentations with no target tone to catch false positives.",
+          "default": true
+        },
+        "NMaxFalsePositives": {
+          "type": "number",
+          "description": "Number of false positives that can be tolerated before aborting the exam.",
+          "default": 1,
+          "minimum": 1,
+          "maximum": 40
+        },
+        "MaskerBandpass": {
+          "type": "array",
+          "description": "Cuttoff frequencies for the masker bandpass filter.  Range set by calibration.  Vector length 2.",
+          "default": [200,800],
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "ReferenceSignalEar": {
+          "type": "number",
+          "description": "Channel to be used for the target tone during the reference condition 0=Left, 1=Right, 2=Both.",
+          "default": 2,
+          "minimum": 0,
+          "maximum": 2
+        },
+        "ReferenceSignalPhase": {
+          "type": "number",
+          "description": "Phase of the target tone *delivered to the right channel*; only used if **referenceSignalEar** = 2 for the 'Reference' condition.",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 359
+        },
+        "ReferenceMaskerEar": {
+          "type": "number",
+          "description": "Channel to be used for the masker noise during the reference condtion 0=Left, 1=Right, 2=Both.",
+          "default": 2,
+          "minimum": 0,
+          "maximum": 2
+        },
+        "ReferenceMaskerPhase": {
+          "type": "number",
+          "description": "Phase of the masker *delivered to the right channel*; only used if **referenceMaskerEar** = 2 for the 'Reference' condition. If 0, deliver the *exact same noise* to both ears, if 180, invert it at the right ear, if -1 generate new random noise for the right ear; other values invalid.",
+          "default": 0,
+          "enum": [0, 180, -1]
+        },
+        "ReferenceInitialSNR": {
+          "type": "number",
+          "description": "SNR of the first presentation at the 'Reference' condition.",
+          "default": 1,
+          "minimum": -15,
+          "maximum": 10
+        },
+        "ReferenceNPresentations": {
+          "type": "number",
+          "description": "Number of presentations for the 'Reference' condition.",
+          "default": 10,
+          "minimum": 5,
+          "maximum": 50
+        },
+        "ReferenceStepSize": {
+          "type": "number",
+          "description": "The increment or decrement in SPL between presentations of the 'Reference' condition.",
+          "default": 2,
+          "minimum": 0,
+          "maximum": 5
+        },
+        "TargetSignalEar": {
+          "type": "array",
+          "description": "Channel(s) to be used for the target tone during the target condtion(s) 0=Left, 1=Right, 2=Both.",
+          "default": [2],
+          "minItems": 1,
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 2
+          }
+        },
+        "TargetSignalPhase": {
+          "type": "array",
+          "description": "Phase(s) of the target tone *delivered to the right channel*; only used if **targetSignalEar** = 2 for the 'Target' condition(s).",
+          "default": [180],
+          "minItems": 1,
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 359
+          }
+        },
+        "TargetMaskerEar": {
+          "type": "array",
+          "description": "Channel(s) to be used for the masker noise during the target condtion(s) 0=Left, 1=Right, 2=Both.",
+          "default": [2],
+          "minItems": 1,
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 2
+          }
+        },
+        "TargetMaskerPhase": {
+          "type": "array",
+          "description": "Phase(s) of the masker *delivered to the right channel*; only used if **targetMaskerEar** = 2 for the 'Target' condition(s). If 0, deliver the *exact same noise* to both ears, if 180, invert it at the right ear, if -1 generate new random noise for the right ear; other values invalid.]",
+          "default": [0],
+          "minItems": 1,
+          "items": {
+            "type": "number",
+            "enum": [0, 180, -1]
+          }
+        },
+        "TargetInitialSNR": {
+          "type": "array",
+          "description": "SNR(s) of the first presentation(s) at the 'Target' condition(s).",
+          "default": [-7],
+          "minItems": 1,
+          "items": {
+            "type": "number",
+            "minimum": -15,
+            "maximum": 10
+          }
+        },
+        "TargetNPresentations": {
+          "type": "array",
+          "description": "Number(s) of presentations for the 'Target' condition(s).",
+          "default": [11],
+          "minItems": 1,
+          "items": {
+            "type": "number",
+            "minimum": 5,
+            "maximum": 50
+          }
+        },
+        "TargetStepSize": {
+          "type": "array",
+          "description": "For each 'Target' condition, the increment or decrement in SPL to use between presentations of that condition.",
+          "default": [2],
+          "minItems": 1,
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 5
+          }
+        }
+      }
+    }
+  }
+}

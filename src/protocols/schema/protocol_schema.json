@@ -1,0 +1,188 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "TabSINT Protocol Schema",
+  "type": "object",
+  "required": ["pages"],
+  "properties": {
+    "description": {
+      "type": "string",
+      "description": "Description of protocol and any other information"
+    },
+    "protocolId": {
+      "type": "string",
+      "description": "Used to refer to this protocol by reference. For subprotocols, a protocolId of '@PARTIAL' will be executed when the user selects 'Finish Exam and Submit Partial Results'"
+    },
+    "resultFilename": {
+      "type": "string",
+      "description": "JavaScript expression returning a string that will override the default filename for exported results. The expression may use results (i.e. `\"examResults.subjectId\"`) or previously set flags (i.e. \"flags.skipPage1 ? 'skipped' : 'test'\"). This filename may include javascript expressions within curly brackets (`{{ }}`). These expressions have access to the same variable namespace as other protocol conditionals (i.e. 'skipIf', 'followOns'). Exported results will always have the test date time appended as a suffix."
+    },
+    "publicKey": {
+      "type": "string",
+      "description": "Public RSA key used to encrypt result. The protocol developer must take good care to securely store the private key, otherwise the protocol results will be undecypherable. If 'publicKey' is not defined, the uploaded and exported results are not encrypted."
+    },
+    "title": {
+      "type": "string",
+      "description": "Title on the first page of the protocol. This title will be inherited by any page that does not have its own \"title\" field defined. If empty, no text is displayed."
+    },
+    "subtitle": {
+      "type": "string",
+      "description": "Subtitle on the first page of the protocol. If empty, no text is displayed."
+    },
+    "instructionText": {
+      "type": "string",
+      "description": "Instruction text displayed on the first page of the protocol. This text will be inherited by any page that does not have its own \"instructionText\" field defined. If empty, no text is displayed."
+    },
+    "helpText": {
+      "type": "string",
+      "description": "Help text that is displayed in the popup when the user clicks the \"Help ?\" button on the first page. This text will be inherited by any page that does not have its own \"helpText\" field defined.   If empty, that button is disabled."
+    },
+    "submitText": {
+      "type": "string",
+      "default": "Submit",
+      "description": "The text on the submit button on the bottom right of each page. This text will be inherited by any page that does have its own \"submitText\" field defined."
+    },
+    "tablet" : {
+      "type": "string",
+      "description": "DEPRECATED: Tablet model handling is now done in tablet."
+    },
+    "headset" : {
+      "type": "string",
+      "enum":["VicFirth", "VicFirthS2", "HDA200", "WAHTS", "Audiometer", "EPHD1"],
+      "default": "VicFirth",
+      "description": "Headset type used for protocol audio calibration and audio routing. This field will be inherited by any page that does have its own \"headset\" field defined."
+    },
+    "chaStream": {
+      "type": "boolean",
+      "description": "Open streaming connection to the WAHTS when page loads. The streaming connection will be closed at the end of the page, unless the next page also has this property set true",
+      "default": false
+    },
+    "randomization": {
+      "type": "string",
+      "description": "Whether (and how) to order questions randomly. If not present, questions are presented chronologically.",
+      "enum": ["WithoutReplacement"]
+    },
+    "minTabsintVersion": {
+      "type": "string",
+      "description": "The minimum version of TabSINT that must be used to run the protocol (i.e. '0.7.0' or '1.0.0'). Must be full semantic version"
+    },
+    "commonMediaRepository": {
+      "type": "string",
+      "description": "Name of a seperate gitlab repository to be used for playing some or all media files. This repository will be automatically downloaded after the protocol is downloaded. This repository must be in the same group (a.k.a. namespace) as the protocol."
+    },
+    "calibration": {
+      "description": "List of calibration definitions. Any wavfile can be played back in the 'arbitrary' mode. Files which have a 'referenceFile' and a 'referenceLevel' can be played back in 'as-recorded' mode.",
+      "type": "array",
+      "items": {
+        "required": ["wavfiles"],
+        "properties": {
+          "wavfiles": {
+            "type": "array",
+            "description": "A list of .wav filenames to which this calibration shall apply (i.e. \"myAudio.wav\")",
+            "items": {
+              "type": "string"
+            }
+          },
+          "referenceFile": {
+            "type": "string",
+            "description": "A reference wavfile that is used to calibrate the target files"
+          },
+          "referenceLevel": {
+            "type": "number",
+            "description": "The known real-world level (in dB SPL) of the reference file"
+          },
+          "calibrationFilter": {
+            "type": "string",
+            "description": "**full**: filter for headset frequency response. **flat**: single point calibration at 1 kHz.",
+            "default": "full",
+            "enum":["full", "flat"]
+          }
+        }
+      }
+    },
+    "timeout": {
+      "description": "Enforce a maximum amount of time for the exam. If undefined, there is no time limit. If within a subprotocol, the control returns to the parent protocol when an exam times out.",
+      "properties": {
+        "nMaxSeconds": {
+          "type": "number",
+          "description": "Exam times out after this many seconds (including subprotocols)."
+        },
+        "nMaxPages": {
+          "type": "number",
+          "description": "Exam times out after this many pages are completed (*not* including subprotocols)."
+        },
+        "showAlert": {
+          "type": "boolean",
+          "description": "If true, a dialog will alert the user of the timeout. If false, timeout is quiet.",
+          "default": false
+        }
+      }
+    },
+    "hideProgressBar" : {
+      "type": "boolean",
+      "description": "If true, the progress bar will be hidden on each page. This value will be inherited by any page that does not have its own \"hideProgressBar\" field defined.",
+      "default": false
+    },
+    "enableBackButton" :{
+      "type": "boolean",
+      "description": "Enable protocol-wide **back** button in place of the **help** button.  Allows backward navigation within a subprotocol. This button will be disabled on the first page of a subprotocol.",
+      "default": false
+    },
+    "navMenu":{
+      "type": "array",
+      "description": "Define a menu with references to pages or subprotocols. This menu will be available by clicking the three bars in the top right of the application.",
+      "minItems":1,
+      "items": {    
+        "$ref" : "/definitions/navMenu.json"
+      }
+    },
+    "js":{
+      "type": ["array", "string"],
+      "description": "Filename(s) for custom JavaScript defining custom response areas and pre-processing functions used in protocol"
+    },
+    "exclusiveTimingMode" : {
+      "type": "boolean",
+      "description": "This field can help to make the progress bar more accurate. If *true* then TabSINT assumes that all remaining questions are within this protocol, ignoring (for instance) 'sister' subprotocols. The idea is that if you have many subprotocols, but you are only running one, then the progress bar would normally advance very slowly, because it is anticipating all of the subprotocols running. If you set this value to true, then it will know to only count the current protocol."
+    },
+    "pages": {
+      "type": "array",
+      "description": "An array of pages or nested protocols that are presented in-order unless otherwise specified.",
+      "minItems": 1,
+      "items": {
+        "anyOf": [
+          { "$ref" : "/definitions/page.json"},
+          { "$ref" : "/definitions/reference.json"},
+          { "$ref" : "/protocol_schema.json", "description": "An in-line nested protocol"}
+        ]
+      }
+    },
+    "subProtocols": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Protocols to be included by reference. Subprotocols can only be referenced by their direct parent protocols.",
+      "items": {
+        "$ref" : "/protocol_schema.json"
+      }
+    },
+    "lookUpTables": {
+      "description": "An array of tables to use within custom response areas and pre-processing functions",
+      "type": "array",
+      "minItems":1,
+      "items":{
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Key to use when looking up table"
+          },
+          "table": {
+            "type": "array",
+            "description": "table data"
+          }
+        }
+      }
+    },
+    "copyFilesOnLoad": {
+      "description": "Deprecated. Path on tablet to copy files over if 'copyFilesOnLoad' is defined. TabSINT will copy files from the 'filesToCopy' directory onto the tablet.",
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,480 @@
+{
+  "type": "object",
+  "description": "This schema defines a page within a protocol or subprotocol",
+  "required": ["id"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for this presentation"
+    },
+    "headset" : {
+      "type": "string",
+      "enum":["VicFirth", "Vic Firth S2", "HDA200", "WAHTS", "Audiometer", "EPHD1"],
+      "description": "Headset type used for audio calibration and audio routing. If undefined, this value will inherit the protocol level `headset`."
+    },
+    "skipIf":{
+      "type":"string",
+      "description":"JavaScript function returning true/false based on previous result (i.e. `\"result.response === 'B'\"`) or previously set flags (i.e. \"flags.skipPage1\", see `setFlags` field in the page definition).  If true, this question is skipped."
+    },
+    "hideProgressBar" : {
+      "type": "boolean",
+      "description": "If true, the progress bar will be hidden on the page. This value will override the exam property for this page.",
+      "default": false
+    },
+    "autoSubmitDelay": {
+      "type": "number",
+      "description": "Milliseconds delay before automatically submitting a page. This will override any logic built into a response area.",
+      "minimum": 50
+    },
+    "progressBarVal" : {
+      "type": ["number", "string"],
+      "description": "Override the automatically generated progress bar value on the page. This can be a numeric value (i.e. 50 = 50%) or text value (i.e. 'Question 3/5 in Section 2')"
+    },
+    "enableBackButton" :{
+      "type": "boolean",
+      "description": "Enable **Back** button next in place of the **Help** button. Allows backward navigation within a subprotocol. This button will be disabled on the first page of a protocol or subprotocol."
+    },
+    "navMenu":{
+      "type": "array",
+      "description": "Define a menu with references to pages or subprotocols. This menu will be available by clicking the three bars in the top right of the application.",
+      "minItems":1,
+      "items": {
+        "$ref" : "/definitions/navMenu.json"
+      }
+    },
+    "title": {
+      "type": "string",
+      "description": "Text in the top bar of the page. If undefined, this will inherit the protocol property \"title\". "
+    },
+    "subtitle": {
+      "type": "string",
+      "description": "DEPRECATED - This field is no longer used on the page. Included here for backwards compatibility."
+    },
+    "spacing": {
+      "type": "string",
+      "description": "DEPRECATED: Provides customized spacing between choices on a page"
+    },
+    "questionMainText": {
+      "type": "string",
+      "description": "Primary (large) text centered on the page. This string can include inline HTML for further customization. If undefined, no text is shown."
+    },
+    "questionSubText": {
+      "type": "string",
+      "description": "Secondary (medium) text centered on the page. This string can include inline HTML for further customization. If undefined, no text is shown."
+    },
+    "instructionText": {
+      "type": "string",
+      "description": "Not shown if empty.."
+    },
+    "helpText": {
+      "type": "string",
+      "description": "Help text that is displayed in the popup when the user clicks the \"Help ?\" button on the bottom of the page. If undefined, this value will inherit the protocol level `helpText`."
+    },
+    "resultMainText":{
+      "type": "string",
+      "description": "DEPRECATED - This text will replace the `questionMainText` for pages with a result state."
+    },
+    "resultSubText":{
+      "type": "string",
+      "description": "DEPRECATED -This text will replace the `questionSubText` for pages with a result state."
+    },
+    "repeatPage": {
+      "type":"object",
+      "description": "Repeat the page `n` number of times based on configurable `repeatIf` logic.",
+      "properties": {
+        "nRepeats": {
+          "type": "number",
+          "description": "The maximum number of times to repeat the page. If this value is set to 2, the page will be shown a total of 3 times (once initially, then 2 times repeated)",
+          "default": 2
+        },
+        "repeatIf": {
+          "type": "string",
+          "description": "JavaScript function returning true/false based on the previous result (i.e. \"result.response === 'B'\") or previously set flags (i.e. \"flags.repeatMe\", see `setFlags` field in the page definition). If true, or undefined, the question will repeat `nRepeats` times. If false, the question will not repeat."
+        }
+      }
+    },
+    "preProcessFunction": {
+      "type": "string",
+      "description": "custom JavaScript function that will will run before the page displays, allowing alteration to any page field. This function must be within a file loaded by the `js` property in the top level of the protocol. See the **Protocols** seciton of the user guide for more information about this feature."
+    },
+    "wavfileStartDelayTime": {
+      "type": "number",
+      "description": "Time delay before wavfiles start playing on the page.",
+      "default": 1000,
+      "minimum": 0
+    },
+    "wavfiles":{
+      "type":"array",
+      "description": "Wav files to play when the page begins",
+      "minItems":1,
+      "items":{
+        "required":["path"],
+        "properties":{
+          "useCommonRepo":{
+            "type": "boolean",
+            "description": "Set to true if the wavfile is located in the common media repository defined in `commonMediaRepository`. If false, the wav file is assumed to be within the protocol directory.",
+            "default": false
+          },
+          "path":{
+            "type":"string",
+            "description":"Filename of .wav file to play (i.e. \"myAudio.wav\"). This can include paths relative to the protocol directory (i.e. \"path/to/file/myaudio.wav\")"
+          },
+          "playbackMethod":{
+            "type": "string",
+            "description":"The method for calculating the playback level. See the `calibration` property for more information.",
+            "enum":[
+              "arbitrary",
+              "as-recorded"
+            ],
+            "default": "arbitrary"
+          },
+          "targetSPL":{
+            "type": ["number", "string"],
+            "description":"Volume of sound in SPL (assumes sound is properly normalized). This value is ignored when the `playbackMethod` is set to \"as-recorded\".  Note: this value should be specified as a number. \"string\" is supported for backwards compatibility and will be removed in future versions.",
+            "default": 65
+          },
+          "weighting":{
+            "type": "string",
+            "description":"The method used for weighting the sound levels before volume calculation. The value \"Z\" cooresponds to no weighting. This value is ignored when the `playbackMethod` is set to \"as-recorded\".",
+            "enum":[
+              "A",
+              "C",
+              "Z"
+            ],
+            "default": "Z"
+          },
+          "startTime":{
+            "type":"number",
+            "description":"Time in audio file (in milliseconds) to start playback",
+            "default": 0
+          },
+          "endTime":{
+            "type":"number",
+            "description":"Time in audio file (in milliseconds) to stop playback. Defaults to the end of the file"
+          }
+        }
+      }
+    },
+    "chaWavFiles": {
+      "type":"array",
+      "description": "Wav files to play on the Creare Wireless Headset / CHA when the page begins. These wav files must be transferred on the Headset/CHA before running the test.",
+      "minItems": 1,
+      "maxItems": 2,
+      "items": {
+        "required": ["path"],
+        "properties": {
+          "Leq": {
+            "type": "array",
+            "description": "Desired sound level for the calibrated output on the Creare Wireless Headset / CHA. The values correspond to [HPL0, HPR0, HPL1, HPR1]",
+            "minItems": 2,
+            "maxItems": 4,
+            "default": [72, 72],
+            "items": {
+                "type": "number"
+            }
+          },
+          "path": {
+            "type": "string",
+            "description": "Path to the wav file on the CHA to play (i.e. \"MRT.wav\", or \"C:HINT/LIST1/file.wav\"). If the path does not start with \"C:\", then TabSINT will assume the path is relative the the \"C:User/\" directory"
+          },
+          "SoundFileName": {
+            "type": "string",
+            "description": "Alternate key to specify `path`"
+          },
+          "useMetaRMS": {
+            "type": "boolean",
+            "description": "When TRUE, the CHA reads the wavfile comment field for RMS values and *adds* 0.1*value(s) to the Leq(s). ",
+            "default": false
+          },
+          "UseMetaRMS": {
+            "type": "boolean",
+            "description": "Alternate key to specify `useMetaRMS`"
+          }
+        }
+      }
+    },
+    "chaStream": {
+      "type": "boolean",
+      "description": "Open streaming connection to the WAHTS when page loads. The streaming connection will be closed at the end of the page, unless the next page also has this property set true. If undefined, this value will inherit the protocol level `chaStream`.",
+      "default": false
+    },
+    "image": {
+      "type": "object",
+      "description": "Image to display on the page (.jpg, .png, or .gif)",
+      "required": ["path"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "File path of image relative to the protocol directory"
+        },
+        "width": {
+          "type": "string",
+          "description": "Width of image in CSS compatible format (i.e. \"80%\" or \"50px\") ",
+          "default": "100%"
+        }
+      }
+    },
+    "video": {
+      "type": "object",
+      "description": "Video to display on page (.mp4,.webM, .ogg). Please note that video formats must be compatible with the mobile device running TabSINT.",
+      "required":["path"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "File path of video relative to the protocol directory"
+        },
+        "width": {
+          "type": "string",
+          "description": "Width of video in a CSS compatible format (i.e. \"80%\" or \"50px\")",
+          "default": "100%"
+        },
+        "autoplay": {
+          "type": "boolean",
+          "description": "This value determines if the video will autoplay when page loads. Otherwise, user must press play",
+          "default": false
+        },
+        "noSkip": {
+          "type": "boolean",
+          "description": "This value disables the submit button until the video has completed",
+          "default": false
+        }
+      }
+    },
+    "responseArea": {
+      "type": "object",
+      "description": "The response area in which the user can input a value. If not present, no response area is rendered.",
+      "oneOf": [
+        {
+          "$ref":"/response-areas/audiometryInputResponseArea.json"
+        },
+        {
+          "$ref":"/response-areas/subjectIdResponseArea.json"
+        },
+        {
+          "$ref":"/response-areas/mrtResponseArea.json"
+        },
+        {
+          "$ref":"/response-areas/multipleChoiceResponseArea.json"
+        },
+        {
+          "$ref":"/response-areas/integerResponseArea.json"
+        },
+        {
+          "$ref":"/response-areas/yesNoResponseArea.json"
+        },
+        {
+          "$ref":"/response-areas/likertResponseArea.json"
+        },
+        {
+          "$ref":"/response-areas/seeSawResponseArea.json"
+        },
+        {
+          "$ref":"/response-areas/omtResponseArea.json"
+        },
+        {
+          "$ref":"/response-areas/multipleChoiceSelectionResponseArea.json"
+        },
+        {
+          "$ref":"/response-areas/qrResponseArea.json"
+        },
+        {
+          "$ref":"/response-areas/checkboxResponseArea.json"
+        },
+        {
+          "$ref":"/response-areas/mpanlResponseArea.json"
+        },
+        {
+          "$ref":"/response-areas/buttonGridResponseArea.json"
+        },
+        {
+          "$ref":"/response-areas/imageMapResponseArea.json"
+        },
+        {
+          "$ref":"/response-areas/textboxResponseArea.json"
+        },
+        {
+          "$ref":"/response-areas/customResponseArea.json"
+        },
+        {
+          "$ref":"/response-areas/threeDigitTestResponseArea.json"
+        },
+        {
+          "$ref":"/response-areas/multipleInputResponseArea.json"
+        },
+        {
+          "$ref":"/response-areas/externalAppResponseArea.json"
+        },
+        {
+          "$ref":"/response-areas/fetchResponseArea.json"
+        },
+        {
+          "$ref":"/response-areas/computroResponseArea.json"
+        },
+        {
+          "$ref":"/response-areas/natoResponseArea.json"
+        },
+        {
+          "$ref":"/response-areas/resultsViewResponseArea.json"
+        },
+        {
+          "$ref":"/cha/response-areas/chaFrequencyPattern.json"
+        },
+        {
+          "$ref":"/cha/response-areas/chaBekesyLike.json"
+        },
+        {
+          "$ref":"/cha/response-areas/chaBekesyMLD.json"
+        },
+        {
+          "$ref":"/cha/response-areas/chaBHAFT.json"
+        },
+        {
+          "$ref":"/cha/response-areas/chaThreeDigit.json"
+        },
+        {
+          "$ref":"/cha/response-areas/chaDichoticDigits.json"
+        },
+        {
+          "$ref":"/cha/response-areas/chaHughsonWestlake.json"
+        },
+        {
+          "$ref":"/cha/response-areas/chaAcceleratedThreshold.json"
+        },
+        {
+          "$ref":"/cha/response-areas/chaThirdOctaveBands.json"
+        },
+        {
+          "$ref":"/cha/response-areas/chaToneGeneration.json"
+        },
+        {
+          "$ref":"/cha/response-areas/chaDPOAE.json"
+        },
+        {
+          "$ref":"/cha/response-areas/chaAudiometryResultsPlot.json"
+        },
+        {
+          "$ref":"/cha/response-areas/chaAudiometryResultsTable.json"
+        },
+        {
+          "$ref":"/cha/response-areas/chaHINT.json"
+        },
+        {
+          "$ref":"/cha/response-areas/chaManualAudiometry.json"
+        },
+        {
+          "$ref":"/cha/response-areas/chaRecordFile.json"
+        },
+        {
+          "$ref":"/cha/response-areas/chaThirdOctaveBandsExtended.json"
+        },
+        {
+          "$ref":"/cha/response-areas/chaManualAudiometryExam.json"
+        },
+        {
+          "$ref":"/cha/response-areas/chaManualScreener.json"
+        },
+        {
+          "$ref":"/cha/response-areas/chaPlaysoundArray.json"
+        },
+        {
+          "$ref":"/cha/response-areas/chaManualToneGeneration.json"
+        },
+        {
+          "$ref":"/cha/response-areas/chaMLD.json"
+        },
+        {
+          "$ref":"/cha/response-areas/chaGAP.json"
+        },
+        {
+          "$ref":"/cha/response-areas/chaTRT.json"
+        },
+        {
+          "$ref":"/cha/response-areas/chaMaskedThreshold.json"
+        },
+        {
+          "$ref":"/cha/response-areas/chaCalibrationCheck.json"
+        }
+      ]
+    },
+    "submitText": {
+      "type": "string",
+      "description": "The text on the submit button on the bottom right of the page. If undefined, this text will inherit the value from the protocol.",
+      "default": "Submit"
+    },
+    "followOns":{
+      "type": "array",
+      "description": "A list of potential follow-on pages, protocols, or references. Only the first qualifying follow-on is executed.",
+      "items": {
+        "required":[
+          "conditional",
+          "target"
+        ],
+        "properties":{
+          "conditional":{
+            "type":"string",
+            "description": "JavaScript function returning true/false based on the previous result (i.e. \"result.response === 'Follow-on'\") or previously set flags (i.e. \"flags.followOn\", see `setFlags` field in the page definition)."
+          },
+          "target":{
+            "anyOf": [
+              { "$ref" : "/definitions/page.json" },
+              { "$ref" : "/definitions/reference.json" },
+              { "$ref" : "/protocol_schema.json", "description": "An in-line nested protocol" }
+            ]
+          }
+        }
+      }
+    },
+    "setFlags":{
+      "type": "array",
+      "description": "Set boolean flags based on the current result that are then available throughout the protocol on the `flags` variable. The current response is available using the variable `result.response`",
+      "items": {
+        "required":["id"],
+        "properties":{
+          "id":{
+            "type": "string",
+            "description": "Name of the flag to be referenced later for conditional questions (i.e. \"skipThis\" cooresponds to the variable \"flags.skipThis\") "
+          },
+          "conditional":{
+            "type":"string",
+            "description": "JavaScript function returning true/false based on the previous result (i.e. \"result.response === 'set-flag'\") or previously set flags (i.e. \"flags.otherFlag\")."
+          }
+        }
+      }
+    },
+    "slm": {
+      "type": "object",
+      "description": "Records background sound level properties during page. This property requires the `sensimetrics-slm` TabSINT plugin to operate",
+      "properties": {
+        "microphone": {
+          "type": "string",
+          "description": "Microphone to use for recording",
+          "enum": ["internal", "dayton", "studio6"],
+          "default": "internal"
+        },
+        "parameters": {
+          "type": "array",
+          "description": "Properties to record with the sound level meter. Spectrum measurements (i.e. meanSpectrum) return an array of values for frequencies from [100, 12,500] Hz in third octave bands",
+          "items": {
+            "type": "string",
+            "enum": ["recordingStartTime", "recordingDuration", "numberOfReports", "timePoints", "SPL_A_mean", "rms", "SPL_A_peak", "SPL_C_peak", "SPL_Z_peak", "peakSpectrum", "independentBandPeaks", "SPL_A_slow", "SPL_C_slow", "SPL_Z_slow", "SPL_C_mean", "SPL_Z_mean", "meanSpectrum","bandCenterFrequencies"]
+          },
+          "default": ["recordingStartTime", "recordingDuration", "numberOfReports", "timePoints", "SPL_A_mean"]
+        },
+        "ignoreResults": {
+          "type": "array",
+          "description": "Properties to omit from results object",
+          "items": {
+            "type": "string",
+            "enum": ["recordingStartTime", "recordingDuration", "numberOfReports", "timePoints", "SPL_A_mean", "rms", "SPL_A_peak", "SPL_C_peak", "SPL_Z_peak", "peakSpectrum", "independentBandPeaks", "SPL_A_slow", "SPL_C_slow", "SPL_Z_slow", "SPL_C_mean", "SPL_Z_mean", "meanSpectrum", "bandCenterFrequencies", "Frequencies", "Leq", "LeqA", "overallAmbientNoise", "bandLevel", "FBand"]
+          },
+          "default": []
+        }
+      }
+    },
+    "svantek": {
+      "type": "boolean",
+      "description": "If true, the Dosimeter should be used to record background noise level for this page.",
+      "default": false
+    }
+  }
+}

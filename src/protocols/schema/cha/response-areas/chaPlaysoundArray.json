@@ -1,0 +1,42 @@
+{
+  "description": "CHA - Play Sound Array.",
+  "properties": {
+    "type": {
+      "enum": [ "chaPlaysoundArray"]
+    },
+    "nSpeakers": {
+      "type": "number",
+      "description": "Number of speakers in the array.",
+      "default": 8
+    },
+    "chaWavFiles": {
+      "type":"array",
+      "description": "Wave files to play on a speaker array. The wavefiles must be transferred to the FieldSINT board before running the test.",
+      "minItems": 1,
+      "maxItems": 12,
+      "items": {
+        "required": ["path", "soundFileName"],
+        "properties": {
+          "Leq": {
+            "type": "number",
+            "description": "Desired sound level for the calibrated output on speaker array.",
+            "default": 72
+          },
+          "path": {
+            "type": "string",
+            "description": "Path to the wav file on the CHA to play (i.e. \"MRT.wav\", or \"C:HINT/LIST1/file.wav\"). If the path does not start with \"C:\", then TabSINT will assume the path is relative the the \"C:User/\" directory"
+          },
+          "soundFileName": {
+            "type": "string",
+            "description": "Alternate key to specify `path`"
+          },
+          "useMetaRMS": {
+            "type": "boolean",
+            "description": "When TRUE, the CHA reads the wavfile comment field for RMS values and *adds* 0.1*value(s) to the Leq(s). ",
+            "default": false
+          }
+        }
+      }
+    }
+  }
+}

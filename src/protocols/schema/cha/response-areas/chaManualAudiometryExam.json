@@ -1,0 +1,66 @@
+{
+  "description": "CHA - Manual Audiometry Exam.",
+  "properties": {
+    "type": {
+      "enum": [ "chaManualAudiometryExam"]
+    },
+    "examInstructions": {
+      "type": "string",
+      "description": "Replaces the top-level instruction text on the CHA exam pages (each page after starting page)"
+    },
+    "boneConduction": {
+      "type": "boolean",
+      "description": "Not implemented in TabSINT - If true, enable output to bone conductor",
+      "default": false
+    },
+    "playStimulus": {
+      "type": "boolean",
+      "description": "Not implemented in TabSINT - If true, show the tones presented at each frequency on a seperate chart.",
+      "default": false
+    },
+    "minLevel":{
+      "type": "number",
+      "description": "Minimum level the user can select for playing tones.  Hardware limited.",
+      "default": -10
+    },
+    "maxLevel":{
+      "type": "number",
+      "description": "Maximum level the user can select for playing tones.  Hardware limited.",
+      "default": 90
+    },
+    "masking": {
+      "type": "boolean",
+      "description": "Not implemented in TabSINT - If true, enable masking.",
+      "default": false
+    },
+    "onlySubmitFrequenciesTested":{
+      "type": "boolean",
+      "Description": "If true, only generate results for frequencies tested.  Default: false, submit all",
+      "default": false
+    },
+    "exportToCSV": {
+      "type": "boolean",
+      "description": "Whether result should be exported to CSV upon submitting exam results.",
+      "default": false
+    },
+    "presentationList": {
+      "type": "array",
+      "description": "Array of frequencies to run in manual audiometry. Does not support DynamicStartLevel.",
+      "items": {
+        "type": "object",
+        "allOf": [
+          {"$ref": "/cha/definitions/audiometryLevelProperties.json"},
+          {
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Custom presentationId to use for each frequency."
+              }
+            }
+          }
+        ]
+      }
+    },
+    "examProperties": { "$ref":"/cha/definitions/hughsonWestlakeExamProperties.json" }
+  }
+}

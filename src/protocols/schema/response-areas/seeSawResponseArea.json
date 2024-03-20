@@ -1,0 +1,45 @@
+{
+  "description": "Allows user to indicate a desired tradeoff between two sets of criteria.",
+  "required":[
+    "leftLabels",
+    "rightLabels"
+  ],
+  "allOf": [
+    {"$ref": "/response-areas/definitions/commonResponseAreaProperties.json"},
+    {
+      "properties": {
+        "type": {
+          "enum": [
+            "seeSawResponseArea"
+          ]
+        },
+        "leftHeader": {
+          "type": "string",
+          "description": "Header above choices on the **left** side."
+        },
+        "leftLabels": {
+          "type": "array",
+          "description": "Five labels for the **left** side of the response area.",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 5,
+          "maxItems": 5
+        },
+        "rightHeader": {
+          "type": "string",
+          "description": "Header above choices on the **right** side."
+        },
+        "rightLabels": {
+          "type": "array",
+          "description": "Five labels for the **right** side of the response area.",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 5,
+          "maxItems": 5
+        }
+      }
+    }
+  ]
+}

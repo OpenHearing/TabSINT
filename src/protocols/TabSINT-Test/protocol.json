@@ -1,0 +1,1825 @@
+{
+  "title": "TabSINT Feature Demonstration",
+  "subtitle": "This protocol is used for Human-in-the-Loop testing of TabSINT response areas.",
+  "js": ["customJs.js"],
+  "instructionText": "Refer to the TabSINT Test Procedures PDF for instructions",
+  "hideProgressBar": true,
+  "calibration": [
+    {
+      "wavfiles": [
+          "word01_norm.wav"
+      ]
+    }
+  ],
+  "navMenu":[
+    {
+      "text": "Back to Main Menu",
+      "target": {
+        "reference": "MainMenu"
+      },
+      "returnHereAfterward": false
+    }
+  ],
+  "pages": [
+    {
+      "protocolId":"MainMenu",
+      "title":"Main Menu",
+      "pages":[
+        {
+          "id":"choose",
+          "title":"Response Area Testing",
+          "questionMainText":"Please select a response area to test:",
+          "responseArea":{
+            "type":"multipleChoiceResponseArea",
+            "choices":[
+              {
+                "id":"Audiometry Input"
+              },
+              {
+                "id":"Button Grid"
+              },
+              {
+                "id":"Checkbox"
+              },
+              {
+                "id":"Image Map"
+              },
+              {
+                "id":"Integer"
+              },
+              {
+                "id":"Likert"
+              },
+              {
+                "id":"Modified Rhyme Test (MRT)"
+              },
+              {
+                "id":"MPANL"
+              },
+              {
+                "id":"Multiple Choice"
+              },
+              {
+                "id":"Multiple Choice Selection"
+              },
+              {
+                "id":"Multiple Input"
+              },
+              {
+                "id":"QR Code"
+              },
+              {
+                "id":"SeeSaw"
+              },
+              {
+                "id":"Subject ID"
+              },
+              {
+                "id":"Text Box"
+              },
+              {
+                "id":"Three Digit Test"
+              },
+              {
+                "id":"Yes-No"
+              },
+              {
+                "id":"Results View"
+              },
+              {
+                "id": "Finish and Submit"
+              }
+            ]
+          }, 
+          "followOns":[
+            {
+              "conditional":"result.response=='Audiometry Input'",
+              "target":{
+                "reference":"AudiometryInput"
+              }
+            },
+            {
+              "conditional":"result.response=='Button Grid'",
+              "target":{
+                "reference":"ButtonGrid"
+              }
+            },
+            {
+              "conditional":"result.response=='Checkbox'",
+              "target":{
+                "reference":"Checkbox"
+              }
+            },
+            {
+              "conditional":"result.response=='Image Map'",
+              "target":{
+                "reference":"ImageMap"
+              }
+            },
+            {
+              "conditional":"result.response=='Integer'",
+              "target":{
+                "reference":"Integer"
+              }
+            },
+            {
+              "conditional":"result.response=='Likert'",
+              "target":{
+                "reference":"Likert"
+              }
+            },
+            {
+              "conditional":"result.response=='Modified Rhyme Test (MRT)'",
+              "target":{
+                "reference":"ModifiedRhymeTest"
+              }
+            },
+            {
+              "conditional":"result.response=='MPANL'",
+              "target":{
+                "reference":"MPANL"
+              }
+            },
+            {
+              "conditional":"result.response=='Multiple Choice'",
+              "target":{
+                "reference":"MultipleChoice"
+              }
+            },
+            {
+              "conditional":"result.response=='Multiple Choice Selection'",
+              "target":{
+                "reference":"MultipleChoiceSelection"
+              }
+            },
+            {
+              "conditional":"result.response=='Multiple Input'",
+              "target":{
+                "reference":"MultipleInput"
+              }
+            },
+            {
+              "conditional":"result.response=='QR Code'",
+              "target":{
+                "reference":"QR"
+              } 
+            },
+            {
+              "conditional":"result.response=='SeeSaw'",
+              "target":{
+                "reference":"SeeSaw"
+              } 
+            },
+            {
+              "conditional":"result.response=='Subject ID'",
+              "target":{
+                "reference":"SubjectID"
+              } 
+            },
+            {
+              "conditional":"result.response=='Text Box'",
+              "target":{
+                "reference":"TextBox"
+              } 
+            },
+            {
+              "conditional":"result.response=='Three Digit Test'",
+              "target":{
+                "reference":"ThreeDigitTest"
+              } 
+            },
+            {
+              "conditional":"result.response=='Yes-No'",
+              "target":{
+                "reference":"YesNo"
+              } 
+            },
+            {
+              "conditional":"result.response=='Results View'",
+              "target":{
+                "reference":"ResultsView"
+              } 
+            },
+            {
+              "conditional":"result.response=='Finish and Submit'",
+              "target":{
+                "reference":"@END_ALL"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "subProtocols":[
+    {
+      "protocolId": "AudiometryInput",
+      "pages":[
+       {
+        "id": "audiometry_input_001",
+        "title": "Audiometry Input",
+        "instructionText": "Test Cases 001 and 002",
+        "responseArea": {
+          "type": "audiometryInputResponseArea",
+          "responseRequired": false
+          }
+        },
+        {
+        "id": "audiometry_input_002",
+        "title": "Audiometry Input",
+        "instructionText": "Test Cases 003, 004, 005 and 201",
+        "responseArea": {
+          "type": "audiometryInputResponseArea"
+          }
+        },
+        {
+        "id": "audiometry_input_003",
+        "title": "Video",
+        "instructionText": "Test Case 006",
+        "video": {
+            "path": "waves.mp4"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "ButtonGrid",
+      "pages":[
+        {
+          "id":"button_grid_001",
+          "title": "Button Grid",
+          "instructionText": "Test Cases 001 and 201",
+          "responseArea":{
+              "type":"buttonGridResponseArea",
+              "responseRequired": false,
+              "rows": [
+                  {
+                    "choices":[
+                        {
+                          "id":"A",
+                          "text":"A",
+                          "correct":true
+                        },
+                        {
+                          "id":"B"
+                        }
+                      ]
+                  },
+                  {
+                    "choices": [
+                        {
+                          "id":"C"
+                        },
+                        {
+                          "id":"D"
+                        }
+                      ]
+                  }
+              ]
+          }
+        },
+        {
+          "id":"button_grid_002",
+          "title": "Button Grid",
+          "questionSubText": "This page will automatically submit after 5 seconds.",
+          "instructionText": "Test Case 002",
+          "autoSubmitDelay": 5000,
+          "responseArea":{
+              "type":"buttonGridResponseArea",
+              "responseRequired": false,
+              "rows": [
+                  {
+                    "choices":[
+                        {
+                          "id":"A",
+                          "text":"A",
+                          "correct":true
+                        },
+                        {
+                          "id":"B"
+                        }
+                      ]
+                  },
+                  {
+                    "choices": [
+                        {
+                          "id":"C"
+                        },
+                        {
+                          "id":"D"
+                        }
+                      ]
+                  }
+              ]
+          }
+        },
+        {
+          "id":"button_grid_003",
+          "title": "Button Grid",
+          "questionSubText": "Press the Submit button immediately.",
+          "instructionText": "Test Case 003",
+          "autoSubmitDelay": 5000,
+          "responseArea":{
+              "type":"buttonGridResponseArea",
+              "responseRequired": false,
+              "rows": [
+                  {
+                    "choices":[
+                        {
+                          "id":"A",
+                          "text":"A",
+                          "correct":true
+                        },
+                        {
+                          "id":"B"
+                        }
+                      ]
+                  },
+                  {
+                    "choices": [
+                        {
+                          "id":"C"
+                        },
+                        {
+                          "id":"D"
+                        }
+                      ]
+                  }
+              ]
+          }
+        },
+        {
+          "id":"button_grid_004",
+          "title": "Button Grid",
+          "questionSubText": "Wait 5 seconds. This page should NOT submit automatically.",
+          "instructionText": "Test Case 003",
+          "responseArea":{
+              "type":"buttonGridResponseArea",
+              "responseRequired": false,
+              "rows": [
+                  {
+                    "choices":[
+                        {
+                          "id":"A",
+                          "text":"A",
+                          "correct":true
+                        },
+                        {
+                          "id":"B"
+                        }
+                      ]
+                  },
+                  {
+                    "choices": [
+                        {
+                          "id":"C"
+                        },
+                        {
+                          "id":"D"
+                        }
+                      ]
+                  }
+              ]
+          }
+        },
+        {
+          "id":"button_grid_005",
+          "title": "Button Grid",
+          "questionMainText": "The correct answer is A. Please choose the correct answer.",
+          "instructionText": "Test Cases  004, 005, 006, 202, and 203",
+          "responseArea":{
+              "type":"buttonGridResponseArea",
+              "feedback": "gradeResponse",
+              "rows": [
+                  {
+                    "choices":[
+                        {
+                          "id":"A",
+                          "text":"A",
+                          "correct":true
+                        },
+                        {
+                          "id":"B"
+                        }
+                      ]
+                  },
+                  {
+                    "choices": [
+                        {
+                          "id":"C"
+                        },
+                        {
+                          "id":"D"
+                        }
+                      ]
+                  }
+              ]
+          }
+        },
+        {
+          "id":"button_grid_006",
+          "title": "Button Grid",
+          "questionMainText": "The correct answer is A. Please choose an incorrect answer.",
+          "instructionText": "Test Cases 007 and 204",
+          "responseArea":{
+              "type":"buttonGridResponseArea",
+              "feedback": "showCorrect",
+              "rows": [
+                  {
+                    "choices":[
+                      {
+                        "id":"A",
+                        "text":"A",
+                        "correct":true
+                      },
+                      {
+                        "id":"B"
+                      }
+                    ]
+                  },
+                  {
+                    "choices": [
+                      {
+                        "id":"C"
+                      },
+                      {
+                        "id":"D"
+                      }
+                    ]
+                  }
+              ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "Checkbox",
+      "pages":[
+        {
+          "id": "checkbox_001",    
+          "title": "Checkbox",
+          "questionMainText": "What is your favorite color?",
+          "questionSubText": "This page must have default styling.",
+          "instructionText": "Test Cases 001 and 201",
+          "responseArea": {
+            "type": "checkboxResponseArea",
+            "responseRequired": false,
+            "choices": [
+              {
+                "id": "Red"
+              },
+              {
+                "id": "Blue"
+              },
+              {
+                "id": "Green"
+              }
+            ],
+            "other" : "Other"
+          }
+        },
+        {
+          "id": "checkbox_002",    
+          "title": "Checkbox",
+          "questionMainText": "What is your favorite color?",
+          "questionSubText": "Buttons that are not selected should be red. Buttons that are selected should be green.",
+          "instructionText": "Test Cases 002, 003, and 004",
+          "responseArea": {
+            "type": "checkboxResponseArea",
+            "responseRequired": true,
+            "buttonScheme": "markCorrect",
+            "choices": [
+              {
+                "id": "Red"
+              },
+              {
+                "id": "Blue"
+              },
+              {
+                "id": "Green"
+              }
+            ],
+            "other" : "Other"
+          }
+        },
+        {
+          "id": "checkbox_003",    
+          "title": "Checkbox",
+          "questionMainText": "What is your favorite color?",
+          "questionSubText": "Buttons that are not selected should be green. Buttons that are selected should be red.",
+          "instructionText": "Test Case 005",
+          "responseArea": {
+            "type": "checkboxResponseArea",
+            "responseRequired": true,
+            "buttonScheme": "markIncorrect",
+            "choices": [
+              {
+                "id": "Red"
+              },
+              {
+                "id": "Blue"
+              },
+              {
+                "id": "Green"
+              }
+            ],
+            "other" : "Other"
+          }
+        },
+        {
+          "id": "checkbox_004",    
+          "title": "Checkbox",
+          "questionMainText": "What is your favorite color?",
+          "questionSubText": "Select Red. Red should be marked correct (green). Any other selected answers should be marked incorrect (red).",
+          "instructionText": "Test Case 006",
+          "responseArea": {
+            "type": "checkboxResponseArea",
+            "responseRequired": true,
+            "feedback": "gradeResponse",
+            "choices": [
+              {
+                "id": "Red",
+                "correct": true
+              },
+              {
+                "id": "Blue"
+              },
+              {
+                "id": "Green"
+              }
+            ],
+            "other" : "Other"
+          }
+        },
+        {
+          "id": "checkbox_005",    
+          "title": "Checkbox",
+          "questionMainText": "What is your favorite color?",
+          "questionSubText": "Select anything other than Red. Red should be marked correct (green). Any other selected answers should be marked incorrect (red).",
+          "instructionText": "Test Case 006",
+          "responseArea": {
+            "type": "checkboxResponseArea",
+            "responseRequired": true,
+            "feedback": "gradeResponse",
+            "choices": [
+              {
+                "id": "Red",
+                "correct": true
+              },
+              {
+                "id": "Blue"
+              },
+              {
+                "id": "Green"
+              }
+            ],
+            "other" : "Other"
+          }
+        },
+        {
+          "id": "checkbox_006",    
+          "title": "Checkbox",
+          "questionMainText": "What is your favorite color?",
+          "questionSubText": "Select anything other than Red. Selected answers other than Red should be marked incorrect (red), the correct answer (Red) will be shown in grey and all other answers should be faded. ",
+          "instructionText": "Test Case 007",
+          "responseArea": {
+            "type": "checkboxResponseArea",
+            "responseRequired": true,
+            "feedback": "showCorrect",
+            "choices": [
+              {
+                "id": "Red",
+                "correct": true
+              },
+              {
+                "id": "Blue"
+              },
+              {
+                "id": "Green"
+              }
+            ],
+            "other" : "Other"
+          }
+        },
+        {
+          "id": "checkbox_007",    
+          "title": "Checkbox",
+          "questionMainText": "What is your favorite color?",
+          "instructionText": "Test Cases 008, 009, and 202",
+          "responseArea": {
+            "type": "checkboxResponseArea",
+            "responseRequired": true,
+            "choices": [
+              {
+                "id": "Red"
+              },
+              {
+                "id": "Blue"
+              },
+              {
+                "id": "Green"
+              }
+            ],
+            "other" : "Other"
+          },
+          "setFlags":[
+            {
+               "conditional":"arrayContains(result.response,'Red')",
+               "id":"likesRed"
+            }
+          ]
+        },
+        {
+         "id":"checkbox_008",
+         "skipIf":"flags.likesRed",
+         "title": "Checkbox",
+         "questionMainText":"Do you dislike the color red?",
+         "instructionText": "This is a follow-on to Test Case 009",
+         "responseArea":{
+            "type":"yesNoResponseArea"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "ImageMap",
+      "pages":[
+        {
+          "id":"image_map_001",
+          "instructionText": "Test Case 001 and 201",
+          "responseArea": {
+              "type":"imageMapResponseArea",
+              "responseRequired": false ,
+              "image": {
+                  "path": "gnomes.jpg"
+              },
+              "hotspots":[
+                {
+                  "id": "gnome1",
+                  "shape": "rect",
+                  "coordinates": "7,20,22,42"
+                },
+                {
+                  "id": "gnome2",
+                  "shape": "rect",
+                  "coordinates": "42,15,56,38" 
+                },
+                {
+                  "id": "gnome3",
+                  "shape": "rect",
+                  "coordinates": "75,17,90,43"
+                }
+            ]
+          }
+        },
+        {
+          "id":"image_map_002",
+          "instructionText": "Test Cases 002, 003, and 004",
+          "enableBackButton": true,
+          "responseArea": {
+              "type":"imageMapResponseArea",
+              "image": {
+                  "path": "gnomes.jpg"
+              },
+              "hotspots":[
+                {
+                  "id": "gnome1",
+                  "shape": "rect",
+                  "coordinates": "7,20,22,42"
+                },
+                {
+                  "id": "gnome2",
+                  "shape": "rect",
+                  "coordinates": "42,15,56,38" 
+                },
+                {
+                  "id": "gnome3",
+                  "shape": "rect",
+                  "coordinates": "75,17,90,43"
+                }
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "Integer",
+      "pages":[
+        {
+          "id":"integer_001",
+          "title": "Integer",
+          "instructionText":"Test Cases 001 and 201",
+          "responseArea":{
+            "type":"integerResponseArea",
+            "responseRequired": false
+          }
+        },
+        {
+          "id":"integer_002",
+          "title": "Integer",
+          "instructionText":"Test Cases 002, 003, 202, and 203",
+          "responseArea":{
+            "type":"integerResponseArea",
+            "negative": true
+          }
+        },
+        {
+          "id":"integer_003",
+          "title": "Integer with Follow-Ons",
+          "questionMainText":"How many times have you been deployed to Iraq or Afghanistan?",
+          "instructionText":"Test Case 004",
+          "responseArea":{
+          "type":"integerResponseArea"
+            },
+            "followOns":[
+              {
+                "conditional":"result.response>0",
+                "target":{
+                  "id":"integer_004",
+                  "title": "Integer",
+                  "questionMainText":"Were you ever close enough to an explosive blast to feel the heat or pressure wave?",
+                  "instructionText":"Test Case 005",
+                  "responseArea":{
+                    "type":"yesNoResponseArea"
+                  },
+                  "followOns":[
+                    {
+                      "conditional":"result.response=='yes'",
+                      "target":{
+                        "id":"integer_005",
+                        "title": "Integer",
+                        "questionMainText":"How many times?",
+                        "responseArea":{
+                          "type":"integerResponseArea"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+        {
+          "id": "backtomain",
+          "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "Likert",
+      "pages":[
+        {
+          "id": "likert_001",
+          "title": "Likert",
+          "instructionText": "Test Case 001",
+          "responseArea": {
+            "type": "likertResponseArea",
+            "responseRequired": false,
+            "levels": 5,
+            "useEmoticons": true,
+            "specifiers": [
+              {
+                "level": 0,
+                "label": "Strongly Disagree"
+              },
+              {
+                "level": 1,
+                "label": "Disagree"
+
+              },
+              {
+                "level": 2,
+                "label": "No Opinion"
+              },
+              {
+                "level": 3,
+                "label": "Agree"
+
+              },
+              {
+                "level": 4,
+                "label": "Strongly Agree"
+              }
+            ]
+          }
+        },
+        {
+          "id": "likert_002",
+          "title": "Likert",
+          "instructionText": "Test Case 002",
+          "hideProgressBar": false,
+          "responseArea": {
+            "type": "likertResponseArea",
+            "responseRequired": false,
+            "levels": 5,
+            "useEmoticons": true,
+            "specifiers": [
+              {
+                "level": 0,
+                "label": "Strongly Disagree"
+              },
+              {
+                "level": 1,
+                "label": "Disagree"
+
+              },
+              {
+                "level": 2,
+                "label": "No Opinion"
+              },
+              {
+                "level": 3,
+                "label": "Agree"
+
+              },
+              {
+                "level": 4,
+                "label": "Strongly Agree"
+              }
+            ]
+          }
+        },
+        {
+          "id": "likert_003",
+          "title": "Likert",
+          "instructionText": "Test Case 003",
+          "hideProgressBar": false,
+          "progressBarVal": "Likert 3/5",
+          "responseArea": {
+            "type": "likertResponseArea",
+            "responseRequired": false,
+            "levels": 5,
+            "useEmoticons": true,
+            "specifiers": [
+              {
+                "level": 0,
+                "label": "Strongly Disagree"
+              },
+              {
+                "level": 1,
+                "label": "Disagree"
+
+              },
+              {
+                "level": 2,
+                "label": "No Opinion"
+              },
+              {
+                "level": 3,
+                "label": "Agree"
+
+              },
+              {
+                "level": 4,
+                "label": "Strongly Agree"
+              }
+            ]
+          }
+        },
+        {
+          "id": "likert_004",
+          "title": "Likert",
+          "questionMainText": "It was easy for the person to put the headset on me.",
+          "instructionText": "Test Cases 004, 005, 201 and 202",
+          "responseArea": {
+            "type": "likertResponseArea",
+            "exportToCSV": true,
+            "levels": 5,
+            "useEmoticons": true,
+            "specifiers": [
+              {
+                "level": 0,
+                "label": "Strongly Disagree"
+              },
+              {
+                "level": 1,
+                "label": "Disagree"
+
+              },
+              {
+                "level": 2,
+                "label": "No Opinion"
+              },
+              {
+                "level": 3,
+                "label": "Agree"
+
+              },
+              {
+                "level": 4,
+                "label": "Strongly Agree"
+              }
+            ]
+          }
+        },
+        {
+          "id": "likert_005",
+          "title": "Likert",
+          "instructionText": "Test Cases 203, 204, 205",
+          "responseArea": {
+            "type": "likertResponseArea",
+            "exportToCSV": true,
+            "questions": [
+              {
+                "questionMainText": "Did you have any trouble hearing soft sounds before being exposed to noise?",
+                "levels": 11,
+                "labelFontSize": 15,
+                "specifiers": [
+                  {
+                    "level": 0,
+                    "label": "No trouble",
+                    "position": "below"
+                  },
+                  {
+                    "level": 0,
+                    "label": "0",
+                    "position": "above"
+                  },
+                  {
+                    "level": 1,
+                    "label": "1"
+                  },
+                  {
+                    "level": 2,
+                    "label": "2"
+                  },
+                  {
+                    "level": 3,
+                    "label": "3"
+                  },
+                  {
+                    "level": 4,
+                    "label": "4"
+                  },
+                  {
+                    "level": 5,
+                    "label": "5"
+                  },
+                  {
+                    "level": 6,
+                    "label": "6"
+                  },
+                  {
+                    "level": 7,
+                    "label": "7"
+                  },
+                  {
+                    "level": 8,
+                    "label": "8"
+                  },
+                  {
+                    "level": 9,
+                    "label": "9"
+                  },
+                  {
+                    "level": 10,
+                    "label": "Great deal of trouble",
+                    "position": "below"
+                  },
+                  {
+                    "level": 10,
+                    "label": "10",
+                    "position": "above"
+                  }
+                ]
+              },
+              {
+                "questionMainText": "Do you have any trouble hearing soft sounds RIGHT NOW?",
+                "levels": 11,
+                "labelFontSize": 30,
+                "specifiers": [
+                  {
+                    "level": 0,
+                    "label": "No trouble",
+                    "position": "above"
+                  },
+                  {
+                    "level": 0,
+                    "label": "0",
+                    "position": "below"
+                  },
+                  {
+                    "level": 1,
+                    "label": "1",
+                    "position": "below"
+                  },
+                  {
+                    "level": 2,
+                    "label": "2",
+                    "position": "below"
+                  },
+                  {
+                    "level": 3,
+                    "label": "3",
+                    "position": "below"
+                  },
+                  {
+                    "level": 4,
+                    "label": "4",
+                    "position": "below"
+                  },
+                  {
+                    "level": 5,
+                    "label": "5",
+                    "position": "below"
+                  },
+                  {
+                    "level": 6,
+                    "label": "6",
+                    "position": "below"
+                  },
+                  {
+                    "level": 7,
+                    "label": "7",
+                    "position": "below"
+                  },
+                  {
+                    "level": 8,
+                    "label": "8",
+                    "position": "below"
+                  },
+                  {
+                    "level": 9,
+                    "label": "9",
+                    "position": "below"
+                  },
+                  {
+                    "level": 10,
+                    "label": "Great deal of trouble",
+                    "position": "above"
+                  },
+                  {
+                    "level": 10,
+                    "label": "10",
+                    "position": "below"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "ModifiedRhymeTest",
+      "title":"Modified Rhyme Test",
+      "pages":[
+        {
+          "id":"mrt_001",
+          "headset": "EPHD1",
+          "title": "Modified Rhyme Test (MRT)",
+          "instructionText": "Test Cases 001, 002, 003 and 201",
+          "submitText": "Continue",
+          "responseArea":{
+            "type":"mrtResponseArea",
+            "responseRequired": false,
+            "choices":[
+              {
+                "id":"meat",
+                "correct":true
+              },
+              {
+                "id":"seat"
+              },
+              {
+                "id":"feat"
+              },
+              {
+                "id":"beat"
+              },
+              {
+                "id":"heat"
+              },
+              {
+                "id":"neat"
+              }
+            ]
+          }
+        },
+        {
+          "id":"mrt_002",
+          "title": "Modified Rhyme Test (MRT)",
+          "questionMainText": "The correct response is <b>meat</b>. Mark the correct answer.",
+          "instructionText": "Test Cases 004, 005, 006, 007, 202, and 203",
+          "wavfiles":[
+            {
+              "path":"word01_norm.wav",
+              "playbackMethod": "as-recorded"
+            }
+          ],
+          "responseArea":{
+            "type":"mrtResponseArea",
+            "feedback": "gradeResponse",
+            "choices":[
+              {
+                "id":"meat",
+                "correct":true
+              },
+              {
+                "id":"seat"
+              },
+              {
+                "id":"feat"
+              },
+              {
+                "id":"beat"
+              },
+              {
+                "id":"heat"
+              },
+              {
+                "id":"neat"
+              }
+            ]
+          }
+        },
+        {
+          "id":"mrt_003",
+          "title": "Modified Rhyme Test (MRT)",
+          "questionMainText": "The correct response is <b>meat</b>. Mark the correct answer.",
+          "instructionText": "Test Case 008",
+          "wavfileStartDelayTime": 5000,
+          "wavfiles":[
+            {
+              "path":"word01_norm.wav",
+              "playbackMethod": "as-recorded"
+            }
+          ],
+          "responseArea":{
+            "type":"mrtResponseArea",
+            "feedback": "gradeResponse",
+            "choices":[
+              {
+                "id":"meat",
+                "correct":true
+              },
+              {
+                "id":"seat"
+              },
+              {
+                "id":"feat"
+              },
+              {
+                "id":"beat"
+              },
+              {
+                "id":"heat"
+              },
+              {
+                "id":"neat"
+              }
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId":"MPANL",
+      "pages":[
+        {
+          "id":"mpanl_001",
+          "title": "MPANL - Svantek Background Noise Measurement",
+          "instructionText": "Test Cases 001, 002, 201, and 202",
+          "responseArea": {
+            "type": "mpanlResponseArea",
+            "exportToCSV": true
+          }
+        },
+        {
+          "id":"mpanl_002",
+          "title": "Svantek Background Noise Measurement",
+          "questionSubText": "This page uses the Svantek to record background noise. This page does not use the MPANL response area.",
+          "instructionText": "Test Case 003",
+          "svantek": true
+        },
+        {
+          "id": "backtomain",
+          "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId":"MultipleChoice",
+      "pages":[
+        {
+          "id": "multiple_choice_001",
+          "title": "Multiple Choice",
+          "questionMainText": "What day of the week is today?",
+          "instructionText": "Test Cases 001 and 201",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "responseRequired": false,
+            "choices": [
+              {
+                "id": "Sunday"
+              },
+              {
+                "id": "Monday"
+              },
+              {
+                "id": "Tuesday"
+              },
+              {
+                "id": "Wednesday"
+              },
+              {
+                "id": "Thursday"
+              },
+              {
+                "id": "Friday"  
+              },
+              {
+                "id": "Saturday"
+              }
+             ]
+            }
+          },
+          {
+          "id": "multiple_choice_002",
+          "title": "Multiple Choice with Set Flags",
+          "questionMainText": "What day of the week is today?",
+          "instructionText": "Test Cases 002, 003, 004, and 202",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "exportToCSV": true,
+            "choices": [
+              {
+                "id": "Sunday"
+              },
+              {
+                "id": "Monday"
+              },
+              {
+                "id": "Tuesday"
+              },
+              {
+                "id": "Wednesday"
+              },
+              {
+                "id": "Thursday"
+              },
+              {
+                "id": "Friday"  
+              },
+              {
+                "id": "Saturday"
+              }
+            ]
+          },
+          "setFlags":[
+            {
+              "conditional":"result.response=='Monday'||result.response=='Tuesday'||result.response=='Wednesday'||result.response=='Thursday'||result.response=='Friday'",
+              "id":"weekday"
+            },
+            {
+              "conditional":"result.response=='Saturday'||result.response=='Sunday'",
+              "id":"weekend"
+            }
+          ]
+        },
+        {
+          "id": "multiple_choice_003",
+          "skipIf":"flags.weekend",
+          "title": "Multiple Choice",
+          "questionMainText": "Are you working?",
+          "instructionText": "Test Case 005",
+          "responseArea":{
+            "type":"multipleChoiceResponseArea",
+            "exportToCSV": true,
+            "choices": [
+              {
+                "id": "Yes"
+              },
+              {
+                "id": "No"
+              }
+            ],
+            "other" : "Other"
+          }
+        },
+        {
+          "id": "multiple_choice_004",
+          "skipIf":"flags.weekday",
+          "title": "Multiple Choice",
+          "questionMainText": "What is something you do on your day off?",
+          "instructionText": "Test Case 005",
+          "responseArea":{
+            "type":"multipleChoiceResponseArea",
+            "exportToCSV": true,
+            "choices":[
+              {
+                "id":"Work-out"
+              },
+              {
+                "id":"Walk the dog"
+              },
+              {
+                "id":"Clean the house"
+              },
+              {
+                "id":"Travel"
+              },
+              {
+                "id":"Go shopping"
+              }
+            ],
+            "other" : "Other"
+          }
+        },
+        {
+          "id":"multiple_choice_005",
+          "title":"Multiple Choice With Repeats",
+          "questionMainText": "This page will repeat twice if you select A.",
+          "instructionText":"Test Case 006",
+          "responseArea":{
+            "type":"multipleChoiceResponseArea",
+            "choices":[
+              {
+                "id":"A",
+                "text":"Choice A"
+              },
+              {
+                "id":"B",
+                "text":"Choice B"
+              }
+            ]
+          },
+          "repeatPage":{
+            "nRepeats":2,
+            "repeatIf":"result.response!=='B'"
+          }
+        },
+        {
+          "id": "multiple_choice_006",
+          "title": "Custom HTML and JS",
+          "questionMainText": "Custom Response Area",
+          "instructionText": "Test Case 007",
+          "responseArea": {
+            "type": "customResponseArea",
+            "html": "customHtml.html"
+          }
+        },
+        {
+          "id": "multiple_choice_007",
+          "title": "Preprocessing Functions",
+          "questionMainText": "Preprocessing Functions",
+          "questionSubText": "You can run a pre-processing function on the test data before loading a page",
+          "instructionText": "Test Case 008",
+          "preProcessFunction": "preprocessExample"
+        },
+        {
+          "id": "multiple_choice_008",
+          "title": "Progress Bar",
+          "questionSubText": "You can change the progress bar using pre-processing functions. Your response here will set the progress bar on the next page.",
+          "instructionText": "Test Case 009",
+          "hideProgressBar": false,
+          "responseArea":{
+            "type":"multipleChoiceResponseArea",
+            "choices":[
+              {
+                "id":"A",
+                "text":"Make it a Fraction String"
+              },
+              {
+                "id":"B",
+                "text":"Jump to 80%"
+              }
+            ]
+          }
+        },
+        {
+          "id": "multiple_choice_009",
+          "title": "Progress Bar",
+          "questionSubText": "The progress bar should have changed to your choice",
+          "instructionText": "Test Case 009",
+          "hideProgressBar": false,
+          "preProcessFunction": "multichoice002"
+        },
+        {
+          "id": "backtomain",
+          "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "MultipleChoiceSelection",
+      "pages":[
+        {
+          "id": "multiple_choice_selection_001",
+          "title": "Multiple Choice Selection",
+          "instructionText": "Test Cases 001 and 201",
+          "responseArea": {
+            "type": "multipleChoiceSelectionResponseArea",
+            "responseRequired": false,
+            "rows": [["test", "test", "test"], ["three", "three", "three"], ["and", "four", "rows"], ["long", "for", "testing"]],
+            "columnLabels": ["My"," Column", "Labels"],
+            "correct": "test three rows"
+          }
+        },
+        {
+          "id": "multiple_choice_selection_002",
+          "title": "Multiple Choice Selection",
+          "questionMainText": "Mark <strong>test</strong>, <strong>three</strong>, and <strong>rows</strong>, then press Submit.",
+          "instructionText": "Test Cases 002, 003, 202 and 203",
+          "responseArea": {
+            "type": "multipleChoiceSelectionResponseArea",
+            "rows": [["test", "test", "test"], ["three", "three", "three"], ["and", "four", "rows"], ["long", "for", "testing"]],
+            "columnLabels": ["My"," Column", "Labels"],
+            "correct": "test three rows",
+            "feedback": "gradeResponse"
+          }
+        },
+        {
+         "id": "multiple_choice_selection_003",
+          "title": "Multiple Choice Selection",
+          "questionMainText": "Mark <strong>three</strong>, <strong>four</strong>, and <strong>testing</strong>, then press Submit.",
+          "instructionText": "Test Cases 004 and 204",
+          "responseArea": {
+            "type": "multipleChoiceSelectionResponseArea",
+            "rows": [["test", "test", "test"], ["three", "three", "three"], ["and", "four", "rows"], ["long", "for", "testing"]],
+            "columnLabels": ["My"," Column", "Labels"],
+            "correct": "test three rows",
+            "feedback": "showCorrect" 
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "MultipleInput",
+      "pages":[
+        {
+          "id": "multiple_input_001",
+          "title": "Multiple Input",
+          "instructionText": "Test Cases 001, 002",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "verticalSpacing": 15,
+            "textAlign": "left",
+            "inputList":[
+              {
+                "text": "Text Input"
+              },
+              {
+                "inputType": "number",
+                "text": "Numerical Input"
+              },
+              {
+                "inputType": "dropdown",
+                "options": [1,2,3,4,5,6,7,8,9],
+                "text": "Dropdown Input"
+              },
+              {
+                "inputType": "date",
+                "text": "Date Input"
+              },
+              {
+                "inputType": "multi-dropdown",
+                "options": ["a","b","c"],
+                "text": "Multi-dropdown Input"
+              }
+            ]
+          }
+        },
+        {
+          "id": "multiple_input_002",
+          "title": "Multiple Input",
+          "instructionText": "Test Cases 003, 004, 005, 006, 007, 008, 009, 010, 011, 012, 013, 201, 202, 203, and 204",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "verticalSpacing": 15,
+            "review": true,
+            "textAlign": "left",
+            "inputList":[
+              {
+                "text": "Text Input",
+                "required": true,
+                "exportToCSV": true
+              },
+              {
+                "inputType": "number",
+                "text": "Numerical Input",
+                "required": true,
+                "exportToCSV": true
+              },
+              {
+                "inputType": "dropdown",
+                "options": [1,2,3,4,5,6,7,8,9],
+                "text": "Dropdown Input",
+                "required": true,
+                "exportToCSV": true
+              },
+              {
+                "inputType": "date",
+                "text": "Date Input",
+                "dateProperties": {
+                  "minDate": "2021-12-25", 
+                  "maxDate": "today"
+                },
+                "exportToCSV": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "QR",
+      "pages":[
+        {
+          "id": "qr_001",
+          "title": "QR Code",
+          "instructionText": "Test Case 001",
+          "responseArea": {
+            "type": "qrResponseArea",
+            "responseRequired": false 
+          }
+        },
+        {
+          "id": "qr_002",
+          "title": "QR Code",
+          "instructionText": "Test Cases 002, 003, and 201",
+          "responseArea": {
+            "type": "qrResponseArea"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "SeeSaw",
+      "pages":[
+        {
+          "id": "seesaw_001",
+          "title": "SeeSaw",
+          "questionMainText": "Protection vs. Distortion",
+          "instructionText": "Test Cases 001 and 201",
+          "responseArea": {
+            "type": "seeSawResponseArea",
+            "responseRequired": false,
+            "leftHeader": "How well my HPD protects me from loud impulse sounds like gunfire or explosions",
+            "rightHeader": "How natural my own voice sounds while talking when wearing my HPD",
+            "leftLabels": [
+              "Much less protection from loud impulse sounds",
+              "Somewhat less protection from loud impulse sounds",
+              "No change",
+              "Somewhat more protection from loud impulse sounds",
+              "Much more protection from loud impulse sounds"
+            ],
+            "rightLabels":[
+              "Much more distortion of my voice",
+              "Somewhat more distortion of my voice",
+              "No change",
+              "Somewhat more natural sound of my voice",
+              "Much more natural sound of my voice"
+            ]
+          }
+        },
+        {
+          "id": "seesaw_002",
+          "title": "SeeSaw",
+          "questionMainText": "Protection vs. Distortion",
+          "instructionText": "Test Cases 002, 003, and 202",
+          "responseArea": {
+            "type": "seeSawResponseArea",
+            "leftHeader": "How well my HPD protects me from loud impulse sounds like gunfire or explosions",
+            "rightHeader": "How natural my own voice sounds while talking when wearing my HPD",
+            "leftLabels": [
+              "Much less protection from loud impulse sounds",
+              "Somewhat less protection from loud impulse sounds",
+              "No change",
+              "Somewhat more protection from loud impulse sounds",
+              "Much more protection from loud impulse sounds"
+            ],
+            "rightLabels":[
+              "Much more distortion of my voice",
+              "Somewhat more distortion of my voice",
+              "No change",
+              "Somewhat more natural sound of my voice",
+              "Much more natural sound of my voice"
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "SubjectID",
+      "pages":[
+        {
+          "id": "subject_id_001",
+          "title": "Subject ID",
+          "instructionText": "Test Case 001",
+          "responseArea": {
+            "type": "subjectIdResponseArea",
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "subject_id_002",
+          "title": "Subject ID",
+          "instructionText": "Test Cases 002, 003, and 202",
+          "responseArea": {
+            "type": "subjectIdResponseArea",
+            "generate": true
+          }
+        },
+        {
+          "id": "subject_id_003",
+          "title": "Subject ID",
+          "instructionText": "Test Cases 004 and 203",
+          "responseArea": {
+            "type": "subjectIdResponseArea"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "TextBox",
+      "pages":[
+        {
+          "id": "textbox_001",
+          "title": "Text Box",
+          "instructionText": "Test Case 001",
+          "responseArea": {
+              "type": "textboxResponseArea",
+              "rows": 5,
+              "responseRequired": false
+          }
+        },
+        {
+          "id": "textbox_002",
+          "title": "Text Box",
+          "instructionText": "Test Cases 002, 003, 201, and 202",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "exportToCSV": true,
+            "rows": 5
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "ThreeDigitTest",
+      "pages":[
+        {
+          "id": "three_digit_test_001",
+          "title": "Three Digit Test",
+          "instructionText": "Test Cases 001 and 201",
+          "responseArea": {
+            "type": "threeDigitTestResponseArea",
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "three_digit_test_002",
+          "title": "Three Digit Test",
+          "instructionText": "Test Cases 002, 003, 004, 202, and 203",
+          "responseArea": {
+            "type": "threeDigitTestResponseArea"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "YesNo",
+      "pages":[
+        {
+          "id": "yes_no_001",
+          "title": "Yes-No",
+          "questionMainText": "Do you want to continue with the demonstration?",
+          "instructionText": "Test Cases 001 and 201",
+          "responseArea": {
+            "type": "yesNoResponseArea",
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "yes_no_002",
+          "title": "Yes-No",
+          "questionMainText": "Do you want to continue with the demonstration?",
+          "instructionText": "Test Cases 002, 003, 004, 005 and 202",
+          "responseArea": {
+            "type": "yesNoResponseArea"
+          },
+          "followOns":[
+            {
+              "conditional":"result.response=='no'",
+              "target":{
+                "reference": "@PARTIAL"
+              }
+            }
+          ]
+        },
+        {
+          "id": "backtomain",
+          "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "ResultsView",
+      "pages":[
+        {
+          "id": "results_view_001",
+          "title": "Results",
+          "instructionText": "Test Cases 001, 002, 003, 201",
+          "responseArea": {
+            "type": "resultsViewResponseArea",
+            "displayResults": [
+              {
+                "text": "Likert",
+                "displayIds": ["likert_002","likert_003"]
+              },
+              {
+                "text": "MPANL",
+                "displayIds": ["mpanl_001"]
+              },
+              {
+                "text": "Multiple Input",
+                "displayIds": ["multiple_input_002"]
+              },
+              {
+                "text": "Text Box",
+                "displayIds": ["textbox_002"]
+              }
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "@PARTIAL",
+      "pages":[
+        {
+          "id": "end_001",
+          "title": "Feedback",
+          "questionMainText": "Please give us your feedback on this demonstration.",
+          "questionSubText": "This page is a follow-on from Test Case SRS-Yes-No-005",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 5,
+            "responseRequired": false
+          }
+        },
+        {
+          "reference": "@END_ALL"
+        }
+      ]
+    }
+  ]
+}

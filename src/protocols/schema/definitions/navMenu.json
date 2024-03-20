@@ -1,0 +1,21 @@
+{
+  "type": "object",
+  "description": "Nav menu object to define a custom navigation menu at the protocol or page level.",
+  "required": ["text","target","returnHereAfterward"],
+  "properties": {
+    "text": {
+      "type": "string",
+      "description": "Link text to display in the menu"
+    },
+    "target": {
+      "anyOf": [
+        { "$ref" : "/definitions/page.json"},
+        { "$ref" : "/definitions/reference.json"}
+      ]
+    },
+    "returnHereAfterward": {
+      "type": "boolean",
+      "description": "if true, return to current page after finishing target page or protocol"
+    }
+  }
+}

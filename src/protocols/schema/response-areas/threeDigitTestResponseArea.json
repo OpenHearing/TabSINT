@@ -1,0 +1,30 @@
+{
+  "description": "Three digit test response area using the tablet audio output and calibrated headset.",
+  "allOf": [
+    {"$ref": "/response-areas/definitions/commonResponseAreaProperties.json"},
+    {
+      "properties": {
+        "type": {
+          "enum": [ "threeDigitTestResponseArea" ]
+        },
+        "skip": {
+          "type": "boolean",
+          "description": "Allows user to skip the response area. DEPRECATED - please use enableSkip",
+          "default": false
+        },
+        "correct": {
+          "type": "array",
+          "description": "The three correct answers in an array of strings",
+          "items": {
+            "type": "string"
+          }
+        },
+        "delayEnable": {
+          "type": "integer",
+          "description": "Delay (ms) before the buttons are active to accept a response",
+          "default": 0
+        }
+      }
+    }
+  ]
+}

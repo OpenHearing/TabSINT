@@ -109,7 +109,7 @@ export class ProtocolService {
         }
     };
 
-    load(meta: any, _requiresValidation: boolean, notify: boolean, reload: boolean) { //Promise<any> {
+    load(meta: any, _requiresValidation: boolean, notify: boolean, reload: boolean): Promise<any> {
         this.loading.meta = meta;
         this.loading.requiresValidation = _requiresValidation || this.disk.validateProtocols;
         this.loading.notify = notify || false;
@@ -125,18 +125,10 @@ export class ProtocolService {
         // fix path
         // this.loading.meta.path = paths.dir(this.loading.meta.path);
     
-        const addTask = (taskName: string, taskMessage: string): Promise<void> => {
-            return new Promise((resolve) => {
-                if (this.loading.notify) {
-                    this.tasks.register(taskName, taskMessage);
-                    resolve();
-                } else {
-                    resolve();
-                }
-            });
-        }
-
         const reloadIfNeeded = (): Promise<CopyResult | void> => {
+            if (this.loading.notify) {
+                this.tasks.register("updating protocol", "Loading Protocol Files...");
+            }
             return new Promise((resolve) => {
                 this.logger.debug("loading.meta" + JSON.stringify(this.loading.meta));
                 if (this.loading.meta.contentURI && this.loading.reload) {
@@ -215,6 +207,11 @@ export class ProtocolService {
         }
 
         const validateIfCalledFor = (): Promise<void> => {
+            
+            if (this.loading.notify) {
+                this.tasks.register("updating protocol", "Validating Protocol... This process could take several minutes");
+            }
+
             return new Promise((resolve, reject) => {
                 if (this.loading.requiresValidation) {
                     validate(this.loading.protocol)
@@ -232,12 +229,10 @@ export class ProtocolService {
                     resolve();
                 }
             });
-        }
-    
-
+        } 
       
         const initializeProtocol = () => {
-            this.tasks.register("updating protocol", "Processing Protocol...");
+            this.tasks.register("updating protocol", "Initializing Protocol...");
             
             this.loading.protocol.errors = [];
             var cCommon, msg;
@@ -358,6 +353,7 @@ export class ProtocolService {
             this.loading.protocol._requiresCha = false;
             this.loading.protocol.errors = [];
     
+            this.tasks.register("updating protocol", "Processing Protocol...");
             processProtocol(this.loading.protocol, this.loading.protocol._protocolIdDict, this.loading.protocol, this.loading.calibration, cCommon, this.loading.meta.path!);
             // put the processed protocol on the protocol model, root object
             this.protocolModel.activeProtocol = this.loading.protocol;
@@ -427,8 +423,7 @@ export class ProtocolService {
         }
 
         let errorCopying: Boolean = false;
-        return addTask("updating protocol", "Loading Protocol Files...")
-            .then(reloadIfNeeded)
+        return reloadIfNeeded()
             .catch(() => {
                 errorCopying = true;
             })
@@ -446,17 +441,11 @@ export class ProtocolService {
                 return promise;
             })
             .then(loadFiles)
-            .then(() => {
-                return addTask("updating protocol", "Validating Protocol... This process could take several minutes");
-            })
             .then(validateIfCalledFor)
-            .then(() => {
-                return addTask("updating protocol", "Initializing Protocol...");
-            })
             .then(initializeProtocol)
-            .then(() => {
-                return addTask("updating protocol", "Checking Protocol Files...");
-            })
+            // .then(() => {
+            //     return addTask("updating protocol", "Checking Protocol Files...");
+            // })
             // .then(loadCustomJs)
             // .then(validateCustomJsIfCalledFor)
             .then(handleLoadErrors) // uses this.protocolModel.activeProtocol, loading.notify

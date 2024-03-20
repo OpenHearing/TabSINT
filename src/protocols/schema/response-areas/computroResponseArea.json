@@ -1,0 +1,87 @@
+{
+  "description": "Load Computro Game",
+  "allOf": [
+    {
+      "properties": {
+        "type": {
+          "enum": [ "externalAppResponseArea" ]
+        },
+        "autoSubmit": {
+          "type": "boolean",
+          "description": "Go straight to next page once this page is complete",
+          "default": false
+        },
+        "appName": {
+          "enum": [ "com.creare.computro" ],
+          "description": "Package name for computro"
+        },
+        "dataOut": {
+          "type": "object",
+          "description": "data object to passed to computro",
+          "properties": {
+            "message": {
+              "type": "string",
+              "description": "A string message to pass to external app - this could be something telling the external app what to do."
+            },
+            "data":{
+              "description": "Open ended field to pass other data to the external app, such as a number.",
+              "properties": {
+                "levels": {
+                  "type": "array",
+                  "description": ".",
+                  "properties":{
+                    "playbackRate": {
+                      "type": "number",
+                      "description": "Speed multiplier for the target audio.  Must be nonzero. Recommended range is 0.5 (half speed) to 2.0 (double speed).",
+                      "default": 1
+                    },
+                    "SpiesCaughtBeforeLevel": {
+                      "type": "number",
+                      "description": "Unity level to start on.",
+                      "default": 0
+                    },
+                    "NumDecodeTries": {
+                      "type": "number",
+                      "description": "Number of trials a player has to decode a message before declaring that the player has lost the level.",
+                      "default": 3
+                    },
+                    "signalSPL": {
+                      "type": "number",
+                      "description": "Volume at which to play the 'target' sound - the radio program recordings (dB SPL). Only effective in externalTargetAudioPath is defined and signalType=1.",
+                      "default": 65
+                    },
+                    "maskerSPL": {
+                      "type": "number",
+                      "description": "Volume at which to play the masker sound (db SPL). Set to zero for no masker. Only effective if maskerAudioPath is defined and targetType=1.",
+                      "default": 65
+                    },
+                    "rewardName": {
+                      "type": "string",
+                      "description": "Type of reward to show the player. Sound rewards (coffeeMaker, fan, radio) replace any previous masker. Visual rewards (rock, pencilHolder, picture, plant, mug, tchotchke) accumulate on the Unity 'desk'. If this parameter is not specified in the protocol, TabSINT will choose one at random.",
+                      "enum": ["none", "coffeeMaker", "fan", "mug", "pencilHolder", "picture", "plant", "radio", "rock", "tchotchke"]
+                    },
+                    "wordMaxLateTimeS": {
+                      "type": "number",
+                      "description": "If the player selects a word this many seconds after the word ends in the audio recording, it is scored as incorrect.",
+                      "default": 4
+                    },
+                    "wordMaxEarlyTimeS": {
+                      "type": "number",
+                      "description": "If the player selects a word this many seconds before the word begins in the audio recording, it is scored as incorrect. The time of each word in the recording may be estimated, rather than precisely known. This setting exists to add tolerance for the mismatch.",
+                      "default": 1
+                    },
+                    "wordAdvanceSelTimeS": {
+                      "type": "string",
+                      "description": "Maximum duration, in seconds, a word can be presented and selected on the screen before it is spoken in the clip.",
+                      "default": 10
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

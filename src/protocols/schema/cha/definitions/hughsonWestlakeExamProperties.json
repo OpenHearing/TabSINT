@@ -1,0 +1,61 @@
+{
+  "description": "Hughson-Westlake Exam Properties",
+  "allOf": [
+    { "$ref": "/cha/definitions/audiometryLevelProperties.json" },
+    {
+      "properties": {
+        "StepSize": {
+          "type": "integer",
+          "description": "Smallest level increment.  Ignored when Screener = true and for the accelerated threshold exam.",
+          "default": 5,
+          "maximum": 10,
+          "minimum": 2
+        },
+        "TonePulseNumber": {
+          "type": "integer",
+          "description": "Total number of tones played for each pulse train",
+          "default": 3,
+          "maximum": 5,
+          "minimum": 1
+        },
+        "PollingOffset": {
+          "type": "integer",
+          "description": "Period beyond last pulse where subject response still accepted, in ms.  Enforced on the CHA: PollingOffset <= MinISI <= MaxISI",
+          "default": 600,
+          "maximum": 1000,
+          "minimum": 0
+        },
+        "MinISI": {
+          "type": "integer",
+          "description": "Minimum value for inter-stimulus interval (ISI), in ms. Enforced on the CHA: PollingOffset <= MinISI <= MaxISI",
+          "default": 600,
+          "maximum": 2000,
+          "minimum": 0
+        },
+        "MaxISI": {
+          "type": "integer",
+          "description": "Maximum value for inter-stimulus interval (ISI), in ms. Enforced on the CHA: PollingOffset <= MinISI <= MaxISI",
+          "default": 1000,
+          "maximum": 5000,
+          "minimum": 1000
+        },
+        "Screener": {
+          "type": "boolean",
+          "description": "If true, will use the screener version of Hughson-Westlake level exam",
+          "default": false
+        },
+        "NumCorrectReq": {
+          "type": "integer",
+          "description": "Number of correct responses required to pass, and end the exam early (if applicable). Only used when Screener = true",
+          "default": 2,
+          "minimum": 0
+        },
+        "SemiAutomaticMode": {
+          "type": "boolean",
+          "description": "If true, pause after each pulse train to wait for a response.  If false, proceed in a fully automated fashion.",
+          "default": false
+        }
+      }
+    }
+  ]
+}

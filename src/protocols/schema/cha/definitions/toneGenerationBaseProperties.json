@@ -1,0 +1,55 @@
+{
+  "description": "CHA - tone generation properties",
+  "properties": {
+    "OutputChannel": {
+      "type": "string",
+      "description": "Channel",
+      "enum": ["HPL0", "HPR0", "HPL1", "HPR1", "LINEL0", "NONE LINEL0", "LINEL0 NONE", "HPL0 HPR0"],
+      "default": "HPL0"   
+    },
+    "UseWavFile": {
+      "type": "boolean",
+      "description": "If True, determine if a wav file exists for the requested OutputChannel and other parameters. If the wav file does not exist, return CHA_ERR_BAD_MEDIA per Error Codes. If False, generate stimulus on the fly.",
+      "default": false
+    },
+    "ToneRamp": {
+      "type": "integer",
+      "description": "Length of tone, in ms",
+      "default": 25,
+      "maximum": 50,
+      "minimum": 20
+    },
+    "UseNthOctave": {
+      "type": "boolean",
+      "description": "Test with pure/warble tones (False) or octave band noise (True)",
+      "default": false
+    },
+    "OctaveBandSize": {
+      "type": "integer",
+      "description": "Width of noise to generate if UseNthOctave is true. This is denominator",
+      "default": 8,
+      "maximum": 12,
+      "minimum": 1
+    },
+    "FDev": {
+      "type": "number",
+      "description": "Frequency modulation deviation about nominal frequency",
+      "default": 5.7,
+      "maximum": 60,
+      "minimum": 1.5
+    },
+    "FDevForm": {
+      "type": "string",
+      "enum": ["None", "Triangle", "Sine"],
+      "description": "Frequency modulation functional form",
+      "default": "None"
+    },
+    "FDevRate": {
+      "type": "number",
+      "description": "Frequency modulation rate, in Hz",
+      "default": 20,
+      "maximum": 20,
+      "minimum": 4
+    }
+  }
+}

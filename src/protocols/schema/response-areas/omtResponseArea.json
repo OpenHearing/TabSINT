@@ -1,0 +1,33 @@
+{
+  "description": "Oldenburg Matrix Test response area.",
+  "allOf": [
+    {"$ref": "/response-areas/definitions/commonResponseAreaProperties.json"},
+    {
+      "properties": {
+        "type": {
+          "enum": ["omtResponseArea"]
+        },
+        "language": {
+          "type": "string",
+          "enum": ["british", "american"],
+          "description": "Determines which set of words are used, from International Matrix Tests doc. Unused if 'rows' property is specified.",
+          "default": "british"
+        },
+         "autoSubmit": {
+          "type": "boolean",
+          "description": "Go straight to next page when a choice is selected",
+          "default": false
+        },
+        "correct": {
+          "type": "string",
+          "description": "The correct answer, such as 'Alan bought some big beds'. Should have the same number of words as there are columns in the word matrix."
+        },
+        "feedback": {
+          "type": "string",
+          "enum": ["gradeResponse", "showCorrect" ],
+          "description": "Provide feedback after submit.  'gradeResponse' will mark answers correct/incorrect(green/red).  'showCorrect' will grade AND show the correct choices."
+        }
+      }
+    }
+  ]
+}

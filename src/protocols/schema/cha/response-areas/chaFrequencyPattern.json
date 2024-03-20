@@ -1,0 +1,47 @@
+{
+  "description": "CHA - Frequency Pattern Detection Test",
+  "properties": {
+    "type": {
+      "enum": ["chaFrequencyPattern"]
+    },
+    "autoBegin": {
+      "type": "boolean",
+      "description": "Go straight into exam, without having to press the 'Begin' button",
+      "default": false
+    },
+    "feedback": {
+      "type": "boolean",
+      "description": "Shows the user whether they answered each frequency correctly.",
+      "default": true
+    },
+    "feedbackDelay": {
+       "type": "number",
+       "description": "Number of milliseconds to show feedback after the presentation before starting the next presentation. This field can be used even when `feedback` is set to `false`.",
+       "default": 1000
+    },
+    "examProperties": {
+      "type": "object",
+      "properties": {
+        "NumberOfPresentations": {
+          "type": "number",
+          "description": "Number of presentations in an exam.",
+          "default": 30,
+          "maximum": 40,
+          "minimum": 0
+        },
+        "Level": {
+          "type": "number",
+          "description": "Level of tones, set by calibration, in dB SPL",
+          "default": 75,
+          "maximum": 100,
+          "minimum": 0
+        },
+        "Channel": {
+          "type": "number",
+          "description": "Which ear to use for the output. 0=Left, 1=Right, 2=Both.",
+          "default": 0
+        }
+      }
+    }
+  }
+}

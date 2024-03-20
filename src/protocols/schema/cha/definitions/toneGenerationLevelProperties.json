@@ -1,0 +1,15 @@
+{
+  "description": "CHA - tone generation properties",
+  "allOf": [
+    { "$ref": "/cha/definitions/toneGenerationProperties.json"},
+    {
+      "properties": {
+        "Level": {
+          "type": "number",
+          "description": "Level of tone, set by calibration, in dB SPL",
+          "default": 65
+        }
+      }
+    }
+  ]
+}

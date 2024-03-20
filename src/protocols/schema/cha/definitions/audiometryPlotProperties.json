@@ -1,0 +1,12 @@
+{
+  "description": "CHA - common properties for audiometry plots",
+  "properties":{
+    "displayAudiogram": {
+      "description": "An array of strings, to be used in matching page ids, to select which results are plotted.  i.e. ['training'] or ['section1_left', 'section1_right']",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

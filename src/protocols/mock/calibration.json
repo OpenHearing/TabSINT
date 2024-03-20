@@ -1,0 +1,14 @@
+{
+  "headset": "VicFirth",
+	"tablet": "Nexus 7",
+	"CompAudioTest.wav": {
+        "refType": "none",
+        "RMSC": 0.1422041399190663,
+        "RMSA": 0.171569043273126,
+        "wavRMSC": 0.06330953052119198,
+        "wavRMSA": 0.07638283658811638,
+        "wavRMSZ": 0.1172970476929792,
+        "RMSZ": 0.2634694278240204,
+        "scaleFactor": 0.2774023438598532
+    }
+}

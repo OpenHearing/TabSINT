@@ -1,0 +1,1222 @@
+{
+  "title": "Basic Audiometry",
+  "subtitle": "",
+  "instructionText": "Tap <strong>Begin</strong> when you are ready to start.",
+  "minTabsintVersion": "1.2.0",
+  "hideProgressBar": true,
+  "submitText": "Submit",
+  "headset": "WAHTS",
+  "navMenu":[
+    {
+      "text": "Back to Main Menu",
+      "target": {
+        "reference": "MainMenu"
+      },
+      "returnHereAfterward": false
+    }
+  ],
+  "pages": [
+    {
+      "protocolId":"MainMenu",
+      "title":"main menu",
+      "pages":[
+        {
+          "id":"choose",
+          "title":"Menu",
+          "questionMainText":"Please Select a Test",
+          "instructionText": "",
+          "helpText": "",
+          "hideProgressBar":true,
+          "responseArea":{
+            "type":"multipleChoiceResponseArea",
+            "choices":[
+              {
+                "id": "Information"
+              },
+              {
+                "id":"Manual Audiometry"
+              },
+              {
+                "id":"Manual Screening"
+              },
+              {
+                "id":"Manual Tone Presentation"
+              },
+              {
+                "id":"Automated Screener"
+              },
+              {
+                "id":"Automated Audiometry (long)"
+              },
+              {
+                "id":"Automated Audiometry (short)"
+              },
+              {
+                "id": "Fixed Level Frequency Threshold (Bekesy Tracking)"
+              },
+              {
+                "id":"MPANL"
+              },
+              {
+                "id":"Comments"
+              },
+              {
+                "id": "Save PDF and Submit"
+              },
+              {
+                "id":"Finish and Submit"
+              }
+            ]
+          },
+          "followOns":[
+            {
+              "conditional":"result.response=='Information'",
+              "target":{
+                "reference": "info"
+              }
+            },
+            {
+              "conditional":"result.response=='Manual Audiometry'",
+              "target":{
+                "reference":"ManualAudiometry"
+              }
+            },
+            {
+              "conditional":"result.response=='Manual Screening'",
+              "target":{
+                "reference":"ManualScreening"
+              }
+            },
+            {
+              "conditional":"result.response=='Manual Tone Presentation'",
+              "target":{
+                "reference":"ManualTone"
+              }
+            },
+            {
+              "conditional":"result.response=='Automated Screener'",
+              "target":{
+                "reference":"AutomatedScreener"
+              }
+            },
+            {
+              "conditional":"result.response=='Automated Audiometry (long)'",
+              "target":{
+                "reference":"AutomatedAudiometryLong"
+              }
+            },
+            {
+              "conditional":"result.response=='Automated Audiometry (short)'",
+              "target":{
+                "reference":"AutomatedAudiometryShort"
+              }
+            },
+            {
+              "conditional": "result.response=='Fixed Level Frequency Threshold (Bekesy Tracking)'",
+              "target": {
+                "reference": "HAFTBekesy"
+              }
+            },
+            {
+              "conditional":"result.response=='MPANL'",
+              "target":{
+                "reference":"MPANL"
+              }
+            },
+            {
+              "conditional":"result.response=='Comments'",
+              "target":{
+                "reference":"comments"
+              }
+            },
+            {
+              "conditional":"result.response=='Save PDF and Submit'",
+              "target":{
+                "reference":"export_and_submit"
+              }
+            },
+            {
+              "conditional":"result.response=='Finish and Submit'",
+              "target":{
+                "reference":"@END_ALL"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "subProtocols":[
+    {
+      "protocolId": "export_and_submit",
+      "pages": [
+        {
+          "id": "pdf_export",
+          "title": "Basic Audiometry Results",
+          "questionMainText": "Basic Audiometry Results",
+          "instructionText":"Review and select Submit to Export as PDF",
+          "responseArea":{
+            "type": "resultsViewResponseArea",
+            "displayResults": [
+              {
+                "text": "Patient Information",
+                "displayIds": ["subject_info"]
+              },
+              {
+                "text": "Automated Screening",
+                "displayIds": ["autoscreen_results"]
+              },
+              {
+                "text": "Automated Audiometry (short) Results",
+                "displayIds": ["autoaudl_results"]
+              },
+              {
+                "text": "Automated Audiometry (short) Plot",
+                "displayIds": ["autoaudl_plot"]
+              },
+              {
+                "text": "Automated Audiometry (long) Table",
+                "displayIds": ["autoauds_results"]
+              },
+              {
+                "text": "Automated Audiometry (long) Plot",
+                "displayIds": ["autoauds_plot"]
+              },
+              {
+                "text": "Manual Audiometry Table ",
+                "displayIds": ["ManualAudiometryTable"]
+              },
+              {
+                "text": "Manual Audiometry Plot",
+                "displayIds": ["ManualAudiometryPlot"]
+              },
+              {
+                "text": "MPANL",
+                "displayIds": ["MPANL"]
+              },
+              {
+                "text": "Comments",
+                "displayIds": ["comments"]
+              }
+            ]
+        
+          }
+        },
+        {
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "comments",
+      "pages": [
+        {
+          "id": "comments",
+          "title": "Text Box Input",
+          "questionMainText": "Enter arbitrary text",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 5
+          }
+        },
+        {
+          "reference": "MainMenu"
+        }
+        ]
+      },
+    {
+      "protocolId": "info",
+      "pages": [
+        { 
+          "id": "subject_info",
+          "title": "Information",
+          "questionSubText": "Enter the following information:",
+          "helpText": "",
+          "hideProgressBar": true,
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "review": true,
+            "verticalSpacing": 10,
+            "responseRequired": true,
+            "inputList": [
+              {
+                "text": "Subject ID",
+                "inputType": "text",
+                "required": true
+              },
+              {
+                "text": "Administrator ID",
+                "inputType": "text",
+                "required": true
+              },
+              {
+                "text": "Subject Age",
+                "inputType": "number",
+                "required": true
+              },
+              {
+                "text": "Subject Gender",
+                "inputType": "dropdown",
+                "options": ["Male", "Female", "Other"],
+                "required": true
+              },
+              {
+                "text": "Test Location",
+                "inputType": "text",
+                "required": true
+              }
+            ]
+          }
+        },
+        {
+          "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "ManualAudiometry",
+      "pages": [
+        {
+          "id": "ManualAudiometry",
+          "title": "Manual Audiometry",
+          "responseArea": {
+            "type": "chaManualAudiometry",
+            "boneConduction": true,
+            "minLevel": -10,
+            "maxLevel": 100,
+            "presentationList": [
+              {
+                "F": 1000
+              },
+              {
+                "F": 500
+              },
+              {
+                "F": 1000
+              },
+              {
+                "F": 2000
+              },
+              {
+                "F": 3000
+              },
+              {
+                "F": 4000
+              },
+              {
+                "F": 6000
+              },
+              {
+                "F": 8000
+              }
+            ],
+            "examProperties": {
+              "LevelUnits": "dB HL",
+              "Lstart": 30,
+              "TonePulseNumber": 5,
+              "OutputChannel": "HPL0",
+              "UseSoftwareButton": true,
+              "PollingOffset": 1000,
+              "MinISI":1000,
+              "MaxISI":3000
+            }
+          }
+        },
+        {
+          "id": "ManualAudiometryPlot",
+          "questionSubText": "Manual Audiometry Results",
+          "responseArea": {
+            "type": "chaAudiometryResultsPlot",
+            "displayIds": ["ManualAudiometry"]
+          }
+        },
+        {
+          "id": "ManualAudiometryTable",
+          "questionSubText": "Manual Audiometry Results",
+          "responseArea": {
+            "type": "chaAudiometryResultsTable",
+            "displayIds": ["ManualAudiometry"]
+          }
+        },
+        {
+          "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "ManualScreening",
+      "pages": [
+        {
+          "id": "ManualScreening",
+          "title": "Manual Screening",
+          "responseArea": {
+            "type": "chaManualScreener",
+            "levels": [25, 40, 60],
+            "presentationList": [
+              {
+                "F": 1000
+              },
+              {
+                "F": 500
+              },
+              {
+                "F": 1000
+              },
+              {
+                "F": 2000
+              },
+              {
+                "F": 3000
+              },
+              {
+                "F": 4000
+              },
+              {
+                "F": 6000
+              },
+              {
+                "F": 8000
+              }
+            ],
+            "examProperties": {
+              "LevelUnits": "dB HL",
+              "Lstart": 30,
+              "TonePulseNumber": 5,
+              "OutputChannel": "HPL0",
+              "UseSoftwareButton": true,
+              "PollingOffset": 1000,
+              "MinISI":1000,
+              "MaxISI":3000
+            }
+          }
+        },
+        {
+          "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "ManualTone",
+      "pages": [
+        {
+          "id": "ManualTone",
+          "title": "Manual Tone Presentation",
+          "responseArea": {
+            "type": "chaManualAudiometry",
+            "minLevel": -10,
+            "maxLevel": 100,
+            "presentationList": [
+              {
+                "F": 1000
+              },
+              {
+                "F": 500
+              },
+              {
+                "F": 1000
+              },
+              {
+                "F": 2000
+              },
+              {
+                "F": 3000
+              },
+              {
+                "F": 4000
+              },
+              {
+                "F": 6000
+              },
+              {
+                "F": 8000
+              }
+            ],
+            "examProperties": {
+              "LevelUnits": "dB HL",
+              "Lstart": 30,
+              "TonePulseNumber": 5,
+              "OutputChannel": "HPL0",
+              "UseSoftwareButton": true,
+              "PollingOffset": 1000,
+              "MinISI":1000,
+              "MaxISI":3000
+            }
+          }
+        },
+        {
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "AutomatedScreener",
+      "pages": [
+        {
+          "id": "screen_r1",
+          "title": "Automated Screener",
+          "questionMainText": "Automated Screener",
+          "instructionText": "",
+          "responseArea": {
+            "type": "chaHughsonWestlake",
+            "autoSubmit": true,
+            "repeatIfFailedOnce": true,
+            "examProperties": {
+              "F": 1000,
+              "Lstart": 20,
+              "Screener": true,
+              "TonePulseNumber": 3,
+              "UseSoftwareButton": true,
+              "PresentationMax": 3,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPR0"
+            }
+          }
+        },
+        {
+          "id": "screen_r2",
+          "title": "Automated Screener",
+          "questionMainText": "Automated Screener",
+          "instructionText": "",
+          "responseArea": {
+            "type": "chaHughsonWestlake",
+            "autoBegin": true,
+            "autoSubmit": true,
+            "repeatIfFailedOnce": true,
+            "examProperties": {
+              "F": 2000,
+              "Lstart": 20,
+              "Screener": true,
+              "TonePulseNumber": 3,
+              "UseSoftwareButton": true,
+              "PresentationMax": 3,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPR0"
+            }
+          }
+        },
+        {
+          "id": "screen_r3",
+          "title": "Automated Screener",
+          "questionMainText": "Automated Screener",
+          "instructionText": "",
+          "responseArea": {
+            "type": "chaHughsonWestlake",
+            "autoBegin": true,
+            "autoSubmit": true,
+            "repeatIfFailedOnce": true,
+            "examProperties": {
+              "F": 4000,
+              "Lstart": 20,
+              "Screener": true,
+              "TonePulseNumber": 3,
+              "UseSoftwareButton": true,
+              "PresentationMax": 3,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPR0"
+            }
+          }
+        },
+        {
+          "id": "screen_l1",
+          "title": "Automated Screener",
+          "questionMainText": "Automated Screener",
+          "instructionText": "",
+          "responseArea": {
+            "type": "chaHughsonWestlake",
+            "autoBegin": true,
+            "autoSubmit": true,
+            "repeatIfFailedOnce": true,
+            "examProperties": {
+              "F": 1000,
+              "Lstart": 20,
+              "Screener": true,
+              "TonePulseNumber": 3,
+              "UseSoftwareButton": true,
+              "PresentationMax": 3,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPL0"
+            }
+          }
+        },
+        {
+          "id": "screen_l2",
+          "title": "Automated Screener",
+          "questionMainText": "Automated Screener",
+          "instructionText": "",
+          "responseArea": {
+            "type": "chaHughsonWestlake",
+            "autoBegin": true,
+            "autoSubmit": true,
+            "repeatIfFailedOnce": true,
+            "examProperties": {
+              "F": 2000,
+              "Lstart": 20,
+              "Screener": true,
+              "TonePulseNumber": 3,
+              "UseSoftwareButton": true,
+              "PresentationMax": 3,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPL0"
+            }
+          }
+        },
+        {
+          "id": "screen_l3",
+          "title": "Automated Screener",
+          "questionMainText": "Automated Screener",
+          "instructionText": "",
+          "responseArea": {
+            "type": "chaHughsonWestlake",
+            "autoBegin": true,
+            "autoSubmit": true,
+            "repeatIfFailedOnce": true,
+            "examProperties": {
+              "F": 4000,
+              "Lstart": 20,
+              "Screener": true,
+              "TonePulseNumber": 3,
+              "UseSoftwareButton": true,
+              "PresentationMax": 3,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPL0"
+            }
+          }
+        },
+        {
+          "id": "autoscreen_results",
+          "title": "Automated Screener",
+          "responseArea": {
+            "type": "chaAudiometryResultsTable",
+            "displayIds": ["screen_r1", "screen_r2", "screen_r3", "screen_l1", "screen_l2", "screen_l3"]
+          }
+
+        },
+        {
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "AutomatedAudiometryLong",
+      "pages": [
+        {
+          "id": "HW_1",
+          "title": "Automated Audiometry (long)",
+          "questionMainText": "Automated Audiometry (long)",
+          "instructionText": "",
+          "submitText": "Submit",
+          "responseArea": {
+            "type": "chaHughsonWestlake",
+            "repeatIfFailedOnce": true,
+            "skip": true,
+            "autoSubmit": true,
+            "examProperties": {
+              "F": 500,
+              "Lstart": 30,
+              "TonePulseNumber": 3,
+              "UseSoftwareButton": true,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPR0"
+            }
+          }
+        },
+        {
+          "id": "HW_2",
+          "title": "Automated Audiometry (long)",
+          "questionMainText": "Automated Audiometry (long)",
+          "instructionText": "",
+          "submitText": "Submit",
+          "responseArea": {
+            "type": "chaHughsonWestlake",
+            "repeatIfFailedOnce": true,
+            "skip": true,
+            "autoSubmit": true,
+            "examProperties": {
+              "F": 1000,
+              "Lstart": 30,
+              "TonePulseNumber": 3,
+              "UseSoftwareButton": true,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPR0"
+            }
+          }
+        },
+        {
+          "id": "HW_3",
+          "title": "Automated Audiometry (long)",
+          "questionMainText": "Automated Audiometry (long)",
+          "instructionText": "",
+          "responseArea": {
+            "type": "chaHughsonWestlake",
+            "repeatIfFailedOnce": true,
+            "skip": true,
+            "autoSubmit": true,
+            "examProperties": {
+              "F": 2000,
+              "Lstart": 30,
+              "TonePulseNumber": 3,
+              "UseSoftwareButton": true,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPR0"
+            }
+          }
+        },
+        {
+          "id": "HW_4",
+          "title": "Automated Audiometry (long)",
+          "questionMainText": "Automated Audiometry (long)",
+          "instructionText": "",
+          "responseArea": {
+            "type": "chaHughsonWestlake",
+            "repeatIfFailedOnce": true,
+            "skip": true,
+            "autoSubmit": true,
+            "examProperties": {
+              "F": 4000,
+              "Lstart": 30,
+              "TonePulseNumber": 3,
+              "UseSoftwareButton": true,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPR0"
+            }
+          }
+        },
+        {
+          "id": "HW_5",
+          "title": "Automated Audiometry (long)",
+          "questionMainText": "Automated Audiometry (long)",
+          "instructionText": "",
+          "responseArea": {
+            "type": "chaHughsonWestlake",
+            "repeatIfFailedOnce": true,
+            "skip": true,
+            "autoSubmit": true,
+            "examProperties": {
+              "F": 6000,
+              "Lstart": 30,
+              "TonePulseNumber": 3,
+              "UseSoftwareButton": true,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPR0"
+            }
+          }
+        },
+        {
+          "id": "HW_6",
+          "title": "Automated Audiometry (long)",
+          "questionMainText": "Automated Audiometry (long)",
+          "instructionText": "",
+          "responseArea": {
+            "type": "chaHughsonWestlake",
+            "repeatIfFailedOnce": true,
+            "skip": true,
+            "autoSubmit": true,
+            "examProperties": {
+              "F": 8000,
+              "Lstart": 30,
+              "TonePulseNumber": 3,
+              "UseSoftwareButton": true,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPR0"
+            }
+          }
+        },
+        {
+          "id": "HW_7",
+          "title": "Automated Audiometry (long)",
+          "questionMainText": "Automated Audiometry (long)",
+          "instructionText": "",
+          "responseArea": {
+            "type": "chaHughsonWestlake",
+            "repeatIfFailedOnce": true,
+            "skip": true,
+            "autoSubmit": true,
+            "examProperties": {
+              "F": 500,
+              "Lstart": 30,
+              "TonePulseNumber": 3,
+              "UseSoftwareButton": true,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPL0"
+            }
+          }
+        },
+        {
+          "id": "HW_8",
+          "title": "Automated Audiometry (long)",
+          "questionMainText": "Automated Audiometry (long)",
+          "instructionText": "",
+          "responseArea": {
+            "type": "chaHughsonWestlake",
+            "repeatIfFailedOnce": true,
+            "skip": true,
+            "autoSubmit": true,
+            "examProperties": {
+              "F": 1000,
+              "Lstart": 30,
+              "TonePulseNumber": 3,
+              "UseSoftwareButton": true,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPL0"
+            }
+          }
+        },
+        {
+          "id": "HW_9",
+          "title": "Automated Audiometry (long)",
+          "questionMainText": "Automated Audiometry (long)",
+          "instructionText": "",
+          "responseArea": {
+            "type": "chaHughsonWestlake",
+            "repeatIfFailedOnce": true,
+            "skip": true,
+            "autoSubmit": true,
+            "examProperties": {
+              "F": 2000,
+              "Lstart": 30,
+              "TonePulseNumber": 3,
+              "UseSoftwareButton": true,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPL0"
+            }
+          }
+        },
+        {
+          "id": "HW_10",
+          "title": "Automated Audiometry (long)",
+          "questionMainText": "Automated Audiometry (long)",
+          "instructionText": "",
+          "responseArea": {
+            "type": "chaHughsonWestlake",
+            "repeatIfFailedOnce": true,
+            "skip": true,
+            "autoSubmit": true,
+            "examProperties": {
+              "F": 4000,
+              "Lstart": 30,
+              "TonePulseNumber": 3,
+              "UseSoftwareButton": true,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPL0"
+            }
+          }
+        },
+        {
+          "id": "HW_11",
+          "title": "Automated Audiometry (long)",
+          "questionMainText": "Automated Audiometry (long)",
+          "instructionText": "",
+          "responseArea": {
+            "type": "chaHughsonWestlake",
+            "repeatIfFailedOnce": true,
+            "skip": true,
+            "autoSubmit": true,
+            "examProperties": {
+              "F": 6000,
+              "Lstart": 30,
+              "TonePulseNumber": 3,
+              "UseSoftwareButton": true,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPL0"
+            }
+          }
+        },
+        {
+          "id": "HW_12",
+          "title": "Automated Audiometry (long)",
+          "questionMainText": "Automated Audiometry (long)",
+          "instructionText": "",
+          "responseArea": {
+            "type": "chaHughsonWestlake",
+            "repeatIfFailedOnce": true,
+            "skip": true,
+            "autoSubmit": true,
+            "examProperties": {
+              "F": 8000,
+              "Lstart": 30,
+              "TonePulseNumber": 3,
+              "UseSoftwareButton": true,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPL0"
+            }
+          }
+        },
+        {
+          "id": "autoaudl_plot",
+          "title": "results",
+          "responseArea": {
+            "type": "chaAudiometryResultsPlot",
+            "displayIds": ["HW_1", "HW_2", "HW_3", "HW_4", "HW_5", "HW_6", "HW_7", "HW_8", "HW_9", "HW_10", "HW_11", "HW_12"]
+          }
+        },
+        {
+          "id": "autoaudl_results",
+          "title": "results",
+          "responseArea": {
+            "type": "chaAudiometryResultsTable",
+            "displayIds": ["HW_1", "HW_2", "HW_3", "HW_4", "HW_5", "HW_6", "HW_7", "HW_8", "HW_9", "HW_10", "HW_11", "HW_12"]
+          }
+        },    
+        {
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "AutomatedAudiometryShort",
+      "pages": [
+        {
+          "id": "HW_short0",
+          "title": "Automated Audiometry (short)",
+          "questionMainText": "Automated Audiometry (short)",
+          "instructionText": "",
+          "responseArea": {
+            "type": "chaHughsonWestlake",
+            "repeatIfFailedOnce": true,
+            "skip": true,
+            "autoSubmit": true,
+            "examProperties": {
+              "F": 500,
+              "Lstart": 30,
+              "TonePulseNumber": 3,
+              "UseSoftwareButton": true,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPR0"
+            }
+          }
+        },
+        {
+          "id": "HW_short1",
+          "title": "Automated Audiometry (short)",
+          "questionMainText": "Automated Audiometry (short)",
+          "instructionText": "",
+          "responseArea": {
+            "type": "chaHughsonWestlake",
+            "repeatIfFailedOnce": true,
+            "skip": true,
+            "autoSubmit": true,
+            "examProperties": {
+              "F": 1000,
+              "Lstart": 30,
+              "TonePulseNumber": 3,
+              "UseSoftwareButton": true,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPR0"
+            }
+          }
+        },
+        {
+          "id": "HW_short2",
+          "title": "Automated Audiometry (short)",
+          "questionMainText": "Automated Audiometry (short)",
+          "instructionText": "",
+          "responseArea": {
+            "type": "chaHughsonWestlake",
+            "repeatIfFailedOnce": true,
+            "skip": true,
+            "autoSubmit": true,
+            "examProperties": {
+              "F": 2000,
+              "Lstart": 30,
+              "TonePulseNumber": 3,
+              "UseSoftwareButton": true,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPR0"
+            }
+          }
+        },
+        {
+          "id": "HW_short3",
+          "title": "Automated Audiometry (short)",
+          "questionMainText": "Automated Audiometry (short)",
+          "instructionText": "",
+          "responseArea": {
+            "type": "chaHughsonWestlake",
+            "repeatIfFailedOnce": true,
+            "skip": true,
+            "autoSubmit": true,
+            "examProperties": {
+              "F": 3000,
+              "Lstart": 30,
+              "TonePulseNumber": 3,
+              "UseSoftwareButton": true,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPR0"
+            }
+          }
+        },
+        {
+          "id": "HW_short4",
+          "title": "Automated Audiometry (short)",
+          "questionMainText": "Automated Audiometry (short)",
+          "instructionText": "",
+          "responseArea": {
+            "type": "chaHughsonWestlake",
+            "repeatIfFailedOnce": true,
+            "skip": true,
+            "autoSubmit": true,
+            "examProperties": {
+              "F": 4000,
+              "Lstart": 30,
+              "TonePulseNumber": 3,
+              "UseSoftwareButton": true,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPR0"
+            }
+          }
+        },
+        {
+          "id": "HW_short5",
+          "title": "Automated Audiometry (short)",
+          "questionMainText": "Automated Audiometry (short)",
+          "instructionText": "",
+          "responseArea": {
+            "type": "chaHughsonWestlake",
+            "repeatIfFailedOnce": true,
+            "skip": true,
+            "autoSubmit": true,
+            "examProperties": {
+              "F": 500,
+              "Lstart": 30,
+              "TonePulseNumber": 3,
+              "UseSoftwareButton": true,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPL0"
+            }
+          }
+        },
+        {
+          "id": "HW_short6",
+          "title": "Automated Audiometry (short)",
+          "questionMainText": "Automated Audiometry (short)",
+          "instructionText": "",
+          "responseArea": {
+            "type": "chaHughsonWestlake",
+            "repeatIfFailedOnce": true,
+            "skip": true,
+            "autoSubmit": true,
+            "examProperties": {
+              "F": 1000,
+              "Lstart": 30,
+              "TonePulseNumber": 3,
+              "UseSoftwareButton": true,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPL0"
+            }
+          }
+        },
+        {
+          "id": "HW_short7",
+          "title": "Automated Audiometry (short)",
+          "questionMainText": "Automated Audiometry (short)",
+          "instructionText": "",
+          "responseArea": {
+            "type": "chaHughsonWestlake",
+            "repeatIfFailedOnce": true,
+            "skip": true,
+            "autoSubmit": true,
+            "examProperties": {
+              "F": 2000,
+              "Lstart": 30,
+              "TonePulseNumber": 3,
+              "UseSoftwareButton": true,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPL0"
+            }
+          }
+        },
+        {
+          "id": "HW_short8",
+          "title": "Automated Audiometry (short)",
+          "questionMainText": "Automated Audiometry (short)",
+          "instructionText": "",
+          "responseArea": {
+            "type": "chaHughsonWestlake",
+            "repeatIfFailedOnce": true,
+            "skip": true,
+            "autoSubmit": true,
+            "examProperties": {
+              "F": 3000,
+              "Lstart": 30,
+              "TonePulseNumber": 3,
+              "UseSoftwareButton": true,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPL0"
+            }
+          }
+        },
+        {
+          "id": "HW_short9",
+          "title": "Automated Audiometry (short)",
+          "questionMainText": "Automated Audiometry (short)",
+          "instructionText": "",
+          "responseArea": {
+            "type": "chaHughsonWestlake",
+            "repeatIfFailedOnce": true,
+            "skip": true,
+            "autoSubmit": true,
+            "examProperties": {
+              "F": 4000,
+              "Lstart": 30,
+              "TonePulseNumber": 3,
+              "UseSoftwareButton": true,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPL0"
+            }
+          }
+        },
+        {
+          "id": "autoauds_results",
+          "title": "results",
+          "responseArea": {
+            "type": "chaAudiometryResultsTable",
+            "displayIds": ["HW_short0", "HW_short1", "HW_short2", "HW_short3", "HW_short4", "HW_short5", "HW_short6", "HW_short7", "HW_short8", "HW_short9"]
+          }
+
+        },
+        {
+          "id": "autoauds_plot",
+          "title": "results",
+          "responseArea": {
+            "type": "chaAudiometryResultsPlot",
+            "displayIds": ["HW_short0", "HW_short1", "HW_short2", "HW_short3", "HW_short4", "HW_short5", "HW_short6", "HW_short7", "HW_short8", "HW_short9"]
+          }
+        },
+        {
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "HAFTBekesy",
+      "pages": [
+        {
+          "reference": "HAFTBekesyRight"
+        },
+        {
+          "reference": "HAFTBekesyLeft"
+        },
+        {
+          "reference": "HAFTBekesyResults"
+        }
+      ]
+    },
+    {
+      "protocolId": "HAFTBekesyRight",
+      "pages": [
+        {
+          "id": "right_bekesy_flft",
+          "title": "HAFT",
+          "questionMainText": "Highest Audible Freqency Test (Bekesy Tracking)",
+          "instructionText": "Press and hold the button whenever you believe you hear the sound and release the button when you can no longer hear the sound.",
+          "responseArea": {
+            "type": "chaBHAFT",
+            "skip": false,
+            "pause": true,
+            "autoSubmit": true,
+            "hideExamProperties": "always",
+            "examInstructions": "Press and hold the button whenever you believe you hear the sound and release the button when you can no longer hear the sound.",
+            "maskingNoise": {
+              "Ear": 1,
+              "Level": [
+                0,
+                30
+              ]
+            },
+            "examProperties": {
+              "LevelUnits": "dB SPL",
+              "UseSoftwareButton": true,
+              "Fstart": 8000,
+              "PresentationMax": 100,
+              "MaximumOutputFrequency": 20000,
+              "IncrementStartMultiplierFrequency": 2,
+              "IncrementNominalFrequency": 0.08333,
+              "Level": 80,
+              "OutputChannel": "HPR0",
+              "BypassCalibrationLimit": true,
+              "ToneDuration": 225,
+              "ToneRamp": 25
+            }
+          }
+        }
+      ]
+    },
+    {
+      "protocolId": "HAFTBekesyLeft",
+      "pages": [
+        {
+          "id": "left_bekesy_flft",
+          "title": "HAFT",
+          "questionMainText": "Highest Audible Freqency Test (Bekesy Tracking)",
+          "instructionText": "Press and hold the button whenever you believe you hear the sound and release the button when you can no longer hear the sound.",
+          "responseArea": {
+            "type": "chaBHAFT",
+            "skip": false,
+            "pause": true,
+            "autoSubmit": true,
+            "hideExamProperties": "always",
+            "examInstructions": "Press and hold the button whenever you believe you hear the sound and release the button when you can no longer hear the sound.",
+            "maskingNoise": {
+              "Ear": 0,
+              "Level": [
+                30,
+                0
+              ]
+            },
+            "examProperties": {
+              "LevelUnits": "dB SPL",
+              "UseSoftwareButton": true,
+              "Fstart": 8000,
+              "PresentationMax": 100,
+              "MaximumOutputFrequency": 20000,
+              "IncrementStartMultiplierFrequency": 2,
+              "IncrementNominalFrequency": 0.08333,
+              "Level": 80,
+              "OutputChannel": "HPL0",
+              "BypassCalibrationLimit": true,
+              "ToneDuration": 225,
+              "ToneRamp": 25
+            }
+          }
+        }
+      ]
+    },
+    {
+      "protocolId": "HAFTBekesyResults",
+      "pages": [
+        {
+          "id": "bhaft_results",
+          "title": "Results",
+          "responseArea": {
+            "type": "chaAudiometryResultsTable",
+            "displayIds": [
+              "right_bekesy_flft",
+              "left_bekesy_flft"
+            ]
+          }
+        },
+        {
+          "reference": "@END_ALL"
+        }
+      ]
+    },
+    {
+      "protocolId": "MPANL",
+      "pages": [
+        {
+          "id": "MPANLs",
+          "title": "MPANLs",
+          "questionMainText": "Svantek Background Noise Measurement",
+          "instructionText":"This test measures the background noise levels using the Svantek Dosimeter.  Press 3 or 10 seconds and then wait quietly for measurement to complete.",
+          "responseArea":{
+              "type": "mpanlResponseArea"
+          }
+        },
+        {
+          "reference": "MainMenu"
+        }
+      ]
+    }
+
+  ]
+}

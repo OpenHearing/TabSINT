@@ -1,0 +1,43 @@
+{
+  "description": "CHA - Tone Generation.",
+  "additionalProperties": false,
+  "properties": {
+    "type": {
+      "enum": [ "chaToneGeneration"]
+    },
+    "skip": {
+      "type": "boolean",
+      "description": "Allows user to skip the response area",
+      "default": false
+    },
+    "autoSubmit": {
+      "type": "boolean",
+      "description": "Go straight to next page once this page is complete",
+      "default": false
+    },
+    "autoBegin": {
+      "type": "boolean",
+      "description": "Go straight into exam, without having to press the 'Begin' button",
+      "default": false
+    },
+    "examInstructions": {
+      "type": "string",
+      "description": "Replaces the top-level instruction text on the CHA exam pages (each page after starting page)"
+    },
+    "examProperties": {
+      "allOf": [
+        { "$ref":"/cha/definitions/toneGenerationLongLevelProperties.json"},
+        {
+          "properties": {
+            "F": {
+              "type": "integer",
+              "description": "Frequency of tone/center frequency of noise",
+              "maximum": 32000,
+              "minimum": 1
+            }
+          }
+        }
+      ]
+    }
+  }
+}

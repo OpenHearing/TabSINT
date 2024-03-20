@@ -1,0 +1,51 @@
+{
+  "description": "Multiple Choice Selection Response Area",
+  "allOf": [
+    {"$ref": "/response-areas/definitions/commonResponseAreaProperties.json"},
+    {
+      "properties": {
+        "type": {
+          "enum": ["multipleChoiceSelectionResponseArea"]
+        },
+        "columnLabels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 2,
+          "maxItems": 5,
+          "description": "Labels for columns. The number of columns must match the number of columns in the 'rows' property, described below. The number of columns must be between 2 and 5."
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 2,
+            "maxItems": 5
+          },
+          "minItems": 1,
+          "maxItems": 10,
+          "description": "n by m array. The number of rows, n, should be between 1 and 10. The number of columns, m, should be between 2 and 5. If nothing specified, defaults to standard OMT array.",
+          "default": "OMT 10 x 5 array"
+        },
+        "autoSubmit": {
+          "type": "boolean",
+          "description": "Go straight to next page when a choice is selected",
+          "default": false
+        },
+        "correct": {
+          "type": "string",
+          "description": "The correct answer, such as 'Alan bought some big beds'. Should have the same number of words as there are columns in the word matrix."
+        },
+        "feedback": {
+          "type": "string",
+          "enum": ["gradeResponse", "showCorrect"],
+          "description": "Provide feedback after submit.  'gradeResponse' will mark answers correct/incorrect(green/red).  'showCorrect' will grade AND show the correct choices."
+        }
+      }
+    }
+  ]
+}

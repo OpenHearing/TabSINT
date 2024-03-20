@@ -1,0 +1,28 @@
+{
+  "description": "NATO Response Area",
+  "allOf": [
+    {"$ref": "/response-areas/definitions/commonResponseAreaProperties.json"},
+    {
+      "properties": {
+        "type": {
+          "enum": ["natoResponseArea"]
+        },
+        "sentence": {
+          "type": "string",
+          "description": "Sentence to be displayed to user. Required."
+        },
+        "microphone": {
+          "type": "string",
+          "description": "Microphone to use for recording",
+          "enum": ["internal", "external"],
+          "default": "internal"
+        },
+        "autoPlay": {
+          "type": "boolean",
+          "description": "Automatically play the recorded audio once stopped",
+          "default": "true"
+        }
+      }
+    }
+  ]
+}

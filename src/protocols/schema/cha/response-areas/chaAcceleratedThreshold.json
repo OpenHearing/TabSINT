@@ -1,0 +1,14 @@
+{
+  "description": "CHA - Accelerated Threshold Audiometry",
+  "allOf": [
+    { "$ref": "/cha/definitions/audiometryPageProperties.json" },
+    { 
+      "properties": {
+        "type": {
+          "enum": [ "chaAcceleratedThreshold"]
+        },
+        "examProperties": { "$ref": "/cha/definitions/acceleratedThresholdExamProperties.json" }
+      }
+    }
+  ]
+}

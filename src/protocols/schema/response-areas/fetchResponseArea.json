@@ -1,0 +1,106 @@
+{
+  "description": "Load Fetch Game",
+  "allOf": [
+    {
+      "properties": {
+        "type": {
+          "enum": [ "externalAppResponseArea" ]
+        },
+        "autoSubmit": {
+          "type": "boolean",
+          "description": "Go straight to next page once this page is complete",
+          "default": false
+        },
+        "appName": {
+          "enum": [ "com.creare.fetch" ],
+          "description": "Package name for fetch"
+        },
+        "dataOut": {
+          "type": "object",
+          "description": "data object to passed to fetch",
+          "properties": {
+            "message": {
+              "type": "string",
+              "description": "A string message to pass to external app - this could be something telling the external app what to do."
+            },
+            "data":{
+              "description": "Open ended field to pass other data to the external app, such as a number.",
+              "properties": {
+                "PerpetualPlay": {
+                  "type": "boolean",
+                  "description": "Deprecated. Please use NumLevelsToPlay = -1.",
+                  "default": true
+                },
+                "StartLevelNum": {
+                  "type": "number",
+                  "description": "Unity level to start on.",
+                  "default": 1
+                },
+                "MostDifficultLevel": {
+                  "type": "number",
+                  "description": "Most difficult Unity level.",
+                  "default": 40
+                },
+                "NumLevelsToPlay": {
+                  "type": "number",
+                  "description": "Number of Fetch levels to play, after which the Unity application will transfer back to TabSINT automatically. If -1, then Fetch will continue to play indefinitely.",
+                  "default": -1
+                },
+                "MinBikeSpeed": {
+                  "type": "number",
+                  "description": "Minimum Unity Fetch Game bike speed.",
+                  "default": 3
+                },
+                "MaxBikeSpeed": {
+                  "type": "number",
+                  "description": "Maximum Unity Fetch Game bike speed.",
+                  "default": 8
+                },
+                "MinTailSpeed": {
+                  "type": "number",
+                  "description": "Minimum Unity Fetch Game tail speed.",
+                  "default": 3.5
+                },
+                "MaxTailSpeed": {
+                  "type": "number",
+                  "description": "Maximum Unity Fetch Game tail speed.",
+                  "default": 8.5
+                },
+                "EasiestSnrDb": {
+                  "type": "number",
+                  "description": "Easiest (maximum) Unity SNR (dB).",
+                  "default": 6
+                },
+                "HardestSnrDb": {
+                  "type": "number",
+                  "description": "Most difficult (minimum) Unity SNR (dB).",
+                  "default": -20
+                },
+                "MinAmbientVol": {
+                  "type": "number",
+                  "description": "Minimum ambient volume (dB).",
+                  "default": 0.2
+                },
+                "MaxAmbientVol": {
+                  "type": "number",
+                  "description": "Maximum ambient volume (dB).",
+                  "default": 0.5
+                },
+                "MinLevelLengthTurns": {
+                  "type": "number",
+                  "description": "Number of audio cues (turns) the player must correctly decipher to win level 0.",
+                  "default": 15
+                },
+                "MaxLevelLengthTurns": {
+                  "type": "number",
+                  "description": "Number of audio cues (turns) the player must correctly decipher to win the most difficult level.",
+                  "default": 30
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
