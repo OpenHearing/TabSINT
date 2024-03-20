@@ -1,26 +1,28 @@
 import * as _ from 'lodash';
-
 import { Injectable } from '@angular/core';
-import { Logger } from '../utilities/logger.service';
+import { CopyResult } from '@capacitor/filesystem';
+import { TranslateService } from '@ngx-translate/core';
+
+import { ProtocolSchema } from '../interfaces/protocol-schema.interface';
+import { LoadingProtocolInterface } from '../interfaces/loading-protocol-object.interface';
+import { ProtocolValidationResultInterface } from '../interfaces/protocol-validation-result.interface';
+import { ProtocolErrorInterface } from '../interfaces/protocol-error.interface';
 import { DiskModel } from '../models/disk/disk.service';
+import { DiskInterface } from '../models/disk/disk.interface';
 import { ProtocolModel } from '../models/protocol/protocol.service';
 import { ProtocolInterface } from '../models/protocol/protocol.interface';
-import { PageDefinition, ProtocolSchema } from '../interfaces/protocol-schema.interface';
-import { DialogType, ProtocolServer} from '../utilities/constants';
 import { AppModel } from '../models/app/app.service';
+import { AppInterface } from '../models/app/app.interface';
+import { ProtocolModelInterface } from '../models/protocol/protocol-model.interface';
+import { DialogType, ProtocolServer} from '../utilities/constants';
+import { Logger } from '../utilities/logger.service';
 import { FileService } from './file.service';
 import { Paths } from '../utilities/paths.service';
-import { LoadingProtocolInterface } from '../interfaces/loading-protocol-object.interface';
-import { DiskInterface } from '../models/disk/disk.interface';
-import { AppInterface } from '../models/app/app.interface';
 import { Tasks } from '../utilities/tasks.service';
-import { ProtocolValidationResultInterface } from '../interfaces/protocol-validation-result.interface';
-import { CopyResult } from '@capacitor/filesystem';
-import { error } from 'console';
 import { Notifications } from '../utilities/notifications.service';
-import { TranslateService } from '@ngx-translate/core';
-import { ProtocolModelInterface } from '../models/protocol/protocol-model.interface';
 import { loadingProtocolDefaults } from '../utilities/defaults';
+import { processProtocol } from '../utilities/process-protocol';
+import { checkCalibrationFiles, checkControllers, checkPreProcessFunctions } from '../utilities/protocol-checks';
 
 @Injectable({
     providedIn: 'root',
@@ -176,7 +178,6 @@ export class ProtocolService {
               })
               .then(() => {
                 const promise = new Promise<void>((resolve, reject) => {
-                    // reject if p didn't load
                     if (!this.loading.protocol) {
                       this.logger.error("Protocol did not load properly");
                       if (this.disk.audhere) {
@@ -233,148 +234,7 @@ export class ProtocolService {
             });
         }
     
-        function processProtocol(subProtocol: ProtocolSchema, dict: _.Dictionary<ProtocolSchema>, rootProtocol: ProtocolInterface, calibration: any, commonCalibration: any, prefix: string) {
-            _.forEach(subProtocol.pages, function(page) {
-              processPage(page, dict, rootProtocol, calibration, commonCalibration, prefix);
-            });
-      
-            if (_.has(subProtocol, "protocolId")) {
-              dict[subProtocol.protocolId!] = subProtocol; //todo: we are storing the whole procotocol here...
-            }
-      
-            if (_.has(subProtocol, "subProtocols")) {
-              _.forEach(subProtocol.subProtocols, function(obj) {
-                processProtocol(obj, dict, rootProtocol, calibration, commonCalibration, prefix);
-              });
-            }
-          }
-      
-          function processPage(page: any, dict: _.Dictionary<ProtocolSchema>, rootProtocol: ProtocolInterface, calibration: any, commonCalibration: any, prefix: string) {
-            // check for missing preProcessFunctions
-            if (page.preProcessFunction) {
-              rootProtocol._preProcessFunctionList!.push(page.preProcessFunction);
-            }
-      
-            if (page.wavfiles) {
-              _.forEach(page.wavfiles, function(wavfile) {
-                // wav files using common media repos
-                if (wavfile.useCommonRepo) {
-                  if (rootProtocol.commonRepo && rootProtocol.commonRepo.path) {
-                    if (commonCalibration) {
-                      if (commonCalibration[wavfile.path]) {
-                        wavfile.cal = commonCalibration[wavfile.path];
-                      } else {
-                        rootProtocol._missingCommonWavCalList!.push(wavfile.path);
-                      }
-                    } else {
-                        rootProtocol._missingCommonMediaRepo = true;
-                        rootProtocol._missingCommonWavCalList!.push(wavfile.path);
-                    }
-                    wavfile.path = rootProtocol.commonRepo.path + wavfile.path;
-                  }
-                }
-      
-                // wav files using protocol contained media
-                else {
-                  if (calibration && calibration[wavfile.path]) {
-                    wavfile.cal = calibration[wavfile.path];
-                    wavfile.cal.tablet = calibration.tablet;
-                  } else {
-                    rootProtocol._missingWavCalList!.push(wavfile.path);
-                  }
-      
-                  wavfile.path = prefix + wavfile.path;
-                }
-              });
-            }
-      
-            // Fix paths to the image and video files.
-            if (page.image) {
-              page.image.path = prefix + page.image.path;
-            }
-      
-            if (page.video) {
-              page.video.path = prefix + page.video.path;
-            }
-      
-            // Access page.responseAreas
-            if (page.responseArea) {
-              // Fix paths to the image files in image map response Areas
-              if (page.responseArea.image) {
-                page.responseArea.image.path = prefix + page.responseArea.image.path;
-              }
-      
-              // Custom Response Area handling
-              if (page.responseArea.html) {
-                var originalHtmlFile = page.responseArea.html;
-                page.responseArea.html = prefix + page.responseArea.html; // fix path
-                rootProtocol._customHtmlList!.push({
-                  name: originalHtmlFile,
-                  path: page.responseArea.html,
-                  id: page.id
-                }); // add to list for checking later (async)
-              }
-      
-              // Flag subject history
-              if (page.responseArea.type === "subjectIdResponseArea") {
-                rootProtocol._hasSubjectIdResponseArea = true;
-              }
-      
-              // flag cha reseponse areas
-              if (page.responseArea.type.startsWith("cha")) {
-                rootProtocol._requiresCha = true;
-              }
-      
-              // flag whether protocol requires export to CSV
-              if (_.has(page.responseArea, "exportToCSV")) {
-                if (page.responseArea.exportToCSV === true) {
-                    rootProtocol._exportCSV = true;
-                }
-              }
-              if (_.has(page, "exportToCSV")) {
-                if (page.exportToCSV === true) {
-                    rootProtocol._exportCSV = true;
-                }
-              }
-              if (page.responseArea.type === "multipleInputResponseArea") {
-                _.forEach(page.responseArea.inputList, function(input) {
-                  if (_.has(input, "exportToCSV")) {
-                    if (input.exportToCSV === true) {
-                        rootProtocol._exportCSV = true;
-                      return;
-                    }
-                  }
-                });
-              }
-      
-              // load callbacks if response area has one -- will be performed at the end of the load cycle
-            //   var respAreas = responseAreas.all();
-            //   if (_.has(respAreas[page.responseArea.type], "loadCallback")) {
-            //     var name = respAreas[page.responseArea.type].loadCallback.name;
-            //     if (name === "") {
-            //       name = page.responseArea.type;
-            //     }
-            //     callbackQueue.add(name, respAreas[page.responseArea.type].loadCallback);
-            //   }
-            }
-      
-            // if page has a subprotocol follow-on (i.e., it has a 'pages' variable) then recurse into that using parent fcn.
-            // also if any follow-on is  a page, recurse on that using this fcn.
-            if (_.has(page, "followOns")) {
-              _.forEach(page.followOns, function(followOn) {
-                if (_.has(followOn.target, "id") && !_.has(followOn.target, "reference")) {
-                  processPage(followOn.target, dict, rootProtocol, calibration, commonCalibration, prefix); // it's a page.
-                } else if (_.has(followOn.target, "pages")) {
-                  processProtocol(followOn.target, dict, rootProtocol, calibration, commonCalibration, prefix); // it's a subprotocol
-                }
-              });
-            }
-      
-            // is it an inline subprotocol...
-            if (_.has(page, "pages")) {
-              processProtocol(page, dict, rootProtocol, calibration, commonCalibration, prefix);
-            }
-          }
+
       
         const initializeProtocol = () => {
             this.tasks.register("updating protocol", "Processing Protocol...");
@@ -384,11 +244,11 @@ export class ProtocolService {
     
             if (this.disk.requireEncryptedResults && !this.loading.protocol.publicKey) {
                 this.loading.protocol.errors.push({
-                type: this.translate.instant("Public Key"),
-                error: this.translate.instant(
-                    'No public encryption key is defined in the protocol. Results will not be recorded from this protocol while the "Require Encryption" setting is enabled.'
-                )
-            });
+                    type: this.translate.instant("Public Key"),
+                    error: this.translate.instant(
+                        'No public encryption key is defined in the protocol. Results will not be recorded from this protocol while the "Require Encryption" setting is enabled.'
+                    )
+                });
             }
     
             this.loading.protocol.protocolTabsintOutdated = false;
@@ -419,8 +279,8 @@ export class ProtocolService {
                     // version.dm.tabsint;
                     this.logger.error(msg);
                     this.loading.protocol.errors.push({
-                    type: this.translate.instant("TabSINT Version"),
-                    error: msg
+                        type: this.translate.instant("TabSINT Version"),
+                        error: msg
                     });
                     this.loading.protocol.protocolTabsintOutdated = true;
                 }
@@ -521,121 +381,51 @@ export class ProtocolService {
         }
 
         const handleLoadErrors = () => {
-          let msg = '';
-    
-          // check calibration of files
-          if (this.protocolModel.activeProtocol!._missingWavCalList!.length > 0 || this.protocolModel.activeProtocol!._missingCommonWavCalList!.length > 0) {
-            if (this.protocolModel.activeProtocol!._missingWavCalList!.length + this.protocolModel.activeProtocol!._missingCommonWavCalList!.length < 10) {
-              if (this.protocolModel.activeProtocol!._missingWavCalList!.length > 0 && this.protocolModel.activeProtocol!._missingCommonWavCalList!.length > 0) {
-                msg =
-                  "Missing calibration(s) for wav files(s): " +
-                  this.protocolModel.activeProtocol!._missingWavCalList! +
-                  ", and common media wav file(s): " +
-                  this.protocolModel.activeProtocol!._missingCommonWavCalList! +
-                  ".";
-              } else if (this.protocolModel.activeProtocol!._missingWavCalList!.length > 0 && this.protocolModel.activeProtocol!._missingCommonWavCalList!.length <= 0) {
-                msg = "Missing calibration(s) for wav files(s): " + this.protocolModel.activeProtocol!._missingWavCalList! + ".";
-              } else if (this.protocolModel.activeProtocol!._missingWavCalList!.length <= 0 && this.protocolModel.activeProtocol!._missingCommonWavCalList!.length > 0) {
-                msg = "Missing common media wav file(s): " + this.protocolModel.activeProtocol!._missingCommonWavCalList! + ".";
-              }
+            let msg = checkCalibrationFiles(this.protocolModel.activeProtocol!);
+            if (typeof msg === "string") {
+                this.logger.debug(msg);
+                this.protocolModel.activeProtocol!.errors!.push({
+                    type: "Calibration",
+                    error: msg
+                });
             } else {
-              if (this.protocolModel.activeProtocol!._missingWavCalList!.length > 0 && this.protocolModel.activeProtocol!._missingCommonWavCalList!.length > 0) {
-                msg =
-                  "Missing calibrations for " +
-                  this.protocolModel.activeProtocol!._missingWavCalList!.length +
-                  " wav files(s), and " +
-                  this.protocolModel.activeProtocol!._missingCommonWavCalList!.length +
-                  " common media wav files(s)";
-              } else if (this.protocolModel.activeProtocol!._missingWavCalList!.length > 0 && this.protocolModel.activeProtocol!._missingCommonWavCalList!.length <= 0) {
-                msg = "Missing calibrations for " + this.protocolModel.activeProtocol!._missingWavCalList!.length + " wav files(s). ";
-              } else {
-                msg = "Missing calibrations for " + this.protocolModel.activeProtocol!._missingCommonWavCalList!.length + " common media wav files(s)";
-              }
+                this.logger.debug("All calibration files found.");
             }
-            this.logger.debug(msg);
-            this.protocolModel.activeProtocol!.errors!.push({
-              type: "Calibration",
-              error: msg
-            });
-          } else {
-            this.logger.debug("All calibration files found.");
-          }
-    
-          // check preProcessFunctions and Controllers
-          if (
-            (this.protocolModel.activeProtocol!._missingPreProcessFunctionList!.length > 0 || this.protocolModel.activeProtocol!._missingControllerList!.length > 0) &&
-            !this.protocolModel.activeProtocol!.js
-          ) {
-            msg =
-              'The protocol uses custom functions that should be found in a customJs.js file, but the protocol does not have a "js" field pointing to this file.  Please make sure the file exists and is referenced properly.';
-            this.protocolModel.activeProtocol!.errors!.push({
-              type: "Protocol",
-              error: msg
-            });
-          }
-    
-          if (this.protocolModel.activeProtocol!._missingPreProcessFunctionList!.length > 0) {
-            msg =
-              "The protocol references the following undefined pre-process functions: " +
-              this.protocolModel.activeProtocol!._missingPreProcessFunctionList +
-              ".  Please make sure each function is defined properly in the customJs.js file.";
-            this.protocolModel.activeProtocol!.errors!.push({
-              type: "Protocol",
-              error: msg
-            });
-          }
-    
-          if (this.protocolModel.activeProtocol!._missingControllerList!.length > 0) {
-            msg =
-              "The protocol contains custom html pages that reference the following undefined controllers: " +
-              this.protocolModel.activeProtocol!._missingControllerList +
-              ".  Please make sure each controller is defined properly in the customJs.js file.";
-            this.protocolModel.activeProtocol!.errors!.push({
-              type: "Protocol",
-              error: msg
-            });
-          }
-    
-          if (this.protocolModel.activeProtocol!._missingHtmlList!.length > 0) {
-            msg =
-              "The protocol references the following html pages that could not be loaded:  " +
-              this.protocolModel.activeProtocol!._missingHtmlList +
-              ".  Please make sure each html page exists and is referenced properly.";
-            this.protocolModel.activeProtocol!.errors!.push({
-              type: "Protocol",
-              error: msg
-            });
-          }
-    
-          if (this.protocolModel.activeProtocol!.errors!.length > 0) {
-            msg =
-              this.translate.instant("The protocol contains the following errors and may not function properly.") +
-              " \n\n";
-            for (var i = 0; i < this.protocolModel.activeProtocol!.errors!.length; i++) {
-              var err = this.protocolModel.activeProtocol!.errors![i];
-              msg += err.type + ":\n";
-              msg += " - " + err.error + "\n";
+        
+            checkPreProcessFunctions(this.protocolModel.activeProtocol!).forEach((e: ProtocolErrorInterface) => {
+                this.protocolModel.activeProtocol!.errors!.push(e);
+            })
+            
+            checkControllers(this.protocolModel.activeProtocol!).forEach((e: ProtocolErrorInterface) => {
+                this.protocolModel.activeProtocol!.errors!.push(e);
+            })
+          
+            if (this.protocolModel.activeProtocol!.errors!.length > 0) {
+                msg ="The protocol contains the following errors and may not function properly." + " \n\n";
+                for (var i = 0; i < this.protocolModel.activeProtocol!.errors!.length; i++) {
+                    var err = this.protocolModel.activeProtocol!.errors![i];
+                    msg += err.type + ":\n";
+                    msg += " - " + err.error + "\n";
+                }
+                this.logger.error(" Protocol contains the following errors: " + JSON.stringify(this.protocolModel.activeProtocol!.errors));
+                this.notifications.alert({
+                    title: "Alert",
+                    content: msg,
+                    type: DialogType.Alert
+                });
+            } else if (this.loading.notify) {
+                msg = "Successfully loaded protocol: " +
+                    this.loading.meta.name +
+                    "\nThis protocol requires headset: " + this.protocolModel.activeProtocol!.headset;
+                this.notifications.alert({
+                    title: "Alert",
+                    content: msg,
+                    type: DialogType.Alert
+                });
             }
-            this.logger.error(" Protocol contains the following errors: " + JSON.stringify(this.protocolModel.activeProtocol!.errors));
-            this.notifications.alert({
-                title: "Alert",
-                content: msg,
-                type: DialogType.Alert
-            });
-          } else if (this.loading.notify) {
-            msg = this.translate.instant("Successfully loaded protocol: ") +
-                this.loading.meta.name +
-                this.translate.instant("\nThis protocol requires headset: " + this.protocolModel.activeProtocol!.headset);
-            this.notifications.alert({
-                title: "Alert",
-                content: msg,
-                type: DialogType.Alert
-            });
-          }
-    
-          this.tasks.deregister("updating protocol");
+            this.tasks.deregister("updating protocol");
         }
-  
+
         let errorCopying: Boolean = false;
         return addTask("updating protocol", "Loading Protocol Files...")
             .then(reloadIfNeeded)
@@ -730,7 +520,6 @@ export class ProtocolService {
             this.protocolModel.activeProtocol = undefined;
         }
     
-        //try to erase the files copied to internal storage
         try {
             console.log("attempting to delete files in development");
             // this.file.deleteCopiedInternalDir(p.path, p.name);
