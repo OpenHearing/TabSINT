@@ -15,6 +15,19 @@ export class AdminService {
         this.disk = this.diskModel.getDisk();
     }
 
+    // Variables
+    
+    keyboardStyle = { "padding-top": "0px" };
+
+
+    // Functions
+
+    keyboardSpace = (height:any)=> {
+        setTimeout( ()=> {
+          this.keyboardStyle = { "padding-top": height + "px" };
+        }, 0);
+    };
+
     toggleDebugMode() {
         console.log("toggleDebugMode");
     }

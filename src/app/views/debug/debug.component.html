@@ -1,0 +1,32 @@
+<div *ngIf="disk.debugMode" class="debug-view">
+
+    <button type="button" class="btn btn-xs btn-link" (click)="isCollapsed = !isCollapsed">
+        <span *ngIf="!isCollapsed" ><small>{{'Hide Debug Info'|translate}} <i class="ion-chevron-up"></i></small></span>
+        <span *ngIf="isCollapsed" ><small>{{'Show Debug Info'|translate}} <i class="ion-chevron-down"></i></small></span>
+    </button>
+  
+    <div uib-collapse="isCollapsed" class="small text-left" id="showDebugInfoCollapseId">
+  
+      <div class="well">
+        
+        <!-- <b id="page">Page</b>
+        <json-formatter json="page.dm" open="0" aria-labelledby="page"></json-formatter>
+        
+        <b id="pageresult">Page Result</b>
+        <json-formatter json="page.result" open="0" aria-labelledby="pageresult"></json-formatter>
+  
+        <b id="examresults">Exam Results</b>
+        <json-formatter json="results.current" open="0" aria-labelledby="examresults"></json-formatter>
+  
+        <b id="flags">Flags</b>
+        <json-formatter json="state.flags" open="0" aria-labelledby="flags"></json-formatter>
+  
+        <b id="progress">Progress</b>
+        <div aria-labelledby="progress">
+          {{state.progress ? formatNumber(state.progress.pctProgress) : ""}}
+        </div> -->
+        
+      </div>
+  
+    </div>
+  </div>

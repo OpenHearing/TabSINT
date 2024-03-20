@@ -3,9 +3,30 @@
 
 <!-- Body -->
 <main id="maincontent">
-<div class="has-header exam">
+    <div class="has-header">
 
-    <p>exam works!</p>
+        <!-- <div *ngIf="protocol.protocolTabsintOutdated" style="background-color:#F25858; color: white; padding: 20px; text-align: center;" (click)="link('builds')">
+            This protocol requires a newer version of TabSINT. Press here to update to the latest version.
+        </div> -->
+        <!-- <div *ngIf="protocol.activeProtocol.protocolUsbCMissing" style="background-color:#F25858; color: white; padding: 20px; text-align: center;">
+            This protocol requires the Essential USB-C headset. Please plug the headset in prior to beginning the exam.
+        </div> -->
 
-</div>
+        <div class="questionbox exam-page">
+
+            <div class="question">
+        
+              <!-- Change which template we show based on what "mode" the exam is in. -->
+              <!-- <div ng-include src="'scripts/routes/exam/state/' + dm.state.mode + '.html'"></div> -->
+        
+              <!-- Debugging display. -->
+              <debug-view></debug-view>
+        
+              <!-- add space for keyboard -->
+              <div class="keyboard-spacer" [style]="adminService.keyboardStyle"></div>
+        
+            </div>
+          </div>
+
+    </div>
 </main>
