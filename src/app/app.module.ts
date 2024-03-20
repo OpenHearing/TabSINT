@@ -15,7 +15,7 @@ import { AppComponent } from './app.component';
 // import ngx-translate and the http loader
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http';
 
 // Views
 import { ConfigComponent } from './views/config/config.component';
@@ -58,6 +58,7 @@ import { SoftwareConfigComponent } from './views/software-config/software-config
 import { LogConfigComponent } from './views/log-config/log-config.component';
 import { ChaConfigComponent } from './views/cha-config/cha-config.component';
 import { ChaInfoComponent } from './views/cha-info/cha-info.component';
+import { DebugComponent } from './views/debug/debug.component';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -78,7 +79,8 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     SoftwareConfigComponent,
     LogConfigComponent,
     ChaConfigComponent,
-    ChaInfoComponent
+    ChaInfoComponent,
+    DebugComponent
   ],
   imports: [
     BrowserModule,
@@ -95,14 +97,15 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     NgbModule,
     TranslateModule.forRoot({
       loader: {
-          provide: TranslateLoader,
-          useFactory: HttpLoaderFactory,
-          deps: [HttpClient]
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient]
       }
     })
   ],
   providers: [
     provideClientHydration(),
+    provideHttpClient(withFetch()),
     AppModel,
     DevicesModel,
     DiskModel,
