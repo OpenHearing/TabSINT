@@ -49,8 +49,6 @@ export interface DiskInterface {
       useTagsOnly: boolean,
       useSeperateResultsRepo: boolean
     },
-    activeProtocol: ProtocolInterface, 
-    loadedProtocols: Array<ProtocolInterface>, 
     mediaRepos: Array<MediaReposInterface>, 
     servers: {
       localServer: {

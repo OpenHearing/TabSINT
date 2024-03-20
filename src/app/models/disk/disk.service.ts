@@ -55,8 +55,6 @@ export class DiskModel {
         init: true, // when set to true, this is the initial opening of the app and disclaimer should be displayed
         versionCheck: false,
         lastReleaseCheck: '',
-        activeProtocol: {},
-        loadedProtocols: [],
         mediaRepos: [],
         language: 'English',
         interApp: {

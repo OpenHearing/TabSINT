@@ -22,3 +22,8 @@ export enum ProtocolServer {
     Gitlab,
     Developer
 }
+
+export enum DialogType {
+    Confirm,
+    Alert
+}

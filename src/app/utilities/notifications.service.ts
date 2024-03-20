@@ -24,4 +24,16 @@ export class Notifications {
       return dialogRef.afterClosed();
     }
     
+    alert(dialogData: DialogData): Observable<string> {
+      
+        const dialogRef = this.dialog.open(ConfirmationDialog, {
+          data: {
+            title: dialogData.title,
+            content: dialogData.content
+          }
+        });
+  
+        return dialogRef.afterClosed();
+      }
+      
 }

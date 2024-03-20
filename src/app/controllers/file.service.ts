@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Filesystem, Directory, Encoding, ReadFileResult } from '@capacitor/filesystem';
+import { Filesystem, Directory, Encoding, ReadFileResult, CopyResult } from '@capacitor/filesystem';
 import { Logger } from '../utilities/logger.service';
 
 @Injectable({
@@ -117,6 +117,21 @@ export class FileService {
             return res
         }).catch( (err)=> {
             this.logger.error("Error listing dir "+dir+" - "+err);
+        });
+    }
+
+    async copyDirectory(_from: string, _to: string): Promise<CopyResult | void> {
+        let _fromDir = this.directoryHandler(_from);
+        let _toDir = this.directoryHandler(_to);
+        this.logger.debug("Copying directory from: " + _fromDir + " to: " + _toDir);
+        return Filesystem.copy({
+            from: _fromDir,
+            to: _toDir,
+        }).then( (res)=> {
+            this.logger.debug("Copied dir from: " + _fromDir + " to: " + _toDir);
+            return res
+        }).catch( (err)=> {
+            this.logger.error("Error copying dir from: " + _fromDir + " to: " + _toDir);
         });
     }
     

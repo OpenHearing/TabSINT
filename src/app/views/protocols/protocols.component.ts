@@ -5,7 +5,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { DiskModel } from '../../models/disk/disk.service';
 import { Logger } from '../../utilities/logger.service';
 import { ProtocolInterface } from '../../models/protocol/protocol.interface';
-import { ProtocolServer } from '../../utilities/constants';
+import { DialogType, ProtocolServer } from '../../utilities/constants';
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { ProtocolModel } from '../../models/protocol/protocol.service';
 import { ProtocolService } from '../../controllers/protocol.service';
@@ -15,6 +15,7 @@ import { Observable } from 'rxjs';
 import { DialogData } from '../../interfaces/dialog-data.interface';
 import { Notifications } from '../../utilities/notifications.service';
 import { Tasks } from '../../utilities/tasks.service';
+import { ProtocolModelInterface } from '../../models/protocol/protocol-model.interface';
 
 @Component({
   selector: 'protocols-view',
@@ -24,14 +25,14 @@ import { Tasks } from '../../utilities/tasks.service';
 export class ProtocolsComponent {
   selected?: ProtocolInterface;
   disk: DiskInterface;
-  protocol: ProtocolInterface;
+  protocolModel: ProtocolModelInterface;
   localServer: ProtocolServer = ProtocolServer.LocalServer;
   state: StateInterface;
 
   constructor (
     public diskModel: DiskModel,
     public protocolService: ProtocolService,
-    public protocolModel: ProtocolModel,
+    public protocolM: ProtocolModel,
     public stateModel: StateModel,
     private translate: TranslateService,
     private logger: Logger,
@@ -39,7 +40,7 @@ export class ProtocolsComponent {
     private tasks: Tasks
   ) {
     this.disk = this.diskModel.getDisk();
-    this.protocol = this.protocolModel.getProtocol();
+    this.protocolModel = this.protocolM.getProtocolModel();
     this.state = this.stateModel.getState();
   }
 
@@ -119,12 +120,13 @@ export class ProtocolsComponent {
         this.tasks.deregister("updating");
     }
 
-    if (!this.disk.activeProtocol) {
+    if (!this.protocolModel.activeProtocol) {
         loadAndReset(false);
     } else {
         let msg: DialogData = {
           title: "Confirm",
-          content: `Switch to protocol ${this.selected.name} and reset the current test? The current test results will be deleted`
+          content: `Switch to protocol ${this.selected.name} and reset the current test? The current test results will be deleted`,
+          type: DialogType.Confirm
           };
         if (this.protocolService.isActive(this.selected)) {
             msg.content = `Reload protocol ${this.selected.name} and reset the current test? The current test will be reset`;
