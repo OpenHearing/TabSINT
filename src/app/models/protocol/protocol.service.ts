@@ -4,7 +4,6 @@ import _ from 'lodash';
 import { ProtocolInterface } from './protocol.interface';
 import { ProtocolServer } from '../../utilities/constants';
 import { ProtocolModelInterface } from './protocol-model.interface';
-import { loadingProtocolDefaults } from '../../utilities/defaults';
 
 @Injectable({
     providedIn: 'root',
@@ -17,7 +16,7 @@ export class ProtocolModel {
         loadedProtocols: [
             this.define({
                 name: "Audiometry",
-                path: "res/protocol/edare-audiometry",
+                path: "protocols/edare-audiometry",
                 creator: "Edare",
                 server: ProtocolServer.Developer,
                 protocolId: 'temp',
@@ -25,7 +24,7 @@ export class ProtocolModel {
             }),
             this.define({
                 name: "Creare Audiometry",
-                path: "res/protocol/creare-audiometry",
+                path: "protocols/creare-audiometry",
                 creator: "creare",
                 server: ProtocolServer.Developer,
                 admin: true,
@@ -34,7 +33,7 @@ export class ProtocolModel {
             }),
             this.define({
                 name: "tabsint-test",
-                path: "res/protocol/TabSINT-Test",
+                path: "protocols/TabSINT-Test",
                 creator: "creare",
                 server: ProtocolServer.Developer,
                 admin: true,
@@ -43,7 +42,7 @@ export class ProtocolModel {
             }),
             this.define({
                 name: "wahts-device-test",
-                path: "res/protocol/wahts-device-test",
+                path: "protocols/wahts-device-test",
                 creator: "creare",
                 server: ProtocolServer.Developer,
                 admin: true,
@@ -52,7 +51,7 @@ export class ProtocolModel {
             }),
             this.define({
                 name: "wahts-software-test",
-                path: "res/protocol/wahts-software-test",
+                path: "protocols/wahts-software-test",
                 creator: "creare",
                 server: ProtocolServer.Developer,
                 admin: true,
