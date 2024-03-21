@@ -59,6 +59,10 @@ import { LogConfigComponent } from './views/log-config/log-config.component';
 import { ChaConfigComponent } from './views/cha-config/cha-config.component';
 import { ChaInfoComponent } from './views/cha-info/cha-info.component';
 import { DebugComponent } from './views/debug/debug.component';
+import { ExamReadyComponent } from './views/exam-ready/exam-ready.component';
+import { ExamNotReadyComponent } from './views/exam-not-ready/exam-not-ready.component';
+import { ExamTestingComponent } from './views/exam-testing/exam-testing.component';
+import { ExamFinalizedComponent } from './views/exam-finalized/exam-finalized.component';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -80,7 +84,11 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     LogConfigComponent,
     ChaConfigComponent,
     ChaInfoComponent,
-    DebugComponent
+    DebugComponent,
+    ExamReadyComponent,
+    ExamNotReadyComponent,
+    ExamTestingComponent,
+    ExamFinalizedComponent
   ],
   imports: [
     BrowserModule,

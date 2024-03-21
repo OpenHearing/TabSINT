@@ -19,7 +19,7 @@ export class ResultsModel {
             enableBackButton: true,
             hideProgressBar: false,
             helpText: "helpText",
-            submitText: "submitText",
+            submitText: undefined,
             isSubmittable: true,
             canGoBack: Function,
             responseArea: {

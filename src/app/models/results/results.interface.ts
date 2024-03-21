@@ -10,7 +10,7 @@ export interface ResultsInterface {
         enableBackButton: boolean,
         hideProgressBar: boolean,
         helpText: string,
-        submitText: string,
+        submitText: string | undefined,
         isSubmittable: boolean,
         canGoBack: Function,
         responseArea: {
