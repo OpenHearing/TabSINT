@@ -45,6 +45,10 @@ export class ExamService {
         } else {
           return
         }
-      };
+    };
+
+    finishActivateMedia() {
+        console.log("ExamService finishActivateMedia() called");
+    }
 
 }

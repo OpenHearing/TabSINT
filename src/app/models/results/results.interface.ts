@@ -14,10 +14,18 @@ export interface ResultsInterface {
         isSubmittable: boolean,
         canGoBack: Function,
         responseArea: {
-            enableSkip: boolean
+            enableSkip: boolean,
+            type: string
         },
         title: string,
         instructionText: string,
-        subtitle: string
+        subtitle: string,
+        image?: {
+            path: string
+        },
+        questionSubText: string,
+        questionMainText: string,
+        loadingRequired: boolean
+        loadingActive: boolean
     }
 }

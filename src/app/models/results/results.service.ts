@@ -23,11 +23,20 @@ export class ResultsModel {
             isSubmittable: true,
             canGoBack: Function,
             responseArea: {
-                enableSkip: true
+                enableSkip: true,
+                type: "type"
             },
             title: "title",
             instructionText: "instructionText",
-            subtitle: "subtitle"
+            subtitle: "subtitle",
+            // image: {
+            //     path: "path"
+            // },
+            image: undefined,
+            questionSubText: "questionSubText",
+            questionMainText: "questionMainText",
+            loadingRequired: false,
+            loadingActive: false
         }
     }
 
