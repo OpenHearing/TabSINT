@@ -10,7 +10,7 @@ export class ResultsModel {
     resultsModel: ResultsInterface = {
         name: "name",
         state: {
-            mode: "TESTING", // looks like it can be ['NOT-READY','FINALIZED','READY','TESTING']
+            mode: "READY", // looks like it can be ['NOT-READY','FINALIZED','READY','TESTING']
             progress: {
                 pctProgress: "1"
             }
@@ -24,7 +24,10 @@ export class ResultsModel {
             canGoBack: Function,
             responseArea: {
                 enableSkip: true
-            }
+            },
+            title: "title",
+            instructionText: "instructionText",
+            subtitle: "subtitle"
         }
     }
 

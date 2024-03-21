@@ -15,6 +15,9 @@ export interface ResultsInterface {
         canGoBack: Function,
         responseArea: {
             enableSkip: boolean
-        }
+        },
+        title: string,
+        instructionText: string,
+        subtitle: string
     }
 }

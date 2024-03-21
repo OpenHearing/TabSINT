@@ -36,4 +36,15 @@ export class ExamService {
         console.log("ExamService begin() called");
     }
 
+    centerIfShort(id:string) {
+        if (
+          document.getElementById(id) &&
+          (document.getElementById(id) as HTMLElement).offsetWidth > 0.8 * document.documentElement.clientWidth
+        ) {
+          return { "text-align": "left" };
+        } else {
+          return
+        }
+      };
+
 }
