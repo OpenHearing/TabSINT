@@ -10,7 +10,7 @@ export class ResultsModel {
     resultsModel: ResultsInterface = {
         name: "name",
         state: {
-            mode: "",
+            mode: "TESTING", // looks like it can be ['NOT-READY','FINALIZED','READY','TESTING']
             progress: {
                 pctProgress: "1"
             }

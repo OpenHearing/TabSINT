@@ -16,8 +16,23 @@
 
             <div class="question">
         
-              <!-- Change which template we show based on what "mode" the exam is in. -->
-              <!-- <div ng-include src="'scripts/routes/exam/state/' + results.state.mode + '.html'"></div> -->
+                <!-- Change which template we show based on what "mode" the exam is in. -->
+
+                <!-- Here we need to include the files from src/scripts/routes/exam/state from old tabsint -->
+                <div [ngSwitch]="results.state.mode">
+                    <div *ngSwitchCase="'READY'">
+                        READY
+                    </div>
+                    <div *ngSwitchCase="'NOT-READY'">
+                        NOT-READY
+                    </div>
+                    <div *ngSwitchCase="'TESTING'">
+                        TESTING
+                    </div>
+                    <div *ngSwitchCase="'FINALIZED'">
+                        FINALIZED
+                    </div>
+                </div>
         
               <!-- Debugging display. -->
               <debug-view></debug-view>
@@ -26,7 +41,7 @@
               <div class="keyboard-spacer" [style]="adminService.keyboardStyle"></div>
         
             </div>
-          </div>
+        </div>
 
     </div>
 </main>
