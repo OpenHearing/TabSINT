@@ -8,7 +8,24 @@ import { ResultsInterface } from './results.interface';
 export class ResultsModel {
 
     resultsModel: ResultsInterface = {
-        name: "name"
+        name: "name",
+        state: {
+            mode: "",
+            progress: {
+                pctProgress: "1"
+            }
+        },
+        page: {
+            enableBackButton: true,
+            hideProgressBar: false,
+            helpText: "helpText",
+            submitText: "submitText",
+            isSubmittable: true,
+            canGoBack: Function,
+            responseArea: {
+                enableSkip: true
+            }
+        }
     }
 
     getResults(): ResultsInterface {

@@ -15,6 +15,10 @@ import { Notifications } from '../../utilities/notifications.service';
 import { Tasks } from '../../utilities/tasks.service';
 import { AdminService } from '../../controllers/admin.service';
 import { ProtocolModelInterface } from '../../models/protocol/protocol-model.interface';
+import { ResultsInterface } from '../../models/results/results.interface';
+import { ResultsModel } from '../../models/results/results.service';
+import { ExamService } from '../../controllers/exam.service';
+
 @Component({
   selector: 'exam-view',
   templateUrl: './exam.component.html',
@@ -23,12 +27,14 @@ import { ProtocolModelInterface } from '../../models/protocol/protocol-model.int
 
 export class ExamComponent {
   disk: DiskInterface;
+  results: ResultsInterface
   protocolModel: ProtocolModelInterface;
   localServer: ProtocolServer = ProtocolServer.LocalServer;
   state: StateInterface;
 
   constructor (
     public diskModel: DiskModel,
+    public resultsModel: ResultsModel,
     public protocolService: ProtocolService,
     public protocolM: ProtocolModel,
     public stateModel: StateModel,
@@ -36,9 +42,11 @@ export class ExamComponent {
     private logger: Logger,
     private notifications: Notifications,
     private tasks: Tasks,
-    public adminService: AdminService
+    public adminService: AdminService,
+    public examService: ExamService
   ) {
     this.disk = this.diskModel.getDisk();
+    this.results = this.resultsModel.getResults();
     this.protocolModel = this.protocolM.getProtocolModel();
     this.state = this.stateModel.getState();
   }

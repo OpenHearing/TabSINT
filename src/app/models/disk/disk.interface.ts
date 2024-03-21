@@ -11,7 +11,7 @@ export interface DiskInterface {
     disableVolume?: boolean,
     requireEncryptedResults?: boolean,
     recordTestLocation?: boolean,
-    adminSkipMode?: boolean,
+    adminSkipMode: boolean,
     autoUpload?: boolean,
     disableAudioStreaming?: boolean,
     server: ProtocolServer,

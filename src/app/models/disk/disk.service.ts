@@ -17,6 +17,7 @@ export class DiskModel {
             bluetoothType: ""
         },
         debugMode: true,
+        adminSkipMode: false,
         pin: "7114",
         disableLogs: false,
         maxLogRows: 1000,
