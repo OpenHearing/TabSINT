@@ -61,7 +61,7 @@
   
 <a href="javascript:" class="header-text" *ngIf="!networkModel.status" title="Network status: Not connected">
     <span>
-        <i [matMenuTriggerFor]= "WiFiNotConnectedMenu" class="ion-close"></i>
+        <mat-icon [matMenuTriggerFor]= "WiFiNotConnectedMenu" aria-hidden="false" aria-label="Example home icon" fontIcon="signal_wifi_off" style="color:blue"></mat-icon>
     </span>
     <mat-menu #WiFiNotConnectedMenu="matMenu">
         <button mat-menu-item>
