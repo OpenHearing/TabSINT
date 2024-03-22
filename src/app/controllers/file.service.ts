@@ -15,8 +15,6 @@ export class FileService {
         let directory;
         if (dirLoc=='Data') {
             directory = Directory.Data;
-        } else if (dirLoc=='Data') {
-            directory = Directory.Data;
         } else if (dirLoc=='Documents') {
             directory = Directory.Documents;
         } else if (dirLoc=='Library') {
@@ -114,6 +112,7 @@ export class FileService {
             directory: directory,
         }).then( (res)=> {
             this.logger.debug("Listed dir: "+dir);
+            console.log(res);
             return res
         }).catch( (err)=> {
             this.logger.error("Error listing dir "+dir+" - "+err);

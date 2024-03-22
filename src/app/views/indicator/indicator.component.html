@@ -1,17 +1,17 @@
 <!-- plugin indicators -->
-<!-- <a href="#" class="header-text" *ngFor="let navbar of plugins.elems.navbar" title="Plugin indicator"> -->
+<!-- <a href="javascript:" class="header-text" *ngFor="let navbar of plugins.elems.navbar" title="Plugin indicator"> -->
     <!-- <ng-include src="navbar.templateUrl"/> -->
     <!-- navbar -->
 <!-- </a> -->
   
 <!-- CHA status -->
-<a href="#" class="header-text" *ngIf="bluetoothStatus.state" title="CHA status">
+<a href="javascript:" class="header-text" *ngIf="bluetoothStatus.state" title="CHA status">
     <!-- <cha-indicator></cha-indicator> -->
     cha
 </a>
 
 <!-- Streaming Status -->
-<a href="#" class="header-text" *ngIf="!disk.disableAudioStreaming" title="Streaming status">
+<a href="javascript:" class="header-text" *ngIf="!disk.disableAudioStreaming" title="Streaming status">
     <span>
         <i [matMenuTriggerFor]= "StreamingConnectionMenu" class="ion-radio-waves"></i>
     </span>
@@ -23,7 +23,7 @@
 </a>
   
 <!-- Svantek status -->
-<a href="#" class="header-text" title="Svantek status">
+<a href="javascript:" class="header-text" title="Svantek status">
     <span *ngIf="svantek.state === 'connected' || svantek.state === 'recording'">
         <img [matMenuTriggerFor]= "DosimeterConnectedMenu" src="../../../assets/img/svantek-indicator.png" style="height:25px" alt="Svantek indicator" />
     </span>
@@ -36,7 +36,7 @@
   
   
 <!-- bluetooth status -->
-<a href="#" class="header-text" *ngIf="bluetoothStatus.state" title="Bluetooth status">
+<a href="javascript:" class="header-text" *ngIf="bluetoothStatus.state" title="Bluetooth status">
     <span>
         <i [matMenuTriggerFor]= "BluetoothConnectedMenu" class="ion-bluetooth"></i>
     </span>
@@ -48,7 +48,7 @@
 </a>
   
 <!-- network status -->
-<a href="#" class="header-text" *ngIf="networkModel.status" title="Network status: Connected">
+<a href="javascript:" class="header-text" *ngIf="networkModel.status" title="Network status: Connected">
     <span>
         <i [matMenuTriggerFor]= "WiFiConnectedMenu" class="ion-wifi"></i>
     </span>
@@ -59,7 +59,7 @@
     </mat-menu>
 </a>
   
-<a href="#" class="header-text" *ngIf="!networkModel.status" title="Network status: Not connected">
+<a href="javascript:" class="header-text" *ngIf="!networkModel.status" title="Network status: Not connected">
     <span>
         <i [matMenuTriggerFor]= "WiFiNotConnectedMenu" class="ion-close"></i>
     </span>

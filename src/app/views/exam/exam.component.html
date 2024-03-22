@@ -99,7 +99,7 @@
             <button id="submit-btn" type="button"
                     class="btn btn-block btn-lg btn-primary"
                     [ngClass]="(results.page.isSubmittable)?'':'disabled custom-disabled'"
-                    ng-disabled= "!results.page.isSubmittable"
+                    [disabled]= "!results.page.isSubmittable"
                     (click)="examService.closeAll(); examService.submit()">
                 <div *ngIf="results.page.submitText"> {{results.page.submitText}}</div>
                 <div *ngIf="results.page.submitText===undefined"> {{'Submit' | translate}}</div>
@@ -118,7 +118,7 @@
             <button id="back-btn" type="button"
                 class="btn btn-block btn-lg btn-default"
                 [ngClass]="results.page.canGoBack() ? '' : 'disabled custom-disabled'"
-                ng-disabled= "!results.page.canGoBack()"
+                [disabled]= "!results.page.canGoBack()"
                 *ngIf="!!results.page.enableBackButton"
                 (click)="examService.back()">
               <span class="ion-arrow-left"></span> {{'Back'|translate}}
@@ -128,7 +128,7 @@
             <button id="submit-btn" type="button"
                     class="btn btn-block btn-lg btn-primary"
                     [ngClass]="(results.page.isSubmittable)?'':'disabled custom-disabled'"
-                    ng-disabled= "!results.page.isSubmittable"
+                    [disabled]= "!results.page.isSubmittable"
                     (click)="examService.closeAll(); examService.submit()">
                 <div *ngIf="results.page.submitText"> {{results.page.submitText}}</div>
                 <div *ngIf="results.page.submitText===undefined"> {{'Submit' | translate}}</div>
