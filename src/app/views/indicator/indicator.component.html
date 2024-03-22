@@ -1,8 +1,8 @@
 <!-- plugin indicators -->
-<a href="#" class="header-text" ng-repeat="navbar in plugins.elems.navbar" title="Plugin indicator">
+<!-- <a href="#" class="header-text" *ngFor="let navbar of plugins.elems.navbar" title="Plugin indicator"> -->
     <!-- <ng-include src="navbar.templateUrl"/> -->
     <!-- navbar -->
-</a>
+<!-- </a> -->
   
 <!-- CHA status -->
 <a href="#" class="header-text" *ngIf="bluetoothStatus.state" title="CHA status">
@@ -12,34 +12,61 @@
 
 <!-- Streaming Status -->
 <a href="#" class="header-text" *ngIf="!disk.disableAudioStreaming" title="Streaming status">
-    <span *ngIf="chaStreaming.streaming" uib-popover="Streaming Connection Established" popover-placement="bottom" popover-trigger="'outsideClick'">
-        <i class="ion-radio-waves"></i>
+    <span>
+        <i [matMenuTriggerFor]= "StreamingConnectionMenu" class="ion-radio-waves"></i>
     </span>
+    <mat-menu #StreamingConnectionMenu="matMenu">
+        <button mat-menu-item>
+            <div [innerHTML]="StreamingConnectionPopover"></div>
+        </button>
+    </mat-menu>
 </a>
   
 <!-- Svantek status -->
 <a href="#" class="header-text" title="Svantek status">
-    <span *ngIf="svantek.state === 'connected' || svantek.state === 'recording'" uib-popover="Dosimeter Connected" popover-placement="bottom" popover-trigger="'outsideClick'">
-        <img src="../../../assets/img/svantek-indicator.png" style="height:25px" alt="Svantek indicator" />
+    <span *ngIf="svantek.state === 'connected' || svantek.state === 'recording'">
+        <img [matMenuTriggerFor]= "DosimeterConnectedMenu" src="../../../assets/img/svantek-indicator.png" style="height:25px" alt="Svantek indicator" />
     </span>
+    <mat-menu #DosimeterConnectedMenu="matMenu">
+        <button mat-menu-item>
+            <div [innerHTML]="DosimeterConnectedPopover"></div>
+        </button>
+    </mat-menu>
 </a>
   
   
 <!-- bluetooth status -->
 <a href="#" class="header-text" *ngIf="bluetoothStatus.state" title="Bluetooth status">
-    <span uib-popover="Bluetooth Connected" popover-placement="bottom" popover-trigger="'outsideClick'">
-      <i class="ion-bluetooth"></i>
+    <span>
+        <i [matMenuTriggerFor]= "BluetoothConnectedMenu" class="ion-bluetooth"></i>
     </span>
+    <mat-menu #BluetoothConnectedMenu="matMenu">
+        <button mat-menu-item>
+            <div [innerHTML]="BluetoothConnectedPopover"></div>
+        </button>
+    </mat-menu>
 </a>
   
 <!-- network status -->
 <a href="#" class="header-text" *ngIf="networkModel.status" title="Network status: Connected">
-    <span uib-popover="WiFi Connected" popover-placement="bottom" popover-trigger="'outsideClick'">
-      <i class="ion-wifi" ></i>
+    <span>
+        <i [matMenuTriggerFor]= "WiFiConnectedMenu" class="ion-wifi"></i>
     </span>
+    <mat-menu #WiFiConnectedMenu="matMenu">
+        <button mat-menu-item>
+            <div [innerHTML]="WiFiConnectedPopover"></div>
+        </button>
+    </mat-menu>
 </a>
   
 <a href="#" class="header-text" *ngIf="!networkModel.status" title="Network status: Not connected">
-    <span uib-popover="WiFi Not Connected" popover-placement="bottom" popover-trigger="'outsideClick'" class="glyphicon glyphicon-ban-circle"></span>
+    <span>
+        <i [matMenuTriggerFor]= "WiFiNotConnectedMenu" class="ion-close"></i>
+    </span>
+    <mat-menu #WiFiNotConnectedMenu="matMenu">
+        <button mat-menu-item>
+            <div [innerHTML]="WiFiNotConnectedPopover"></div>
+        </button>
+    </mat-menu>
 </a>
   

@@ -1,1 +1,69 @@
-<p>exam-finalized works!</p>
+<h1> {{'Exam Complete'|translate}} </h1>
+
+<h2 *ngIf="results.page.title">{{results.page.title}}</h2>
+<p>{{'Press'|translate}} <strong>{{'New Exam'|translate}}</strong> {{'to restart'|translate}}</p>
+<div class="spacer"></div>
+
+<div class="panel panel-default">
+  <div class="panel-heading panel-title" id="examDetails">
+      {{'Exam Details'|translate}}
+  </div>
+  <div class="panel-body">
+    <table class="table" aria-labelledby="examDetails" style="margin: 0;">
+      <tbody>
+        <tr>
+          <th class="align-right width-50">{{'Protocol'|translate}}:</th>
+          <td>{{results.current.protocolName}}</td>
+        </tr>
+        <tr>
+          <th class="align-right width-50">{{'Started at'|translate}}:</th>
+          <td>{{results.current.testDateTime | date:'yyyy-M-dd H:mm:ss'}}</td>
+        </tr>
+        <tr>
+          <th class="align-right width-50">{{'Elapsed Time'|translate}}:</th>
+          <td>{{results.current.elapsedTime}}</td>
+        </tr>
+  
+        <!-- Tabsint Server details -->
+        <tr *ngIf="results.current.siteId">
+          <th class="align-right width-50">{{'Site ID'|translate}}:</th>
+          <td>{{results.current.siteId}}</td>
+        </tr>
+        <tr *ngIf="results.current.qrString">
+          <th class="align-right width-50">{{'QR String'|translate}}:</th>
+          <td>{{results.current.qrString}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="spacer"></div>
+
+<div class="text-left" *ngIf="disk.debugMode">
+  <table class="table table-striped finalized-table">
+    <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">{{'Page ID'|translate}}</th>
+      <th scope="col">{{'Response'|translate}}</th>
+      <!-- <th>Response Time</th> -->
+      <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let resp of results.current.testResults.responses; index as i">
+      <td scope="row">{{i+1}}</td>
+      <td>{{resp.presentationId.substr(0,15)}}</td>
+      <td>{{resp.response.substr(0,25)}}</td>
+      <!-- <td>{{resp}}</td> -->
+
+      <td [ngSwitch]="resp.correct">
+        <span class="ion-checkmark" *ngSwitchCase="'true'"></span>
+        <span class="ion-close" *ngSwitchCase="'false'"></span>
+        <span class="ion-minus" *ngSwitchCase="'undefined'"></span>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>

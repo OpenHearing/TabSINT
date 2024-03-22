@@ -27,5 +27,13 @@ export interface ResultsInterface {
         questionMainText: string,
         loadingRequired: boolean
         loadingActive: boolean
+    },
+    current: {
+        qrString: string,
+        siteId: string,
+        elapsedTime: string,
+        testDateTime: string,
+        protocolName: string,
+        testResults: any
     }
 }

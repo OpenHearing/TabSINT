@@ -58,7 +58,7 @@
                   class="btn btn-block btn-lg btn-default"
                   [ngClass]="(results.page.helpText)?'':'disabled custom-disabled'"
                   (click)="examService.help()">
-            <span class="glyphicon glyphicon-question-sign"></span> {{'Help'|translate}}
+            <span class="ion-help-circled"></span> {{'Help'|translate}}
           </button>
         </div>
         <div class="col-6">
@@ -78,21 +78,21 @@
                     [ngClass]="(results.page.helpText)?'':'disabled custom-disabled'"
                     *ngIf="!results.page.enableBackButton"
                     (click)="examService.help()">
-              <span class="glyphicon glyphicon-question-sign"></span> {{'Help'|translate}}
+              <span class="ion-help-circled"></span> {{'Help'|translate}}
             </button>
             <button id="back-btn" type="button"
                 class="btn btn-block btn-lg btn-default"
                 [ngClass]="(results.page.canGoBack())?'':'disabled custom-disabled'"
                 *ngIf="!!results.page.enableBackButton"
                 (click)="examService.back()">
-              <span class="glyphicon glyphicon-arrow-left"></span> {{'Back'|translate}}
+              <span class="ion-arrow-left"></span> {{'Back'|translate}}
             </button>
           </div>
           <div class="col-4">
             <button id="submit-btn" type="button"
                     class="btn btn-block btn-lg btn-primary"
                     (click)="examService.skip()">
-              <span class="glyphicon glyphicon-arrow-right"></span> {{'Skip'|translate}}
+              <span class="ion-arrow-right"></span> {{'Skip'|translate}}
             </button>
           </div>
           <div class="col-4">
@@ -113,7 +113,7 @@
                     [ngClass]="(results.page.helpText)?'':'disabled custom-disabled'"
                     *ngIf="!results.page.enableBackButton"
                     (click)="examService.help()">
-              <span class="glyphicon glyphicon-question-sign"></span> {{'Help'|translate}}
+              <span class="ion-help-circled"></span> {{'Help'|translate}}
             </button>
             <button id="back-btn" type="button"
                 class="btn btn-block btn-lg btn-default"
@@ -121,7 +121,7 @@
                 ng-disabled= "!results.page.canGoBack()"
                 *ngIf="!!results.page.enableBackButton"
                 (click)="examService.back()">
-              <span class="glyphicon glyphicon-arrow-left"></span> {{'Back'|translate}}
+              <span class="ion-arrow-left"></span> {{'Back'|translate}}
             </button>
           </div>
           <div class="col-6">
@@ -142,7 +142,7 @@
                   class="btn btn-block btn-lg btn-default"
                   [ngClass]="(results.page.helpText)?'':'disabled custom-disabled'"
                   (click)="examService.help()">
-            <span class="glyphicon glyphicon-question-sign"></span> {{'Help'|translate}}
+            <span class="ion-help-circled"></span> {{'Help'|translate}}
           </button>
         </div>
         <div class="col-6">
