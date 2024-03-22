@@ -6,6 +6,7 @@ export interface ResultsInterface {
         elapsedTime: string,
         testDateTime: string,
         protocolName: string,
+        isSkipped?: boolean
         testResults: any
     }
 }

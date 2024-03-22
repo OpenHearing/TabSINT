@@ -112,7 +112,6 @@ export class FileService {
             directory: directory,
         }).then( (res)=> {
             this.logger.debug("Listed dir: "+path);
-            console.log(res);
             return res
         }).catch( (err)=> {
             this.logger.error("Error listing dir "+path+" - "+err);
