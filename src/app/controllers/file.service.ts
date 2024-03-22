@@ -120,18 +120,16 @@ export class FileService {
         });
     }
 
-    async copyDirectory(_from: string, _to: string): Promise<CopyResult | void> {
-        let _fromDir = this.directoryHandler(_from);
-        let _toDir = this.directoryHandler(_to);
-        this.logger.debug("Copying directory from: " + _fromDir + " to: " + _toDir);
+    async copyDirectory(from: string, to: string) {
+        this.logger.debug("Copying directory from: " + from + " to: " + to);
         return Filesystem.copy({
-            from: _fromDir,
-            to: _toDir,
+            from: from,
+            to: to,
         }).then( (res)=> {
-            this.logger.debug("Copied dir from: " + _fromDir + " to: " + _toDir);
+            this.logger.debug("Copied dir from: " + from + " to: " + to);
             return res
         }).catch( (err)=> {
-            this.logger.error("Error copying dir from: " + _fromDir + " to: " + _toDir);
+            this.logger.error("Error copying dir from: " + from + " to: " + to);
         });
     }
     
