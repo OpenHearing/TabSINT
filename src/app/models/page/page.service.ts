@@ -13,7 +13,28 @@ export class PageModel {
         units: "mm",
         example: 100,
         other: ["array","of","strings"],
-        dict: {"key":"value"}
+        dict: {"key":"value"},
+        enableBackButton: true,
+        hideProgressBar: false,
+        helpText: "helpText",
+        submitText: undefined,
+        isSubmittable: true,
+        canGoBack: Function,
+        responseArea: {
+            enableSkip: true,
+            type: "type"
+        },
+        title: "title",
+        instructionText: "instructionText",
+        subtitle: "subtitle",
+        // image: {
+        //     path: "path"
+        // },
+        image: undefined,
+        questionSubText: "questionSubText",
+        questionMainText: "questionMainText",
+        loadingRequired: false,
+        loadingActive: false
     }
 
     getPage(): PageInterface {

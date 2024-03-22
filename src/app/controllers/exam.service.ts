@@ -10,6 +10,9 @@ export class ExamService {
     
     help() {
         console.log("ExamService help() called");
+        // if (exam.dm && page.dm && page.dm.helpText) {
+        //     notifications.alert(page.dm.helpText);
+        // }
     }
 
     reset() {

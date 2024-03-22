@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { DiskModel } from '../../models/disk/disk.service';
-import { AppState } from '../../utilities/constants';
+import { AppState, ExamState } from '../../utilities/constants';
 import { Logger } from '../../utilities/logger.service';
 import { ProtocolInterface } from '../../models/protocol/protocol.interface';
 import { ProtocolServer } from '../../utilities/constants';
@@ -18,6 +18,8 @@ import { ProtocolModelInterface } from '../../models/protocol/protocol-model.int
 import { ResultsInterface } from '../../models/results/results.interface';
 import { ResultsModel } from '../../models/results/results.service';
 import { ExamService } from '../../controllers/exam.service';
+import { PageInterface } from '../../models/page/page.interface';
+import { PageModel } from '../../models/page/page.service';
 
 @Component({
   selector: 'exam-view',
@@ -27,13 +29,16 @@ import { ExamService } from '../../controllers/exam.service';
 
 export class ExamComponent {
   disk: DiskInterface;
+  page: PageInterface;
   results: ResultsInterface
   protocolModel: ProtocolModelInterface;
   localServer: ProtocolServer = ProtocolServer.LocalServer;
   state: StateInterface;
+  ExamState = ExamState;
 
   constructor (
     public diskModel: DiskModel,
+    public pageModel: PageModel,
     public resultsModel: ResultsModel,
     public protocolService: ProtocolService,
     public protocolM: ProtocolModel,
@@ -46,6 +51,7 @@ export class ExamComponent {
     public examService: ExamService
   ) {
     this.disk = this.diskModel.getDisk();
+    this.page = this.pageModel.getPage();
     this.results = this.resultsModel.getResults();
     this.protocolModel = this.protocolM.getProtocolModel();
     this.state = this.stateModel.getState();

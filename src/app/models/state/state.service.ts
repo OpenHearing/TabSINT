@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { StateInterface } from './state.interface';
-import { AppState, ProtocolState } from "../../utilities/constants";
+import { AppState, ExamState, ProtocolState } from "../../utilities/constants";
 
 @Injectable({
     providedIn: 'root',
@@ -11,6 +11,7 @@ export class StateModel {
     stateModel: StateInterface = {
         appState: AppState.Welcome,
         protocolState: ProtocolState.null,
+        examState: ExamState.Finalized,
         isPaneOpen: {
             general: true,
             advanced: false,
@@ -21,6 +22,9 @@ export class StateModel {
             protocols: true,
             protocolsSource: true,
             chaAdvanced: false
+        },
+        examProgress: {
+            pctProgress: "1"
         }
     }
 

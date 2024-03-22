@@ -24,49 +24,49 @@
     }
 </style>
 
-<div *ngIf="results.page.loadingRequired && results.page.loadingActive">
+<div *ngIf="page.loadingRequired && page.loadingActive">
     <h2>Media File(s) Loading...</h2>
     <div class="loader"></div>
-    <button type="button" class="button btn btn-default" (click)="results.page.loadingRequired=false; examService.finishActivateMedia()" translate disabled="true">Start Exam</button>
+    <button type="button" class="button btn btn-default" (click)="page.loadingRequired=false; examService.finishActivateMedia()" translate disabled="true">Start Exam</button>
     </div>
 
-    <div *ngIf="results.page.loadingRequired && !results.page.loadingActive">
+    <div *ngIf="page.loadingRequired && !page.loadingActive">
     <h2 style="margin-bottom:1em;">Loading Complete</h2>
-    <button type="button" class="button btn btn-default" (click)="results.page.loadingRequired=false; examService.finishActivateMedia()" translate>Start Exam</button>
+    <button type="button" class="button btn btn-default" (click)="page.loadingRequired=false; examService.finishActivateMedia()" translate>Start Exam</button>
     </div>
 
-    <div *ngIf="!results.page.loadingRequired">
+    <div *ngIf="!page.loadingRequired">
     <!-- Title block -->
-    <h2 [textContent]="results.page.questionMainText" *ngIf="results.page.questionMainText"
-        ng-class="{medium: ((results.page.questionMainText.length >= 38) && (results.page.questionMainText.length < 48)), long: (results.page.questionMainText.length > 42)}"></h2>
-    <p class="subtext pad-top" *ngIf="results.page.questionSubText" [ngStyle]="examService.centerIfShort('subtext-testing')">
-        <span [textContent]="results.page.questionSubText" id="subtext-testing"></span>
+    <h2 [textContent]="page.questionMainText" *ngIf="page.questionMainText"
+        ng-class="{medium: ((page.questionMainText.length >= 38) && (page.questionMainText.length < 48)), long: (page.questionMainText.length > 42)}"></h2>
+    <p class="subtext pad-top" *ngIf="page.questionSubText" [ngStyle]="examService.centerIfShort('subtext-testing')">
+        <span [textContent]="page.questionSubText" id="subtext-testing"></span>
     </p>
-    <p class="instructions" *ngIf="results.page.instructionText" [ngStyle]="examService.centerIfShort('instructions-testing')"><span [textContent]="results.page.instructionText" id="instructions-testing"></span></p>
+    <p class="instructions" *ngIf="page.instructionText" [ngStyle]="examService.centerIfShort('instructions-testing')"><span [textContent]="page.instructionText" id="instructions-testing"></span></p>
 
 
     <!-- Images -->
-    <!-- <div class="multimedia" *ngIf="results.page.image" [ngStyle]="{width:results.page.image.width}">
-        <img [src]="{{results.page.image.path}}" class="img-responsive img-rounded" alt="" style="margin:0 auto;max-height:40vh;" />
+    <!-- <div class="multimedia" *ngIf="page.image" [ngStyle]="{width:page.image.width}">
+        <img [src]="{{page.image.path}}" class="img-responsive img-rounded" alt="" style="margin:0 auto;max-height:40vh;" />
     </div> -->
 
 
     <!-- Videos -->
-    <!-- <div class="multimedia" *ngIf="results.page.video" [ngStyle]="{width:results.page.video.width}">
-        <row *ngIf="results.page.video.autoplay">
-        <video id="video1" [src]="{{results.page.video.path}}" class="video-responsive video-rounded"  preload="results.page.video.autoplay" controls />
+    <!-- <div class="multimedia" *ngIf="page.video" [ngStyle]="{width:page.video.width}">
+        <row *ngIf="page.video.autoplay">
+        <video id="video1" [src]="{{page.video.path}}" class="video-responsive video-rounded"  preload="page.video.autoplay" controls />
         </row>
-        <row *ngIf="!results.page.video.autoplay">
-        <video id="video1" [src]="{{results.page.video.path}}" class="video-responsive video-rounded"  controls />
+        <row *ngIf="!page.video.autoplay">
+        <video id="video1" [src]="{{page.video.path}}" class="video-responsive video-rounded"  controls />
         </row>
     </div> -->
 
     <br />
 
     <!-- Response area content -->
-    <!-- <div *ngIf="results.page.responseArea" ng-controller="ResponseAreaCtrl as ra">
+    <!-- <div *ngIf="page.responseArea" ng-controller="ResponseAreaCtrl as ra">
         <div ng-repeat="(type, spec) in ra.responseAreas">
-            <response-area *ngIf="type === results.page.responseArea.type" ng-include="spec.templateUrl"></response-area>
+            <response-area *ngIf="type === page.responseArea.type" ng-include="spec.templateUrl"></response-area>
         </div>
     </div> -->
 

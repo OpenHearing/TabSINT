@@ -1,8 +1,9 @@
-import { AppState, ProtocolState } from "../../utilities/constants";
+import { AppState, ProtocolState, ExamState } from "../../utilities/constants";
 
 export interface StateInterface {
     appState: AppState;
-    protocolState: ProtocolState
+    protocolState: ProtocolState;
+    examState: ExamState;
     isPaneOpen: {
         general: boolean,
         advanced: boolean,
@@ -14,4 +15,7 @@ export interface StateInterface {
         protocolsSource: boolean,
         chaAdvanced: boolean
     };
+    examProgress: {
+        pctProgress: string
+    }
 }

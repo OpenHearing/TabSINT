@@ -1,12 +1,12 @@
-<div *ngIf="!!(results.page.title)">
-    <h1 [innerHtml]="results.page.title"></h1>
+<div *ngIf="!!(page.title)">
+    <h1 [innerHtml]="page.title"></h1>
     <div class="spacer"></div>
   </div>
   
-  <div *ngIf="!!(results.page.subtitle)">
-    <h2 [innerHtml]="results.page.subtitle"></h2>
+  <div *ngIf="!!(page.subtitle)">
+    <h2 [innerHtml]="page.subtitle"></h2>
     <div class="spacer"></div>
   </div>
   
-  <p class="instructions" *ngIf="!!(results.page.instructionText)" [ngStyle]="examService.centerIfShort('instructions-ready')"><span [innerHtml]="results.page.instructionText" id="instructions-ready"></span></p>
+  <p class="instructions" *ngIf="!!(page.instructionText)" [ngStyle]="examService.centerIfShort('instructions-ready')"><span [innerHtml]="page.instructionText" id="instructions-ready"></span></p>
   
