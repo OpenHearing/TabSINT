@@ -1,10 +1,13 @@
 Things that have been added to get tabsint up and running but we could revisit
 
-Style sheets:
-- jsonformatter@0.7.0
-- ionicons@2.0.1
-
-Also we could revisit all the css in src/styles.scss
-
-
-OTHER: I did upgrade our bootstrap (now ng-bootstrap) which comes with popperjs and bootstrap
+- style sheets
+  - jsonformatter@0.7.0
+  - ionicons@2.0.1
+  - all the css in src/styles.scss
+- look for "TODO" in code base for notes
+- remove / modify all console.log statements
+- replace any with more descriptive typings
+- search for any "ng-" and update
+- try to use '() => {}' instead of 'function() {}' when defining functions
+- angular.isDefined() replace with !_.isUndefined()
+- clean up all comments, both '//' and '*/ blah /*'
