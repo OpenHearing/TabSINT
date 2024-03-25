@@ -4,6 +4,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { ResultsInterface } from '../../models/results/results.interface';
 import { ResultsModel } from '../../models/results/results.service';
 import { ExamService } from '../../controllers/exam.service';
+import { PageInterface } from '../../models/page/page.interface';
+import { PageModel } from '../../models/page/page.service';
 
 @Component({
   selector: 'exam-testing-view',
@@ -12,13 +14,16 @@ import { ExamService } from '../../controllers/exam.service';
 })
 export class ExamTestingComponent {
   results: ResultsInterface;
+  page: PageInterface
 
   constructor(
     public resultsModel: ResultsModel, 
     public translate: TranslateService,
-    public examService: ExamService
+    public examService: ExamService,
+    public pageModel: PageModel
   ) { 
     this.results = this.resultsModel.getResults();
+    this.page = this.pageModel.getPage();
   }
 
 }

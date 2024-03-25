@@ -9,35 +9,6 @@ export class ResultsModel {
 
     resultsModel: ResultsInterface = {
         name: "name",
-        state: {
-            mode: "FINALIZED", // looks like it can be ['NOT-READY','FINALIZED','READY','TESTING']
-            progress: {
-                pctProgress: "1"
-            }
-        },
-        page: {
-            enableBackButton: true,
-            hideProgressBar: false,
-            helpText: "helpText",
-            submitText: undefined,
-            isSubmittable: true,
-            canGoBack: Function,
-            responseArea: {
-                enableSkip: true,
-                type: "type"
-            },
-            title: "title",
-            instructionText: "instructionText",
-            subtitle: "subtitle",
-            // image: {
-            //     path: "path"
-            // },
-            image: undefined,
-            questionSubText: "questionSubText",
-            questionMainText: "questionMainText",
-            loadingRequired: false,
-            loadingActive: false
-        },
         current: {
             qrString: "qrString",
             siteId: "siteId",

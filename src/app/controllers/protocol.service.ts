@@ -210,7 +210,7 @@ export class ProtocolService {
             this.logger.debug("loading.meta" + JSON.stringify(this.loading.meta));
             if (this.loading.meta.contentURI && this.loading.reload) {
                 this.logger.debug("re-loading protocol - copying directory");
-                return (this.file.copyDirectory(this.loading.meta.contentURI, this.loading.meta.name!));
+                return; // (this.file.copyDirectory(this.loading.meta.contentURI, this.loading.meta.name!));
             } else {
                 return;
             }

@@ -11,6 +11,13 @@ export enum ProtocolState {
     InProgress
 }
 
+export enum ExamState {
+    NotReady,
+    Finalized,
+    Ready,
+    Testing
+}
+
 export enum ResultsMode {
     UploadOnly = "Upload Only",
     ExportOnly = "Export Only",

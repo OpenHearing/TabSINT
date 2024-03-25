@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Filesystem, Directory, Encoding, ReadFileResult, CopyResult } from '@capacitor/filesystem';
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { Logger } from '../utilities/logger.service';
 
 @Injectable({
@@ -10,25 +10,25 @@ export class FileService {
 
     constructor(public logger:Logger) {  }
 
-    directoryHandler(dirLoc?:string) {
-        /* Convert string dir to Filesystem directoyr plugin. Defaults to Documents. */
+    directoryHandler(rootDir?:string) {
+        /* Convert string dir to Filesystem directory plugin. Defaults to Documents. */
         let directory;
-        if (dirLoc=='Data') {
+        if (rootDir=='Data') {
             directory = Directory.Data;
-        } else if (dirLoc=='Documents') {
+        } else if (rootDir=='Documents') {
             directory = Directory.Documents;
-        } else if (dirLoc=='Library') {
+        } else if (rootDir=='Library') {
             directory = Directory.Library;
-        } else if (dirLoc=='Cache') {
+        } else if (rootDir=='Cache') {
             directory = Directory.Cache;
-        } else if (dirLoc=='External') {
+        } else if (rootDir=='External') {
             directory = Directory.External;
-        } else if (dirLoc=='ExternalStorage') {
+        } else if (rootDir=='ExternalStorage') {
             directory = Directory.ExternalStorage;
-        } else if (dirLoc==undefined) {
+        } else if (rootDir==undefined) {
             directory = Directory.Documents;
         } else {
-            this.logger.debug("Invalid dirLoc in directoryHandler, defaulting to Documents");
+            this.logger.debug("Invalid rootDir in directoryHandler, defaulting to Documents");
             directory = Directory.Documents;
         }
         return directory;
@@ -46,84 +46,87 @@ export class FileService {
         });
     }
 
-    async writeFile(filepath:string, data:string, dirLoc?:string) {
-        let directory = this.directoryHandler(dirLoc);
-        this.logger.debug("Writing to: "+filepath);
+    async writeFile(path:string, data:string, rootDir?:string) {
+        let directory = this.directoryHandler(rootDir);
+        this.logger.debug("Writing to: "+path);
         return Filesystem.writeFile({
-            path: filepath,
+            path: path,
             data: data,
             directory: directory,
             encoding: Encoding.UTF8,
         }).then( (res)=> {
-            this.logger.debug("Wrote to: "+filepath);
+            this.logger.debug("Wrote to: "+path);
             return res
         }).catch( (err)=> {
-            this.logger.error("Error writing to "+filepath+" - "+err);
+            this.logger.error("Error writing to "+path+" - "+err);
         });
     };
       
-    async readFile(filepath:string, dirLoc?:string) {
-        let directory = this.directoryHandler(dirLoc);
-        this.logger.debug("Reading from: "+filepath);
+    async readFile(path:string, rootDir?:string) {
+        let directory = this.directoryHandler(rootDir);
+        this.logger.debug("Reading from: "+path);
         return Filesystem.readFile({
-            path: filepath,
+            path: path,
             directory: directory,
             encoding: Encoding.UTF8,
         }).then( (res)=> {
-            this.logger.debug("Read file: "+filepath);
+            this.logger.debug("Read file: "+path);
             return res
         }).catch( (err)=> {
-            this.logger.error("Error reading "+filepath+" - "+err);
+            this.logger.error("Error reading "+path+" - "+err);
         });
     };
 
-    async createDirectory(dir:string, dirLoc?:string) {
-        let directory = this.directoryHandler(dirLoc);
-        this.logger.debug("Creating dir: "+dir);
+    async createDirectory(path:string, rootDir?:string) {
+        let directory = this.directoryHandler(rootDir);
+        this.logger.debug("Creating dir: "+path);
         return Filesystem.mkdir({
-            path: dir,
+            path: path,
             directory: directory,
         }).then( (res)=> {
-            this.logger.debug("Created dir: "+dir);
+            this.logger.debug("Created dir: "+path);
         }).catch( (err)=> {
-            this.logger.error("Error creating dir "+dir+" - "+err);
+            this.logger.error("Error creating dir "+path+" - "+err);
         });
     }
 
-    async deleteDirectory(dir:string, dirLoc?:string) {
-        let directory = this.directoryHandler(dirLoc);
-        this.logger.debug("Deleting dir: "+dir);
+    async deleteDirectory(path:string, rootDir?:string) {
+        let directory = this.directoryHandler(rootDir);
+        this.logger.debug("Deleting dir: "+path);
         return Filesystem.rmdir({
-            path: dir,
+            path: path,
             directory: directory,
         }).then( (res)=> {
-            this.logger.debug("Deleted dir: "+dir);
+            this.logger.debug("Deleted dir: "+path);
             return res
         }).catch( (err)=> {
-            this.logger.error("Error deleting dir "+dir+" - "+err);
+            this.logger.error("Error deleting dir "+path+" - "+err);
         });
     }
 
-    async listDirectory(dir:string, dirLoc?:string) {
-        let directory = this.directoryHandler(dirLoc);
-        this.logger.debug("Listing dir: "+dir);
+    async listDirectory(path:string, rootDir?:string) {
+        let directory = this.directoryHandler(rootDir);
+        this.logger.debug("Listing dir: "+path);
         return Filesystem.readdir({
-            path: dir,
+            path: path,
             directory: directory,
         }).then( (res)=> {
-            this.logger.debug("Listed dir: "+dir);
-            console.log(res);
+            this.logger.debug("Listed dir: "+path);
             return res
         }).catch( (err)=> {
-            this.logger.error("Error listing dir "+dir+" - "+err);
+            this.logger.error("Error listing dir "+path+" - "+err);
         });
     }
 
-    async copyDirectory(from: string, to: string) {
+    async copyDirectory(from: string, to: string, rootDirFrom: string, rootDirTo: string) {
+        let directoryFrom = this.directoryHandler(rootDirFrom);
+        let directoryTo = this.directoryHandler(rootDirTo);
         this.logger.debug("Copying directory from: " + from + " to: " + to);
         return Filesystem.copy({
             from: from,
             to: to,
+            directory: directoryFrom,
+            toDirectory: directoryTo
         }).then( (res)=> {
             this.logger.debug("Copied dir from: " + from + " to: " + to);
             return res

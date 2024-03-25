@@ -17,17 +17,17 @@
       <div class="question">
   
         <!-- Change which template we show based on what "mode" the exam is in. -->
-        <div [ngSwitch]="results.state.mode">
-          <div *ngSwitchCase="'READY'">
+        <div [ngSwitch]="state.examState">
+          <div *ngSwitchCase="ExamState.Ready">
             <exam-ready-view></exam-ready-view>
           </div>
-          <div *ngSwitchCase="'NOT-READY'">
+          <div *ngSwitchCase="ExamState.NotReady">
             <exam-not-ready-view></exam-not-ready-view>
           </div>
-          <div *ngSwitchCase="'TESTING'">
+          <div *ngSwitchCase="ExamState.Testing">
             <exam-testing-view></exam-testing-view>
           </div>
-          <div *ngSwitchCase="'FINALIZED'">
+          <div *ngSwitchCase="ExamState.Finalized">
             <exam-finalized-view></exam-finalized-view>
           </div>
         </div>
@@ -52,11 +52,11 @@
 <!-- Footer (incl. buttons) -->
 <nav class="navbar-fixed-bottom exam-footer">
     <div class="container-fluid">
-      <div class="row response-buttons" *ngIf="results.state.mode==='READY'">
+      <div class="row response-buttons" *ngIf="state.examState===ExamState.Ready">
         <div class="col-6">
           <button id="help-btn" type="button"
                   class="btn btn-block btn-lg btn-default"
-                  [ngClass]="(results.page.helpText)?'':'disabled custom-disabled'"
+                  [ngClass]="(page.helpText)?'':'disabled custom-disabled'"
                   (click)="examService.help()">
             <span class="ion-help-circled"></span> {{'Help'|translate}}
           </button>
@@ -65,25 +65,25 @@
           <button id="begin-btn" type="button"
                   class="btn btn-block btn-lg btn-primary"
                   (click)="examService.begin()"
-                  *ngIf="results.state.mode==='READY'">
+                  *ngIf="state.examState===ExamState.Ready">
             {{'Begin'|translate}}
           </button>
         </div>
       </div>
-      <div *ngIf="results.state.mode==='TESTING'">
-        <div class="row response-buttons" *ngIf="(disk.debugMode && disk.adminSkipMode) || results.page.responseArea.enableSkip">
+      <div *ngIf="state.examState===ExamState.Testing">
+        <div class="row response-buttons" *ngIf="(disk.debugMode && disk.adminSkipMode) || page.responseArea.enableSkip">
           <div class="col-4">
             <button id="help-btn" type="button"
                     class="btn btn-block btn-lg btn-default"
-                    [ngClass]="(results.page.helpText)?'':'disabled custom-disabled'"
-                    *ngIf="!results.page.enableBackButton"
+                    [ngClass]="(page.helpText)?'':'disabled custom-disabled'"
+                    *ngIf="!page.enableBackButton"
                     (click)="examService.help()">
               <span class="ion-help-circled"></span> {{'Help'|translate}}
             </button>
             <button id="back-btn" type="button"
                 class="btn btn-block btn-lg btn-default"
-                [ngClass]="(results.page.canGoBack())?'':'disabled custom-disabled'"
-                *ngIf="!!results.page.enableBackButton"
+                [ngClass]="(page.canGoBack())?'':'disabled custom-disabled'"
+                *ngIf="!!page.enableBackButton"
                 (click)="examService.back()">
               <span class="ion-arrow-left"></span> {{'Back'|translate}}
             </button>
@@ -98,28 +98,28 @@
           <div class="col-4">
             <button id="submit-btn" type="button"
                     class="btn btn-block btn-lg btn-primary"
-                    [ngClass]="(results.page.isSubmittable)?'':'disabled custom-disabled'"
-                    [disabled]= "!results.page.isSubmittable"
+                    [ngClass]="(page.isSubmittable)?'':'disabled custom-disabled'"
+                    [disabled]= "!page.isSubmittable"
                     (click)="examService.closeAll(); examService.submit()">
-                <div *ngIf="results.page.submitText"> {{results.page.submitText}}</div>
-                <div *ngIf="results.page.submitText===undefined"> {{'Submit' | translate}}</div>
+                <div *ngIf="page.submitText"> {{page.submitText}}</div>
+                <div *ngIf="page.submitText===undefined"> {{'Submit' | translate}}</div>
             </button>
           </div>
         </div>
-        <div class="row response-buttons" *ngIf="!((disk.debugMode && disk.adminSkipMode) || results.page.responseArea.enableSkip)">
+        <div class="row response-buttons" *ngIf="!((disk.debugMode && disk.adminSkipMode) || page.responseArea.enableSkip)">
           <div class="col-6">
             <button id="help-btn" type="button"
                     class="btn btn-block btn-lg btn-default"
-                    [ngClass]="(results.page.helpText)?'':'disabled custom-disabled'"
-                    *ngIf="!results.page.enableBackButton"
+                    [ngClass]="(page.helpText)?'':'disabled custom-disabled'"
+                    *ngIf="!page.enableBackButton"
                     (click)="examService.help()">
               <span class="ion-help-circled"></span> {{'Help'|translate}}
             </button>
             <button id="back-btn" type="button"
                 class="btn btn-block btn-lg btn-default"
-                [ngClass]="results.page.canGoBack() ? '' : 'disabled custom-disabled'"
-                [disabled]= "!results.page.canGoBack()"
-                *ngIf="!!results.page.enableBackButton"
+                [ngClass]="page.canGoBack() ? '' : 'disabled custom-disabled'"
+                [disabled]= "!page.canGoBack()"
+                *ngIf="!!page.enableBackButton"
                 (click)="examService.back()">
               <span class="ion-arrow-left"></span> {{'Back'|translate}}
             </button>
@@ -127,20 +127,20 @@
           <div class="col-6">
             <button id="submit-btn" type="button"
                     class="btn btn-block btn-lg btn-primary"
-                    [ngClass]="(results.page.isSubmittable)?'':'disabled custom-disabled'"
-                    [disabled]= "!results.page.isSubmittable"
+                    [ngClass]="(page.isSubmittable)?'':'disabled custom-disabled'"
+                    [disabled]= "!page.isSubmittable"
                     (click)="examService.closeAll(); examService.submit()">
-                <div *ngIf="results.page.submitText"> {{results.page.submitText}}</div>
-                <div *ngIf="results.page.submitText===undefined"> {{'Submit' | translate}}</div>
+                <div *ngIf="page.submitText"> {{page.submitText}}</div>
+                <div *ngIf="page.submitText===undefined"> {{'Submit' | translate}}</div>
             </button>
           </div>
         </div>
       </div>
-      <div class="row response-buttons" *ngIf="results.state.mode==='FINALIZED'">
+      <div class="row response-buttons" *ngIf="state.examState===ExamState.Finalized">
         <div class="col-6">
           <button id="help-btn" type="button"
                   class="btn btn-block btn-lg btn-default"
-                  [ngClass]="(results.page.helpText)?'':'disabled custom-disabled'"
+                  [ngClass]="(page.helpText)?'':'disabled custom-disabled'"
                   (click)="examService.help()">
             <span class="ion-help-circled"></span> {{'Help'|translate}}
           </button>
@@ -149,18 +149,18 @@
           <button id="reset-btn" type="button"
                   class="btn btn-block btn-lg btn-success"
                   (click)="examService.reset()"
-                  *ngIf="results.state.mode==='FINALIZED'"> {{'New Exam'|translate}}
+                  *ngIf="state.examState===ExamState.Finalized"> {{'New Exam'|translate}}
           </button>
         </div>
       </div>
   
-      <div class="row" style="margin-top: 30px;" *ngIf="!(results.page.hideProgressBar || results.state.mode === 'READY' || results.state.mode === 'FINALIZED')">
+      <div class="row" style="margin-top: 30px;" *ngIf="!(page.hideProgressBar || state.examState === ExamState.Ready || state.examState === ExamState.Finalized)">
         <!-- <uib-progressbar *ngIf="!isString(results.state.progress.pctProgress)" value="results.state.progress.pctProgress"></uib-progressbar> -->
         <!-- <div *ngIf="isString(results.state.progress.pctProgress)" class="progress-words">
             {{results.state.progress.pctProgress}}
         </div> -->
-        <div *ngIf="results.state.progress.pctProgress" class="progress-words">
-        {{results.state.progress.pctProgress}}
+        <div *ngIf="state.examProgress.pctProgress" class="progress-words">
+        {{state.examProgress.pctProgress}}
         </div>
   
       </div>
