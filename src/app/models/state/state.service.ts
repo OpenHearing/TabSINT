@@ -24,7 +24,9 @@ export class StateModel {
             chaAdvanced: false
         },
         examProgress: {
-            pctProgress: "1"
+            pctProgress: 1,
+            anticipatedProtocols: [],
+            activatedProtocols: []
         }
     }
 

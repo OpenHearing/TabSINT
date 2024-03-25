@@ -9,11 +9,6 @@ export class PageModel {
 
     pageModel: PageInterface = {
         name: "name",
-        filename: "path/to/file",
-        units: "mm",
-        example: 100,
-        other: ["array","of","strings"],
-        dict: {"key":"value"},
         enableBackButton: true,
         hideProgressBar: false,
         helpText: "helpText",

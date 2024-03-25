@@ -8,17 +8,17 @@
   
     <div class="container">
   
-      <a href="#" class="welcome-row" ng-click="scanQrCodeandAutoConfig()">
+      <a href="#" class="welcome-row" (click)="scanQrCodeandAutoConfig()">
         <span><img src="assets/img/QR_code.png" style="max-width: 29px" alt="{{'QR code logo'}}" /></span>
         <span i18n class="welcome">Scan Configurations</span>
       </a>
   
-      <a routerLink="/exam" class="welcome-row" ng-click="switchToExamView()">
+      <a routerLink="/exam" class="welcome-row" (click)="examService.switchToExamView()">
         <span><mat-icon>edit</mat-icon></span>
         <span class="welcome" i18n>Exam View</span>
       </a>
   
-      <a routerLink="/admin" routerLinkActive="active" class="welcome-row" *ngIf="config.build !== 'heartrack'" ng-click="switchToAdminView()">
+      <a routerLink="/admin" routerLinkActive="active" class="welcome-row" *ngIf="config.build !== 'heartrack'" (click)="examService.switchToAdminView()">
         <span><mat-icon>settings</mat-icon></span>
         <span class="welcome" i18n>Admin View</span>
       </a>

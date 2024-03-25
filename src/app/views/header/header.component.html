@@ -45,8 +45,8 @@
               </button>
               <div ngbDropdownMenu aria-labelledby="header-dropdown-menu">
                 <button ngbDropdownItem>Scan Configuration</button>
-                <button routerLink="/exam" ngbDropdownItem>Exam View</button>
-                <button routerLink="/admin" ngbDropdownItem>Admin View</button>
+                <button (click)="examService.switchToExamView()" routerLink="/exam" ngbDropdownItem>Exam View</button>
+                <button (click)="examService.switchToAdminView()" routerLink="/admin" ngbDropdownItem>Admin View</button>
                 <a href="https://tabsint.org/"><button ngbDropdownItem>Documentation</button></a> 
               </div>
             </div>

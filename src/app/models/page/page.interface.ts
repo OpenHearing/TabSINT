@@ -1,10 +1,5 @@
 export interface PageInterface {
     name: string;
-    filename: string;
-    units: string;
-    example: number;
-    other: Array<string>;
-    dict: object;
     enableBackButton: boolean;
     hideProgressBar: boolean;
     helpText: string;
@@ -25,4 +20,9 @@ export interface PageInterface {
     questionMainText: string;
     loadingRequired: boolean;
     loadingActive: boolean;
+    chaWavFiles?: any;
+    video?: any;
+    wavfiles?: any;
+    chaStream?: any;
+    wavfileStartDelayTime?: any;
 }

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AdminService } from '../../controllers/admin.service';
+import { ExamService } from '../../controllers/exam.service';
 
 @Component({
   selector: 'app-admin',
@@ -8,7 +9,7 @@ import { AdminService } from '../../controllers/admin.service';
 })
 export class AdminComponent {
   
-  constructor(public adminService: AdminService) { }
+  constructor(public adminService: AdminService, public examService: ExamService) { }
 
   active = 1;
 }

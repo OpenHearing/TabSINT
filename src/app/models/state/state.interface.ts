@@ -5,17 +5,19 @@ export interface StateInterface {
     protocolState: ProtocolState;
     examState: ExamState;
     isPaneOpen: {
-        general: boolean,
-        advanced: boolean,
-        wahts: boolean,
-        dosimeter: boolean,
-        softwareHardware: boolean,
-        appLog: boolean,
-        protocols: boolean,
-        protocolsSource: boolean,
-        chaAdvanced: boolean
+        general: boolean;
+        advanced: boolean;
+        wahts: boolean;
+        dosimeter: boolean;
+        softwareHardware: boolean;
+        appLog: boolean;
+        protocols: boolean;
+        protocolsSource: boolean;
+        chaAdvanced: boolean;
     };
     examProgress: {
-        pctProgress: string
+        pctProgress: number;
+        anticipatedProtocols: Array<any>;
+        activatedProtocols: Array<any>;
     }
 }

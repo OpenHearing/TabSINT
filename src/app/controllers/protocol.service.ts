@@ -107,7 +107,7 @@ export class ProtocolService {
         }
     };
 
-    async load(meta: any, _requiresValidation: boolean, notify: boolean, reload: boolean) {
+    async load(meta: any, _requiresValidation: boolean, notify?: boolean, reload?: boolean) {
         this.loading.meta = meta;
         this.loading.requiresValidation = _requiresValidation || this.disk.validateProtocols;
         this.loading.notify = notify || false;
