@@ -35,7 +35,7 @@ export class ProtocolService {
     constructor(
         public appModel: AppModel,
         public diskModel: DiskModel,
-        public file: FileService,
+        public fileService: FileService,
         public logger:Logger,
         public paths: Paths,
         public protocolM: ProtocolModel,
@@ -88,7 +88,7 @@ export class ProtocolService {
     
         // add 'tabsint-protocols' directory next to 'tabsint-results' to store local server TabSINT protocols
         // if (this.app.tablet) {
-        //     this.file.createDirectory("tabsint-protocols");
+        //     this.fileService.createDirectory("tabsint-protocols");
         // }
     };
 
@@ -162,7 +162,7 @@ export class ProtocolService {
                     .join("/");
                 const dir = p.path!.split("/").slice(-2, -1)[0];
                 this.logger.debug('Delete protocol in development');
-                // this.file.removeRecursively(root, dir).catch(function(e: Error) {
+                // this.fileService.removeRecursively(root, dir).catch(function(e: Error) {
                 //     this.logger.error(
                 //         "Failed to remove protocol files in directory " +
                 //         dir +
@@ -187,7 +187,7 @@ export class ProtocolService {
     
         try {
             console.log("attempting to delete files in development");
-            // this.file.deleteCopiedInternalDir(p.path, p.name);
+            // this.fileService.deleteCopiedInternalDir(p.path, p.name);
         } catch (error) {
             console.log("Error trying to delete files");
             console.log(error);
@@ -210,7 +210,7 @@ export class ProtocolService {
             this.logger.debug("loading.meta" + JSON.stringify(this.loading.meta));
             if (this.loading.meta.contentURI && this.loading.reload) {
                 this.logger.debug("re-loading protocol - copying directory");
-                return; // (this.file.copyDirectory(this.loading.meta.contentURI, this.loading.meta.name!));
+                return (this.fileService.copyDirectory(this.loading.meta.contentURI, this.loading.meta.name!, 'Documents', 'Documents'));
             } else {
                 return;
             }
@@ -234,7 +234,7 @@ export class ProtocolService {
             if (this.loading.meta.server === ProtocolServer.Developer) {
                 protocol = DeveloperProtocols[this.loading.meta.name!];
             } else {
-                protocol = await this.file.readFile(this.loading.meta.path + "/protocol.json");
+                protocol = await this.fileService.readFile(this.loading.meta.path + "/protocol.json");
             }
             
             if (!_.isUndefined(protocol)) {
@@ -258,7 +258,7 @@ export class ProtocolService {
             if (this.loading.meta.server === ProtocolServer.Developer) {
                 calibration = DeveloperProtocolsCalibration[this.loading.meta.name!];
             } else {
-                calibration = await this.file.readFile(this.loading.meta.path + "/calibration.json");
+                calibration = await this.fileService.readFile(this.loading.meta.path + "/calibration.json");
             }
             if (calibration) {
                 this.loading.calibration = calibration as unknown as ProtocolInterface; // ????
