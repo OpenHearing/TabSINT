@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
+import { MatDialogActions, MatDialogContent, MatDialogModule } from '@angular/material/dialog';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -26,6 +27,7 @@ import { ResultsComponent } from './views/results/results.component';
 import { HeaderComponent } from './views/header/header.component';
 import { ExamComponent } from './views/exam/exam.component';
 import { IndicatorComponent } from './views/indicator/indicator.component';
+import { NotificationsComponent } from './views/notifications/notifications.component';
 
 // Models
 import { AppModel } from './models/app/app.service';
@@ -79,6 +81,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     HeaderComponent,
     ExamComponent,
     IndicatorComponent,
+    NotificationsComponent,
     TabsintConfigComponent,
     SoftwareConfigComponent,
     LogConfigComponent,
@@ -102,6 +105,9 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     MatMenuModule,
     MatExpansionModule,
     MatAccordion,
+    MatDialogContent,
+    MatDialogActions,
+    MatDialogModule,
     NgbModule,
     TranslateModule.forRoot({
       loader: {

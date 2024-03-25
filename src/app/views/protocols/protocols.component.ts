@@ -11,7 +11,6 @@ import { ProtocolModel } from '../../models/protocol/protocol.service';
 import { ProtocolService } from '../../controllers/protocol.service';
 import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
-import { Observable } from 'rxjs';
 import { DialogData } from '../../interfaces/dialog-data.interface';
 import { Notifications } from '../../utilities/notifications.service';
 import { Tasks } from '../../utilities/tasks.service';

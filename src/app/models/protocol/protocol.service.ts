@@ -18,45 +18,35 @@ export class ProtocolModel {
                 name: "Audiometry",
                 path: "protocols/edare-audiometry",
                 creator: "Edare",
-                server: ProtocolServer.Developer,
-                protocolId: 'temp',
-                pages: []
+                server: ProtocolServer.Developer
             }),
             this.define({
                 name: "Creare Audiometry",
                 path: "protocols/creare-audiometry",
                 creator: "creare",
                 server: ProtocolServer.Developer,
-                admin: true,
-                protocolId: 'temp',
-                pages: []
+                admin: true
             }),
             this.define({
                 name: "tabsint-test",
                 path: "protocols/TabSINT-Test",
                 creator: "creare",
                 server: ProtocolServer.Developer,
-                admin: true,
-                protocolId: 'temp',
-                pages: []
+                admin: true
             }),
             this.define({
                 name: "wahts-device-test",
                 path: "protocols/wahts-device-test",
                 creator: "creare",
                 server: ProtocolServer.Developer,
-                admin: true,
-                protocolId: 'temp',
-                pages: []
+                admin: true
             }),
             this.define({
                 name: "wahts-software-test",
                 path: "protocols/wahts-software-test",
                 creator: "creare",
                 server: ProtocolServer.Developer,
-                admin: true,
-                protocolId: 'temp',
-                pages: []
+                admin: true
             })
         ]
     }

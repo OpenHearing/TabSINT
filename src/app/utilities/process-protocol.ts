@@ -2,7 +2,14 @@ import _ from "lodash";
 import { ProtocolSchema } from "../interfaces/protocol-schema.interface";
 import { ProtocolInterface } from "../models/protocol/protocol.interface";
 
-export function processProtocol(subProtocol: ProtocolSchema, dict: _.Dictionary<ProtocolSchema>, rootProtocol: ProtocolInterface, calibration: any, commonCalibration: any, prefix: string) {
+export function processProtocol(
+    subProtocol: ProtocolSchema, 
+    dict: _.Dictionary<ProtocolSchema>, 
+    rootProtocol: ProtocolInterface, 
+    calibration: any, 
+    commonCalibration: any, 
+    prefix: string
+  ) {
     _.forEach(subProtocol.pages, function(page) {
       processPage(page, dict, rootProtocol, calibration, commonCalibration, prefix);
     });
@@ -18,7 +25,14 @@ export function processProtocol(subProtocol: ProtocolSchema, dict: _.Dictionary<
     }
   }
 
-  function processPage(page: any, dict: _.Dictionary<ProtocolSchema>, rootProtocol: ProtocolInterface, calibration: any, commonCalibration: any, prefix: string) {
+  function processPage(
+      page: any, 
+      dict: _.Dictionary<ProtocolSchema>, 
+      rootProtocol: ProtocolInterface, 
+      calibration: any, 
+      commonCalibration: any, 
+      prefix: string
+    ) {
     if (page.preProcessFunction) {
       rootProtocol._preProcessFunctionList!.push(page.preProcessFunction);
     }

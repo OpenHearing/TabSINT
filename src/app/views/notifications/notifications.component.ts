@@ -1,25 +1,29 @@
 import {Component, Inject} from '@angular/core';
 import {
   MatDialog,
-  MatDialogRef,
-  MatDialogActions,
-  MatDialogClose,
-  MatDialogTitle,
-  MatDialogContent,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
 import {MatButtonModule} from '@angular/material/button';
+
 import { DialogData } from '../../interfaces/dialog-data.interface';
+import { DialogType } from '../../utilities/constants';
 
 @Component({
   selector: 'confirmation-dialog',
   templateUrl: './notifications.component.html',
-  standalone: true,
-  imports: [MatButtonModule, MatDialogActions, MatDialogClose, MatDialogTitle, MatDialogContent],
+  styleUrl: './notifications.component.css'
 })
-export class ConfirmationDialog {
+export class NotificationsComponent {
+  dialogTypeConfirm = DialogType.Confirm;
+
   constructor(
-    public dialogRef: MatDialogRef<ConfirmationDialog>, 
+    public dialog: MatDialog, 
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
   ) {}
+
+  
+  cancel() {
+    this.dialog.closeAll();
+  }
+
 }
