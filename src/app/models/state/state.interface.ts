@@ -3,6 +3,7 @@ import { AppState, ProtocolState, ExamState } from "../../utilities/constants";
 export interface StateInterface {
     appState: AppState;
     protocolState: ProtocolState;
+    protocolStack: Array<any>;
     examState: ExamState;
     isPaneOpen: {
         general: boolean;

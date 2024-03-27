@@ -54,3 +54,5 @@ export var DeveloperProtocolsCalibration: any = {
     "wahts-device-test": WahtsDeviceTestCalibration,
     "wahts-software-test" : WahtsSoftwareTestCalibration
 }
+
+export const bluetoothTimeout: number = 5000;

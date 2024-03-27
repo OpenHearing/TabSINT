@@ -65,6 +65,7 @@ import { ExamReadyComponent } from './views/exam-ready/exam-ready.component';
 import { ExamNotReadyComponent } from './views/exam-not-ready/exam-not-ready.component';
 import { ExamTestingComponent } from './views/exam-testing/exam-testing.component';
 import { ExamFinalizedComponent } from './views/exam-finalized/exam-finalized.component';
+import { ResponseAreaComponent } from './views/response-area/response-area.component';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -91,7 +92,8 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     ExamReadyComponent,
     ExamNotReadyComponent,
     ExamTestingComponent,
-    ExamFinalizedComponent
+    ExamFinalizedComponent,
+    ResponseAreaComponent
   ],
   imports: [
     BrowserModule,

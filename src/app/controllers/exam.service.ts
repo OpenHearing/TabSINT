@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { Injectable } from '@angular/core';
+import { Injectable, Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Logger } from '../utilities/logger.service';
 import { AppState, ExamState } from '../utilities/constants';
@@ -15,6 +15,8 @@ import { ProtocolService } from './protocol.service';
 import { DiskInterface } from '../models/disk/disk.interface';
 import { DiskModel } from '../models/disk/disk.service';
 import { Notifications } from '../utilities/notifications.service';
+import { bluetoothTimeout } from '../utilities/constants';
+
 @Injectable({
     providedIn: 'root',
 })
@@ -39,7 +41,7 @@ export class ExamService {
         private logger: Logger,
         private diskModel: DiskModel,
         private notifications: Notifications
-        ) { 
+    ) {
         this.page = this.pageModel.getPage();
         this.results = this.resultsModel.getResults();
         this.protocolModel = this.protocolM.getProtocolModel();
@@ -54,13 +56,10 @@ export class ExamService {
     - page.dm => protocol.activeProtocol
     - exam.dm.state.progress => state.examProgress
     - page.result => results.current
-
-
     */
 
     // Definining variables
     // TODO: Should these variables be moved to a model?
-    protocolStack:Array<any> = [];
     cha = {
         myCha: "",
         streaming: false
@@ -74,8 +73,6 @@ export class ExamService {
     }
 
     switchToExamView() {
-        console.log("ExamService switchToExamView() called");
-
         // hide tasks by default when moving to exam view
         // tasks.hide();
 
@@ -88,10 +85,9 @@ export class ExamService {
             // router.goto("EXAM");
 
             console.log("this.protocol.activeProtocol",this.protocol.activeProtocol);
-            // TODO: what is the '.id' field doing? Where should this be getting set?
-            if (this.protocol.activeProtocol && this.protocol.activeProtocol.id) {
+            if (this.protocol.activeProtocol?.id) {
                 this.logger.debug("re-activating page " + this.protocol.activeProtocol.id);
-                this.finishActivate(this.protocol.activeProtocol, this.results.current);
+                this.finishActivate();
             }
         }
 
@@ -99,7 +95,7 @@ export class ExamService {
         if (_.isUndefined(this.protocol.activeProtocol)) {
             this.protocolService
                 .load(undefined, this.disk.validateProtocols)
-                .then(this.reset) // reset the test - still need to reset to show the proper 'exam disabled' note
+                .then(this.reset)
                 .then(finishSwitch)
                 .catch( () => {
                     this.notifications.alert(
@@ -114,14 +110,13 @@ export class ExamService {
     }
 
     // TODO: this function needs major reworking
-    finishActivate(pg:any, result:any) {
+    finishActivate() {
         console.log("finishActivate called");
-        var previous = JSON.parse(JSON.stringify(this.protocol.activeProtocol));
-        if (JSON.stringify(previous.dm) == JSON.stringify(pg)) {
-            //reset previous if it is identical to curent. This occurs if switching between admin mode / exam view.
-            previous = {};
-        }
-        var bluetoothTimeout = 5000; // ~5 seconds seems to avoid beep
+        // var previous = JSON.parse(JSON.stringify(this.protocol.activeProtocol));
+        // if (JSON.stringify(previous.dm) == JSON.stringify(pg)) {
+        //     // reset previous if it is identical to curent. This occurs if switching between admin mode / exam view.
+        //     previous = {};
+        // }
 
         // TODO: Below 2 lines are not needed?
         // page.dm = pg;
@@ -132,28 +127,28 @@ export class ExamService {
 
         this.logger.debug("streaming required:" + JSON.stringify(this.page.video || this.page.wavfiles || this.page.chaStream));
 
-        if (
-            (this.disk.headset === "Creare Headset" ||
-            this.disk.headset === "WAHTS" ||
-            // this.protocol.activeProtocol?.headset === "Creare Headset" ||
-            this.protocol.activeProtocol?.headset === "WAHTS") &&
-            (this.page.video || this.page.wavfiles || this.page.chaStream)
-        ) {
-            if (previous && previous.dm && (previous.dm.video || previous.dm.wavfiles || previous.dm.chaStream)) {
-                this.logger.debug("Streaming mode should already be running");
-                streamRunning = true;
-            } else {
-                this.page.loadingActive = true;
-                this.page.loadingRequired = true;
-                setTimeout( () => {
-                    this.page.loadingActive = false;
-                    this.logger.debug("this.page.loadingActive: "+this.page.loadingActive.toString());
-                }, bluetoothTimeout);
-            }
-        } else {
-            this.page.loadingActive = false;
-            this.page.loadingRequired = false;
-        }
+        // if (
+        //     (this.disk.headset === "Creare Headset" ||
+        //     this.disk.headset === "WAHTS" ||
+        //     // this.protocol.activeProtocol?.headset === "Creare Headset" ||
+        //     this.protocol.activeProtocol?.headset === "WAHTS") &&
+        //     (this.page.video || this.page.wavfiles || this.page.chaStream)
+        // ) {
+        //     if (previous && previous.dm && (previous.dm.video || previous.dm.wavfiles || previous.dm.chaStream)) {
+        //         this.logger.debug("Streaming mode should already be running");
+        //         streamRunning = true;
+        //     } else {
+        //         this.page.loadingActive = true;
+        //         this.page.loadingRequired = true;
+        //         setTimeout( () => {
+        //             this.page.loadingActive = false;
+        //             this.logger.debug("this.page.loadingActive: "+this.page.loadingActive.toString());
+        //         }, bluetoothTimeout);
+        //     }
+        // } else {
+        //     this.page.loadingActive = false;
+        //     this.page.loadingRequired = false;
+        // }
 
         console.log("this.page",this.page);
 
@@ -228,12 +223,12 @@ export class ExamService {
             this.nPages = 1;
         }
         if (this.currPageQueue() && this.getCurrPageIndex() + this.nPages < this.currPageQueue().length) {
-            _.last(this.protocolStack).pageIndex += this.nPages;
+            _.last(this.state.protocolStack).pageIndex += this.nPages;
             return this.getCurrentPage();
         } else {
             this.removeCurrentProtocol(); // recurses until finding a parent protocol that isn't timed out and has pages left
             // if anything is left, return that page here
-            if (this.protocolStack.length > 0) {
+            if (this.state.protocolStack.length > 0) {
                 return this.getNextPage();
             }
         }
@@ -252,19 +247,19 @@ export class ExamService {
         this.nRemove = this.nRemove !== undefined ? this.nRemove : 1;
         //var state = protocolStack.pop();  //BPF commented - state was overwriting parent var!
         for (var i = 0; i < this.nRemove; i++) {
-            this.protocolStack.pop();
+            this.state.protocolStack.pop();
         }
         // We are done; we don't expect any more questions.
         //state.nPagesExpected = state.nPagesDone; //TODO follow this logic - what does this change?
 
         // if any protocols left
-        if (this.protocolStack.length > 0) {
+        if (this.state.protocolStack.length > 0) {
             // if no pages left in this protocol, remove this one too
             if (this.getCurrPageIndex() + 1 > this.currPageQueue().length) {
                 this.removeCurrentProtocol();
             } else {
                 // increment parent protocol pagesDone counter, check timeouts
-                this.protocolStack[this.protocolStack.length - 1].nPagesDone += 1;
+                this.state.protocolStack[this.state.protocolStack.length - 1].nPagesDone += 1;
                 this.checkNPagesBasedTimeouts();
             }
         }
@@ -275,7 +270,7 @@ export class ExamService {
         // changing # of pages)
         if (this.currProtocol().timeout) {
             if (this.currProtocol().timeout.nMaxPages) {
-                var nPagesDone = this.protocolStack[this.protocolStack.length - 1].nPagesDone;
+                var nPagesDone = this.state.protocolStack[this.state.protocolStack.length - 1].nPagesDone;
                 if (nPagesDone >= this.currProtocol().timeout.nMaxPages) {
                     // Remove timed out protocol and all child protocols.
                     this.logger.debug("Timed out after " + nPagesDone.toString() + " pages.");
@@ -293,11 +288,11 @@ export class ExamService {
     }
 
     currPageQueue() {
-        return this.protocolStack.length ? _.last(this.protocolStack).pageQueue : undefined;
+        return this.state.protocolStack.length ? _.last(this.state.protocolStack).pageQueue : undefined;
     }
 
     getCurrPageIndex() {
-        return this.protocolStack.length ? _.last(this.protocolStack).pageIndex : undefined;
+        return this.state.protocolStack.length ? _.last(this.state.protocolStack).pageIndex : undefined;
     }
 
     finishActivateMedia() {
@@ -371,7 +366,7 @@ export class ExamService {
         // }
     }
 
-    reset(startPage?:any) {
+    reset() {
         console.log("ExamService reset() called");
 
         this.logger.debug("Resetting exam");
@@ -409,7 +404,7 @@ export class ExamService {
         // setup exam
         this.results.current = {};
         // exam.dm.state.iQuestion = 1;
-        this.state.examState = ExamState.Ready;
+        // this.state.examState = ExamState.Ready;
         this.state.examProgress = {
             pctProgress: 0,
             anticipatedProtocols: [],
@@ -419,18 +414,20 @@ export class ExamService {
         // exam.dm.state.flags = {};
         // exam.dm.state.nRepeats = 0;
 
-        var pg = {};
-        if (this.disk.externalMode) {
-            // pg = externalControlMode.resetExternal(startPage);
-        } else {
-            pg = this.resetInternal();
-        }
+        // this.page.previous = JSON.parse(JSON.stringify(this.page.current));
+        // this.page.current = {};
 
-        if (!pg) {
-            return;
-        }
+        // if (this.disk.externalMode) {
+        //     // this.page.current = externalControlMode.resetExternal(startPage);
+        // } else {
+        //     this.page.current = this.resetInternal();
+        // }
 
-        // TODO: Should this automatically happen in page model?
+        // if (!this.page.current) {
+        //     return;
+        // }
+
+        // TODO: Should this happen somewhere else?
         // page.dm = {
         //     title: pg.title,
         //     subtitle: pg.subtitle,
@@ -463,10 +460,11 @@ export class ExamService {
   
         // load protocol
         // this.protocolService.reset();
-        this.protocolStack.splice(0, this.protocolStack.length); // reset/empty it.
+        this.state.protocolStack.splice(0, this.state.protocolStack.length); // reset/empty it.
   
         // prepare progress tracking structures.
         if (this.protocol.activeProtocol) {
+            // TODO: VAL to rewrite this into protocol service
             this.fillAnticipatedProtocols(this.protocol.activeProtocol);
             this.activateNewProtocol(this.protocol.activeProtocol);
         } else {
@@ -480,9 +478,10 @@ export class ExamService {
 
     currProtocol() {
         /* Convenience fxn to get current protocol. Undefined if stack is empty. */
-        return this.protocolStack.length ? _.last(this.protocolStack).protocol : undefined;
+        return this.state.protocolStack.length ? _.last(this.state.protocolStack).protocol : undefined;
     }
 
+    // ESSENTIAL?
     activateNewProtocol(thisProtocol:any) {
         var state:any = {
             protocol: thisProtocol,
@@ -509,7 +508,7 @@ export class ExamService {
         }
   
         // push onto protocol stack.
-        this.protocolStack.push(state);
+        this.state.protocolStack.push(state);
   
         // for progress calculation, add protocol to activated protocols list and
         // remove from anticipated protocols list.
@@ -521,6 +520,7 @@ export class ExamService {
         }
     }
 
+    // ESSENTIAL?
     fillAnticipatedProtocols(protocol:any) {
         // clear the list.
         this.state.examProgress.anticipatedProtocols = [];

@@ -11,7 +11,8 @@ export class StateModel {
     stateModel: StateInterface = {
         appState: AppState.Welcome,
         protocolState: ProtocolState.null,
-        examState: ExamState.Finalized,
+        protocolStack: [],
+        examState: ExamState.Testing,
         isPaneOpen: {
             general: true,
             advanced: false,
