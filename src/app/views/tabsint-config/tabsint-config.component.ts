@@ -10,7 +10,6 @@ import { VersionService } from '../../controllers/version.service';
 import { ConfigService } from '../../controllers/config.service';
 import { AppState } from '../../utilities/constants';
 import { StateModel } from '../../models/state/state.service';
-import { DiskInterface } from '../../models/disk/disk.interface';
 import { PageInterface } from '../../models/page/page.interface';
 import { StateInterface } from '../../models/state/state.interface';
 import { ResultsMode } from '../../utilities/constants';
@@ -23,7 +22,6 @@ import { MatDialog } from '@angular/material/dialog';
   styleUrl: './tabsint-config.component.css'
 })
 export class TabsintConfigComponent {
-  disk: DiskInterface;
   page: PageInterface;
   state: StateInterface;
   version: any;
@@ -40,7 +38,6 @@ export class TabsintConfigComponent {
     public translate: TranslateService,
     public dialog: MatDialog
   ) { 
-    this.disk = this.diskModel.getDisk();
     this.version = this.versionService.getVersion();
     this.page = this.pageModel.getPage();
     this.state = this.stateModel.getState();
@@ -75,19 +72,19 @@ export class TabsintConfigComponent {
   // Functions
 
   changeHeadset(headset: string) {
-    this.disk.headset = headset;
-    this.logger.debug("Headset changed to: "+headset);
+    this.diskModel.updateDiskModel("headset", headset);
+    this.logger.debug("Headset changed to: " + headset);
   }
 
   changeLanguage(language: string) {
-    this.disk.language = language;
     // need to update the language here
+    this.diskModel.updateDiskModel("language", language);
     this.translate.setDefaultLang(language);
     this.logger.debug("Language changed to: "+language);
   }
 
   changeResultsMode(resultsMode: ResultsMode) {
-    this.disk.resultsMode = resultsMode;
+    this.diskModel.updateDiskModel("resultsMode", resultsMode);
     this.logger.debug("ResultsMode changed to: "+JSON.stringify(resultsMode));
   }
 

@@ -19,15 +19,14 @@ import { Paths } from '../utilities/paths.service';
 import { Tasks } from '../utilities/tasks.service';
 import { Notifications } from '../utilities/notifications.service';
 import { loadingProtocolDefaults } from '../utilities/defaults';
-import { checkCalibrationFiles, checkControllers, checkPreProcessFunctions } from '../utilities/protocol-checks';
-import { processProtocol } from '../utilities/process-protocol';
+import { checkCalibrationFiles, checkControllers, checkPreProcessFunctions } from '../utilities/protocol-checks.function';
+import { processProtocol } from '../utilities/process-protocol.function';
 
 @Injectable({
     providedIn: 'root',
 })
 
 export class ProtocolService {
-    disk: DiskInterface;
     app: AppInterface;
     loading: LoadingProtocolInterface;
     protocolModel: ProtocolModelInterface;
@@ -43,11 +42,10 @@ export class ProtocolService {
         public translate: TranslateService,
         public notifications: Notifications
     ) { 
-        this.disk = this.diskModel.getDisk(); 
         this.app = this.appModel.getApp();
         this.protocolModel = this.protocolM.getProtocolModel();
         
-        this.loading = loadingProtocolDefaults(this.disk.validateProtocols);
+        this.loading = loadingProtocolDefaults(this.diskModel.disk.validateProtocols);
     }
 
     init(): void  {
@@ -81,7 +79,7 @@ export class ProtocolService {
         // if (!this.app.tablet) {
             // config.load();
         // }
-        // this.disk.server = ProtocolServer.LocalServer;
+        // this.diskModel.disk.server = ProtocolServer.LocalServer;
     
         // add root, recursively will add all dependent schemas
         // protocolSchema = addSchema("protocol_schema");
@@ -109,7 +107,7 @@ export class ProtocolService {
 
     async load(meta: any, _requiresValidation: boolean, notify: boolean, reload: boolean) {
         this.loading.meta = meta;
-        this.loading.requiresValidation = _requiresValidation || this.disk.validateProtocols;
+        this.loading.requiresValidation = _requiresValidation || this.diskModel.disk.validateProtocols;
         this.loading.notify = notify || false;
         this.loading.reload = reload || false;
     
@@ -226,7 +224,7 @@ export class ProtocolService {
     private async loadFiles() {
         // callbackQueue.clear();
   
-        // this.loading = loadingProtocolDefaults(this.disk.validateProtocols);
+        // this.loading = loadingProtocolDefaults(this.diskModel.disk.validateProtocols);
         this.loading.calibration = undefined;
 
         try {
@@ -241,7 +239,7 @@ export class ProtocolService {
                 this.loading.protocol = {...this.loading.meta, ...protocol as unknown as ProtocolInterface}; // ????
             } else {
                 this.logger.error("Protocol did not load properly");
-                if (this.disk.audhere) {
+                if (this.diskModel.disk.audhere) {
                   this.notifications.alert(
                     this.translate.instant("The protocol specified is not available, please see the administrator.")
                   ).subscribe();
@@ -344,13 +342,14 @@ export class ProtocolService {
         this.tasks.deregister("updating protocol");
     }
     
+    // TODO: extract this into utility function
     private initializeProtocol() {
         this.tasks.register("updating protocol", "Initializing Protocol...");
         
         this.loading.protocol.errors = [];
         var cCommon, msg;
     
-        if (this.disk.requireEncryptedResults && !this.loading.protocol.publicKey) {
+        if (this.diskModel.disk.requireEncryptedResults && !this.loading.protocol.publicKey) {
             this.loading.protocol.errors.push({
                 type: this.translate.instant("Public Key"),
                 error: this.translate.instant(
@@ -435,11 +434,11 @@ export class ProtocolService {
         this.loading.protocol.currentCalibration = this.loading.protocol.headset || "None"; 
     
         if (this.loading.protocol.commonMediaRepository) {
-            var midx = _.findIndex(this.disk.mediaRepos, {
+            var midx = _.findIndex(this.diskModel.disk.mediaRepos, {
                 name: this.loading.protocol.commonMediaRepository
             });
             if (midx !== -1) {
-                this.loading.protocol.commonRepo = this.disk.mediaRepos[midx];
+                this.loading.protocol.commonRepo = this.diskModel.disk.mediaRepos[midx];
                 // cCommon = json.load(loading.protocol.commonRepo.path + "calibration.json");
             } else {
                 msg =
@@ -469,6 +468,7 @@ export class ProtocolService {
         this.loading.protocol.errors = [];
     
         this.tasks.register("updating protocol", "Processing Protocol...");
+        // TODO: return expected result
         processProtocol(
             this.loading.protocol, 
             this.loading.protocol._protocolIdDict, 
@@ -485,7 +485,7 @@ export class ProtocolService {
                 this.protocolModel.activeProtocol.publicKey = decodeURI(this.protocolModel.activeProtocol.key);
             }
         }
-        this.disk.headset = this.protocolModel.activeProtocol.headset || "None";
+        this.diskModel.disk.headset = this.protocolModel.activeProtocol.headset || "None";
     
         // try connecting the cha
         if (this.loading.protocol._requiresCha) {

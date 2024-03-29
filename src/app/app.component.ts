@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProtocolService } from './controllers/protocol.service';
 import { TranslateService } from "@ngx-translate/core";
+import { DiskModel } from './models/disk/disk.service';
 
 @Component({
   selector: 'app-root',
@@ -13,6 +14,7 @@ export class AppComponent {
   
   constructor(
     private protocolService: ProtocolService,
+    private diskModel: DiskModel,
     private router: Router,
     private translate: TranslateService
   ) { 
