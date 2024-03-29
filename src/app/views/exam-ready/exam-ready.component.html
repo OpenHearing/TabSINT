@@ -1,12 +1,12 @@
-<div *ngIf="!!(page.title)">
-    <h1 [innerHtml]="page.title"></h1>
+<div *ngIf="!!(this.protocol.activeProtocol?.title)">
+    <h1 [innerHtml]="this.protocol.activeProtocol?.title"></h1>
     <div class="spacer"></div>
   </div>
   
-  <div *ngIf="!!(page.subtitle)">
-    <h2 [innerHtml]="page.subtitle"></h2>
+  <div *ngIf="!!(this.protocol.activeProtocol?.subtitle)">
+    <h2 [innerHtml]="this.protocol.activeProtocol?.subtitle"></h2>
     <div class="spacer"></div>
   </div>
   
-  <p class="instructions" *ngIf="!!(page.instructionText)" [ngStyle]="examService.centerIfShort('instructions-ready')"><span [innerHtml]="page.instructionText" id="instructions-ready"></span></p>
+  <p class="instructions" *ngIf="!!(this.protocol.activeProtocol?.instructionText)" [ngStyle]="examService.centerIfShort('instructions-ready')"><span [innerHtml]="this.protocol.activeProtocol?.instructionText" id="instructions-ready"></span></p>
   

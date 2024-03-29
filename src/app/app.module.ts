@@ -33,7 +33,6 @@ import { NotificationsComponent } from './views/notifications/notifications.comp
 import { AppModel } from './models/app/app.service';
 import { DevicesModel } from './models/devices/devices.service';
 import { DiskModel } from './models/disk/disk.service';
-import { PageModel } from './models/page/page.service';
 import { ProtocolModel } from './models/protocol/protocol.service';
 import { ResultsModel } from './models/results/results.service';
 import { StateModel } from './models/state/state.service';
@@ -66,6 +65,8 @@ import { ExamNotReadyComponent } from './views/exam-not-ready/exam-not-ready.com
 import { ExamTestingComponent } from './views/exam-testing/exam-testing.component';
 import { ExamFinalizedComponent } from './views/exam-finalized/exam-finalized.component';
 import { ResponseAreaComponent } from './views/response-area/response-area.component';
+import { TextboxComponent } from './views/response-area/response-areas/textbox/textbox.component';
+import { MultipleChoiceComponent } from './views/response-area/response-areas/multiple-choice/multiple-choice.component';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -93,7 +94,9 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     ExamNotReadyComponent,
     ExamTestingComponent,
     ExamFinalizedComponent,
-    ResponseAreaComponent
+    ResponseAreaComponent,
+    TextboxComponent,
+    MultipleChoiceComponent
   ],
   imports: [
     BrowserModule,
@@ -125,7 +128,6 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     AppModel,
     DevicesModel,
     DiskModel,
-    PageModel,
     ProtocolModel,
     ResultsModel,
     StateModel,

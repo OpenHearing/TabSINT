@@ -1,0 +1,34 @@
+<div>
+  
+    <span class="multi-choice-container">
+      <div class="row" *ngFor="let choice of choices;">
+        <div [ngStyle]="spacing">
+          <!-- <button type="button" 
+            [ngStyle]="{'font-size':choice.fontSize,'background':(choice.backgroundColor) || (choice.disable&&'#cccccc'),'color':(choice.textColor)||(choice.disable&&'#666666')}"
+            [ngClass]="
+                {
+                    'btn btn-default btn-block':true,
+                    'btn-default active' : (!gradeResponse && !showCorrect) && multichosen(choice),
+                    'btn-disabled' : gradeResponse || showCorrect || buttonDisabled,
+                    'btn-success' : (gradeResponse || showCorrect) && multichosen(choice) && isCorrect(choice.id),
+                    'btn-danger' : (gradeResponse || showCorrect) && multichosen(choice) && !isCorrect(choice.id),
+                    'btn-faded' : showCorrect && !multichosen(choice)|| buttonDisabled
+                }
+                "
+                [innerHtml]="choice.text || choice.id" (click)="!choice.disable&&choose()" name="{{choice.text || choice.id}}">
+          </button> -->
+          <button type="button" 
+            [innerHtml]="choice.text || choice.id" (click)="!choice.disable && choose(choice.id);" name="{{choice.text || choice.id}}">
+          </button>
+        </div>
+      </div>
+
+      <!-- <div class="row" style="margin-bottom: 200px" *ngIf="enableOther && page.result.response === 'Other'">
+        <span class="glyphicon glyphicon-arrow-right"></span>
+        <input type="text" name="Other" [(ngModel)]="page.result.otherResponse" autofocus="true">
+      </div> -->
+
+    </span>
+  
+  </div>
+  

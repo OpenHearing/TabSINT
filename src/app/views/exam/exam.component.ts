@@ -18,8 +18,6 @@ import { ProtocolModelInterface } from '../../models/protocol/protocol-model.int
 import { ResultsInterface } from '../../models/results/results.interface';
 import { ResultsModel } from '../../models/results/results.service';
 import { ExamService } from '../../controllers/exam.service';
-import { PageInterface } from '../../models/page/page.interface';
-import { PageModel } from '../../models/page/page.service';
 
 @Component({
   selector: 'exam-view',
@@ -29,16 +27,14 @@ import { PageModel } from '../../models/page/page.service';
 
 export class ExamComponent {
   disk: DiskInterface;
-  page: PageInterface;
   results: ResultsInterface
-  protocolModel: ProtocolModelInterface;
+  protocol: ProtocolModelInterface;
   localServer: ProtocolServer = ProtocolServer.LocalServer;
   state: StateInterface;
   ExamState = ExamState;
 
   constructor (
     public diskModel: DiskModel,
-    public pageModel: PageModel,
     public resultsModel: ResultsModel,
     public protocolService: ProtocolService,
     public protocolM: ProtocolModel,
@@ -51,9 +47,8 @@ export class ExamComponent {
     public examService: ExamService
   ) {
     this.disk = this.diskModel.getDisk();
-    this.page = this.pageModel.getPage();
     this.results = this.resultsModel.getResults();
-    this.protocolModel = this.protocolM.getProtocolModel();
+    this.protocol = this.protocolM.getProtocolModel();
     this.state = this.stateModel.getState();
   }
 

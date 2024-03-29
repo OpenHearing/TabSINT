@@ -24,7 +24,7 @@ export interface ProtocolSchema {
     navMenu?: NavMenuItem[];
     js?: string | string[];
     exclusiveTimingMode?: boolean;
-    pages?: (PageDefinition | ProtocolReference | ProtocolSchema)[];
+    pages?: PageDefinition[];
     subProtocols?: ProtocolSchema[];
     lookUpTables?: { name: string; table: any[] }[];
 }

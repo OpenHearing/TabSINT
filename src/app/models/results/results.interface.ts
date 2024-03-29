@@ -10,5 +10,9 @@ export interface ResultsInterface {
         testResults?: any;
         response?: any;
         responseStartTime?: any;
-    }
+        nResponses?: any;
+        nCorrect?: any;
+        nIncorrect?: any;
+    },
+    previous: any;
 }

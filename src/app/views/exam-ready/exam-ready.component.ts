@@ -2,8 +2,10 @@ import { Component } from '@angular/core';
 import { ResultsInterface } from '../../models/results/results.interface';
 import { ResultsModel } from '../../models/results/results.service';
 import { ExamService } from '../../controllers/exam.service';
-import { PageInterface } from '../../models/page/page.interface';
-import { PageModel } from '../../models/page/page.service';
+import { ProtocolModel } from '../../models/protocol/protocol.service';
+import { StateInterface } from '../../models/state/state.interface';
+import { StateModel } from '../../models/state/state.service';
+import { ProtocolModelInterface } from '../../models/protocol/protocol-model.interface';
 
 @Component({
   selector: 'exam-ready-view',
@@ -12,11 +14,18 @@ import { PageModel } from '../../models/page/page.service';
 })
 export class ExamReadyComponent {
   results: ResultsInterface;
-  page: PageInterface
+  state: StateInterface;
+  protocol: ProtocolModelInterface;
 
-  constructor(public resultsModel: ResultsModel, public examService: ExamService, public pageModel: PageModel) { 
+  constructor(
+    public resultsModel: ResultsModel, 
+    public examService: ExamService, 
+    public stateModel: StateModel,
+    public protocolModel: ProtocolModel
+  ) { 
     this.results = this.resultsModel.getResults();
-    this.page = this.pageModel.getPage();
+    this.state = this.stateModel.getState();
+    this.protocol = this.protocolModel.getProtocolModel();
   }
 
 }

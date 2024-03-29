@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { PageModel } from '../../models/page/page.service';
 import { DiskModel } from '../../models/disk/disk.service';
 import { Logger } from '../../utilities/logger.service';
 import { FileService } from '../../controllers/file.service';
@@ -11,7 +10,6 @@ import { ConfigService } from '../../controllers/config.service';
 import { AppState } from '../../utilities/constants';
 import { StateModel } from '../../models/state/state.service';
 import { DiskInterface } from '../../models/disk/disk.interface';
-import { PageInterface } from '../../models/page/page.interface';
 import { StateInterface } from '../../models/state/state.interface';
 import { ResultsMode } from '../../utilities/constants';
 import { ChangePinComponent } from '../change-pin/change-pin.component';
@@ -24,7 +22,6 @@ import { MatDialog } from '@angular/material/dialog';
 })
 export class TabsintConfigComponent {
   disk: DiskInterface;
-  page: PageInterface;
   state: StateInterface;
   version: any;
 
@@ -35,14 +32,12 @@ export class TabsintConfigComponent {
     public configService: ConfigService,
     public versionService: VersionService,
     public logger: Logger, 
-    public pageModel: PageModel,
     public stateModel: StateModel,
     public translate: TranslateService,
     public dialog: MatDialog
   ) { 
     this.disk = this.diskModel.getDisk();
     this.version = this.versionService.getVersion();
-    this.page = this.pageModel.getPage();
     this.state = this.stateModel.getState();
   }
 

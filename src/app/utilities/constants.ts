@@ -40,12 +40,14 @@ import CreareAudiometry from '../../protocols/creare-audiometry/protocol.json';
 import TabsintTest from '../../protocols/tabsint-test/protocol.json';
 import WahtsDeviceTest from '../../protocols/wahts-device-test/protocol.json';
 import WahtsSoftwareTest from '../../protocols/wahts-software-test/protocol.json';
+import develop from '../../protocols/develop/protocol.json';
 export var DeveloperProtocols: any = {
     "Audiometry": EdareAudiometry,
     "Creare Audiometry": CreareAudiometry,
     "tabsint-test": TabsintTest,
     "wahts-device-test": WahtsDeviceTest,
-    "wahts-software-test" : WahtsSoftwareTest
+    "wahts-software-test" : WahtsSoftwareTest,
+    "develop" : develop
 }
 
 import WahtsDeviceTestCalibration from '../../protocols/wahts-device-test/calibration.json';

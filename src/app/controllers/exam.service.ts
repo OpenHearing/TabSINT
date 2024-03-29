@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { Injectable, Component } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Logger } from '../utilities/logger.service';
 import { AppState, ExamState } from '../utilities/constants';
@@ -7,8 +7,6 @@ import { ResultsInterface } from '../models/results/results.interface';
 import { ResultsModel } from '../models/results/results.service';
 import { StateInterface } from '../models/state/state.interface';
 import { StateModel } from '../models/state/state.service';
-import { PageInterface } from '../models/page/page.interface';
-import { PageModel } from '../models/page/page.service';
 import { ProtocolModelInterface } from '../models/protocol/protocol-model.interface';
 import { ProtocolModel } from '../models/protocol/protocol.service';
 import { ProtocolService } from './protocol.service';
@@ -22,17 +20,15 @@ import { bluetoothTimeout } from '../utilities/constants';
 })
 
 export class ExamService {
-    page: PageInterface;
     protocol: ProtocolModelInterface
     disk: DiskInterface;
     results: ResultsInterface
     state: StateInterface;
     ExamState = ExamState;
     AppState = AppState;
-    protocolModel: ProtocolModelInterface;
+    testVar: any;
 
     constructor (
-        public pageModel: PageModel,
         public resultsModel: ResultsModel,
         public protocolService: ProtocolService,
         public protocolM: ProtocolModel,
@@ -42,12 +38,12 @@ export class ExamService {
         private diskModel: DiskModel,
         private notifications: Notifications
     ) {
-        this.page = this.pageModel.getPage();
         this.results = this.resultsModel.getResults();
-        this.protocolModel = this.protocolM.getProtocolModel();
         this.state = this.stateModel.getState();
         this.disk = this.diskModel.getDisk();
         this.protocol = this.protocolM.getProtocolModel();
+
+        this.testVar = (this.protocol.activeProtocol?.pages?.[this.state.examIndex] as any)?.pages?.[this.state.examIndex];
     }
 
     /* Replacements
@@ -66,6 +62,8 @@ export class ExamService {
     };
     nRemove: any;
     nPages: any;
+    gradeResponse: any;
+    INHERITABLE_PROPERTIES: any;
 
     
     switchToAdminView() {
@@ -85,8 +83,12 @@ export class ExamService {
             // router.goto("EXAM");
 
             console.log("this.protocol.activeProtocol",this.protocol.activeProtocol);
-            if (this.protocol.activeProtocol?.id) {
-                this.logger.debug("re-activating page " + this.protocol.activeProtocol.id);
+            this.testVar = (this.protocol.activeProtocol?.pages?.[this.state.examIndex] as any)?.pages?.[this.state.examIndex];
+            console.log("this.protocol.activeProtocol / testVar:",this.testVar);
+            if (this.protocol.activeProtocol?.pages?.[this.state.examIndex]?.id) {
+            // if (testVar?.id) {
+                // this.logger.debug("re-activating page " + this.protocol.activeProtocol.id);
+                this.logger.debug("re-activating page " + this.testVar?.id);
                 this.finishActivate();
             }
         }
@@ -123,9 +125,10 @@ export class ExamService {
         // page.result = result;
 
         this.state.examState = ExamState.Testing;
+        console.log("this.state.examState",this.state.examState);
         let streamRunning = false;
 
-        this.logger.debug("streaming required:" + JSON.stringify(this.page.video || this.page.wavfiles || this.page.chaStream));
+        // this.logger.debug("streaming required:" + JSON.stringify(this.page.video || this.page.wavfiles || this.page.chaStream));
 
         // if (
         //     (this.disk.headset === "Creare Headset" ||
@@ -150,57 +153,56 @@ export class ExamService {
         //     this.page.loadingRequired = false;
         // }
 
-        console.log("this.page",this.page);
 
         // pass in disk and page so they are available to the run functions
         // plugins.runEvent("pageStart", { disk: this.disk, page: page.dm })
         Promise.resolve()
-            .then(async () => {
-                // cha streaming
-                if (
-                    (this.disk.headset === "Creare Headset" ||
-                        this.disk.headset === "WAHTS" ||
-                        // this.protocol.activeProtocol?.headset === "Creare Headset" ||
-                        this.protocol.activeProtocol?.headset === "WAHTS") &&
-                        (this.page.video || this.page.wavfiles || this.page.chaStream) &&
-                        (_.isUndefined(this.page.responseArea) ||
-                    (!_.isUndefined(this.page.responseArea) && this.page.responseArea.type !== "externalAppResponseArea"))
-                ) {
-                    if (this.cha.myCha) {
-                        if (!this.disk.disableAudioStreaming) {
-                            // video should get into this one
-                            if (!this.cha.streaming && !streamRunning) {
-                                try {
-                                    console.log("exam.service.ts - talkThrough not yet supported");
-                                    // await chaExams.startTalkThrough();
-                                    await new Promise(r => setTimeout(r, 1000));
-                                    // if (!_.isUndefined(page.dm.volumeLevel)) {
-                                    //   tabsintNative.setAudio(null, tabsintNative.onVolumeErr, page.dm.volumeLevel);
-                                    //   console.log("Changing the tablet volume...", page.dm.volumeLevel);
-                                    // }
-                                } catch (e) {
-                                    this.logger.debug("Could not start TalkThrough exam. Error was:" + e);
-                                }
-                            }
-                            if (this.cha.streaming && !this.getNextPage()) {
-                                // chaExams.stopTalkThrough();
-                                console.log("chaExams.stopTalkThrough() called, but it isnt implemented yet");
-                            }
-                        } else {
-                            this.notifications.alert(
-                                this.translate.instant("Audio streaming is currently disabled. Streaming can be enabled in the WAHTS preferences on the Admin page. Please reload the protocol after enabling streaming.")
-                            ).subscribe();
-                        }
-                    } else {
-                        // notifications.alert("WAHTS is currently disconnected. Please reconnect WAHTS and restart exam.");
-                    }
-                } else {
-                    // NOTE: this should not return because the promise gets conflicted with
-                    // the cha-response-areas controller
-                    this.results.current.responseStartTime = new Date();
-                    // await chaExams.reset();
-                }
-            })
+            // .then(async () => {
+            //     // cha streaming
+            //     if (
+            //         (this.disk.headset === "Creare Headset" ||
+            //             this.disk.headset === "WAHTS" ||
+            //             // this.protocol.activeProtocol?.headset === "Creare Headset" ||
+            //             this.protocol.activeProtocol?.headset === "WAHTS") &&
+            //             (this.page.video || this.page.wavfiles || this.page.chaStream) &&
+            //             (_.isUndefined(this.protocol.activeProtocol?.pages?.[this.state.examIndex]?.responseArea) ||
+            //         (!_.isUndefined(this.protocol.activeProtocol?.pages?.[this.state.examIndex]?.responseArea) && this.protocol.activeProtocol?.pages?.[this.state.examIndex]?.responseArea?.['type'] !== "externalAppResponseArea"))
+            //     ) {
+            //         if (this.cha.myCha) {
+            //             if (!this.disk.disableAudioStreaming) {
+            //                 // video should get into this one
+            //                 if (!this.cha.streaming && !streamRunning) {
+            //                     try {
+            //                         console.log("exam.service.ts - talkThrough not yet supported");
+            //                         // await chaExams.startTalkThrough();
+            //                         await new Promise(r => setTimeout(r, 1000));
+            //                         // if (!_.isUndefined(page.dm.volumeLevel)) {
+            //                         //   tabsintNative.setAudio(null, tabsintNative.onVolumeErr, page.dm.volumeLevel);
+            //                         //   console.log("Changing the tablet volume...", page.dm.volumeLevel);
+            //                         // }
+            //                     } catch (e) {
+            //                         this.logger.debug("Could not start TalkThrough exam. Error was:" + e);
+            //                     }
+            //                 }
+            //                 if (this.cha.streaming && !this.getNextPage()) {
+            //                     // chaExams.stopTalkThrough();
+            //                     console.log("chaExams.stopTalkThrough() called, but it isnt implemented yet");
+            //                 }
+            //             } else {
+            //                 this.notifications.alert(
+            //                     this.translate.instant("Audio streaming is currently disabled. Streaming can be enabled in the WAHTS preferences on the Admin page. Please reload the protocol after enabling streaming.")
+            //                 ).subscribe();
+            //             }
+            //         } else {
+            //             // notifications.alert("WAHTS is currently disconnected. Please reconnect WAHTS and restart exam.");
+            //         }
+            //     } else {
+            //         // NOTE: this should not return because the promise gets conflicted with
+            //         // the cha-response-areas controller
+            //         this.results.current.responseStartTime = new Date();
+            //         // await chaExams.reset();
+            //     }
+            // })
 
             // page setup functions
             .then( () => {
@@ -211,9 +213,9 @@ export class ExamService {
                 window.scrollTo(0, 0);
             })
             .then( () => {
-                if (!this.page.loadingActive) {
-                    this.finishActivateMedia();
-                }
+                // if (!this.page.loadingActive) {
+                //     this.finishActivateMedia();
+                // }
             });
     }
 
@@ -302,60 +304,60 @@ export class ExamService {
         .then( () => {
             // Start audio files(s) (if applicable):
             if (
-                _.isUndefined(this.page.responseArea) ||
-                (!_.isUndefined(this.page.responseArea) && this.page.responseArea.type !== "externalAppResponseArea")
+                _.isUndefined(this.protocol.activeProtocol?.pages?.[this.state.examIndex]?.responseArea) ||
+                (!_.isUndefined(this.protocol.activeProtocol?.pages?.[this.state.examIndex]?.responseArea) && this.protocol.activeProtocol?.pages?.[this.state.examIndex]?.responseArea?.['type'] !== "externalAppResponseArea")
             ) {
                 // media.stopAudio();
 
-                if (!_.isUndefined(this.page.wavfiles)) {
-                    var startDelayTime = !_.isUndefined(this.page.wavfileStartDelayTime)
-                        ? this.page.wavfileStartDelayTime
-                        : 1000; // use default delay of 1000ms if no time specified
+                // if (!_.isUndefined(this.page.wavfiles)) {
+                //     var startDelayTime = !_.isUndefined(this.page.wavfileStartDelayTime)
+                //         ? this.page.wavfileStartDelayTime
+                //         : 1000; // use default delay of 1000ms if no time specified
 
-                    var playDelay = 0;
+                //     var playDelay = 0;
 
-                    //Volume has already been set above
-                    setTimeout(() => {
-                        // media.playWav(this.page.wavfiles, startDelayTime, true);
-                    }, playDelay);
-                }
+                //     //Volume has already been set above
+                //     setTimeout(() => {
+                //         // media.playWav(this.page.wavfiles, startDelayTime, true);
+                //     }, playDelay);
+                // }
             }
 
             // Video handling
-            if (!_.isUndefined(this.page.video)) {
-                // tabsintNative.resetAudio(null, tabsintNative.onVolumeErr);
+            // if (!_.isUndefined(this.page.video)) {
+            //     // tabsintNative.resetAudio(null, tabsintNative.onVolumeErr);
 
-                // video object to hold important local information
-                var video = {
-                    submittable: !this.page.video.noSkip,
-                    elem: undefined
-                };
+            //     // video object to hold important local information
+            //     var video = {
+            //         submittable: !this.page.video.noSkip,
+            //         elem: undefined
+            //     };
 
-                // submittable logic only set once here
-                this.page.isSubmittable = video.submittable;
+            //     // submittable logic only set once here
+            //     this.state.isSubmittable = video.submittable;
 
-                // setTimeout( () => {
-                //     video.elem = document.getElementById("video1"); // mobile browsers often disable allowing auto-play.  Autoplay must be set in the html AND play must be called here
-                //     if (page.dm.video.autoplay) {
-                //         video.elem.play();
-                //     }
+            //     // setTimeout( () => {
+            //     //     video.elem = document.getElementById("video1"); // mobile browsers often disable allowing auto-play.  Autoplay must be set in the html AND play must be called here
+            //     //     if (page.dm.video.autoplay) {
+            //     //         video.elem.play();
+            //     //     }
 
-                //     if (page.dm.video.noSkip) {
-                //         video.elem.addEventListener("ended", () => {
-                //             // wait until the video has ended to make our local handle false
-                //             video.submittable = true;
-                //             this.page.isSubmittable = video.submittable;
-                //             $rootScope.$apply();
-                //         });
-                //     }
-                // }, 250);
-            }
+            //     //     if (page.dm.video.noSkip) {
+            //     //         video.elem.addEventListener("ended", () => {
+            //     //             // wait until the video has ended to make our local handle false
+            //     //             video.submittable = true;
+            //     //             this.state.isSubmittable = video.submittable;
+            //     //             $rootScope.$apply();
+            //     //         });
+            //     //     }
+            //     // }, 250);
+            // }
 
             // CHA wav file handling
-            if (this.page.chaWavFiles) {
-                console.log('wavfile not yet supported');
-                // chaExams.playSound(this.page.chaWavFiles);
-            }
+            // if (this.page.chaWavFiles) {
+            //     console.log('wavfile not yet supported');
+            //     // chaExams.playSound(this.page.chaWavFiles);
+            // }
         });
     }
     
@@ -404,7 +406,9 @@ export class ExamService {
         // setup exam
         this.results.current = {};
         // exam.dm.state.iQuestion = 1;
-        // this.state.examState = ExamState.Ready;
+        this.state.examState = ExamState.Ready;
+        console.log("this.state.examState",this.state.examState);
+        
         this.state.examProgress = {
             pctProgress: 0,
             anticipatedProtocols: [],
@@ -455,6 +459,7 @@ export class ExamService {
     resetInternal() {
         if (!this.protocol.activeProtocol) {
             this.state.examState = ExamState.NotReady;
+            console.log("this.state.examState",this.state.examState);
             return false;
         }
   
@@ -469,6 +474,7 @@ export class ExamService {
             this.activateNewProtocol(this.protocol.activeProtocol);
         } else {
             this.state.examState = ExamState.NotReady;
+            console.log("this.state.examState",this.state.examState);
             return false;
         }
   
@@ -581,7 +587,7 @@ export class ExamService {
     skip() {
         this.logger.debug("Skipping Page");
         this.results.current.isSkipped = true;
-        this.page.isSubmittable = true;
+        this.state.isSubmittable = true;
         this.submit = this.submitDefault;
         this.submit();
     }
@@ -589,16 +595,16 @@ export class ExamService {
     submitDefault() {
         console.log("ExamService submitDefault() called");
 
-        this.page.isSubmittable = this.getSubmittableLogic(this.page.responseArea);
+        this.state.isSubmittable = this.getSubmittableLogic(this.protocol.activeProtocol?.pages?.[this.state.examIndex]?.responseArea);
   
         // if not ready to submit, alert with error and just return.
-        if (!this.page.isSubmittable) {
+        if (!this.state.isSubmittable) {
           this.logger.warning("Page is not submittable");
           return;
         }
   
         return this.finishPage()
-            .then( () => this.pushResults) // save the current result and reset temp result object (page.result)
+            .then( () => this.pushResults()) // save the current result and reset temp result object (page.result)
             .then( () => {
                 // if (this.page.chaWavFiles && chaExams.state === "Playing") {
                 //     // chaWavFile still playing. Clear interval in examLogic.
@@ -617,10 +623,281 @@ export class ExamService {
 
     submitInternal() {
         console.log("ExamService submitInternal() called");
+
+        // This Section Works With The animate-switch-container and animate-switch.
+        // a bit of a hack, using 2 exam pages (exactly the same) and flipping between them to trigger a switch slide
+        // if (page.dm.showFeedback === undefined) {
+        //     startPageTransition(finishSubmit); // stop audio, transition
+        // } else {
+        //     startPageTransition(function() {
+        //         page.dm.showFeedback();
+        //         $timeout(function() {
+        //             finishSubmit();
+        //         }, 1250);
+        //     });
+        // }
+        this.finishSubmit();
     }
+
+    finishSubmit() {
+        console.log("finishSubmit in exam service called");
+
+        // exam.dm.state.displayMode = "ENABLED";
+        // var i;
+  
+        // Add pages done
+        // this.state.protocolStack[this.state.protocolStack.length - 1].nPagesDone += 1;
+  
+        // count it as a question if the answer is not undefined...
+        if (this.results.current.response !== undefined) {
+            //   exam.dm.state.iQuestion += 1;
+            console.log("count it as a question if the answer is not undefined... ???");
+        }
+  
+        // re-initialize the result to undefined
+        // page.result = undefined;
+  
+        // this.checkTimeouts(); // will remove a protocol if timed out based on nPages or actual time
+  
+        // Set any flags...  Use page.dm, even if that means we will use flags from a time out page.
+        // if (page.dm.setFlags) {
+        //   _.forEach(page.dm.setFlags, function(setFlag) {
+        //     if (_.isUndefined(setFlag.conditional)) {
+        //       exam.dm.state.flags[setFlag.id] = true;
+        //     } else {
+        //       exam.dm.state.flags[setFlag.id] = evalConditional(setFlag.conditional);
+        //     }
+        //   });
+        // }
+  
+        // check for repeat logic - Note - cannot use page.dm, in case we timed out already.  Use exam.getCurrentPage()
+        // if (this.getCurrentPage().repeatPage !== undefined) {
+        //     // does it have repeat logic
+    
+        //     var r = this.getCurrentPage().repeatPage;
+        //     r.nRepeats = !_.isUndefined(r.nRepeats) ? r.nRepeats : 2; // cap number of repeats
+    
+        //     if (exam.dm.state.nRepeats < r.nRepeats) {
+        //         // check number of repeats
+        //         if ((r.repeatIf !== undefined && evalConditional(r.repeatIf)) || r.repeatIf === undefined) {
+        //             if (this.activatePage(this.getCurrentPage())) {
+        //                 // just feed the same page in again
+        //                 exam.dm.state.nRepeats++;
+        //                 this.logger.info("Repeating the page, nRepeats = " + exam.dm.state.nRepeats);
+        //                 return;
+        //             }
+        //         } else {
+        //             exam.dm.state.nRepeats = 0; // The repeatIf condition was not true: finished repeating, so reset the counter
+        //         }
+        //     } else {
+        //         exam.dm.state.nRepeats = 0; // finished repeating
+        //     }
+        // } else {
+        //     exam.dm.state.nRepeats = 0; // repeats only work for a page - they are not saved once you navigate somewhere else, like a subprotocol
+        // }
+  
+        // Do a follow-on, if applicable.
+        if (this.testVar?.followOns) {
+            console.log("follow on found, proceeding");
+            for (let i = 0; i < (this.testVar?.followOns as any).length; i++) {
+                var followOn = this.testVar?.followOns[i];
+                console.log("followOn", followOn);
+                if (_.isUndefined(followOn.conditional) || this.evalConditional(followOn.conditional)) {
+                    try {
+                        var activationSuccess = this.activatePage(followOn.target);
+                        // TODO: THIS IS A HACK THAT SHOULD BE CHANGED
+                        this.testVar = this.protocol.activeProtocol?.subProtocols?.[0]?.pages?.[0];
+                        console.log("this.testVar",this.testVar);
+
+                        if (activationSuccess) {
+                            return;
+                        }
+                    } catch (err:any) {
+                        // notifications.alert(
+                        //     err.toString() +
+                        //         "\n\n" +
+                        //         gettextCatalog.getString(
+                        //         "Please alert an administrator. Unfortunately, this exam cannot be completed. Reset the exam to try again."
+                        //         )
+                        //     );
+                        this.logger.error("In submit() followOns.  Details: " + err.toString());
+                    }
+                }
+            }
+        }
+  
+        // Otherwise, go to the next page in the list (if there is one)...
+        if (this.activatePage(this.getNextPage())) {
+          return;
+        }
+  
+        // If there are no pages left, finalize the exam
+        this.finalize();
+    }
+
+    evalConditional(conditional:any, locals?:any) {
+        locals = locals || {};
+        var ret;
+  
+        // _.extend(locals, {
+        //     _: _,
+        //     arrayContains: (strArray:any, item:any) => {
+        //         return _.includes(JSON.parse(strArray), item);
+        //     },
+        //     getPresentation: (presId:any) => {
+        //         return _.filter(this.results.current.testResults?.responses, function(res) {
+        //         return res.presentationId === presId;
+        //         })[0];
+        //     },
+        //     getLastPresentation: (presId:any) => {
+        //         return _.filter(this.results.current.testResults?.responses, function(res) {
+        //         return res.presentationId === presId;
+        //         }).pop();
+        //     },
+        //     // flags: JSON.parse(JSON.stringify(exam.dm.state.flags)),
+        //     result: JSON.parse(JSON.stringify(_.last(this.results.current.testResults?.responses))),
+        //     examResults: JSON.parse(JSON.stringify(this.results.current)),
+        //     Math: Math,
+        //     JSON: JSON
+        // });
+  
+        // Co-opting AngularJS's eval because it's so much safer than native javascript eval.
+        try {
+            // ret = $rootScope.$new().$eval(conditional, locals);
+            ret = true;
+        } catch (err) {
+            // notifications.alert(
+            //     gettextCatalog.getString("There is an error in this page's conditional in the exam protocol") +
+            //     ": \n\n" +
+            //     err.toString() +
+            //     "\n\n" +
+            //     gettextCatalog.getString("The conditional is: \n\t") +
+            //     conditional
+            // );
+            console.log("error in evalCondition() ???");
+            ret = false;
+        }
+        return ret;
+    }
+
+    finalize() {
+        // media.stopAudio(); // Make sure Audio is stopped.
+
+        // Calculating the exam elapsed time.  Could probably be simpler!
+        var stopTime:any = new Date();
+        var startTime:any = new Date(JSON.parse('"' + this.results.current.testDateTime + '"'));
+        var diff = Math.abs(stopTime - startTime); // in ms
+        diff /= 1000; //throw away ms
+        var dDays = Math.floor(diff / (24 * 60 * 60));
+        diff = diff % (24 * 60 * 60);
+        var dHours = Math.floor(diff / (60 * 60));
+        diff = diff % (60 * 60);
+        var dMinutes = Math.floor(diff / 60);
+        diff = diff % 60;
+        var dSeconds = Math.floor(diff);
+
+        var sDays = dDays < 10 ? "0" + dDays : "" + dDays;
+        var sHours = dHours < 10 ? "0" + dHours : "" + dHours;
+        var sMinutes = dMinutes < 10 ? "0" + dMinutes : "" + dMinutes;
+        var sSeconds = dSeconds < 10 ? "0" + dSeconds : "" + dSeconds;
+
+        this.results.current.elapsedTime = sHours + ":" + sMinutes + ":" + sSeconds;
+
+        for (var i = 0; i < this.results.current.testResults.responses.length; i++) {
+            var response = this.results.current.testResults.responses[i];
+            this.results.current.nResponses += 1;
+
+            if (typeof response.correct === "string") {
+                if (_.includes(JSON.parse(response.correct), false)) {
+                    this.results.current.nIncorrect += 1;
+                } else {
+                    this.results.current.nCorrect += 1;
+                }
+            } else if (response.correct === true) {
+                this.results.current.nCorrect += 1;
+            } else if (response.correct === false) {
+                this.results.current.nIncorrect += 1;
+            }
+        }
+
+        // finalize
+        // page.dm = {
+        //     id: undefined,
+        //     title: pm.root.title,
+        //     subtitle: pm.root.subtitle,
+        //     instructionText: "",
+        //     helpText: ""
+        // };
+
+        // evaluate custom result export filename if included
+        if (this.protocol.activeProtocol?.resultFilename) {
+            let filename = this.protocol.activeProtocol?.resultFilename;
+            let interpretedFilename;
+
+            // see evalConditional for local names (copied directly)
+            let locals = {
+            _: _, // underscore library
+            arrayContains: (strArray:any, item:any) => {
+                return _.includes(JSON.parse(strArray), item);
+            },
+            getPresentation: (presId:any) => {
+                return _.filter(this.results.current.testResults.responses, function(res) {
+                return res.presentationId === presId;
+                })[0];
+            },
+            getLastPresentation: (presId:any) => {
+                return _.filter(this.results.current.testResults.responses, function(res) {
+                return res.presentationId === presId;
+                }).pop();
+            },
+            // flags: JSON.parse(JSON.stringify(exam.dm.state.flags)),
+            result: JSON.parse(JSON.stringify(_.last(this.results.current.testResults.responses))),
+            examResults: JSON.parse(JSON.stringify(this.results.current)),
+            Math: Math
+            };
+
+            // use $eval on filename in case it is a conditional expression
+            try {
+                // interpretedFilename = $rootScope.$new().$eval(filename, locals);
+
+                // if the interpretedFilename evaluates to undefined, set it equal to the protocol resultFilename field string
+                if (!interpretedFilename) {
+                    interpretedFilename = filename;
+                }
+
+                if (typeof interpretedFilename !== "string") {
+                    throw "Filename is not a string";
+                }
+            } catch (err) {
+                // interpretedFilename = devices.shortUUID;
+                // notifications.alert(
+                //     gettextCatalog.getString("TabSINT failed to evaluate the export filename for this result with error:") +
+                //     "\n\n" +
+                //     err.toString() +
+                //     "\n\n" +
+                //     gettextCatalog.getString("This result will be exported with the device uuid as the filename")
+                // );
+            }
+
+            // save evaluated filename to disk results
+            // results.current.resultFilename = interpretedFilename;
+        }
+
+        // results.save(results.current);
+        this.disk.currentResults = undefined; // can reset this now - we have generated a proper result
+
+        // page.result = undefined;
+        this.state.examState = ExamState.Finalized;
+        // If previous page was scrolled down this page will be too, scroll back to top - starting at the bottom is annoying!
+        window.scrollTo(0, 0);
+        // noSleep.allowSleepAgain();
+    }
+
 
     pushResults() {
         console.log("ExamService pushResults() called");
+        this.results.previous = JSON.parse(JSON.stringify(this.results.current));
+        this.results.current = {};
     }
 
     finishPage() {
@@ -636,6 +913,7 @@ export class ExamService {
             if (_.isUndefined(responseArea) || responseArea.responseRequired === false) {
                 return true;
             } else {
+                console.log("this.results.current",this.results.current);
                 if (!_.isUndefined(this.results.current)) {
                     if (responseArea.type === "qrResponseArea") {
                         if (this.results.current.qrString) {
@@ -662,7 +940,7 @@ export class ExamService {
                         this.results.current.response !== undefined &&
                         this.results.current.response !== "[]" &&
                         this.results.current.response !== ""
-                    ) {
+                        ) {
                         return true;
                     } else {
                         return false;
@@ -676,7 +954,273 @@ export class ExamService {
 
     begin() {
         console.log("ExamService begin() called");
+
+        // exam.dm.svantekWarned = false;
+        // if (pm.root.headset === "EPHD1") {
+        //     tabsintNative.registerUsbDeviceListener(exam.usbEventCallback);
+        // } else {
+        //     tabsintNative.unregisterUsbDeviceListener(exam.usbEventCallback);
+        // }
+
+        // if (pm.root.headset === "EPHD1" && pm.root.protocolUsbCMissing) {
+        //     notifications.alert(
+        //     "The Essential EPHD1 USB-C headset must be used with this protocol. Please plug the headset in and restart the exam."
+        //     );
+        //     return;
+        // }
+
+        // check to see how much memory is left on disk
+        if (JSON.stringify(this.disk).length > 8000000) {
+            this.notifications.alert(
+                this.translate.instant(
+                    "The tablet's storage space is too low to continue. Please upload exams as soon as possible to avoid data loss."
+                )
+            );
+            this.logger.error("Memory maxed at 8M");
+            return;
+        } else if (JSON.stringify(this.disk).length > 2000000) {
+            this.notifications.alert(
+                this.translate.instant(
+                    "The tablet's storage space is getting low. Please upload exams as soon as possible to avoid data loss."
+                )
+            );
+            this.logger.warning("Warned memory low");
+        }
+
+        // turn screen sleep off
+        // noSleep.keepAwake();
+
+        // reset audio
+        // tabsintNative.resetAudio(null, tabsintNative.onVolumeErr);
+
+        // switch exam state displayMode
+        // exam.dm.state.displayMode = "DISABLED";
+        // $timeout(function() {
+        //     exam.dm.state.displayMode = "ENABLED";
+        // }, 150);
+
+        // initialize examResults
+        // results.create();
+
+        // delete repo field from gitlab protocols - way too verbose
+        // if (this.results.current.testResults.protocol.repo) {
+        //     delete this.results.current.testResults.protocol.repo;
+        // }
+
+        // initialize temp storage of current test results
+        this.disk.currentResults = JSON.parse(JSON.stringify(this.results.current)); // load all the fields into the temp storage option
+
+        // get the current position and save it in the results
+        // tabletLocation.updateCurrentPosition().then(function() {
+        //     if (angular.isDefined(results.current)) {
+        //     results.current.tabletLocation = disk.tabletLocation; // if position is not updated, this value will be the same as before
+        //     }
+        // });
+
+        this.logger.debug(
+            `Beginning exam on tablet UUID: ${this.results.current.testResults.tabletUUID} at Location: ${Object.hasOwnProperty(
+                this.results.current.testResults.tabletLocation
+            )}`
+        );
+
+        if (this.disk.externalMode) {
+            // externalControlMode.getExternalPage();
+        } else {
+            this.activatePage(this.getCurrentPage());
+        }
     }
+
+    activatePage(pg:any) {
+        /*
+        Cancel timerPromise before it auto submits.
+        */
+        // try {
+        //     $timeout.cancel(timerPromise);
+        // } catch {}
+
+        // get the default submit function to start (in case it was overriden)
+        this.submit = this.submitDefault;
+
+        // reset immersive mode
+        // androidFullScreen.immersiveMode();
+
+        // Make sure Audio is stopped.
+        // media.stopAudio();
+
+        // reset the page response area to undefined to trigger controller
+        // page.dm.responseArea = undefined;
+
+        // reset the gradeResponse function to the default
+        this.gradeResponse = this.gradeResponseDefault;
+
+        // resolve page references
+        // pg = _resolvePage(pg);
+        // if (!pg) {
+        //     return false;
+        // }
+
+        // copy so we can add properties safely.
+        // pg = JSON.parse(JSON.stringify(pg));
+
+        // default property for autoSubmit
+        //checkbox response area should default to false if responseRequired undefined, HG 2/28/19
+        // if (!_.isUndefined(pg.responseArea)) {
+        //     if (pg.responseArea.type === "checkboxResponseArea") {
+        //     pg.responseArea.responseRequired = !_.isUndefined(pg.responseArea.responseRequired)
+        //         ? pg.responseArea.responseRequired
+        //         : false;
+        //     }
+        // }
+
+        // Iterate from child to root protocols, applying any missing fields.
+        for (var i = this.state.protocolStack.length - 1; i >= 0; i--) {
+            _.defaults(pg, _.pick(this.state.protocolStack[i].protocol, this.INHERITABLE_PROPERTIES));
+        }
+
+        // run preprocessing function if available, before all the updates to canGoBack, isSubmittable, progress, etc.
+        if (pg.preProcessFunction) {
+            var passIn = {
+                result: JSON.parse(JSON.stringify(_.last(this.results.current.testResults.responses))),
+                examResults: JSON.parse(JSON.stringify(this.results.current)),
+                page: JSON.parse(JSON.stringify(pg)),
+                // flags: exam.dm.state.flags
+            };
+
+            // if (_.has(advancedProtocol.registry, pg.preProcessFunction)) {
+            //     pg.changedFields = advancedProtocol.run(pg.preProcessFunction, passIn);
+            // } else {
+            //     this.logger.error(
+            //         "The protocol referenced function " +
+            //         pg.preProcessFunction +
+            //         " but this function does not exist in the functionRegistry."
+            //     );
+            //     this.notifications.alert(
+            //         gettextCatalog.getString("The protocol referenced pre-processing function ") +
+            //         pg.preProcessFunction +
+            //         gettextCatalog.getString(
+            //             ", but this function was not found in the registry. Please check the TabSINT documentation to confirm the function is properly defined"
+            //         )
+            //     );
+            // }
+
+            // apply diff from changed fields
+            if (pg.changedFields) {
+                // hack to show no page based on preprocess function, and instead move on to next page in protocol
+                // if (pg.changedFields === "@SKIP") {
+                //     return this.activatePage(this.getNextPage());
+                // } else {
+                //     this.applyDiff(pg);
+                // }
+            }
+        }
+
+        // integrate SLM into page logic. If the SLM field is on page, we pass that the slm service to handle.
+        // SLM is closed in `finishPage()`
+        // if (pg.slm) {
+        //     slm.init(pg);
+        // }
+
+        // activate svantek if defined at page level
+        // if (pg.svantek) {
+        //     if (svantek.device) {
+        //     svantek.start();
+        //     } else {
+        //     logger.warn("A Svantek dosimeter is not connected, no Svantek data will be collected.");
+        //     if (!exam.dm.svantekWarned) {
+        //         notifications.alert(
+        //         gettextCatalog.getString("A Svantek dosimeter is not connected, no Svantek data will be collected.")
+        //         );
+        //         exam.dm.svantekWarned = true;
+        //     }
+        //     }
+        // }
+
+        // auto-submit pages after a delay
+        // if (angular.isDefined(pg.autoSubmitDelay) && pg.autoSubmitDelay >= 50) {
+        //     timerPromise = $timeout(function() {
+        //     pg.isSubmittable = true;
+        //     exam.submit();
+        //     }, pg.autoSubmitDelay);
+        // }
+
+        // Determine page back button logic
+        this.state.canGoBack = function() {
+            // make sure its not the first page
+            // var notTheFirstPage = _.last(this.state.protocolStack).pageIndex > 0;
+
+            // // Detect inline page follow-on's by noting when the current page does not match what the protocol stack expects it to be.
+            // var notInASinglePageFollowOn = _.last(this.state.protocolStack).pageQueue[_.last(this.state.protocolStack).pageIndex].id === pg.id;
+
+            // // Detect when the previous page isn't what we expect it to be.
+            // var previousPageMatches = false;
+            // if (results.current) {
+            // var previousResult = _.last(results.current.testResults.responses);
+            // var expectedPreviousPage = _.last(this.state.protocolStack).pageQueue[_.last(this.state.protocolStack).pageIndex - 1];
+            // previousPageMatches =
+            //     previousResult && expectedPreviousPage && previousResult.presentationId === expectedPreviousPage.id;
+            // }
+
+            // return pg.enableBackButton && notTheFirstPage && previousPageMatches && notInASinglePageFollowOn;
+        };
+
+        // Determine page submission logic.
+        // pg.isSubmittable = this.getSubmittableLogic(pg.responseArea);
+
+        // initialize callback
+        // pg.showFeedback = undefined;
+
+        // Re-calculate pct progress.
+        // var nPagesDone = 0,
+        //     nPagesTotal = 0;
+        // _.forEach(exam.dm.state.progress.anticipatedProtocols, function(container) {
+        //     nPagesTotal += container.nPagesExpected;
+        // });
+        // _.forEach(exam.dm.state.progress.activatedProtocols, function(state) {
+        //     var applicablePageLimits = [state.pageQueue.length];
+        //     if (state.protocol.timeout) {
+        //     if (state.protocol.timeout.nMaxSeconds) {
+        //         var remainingSeconds = state.protocol.timeout.nMaxSeconds - (new Date() - state.startTime) / 1000;
+        //         remainingSeconds = _.max([0, remainingSeconds]);
+        //         applicablePageLimits.push(Math.ceil(remainingSeconds / exam.APPROX_TIME_PER_PAGE));
+        //     }
+        //     if (state.protocol.timeout.nMaxPages) {
+        //         applicablePageLimits.push(state.protocol.timeout.nMaxPages - state.nPagesDone);
+        //     }
+        //     }
+        //     state.nPagesExpected = state.nPagesDone + _.min(applicablePageLimits);
+        //     nPagesDone += state.nPagesDone;
+        //     nPagesTotal += state.nPagesExpected;
+        // });
+
+        // var newProgressEstimate = (100 * nPagesDone) / (nPagesTotal + 1);
+        // newProgressEstimate = _.min([100, _.max([0, newProgressEstimate])]); // must be between 0 and 100.
+
+        // set page progress bar
+        // if (pg.progressBarVal) {
+        //     this.state.examProgress.pctProgress = pg.progressBarVal;
+        // } else {
+        //     this.state.examProgress.pctProgress = newProgressEstimate;
+        // }
+
+        // Create new result.
+        // var result = results.default(pg);
+
+        setTimeout( () => {
+            this.finishActivate();
+        }, 20);
+
+        return true;
+    }
+
+    gradeResponseDefault() {
+        // if (page.dm.responseArea.choices) {
+        //     gradeResponses(page.dm.responseArea.choices);
+        // } else if (page.dm.responseArea.hotspots) {
+        //     gradeResponses(page.dm.responseArea.hotspots);
+        // } else if (page.dm.responseArea.correct) {
+        //     page.result.correct = page.result.response === page.dm.responseArea.correct;
+        // }
+    };
 
     centerIfShort(id:string) {
         if (

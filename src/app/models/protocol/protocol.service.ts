@@ -47,6 +47,13 @@ export class ProtocolModel {
                 creator: "creare",
                 server: ProtocolServer.Developer,
                 admin: true
+            }),
+            this.define({
+                name: "develop",
+                path: "protocols/develop",
+                creator: "creare",
+                server: ProtocolServer.Developer,
+                admin: true
             })
         ]
     }

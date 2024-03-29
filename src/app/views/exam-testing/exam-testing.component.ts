@@ -5,9 +5,11 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { ResultsInterface } from '../../models/results/results.interface';
 import { ResultsModel } from '../../models/results/results.service';
 import { ExamService } from '../../controllers/exam.service';
-import { PageInterface } from '../../models/page/page.interface';
-import { PageModel } from '../../models/page/page.service';
 import { WINDOW } from '../../utilities/window';
+import { ProtocolModelInterface } from '../../models/protocol/protocol-model.interface';
+import { ProtocolModel } from '../../models/protocol/protocol.service';
+import { StateModel } from '../../models/state/state.service';
+import { StateInterface } from '../../models/state/state.interface';
 
 @Component({
   selector: 'exam-testing-view',
@@ -16,19 +18,21 @@ import { WINDOW } from '../../utilities/window';
 })
 export class ExamTestingComponent {
   results: ResultsInterface;
-  page: PageInterface
+  protocol: ProtocolModelInterface;
+  state: StateInterface;
 
   constructor(
-    public resultsModel: ResultsModel, 
+    public resultsModel: ResultsModel,
     public translate: TranslateService,
     public examService: ExamService,
-    public pageModel: PageModel,
     public sanitizer: DomSanitizer,
+    public protocolModel: ProtocolModel,
+    public stateModel: StateModel,
     @Inject(WINDOW) private window: Window
   ) { 
     this.results = this.resultsModel.getResults();
-    this.page = this.pageModel.getPage();
-    (window as any).pageModel = this.pageModel;
+    this.protocol = this.protocolModel.getProtocolModel();
+    this.state = this.stateModel.getState();
   }
 
   testHTML = this.sanitizer.bypassSecurityTrustHtml(`
@@ -46,15 +50,15 @@ export class ExamTestingComponent {
   }
 
   testing() {
-    console.log(this.pageModel);
-    console.log((this.window as any).pageModel);
+    // console.log(this.pageModel);
+    // console.log((this.window as any).pageModel);
   }
 
   testFunction() {
     console.log('this is a test');
-    console.log(this.page.questionMainText);
-    this.page.questionMainText = 'different question main text';
-    console.log(this.page.questionMainText);
+    // console.log(this.page.questionMainText);
+    // this.page.questionMainText = 'different question main text';
+    // console.log(this.page.questionMainText);
   }
 
 }

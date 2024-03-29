@@ -6,8 +6,8 @@ import { ResultsModel } from '../../models/results/results.service';
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { DiskModel } from '../../models/disk/disk.service';
 import { ExamService } from '../../controllers/exam.service';
-import { PageInterface } from '../../models/page/page.interface';
-import { PageModel } from '../../models/page/page.service';
+import { ProtocolModel } from '../../models/protocol/protocol.service';
+import { ProtocolModelInterface } from '../../models/protocol/protocol-model.interface';
 
 @Component({
   selector: 'exam-finalized-view',
@@ -17,18 +17,18 @@ import { PageModel } from '../../models/page/page.service';
 export class ExamFinalizedComponent {
   results: ResultsInterface;
   disk: DiskInterface;
-  page: PageInterface;
+  protocol: ProtocolModelInterface;
 
   constructor(
     public resultsModel: ResultsModel, 
     public translate: TranslateService,
     public examService: ExamService,
     public diskModel: DiskModel,
-    public pageModel: PageModel
+    public protocolModel: ProtocolModel
   ) { 
     this.results = this.resultsModel.getResults();
     this.disk = this.diskModel.getDisk();
-    this.page = this.pageModel.getPage();
+    this.protocol = this.protocolModel.getProtocolModel();
   }
 
 }

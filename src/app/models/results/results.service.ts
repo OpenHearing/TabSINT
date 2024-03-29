@@ -15,6 +15,7 @@ export class ResultsModel {
             elapsedTime: "elapsedTime",
             testDateTime: "2024-01-31T16:13:53.769Z",
             protocolName: "protocolName",
+            response: "resp",
             testResults: {
                 responses: [
                     {
@@ -34,7 +35,8 @@ export class ResultsModel {
                     }
                 ]
             }
-        }
+        },
+        previous: {}
     }
 
     getResults(): ResultsInterface {

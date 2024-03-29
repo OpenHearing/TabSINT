@@ -5,6 +5,9 @@ export interface StateInterface {
     protocolState: ProtocolState;
     protocolStack: Array<any>;
     examState: ExamState;
+    isSubmittable: boolean;
+    examIndex: number;
+    canGoBack: Function;
     isPaneOpen: {
         general: boolean;
         advanced: boolean;
