@@ -1,4 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
+import _ from 'lodash';
+import { DOCUMENT } from '@angular/common';
+
 import { DiskInterface } from './disk.interface';
 import { ProtocolServer, ResultsMode } from '../../utilities/constants';
 
@@ -8,7 +11,9 @@ import { ProtocolServer, ResultsMode } from '../../utilities/constants';
 
 export class DiskModel {
 
-    diskModel: DiskInterface = {
+    window: (Window & typeof globalThis) | null;
+
+    disk: DiskInterface = {
         headset: "None",
         cha: {
             embeddedFirmwareBuildDate: "",
@@ -64,10 +69,37 @@ export class DiskModel {
             dataOut: ''
         },
         audhere: ''
+    };
+    
+    constructor(@Inject(DOCUMENT) private document: Document) {
+        this.window = document.defaultView;
     }
 
     getDisk(): DiskInterface {
-        return this.diskModel;
+
+        if (this.window !== null && !_.isUndefined(this.window!.localStorage)) {
+            console.log("localStorage getDisk: ", this.window!.localStorage);
+            if (this.window.localStorage.getItem('diskModel') !== null) {
+                this.disk = JSON.parse(this.window.localStorage.getItem('diskModel')!);
+            } else {
+                this.storeDisk();
+            }            
+        } 
+    
+        return this.disk;
+    }
+
+    storeDisk(): void {
+        if (this.window !== null && !_.isUndefined(this.window!.localStorage)) {
+            this.window.localStorage.setItem('diskModel', JSON.stringify(this.disk));
+            console.log("localStorage storeDisk: ", this.window!.localStorage);
+        }
+    }
+
+    updateDiskModel(key: any, value: any) {
+        (this.disk as any)[key] = value; // TODO: improve typing here
+        this.storeDisk();
+        console.log("updateDiskModel: ", this.disk);
     }
 
 }

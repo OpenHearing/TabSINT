@@ -36,7 +36,6 @@ export class TabsintConfigComponent {
     public translate: TranslateService,
     public dialog: MatDialog
   ) { 
-    this.disk = this.diskModel.getDisk();
     this.version = this.versionService.getVersion();
     this.state = this.stateModel.getState();
   }
@@ -70,19 +69,19 @@ export class TabsintConfigComponent {
   // Functions
 
   changeHeadset(headset: string) {
-    this.disk.headset = headset;
-    this.logger.debug("Headset changed to: "+headset);
+    this.diskModel.updateDiskModel("headset", headset);
+    this.logger.debug("Headset changed to: " + headset);
   }
 
   changeLanguage(language: string) {
-    this.disk.language = language;
     // need to update the language here
+    this.diskModel.updateDiskModel("language", language);
     this.translate.setDefaultLang(language);
     this.logger.debug("Language changed to: "+language);
   }
 
   changeResultsMode(resultsMode: ResultsMode) {
-    this.disk.resultsMode = resultsMode;
+    this.diskModel.updateDiskModel("resultsMode", resultsMode);
     this.logger.debug("ResultsMode changed to: "+JSON.stringify(resultsMode));
   }
 
