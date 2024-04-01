@@ -4,7 +4,7 @@
     </div>
     <div ngbDropdown class="col-5 dropdown-width" display="dynamic">                            
         <button type="button" class="btn btn-default btn-block dropdown-toggle" id="defaultHeadset" ngbDropdownToggle>
-            {{diskModel.disk.headset}}
+            {{disk.headset}}
         </button>
         <div ngbDropdownMenu aria-labelledby="defaultHeadset">
             <button *ngFor="let headset of headsets" ngbDropdownItem (click)="changeHeadset(headset)">{{headset}}</button>
@@ -29,7 +29,7 @@
     </div>
     <div ngbDropdown class="col-5 dropdown-width" display="dynamic">                            
         <button type="button" class="btn btn-default btn-block dropdown-toggle" id="selectLanguage" ngbDropdownToggle>
-            {{diskModel.disk.language}}
+            {{disk.language}}
         </button>
         <div ngbDropdownMenu aria-labelledby="selectLanguage">
             <button *ngFor="let language of languages" ngbDropdownItem (click)="changeLanguage(language)">{{language | translate}}</button>
@@ -74,7 +74,7 @@
     <!-- Admin Mode -->
     <div class="row pad-top">
         <div class="col-6"><label translate for="adminMode">Admin Mode:</label></div>
-        <div class="col-2"><input id="adminMode" type="checkbox" [(ngModel)]="diskModel.disk.debugMode" (change)="adminService.toggleDebugMode()"/></div>
+        <div class="col-2"><input id="adminMode" type="checkbox" [(ngModel)]="disk.debugMode" (change)="adminService.toggleDebugMode()"/></div>
         <div class="col-2"></div>
         <div class="col-1" title="{{'Admin Mode help' | translate}}">
             <i [matMenuTriggerFor]= "adminHelpMenu" class="ion-help-circled"></i>
@@ -88,7 +88,7 @@
 
     <div class="row pad-top">
         <div class="col-6">Admin PIN:</div>
-        <div class="col-2">{{diskModel.disk.pin}}</div>
+        <div class="col-2">{{disk.pin}}</div>
         
         <div class="col-1"><a href="javascript:" title="{{'Admin PIN edit' | translate}}"
             (click)="editAdminPin()"><i class="ion-edit"></i></a>
@@ -108,7 +108,7 @@
     <!-- Disable Logs -->
     <div class="row pad-top">
         <div class="col-6"><label translate for="disableLogs">Disable Logs:</label></div>
-        <div class="col-2"><input id="disableLogsID" type="checkbox" [(ngModel)]="diskModel.disk.disableLogs" (change)="adminService.toggleDisableLogs()"/></div>
+        <div class="col-2"><input id="disableLogsID" type="checkbox" [(ngModel)]="disk.disableLogs" (change)="adminService.toggleDisableLogs()"/></div>
         <div class="col-2"></div>
         <div class="col-1" title="{{'Disable Logs help' | translate}}">
             <i [matMenuTriggerFor]= "disableLogsMenu" class="ion-help-circled"></i>
@@ -123,7 +123,7 @@
     <!-- Set the Maximum number of log records -->
     <div class="row pad-top">
         <div class="col-6" translate>Max Log Length:</div>
-        <div class="col-2">{{diskModel.disk.maxLogRows}}</div>
+        <div class="col-2">{{disk.maxLogRows}}</div>
 
         <!-- <div class="col-1"><a href="javascript:" title="{{'Max Log Length edit' | translate}}"
             (click)="changeLog.editMaxLogRows()"><i class="ion-edit"></i></a>
@@ -147,7 +147,7 @@
     <div class="row pad-top">
         <div class="col-6"><label translate for="automaticVolControl"> Disable Automatic Volume Control:</label>
         </div>
-        <div class="col-2"><input id="automaticVolControl" type="checkbox" [(ngModel)]="diskModel.disk.disableVolume" (change)="adminService.toggleDisableVolume()"/></div>
+        <div class="col-2"><input id="automaticVolControl" type="checkbox" [(ngModel)]="disk.disableVolume" (change)="adminService.toggleDisableVolume()"/></div>
         <div class="col-2"></div>
         <div class="col-1" href="javascript:" title="{{'Automatic Volume Control help' | translate}}">
             <i [matMenuTriggerFor]= "disableVolumeMenu" class="ion-help-circled"></i>
@@ -162,7 +162,7 @@
     <!-- Enable Admin Skip -->
     <div class="row pad-top">
         <div class="col-6"><label translate for="enableSkip">Enable Skip in Exams:</label></div>
-        <div class="col-2"><input id="enableSkip" type="checkbox" [(ngModel)]="diskModel.disk.adminSkipMode" (change)="adminService.toggleAdminSkipMode()"/></div>
+        <div class="col-2"><input id="enableSkip" type="checkbox" [(ngModel)]="disk.adminSkipMode" (change)="adminService.toggleAdminSkipMode()"/></div>
         <div class="col-2"></div>
         <div class="col-1" href="javascript:" title="{{'Enable Skip in Exams help' | translate}}">
             <i [matMenuTriggerFor]= "adminSkipModeMenu" class="ion-help-circled"></i>
@@ -177,7 +177,7 @@
     <!-- Enforce Results Encryption -->
     <div class="row pad-top">
         <div class="col-6"><label translate for="requireEncryption">Require Encryption:</label></div>
-        <div class="col-2"><input id="requireEncryption" type="checkbox" [(ngModel)]="diskModel.disk.requireEncryptedResults" (change)="adminService.toggleRequireEncryptedResults()"/></div>
+        <div class="col-2"><input id="requireEncryption" type="checkbox" [(ngModel)]="disk.requireEncryptedResults" (change)="adminService.toggleRequireEncryptedResults()"/></div>
         <div class="col-2"></div>
         <div class="col-1" href="javascript:" title="{{'Require Encription help' | translate}}">
             <i [matMenuTriggerFor]= "requireEncryptedResultsPopoverMenu" class="ion-help-circled"></i>
@@ -192,7 +192,7 @@
     <!-- Record Test Location -->
     <div class="row pad-top">
         <div class="col-6"><label translate for="recordTestLocation">Record Test Location:</label></div>
-        <div class="col-2"><input id="recordTestLocation" type="checkbox" [(ngModel)]="diskModel.disk.recordTestLocation" (change)="adminService.toggleRecordTestLocation()"/></div>
+        <div class="col-2"><input id="recordTestLocation" type="checkbox" [(ngModel)]="disk.recordTestLocation" (change)="adminService.toggleRecordTestLocation()"/></div>
         <div class="col-2"></div>
         <div class="col-1" href="javascript:" title="{{'Record Test Location help' | translate}}">
             <i [matMenuTriggerFor]= "recordTestLocationPopoverMenu" class="ion-help-circled"></i>
@@ -260,7 +260,7 @@
     <!-- Automatically Output Test Results -->
     <div class="row pad-top">
         <div class="col-6"><label for="outputResults">{{'Automatically output test results' | translate}}:</label></div>
-        <div class="col-2"><input id="outputResults" type="checkbox" [(ngModel)]="diskModel.disk.autoUpload" (change)="toggleAutoUpload()"/></div>
+        <div class="col-2"><input id="outputResults" type="checkbox" [(ngModel)]="disk.autoUpload" (change)="toggleAutoUpload()"/></div>
         <div class="col-2"> </div>
         <div class="col-1" href="javascript:" title="{{'Automatically output test results help' | translate}}">
             <i [matMenuTriggerFor]= "automaticallyOutputResultsPopoverMenu" class="ion-help-circled"></i>
@@ -278,7 +278,7 @@
         
         <div ngbDropdown class="col-6 dropdown-width" display="dynamic">                            
             <button type="button" class="btn btn-default btn-block dropdown-toggle" id="resultsMode" ngbDropdownToggle>
-                {{diskModel.disk.resultsMode}}
+                {{disk.resultsMode}}
             </button>
             <div ngbDropdownMenu aria-labelledby="resultsMode">
                 <button *ngFor="let resultsMode of resultsModeOptions | keyvalue" ngbDropdownItem (click)="changeResultsMode(resultsMode.value)">{{resultsMode.value}}</button>
@@ -289,7 +289,7 @@
     <!-- Local Results Directory -->
     <div class="row pad-top">
         <div class="col-6"><label for="localResultsDir">{{'Local Results Directory' | translate}}:</label></div>
-        <div class="col-5"><em>{{diskModel.disk.servers.localServer.resultsDir}}</em></div>
+        <div class="col-5"><em>{{disk.servers.localServer.resultsDir}}</em></div>
     </div>
     <div class="row pad-top">
         <div class="col-6"></div>
@@ -311,9 +311,9 @@
     <!-- Tablet Gain -->
     <div class="row pad-top">
         <div class="col-6"><label translate for="tabletGain">Tablet Gain</label></div>
-        <div class="col-2"><input id="tabletGain" type="number" enter-close class="form-control" [(ngModel)]="diskModel.disk.tabletGain" /></div>
+        <div class="col-2"><input id="tabletGain" type="number" enter-close class="form-control" [(ngModel)]="disk.tabletGain" /></div>
         <div class="col-1">
-            <a href="javascript:" title="{{'Minus' | translate}}" (click)="diskModel.disk.tabletGain = -diskModel.disk.tabletGain">
+            <a href="javascript:" title="{{'Minus' | translate}}" (click)="disk.tabletGain = -disk.tabletGain">
                 <i class="ion-minus"></i>
             </a>
         </div>
@@ -334,7 +334,7 @@
     </div>
 
     <!-- Calibration -->
-    <div class="row pad-top" *ngIf="diskModel.disk.debugMode">
+    <div class="row pad-top" *ngIf="disk.debugMode">
         <div class="col-4">
             <button type="button" ng-disabled="tasks.disabled" class="btn btn-block btn-primary"
                 (click)="play1kHz94dB()">

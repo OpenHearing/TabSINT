@@ -38,6 +38,7 @@ export class TabsintConfigComponent {
   ) { 
     this.version = this.versionService.getVersion();
     this.state = this.stateModel.getState();
+    this.disk = this.diskModel.getDisk();
   }
 
   ngOnInit(): void {
@@ -70,6 +71,7 @@ export class TabsintConfigComponent {
 
   changeHeadset(headset: string) {
     this.diskModel.updateDiskModel("headset", headset);
+    this.disk = this.diskModel.getDisk();
     this.logger.debug("Headset changed to: " + headset);
   }
 
@@ -77,11 +79,13 @@ export class TabsintConfigComponent {
     // need to update the language here
     this.diskModel.updateDiskModel("language", language);
     this.translate.setDefaultLang(language);
+    this.disk = this.diskModel.getDisk();
     this.logger.debug("Language changed to: "+language);
   }
 
   changeResultsMode(resultsMode: ResultsMode) {
     this.diskModel.updateDiskModel("resultsMode", resultsMode);
+    this.disk = this.diskModel.getDisk();
     this.logger.debug("ResultsMode changed to: "+JSON.stringify(resultsMode));
   }
 
