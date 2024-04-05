@@ -78,7 +78,6 @@ export class DiskModel {
     getDisk(): DiskInterface {
 
         if (this.window !== null && !_.isUndefined(this.window!.localStorage)) {
-            console.log("localStorage getDisk: ", this.window!.localStorage);
             if (this.window.localStorage.getItem('diskModel') !== null) {
                 this.disk = JSON.parse(this.window.localStorage.getItem('diskModel')!);
             } else {

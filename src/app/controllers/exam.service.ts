@@ -54,6 +54,19 @@ export class ExamService {
     - page.result => results.current
     */
 
+    /* Notes:
+        - protocolStack contains a list of the following object:
+    {
+        protocol: thisProtocol,
+        startTime: new Date().toJSON(),
+        nPagesDone: 0,
+        nPagesExpected: 0,
+        pageQueue: [],
+        pageIndex: 0
+    };
+
+    */
+
     // Definining variables
     // TODO: Should these variables be moved to a model?
     cha = {
@@ -84,7 +97,8 @@ export class ExamService {
 
             console.log("this.protocol.activeProtocol",this.protocol.activeProtocol);
             this.testVar = (this.protocol.activeProtocol?.pages?.[this.state.examIndex] as any)?.pages?.[this.state.examIndex];
-            console.log("this.protocol.activeProtocol / testVar:",this.testVar);
+            console.log("this.testVar",this.testVar);
+            console.log("this.state.protocolStack",this.state.protocolStack);
             if (this.protocol.activeProtocol?.pages?.[this.state.examIndex]?.id) {
             // if (testVar?.id) {
                 // this.logger.debug("re-activating page " + this.protocol.activeProtocol.id);
@@ -573,6 +587,7 @@ export class ExamService {
     }
 
     submit() {
+        // This seems to be overwritten by submitDefault. Need to figure out a good way to do that.
         console.log("ExamService submit() called");
     }
 
@@ -697,6 +712,7 @@ export class ExamService {
         // }
   
         // Do a follow-on, if applicable.
+        console.log("this.testVar?.followOns",this.testVar?.followOns);
         if (this.testVar?.followOns) {
             console.log("follow on found, proceeding");
             for (let i = 0; i < (this.testVar?.followOns as any).length; i++) {
@@ -706,8 +722,10 @@ export class ExamService {
                     try {
                         var activationSuccess = this.activatePage(followOn.target);
                         // TODO: THIS IS A HACK THAT SHOULD BE CHANGED
+                        // instead we should go to this.protocol.activeProtocol?.subProtocols?.[CORRECT_ID]?.pages?.[0];
                         this.testVar = this.protocol.activeProtocol?.subProtocols?.[0]?.pages?.[0];
                         console.log("this.testVar",this.testVar);
+                        console.log("this.state.protocolStack",this.state.protocolStack);
 
                         if (activationSuccess) {
                             return;
@@ -1018,8 +1036,8 @@ export class ExamService {
         // });
 
         this.logger.debug(
-            `Beginning exam on tablet UUID: ${this.results.current.testResults.tabletUUID} at Location: ${Object.hasOwnProperty(
-                this.results.current.testResults.tabletLocation
+            `Beginning exam on tablet UUID: ${this.results?.current?.testResults?.tabletUUID} at Location: ${Object.hasOwnProperty(
+                this.results?.current?.testResults?.tabletUUID
             )}`
         );
 

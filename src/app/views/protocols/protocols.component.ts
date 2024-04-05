@@ -15,6 +15,7 @@ import { DialogData } from '../../interfaces/dialog-data.interface';
 import { Notifications } from '../../utilities/notifications.service';
 import { Tasks } from '../../utilities/tasks.service';
 import { ProtocolModelInterface } from '../../models/protocol/protocol-model.interface';
+import { ExamService } from '../../controllers/exam.service';
 
 @Component({
   selector: 'protocols-view',
@@ -36,7 +37,8 @@ export class ProtocolsComponent {
     private translate: TranslateService,
     private logger: Logger,
     private notifications: Notifications,
-    private tasks: Tasks
+    private tasks: Tasks,
+    public examService: ExamService
   ) {
     this.disk = this.diskModel.getDisk();
     this.protocolModel = this.protocolM.getProtocolModel();
@@ -113,8 +115,7 @@ export class ProtocolsComponent {
         // })
         
         if (this.protocolService.isActive(this.selected)) {
-            // examLogic.reset();
-            console.log("reset examLogic");
+          this.examService.reset();
         }
         this.tasks.deregister("updating");
     }
