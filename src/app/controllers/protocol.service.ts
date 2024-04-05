@@ -46,6 +46,9 @@ export class ProtocolService {
         this.protocolModel = this.protocolM.getProtocolModel();
         
         this.loading = loadingProtocolDefaults(this.diskModel.disk.validateProtocols);
+
+        // For BAyotte development only, auto load protocol when tabsint loads
+        this.load(this.protocolModel.loadedProtocols[5], true, true, false)
     }
 
     init(): void  {

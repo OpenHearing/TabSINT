@@ -12,7 +12,7 @@ export class StateModel {
         appState: AppState.Welcome,
         protocolState: ProtocolState.null,
         protocolStack: [],
-        examState: ExamState.Ready,
+        examState: ExamState.NotReady,
         isSubmittable: true,
         examIndex: 0,
         canGoBack: () => {},

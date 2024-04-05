@@ -8,5 +8,5 @@
     <div class="spacer"></div>
   </div>
   
-  <p class="instructions" *ngIf="!!(this.protocol.activeProtocol?.instructionText)" [ngStyle]="examService.centerIfShort('instructions-ready')"><span [innerHtml]="this.protocol.activeProtocol?.instructionText" id="instructions-ready"></span></p>
+  <p class="instructions" *ngIf="!!(this.protocol.activeProtocol?.instructionText)"><span [innerHtml]="this.protocol.activeProtocol?.instructionText" id="instructions-ready"></span></p>
   

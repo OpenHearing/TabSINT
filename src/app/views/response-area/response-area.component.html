@@ -1,4 +1,4 @@
-<div [ngSwitch]="examService.testVar?.responseArea?.type">
+<div [ngSwitch]="examService.currentPage?.responseArea?.type">
     <textbox-view *ngSwitchCase="'textboxResponseArea'"></textbox-view>
     <multiple-choice-view *ngSwitchCase="'multipleChoiceResponseArea'"></multiple-choice-view>
 </div>

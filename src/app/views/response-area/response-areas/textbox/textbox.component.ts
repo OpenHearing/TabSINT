@@ -26,7 +26,8 @@ export class TextboxComponent {
 
 
     // Logic from tabsint classic
-    this.rows = this.examService.testVar?.responseArea?.rows ? Number(this.examService.testVar?.responseArea?.rows) : 1;
+    // this.rows = this.examService.testVar?.responseArea?.rows ? Number(this.examService.testVar?.responseArea?.rows) : 1;
+    this.rows = 1;
   }
 
 }

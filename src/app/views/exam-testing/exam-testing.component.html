@@ -24,49 +24,49 @@
     }
 </style>
 
-<div *ngIf="examService.testVar.loadingRequired && examService.testVar.loadingActive">
+<div *ngIf="examService?.currentPage?.loadingRequired && examService?.currentPage?.loadingActive">
     <h2>Media File(s) Loading...</h2>
     <div class="loader"></div>
-    <button type="button" class="button btn btn-default" (click)="examService.testVar.loadingRequired=false; examService.finishActivateMedia()" translate disabled="true">Start Exam</button>
-    </div>
+    <button type="button" class="button btn btn-default" (click)="examService.currentPage.loadingRequired=false; examService.finishActivateMedia()" translate disabled="true">Start Exam</button>
+</div>
 
-    <div *ngIf="examService.testVar.loadingRequired && !examService.testVar.loadingActive">
+<div *ngIf="examService?.currentPage?.loadingRequired && !examService?.currentPage?.loadingActive">
     <h2 style="margin-bottom:1em;">Loading Complete</h2>
-    <button type="button" class="button btn btn-default" (click)="examService.testVar.loadingRequired=false; examService.finishActivateMedia()" translate>Start Exam</button>
-    </div>
+    <button type="button" class="button btn btn-default" (click)="examService.currentPage.loadingRequired=false; examService.finishActivateMedia()" translate>Start Exam</button>
+</div>
 
-    <div *ngIf="!examService.testVar.loadingRequired">
+<div *ngIf="!examService?.currentPage?.loadingRequired">
     <!-- Title block -->
-    <h2 [textContent]="examService.testVar.questionMainText" *ngIf="examService.testVar.questionMainText"
-        ng-class="{medium: ((examService.testVar.questionMainText.length >= 38) && (examService.testVar.questionMainText.length < 48)), long: (examService.testVar.questionMainText.length > 42)}"></h2>
-    <p class="subtext pad-top" *ngIf="examService.testVar.questionSubText" [ngStyle]="examService.centerIfShort('subtext-testing')">
-        <span [textContent]="examService.testVar.questionSubText" id="subtext-testing"></span>
+    <h2 [textContent]="examService?.currentPage?.questionMainText" *ngIf="examService?.currentPage?.questionMainText"
+        ng-class="{medium: ((examService?.currentPage?.questionMainText?.length >= 38) && (examService?.currentPage?.questionMainText?.length < 48)), long: (examService?.currentPage?.questionMainText?.length > 42)}"></h2>
+    <p class="subtext pad-top" *ngIf="examService?.currentPage?.questionSubText">
+        <span [textContent]="examService.currentPage.questionSubText" id="subtext-testing"></span>
     </p>
-    <p class="instructions" *ngIf="examService.testVar.instructionText" [ngStyle]="examService.centerIfShort('instructions-testing')"><span [textContent]="examService.testVar.instructionText" id="instructions-testing"></span></p>
+    <p class="instructions" *ngIf="examService?.currentPage?.instructionText"><span [textContent]="examService?.currentPage?.instructionText" id="instructions-testing"></span></p>
 
 
     <!-- Images -->
-    <!-- <div class="multimedia" *ngIf="examService.testVar.image" [ngStyle]="{width:examService.testVar.image.width}">
-        <img [src]="{{examService.testVar.image.path}}" class="img-responsive img-rounded" alt="" style="margin:0 auto;max-height:40vh;" />
+    <!-- <div class="multimedia" *ngIf="examService.currentPage.image" [ngStyle]="{width:examService.currentPage.image.width}">
+        <img [src]="{{examService.currentPage.image.path}}" class="img-responsive img-rounded" alt="" style="margin:0 auto;max-height:40vh;" />
     </div> -->
 
 
     <!-- Videos -->
-    <!-- <div class="multimedia" *ngIf="examService.testVar.video" [ngStyle]="{width:examService.testVar.video.width}">
-        <row *ngIf="examService.testVar.video.autoplay">
-        <video id="video1" [src]="{{examService.testVar.video.path}}" class="video-responsive video-rounded"  preload="examService.testVar.video.autoplay" controls />
+    <!-- <div class="multimedia" *ngIf="examService.currentPage.video" [ngStyle]="{width:examService.currentPage.video.width}">
+        <row *ngIf="examService.currentPage.video.autoplay">
+        <video id="video1" [src]="{{examService.currentPage.video.path}}" class="video-responsive video-rounded"  preload="examService.currentPage.video.autoplay" controls />
         </row>
-        <row *ngIf="!examService.testVar.video.autoplay">
-        <video id="video1" [src]="{{examService.testVar.video.path}}" class="video-responsive video-rounded"  controls />
+        <row *ngIf="!examService.currentPage.video.autoplay">
+        <video id="video1" [src]="{{examService.currentPage.video.path}}" class="video-responsive video-rounded"  controls />
         </row>
     </div> -->
 
     <br />
 
     <!-- Response area content -->
-    <!-- <div *ngIf="examService.testVar.responseArea" ng-controller="ResponseAreaCtrl as ra">
+    <!-- <div *ngIf="examService.currentPage.responseArea" ng-controller="ResponseAreaCtrl as ra">
         <div ng-repeat="(type, spec) in ra.responseAreas">
-            <response-area *ngIf="type === examService.testVar.responseArea.type" ng-include="spec.templateUrl"></response-area>
+            <response-area *ngIf="type === examService.currentPage.responseArea.type" ng-include="spec.templateUrl"></response-area>
         </div>
     </div> -->
 
@@ -76,7 +76,7 @@
 
     <!-- Below 2 lines are for testing the loading of repsonse areas that are not hard-coded into tabsint -->
 
-    <!-- <div *ngIf="examService.testVar.responseArea" [innerHTML]="testHTML"></div> -->
+    <!-- <div *ngIf="examService.currentPage.responseArea" [innerHTML]="testHTML"></div> -->
     <!-- <button (click)="testing()">test button</button> -->
 
 
