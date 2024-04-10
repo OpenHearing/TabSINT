@@ -58,14 +58,13 @@ export class MultipleChoiceComponent {
         text: this.examService.currentPage?.responseArea.other
       });
     }
-    console.log("choices",this.choices);
+    console.log("choices for multiple-choice responseArea",this.choices);
   }
 
   choose(id:any) {
     this.results.current.response = id;
     // this.state.isSubmittable = this.examService.getSubmittableLogic(this.examService.currentPage?.responseArea);
     this.state.isSubmittable = true;
-    console.log("this.state.isSubmittable",this.state.isSubmittable);
     if (this.state.isSubmittable && this.results.current.response !== "Other") {
       this.examService.submit = this.examService.submitDefault;
       this.examService.submit();

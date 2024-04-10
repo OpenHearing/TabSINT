@@ -14,6 +14,7 @@ import { DiskInterface } from '../models/disk/disk.interface';
 import { DiskModel } from '../models/disk/disk.service';
 import { Notifications } from '../utilities/notifications.service';
 import { bluetoothTimeout } from '../utilities/constants';
+import { PageDefinition } from '../interfaces/protocol-schema.interface';
 
 @Injectable({
     providedIn: 'root',
@@ -100,16 +101,74 @@ export class ExamService {
         // TODO: Completely overhaul the protocol loading, parsing, and handling
         // (this.protocol.activeProtocol?.pages?.[this.state.examIndex] as any)?.pages?.[this.state.examIndex];
         let page = (this.protocol.activeProtocol?.pages?.[this.state.examIndex] as any)?.pages?.[this.state.examIndex];
+        // TODO: allow this to add multiple pages to the stack (if applicable)
         this.state.protocolStack = [page];
         this.currentPage = this.state.protocolStack[this.state.examIndex];
     }
 
     reset() {
         console.log("ExamService reset() called");
+
+        this.results.current = {};
     }
 
     submitDefault() {
         console.log("ExamService submitDefault() called");
+
+        // console.log("this.results.current",this.results.current);
+        this.results.previous.push(this.results.current);
+        
+        console.log(this.state.protocolStack,this.state.examIndex);
+        if (this.state.protocolStack.length <= this.state.examIndex + 1) {
+            let followOnId = this.findFollowOn();
+            let pages = this.findSubProtocol(followOnId);
+            // This should eventually be able to add multiple pages? Or page should already be multiple?
+            if (pages.length > 0) {
+                this.state.protocolStack = [];
+                this.state.examIndex = 0;
+                pages.forEach( (page:any)=> {
+                    // TODO: If page has a reference, it should be parsed so we can input the actual page
+                    this.state.protocolStack.push(page);
+                });
+            } else {
+                this.state.protocolStack = [];
+                this.state.examIndex = 0;
+            }
+        } else {
+            // Do something like this... Will need ot be changed though
+            console.log("incrementing examIndex");
+            this.state.examIndex +=1 ;
+            this.currentPage = this.state.protocolStack[this.state.examIndex];
+        }
+        // Go to next page if it is in the pageStack or check for subProtocols
+        this.currentPage = this.state.protocolStack[this.state.examIndex];
+        this.submit = this.submitDefault;
+        this.reset();
+    }
+
+    // General protocol parsing functions (maybe move to utilities? they do need model access...)
+
+    findFollowOn() {
+        let id: any;
+        this.state.protocolStack[this.state.examIndex]?.followOns.forEach((followOn:any) => {
+            // TODO: Fix this hacky way of finding the id, maybe just eval the conditional?
+            if (this.results.current.response == followOn.conditional.split("==")[1].replaceAll("'","")) {
+                id = followOn.target.reference;
+            }
+        });
+        return id
+    }
+
+    findSubProtocol(id:string) {
+        console.log("ExamService findSubProtocol() called");
+        let pages:any;
+        this.protocol.activeProtocol?.subProtocols?.forEach((subProtocol) => {
+            if (id == subProtocol?.protocolId) {
+                pages = subProtocol?.pages;
+            }
+        });
+        console.log("subProtocol pages found:",pages);
+        return pages;
     }
 
 

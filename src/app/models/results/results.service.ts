@@ -36,7 +36,7 @@ export class ResultsModel {
                 ]
             }
         },
-        previous: {}
+        previous: []
     }
 
     getResults(): ResultsInterface {
