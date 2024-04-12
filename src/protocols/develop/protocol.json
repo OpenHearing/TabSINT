@@ -1,75 +1,75 @@
 {
-    "title": "Development Protocol",
-    "subtitle": "Developer testing of open-tabsint responseArea's.",
-    "instructionText": "instructionText goes here",
-    "hideProgressBar": true,
-    "navMenu":[
-      {
-        "text": "Back to Main Menu",
-        "target": {
-          "reference": "MainMenu"
-        },
-        "returnHereAfterward": false
-      }
-    ],
-    "pages": [
-      {
-        "protocolId":"MainMenu",
-        "title":"Main Menu",
-        "pages":[
-          {
-            "id":"choose",
-            "title":"Response Area Testing",
-            "questionMainText":"Please select a response area to test:",
-            "responseArea":{
-              "type":"multipleChoiceResponseArea",
-              "choices":[
-                {
-                  "id":"Text Box"
-                }
-              ]
-            }, 
-            "followOns":[
+  "title": "Development Protocol",
+  "subtitle": "Developer testing of open-tabsint responseArea's.",
+  "instructionText": "instructionText goes here",
+  "hideProgressBar": true,
+  "navMenu":[
+    {
+      "text": "Back to Main Menu",
+      "target": {
+        "reference": "MainMenu"
+      },
+      "returnHereAfterward": false
+    }
+  ],
+  "pages": [
+    {
+      "protocolId":"MainMenu",
+      "title":"Main Menu",
+      "pages":[
+        {
+          "id":"choose",
+          "title":"Response Area Testing",
+          "questionMainText":"Please select a response area to test:",
+          "responseArea":{
+            "type":"multipleChoiceResponseArea",
+            "choices":[
               {
-                "conditional":"result.response=='Text Box'",
-                "target":{
-                  "reference":"TextBox"
-                } 
+                "id":"Text Box"
               }
             ]
-          }
-        ]
-      }
-    ],
-    "subProtocols":[
-      {
-        "protocolId": "TextBox",
-        "pages":[
-          {
-            "id": "textbox_001",
-            "title": "Text Box",
-            "instructionText": "Test Case 001",
-            "responseArea": {
-                "type": "textboxResponseArea",
-                "rows": 5,
-                "responseRequired": false
+          }, 
+          "followOns":[
+            {
+              "conditional":"result.response=='Text Box'",
+              "target":{
+                "reference":"TextBox"
+              } 
             }
-          },
-          {
-            "id": "textbox_002",
-            "title": "Text Box",
-            "instructionText": "Test Cases 002, 003, 201, and 202",
-            "responseArea": {
+          ]
+        }
+      ]
+    }
+  ],
+  "subProtocols":[
+    {
+      "protocolId": "TextBox",
+      "pages":[
+        {
+          "id": "textbox_001",
+          "title": "Text Box",
+          "instructionText": "Test Case 001",
+          "responseArea": {
               "type": "textboxResponseArea",
-              "exportToCSV": true,
-              "rows": 5
-            }
-          },
-          {
-            "id": "backtomain",
-            "reference":"MainMenu"
+              "rows": 5,
+              "responseRequired": false
           }
-        ]
-      }
-    ]
-  }
+        },
+        {
+          "id": "textbox_002",
+          "title": "Text Box",
+          "instructionText": "Test Cases 002, 003, 201, and 202",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "exportToCSV": true,
+            "rows": 5
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference":"MainMenu"
+        }
+      ]
+    }
+  ]
+}
