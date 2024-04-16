@@ -10,6 +10,7 @@ import { DiskInterface } from '../models/disk/disk.interface';
 import { ProtocolModel } from '../models/protocol/protocol.service';
 import { ProtocolInterface } from '../models/protocol/protocol.interface';
 import { AppModel } from '../models/app/app.service';
+import { ExamState } from '../utilities/constants';
 import { AppInterface } from '../models/app/app.interface';
 import { ProtocolModelInterface } from '../models/protocol/protocol-model.interface';
 import { DeveloperProtocols, DeveloperProtocolsCalibration, DialogType, ProtocolServer} from '../utilities/constants';
@@ -21,6 +22,8 @@ import { Notifications } from '../utilities/notifications.service';
 import { loadingProtocolDefaults } from '../utilities/defaults';
 import { checkCalibrationFiles, checkControllers, checkPreProcessFunctions } from '../utilities/protocol-checks.function';
 import { processProtocol } from '../utilities/process-protocol.function';
+import { StateInterface } from '../models/state/state.interface';
+import { StateModel } from '../models/state/state.service';
 
 @Injectable({
     providedIn: 'root',
@@ -30,6 +33,8 @@ export class ProtocolService {
     app: AppInterface;
     loading: LoadingProtocolInterface;
     protocolModel: ProtocolModelInterface;
+    state: StateInterface;
+    ExamState = ExamState;
 
     constructor(
         public appModel: AppModel,
@@ -40,10 +45,12 @@ export class ProtocolService {
         public protocolM: ProtocolModel,
         public tasks: Tasks,
         public translate: TranslateService,
-        public notifications: Notifications
+        public notifications: Notifications,
+        public stateModel: StateModel
     ) { 
         this.app = this.appModel.getApp();
         this.protocolModel = this.protocolM.getProtocolModel();
+        this.state = this.stateModel.getState();
         
         this.loading = loadingProtocolDefaults(this.diskModel.disk.validateProtocols);
 
@@ -498,5 +505,10 @@ export class ProtocolService {
     
         // call each function from the callbackQueue
         // callbackQueue.run();
+
+        // reset the exam related state variables (examIndex, protocolStack, and examState)
+        this.state.examIndex = 0;
+        this.state.protocolStack = [];
+        this.state.examState = ExamState.Ready;
     }
 }

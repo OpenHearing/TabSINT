@@ -27,7 +27,7 @@ export class ExamService {
     state: StateInterface;
     ExamState = ExamState;
     AppState = AppState;
-    testVar: any;
+    // testVar: any;
 
     constructor (
         public resultsModel: ResultsModel,
@@ -44,7 +44,7 @@ export class ExamService {
         this.disk = this.diskModel.getDisk();
         this.protocol = this.protocolM.getProtocolModel();
 
-        this.testVar = (this.protocol.activeProtocol?.pages?.[this.state.examIndex] as any)?.pages?.[this.state.examIndex];
+        // this.testVar = (this.protocol.activeProtocol?.pages?.[this.state.examIndex] as any)?.pages?.[this.state.examIndex];
     }
 
     
@@ -118,11 +118,9 @@ export class ExamService {
     async updateProtocolStack() {
         console.log("ExamService updateProtocolStack() called");
         console.log("this.protocol.activeProtocol",this.protocol.activeProtocol);
-        // TODO: Completely overhaul the protocol loading, parsing, and handling
-        // (this.protocol.activeProtocol?.pages?.[this.state.examIndex] as any)?.pages?.[this.state.examIndex];
-        let page = (this.protocol.activeProtocol?.pages?.[this.state.examIndex] as any)?.pages?.[this.state.examIndex];
-        // TODO: allow this to add multiple pages to the stack (if applicable)
-        this.state.protocolStack = [page];
+        
+        let pages = (this.protocol.activeProtocol?.pages?.[this.state.examIndex] as any)?.pages;
+        this.addPagesToStack(pages);
         this.currentPage = this.state.protocolStack[this.state.examIndex];
         this.state.isSubmittable = this.checkIfPageIsSubmittable();
     }
@@ -131,58 +129,67 @@ export class ExamService {
         console.log("ExamService reset() called");
 
         this.results.current = {};
+        // TODO: Add more information about the protocol / page into results here
+        /* This should include the ID for current page?
+        Can we have multiple results from same pages with repeated ID? Or would it overwrite the exam?
+        This seems rather complicated in current tabsint. I think just having results for each page will work.
+        If the page comes up again the ID wont duplicate and instead we overwrite the results for that page. 
+        This would mean that pushing results needs logic to overwrite if it already exists.
+        */
     }
 
     submitDefault() {
         console.log("ExamService submitDefault() called");
-
         // console.log("this.results.current",this.results.current);
+
+        // TODO: Below line should handle results with more logic, breakout a functoin here.
         this.results.previous.push(this.results.current);
-        
-        console.log("protocolStack, examIndex",this.state.protocolStack,this.state.examIndex);
-        // TODO: The below if, else if, else logic could be greatly simplified
-        let nextExamIndex = this.state.examIndex + 1;
-        if (this.state.protocolStack.length <= nextExamIndex) {
-            let followOnId = this.findFollowOn();
-            let pages = this.findSubProtocol(followOnId);
-            // This should eventually be able to add multiple pages? Or page should already be multiple?
-            if (pages && pages.length > 0) {
-                this.state.protocolStack = [];
-                this.state.examIndex = 0;
-                pages.forEach( (page:any)=> {
-                    // TODO: If page has a reference, it should be parsed so we can input the actual page
-                    this.state.protocolStack.push(page);
-                });
-            } else {
-                this.state.protocolStack = [];
-                this.state.examIndex = 0;
-            }
-        } else if (this.state.protocolStack[nextExamIndex]?.reference != undefined) {
-            let pages = this.getReferencePages(nextExamIndex);
-            if (pages && pages.length > 0) {
-                this.state.protocolStack = [];
-                this.state.examIndex = 0;
-                pages.forEach( (page:any)=> {
-                    // TODO: If page has a reference, it should be parsed so we can input the actual page
-                    this.state.protocolStack.push(page);
-                });
-            } else {
-                this.state.protocolStack = [];
-                this.state.examIndex = 0;
-            }
-        } else {
-            // Do something like this... Will need ot be changed though
-            console.log("incrementing examIndex");
-            this.state.examIndex = nextExamIndex ;
-        }
-        // Go to next page if it is in the pageStack or check for subProtocols
-        this.currentPage = this.state.protocolStack[this.state.examIndex];
+        this.advancePage();
+        // TODO: The above line might need to be async and awaited
+
         this.state.isSubmittable = this.checkIfPageIsSubmittable();
         this.submit = this.submitDefault;
         this.reset();
+
+        console.log("this.results.previous",this.results.previous);
     }
 
     // General protocol parsing functions (maybe move to utilities? they do need model access...)
+
+    advancePage() {
+        // console.log("protocolStack, examIndex",this.state.protocolStack,this.state.examIndex);
+        let nextExamIndex = this.state.examIndex + 1;
+        if (this.state.protocolStack.length <= nextExamIndex) {
+            let nextID = this.findFollowOn();
+            if (nextID != undefined) {
+                let pages = this.getSubProtocol(nextID);
+                this.state.protocolStack = [];
+                this.state.examIndex = 0;
+                this.addPagesToStack(pages);
+            } else {
+                this.state.protocolStack = [];
+                this.state.examIndex = 0;
+                this.state.examState = ExamState.NotReady;
+            }
+        } else {
+            // console.log("incrementing examIndex");
+            this.state.examIndex = nextExamIndex;
+        }
+        this.currentPage = this.state.protocolStack[this.state.examIndex];
+
+    }
+
+    addPagesToStack(pages:any) {
+        let extraPages:any;
+        pages.forEach( (page:any)=> {
+            if (page?.reference) {
+                extraPages = this.getSubProtocol(page?.reference);
+                this.addPagesToStack(extraPages);
+            } else {
+                this.state.protocolStack.push(page);
+            }
+        });
+    }
 
     findFollowOn() {
         let id: string | undefined = undefined;
@@ -195,42 +202,44 @@ export class ExamService {
         return id;
     }
 
-    getReferencePages(exInd: number | undefined = undefined) {
-        console.log("ExamService getReferencePages() called");
+    findReference(exInd: number | undefined = undefined) {
+        console.log("ExamService findReference() called");
         if (exInd == undefined) {
             exInd = this.state.examIndex;
         }
-        let pages:any;
         let referenceID = this.state.protocolStack[exInd]?.reference;
-        // TODO: Using updateProtocolStack(), protocol is getting parse very strangely, will fix later
-        this.protocol.activeProtocol?.pages?.forEach((page:any) => {
-            if (referenceID == page?.protocolId) {
-                // pages = page?.pages;
-
-                // only works for development protocol probably (this is a hack)
-                pages = [ (this.protocol.activeProtocol?.pages?.[0] as any)?.pages?.[0] ];
-            }
-        });
-        return pages;
+        return referenceID;
     }
 
-    findSubProtocol(id: string | undefined) {
-        console.log("ExamService findSubProtocol() called");
+    getSubProtocol(id: string | undefined) {
+        console.log("ExamService getSubProtocol() called");
+
         let pages:any;
         if (id == undefined) {
             return pages
         };
 
+        // check the main protocol definition
+        this.protocol.activeProtocol?.pages?.forEach((subProtocol:any) => {
+            if (id == subProtocol?.protocolId) {
+                pages = subProtocol?.pages;
+                return pages;
+            }
+        });
+
+        // check subProtocol
         this.protocol.activeProtocol?.subProtocols?.forEach((subProtocol) => {
             if (id == subProtocol?.protocolId) {
                 pages = subProtocol?.pages;
+                return pages;
             }
         });
-        console.log("subProtocol pages found:",pages);
+        // console.log("subProtocol pages found:",pages);
         return pages;
     }
 
     checkIfPageIsSubmittable() {
+        // TODO: These defaults should come from responseArea schema
         if (this.currentPage.responseArea.responseRequired != undefined) {
             return !this.currentPage.responseArea.responseRequired
         } else {
