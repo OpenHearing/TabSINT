@@ -27,7 +27,6 @@ export class ExamService {
     state: StateInterface;
     ExamState = ExamState;
     AppState = AppState;
-    // testVar: any;
 
     constructor (
         public resultsModel: ResultsModel,
@@ -43,34 +42,16 @@ export class ExamService {
         this.state = this.stateModel.getState();
         this.disk = this.diskModel.getDisk();
         this.protocol = this.protocolM.getProtocolModel();
-
-        // this.testVar = (this.protocol.activeProtocol?.pages?.[this.state.examIndex] as any)?.pages?.[this.state.examIndex];
     }
 
-    
+    // Local variables for exam service
     currentPage: any;
-
-    /**
-     * Example of typedoc
-     *
-     * @remarks can put remarks here
-     * @param x description of variable x
-     * @returns what the function returns
-     * @customExpression can define anything like this as well
-    */
-    exampleFunction(x:number) {
-        return
-    }
 
     // Necessary functions
 
-    /**
-     * Example of typedoc
-     *
-     * @remarks can put remarks here
-     * @param x description of variable x
-     * @returns what the function returns
-     * @customExpression can define anything like this as well
+    /** Switches to exam view
+     * @remarks Can be called from any other TabSINT view. If protocolStack is not empty, the exam
+     * will proceed where it left off. Otherwise examState gets changed to Ready.
     */
     switchToExamView() {
         console.log("ExamService switchToExamView() called");
@@ -83,14 +64,24 @@ export class ExamService {
             this.state.examState = ExamState.Ready;
         }
         else {
+            // TODO: This is not currently doing anything
             this.activatePage();
         }
     }
 
+    /** Begins TabSINT exam.
+     * @remarks Adds pages to protocolStack and changes examState to testing.
+     * @models protocol, state
+    */
     async begin() {
         console.log("ExamService begin() called");
-        // TODO: This should be synchronous?
-        await this.updateProtocolStack();
+        console.log("this.protocol.activeProtocol",this.protocol.activeProtocol);
+        
+        // TODO: Change how pages gets found, that should be cleaner
+        let pages = (this.protocol.activeProtocol?.pages?.[this.state.examIndex] as any)?.pages;
+        this.addPagesToStack(pages);
+        this.currentPage = this.state.protocolStack[this.state.examIndex];
+        this.state.isSubmittable = this.checkIfPageIsSubmittable();
         this.state.examState = ExamState.Testing;
     }
 
@@ -115,16 +106,10 @@ export class ExamService {
 
     // Internal functions
 
-    async updateProtocolStack() {
-        console.log("ExamService updateProtocolStack() called");
-        console.log("this.protocol.activeProtocol",this.protocol.activeProtocol);
-        
-        let pages = (this.protocol.activeProtocol?.pages?.[this.state.examIndex] as any)?.pages;
-        this.addPagesToStack(pages);
-        this.currentPage = this.state.protocolStack[this.state.examIndex];
-        this.state.isSubmittable = this.checkIfPageIsSubmittable();
-    }
-
+    /** Resets exam related parameters and states.
+     * @remarks Currently only resets the current results
+     * @models results
+    */
     reset() {
         console.log("ExamService reset() called");
 
@@ -138,6 +123,10 @@ export class ExamService {
         */
     }
 
+    /** Default submit function for exam pages.
+     * @remarks Appends current results to previous results, calls advancePage(), and resets.
+     * @models results, state
+    */
     submitDefault() {
         console.log("ExamService submitDefault() called");
         // console.log("this.results.current",this.results.current);
@@ -156,6 +145,12 @@ export class ExamService {
 
     // General protocol parsing functions (maybe move to utilities? they do need model access...)
 
+    /** Advance to next page in the exam
+     * @remarks Advances to next page in protocolStack. If there is no next page it will
+     * search for a followOn. The protocolStack will be updated and exam will proceed
+     * to the correct page.
+     * @models state
+    */
     advancePage() {
         // console.log("protocolStack, examIndex",this.state.protocolStack,this.state.examIndex);
         let nextExamIndex = this.state.examIndex + 1;
@@ -176,9 +171,14 @@ export class ExamService {
             this.state.examIndex = nextExamIndex;
         }
         this.currentPage = this.state.protocolStack[this.state.examIndex];
-
     }
 
+    /** Parse page objects and add them to the protocolStack.
+     * @remarks Adds pages to protocolStack. This will parse any page with a reference and put the 
+     * correct pages in place.
+     * @models state
+     * @inputs pages: list of page objects
+    */
     addPagesToStack(pages:any) {
         let extraPages:any;
         pages.forEach( (page:any)=> {
@@ -191,6 +191,11 @@ export class ExamService {
         });
     }
 
+    /** Finds followOn from current page.
+     * @remarks Finds and returns the followOn ID from a page specified from a response.
+     * @models state, results
+     * @returns followOn ID: string or undefined
+    */
     findFollowOn() {
         let id: string | undefined = undefined;
         this.state.protocolStack[this.state.examIndex]?.followOns.forEach((followOn:any) => {
@@ -202,15 +207,11 @@ export class ExamService {
         return id;
     }
 
-    findReference(exInd: number | undefined = undefined) {
-        console.log("ExamService findReference() called");
-        if (exInd == undefined) {
-            exInd = this.state.examIndex;
-        }
-        let referenceID = this.state.protocolStack[exInd]?.reference;
-        return referenceID;
-    }
-
+    /** Finds pages contained in a subProtocol.
+     * @remarks Finds and returns all pages inside of a subProtocol.
+     * @models protocol
+     * @returns pages: list of page objects
+    */
     getSubProtocol(id: string | undefined) {
         console.log("ExamService getSubProtocol() called");
 
@@ -238,6 +239,10 @@ export class ExamService {
         return pages;
     }
 
+    /** Checks if a page is submittable.
+     * @remarks Checks if a page is submittable and returns a boolean
+     * @returns boolean if page is submittable
+    */
     checkIfPageIsSubmittable() {
         // TODO: These defaults should come from responseArea schema
         if (this.currentPage.responseArea.responseRequired != undefined) {

@@ -25,8 +25,7 @@ export class TextboxComponent {
     this.state = this.stateModel.getState();
 
 
-    // Logic from tabsint classic
-    // this.rows = this.examService.testVar?.responseArea?.rows ? Number(this.examService.testVar?.responseArea?.rows) : 1;
+    // TODO: Update this to get the correct number
     this.rows = 1;
   }
 
