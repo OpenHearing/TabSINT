@@ -58,11 +58,20 @@
         {
           "id": "textbox_002",
           "title": "Text Box",
-          "instructionText": "Test Cases 002, 003, 201, and 202",
+          "instructionText": "Test Cases 002",
           "responseArea": {
             "type": "textboxResponseArea",
             "exportToCSV": true,
-            "rows": 5
+            "rows": 3
+          }
+        },
+        {
+          "id": "textbox_003",
+          "title": "Text Box",
+          "instructionText": "Test Cases 003",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "exportToCSV": true
           }
         },
         {

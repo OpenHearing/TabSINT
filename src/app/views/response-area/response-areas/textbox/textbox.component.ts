@@ -7,6 +7,7 @@ import { ProtocolModel } from '../../../../models/protocol/protocol.service';
 import { ProtocolModelInterface } from '../../../../models/protocol/protocol-model.interface';
 import { StateInterface } from '../../../../models/state/state.interface';
 import { StateModel } from '../../../../models/state/state.service';
+import { Observable } from 'rxjs/internal/Observable';
 
 @Component({
   selector: 'textbox-view',
@@ -18,15 +19,21 @@ export class TextboxComponent {
   protocol: ProtocolModelInterface;
   state: StateInterface
   rows: number;
+  observableVar: any;
 
   constructor (public resultsModel: ResultsModel, public examService: ExamService, public protocolModel: ProtocolModel, public stateModel: StateModel) {
     this.results = this.resultsModel.getResults();
     this.protocol = this.protocolModel.getProtocolModel();
     this.state = this.stateModel.getState();
 
+    this.rows = this.examService.currentPage.responseArea.rows;
+    this.observableVar = this.examService.currentPageObservable;
 
-    // TODO: Update this to get the correct number
-    this.rows = 1;
+    this.observableVar.subscribe( (updatedPage:any) => {
+      // TODO: This ternary might not be needed. Should the exam service send the default value if one is not specified?
+        this.rows = updatedPage?.responseArea?.rows ? updatedPage?.responseArea?.rows : 1;
+      }
+    );
   }
 
 }

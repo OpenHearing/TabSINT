@@ -15,6 +15,7 @@ import { DiskModel } from '../models/disk/disk.service';
 import { Notifications } from '../utilities/notifications.service';
 import { bluetoothTimeout } from '../utilities/constants';
 import { PageDefinition } from '../interfaces/protocol-schema.interface';
+import { Observable, BehaviorSubject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -46,6 +47,7 @@ export class ExamService {
 
     // Local variables for exam service
     currentPage: any;
+    currentPageObservable = new BehaviorSubject(undefined);
 
     // Necessary functions
 
@@ -171,6 +173,7 @@ export class ExamService {
             this.state.examIndex = nextExamIndex;
         }
         this.currentPage = this.state.protocolStack[this.state.examIndex];
+        this.currentPageObservable.next(this.currentPage);
     }
 
     /** Parse page objects and add them to the protocolStack.
