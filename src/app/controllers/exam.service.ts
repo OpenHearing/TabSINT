@@ -79,10 +79,14 @@ export class ExamService {
         console.log("ExamService begin() called");
         console.log("this.protocol.activeProtocol",this.protocol.activeProtocol);
         
-        // TODO: Change how pages gets found, that should be cleaner
+        // TODO: Change how the first main page gets found, maybe this happens with protocol service?
         let pages = (this.protocol.activeProtocol?.pages?.[this.state.examIndex] as any)?.pages;
         this.addPagesToStack(pages);
+        // TODO: This initialization could be clearer? Maybe with another function? This is repeated in advancePage...
         this.currentPage = this.state.protocolStack[this.state.examIndex];
+        this.currentPageObservable.next(this.currentPage);
+        // TODO: Move the results initilization into its own file? Could subscribe to the currentPageObservable...
+        this.initializeResults(this.currentPage);
         this.state.isSubmittable = this.checkIfPageIsSubmittable();
         this.state.examState = ExamState.Testing;
     }
@@ -133,14 +137,14 @@ export class ExamService {
         console.log("ExamService submitDefault() called");
         // console.log("this.results.current",this.results.current);
 
-        // TODO: Below line should handle results with more logic, breakout a functoin here.
-        this.results.previous.push(this.results.current);
+        // TODO: Below line should handle results with more logic, breakout a function here.
+        this.results.previous.push(JSON.parse(JSON.stringify(this.results.current)));
+        // TODO: The below line might need to be async and awaited
         this.advancePage();
-        // TODO: The above line might need to be async and awaited
 
         this.state.isSubmittable = this.checkIfPageIsSubmittable();
         this.submit = this.submitDefault;
-        this.reset();
+        
 
         console.log("this.results.previous",this.results.previous);
     }
@@ -174,6 +178,10 @@ export class ExamService {
         }
         this.currentPage = this.state.protocolStack[this.state.examIndex];
         this.currentPageObservable.next(this.currentPage);
+        // TODO: Should reset be here? Or in initilizeResults? All reset does is reset current results
+        this.reset();
+        // TODO: This should do something with the results...
+        this.initializeResults(this.currentPage);
     }
 
     /** Parse page objects and add them to the protocolStack.
@@ -257,6 +265,17 @@ export class ExamService {
                 return true
             }
         }
+    }
+
+    /** Initializes results after advancing to a new page.
+     * @remarks Initializes results with pageID and other information. This should be moved to results service.
+     * @inputs this.currentPage. Not actually needed as an input but this function will be moved and then it will be.
+     * @models results
+    */
+    initializeResults(currentPage:any) {
+        //TODO: Update this to get correct and all necessary information
+        this.results.current.pageID = currentPage.id;
+        this.results.current.responseArea = currentPage.responseArea;
     }
 
 

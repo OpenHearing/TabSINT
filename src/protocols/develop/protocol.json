@@ -50,9 +50,9 @@
           "title": "Text Box",
           "instructionText": "Test Case 001",
           "responseArea": {
-              "type": "textboxResponseArea",
-              "rows": 5,
-              "responseRequired": false
+            "type": "textboxResponseArea",
+            "rows": 5,
+            "responseRequired": false
           }
         },
         {
