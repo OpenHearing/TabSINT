@@ -26,7 +26,7 @@ export class ExamService {
     disk: DiskInterface;
     results: ResultsInterface
     state: StateInterface;
-    ExamState = ExamState;
+    ExamState = ExamState; // Why these lines?
     AppState = AppState;
 
     constructor (
@@ -45,11 +45,11 @@ export class ExamService {
         this.protocol = this.protocolM.getProtocolModel();
     }
 
-    // Local variables for exam service
+    // Local variables for exam service --> put these above the constructor and remove comment? --> move to pageModel
     currentPage: any;
     currentPageObservable = new BehaviorSubject(undefined);
 
-    // Necessary functions
+    // Necessary functions --> Remove comment
 
     /** Switches to exam view
      * @remarks Can be called from any other TabSINT view. If protocolStack is not empty, the exam
@@ -79,16 +79,16 @@ export class ExamService {
         console.log("ExamService begin() called");
         console.log("this.protocol.activeProtocol",this.protocol.activeProtocol);
         
-        // TODO: Change how the first main page gets found, maybe this happens with protocol service?
+        // TODO: Change how the first main page gets found, maybe this happens with protocol service? --> done while loading protocol
         let pages = (this.protocol.activeProtocol?.pages?.[this.state.examIndex] as any)?.pages;
         this.addPagesToStack(pages);
-        // TODO: This initialization could be clearer? Maybe with another function? This is repeated in advancePage...
+        // TODO: This initialization could be clearer? Maybe with another function? --> do in advance page This is repeated in advancePage...
         this.currentPage = this.state.protocolStack[this.state.examIndex];
         this.currentPageObservable.next(this.currentPage);
         // TODO: Move the results initilization into its own file? Could subscribe to the currentPageObservable...
-        this.initializeResults(this.currentPage);
-        this.state.isSubmittable = this.checkIfPageIsSubmittable();
-        this.state.examState = ExamState.Testing;
+        this.initializeResults(this.currentPage); // call with this.state.protocolStack[0]
+        this.state.isSubmittable = this.checkIfPageIsSubmittable(); // do in advance page
+        this.state.examState = ExamState.Testing; 
     }
 
     activatePage() {
@@ -110,7 +110,7 @@ export class ExamService {
 
 
 
-    // Internal functions
+    // Internal functions --> Meaning they are private? then label with modifier and remove comment
 
     /** Resets exam related parameters and states.
      * @remarks Currently only resets the current results
@@ -119,7 +119,7 @@ export class ExamService {
     reset() {
         console.log("ExamService reset() called");
 
-        this.results.current = {};
+        this.results.current = {}; 
         // TODO: Add more information about the protocol / page into results here
         /* This should include the ID for current page?
         Can we have multiple results from same pages with repeated ID? Or would it overwrite the exam?
@@ -149,7 +149,6 @@ export class ExamService {
         console.log("this.results.previous",this.results.previous);
     }
 
-    // General protocol parsing functions (maybe move to utilities? they do need model access...)
 
     /** Advance to next page in the exam
      * @remarks Advances to next page in protocolStack. If there is no next page it will
@@ -184,13 +183,15 @@ export class ExamService {
         this.initializeResults(this.currentPage);
     }
 
+    // General protocol parsing functions (maybe move to utilities? they do need model access...) --> VAL
+
     /** Parse page objects and add them to the protocolStack.
      * @remarks Adds pages to protocolStack. This will parse any page with a reference and put the 
      * correct pages in place.
      * @models state
      * @inputs pages: list of page objects
     */
-    addPagesToStack(pages:any) {
+    addPagesToStack(pages:any) { // Move this to protocol loading/parsing utility function? 
         let extraPages:any;
         pages.forEach( (page:any)=> {
             if (page?.reference) {
@@ -210,7 +211,7 @@ export class ExamService {
     findFollowOn() {
         let id: string | undefined = undefined;
         this.state.protocolStack[this.state.examIndex]?.followOns.forEach((followOn:any) => {
-            // TODO: Fix this hacky way of finding the id, maybe just eval the conditional?
+            // TODO: Fix this hacky way of finding the id, maybe just eval the conditional? --> eval short term, long termUse logicalExpression JSON object {value1, operator, value2}
             if (this.results.current.response == followOn.conditional.split("==")[1].replaceAll("'","")) {
                 id = followOn.target.reference;
             }
@@ -218,7 +219,7 @@ export class ExamService {
         return id;
     }
 
-    /** Finds pages contained in a subProtocol.
+    /** Finds pages contained in a subProtocol. --> move to protocol loading/parsing and saved on protocol model?
      * @remarks Finds and returns all pages inside of a subProtocol.
      * @models protocol
      * @returns pages: list of page objects
@@ -231,7 +232,7 @@ export class ExamService {
             return pages
         };
 
-        // check the main protocol definition
+        // check the main protocol definition --> instead of comments, make a function with descriptive name and call it
         this.protocol.activeProtocol?.pages?.forEach((subProtocol:any) => {
             if (id == subProtocol?.protocolId) {
                 pages = subProtocol?.pages;
@@ -239,7 +240,7 @@ export class ExamService {
             }
         });
 
-        // check subProtocol
+        // check subProtocol --> call checkSubProtocol(id)
         this.protocol.activeProtocol?.subProtocols?.forEach((subProtocol) => {
             if (id == subProtocol?.protocolId) {
                 pages = subProtocol?.pages;
@@ -267,7 +268,7 @@ export class ExamService {
         }
     }
 
-    /** Initializes results after advancing to a new page.
+    /** Initializes results after advancing to a new page. --> move to results
      * @remarks Initializes results with pageID and other information. This should be moved to results service.
      * @inputs this.currentPage. Not actually needed as an input but this function will be moved and then it will be.
      * @models results

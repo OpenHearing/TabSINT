@@ -52,7 +52,7 @@ export class ProtocolService {
         this.protocolModel = this.protocolM.getProtocolModel();
         this.state = this.stateModel.getState();
         
-        this.loading = loadingProtocolDefaults(this.diskModel.disk.validateProtocols);
+        this.loading = loadingProtocolDefaults(this.diskModel.disk.validateProtocols); // can we simplify?
 
         // For BAyotte development only, auto load protocol when tabsint loads
         this.load(this.protocolModel.loadedProtocols[5], true, true, false)
@@ -101,6 +101,7 @@ export class ProtocolService {
     };
 
     store(p: ProtocolInterface): void {
+        // Could simplify using isDuplicate boolean function
         const duplicates = _.filter(this.protocolModel.loadedProtocols, {
             name: p.name,
             path: p.path,
@@ -115,7 +116,7 @@ export class ProtocolService {
         }
     };
 
-    async load(meta: any, _requiresValidation: boolean, notify?: boolean, reload?: boolean) {
+    async load(meta: any, _requiresValidation: boolean, notify?: boolean, reload?: boolean) { // do we need reload? replace with overwrite. defaults in function definition
         this.loading.meta = meta;
         this.loading.requiresValidation = _requiresValidation || this.diskModel.disk.validateProtocols;
         this.loading.notify = notify || false;
@@ -132,7 +133,7 @@ export class ProtocolService {
         // this.loading.meta.path = paths.dir(this.loading.meta.path);
           
         try {
-            await this.reloadIfNeeded();
+            await this.reloadIfNeeded(); //wording?
             await this.loadFiles();
             await this.validateIfCalledFor();
             this.initializeProtocol();
@@ -148,7 +149,7 @@ export class ProtocolService {
         }
     };
 
-    delete(p: ProtocolInterface): void {
+    delete(p: ProtocolInterface): void { //simplify, use dictionary?
         const idx = _.findIndex(this.protocolModel.loadedProtocols, p);
     
         if (idx === -1) {
@@ -202,7 +203,7 @@ export class ProtocolService {
         }
     };
     
-    isActive(p: ProtocolInterface | undefined): Boolean {
+    isActive(p: ProtocolInterface | undefined): Boolean { //remove if else
         if (this.protocolModel.activeProtocol && p && this.protocolModel.activeProtocol.name == p.name && this.protocolModel.activeProtocol.path == p.path) {
           return true;
         } else {
@@ -210,7 +211,7 @@ export class ProtocolService {
         }
       };
 
-      private async reloadIfNeeded() {
+      private async reloadIfNeeded() { // overwriteLocalFilesIfNeeded, better system?
         try {
             if (this.loading.notify) {
                 this.tasks.register("updating protocol", "Loading Protocol Files...");
@@ -246,7 +247,7 @@ export class ProtocolService {
             }
             
             if (!_.isUndefined(protocol)) {
-                this.loading.protocol = {...this.loading.meta, ...protocol as unknown as ProtocolInterface}; // ????
+                this.loading.protocol = {...this.loading.meta, ...protocol as unknown as ProtocolInterface}; // TODO: fix typing
             } else {
                 this.logger.error("Protocol did not load properly");
                 if (this.diskModel.disk.audhere) {
@@ -269,7 +270,7 @@ export class ProtocolService {
                 calibration = await this.fileService.readFile(this.loading.meta.path + "/calibration.json");
             }
             if (calibration) {
-                this.loading.calibration = calibration as unknown as ProtocolInterface; // ????
+                this.loading.calibration = calibration as unknown as ProtocolInterface; // ToDo: fix typing
             }    
 
         } catch(err) {
@@ -352,7 +353,7 @@ export class ProtocolService {
         this.tasks.deregister("updating protocol");
     }
     
-    // TODO: extract this into utility function
+    // TODO: extract this into utility function --> modify loading, process media
     private initializeProtocol() {
         this.tasks.register("updating protocol", "Initializing Protocol...");
         

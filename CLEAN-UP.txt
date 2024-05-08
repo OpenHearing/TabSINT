@@ -10,4 +10,4 @@ Things that have been added to get tabsint up and running but we could revisit
 - search for any "ng-" and update
 - try to use '() => {}' instead of 'function() {}' when defining functions
 - angular.isDefined() replace with !_.isUndefined()
-- clean up all comments, both '//' and '*/ blah /*'
+- clean up all comments, both '//' and '*/ blah /*' and replace with descriptive function names
