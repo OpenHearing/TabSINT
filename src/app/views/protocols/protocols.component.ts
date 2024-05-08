@@ -11,7 +11,7 @@ import { ProtocolModel } from '../../models/protocol/protocol.service';
 import { ProtocolService } from '../../controllers/protocol.service';
 import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
-import { DialogData } from '../../interfaces/dialog-data.interface';
+import { DialogDataInterface } from '../../interfaces/dialog-data.interface';
 import { Notifications } from '../../utilities/notifications.service';
 import { Tasks } from '../../utilities/tasks.service';
 import { ProtocolModelInterface } from '../../models/protocol/protocol-model.interface';
@@ -115,7 +115,7 @@ export class ProtocolsComponent {
         // })
         
         if (this.protocolService.isActive(this.selected)) {
-          this.examService.reset();
+          // this.examService.reset();
         }
         this.tasks.deregister("updating");
     }
@@ -123,7 +123,7 @@ export class ProtocolsComponent {
     if (!this.protocolModel.activeProtocol) {
         loadAndReset(false);
     } else {
-        let msg: DialogData = {
+        let msg: DialogDataInterface = {
           title: "Confirm",
           content: `Switch to protocol ${this.selected.name} and reset the current test? The current test results will be deleted`,
           type: DialogType.Confirm

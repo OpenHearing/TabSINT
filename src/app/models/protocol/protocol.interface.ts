@@ -1,8 +1,8 @@
 import { ProtocolErrorInterface } from "../../interfaces/protocol-error.interface";
-import { ProtocolSchema } from "../../interfaces/protocol-schema.interface";
+import { ProtocolSchemaInterface } from "../../interfaces/protocol-schema.interface";
 import { ProtocolServer } from "../../utilities/constants";
 
-export interface ProtocolInterface extends ProtocolSchema {
+export interface ProtocolInterface extends ProtocolSchemaInterface {
     group?: string;
     name?: string;
     path?: string;

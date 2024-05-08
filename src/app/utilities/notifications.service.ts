@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DialogData } from '../interfaces/dialog-data.interface';
+import { DialogDataInterface } from '../interfaces/dialog-data.interface';
 import { NotificationsComponent } from '../views/notifications/notifications.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs/internal/Observable';
@@ -12,7 +12,7 @@ export class Notifications {
 
     constructor(public dialog: MatDialog) {}
     
-    confirm(dialogData: DialogData): Observable<string> {
+    confirm(dialogData: DialogDataInterface): Observable<string> {
       
       const dialogRef = this.dialog.open(NotificationsComponent, {
         data: dialogData
@@ -21,7 +21,7 @@ export class Notifications {
       return dialogRef.afterClosed();
     }
     
-    alert(dialogData: DialogData): Observable<string> {
+    alert(dialogData: DialogDataInterface): Observable<string> {
       
         const dialogRef = this.dialog.open(NotificationsComponent, {
           data: dialogData

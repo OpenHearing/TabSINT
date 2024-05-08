@@ -1,5 +1,4 @@
 import { ProtocolInterface } from "../models/protocol/protocol.interface";
-import { ProtocolSchema } from "./protocol-schema.interface";
 
 export interface LoadingProtocolInterface {
     protocol: ProtocolInterface;

@@ -11,3 +11,5 @@ Things that have been added to get tabsint up and running but we could revisit
 - try to use '() => {}' instead of 'function() {}' when defining functions
 - angular.isDefined() replace with !_.isUndefined()
 - clean up all comments, both '//' and '*/ blah /*' and replace with descriptive function names
+- create the response area interfaces programmatically from the JSON schema using 
+https://www.npmjs.com/package/json-schema-to-typescript

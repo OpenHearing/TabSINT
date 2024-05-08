@@ -5,7 +5,7 @@ import {
 } from '@angular/material/dialog';
 import {MatButtonModule} from '@angular/material/button';
 
-import { DialogData } from '../../interfaces/dialog-data.interface';
+import { DialogDataInterface } from '../../interfaces/dialog-data.interface';
 import { DialogType } from '../../utilities/constants';
 
 @Component({
@@ -18,7 +18,7 @@ export class NotificationsComponent {
 
   constructor(
     public dialog: MatDialog, 
-    @Inject(MAT_DIALOG_DATA) public data: DialogData,
+    @Inject(MAT_DIALOG_DATA) public data: DialogDataInterface,
   ) {}
 
   

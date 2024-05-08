@@ -9,7 +9,7 @@ We are currently planning to use TS Docs. This will look something like the foll
 /**
     * Example of TS Doc
     *
-    * @remarks can put remarks here
+    * @summary can put summary here
     * @param x description of variable x
     * @returns what the function returns
     * @customExpression can define anything like this as well

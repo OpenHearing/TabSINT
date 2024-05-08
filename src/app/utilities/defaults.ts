@@ -1,9 +1,9 @@
 import { LoadingProtocolInterface } from "../interfaces/loading-protocol-object.interface";
-import { ProtocolSchema } from "../interfaces/protocol-schema.interface";
+import { ProtocolSchemaInterface } from "../interfaces/protocol-schema.interface";
 
 export function loadingProtocolDefaults(_requiresValidation: boolean): LoadingProtocolInterface {
 
-    let _protocol: ProtocolSchema = {
+    let _protocol: ProtocolSchemaInterface = {
             protocolId: '',
             pages: []
         };

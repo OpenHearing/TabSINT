@@ -1,10 +1,10 @@
 import _ from "lodash";
-import { ProtocolSchema } from "../interfaces/protocol-schema.interface";
+import { ProtocolSchemaInterface } from "../interfaces/protocol-schema.interface";
 import { ProtocolInterface } from "../models/protocol/protocol.interface";
 
 export function processProtocol(
-    subProtocol: ProtocolSchema, 
-    dict: _.Dictionary<ProtocolSchema>, 
+    subProtocol: ProtocolSchemaInterface, 
+    dict: _.Dictionary<ProtocolSchemaInterface>, 
     rootProtocol: ProtocolInterface, 
     calibration: any, 
     commonCalibration: any, 
@@ -27,7 +27,7 @@ export function processProtocol(
 
   function processPage(
       page: any, 
-      dict: _.Dictionary<ProtocolSchema>, 
+      dict: _.Dictionary<ProtocolSchemaInterface>, 
       rootProtocol: ProtocolInterface, 
       calibration: any, 
       commonCalibration: any, 
