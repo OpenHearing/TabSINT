@@ -1,14 +1,27 @@
 import { Injectable } from '@angular/core';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
-import { Logger } from '../utilities/logger.service';
 
+import { AppInterface } from '../models/app/app.interface';
+import { AppModel } from '../models/app/app.service';
+
+import { Logger } from '../utilities/logger.service';
+import { listOfTabsintDirectories } from '../utilities/constants';
 @Injectable({
     providedIn: 'root',
 })
 
 export class FileService {
+    app: AppInterface;
+    
+    existingTabsintDirectories: any;
 
-    constructor(public logger:Logger) {  }
+    constructor(
+        public logger:Logger,
+        public appModel: AppModel
+    ) { 
+        this.app = this.appModel.getApp();
+        this.createTabsintDirectoriesIfDontExist();        
+     }
 
     directoryHandler(rootDir?:string) {
         /* Convert string dir to Filesystem directory plugin. Defaults to Documents. */
@@ -135,4 +148,14 @@ export class FileService {
         });
     }
     
+    private async createTabsintDirectoriesIfDontExist() {
+        if (this.app.tablet) {
+            this.existingTabsintDirectories = await this.listDirectory("");
+            listOfTabsintDirectories.forEach((dir: string) => {
+                if (this.existingTabsintDirectories.includes(dir)) {
+                    this.createDirectory(dir);
+                }                
+            })
+        }
+    }
 }
