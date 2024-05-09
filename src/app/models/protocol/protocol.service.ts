@@ -15,12 +15,16 @@ export class ProtocolModel {
         activeProtocol: undefined,
         loadedProtocols: [
             this.define({
+                type: "ProtocolSchemaInterface",
+                protocolId: "",
                 name: "Audiometry",
                 path: "protocols/edare-audiometry",
                 creator: "Edare",
                 server: ProtocolServer.Developer
             }),
             this.define({
+                type: "ProtocolSchemaInterface",
+                protocolId: "",
                 name: "Creare Audiometry",
                 path: "protocols/creare-audiometry",
                 creator: "creare",
@@ -28,6 +32,8 @@ export class ProtocolModel {
                 admin: true
             }),
             this.define({
+                type: "ProtocolSchemaInterface",
+                protocolId: "",
                 name: "tabsint-test",
                 path: "protocols/TabSINT-Test",
                 creator: "creare",
@@ -35,6 +41,8 @@ export class ProtocolModel {
                 admin: true
             }),
             this.define({
+                type: "ProtocolSchemaInterface",
+                protocolId: "",
                 name: "wahts-device-test",
                 path: "protocols/wahts-device-test",
                 creator: "creare",
@@ -42,6 +50,8 @@ export class ProtocolModel {
                 admin: true
             }),
             this.define({
+                type: "ProtocolSchemaInterface",
+                protocolId: "",
                 name: "wahts-software-test",
                 path: "protocols/wahts-software-test",
                 creator: "creare",
@@ -49,6 +59,8 @@ export class ProtocolModel {
                 admin: true
             }),
             this.define({
+                type: "ProtocolSchemaInterface",
+                protocolId: "",
                 name: "develop",
                 path: "protocols/develop",
                 creator: "creare",

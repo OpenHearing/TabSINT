@@ -8,7 +8,9 @@ import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 
 export class PageModel {
 
-    pageModel: PageInterface = {
+    currentPage: PageInterface = {
+        type: "PageDefinition",
+        id: "id",
         name: "name",
         filename: "path/to/file",
         units: "mm",
@@ -18,7 +20,7 @@ export class PageModel {
         enableBackButton: true,
         hideProgressBar: false,
         helpText: "helpText",
-        submitText: undefined,
+        submitText: "Submit",
         isSubmittable: true,
         canGoBack: Function,
         responseArea: {
@@ -37,12 +39,15 @@ export class PageModel {
         questionSubText: "questionSubText",
         questionMainText: "questionMainText",
         loadingRequired: false,
-        loadingActive: false
+        loadingActive: false,
+        followOns: []
     };
-    currentPageObservable = new BehaviorSubject(this.pageModel);
+    currentPageObservable = new BehaviorSubject(this.currentPage);
+
+    stack: Array<PageInterface> = [];
     
     getPage(): PageInterface {
-        return this.pageModel;
+        return this.currentPage;
     }
 
 }

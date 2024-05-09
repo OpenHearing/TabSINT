@@ -2,28 +2,31 @@ import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
+import { FileService } from './file.service';
+
 import { LoadingProtocolInterface } from '../interfaces/loading-protocol-object.interface';
 import { ProtocolValidationResultInterface } from '../interfaces/protocol-validation-result.interface';
 import { ProtocolErrorInterface } from '../interfaces/protocol-error.interface';
+
 import { DiskModel } from '../models/disk/disk.service';
-import { DiskInterface } from '../models/disk/disk.interface';
 import { ProtocolModel } from '../models/protocol/protocol.service';
 import { ProtocolInterface } from '../models/protocol/protocol.interface';
 import { AppModel } from '../models/app/app.service';
-import { ExamState } from '../utilities/constants';
 import { AppInterface } from '../models/app/app.interface';
 import { ProtocolModelInterface } from '../models/protocol/protocol-model.interface';
+import { StateInterface } from '../models/state/state.interface';
+import { StateModel } from '../models/state/state.service';
+
+import { ExamState } from '../utilities/constants';
 import { DeveloperProtocols, DeveloperProtocolsCalibration, DialogType, ProtocolServer} from '../utilities/constants';
 import { Logger } from '../utilities/logger.service';
-import { FileService } from './file.service';
 import { Paths } from '../utilities/paths.service';
 import { Tasks } from '../utilities/tasks.service';
 import { Notifications } from '../utilities/notifications.service';
 import { loadingProtocolDefaults } from '../utilities/defaults';
 import { checkCalibrationFiles, checkControllers, checkPreProcessFunctions } from '../utilities/protocol-checks.function';
 import { processProtocol } from '../utilities/process-protocol.function';
-import { StateInterface } from '../models/state/state.interface';
-import { StateModel } from '../models/state/state.service';
+import { PageModel } from '../models/page/page.service';
 
 @Injectable({
     providedIn: 'root',
@@ -39,6 +42,7 @@ export class ProtocolService {
     constructor(
         public appModel: AppModel,
         public diskModel: DiskModel,
+        public pageModel: PageModel,
         public fileService: FileService,
         public logger:Logger,
         public paths: Paths,
@@ -509,7 +513,7 @@ export class ProtocolService {
 
         // reset the exam related state variables (examIndex, protocolStack, and examState)
         this.state.examIndex = 0;
-        this.state.protocolStack = [];
+        this.pageModel.stack = [];
         this.state.examState = ExamState.Ready;
     }
 }

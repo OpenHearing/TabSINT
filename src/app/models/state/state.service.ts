@@ -11,7 +11,6 @@ export class StateModel {
     stateModel: StateInterface = {
         appState: AppState.Welcome,
         protocolState: ProtocolState.null,
-        protocolStack: [],
         examState: ExamState.NotReady,
         isSubmittable: true,
         examIndex: 0,

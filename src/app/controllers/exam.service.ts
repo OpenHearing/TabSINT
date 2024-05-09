@@ -9,6 +9,7 @@ import { ResultsInterface } from '../models/results/results.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { DiskInterface } from '../models/disk/disk.interface';
 import { ProtocolModelInterface } from '../models/protocol/protocol-model.interface';
+import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
 
 import { ResultsModel } from '../models/results/results.service';
 import { StateModel } from '../models/state/state.service';
@@ -20,6 +21,8 @@ import { ExamState } from '../utilities/constants';
 import { Notifications } from '../utilities/notifications.service';
 import { PageModel } from '../models/page/page.service';
 import { PageInterface } from '../models/page/page.interface';
+import { FollowOn, PageDefinition, ProtocolReference } from '../interfaces/page-definition.interface';
+import { getIdBasedOnTargetType } from '../utilities/exam-helper-functions';
 
 @Injectable({
     providedIn: 'root',
@@ -62,7 +65,7 @@ export class ExamService {
             return
         }
 
-        if (this.state.protocolStack.length == 0) {
+        if (this.pageModel.stack.length == 0) {
             this.state.examState = ExamState.Ready;
         }
     }
@@ -122,15 +125,15 @@ export class ExamService {
     */
     private advancePage() {
         let nextExamIndex = this.state.examIndex + 1;
-        if (this.state.protocolStack.length <= nextExamIndex) {
+        if (this.pageModel.stack.length <= nextExamIndex) {
             let nextID = this.findFollowOn();
             if (nextID != undefined) {
                 let pages = this.getSubProtocol(nextID);
-                this.state.protocolStack = [];
+                this.pageModel.stack = [];
                 this.state.examIndex = 0;
                 this.addPagesToStack(pages);
             } else {
-                this.state.protocolStack = [];
+                this.pageModel.stack = [];
                 this.state.examIndex = 0;
                 this.state.examState = ExamState.NotReady;
             }
@@ -146,7 +149,7 @@ export class ExamService {
      * @models state
     */
     private startPage() {
-        this.currentPage = this.state.protocolStack[this.state.examIndex];
+        this.currentPage = this.pageModel.stack[this.state.examIndex];
         this.pageModel.currentPageObservable.next(this.currentPage);
         // TODO: Could subscribe to the currentPageObservable...
         this.resultsService.initializeResults(this.currentPage);
@@ -168,7 +171,7 @@ export class ExamService {
                 extraPages = this.getSubProtocol(page?.reference);
                 this.addPagesToStack(extraPages);
             } else {
-                this.state.protocolStack.push(page);
+                this.pageModel.stack.push(page);
             }
         });
     }
@@ -180,11 +183,10 @@ export class ExamService {
     */
     findFollowOn() {
         let id: string | undefined = undefined;
-        this.state.protocolStack[this.state.examIndex]?.followOns.forEach((followOn:any) => {
-            // TODO: Fix this hacky way of finding the id, maybe just eval the conditional? --> eval short term, long termUse logicalExpression JSON object {value1, operator, value2}
-            if (this.results.current.response == followOn.conditional.split("==")[1].replaceAll("'","")) {
-                id = followOn.target.reference;
-            }
+        this.pageModel.stack[this.state.examIndex]?.followOns.forEach((followOn: FollowOn) => {
+            eval(followOn.conditional)
+                ? getIdBasedOnTargetType(followOn.target)
+                : null;   
         });
         return id;
     }

@@ -4,6 +4,7 @@ import { ProtocolSchemaInterface } from "../interfaces/protocol-schema.interface
 export function loadingProtocolDefaults(_requiresValidation: boolean): LoadingProtocolInterface {
 
     let _protocol: ProtocolSchemaInterface = {
+            type: "ProtocolSchemaInterface",
             protocolId: '',
             pages: []
         };
@@ -12,7 +13,7 @@ export function loadingProtocolDefaults(_requiresValidation: boolean): LoadingPr
         protocol: _protocol,
         calibration: undefined,
         requiresValidation: _requiresValidation,
-        meta: {},
+        meta: _protocol,
         reload: false,
         notify: false
     }

@@ -3,34 +3,31 @@ import { TextBoxInterface } from "../views/response-area/response-areas/textbox/
 import { ProtocolSchemaInterface } from "./protocol-schema.interface";
 
 export interface PageDefinition {
+    type: string,
     id: string;
     headset?: "VicFirth" | "Vic Firth S2" | "HDA200" | "WAHTS" | "Audiometer" | "EPHD1" ;
     skipIf?: string;
     hideProgressBar?: boolean;
     autoSubmitDelay?: number;
     progressBarVal?: number | string;
-    enableBackButton?: boolean;
-    navMenu: NavMenuItem[];
-    title?: string;
-    subtitle?: string; // Deprecated
-    spacing?: string; // Deprecated
-    questionMainText?: string;
-    questionSubText?: string;
-    instructionText?: string;
-    helpText?: string;
-    resultMainText?: string; // Deprecated
-    resultSubText?: string; // Deprecated
+    enableBackButton: boolean;
+    navMenu?: NavMenuItem[];
+    title: string;
+    questionMainText: string;
+    questionSubText: string;
+    instructionText: string;
+    helpText: string;
     repeatPage?: RepeatPage;
     preProcessFunction?: string;
     wavfileStartDelayTime?: number;
-    wavfiles: Wavfile[];
-    chaWavFiles: ChaWavfile[];
+    wavfiles?: Wavfile[];
+    chaWavFiles?: ChaWavfile[];
     chaStream?: boolean;
     image?: Image;
     video?: Video;
-    responseArea?: ResponseArea;
-    submitText?: string;
-    followOns?: FollowOn[];
+    responseArea: ResponseArea;
+    submitText: string;
+    followOns: FollowOn[];
     setFlags?: SetFlag[];
     slm?: SLM;
     svantek?: boolean;
@@ -81,6 +78,7 @@ export interface FollowOn {
 }
 
 export interface ProtocolReference {
+    type: "ProtocolReference",
     id?: string;
     reference: string;
     skipIf?: string;
