@@ -3,16 +3,17 @@ import { ProtocolSchemaInterface } from "../../interfaces/protocol-schema.interf
 import { ProtocolServer } from "../../utilities/constants";
 
 export interface ProtocolInterface extends ProtocolSchemaInterface {
-    group?: string;
-    name?: string;
-    path?: string;
-    id?: string;
-    date?: string;
-    version?: string;
-    creator?: string;
-    server?: ProtocolServer;
-    admin?: boolean;
-    contentURI?: string;
+    group: string;
+    name: string;
+    path: string;
+    id: string;
+    date: string;
+    version: string;
+    creator: string;
+    server: ProtocolServer;
+    admin: boolean;
+    contentURI: string;
+    cCommon?: any;
     key?: string;
     commonRepo?: any;
     protocolTabsintOutdated?: boolean;

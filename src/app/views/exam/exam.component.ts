@@ -7,7 +7,7 @@ import { Logger } from '../../utilities/logger.service';
 import { ProtocolInterface } from '../../models/protocol/protocol.interface';
 import { ProtocolServer } from '../../utilities/constants';
 import { DiskInterface } from '../../models/disk/disk.interface';
-import { ProtocolModel } from '../../models/protocol/protocol.service';
+import { ProtocolModel } from '../../models/protocol/protocol-model.service';
 import { ProtocolService } from '../../controllers/protocol.service';
 import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
@@ -16,7 +16,7 @@ import { Tasks } from '../../utilities/tasks.service';
 import { AdminService } from '../../controllers/admin.service';
 import { ProtocolModelInterface } from '../../models/protocol/protocol-model.interface';
 import { ResultsInterface } from '../../models/results/results.interface';
-import { ResultsModel } from '../../models/results/results.service';
+import { ResultsModel } from '../../models/results/results-model.service';
 import { ExamService } from '../../controllers/exam.service';
 
 @Component({

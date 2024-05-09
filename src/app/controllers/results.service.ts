@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ResultsInterface } from '../models/results/results.interface';
-import { ResultsModel } from '../models/results/results.service';
+import { ResultsModel } from '../models/results/results-model.service';
 
 @Injectable({
     providedIn: 'root',

@@ -11,9 +11,9 @@ import { DiskInterface } from '../models/disk/disk.interface';
 import { ProtocolModelInterface } from '../models/protocol/protocol-model.interface';
 import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
 
-import { ResultsModel } from '../models/results/results.service';
+import { ResultsModel } from '../models/results/results-model.service';
 import { StateModel } from '../models/state/state.service';
-import { ProtocolModel } from '../models/protocol/protocol.service';
+import { ProtocolModel } from '../models/protocol/protocol-model.service';
 import { DiskModel } from '../models/disk/disk.service';
 
 import { Logger } from '../utilities/logger.service';

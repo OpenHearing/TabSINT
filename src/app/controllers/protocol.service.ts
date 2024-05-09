@@ -9,13 +9,14 @@ import { ProtocolValidationResultInterface } from '../interfaces/protocol-valida
 import { ProtocolErrorInterface } from '../interfaces/protocol-error.interface';
 
 import { DiskModel } from '../models/disk/disk.service';
-import { ProtocolModel } from '../models/protocol/protocol.service';
+import { ProtocolModel } from '../models/protocol/protocol-model.service';
 import { ProtocolInterface } from '../models/protocol/protocol.interface';
 import { AppModel } from '../models/app/app.service';
 import { AppInterface } from '../models/app/app.interface';
 import { ProtocolModelInterface } from '../models/protocol/protocol-model.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { StateModel } from '../models/state/state.service';
+import { PageModel } from '../models/page/page.service';
 
 import { ExamState } from '../utilities/constants';
 import { DeveloperProtocols, DeveloperProtocolsCalibration, DialogType, ProtocolServer} from '../utilities/constants';
@@ -26,7 +27,9 @@ import { Notifications } from '../utilities/notifications.service';
 import { loadingProtocolDefaults } from '../utilities/defaults';
 import { checkCalibrationFiles, checkControllers, checkPreProcessFunctions } from '../utilities/protocol-checks.function';
 import { processProtocol } from '../utilities/process-protocol.function';
-import { PageModel } from '../models/page/page.service';
+import { findDuplicateProtocols } from '../utilities/protocol-helper-functions';
+import { ProtocolMetaInterface } from '../models/protocol/protocol-meta.interface';
+import { initializeLoadingProtocol } from '../utilities/initialize-loading-protocol';
 
 @Injectable({
     providedIn: 'root',
@@ -56,88 +59,36 @@ export class ProtocolService {
         this.protocolModel = this.protocolM.getProtocolModel();
         this.state = this.stateModel.getState();
         
-        this.loading = loadingProtocolDefaults(this.diskModel.disk.validateProtocols); // can we simplify?
+        this.loading = loadingProtocolDefaults(this.diskModel.disk.validateProtocols);
 
         // For BAyotte development only, auto load protocol when tabsint loads
         this.load(this.protocolModel.loadedProtocols[5], true, true, false)
     }
 
     init(): void  {
-    
-        // load each protocol in config
-        // if (app.browser && config.protocols && config.protocols.length > 0) {
-        //     _.forEach(config.protocols, function(p) {
-        //         pm.local.push(
-        //             define({
-        //                 name: p,
-        //                 path: paths.www("protocols/" + paths.dir(p)),
-        //                 creator: "creare",
-        //                 server: "developer",
-        //                 admin: true
-        //             })
-        //         );
-        //     });
-        // }
-    
-        // put the protocols on the this.protocols.activeProtocol object
-        // _.forEach(localProtocols, (p) => {
-        //     this.store(p);
-        // });
-    
-        // define plugin protocols, and store on disk
-        // _.forEach(plugins.elems.localProtocols, function(p) {
-        //     store(define(p));
-        // });
-    
         // select the source to start
         // if (!this.app.tablet) {
             // config.load();
         // }
-        // this.diskModel.disk.server = ProtocolServer.LocalServer;
     
         // add root, recursively will add all dependent schemas
         // protocolSchema = addSchema("protocol_schema");
     
-        // add 'tabsint-protocols' directory next to 'tabsint-results' to store local server TabSINT protocols
-        // if (this.app.tablet) {
-        //     this.fileService.createDirectory("tabsint-protocols");
-        // }
     };
 
-    store(p: ProtocolInterface): void {
-        // Could simplify using isDuplicate boolean function
-        const duplicates = _.filter(this.protocolModel.loadedProtocols, {
-            name: p.name,
-            path: p.path,
-            date: p.date,
-            contentURI: p.contentURI
-        });
-    
-        if (duplicates.length === 0) {
-            this.protocolModel.loadedProtocols.push(p);
-        } else {
-            this.logger.error("Protocol meta data already in this.protocolModel");
-        }
-    };
-
-    async load(meta: any, _requiresValidation: boolean, notify?: boolean, reload?: boolean) { // do we need reload? replace with overwrite. defaults in function definition
+    async load(
+        meta: ProtocolMetaInterface, 
+        _requiresValidation: boolean = this.diskModel.disk.validateProtocols, 
+        notify: boolean = false, 
+        overwrite: boolean = false
+    ) {
         this.loading.meta = meta;
-        this.loading.requiresValidation = _requiresValidation || this.diskModel.disk.validateProtocols;
-        this.loading.notify = notify || false;
-        this.loading.reload = reload || false;
-    
-        if (!this.loading.meta && this.protocolModel.activeProtocol && this.protocolModel.activeProtocol.path) {
-            this.loading.meta = this.protocolModel.activeProtocol;
-        } else if (!meta && this.protocolModel.activeProtocol && !this.protocolModel.activeProtocol.path) {
-            this.logger.debug("No protocol available");
-            //return Promise.reject();
-        }
-    
-        // fix path
-        // this.loading.meta.path = paths.dir(this.loading.meta.path);
-          
+        this.loading.requiresValidation = _requiresValidation;
+        this.loading.notify = notify;
+        this.loading.overwrite = overwrite;
+        
         try {
-            await this.reloadIfNeeded(); //wording?
+            await this.overwriteLocalFilesIfNeeded();
             await this.loadFiles();
             await this.validateIfCalledFor();
             this.initializeProtocol();
@@ -148,7 +99,7 @@ export class ProtocolService {
             this.tasks.deregister("updating protocol");
             this.logger.error("Could not load protocol.  " + JSON.stringify(e));
             // if (e.code == 606 && meta !== undefined) {
-            //     notifications.alert("Error reloading protocol. Please delete and re-add.");
+            //     notifications.alert("Error overwriteing protocol. Please delete and re-add.");
             // }
         }
     };
@@ -207,75 +158,59 @@ export class ProtocolService {
         }
     };
     
-    isActive(p: ProtocolInterface | undefined): Boolean { //remove if else
-        if (this.protocolModel.activeProtocol && p && this.protocolModel.activeProtocol.name == p.name && this.protocolModel.activeProtocol.path == p.path) {
-          return true;
-        } else {
-          return false;
-        }
+    isActive(p: ProtocolInterface | undefined): Boolean {
+        return (this.protocolModel.activeProtocol 
+                && p 
+                && this.protocolModel.activeProtocol.name == p.name 
+                && this.protocolModel.activeProtocol.path == p.path) 
+            || false;
       };
 
-      private async reloadIfNeeded() { // overwriteLocalFilesIfNeeded, better system?
+    private async overwriteLocalFilesIfNeeded() {
         try {
             if (this.loading.notify) {
                 this.tasks.register("updating protocol", "Loading Protocol Files...");
             }
             this.logger.debug("loading.meta" + JSON.stringify(this.loading.meta));
-            if (this.loading.meta.contentURI && this.loading.reload) {
+            if (this.loading.meta.contentURI && this.loading.overwrite) {
                 this.logger.debug("re-loading protocol - copying directory");
                 return (this.fileService.copyDirectory(this.loading.meta.contentURI, this.loading.meta.name!, 'Documents', 'Documents'));
             } else {
                 return;
             }
         } catch(err) {
-            this.logger.debug("Error reloading: " + err);
+            this.logger.debug("Error overwriting: " + err);
             return {
                 code: 606,
-                msg: "Error reloading protocol"
+                msg: "Error overwriting protocol"
             }
         }
     }
 
+    private loadIfDoesntExist(p: ProtocolInterface): void {
+        const duplicates = findDuplicateProtocols(p, this.protocolModel.loadedProtocols);
+    
+        duplicates.length === 0
+            ? this.protocolModel.loadedProtocols.push(p)
+            : this.logger.error("Protocol meta data already in this.protocolModel");
+    };
+
     private async loadFiles() {
         // callbackQueue.clear();
-  
-        // this.loading = loadingProtocolDefaults(this.diskModel.disk.validateProtocols);
-        this.loading.calibration = undefined;
 
         try {
             var protocol;
-            if (this.loading.meta.server === ProtocolServer.Developer) {
-                protocol = DeveloperProtocols[this.loading.meta.name!];
-            } else {
-                protocol = await this.fileService.readFile(this.loading.meta.path + "/protocol.json");
-            }
+            (this.loading.meta.server === ProtocolServer.Developer)
+                ? protocol = DeveloperProtocols[this.loading.meta.name!]
+                : protocol = await this.fileService.readFile(this.loading.meta.path + "/protocol.json");
             
             if (!_.isUndefined(protocol)) {
-                this.loading.protocol = {...this.loading.meta, ...protocol as unknown as ProtocolInterface}; // TODO: fix typing
+                this.loading.protocol = {...this.loading.meta, ...protocol as unknown as ProtocolInterface};
             } else {
-                this.logger.error("Protocol did not load properly");
-                if (this.diskModel.disk.audhere) {
-                  this.notifications.alert(
-                    this.translate.instant("The protocol specified is not available, please see the administrator.")
-                  ).subscribe();
-                } else {
-                  this.notifications.alert(
-                    this.translate.instant(
-                      "Protocol did not load properly. Please validate your protocol before trying to load again."
-                    )
-                  ).subscribe();
-                }
+                this.notifyProtocolDidntLoadProperly();
             }
 
-            var calibration;
-            if (this.loading.meta.server === ProtocolServer.Developer) {
-                calibration = DeveloperProtocolsCalibration[this.loading.meta.name!];
-            } else {
-                calibration = await this.fileService.readFile(this.loading.meta.path + "/calibration.json");
-            }
-            if (calibration) {
-                this.loading.calibration = calibration as unknown as ProtocolInterface; // ToDo: fix typing
-            }    
+            this.setCalibration();
 
         } catch(err) {
             this.logger.error("Error while loading files: " + err);
@@ -357,131 +292,13 @@ export class ProtocolService {
         this.tasks.deregister("updating protocol");
     }
     
-    // TODO: extract this into utility function --> modify loading, process media
     private initializeProtocol() {
         this.tasks.register("updating protocol", "Initializing Protocol...");
-        
-        this.loading.protocol.errors = [];
-        var cCommon, msg;
-    
-        if (this.diskModel.disk.requireEncryptedResults && !this.loading.protocol.publicKey) {
-            this.loading.protocol.errors.push({
-                type: this.translate.instant("Public Key"),
-                error: this.translate.instant(
-                    'No public encryption key is defined in the protocol. ' + 
-                    'Results will not be recorded from this protocol while the "Require Encryption" setting is enabled.'
-                )
-            });
-        }
-    
-        this.loading.protocol.protocolTabsintOutdated = false;
-        if (this.loading.protocol.minTabsintVersion) {
-            var mtv = _.map(this.loading.protocol.minTabsintVersion.split("."), function(s) {
-                return parseInt(s);
-            }); //
-            // var ctv = _.map(version.dm.tabsint.split("-")[0].split("."), function(s) {
-            //     return parseInt(s);
-            // });
-    
-            if ( false
-                // mtv[0] < ctv[0] ||
-                // (mtv[0] === ctv[0] && mtv[1] < ctv[1]) ||
-                // (mtv[0] === ctv[0] && mtv[1] === ctv[1] && mtv[2] <= ctv[2])
-            ) {
-                this.logger.debug(
-                "Tabsint version " +
-                    // version.dm.tabsint +
-                    ", Protocol requires tabsint version " +
-                    this.loading.protocol.minTabsintVersion
-                );
-            } else {
-                msg =
-                    this.translate.instant("Protocol requires tabsint version ") +
-                    this.loading.protocol.minTabsintVersion +
-                    this.translate.instant(", but current Tabsint version is ")
-                // version.dm.tabsint;
-                this.logger.error(msg);
-                this.loading.protocol.errors.push({
-                    type: this.translate.instant("TabSINT Version"),
-                    error: msg
-                });
-                this.loading.protocol.protocolTabsintOutdated = true;
-            }
-        }
-    
-        // confirm EPHD1 is connected when headset is EPHD1
-        this.loading.protocol.protocolUsbCMissing = false; // default/reset to false.
-        if (this.loading.protocol.headset === "EPHD1") {
-            // this.loading.protocol.protocolUsbCMissing = !tabsintNative.isUsbConnected;
-            console.log("About to run registerUsbDeviceListener()");
-        // tabsintNative.registerUsbDeviceListener(api.usbEventCallback);
-        } else {
-        // tabsintNative.unregisterUsbDeviceListener(api.usbEventCallback);
-        }
-    
-        var reqCalProperties = [
-            "headset",
-            "tablet",
-            "audioProfileVersion",
-            "calibrationPySVNRevision",
-            "calibrationPyManualReleaseDate"
-        ];
-        if (_.difference(_.keys(this.loading.calibration), reqCalProperties).length > 0) {
-            // if calibration contains wav files
-            if (_.intersection(_.keys(this.loading.calibration), reqCalProperties).length === reqCalProperties.length) {
-                // if calibration contains all the required properties
-                this.loading.protocol.headset = this.loading.calibration.headset;
-                this.loading.protocol._audioProfileVersion = this.loading.calibration.audioProfileVersion;
-                this.loading.protocol._calibrationPySVNRevision = this.loading.calibration.calibrationPySVNRevision;
-                this.loading.protocol._calibrationPyManualReleaseDate = this.loading.calibration.calibrationPyManualReleaseDate;
-            } else {
-                this.loading.protocol._audioProfileVersion = "none";
-                this.loading.protocol._calibrationPySVNRevision = "none";
-                this.loading.protocol._calibrationPyManualReleaseDate = "none";
-                msg = "The loaded protocol calibration file is missing version fields.";
-                this.logger.error(msg);
-                this.loading.protocol.errors.push({
-                type: "Calibration",
-                error: msg
-                });
-            }
-        }
-        this.loading.protocol.currentCalibration = this.loading.protocol.headset || "None"; 
-    
-        if (this.loading.protocol.commonMediaRepository) {
-            var midx = _.findIndex(this.diskModel.disk.mediaRepos, {
-                name: this.loading.protocol.commonMediaRepository
-            });
-            if (midx !== -1) {
-                this.loading.protocol.commonRepo = this.diskModel.disk.mediaRepos[midx];
-                // cCommon = json.load(loading.protocol.commonRepo.path + "calibration.json");
-            } else {
-                msg =
-                "The media repository referenced by this protocol is not available (" +
-                this.loading.protocol.commonMediaRepository +
-                "). " +
-                "Please try updating this protocol to automatically download the media repository";
-                this.logger.error("media repository referenced by protocol is not available: " + 
-                    this.loading.protocol.commonMediaRepository);
-                this.loading.protocol.errors.push({
-                type: "Media",
-                error: msg
-                });
-            }
-        }
-    
-        this.loading.protocol._exportCSV = false;
-        this.loading.protocol._protocolIdDict = {};
-        this.loading.protocol._preProcessFunctionList = [];
-        this.loading.protocol._missingPreProcessFunctionList = [];
-        this.loading.protocol._missingControllerList = [];
-        this.loading.protocol._customHtmlList = [];
-        this.loading.protocol._missingHtmlList = [];
-        this.loading.protocol._missingWavCalList = [];
-        this.loading.protocol._missingCommonWavCalList = [];
-        this.loading.protocol._requiresCha = false;
-        this.loading.protocol.errors = [];
-    
+        this.loading = initializeLoadingProtocol(
+            this.loading,
+            this.logger,
+            this.translate,
+            this.diskModel);
         this.tasks.register("updating protocol", "Processing Protocol...");
         // TODO: return expected result
         processProtocol(
@@ -489,10 +306,10 @@ export class ProtocolService {
             this.loading.protocol._protocolIdDict, 
             this.loading.protocol, 
             this.loading.calibration, 
-            cCommon, 
+            this.loading.protocol.cCommon, 
             this.loading.meta.path!
         );
-        // put the processed protocol on the protocol model, root object
+        
         this.protocolModel.activeProtocol = this.loading.protocol;
     
         if (this.protocolModel.activeProtocol && "key" in this.protocolModel.activeProtocol) {
@@ -500,20 +317,49 @@ export class ProtocolService {
                 this.protocolModel.activeProtocol.publicKey = decodeURI(this.protocolModel.activeProtocol.key);
             }
         }
+        // call each function from the callbackQueue
+        // callbackQueue.run();
+
+        
         this.diskModel.disk.headset = this.protocolModel.activeProtocol.headset || "None";
     
-        // try connecting the cha
         if (this.loading.protocol._requiresCha) {
             this.logger.debug("This exam requires the CHA, attempting to connect...");
         // setTimeout(cha.connect, 1000);
         }
     
-        // call each function from the callbackQueue
-        // callbackQueue.run();
 
-        // reset the exam related state variables (examIndex, protocolStack, and examState)
         this.state.examIndex = 0;
         this.pageModel.stack = [];
         this.state.examState = ExamState.Ready;
+    }
+
+    private async setCalibration() {
+        this.loading.calibration = undefined;
+        var calibration;
+        if (this.loading.meta.server === ProtocolServer.Developer) {
+            calibration = DeveloperProtocolsCalibration[this.loading.meta.name!];
+        } else {
+            calibration = await this.fileService.readFile(this.loading.meta.path + "/calibration.json");
+        }
+        if (calibration) {
+            this.loading.calibration = calibration as unknown as ProtocolInterface; // ToDo: fix typing
+        }    
+        
+    }
+
+    private notifyProtocolDidntLoadProperly() {
+        this.logger.error("Protocol did not load properly");
+        if (this.diskModel.disk.audhere) {
+          this.notifications.alert(
+            this.translate.instant("The protocol specified is not available, please see the administrator.")
+          ).subscribe();
+        } else {
+          this.notifications.alert(
+            this.translate.instant(
+              "Protocol did not load properly. Please validate your protocol before trying to load again."
+            )
+          ).subscribe();
+        }
     }
 }

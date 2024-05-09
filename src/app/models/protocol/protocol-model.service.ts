@@ -4,6 +4,7 @@ import _ from 'lodash';
 import { ProtocolInterface } from './protocol.interface';
 import { ProtocolServer } from '../../utilities/constants';
 import { ProtocolModelInterface } from './protocol-model.interface';
+import { partialMetaDefaults } from '../../utilities/defaults';
 
 @Injectable({
     providedIn: 'root',
@@ -15,14 +16,17 @@ export class ProtocolModel {
         activeProtocol: undefined,
         loadedProtocols: [
             this.define({
+                ...partialMetaDefaults,
                 type: "ProtocolSchemaInterface",
                 protocolId: "",
                 name: "Audiometry",
                 path: "protocols/edare-audiometry",
                 creator: "Edare",
-                server: ProtocolServer.Developer
+                server: ProtocolServer.Developer,
+                admin: false
             }),
             this.define({
+                ...partialMetaDefaults,
                 type: "ProtocolSchemaInterface",
                 protocolId: "",
                 name: "Creare Audiometry",
@@ -32,6 +36,7 @@ export class ProtocolModel {
                 admin: true
             }),
             this.define({
+                ...partialMetaDefaults,
                 type: "ProtocolSchemaInterface",
                 protocolId: "",
                 name: "tabsint-test",
@@ -41,6 +46,7 @@ export class ProtocolModel {
                 admin: true
             }),
             this.define({
+                ...partialMetaDefaults,
                 type: "ProtocolSchemaInterface",
                 protocolId: "",
                 name: "wahts-device-test",
@@ -50,6 +56,7 @@ export class ProtocolModel {
                 admin: true
             }),
             this.define({
+                ...partialMetaDefaults,
                 type: "ProtocolSchemaInterface",
                 protocolId: "",
                 name: "wahts-software-test",
@@ -59,6 +66,7 @@ export class ProtocolModel {
                 admin: true
             }),
             this.define({
+                ...partialMetaDefaults,
                 type: "ProtocolSchemaInterface",
                 protocolId: "",
                 name: "develop",

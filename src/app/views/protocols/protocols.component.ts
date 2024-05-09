@@ -7,7 +7,7 @@ import { Logger } from '../../utilities/logger.service';
 import { ProtocolInterface } from '../../models/protocol/protocol.interface';
 import { DialogType, ProtocolServer } from '../../utilities/constants';
 import { DiskInterface } from '../../models/disk/disk.interface';
-import { ProtocolModel } from '../../models/protocol/protocol.service';
+import { ProtocolModel } from '../../models/protocol/protocol-model.service';
 import { ProtocolService } from '../../controllers/protocol.service';
 import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
@@ -16,6 +16,7 @@ import { Notifications } from '../../utilities/notifications.service';
 import { Tasks } from '../../utilities/tasks.service';
 import { ProtocolModelInterface } from '../../models/protocol/protocol-model.interface';
 import { ExamService } from '../../controllers/exam.service';
+import { getProtocolMetaData } from '../../utilities/protocol-helper-functions';
 
 @Component({
   selector: 'protocols-view',
@@ -100,7 +101,7 @@ export class ProtocolsComponent {
         // const observable = new Observable<number>(observer => {
         this.tasks.register("updating", "Loading Protocol...");
         // });
-        this.protocolService.load(this.selected, this.disk.validateProtocols, true, reload);
+        this.protocolService.load(getProtocolMetaData(this.selected!), this.disk.validateProtocols, true, reload);
         // observable.subscribe({
         //   next: () => {
         //     this.protocolService.load(this.selected, this.disk.validateProtocols, true, reload);

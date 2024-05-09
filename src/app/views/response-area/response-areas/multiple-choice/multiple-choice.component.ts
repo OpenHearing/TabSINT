@@ -3,11 +3,11 @@ import * as _ from 'lodash';
 
 import { ExamService } from '../../../../controllers/exam.service';
 import { ResultsInterface } from '../../../../models/results/results.interface';
-import { ResultsModel } from '../../../../models/results/results.service';
+import { ResultsModel } from '../../../../models/results/results-model.service';
 import { ProtocolModelInterface } from '../../../../models/protocol/protocol-model.interface';
 import { StateInterface } from '../../../../models/state/state.interface';
 import { StateModel } from '../../../../models/state/state.service';
-import { ProtocolModel } from '../../../../models/protocol/protocol.service';
+import { ProtocolModel } from '../../../../models/protocol/protocol-model.service';
 
 @Component({
   selector: 'multiple-choice-view',

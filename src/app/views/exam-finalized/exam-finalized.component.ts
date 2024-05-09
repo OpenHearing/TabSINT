@@ -2,11 +2,11 @@ import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { ResultsInterface } from '../../models/results/results.interface';
-import { ResultsModel } from '../../models/results/results.service';
+import { ResultsModel } from '../../models/results/results-model.service';
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { DiskModel } from '../../models/disk/disk.service';
 import { ExamService } from '../../controllers/exam.service';
-import { ProtocolModel } from '../../models/protocol/protocol.service';
+import { ProtocolModel } from '../../models/protocol/protocol-model.service';
 import { ProtocolModelInterface } from '../../models/protocol/protocol-model.interface';
 
 @Component({

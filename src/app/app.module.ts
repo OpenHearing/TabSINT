@@ -33,8 +33,8 @@ import { NotificationsComponent } from './views/notifications/notifications.comp
 import { AppModel } from './models/app/app.service';
 import { DevicesModel } from './models/devices/devices.service';
 import { DiskModel } from './models/disk/disk.service';
-import { ProtocolModel } from './models/protocol/protocol.service';
-import { ResultsModel } from './models/results/results.service';
+import { ProtocolModel } from './models/protocol/protocol-model.service';
+import { ResultsModel } from './models/results/results-model.service';
 import { StateModel } from './models/state/state.service';
 
 // Utilities

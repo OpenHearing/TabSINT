@@ -1,5 +1,6 @@
 import { MediaReposInterface } from "../../interfaces/media-repos.interface"
 import { ResultsMode, ProtocolServer } from "../../utilities/constants"
+import { ProtocolMetaInterface } from "../protocol/protocol-meta.interface"
 import { ProtocolInterface } from "../protocol/protocol.interface"
 
 export interface DiskInterface {
@@ -74,6 +75,8 @@ export interface DiskInterface {
     },
     init: boolean, 
     versionCheck: boolean,
-    audhere: string 
+    audhere: string ,
+    activeProtocolMeta: ProtocolMetaInterface,
+    availableProtocolsMeta: Array<ProtocolMetaInterface>
   
 }

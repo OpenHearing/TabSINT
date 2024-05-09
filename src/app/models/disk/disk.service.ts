@@ -4,6 +4,7 @@ import { DOCUMENT } from '@angular/common';
 
 import { DiskInterface } from './disk.interface';
 import { ProtocolServer, ResultsMode } from '../../utilities/constants';
+import { metaDefaults } from '../../utilities/defaults';
 
 @Injectable({
     providedIn: 'root',
@@ -68,7 +69,9 @@ export class DiskModel {
             dataIn: '',
             dataOut: ''
         },
-        audhere: ''
+        audhere: '',
+        activeProtocolMeta: metaDefaults,
+        availableProtocolsMeta: []
     };
     
     constructor(@Inject(DOCUMENT) private document: Document) {

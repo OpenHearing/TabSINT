@@ -1,20 +1,45 @@
 import { LoadingProtocolInterface } from "../interfaces/loading-protocol-object.interface";
 import { ProtocolSchemaInterface } from "../interfaces/protocol-schema.interface";
+import { ProtocolMetaInterface } from "../models/protocol/protocol-meta.interface";
+import { ProtocolInterface } from "../models/protocol/protocol.interface";
+import { ProtocolServer } from "./constants";
 
-export function loadingProtocolDefaults(_requiresValidation: boolean): LoadingProtocolInterface {
+export const metaDefaults: ProtocolMetaInterface = {
+    group: '',
+    name: '',
+    path: '',
+    date: '',
+    version: '',
+    creator: '',
+    server: ProtocolServer.LocalServer,
+    admin: false,
+    contentURI: ''
+};
 
-    let _protocol: ProtocolSchemaInterface = {
-            type: "ProtocolSchemaInterface",
-            protocolId: '',
-            pages: []
-        };
+export const partialMetaDefaults = {
+    id: '',
+    group: '',
+    name: '',
+    date: '',
+    version: '',
+    contentURI: ''
+};
 
+const protocolDefaults: ProtocolInterface = {
+    ...metaDefaults,
+    type: "ProtocolSchemaInterface",
+    id: '',
+    protocolId: '',
+    pages: []
+};
+
+export function loadingProtocolDefaults(_requiresValidation: boolean = true): LoadingProtocolInterface {
     let loadingProtocol: LoadingProtocolInterface = {
-        protocol: _protocol,
+        protocol: protocolDefaults,
         calibration: undefined,
         requiresValidation: _requiresValidation,
-        meta: _protocol,
-        reload: false,
+        meta: metaDefaults,
+        overwrite: false,
         notify: false
     }
 
