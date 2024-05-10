@@ -23,6 +23,7 @@ import { PageModel } from '../models/page/page.service';
 import { PageInterface } from '../models/page/page.interface';
 import { FollowOn, PageDefinition, ProtocolReference } from '../interfaces/page-definition.interface';
 import { getIdBasedOnTargetType } from '../utilities/exam-helper-functions';
+import { log } from 'util';
 
 @Injectable({
     providedIn: 'root',
@@ -183,10 +184,11 @@ export class ExamService {
     */
     findFollowOn() {
         let id: string | undefined = undefined;
-        this.pageModel.stack[this.state.examIndex]?.followOns.forEach((followOn: FollowOn) => {
-            eval(followOn.conditional)
-                ? getIdBasedOnTargetType(followOn.target)
-                : null;   
+        this.pageModel.stack[this.state.examIndex]?.followOns.forEach((followOn:any) => {
+            // TODO: I looked at this way too long. I don't think we want to do this here. None of the options I looked at are good. But the current implementation is too limiting.
+            if (this.results.current.response == followOn.conditional.split("==")[1].replaceAll("'","")) {
+                id = followOn.target.reference;
+            }
         });
         return id;
     }

@@ -17,7 +17,7 @@ export class ResultsService {
     
     /** Initializes results after starting a new page.
      * @summary Initializes results with pageID and other information. 
-     * @inputs this.currentPage.
+     * @param currentPage exam page to initialize.
      * @models results
     */
     initializeResults(currentPage:any) {
