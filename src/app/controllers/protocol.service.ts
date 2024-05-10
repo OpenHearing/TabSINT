@@ -17,6 +17,7 @@ import { ProtocolModelInterface } from '../models/protocol/protocol-model.interf
 import { StateInterface } from '../models/state/state.interface';
 import { StateModel } from '../models/state/state.service';
 import { PageModel } from '../models/page/page.service';
+import { ProtocolMetaInterface } from '../models/protocol/protocol-meta.interface';
 
 import { ExamState } from '../utilities/constants';
 import { DeveloperProtocols, DeveloperProtocolsCalibration, DialogType, ProtocolServer} from '../utilities/constants';
@@ -28,7 +29,6 @@ import { loadingProtocolDefaults } from '../utilities/defaults';
 import { checkCalibrationFiles, checkControllers, checkPreProcessFunctions } from '../utilities/protocol-checks.function';
 import { processProtocol } from '../utilities/process-protocol.function';
 import { findDuplicateProtocols } from '../utilities/protocol-helper-functions';
-import { ProtocolMetaInterface } from '../models/protocol/protocol-meta.interface';
 import { initializeLoadingProtocol } from '../utilities/initialize-loading-protocol';
 
 @Injectable({
@@ -76,6 +76,17 @@ export class ProtocolService {
     
     };
 
+
+    /** Load all protocol files onto the protocolModel.activeProtocol object.
+     * @summary Overwrite local protocol files if they have changed, load files into tabsint 
+     * including custom protocol files, validate the protocol against the schema. 
+     * Handle load errors.
+     * @models protocol, disk
+     * @param meta meta data for the protocol to load, 
+     * @param _requiresValidation whether the protocol needs to be validated
+     * @param notify whether to use task banners to notify user about progress. Default: false.
+     * @param overwrite whether to overwrite local protocol files if they have changed. Default: false.
+    */
     async load(
         meta: ProtocolMetaInterface, 
         _requiresValidation: boolean = this.diskModel.disk.validateProtocols, 
@@ -104,6 +115,13 @@ export class ProtocolService {
         }
     };
 
+    /**
+     * Removes a protocol from TabSINT
+     * @summary Check if the protocol to delete exists or is an admin or developer protocol.
+     * Removes it from the protocolmodel
+     * @models protocol, app
+     * @param p protocol to delete
+     */
     delete(p: ProtocolInterface): void { //simplify, use dictionary?
         const idx = _.findIndex(this.protocolModel.loadedProtocols, p);
     
@@ -158,6 +176,14 @@ export class ProtocolService {
         }
     };
     
+    /**
+     * Checks whether a protocol is active.
+     * @summary Checks if the input protocol is the same 
+     * as the one on the protocolModel.activeProtocol object.
+     * @models protocol
+     * @param p protocol to check whether it is active or not
+     * @returns whether protocol is active: Boolean
+     */
     isActive(p: ProtocolInterface | undefined): Boolean {
         return (this.protocolModel.activeProtocol 
                 && p 
@@ -166,6 +192,7 @@ export class ProtocolService {
             || false;
       };
 
+    
     private async overwriteLocalFilesIfNeeded() {
         try {
             if (this.loading.notify) {

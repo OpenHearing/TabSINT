@@ -162,7 +162,7 @@ export class ExamService {
      * @summary Adds pages to protocolStack. This will parse any page with a reference and put the 
      * correct pages in place.
      * @models state
-     * @inputs pages: list of page objects
+     * @param pages list of page objects
     */
     addPagesToStack(pages:any) { // Move this to protocol loading/parsing utility function? 
         let extraPages:any;
