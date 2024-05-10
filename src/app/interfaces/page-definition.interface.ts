@@ -78,7 +78,6 @@ export interface FollowOn {
 }
 
 export interface ProtocolReference {
-    type: "ProtocolReference",
     id?: string;
     reference: string;
     skipIf?: string;

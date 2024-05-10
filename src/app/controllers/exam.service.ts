@@ -9,7 +9,6 @@ import { ResultsInterface } from '../models/results/results.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { DiskInterface } from '../models/disk/disk.interface';
 import { ProtocolModelInterface } from '../models/protocol/protocol-model.interface';
-import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
 
 import { ResultsModel } from '../models/results/results-model.service';
 import { StateModel } from '../models/state/state.service';
@@ -21,9 +20,6 @@ import { ExamState } from '../utilities/constants';
 import { Notifications } from '../utilities/notifications.service';
 import { PageModel } from '../models/page/page.service';
 import { PageInterface } from '../models/page/page.interface';
-import { FollowOn, PageDefinition, ProtocolReference } from '../interfaces/page-definition.interface';
-import { getIdBasedOnTargetType } from '../utilities/exam-helper-functions';
-import { log } from 'util';
 
 @Injectable({
     providedIn: 'root',

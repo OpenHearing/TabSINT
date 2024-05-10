@@ -1,7 +1,6 @@
 import { NavMenuItem, PageDefinition } from "./page-definition.interface";
 
 export interface ProtocolSchemaInterface {
-    type: "ProtocolSchemaInterface",
     description?: string;
     protocolId: string;
     resultFilename?: string;

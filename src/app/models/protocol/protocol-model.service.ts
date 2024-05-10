@@ -17,7 +17,6 @@ export class ProtocolModel {
         loadedProtocols: [
             this.define({
                 ...partialMetaDefaults,
-                type: "ProtocolSchemaInterface",
                 protocolId: "",
                 name: "Audiometry",
                 path: "protocols/edare-audiometry",
@@ -27,7 +26,6 @@ export class ProtocolModel {
             }),
             this.define({
                 ...partialMetaDefaults,
-                type: "ProtocolSchemaInterface",
                 protocolId: "",
                 name: "Creare Audiometry",
                 path: "protocols/creare-audiometry",
@@ -37,7 +35,6 @@ export class ProtocolModel {
             }),
             this.define({
                 ...partialMetaDefaults,
-                type: "ProtocolSchemaInterface",
                 protocolId: "",
                 name: "tabsint-test",
                 path: "protocols/TabSINT-Test",
@@ -47,7 +44,6 @@ export class ProtocolModel {
             }),
             this.define({
                 ...partialMetaDefaults,
-                type: "ProtocolSchemaInterface",
                 protocolId: "",
                 name: "wahts-device-test",
                 path: "protocols/wahts-device-test",
@@ -57,7 +53,6 @@ export class ProtocolModel {
             }),
             this.define({
                 ...partialMetaDefaults,
-                type: "ProtocolSchemaInterface",
                 protocolId: "",
                 name: "wahts-software-test",
                 path: "protocols/wahts-software-test",
@@ -67,7 +62,6 @@ export class ProtocolModel {
             }),
             this.define({
                 ...partialMetaDefaults,
-                type: "ProtocolSchemaInterface",
                 protocolId: "",
                 name: "develop",
                 path: "protocols/develop",
