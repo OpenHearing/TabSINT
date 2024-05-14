@@ -3,7 +3,7 @@ import { TextBoxInterface } from "../views/response-area/response-areas/textbox/
 import { ProtocolSchemaInterface } from "./protocol-schema.interface";
 
 export interface PageDefinition {
-    type: string,
+    type: string;
     id: string;
     headset?: "VicFirth" | "Vic Firth S2" | "HDA200" | "WAHTS" | "Audiometer" | "EPHD1" ;
     skipIf?: string;
@@ -43,6 +43,7 @@ export interface RepeatPage {
 }
 
 export interface Wavfile {
+    cal: any;
     useCommonRepo?: boolean;
     path: string;
     playbackMethod?: "arbitrary" | "as-recorded";
@@ -103,4 +104,8 @@ export interface CommonResponseArea {
 export interface ResponseArea extends 
     CommonResponseArea, 
     TextBoxInterface,
-    MultipleChoiceInterface {}
+    MultipleChoiceInterface {
+  inputList(inputList: any, arg1: (input: any) => void): unknown;
+  html: any;
+  image: any;
+}

@@ -1,4 +1,4 @@
-import { NavMenuItem, PageDefinition } from "./page-definition.interface";
+import { NavMenuItem, PageDefinition, ProtocolReference } from "./page-definition.interface";
 
 export interface ProtocolSchemaInterface {
     description?: string;
@@ -23,7 +23,7 @@ export interface ProtocolSchemaInterface {
     navMenu?: NavMenuItem[];
     js?: string | string[];
     exclusiveTimingMode?: boolean;
-    pages?: PageDefinition[];
+    pages: PageDefinition | ProtocolReference | ProtocolSchemaInterface;
     subProtocols?: ProtocolSchemaInterface[];
     lookUpTables?: { name: string; table: any[] }[];
 }

@@ -1,38 +1,75 @@
 import _ from "lodash";
 import { ProtocolSchemaInterface } from "../interfaces/protocol-schema.interface";
 import { ProtocolInterface } from "../models/protocol/protocol.interface";
+import { FollowOn, PageDefinition, ProtocolReference } from "../interfaces/page-definition.interface";
+import { PageInterface } from "../models/page/page.interface";
+import { LoadingProtocolInterface } from "../interfaces/loading-protocol-object.interface";
+import { ProtocolDictionary } from "../interfaces/protocol-dictionary";
+import { FollowOnsDictionary } from "../interfaces/follow-ons-dictionary";
 
-export function processProtocol(
-    subProtocol: ProtocolSchemaInterface, 
-    dict: _.Dictionary<ProtocolSchemaInterface>, 
-    rootProtocol: ProtocolInterface, 
-    calibration: any, 
-    commonCalibration: any, 
-    prefix: string
-  ) {
-    _.forEach(subProtocol.pages, function(page) {
-      processPage(page, dict, rootProtocol, calibration, commonCalibration, prefix);
+/**
+ * Adds variables to the active protocol and generates a stack of pages.
+ * @summary Loops through each page and subprotocol, adds variables to the 
+ * active protocol based on parameters on each page, and creates a page stack.
+ * @param loading: LoadingProtocolInterface containing the protocol JSON, 
+ * its calibration if it exists, its meta data, whether to notify the user about
+ * progress, whether to validate the protocol, and whether to overwrite local protocol files
+ * @returns the active protocol, the stack of pages, a dictionary of all subprotocols,
+ * a dictionary of all pages, and a dictionary of all followOns
+ */
+export function processProtocol(loading: LoadingProtocolInterface):
+  [ProtocolInterface, ProtocolDictionary, FollowOnsDictionary]
+{
+  let rootProtocol = loading.protocol;
+  let calibration = loading.calibration;
+  let protocolDict: ProtocolDictionary = {};
+  let followOnsDict: FollowOnsDictionary = {};
+  let prefix = loading.meta.path!;
+
+  iterateThroughPages(rootProtocol.pages);
+
+  if (_.has(rootProtocol, "subProtocols")) {
+    _.forEach(rootProtocol.subProtocols, (obj) => {
+      processSubProtocol(obj);
     });
+  }
+  
+  return [rootProtocol, protocolDict, followOnsDict];
+
+  function processSubProtocol(
+    subProtocol: ProtocolSchemaInterface
+  ) {
+
+    iterateThroughPages(subProtocol.pages);
 
     if (_.has(subProtocol, "protocolId")) {
-      dict[subProtocol.protocolId!] = subProtocol;
+      protocolDict[subProtocol.protocolId!] = subProtocol;
     }
 
     if (_.has(subProtocol, "subProtocols")) {
       _.forEach(subProtocol.subProtocols, function(obj) {
-        processProtocol(obj, dict, rootProtocol, calibration, commonCalibration, prefix);
+        processSubProtocol(obj);
       });
     }
   }
 
+  function iterateThroughPages(pages: PageDefinition | ProtocolReference | ProtocolSchemaInterface) {
+    _.forEach(pages, function(page) {
+      if (_.has(page, "pages")) {
+        processSubProtocol(page as ProtocolSchemaInterface);
+      } else if ((page as any).reference) {
+        processPage(page as any);
+      } else if (_.has(page, "id")) {
+        processPage(page as any);
+      }
+    });  
+  }
+
   function processPage(
-      page: any, 
-      dict: _.Dictionary<ProtocolSchemaInterface>, 
-      rootProtocol: ProtocolInterface, 
-      calibration: any, 
-      commonCalibration: any, 
-      prefix: string
+      page: any 
+      // PageDefinition | ProtocolReference | ProtocolSchemaInterface
     ) {
+
     if (page.preProcessFunction) {
       rootProtocol._preProcessFunctionList!.push(page.preProcessFunction);
     }
@@ -41,9 +78,9 @@ export function processProtocol(
       _.forEach(page.wavfiles, function(wavfile) {
         if (wavfile.useCommonRepo) {
           if (rootProtocol.commonRepo && rootProtocol.commonRepo.path) {
-            if (commonCalibration) {
-              if (commonCalibration[wavfile.path]) {
-                wavfile.cal = commonCalibration[wavfile.path];
+            if (calibration) {
+              if (calibration[wavfile.path]) {
+                wavfile.cal = calibration[wavfile.path];
               } else {
                 rootProtocol._missingCommonWavCalList!.push(wavfile.path);
               }
@@ -110,40 +147,25 @@ export function processProtocol(
             rootProtocol._exportCSV = true;
         }
       }
-
-      if (page.responseArea.type === "multipleInputResponseArea") {
-        _.forEach(page.responseArea.inputList, function(input) {
-          if (_.has(input, "exportToCSV")) {
-            if (input.exportToCSV === true) {
-                rootProtocol._exportCSV = true;
-              return;
-            }
-          }
-        });
-      }
-
-      // load callbacks if response area has one -- will be performed at the end of the load cycle
-    //   var respAreas = responseAreas.all();
-    //   if (_.has(respAreas[page.responseArea.type], "loadCallback")) {
-    //     var name = respAreas[page.responseArea.type].loadCallback.name;
-    //     if (name === "") {
-    //       name = page.responseArea.type;
-    //     }
-    //     callbackQueue.add(name, respAreas[page.responseArea.type].loadCallback);
-    //   }
     }
 
     if (_.has(page, "followOns")) {
       _.forEach(page.followOns, function(followOn) {
-        if (_.has(followOn.target, "id") && !_.has(followOn.target, "reference")) {
-          processPage(followOn.target, dict, rootProtocol, calibration, commonCalibration, prefix);
-        } else if (_.has(followOn.target, "pages")) {
-          processProtocol(followOn.target, dict, rootProtocol, calibration, commonCalibration, prefix);
-        }
+        let id = followOn.target.id != ''
+          ? followOn.target.id
+          : followOn.target.protocolId != ''
+            ? followOn.target.protocolId
+            : followOn.target.reference
+              ? followOn.target.reference
+              : 'Should not get here';
+        followOnsDict[id] = followOn;
+        iterateThroughPages(followOn.target);
       });
     }
 
     if (_.has(page, "pages")) {
-      processProtocol(page, dict, rootProtocol, calibration, commonCalibration, prefix);
+      processSubProtocol(page);
     }
   }
+
+}

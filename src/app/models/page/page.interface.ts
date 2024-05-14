@@ -1,6 +1,7 @@
 import { PageDefinition, ResponseArea } from "../../interfaces/page-definition.interface";
 
 export interface PageInterface extends PageDefinition{
+    exportToCSV: boolean;
     name: string;
     filename: string;
     units: string;
@@ -9,7 +10,7 @@ export interface PageInterface extends PageDefinition{
     dict: object;
     hideProgressBar: boolean;
     isSubmittable: boolean;
-    canGoBack: Function;
+    canGoBack: boolean;
     subtitle: string,
     loadingRequired: boolean;
     loadingActive: boolean;

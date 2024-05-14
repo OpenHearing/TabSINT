@@ -105,7 +105,7 @@ export class ProtocolService {
             this.initializeProtocol();
                 // .then(loadCustomJs)
                 // .then(validateCustomJsIfCalledFor)
-            this.handleLoadErrors(); // uses this.protocolModel.activeProtocol, loading.notify
+            this.handleLoadErrors();
         } catch(e) {
             this.tasks.deregister("updating protocol");
             this.logger.error("Could not load protocol.  " + JSON.stringify(e));
@@ -144,18 +144,6 @@ export class ProtocolService {
                     .join("/");
                 const dir = p.path!.split("/").slice(-2, -1)[0];
                 this.logger.debug('Delete protocol in development');
-                // this.fileService.removeRecursively(root, dir).catch(function(e: Error) {
-                //     this.logger.error(
-                //         "Failed to remove protocol files in directory " +
-                //         dir +
-                //         " within root " +
-                //         root +
-                //         " for protocol " +
-                //         protocol.name +
-                //         " with error: " +
-                //         JSON.stringify(e)
-                //     );
-                // });
             } catch (e) {
                 this.logger.debug("Failed to remove protocol directory " + p.name + " from path " + p.path);
             }
@@ -223,7 +211,6 @@ export class ProtocolService {
     };
 
     private async loadFiles() {
-        // callbackQueue.clear();
 
         try {
             var protocol;
@@ -327,15 +314,11 @@ export class ProtocolService {
             this.translate,
             this.diskModel);
         this.tasks.register("updating protocol", "Processing Protocol...");
-        // TODO: return expected result
-        processProtocol(
-            this.loading.protocol, 
-            this.loading.protocol._protocolIdDict, 
-            this.loading.protocol, 
-            this.loading.calibration, 
-            this.loading.protocol.cCommon, 
-            this.loading.meta.path!
-        );
+        
+        [this.protocolModel.activeProtocol, 
+            this.protocolModel.activeProtocolDictionary,
+            this.protocolModel.activeProtocolFollowOnsDictionary
+        ] = processProtocol(this.loading);
         
         this.protocolModel.activeProtocol = this.loading.protocol;
     
@@ -344,9 +327,6 @@ export class ProtocolService {
                 this.protocolModel.activeProtocol.publicKey = decodeURI(this.protocolModel.activeProtocol.key);
             }
         }
-        // call each function from the callbackQueue
-        // callbackQueue.run();
-
         
         this.diskModel.disk.headset = this.protocolModel.activeProtocol.headset || "None";
     
@@ -357,7 +337,6 @@ export class ProtocolService {
     
 
         this.state.examIndex = 0;
-        this.pageModel.stack = [];
         this.state.examState = ExamState.Ready;
     }
 

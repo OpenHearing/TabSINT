@@ -1,6 +1,6 @@
 export interface MultipleChoiceInterface {
     type: string;
-    choices: Choice[];
+    choices?: Choice[];
     other?: string; // Text label for an 'other' choice
     verticalSpacing?: number; // Vertical spacing between buttons, given in [px]
     delayEnable?: number; // Delay (ms) before the buttons are active to accept a response

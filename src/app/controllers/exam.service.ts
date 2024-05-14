@@ -52,7 +52,7 @@ export class ExamService {
     }
 
     /** Switches to exam view
-     * @summary Can be called from any other TabSINT view. If protocolStack is not empty, the exam
+     * @summary Can be called from any other TabSINT view. If pageModel.stack is not empty, the exam
      * will proceed where it left off. Otherwise examState gets changed to Ready.
     */
     switchToExamView() {
@@ -75,9 +75,7 @@ export class ExamService {
         console.log("ExamService begin() called");
         console.log("this.protocol.activeProtocol",this.protocol.activeProtocol);
         
-        // TODO: Change how the first main page gets found, maybe this happens with protocol service? --> done while loading protocol
-        let pages = (this.protocol.activeProtocol?.pages?.[this.state.examIndex] as any)?.pages;
-        this.addPagesToStack(pages);
+        this.addPagesToStack(this.protocol.activeProtocol?.pages, 0);
         this.startPage();
         this.state.examState = ExamState.Testing; 
     }
@@ -122,21 +120,15 @@ export class ExamService {
     */
     private advancePage() {
         let nextExamIndex = this.state.examIndex + 1;
-        if (this.pageModel.stack.length <= nextExamIndex) {
-            let nextID = this.findFollowOn();
-            if (nextID != undefined) {
-                let pages = this.getSubProtocol(nextID);
-                this.pageModel.stack = [];
-                this.state.examIndex = 0;
-                this.addPagesToStack(pages);
-            } else {
-                this.pageModel.stack = [];
-                this.state.examIndex = 0;
-                this.state.examState = ExamState.NotReady;
-            }
+        var nextID;
+        if (this.currentPage.followOns) { nextID = this.findFollowOn(); }
+        if (nextID != undefined) {
+            let pages = this.protocolM.protocolModel.activeProtocolDictionary![nextID].pages;
+            this.addPagesToStack(pages, nextExamIndex);
         } else {
-            this.state.examIndex = nextExamIndex;
+            this.state.examState = ExamState.NotReady;
         }
+        this.state.examIndex = nextExamIndex;
         this.startPage();
     }
 
@@ -146,6 +138,7 @@ export class ExamService {
      * @models state
     */
     private startPage() {
+        console.log(this.pageModel.stack[this.state.examIndex]);
         this.currentPage = this.pageModel.stack[this.state.examIndex];
         this.pageModel.currentPageObservable.next(this.currentPage);
         // TODO: Could subscribe to the currentPageObservable...
@@ -161,14 +154,18 @@ export class ExamService {
      * @models state
      * @param pages list of page objects
     */
-    addPagesToStack(pages:any) { // Move this to protocol loading/parsing utility function? 
+    addPagesToStack(pages:any, index:number) { // Move this to protocol loading/parsing utility function? 
         let extraPages:any;
         pages.forEach( (page:any)=> {
+            console.log(page);
             if (page?.reference) {
-                extraPages = this.getSubProtocol(page?.reference);
-                this.addPagesToStack(extraPages);
-            } else {
-                this.pageModel.stack.push(page);
+                extraPages = this.protocolM.protocolModel.activeProtocolDictionary![page?.reference].pages;
+                this.addPagesToStack(extraPages, index+1);
+            } else if (page.pages) {
+                extraPages = page.pages;
+                this.addPagesToStack(extraPages,index+1)
+             } else {
+                this.pageModel.stack.splice(index, 0, page);
             }
         });
     }
@@ -180,45 +177,13 @@ export class ExamService {
     */
     findFollowOn() {
         let id: string | undefined = undefined;
-        this.pageModel.stack[this.state.examIndex]?.followOns.forEach((followOn:any) => {
+        this.currentPage.followOns.forEach((followOn:any) => {
             // TODO: I looked at this way too long. I don't think we want to do this here. None of the options I looked at are good. But the current implementation is too limiting.
             if (this.results.current.response == followOn.conditional.split("==")[1].replaceAll("'","")) {
                 id = followOn.target.reference;
             }
         });
         return id;
-    }
-
-    /** Finds pages contained in a subProtocol. --> move to protocol loading/parsing and saved on protocol model?
-     * @summary Finds and returns all pages inside of a subProtocol.
-     * @models protocol
-     * @returns pages: list of page objects
-    */
-    getSubProtocol(id: string | undefined) {
-        console.log("ExamService getSubProtocol() called");
-
-        let pages:any;
-        if (id == undefined) {
-            return pages
-        };
-
-        // check the main protocol definition --> instead of comments, make a function with descriptive name and call it
-        this.protocol.activeProtocol?.pages?.forEach((subProtocol:any) => {
-            if (id == subProtocol?.protocolId) {
-                pages = subProtocol?.pages;
-                return pages;
-            }
-        });
-
-        // check subProtocol --> call checkSubProtocol(id)
-        this.protocol.activeProtocol?.subProtocols?.forEach((subProtocol) => {
-            if (id == subProtocol?.protocolId) {
-                pages = subProtocol?.pages;
-                return pages;
-            }
-        });
-        // console.log("subProtocol pages found:",pages);
-        return pages;
     }
 
     /** Checks if a page is submittable.

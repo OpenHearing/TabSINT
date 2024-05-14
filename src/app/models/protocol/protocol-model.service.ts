@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { ProtocolInterface } from './protocol.interface';
 import { ProtocolServer } from '../../utilities/constants';
 import { ProtocolModelInterface } from './protocol-model.interface';
-import { partialMetaDefaults } from '../../utilities/defaults';
+import { PageInterfaceDefaults, partialMetaDefaults } from '../../utilities/defaults';
 
 @Injectable({
     providedIn: 'root',
@@ -22,7 +22,8 @@ export class ProtocolModel {
                 path: "protocols/edare-audiometry",
                 creator: "Edare",
                 server: ProtocolServer.Developer,
-                admin: false
+                admin: false,
+                pages: PageInterfaceDefaults
             }),
             this.define({
                 ...partialMetaDefaults,
@@ -31,7 +32,8 @@ export class ProtocolModel {
                 path: "protocols/creare-audiometry",
                 creator: "creare",
                 server: ProtocolServer.Developer,
-                admin: true
+                admin: true,
+                pages: PageInterfaceDefaults
             }),
             this.define({
                 ...partialMetaDefaults,
@@ -40,7 +42,8 @@ export class ProtocolModel {
                 path: "protocols/TabSINT-Test",
                 creator: "creare",
                 server: ProtocolServer.Developer,
-                admin: true
+                admin: true,
+                pages: PageInterfaceDefaults
             }),
             this.define({
                 ...partialMetaDefaults,
@@ -49,7 +52,8 @@ export class ProtocolModel {
                 path: "protocols/wahts-device-test",
                 creator: "creare",
                 server: ProtocolServer.Developer,
-                admin: true
+                admin: true,
+                pages: PageInterfaceDefaults
             }),
             this.define({
                 ...partialMetaDefaults,
@@ -58,7 +62,8 @@ export class ProtocolModel {
                 path: "protocols/wahts-software-test",
                 creator: "creare",
                 server: ProtocolServer.Developer,
-                admin: true
+                admin: true,
+                pages: PageInterfaceDefaults
             }),
             this.define({
                 ...partialMetaDefaults,
@@ -67,7 +72,8 @@ export class ProtocolModel {
                 path: "protocols/develop",
                 creator: "creare",
                 server: ProtocolServer.Developer,
-                admin: true
+                admin: true,
+                pages: PageInterfaceDefaults
             })
         ]
     }

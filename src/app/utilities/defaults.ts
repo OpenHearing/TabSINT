@@ -1,8 +1,11 @@
 import { LoadingProtocolInterface } from "../interfaces/loading-protocol-object.interface";
+import { PageDefinition } from "../interfaces/page-definition.interface";
 import { ProtocolSchemaInterface } from "../interfaces/protocol-schema.interface";
+import { PageInterface } from "../models/page/page.interface";
 import { ProtocolMetaInterface } from "../models/protocol/protocol-meta.interface";
 import { ProtocolInterface } from "../models/protocol/protocol.interface";
 import { ProtocolServer } from "./constants";
+import { checkIfCanGoBack } from "./exam-helper-functions";
 
 export const metaDefaults: ProtocolMetaInterface = {
     group: '',
@@ -25,14 +28,6 @@ export const partialMetaDefaults = {
     contentURI: ''
 };
 
-const protocolDefaults: ProtocolInterface = {
-    ...metaDefaults,
-    type: "ProtocolSchemaInterface",
-    id: '',
-    protocolId: '',
-    pages: []
-};
-
 export function loadingProtocolDefaults(_requiresValidation: boolean = true): LoadingProtocolInterface {
     let loadingProtocol: LoadingProtocolInterface = {
         protocol: protocolDefaults,
@@ -44,4 +39,47 @@ export function loadingProtocolDefaults(_requiresValidation: boolean = true): Lo
     }
 
     return loadingProtocol;
+};
+
+export const PageInterfaceDefaults: PageInterface = {
+    type: '',
+    id: '',
+    enableBackButton: false,
+    title: '',
+    questionMainText: '',
+    questionSubText: '',
+    instructionText: '',
+    helpText: '',
+    responseArea: {
+        enableSkip: false,
+        type: '',
+        responseRequired: false,
+        inputList: function (inputList: any, arg1: (input: any) => void): unknown {
+            throw new Error("Function not implemented.");
+        },
+        html: undefined,
+        image: undefined
+    },
+    submitText: 'Begin',
+    followOns: [],
+    name: '',
+    filename: '',
+    units: '',
+    example: 0,
+    other: [],
+    dict: {},
+    hideProgressBar: true,
+    isSubmittable: true,
+    canGoBack: checkIfCanGoBack(),
+    subtitle: '',
+    loadingRequired: false,
+    loadingActive: false,
+    exportToCSV: false
+}
+
+const protocolDefaults: ProtocolInterface = {
+    ...metaDefaults,
+    id: '',
+    protocolId: '',
+    pages: PageInterfaceDefaults
 };

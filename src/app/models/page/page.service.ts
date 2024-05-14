@@ -15,19 +15,24 @@ export class PageModel {
         filename: "path/to/file",
         units: "mm",
         example: 100,
-        other: ["array","of","strings"],
-        dict: {"key":"value"},
+        other: ["array", "of", "strings"],
+        dict: { "key": "value" },
         enableBackButton: true,
         hideProgressBar: false,
         helpText: "helpText",
         submitText: "Submit",
         isSubmittable: true,
-        canGoBack: Function,
+        canGoBack: true,
         responseArea: {
             enableSkip: true,
             type: "type",
             responseRequired: true,
-            choices: []
+            choices: [],
+            inputList: function (inputList: any, arg1: (input: any) => void): unknown {
+                throw new Error('Function not implemented.');
+            },
+            html: undefined,
+            image: undefined
         },
         title: "title",
         instructionText: "instructionText",
@@ -40,11 +45,13 @@ export class PageModel {
         questionMainText: "questionMainText",
         loadingRequired: false,
         loadingActive: false,
-        followOns: []
+        followOns: [],
+        exportToCSV: false
     };
+
     currentPageObservable = new BehaviorSubject(this.currentPage);
 
-    stack: Array<PageInterface> = [];
+    stack: PageInterface[] = [];
     
     getPage(): PageInterface {
         return this.currentPage;
