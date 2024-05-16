@@ -121,12 +121,14 @@ export class ExamService {
     private advancePage() {
         let nextExamIndex = this.state.examIndex + 1;
         var nextID;
-        if (this.currentPage.followOns) { nextID = this.findFollowOn(); }
-        if (nextID != undefined) {
-            let pages = this.protocolM.protocolModel.activeProtocolDictionary![nextID].pages;
-            this.addPagesToStack(pages, nextExamIndex);
-        } else {
-            this.state.examState = ExamState.NotReady;
+        if (this.currentPage.followOns) { 
+            nextID = this.findFollowOn();
+            if (nextID != undefined) {
+                let pages = this.protocolM.protocolModel.activeProtocolDictionary![nextID].pages;
+                this.addPagesToStack(pages, nextExamIndex);
+            } else {
+                this.state.examState = ExamState.NotReady;
+            }
         }
         this.state.examIndex = nextExamIndex;
         this.startPage();
@@ -151,7 +153,7 @@ export class ExamService {
     /** Parse page objects and add them to the protocolStack.
      * @summary Adds pages to protocolStack. This will parse any page with a reference and put the 
      * correct pages in place.
-     * @models state
+     * @models state, protocol, page
      * @param pages list of page objects
     */
     addPagesToStack(pages:any, index:number) { // Move this to protocol loading/parsing utility function? 
@@ -166,6 +168,7 @@ export class ExamService {
                 this.addPagesToStack(extraPages,index+1)
              } else {
                 this.pageModel.stack.splice(index, 0, page);
+                index = index + 1;
             }
         });
     }
