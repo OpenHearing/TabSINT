@@ -107,7 +107,7 @@
                     class="btn btn-block btn-lg btn-primary"
                     [ngClass]="(state.isSubmittable)?'':'disabled custom-disabled'"
                     [disabled]= "!state.isSubmittable"
-                    (click)="examService.closeAll(); examService.submit()">
+                    (click)="examService.submit()">
                 <div *ngIf="examService.currentPage?.submitText"> {{examService.currentPage?.submitText}}</div>
                 <div *ngIf="examService.currentPage?.submitText===undefined"> {{'Submit' | translate}}</div>
             </button>
@@ -136,7 +136,7 @@
                     class="btn btn-block btn-lg btn-primary"
                     [ngClass]="(state.isSubmittable)?'':'disabled custom-disabled'"
                     [disabled]= "!state.isSubmittable"
-                    (click)="examService.closeAll(); examService.submit()">
+                    (click)="examService.submit()">
                 <div *ngIf="examService.currentPage?.submitText"> {{examService.currentPage?.submitText}}</div>
                 <div *ngIf="examService.currentPage?.submitText===undefined"> {{'Submit' | translate}}</div>
             </button>

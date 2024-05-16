@@ -124,12 +124,16 @@ export class ExamService {
         if (this.currentPage.followOns) { 
             nextID = this.findFollowOn();
             if (nextID != undefined) {
+                if (nextID === "@END_ALL") {
+                    this.endExam();
+                    return;
+                }
                 let pages = this.protocolM.protocolModel.activeProtocolDictionary![nextID].pages;
                 this.addPagesToStack(pages, nextExamIndex);
             } else {
                 this.state.examState = ExamState.NotReady;
             }
-        }
+        }        
         this.state.examIndex = nextExamIndex;
         this.startPage();
     }
@@ -156,7 +160,7 @@ export class ExamService {
      * @models state, protocol, page
      * @param pages list of page objects
     */
-    addPagesToStack(pages:any, index:number) { // Move this to protocol loading/parsing utility function? 
+    private addPagesToStack(pages:any, index:number) { // Move this to protocol loading/parsing utility function? 
         let extraPages:any;
         pages.forEach( (page:any)=> {
             console.log(page);
@@ -166,7 +170,7 @@ export class ExamService {
             } else if (page.pages) {
                 extraPages = page.pages;
                 this.addPagesToStack(extraPages,index+1)
-             } else {
+            } else {
                 this.pageModel.stack.splice(index, 0, page);
                 index = index + 1;
             }
@@ -178,7 +182,7 @@ export class ExamService {
      * @models state, results
      * @returns followOn ID: string or undefined
     */
-    findFollowOn() {
+    private findFollowOn() {
         let id: string | undefined = undefined;
         this.currentPage.followOns.forEach((followOn:any) => {
             // TODO: I looked at this way too long. I don't think we want to do this here. None of the options I looked at are good. But the current implementation is too limiting.
@@ -205,8 +209,16 @@ export class ExamService {
             }
         }
     }
-
-
+    /**
+     * End Exam
+     * @summary Save results, set exam state, and scroll page back to top.
+     * @models state
+     */
+    private endExam() {
+        this.resultsService.save();
+        this.state.examState = ExamState.Finalized;
+        window.scrollTo(0, 0);
+    }
 
     // Ignore the below functions for now
 
@@ -220,10 +232,6 @@ export class ExamService {
 
     help() {
         console.log("ExamService help() called");
-    }
-
-    closeAll() {
-        console.log("ExamService closeAll() called");
     }
 
 }

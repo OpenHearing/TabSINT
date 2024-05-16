@@ -26,6 +26,9 @@
             "choices":[
               {
                 "id":"Text Box"
+              },
+              {
+                "id":"End All"
               }
             ]
           }, 
@@ -34,6 +37,12 @@
               "conditional":"result.response=='Text Box'",
               "target":{
                 "reference":"TextBox"
+              } 
+            },
+            {
+              "conditional":"result.response=='End All'",
+              "target":{
+                "reference":"@END_ALL"
               } 
             }
           ]

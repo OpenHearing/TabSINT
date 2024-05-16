@@ -35,5 +35,14 @@ export class ResultsService {
         this.results.current.responseArea = currentPage.responseArea;
     }
 
-
+    /**
+     * Save exam results
+     * @summary summary
+     * @models models
+     * @param parameter: description
+     * @returns description:  type
+     */
+    save() {
+        // unimplemented
+    }
 }
