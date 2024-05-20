@@ -15,5 +15,5 @@ export interface ResultsInterface {
     //     nIncorrect?: any;
     // },
     current: any;
-    previous: any;
+    testResults: any;
 }

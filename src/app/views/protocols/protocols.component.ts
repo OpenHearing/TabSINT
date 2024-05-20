@@ -101,7 +101,7 @@ export class ProtocolsComponent {
         // const observable = new Observable<number>(observer => {
         this.tasks.register("updating", "Loading Protocol...");
         // });
-        this.protocolService.load(getProtocolMetaData(this.selected!), this.disk.validateProtocols, true, reload);
+        this.protocolService.load(getProtocolMetaData(this.selected!), true, reload);
         // observable.subscribe({
         //   next: () => {
         //     this.protocolService.load(this.selected, this.disk.validateProtocols, true, reload);

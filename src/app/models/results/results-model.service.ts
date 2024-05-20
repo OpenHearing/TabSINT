@@ -10,7 +10,7 @@ export class ResultsModel {
     resultsModel: ResultsInterface = {
         name: "name",
         current: {},
-        previous: []
+        testResults: {}
     }
 
     getResults(): ResultsInterface {

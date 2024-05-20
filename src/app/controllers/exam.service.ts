@@ -16,7 +16,7 @@ import { ProtocolModel } from '../models/protocol/protocol-model.service';
 import { DiskModel } from '../models/disk/disk.service';
 
 import { Logger } from '../utilities/logger.service';
-import { ExamState } from '../utilities/constants';
+import { DialogType, ExamState } from '../utilities/constants';
 import { Notifications } from '../utilities/notifications.service';
 import { PageModel } from '../models/page/page.service';
 import { PageInterface } from '../models/page/page.interface';
@@ -51,14 +51,17 @@ export class ExamService {
         this.protocol = this.protocolM.getProtocolModel();
     }
 
-    /** Switches to exam view
+    /** Switches to exam view.
      * @summary Can be called from any other TabSINT view. If pageModel.stack is not empty, the exam
      * will proceed where it left off. Otherwise examState gets changed to Ready.
     */
     switchToExamView() {
-        console.log("ExamService switchToExamView() called");
         if (this.protocol.activeProtocol == undefined) {
-            // throw alert that no protocol is loaded
+            this.notifications.alert({
+                title: "Alert",
+                content: "No protocol has been loaded. Please scan your QR Code or navigate to the Admin View and load a protocol.",
+                type: DialogType.Alert
+            }).subscribe();
             return
         }
 
@@ -68,14 +71,12 @@ export class ExamService {
     }
 
     /** Begins TabSINT exam.
-     * @summary Adds pages to protocolStack and changes examState to testing.
+     * @summary Adds pages to protocolStack and changes examState to Testing.
      * @models protocol, state
     */
-    async begin() {
-        console.log("ExamService begin() called");
-        console.log("this.protocol.activeProtocol",this.protocol.activeProtocol);
-        
+    async begin() {        
         this.addPagesToStack(this.protocol.activeProtocol?.pages, 0);
+        this.resultsService.initializeExamResults();
         this.startPage();
         this.state.examState = ExamState.Testing; 
     }
@@ -86,16 +87,14 @@ export class ExamService {
     */
     submitDefault() {
         console.log("ExamService submitDefault() called");
-        // TODO: Below line should handle results with more logic, breakout a function here.
-        this.results.previous.push(JSON.parse(JSON.stringify(this.results.current)));
+        this.resultsService.pushResults(this.results.current);
         // TODO: The below line might need to be async and awaited
         this.advancePage();
 
         this.state.isSubmittable = this.checkIfPageIsSubmittable();
-        this.submit = this.submitDefault;
-        
+        this.submit = this.submitDefault;        
 
-        console.log("this.results.previous",this.results.previous);
+        console.log("this.results.testResults",this.results.testResults);
     }
 
     /** Submit function for exam pages. Can be overwritten by exams.
@@ -148,19 +147,17 @@ export class ExamService {
         this.currentPage = this.pageModel.stack[this.state.examIndex];
         this.pageModel.currentPageObservable.next(this.currentPage);
         // TODO: Could subscribe to the currentPageObservable...
-        this.resultsService.initializeResults(this.currentPage);
+        this.resultsService.initializePageResults(this.currentPage);
         this.state.isSubmittable = this.checkIfPageIsSubmittable();
     }
 
-    // General protocol parsing functions (maybe move to utilities? they do need model access...) --> VAL
-
-    /** Parse page objects and add them to the protocolStack.
-     * @summary Adds pages to protocolStack. This will parse any page with a reference and put the 
+    /** Parse page objects and add them to the pageModel.stack.
+     * @summary Adds pages to pageModel.stack. This will parse any page with a reference and put the 
      * correct pages in place.
      * @models state, protocol, page
      * @param pages list of page objects
     */
-    private addPagesToStack(pages:any, index:number) { // Move this to protocol loading/parsing utility function? 
+    private addPagesToStack(pages:any, index:number) {
         let extraPages:any;
         pages.forEach( (page:any)=> {
             console.log(page);
@@ -185,7 +182,6 @@ export class ExamService {
     private findFollowOn() {
         let id: string | undefined = undefined;
         this.currentPage.followOns.forEach((followOn:any) => {
-            // TODO: I looked at this way too long. I don't think we want to do this here. None of the options I looked at are good. But the current implementation is too limiting.
             if (this.results.current.response == followOn.conditional.split("==")[1].replaceAll("'","")) {
                 id = followOn.target.reference;
             }

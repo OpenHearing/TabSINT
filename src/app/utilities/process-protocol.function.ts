@@ -6,6 +6,7 @@ import { PageInterface } from "../models/page/page.interface";
 import { LoadingProtocolInterface } from "../interfaces/loading-protocol-object.interface";
 import { ProtocolDictionary } from "../interfaces/protocol-dictionary";
 import { FollowOnsDictionary } from "../interfaces/follow-ons-dictionary";
+import { doesIdExist, doesProtocolIdExist, doesReferenceExist } from "./protocol-helper-functions";
 
 /**
  * Adds variables to the active protocol and generates a stack of pages.
@@ -57,8 +58,8 @@ export function processProtocol(loading: LoadingProtocolInterface):
     _.forEach(pages, function(page) {
       if (_.has(page, "pages")) {
         processSubProtocol(page as ProtocolSchemaInterface);
-      } else if ((page as any).reference) {
-        processPage(page as any);
+      // } else if ((page as any).reference) {
+      //   processPage(page as any);
       } else if (_.has(page, "id")) {
         processPage(page as any);
       }
@@ -151,16 +152,20 @@ export function processProtocol(loading: LoadingProtocolInterface):
 
     if (_.has(page, "followOns")) {
       _.forEach(page.followOns, function(followOn) {
-        let id = followOn.target.id != ''
-          ? followOn.target.id
-          : followOn.target.protocolId != ''
-            ? followOn.target.protocolId
-            : followOn.target.reference
-              ? followOn.target.reference
-              : 'Should not get here';
+        let id = getId(followOn.target);
         followOnsDict[id] = followOn;
         iterateThroughPages(followOn.target);
       });
+    }
+
+    function getId(target: any): string {
+        return  doesIdExist(target.id)
+          ? target.id
+          : doesProtocolIdExist(target.protocolId)
+            ? target.protocolId
+            : doesReferenceExist(target.reference)
+              ? target.reference
+              : 'Should not get here';
     }
 
     if (_.has(page, "pages")) {

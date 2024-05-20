@@ -14,8 +14,8 @@ export class ProtocolModel {
 
     protocolModel: ProtocolModelInterface = {
         activeProtocol: undefined,
-        loadedProtocols: [
-            this.define({
+        loadedProtocols: {
+            "audiometry": this.define({
                 ...partialMetaDefaults,
                 protocolId: "",
                 name: "Audiometry",
@@ -25,7 +25,7 @@ export class ProtocolModel {
                 admin: false,
                 pages: PageInterfaceDefaults
             }),
-            this.define({
+            "Creare Audiometry": this.define({
                 ...partialMetaDefaults,
                 protocolId: "",
                 name: "Creare Audiometry",
@@ -35,7 +35,7 @@ export class ProtocolModel {
                 admin: true,
                 pages: PageInterfaceDefaults
             }),
-            this.define({
+            "tabsint-test": this.define({
                 ...partialMetaDefaults,
                 protocolId: "",
                 name: "tabsint-test",
@@ -45,7 +45,7 @@ export class ProtocolModel {
                 admin: true,
                 pages: PageInterfaceDefaults
             }),
-            this.define({
+            "wahts-device-test": this.define({
                 ...partialMetaDefaults,
                 protocolId: "",
                 name: "wahts-device-test",
@@ -55,7 +55,7 @@ export class ProtocolModel {
                 admin: true,
                 pages: PageInterfaceDefaults
             }),
-            this.define({
+            "wahts-software-test": this.define({
                 ...partialMetaDefaults,
                 protocolId: "",
                 name: "wahts-software-test",
@@ -65,7 +65,7 @@ export class ProtocolModel {
                 admin: true,
                 pages: PageInterfaceDefaults
             }),
-            this.define({
+            "develop": this.define({
                 ...partialMetaDefaults,
                 protocolId: "",
                 name: "develop",
@@ -75,7 +75,7 @@ export class ProtocolModel {
                 admin: true,
                 pages: PageInterfaceDefaults
             })
-        ]
+        }
     }
 
     getProtocolModel(): ProtocolModelInterface {

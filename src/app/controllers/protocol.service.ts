@@ -62,7 +62,7 @@ export class ProtocolService {
         this.loading = loadingProtocolDefaults(this.diskModel.disk.validateProtocols);
 
         // For BAyotte development only, auto load protocol when tabsint loads
-        this.load(this.protocolModel.loadedProtocols[5], true, true, false)
+        this.load(this.protocolModel.loadedProtocols["develop"], true, false)
     }
 
     init(): void  {
@@ -83,18 +83,16 @@ export class ProtocolService {
      * Handle load errors.
      * @models protocol, disk
      * @param meta meta data for the protocol to load, 
-     * @param _requiresValidation whether the protocol needs to be validated
      * @param notify whether to use task banners to notify user about progress. Default: false.
      * @param overwrite whether to overwrite local protocol files if they have changed. Default: false.
     */
     async load(
         meta: ProtocolMetaInterface, 
-        _requiresValidation: boolean = this.diskModel.disk.validateProtocols, 
         notify: boolean = false, 
         overwrite: boolean = false
     ) {
         this.loading.meta = meta;
-        this.loading.requiresValidation = _requiresValidation;
+        this.loading.requiresValidation = this.diskModel.disk.validateProtocols;
         this.loading.notify = notify;
         this.loading.overwrite = overwrite;
         
@@ -109,9 +107,11 @@ export class ProtocolService {
         } catch(e) {
             this.tasks.deregister("updating protocol");
             this.logger.error("Could not load protocol.  " + JSON.stringify(e));
-            // if (e.code == 606 && meta !== undefined) {
-            //     notifications.alert("Error overwriteing protocol. Please delete and re-add.");
-            // }
+            this.notifications.alert({
+                title: "Alert",
+                content: "Could not load protocol.",
+                type: DialogType.Alert
+            }).subscribe();
         }
     };
 
@@ -122,42 +122,19 @@ export class ProtocolService {
      * @models protocol, app
      * @param p protocol to delete
      */
-    delete(p: ProtocolInterface): void { //simplify, use dictionary?
-        const idx = _.findIndex(this.protocolModel.loadedProtocols, p);
-    
-        if (idx === -1) {
-            this.logger.error("Trying to delete protocol " + p.name + ", but it does not exist");
-            return;
-        }
-    
+    delete(p: ProtocolInterface): void {
         if (_.includes(["app", "developer"], p.group)) {
             this.logger.error("Trying to delete app or developer protocol " + p.name + ", but this is not allowed");
             return;
         }
-    
-        if (this.app.tablet && p.server === ProtocolServer.Gitlab) {
-            try {
-                this.logger.debug("Removing protocol files for protocol: " + p.name + " at path: " + p.path);
-                const root = p.path!
-                    .split("/")
-                    .slice(0, -2)
-                    .join("/");
-                const dir = p.path!.split("/").slice(-2, -1)[0];
-                this.logger.debug('Delete protocol in development');
-            } catch (e) {
-                this.logger.debug("Failed to remove protocol directory " + p.name + " from path " + p.path);
-            }
-        }
-    
-        this.protocolModel.loadedProtocols.splice(idx, 1);
     
         if (this.isActive(p)) {
             this.protocolModel.activeProtocol = undefined;
         }
     
         try {
-            console.log("attempting to delete files in development");
-            // this.fileService.deleteCopiedInternalDir(p.path, p.name);
+            delete this.protocolModel.loadedProtocols[p.name];
+            this.fileService.deleteDirectory(p.path, p.name);
         } catch (error) {
             console.log("Error trying to delete files");
             console.log(error);
@@ -201,14 +178,6 @@ export class ProtocolService {
             }
         }
     }
-
-    private loadIfDoesntExist(p: ProtocolInterface): void {
-        const duplicates = findDuplicateProtocols(p, this.protocolModel.loadedProtocols);
-    
-        duplicates.length === 0
-            ? this.protocolModel.loadedProtocols.push(p)
-            : this.logger.error("Protocol meta data already in this.protocolModel");
-    };
 
     private async loadFiles() {
 
@@ -319,9 +288,7 @@ export class ProtocolService {
             this.protocolModel.activeProtocolDictionary,
             this.protocolModel.activeProtocolFollowOnsDictionary
         ] = processProtocol(this.loading);
-        
-        this.protocolModel.activeProtocol = this.loading.protocol;
-    
+            
         if (this.protocolModel.activeProtocol && "key" in this.protocolModel.activeProtocol) {
             if (this.protocolModel.activeProtocol.key !== undefined) {
                 this.protocolModel.activeProtocol.publicKey = decodeURI(this.protocolModel.activeProtocol.key);
@@ -333,8 +300,7 @@ export class ProtocolService {
         if (this.loading.protocol._requiresCha) {
             this.logger.debug("This exam requires the CHA, attempting to connect...");
         // setTimeout(cha.connect, 1000);
-        }
-    
+        }    
 
         this.state.examIndex = 0;
         this.state.examState = ExamState.Ready;
@@ -349,7 +315,7 @@ export class ProtocolService {
             calibration = await this.fileService.readFile(this.loading.meta.path + "/calibration.json");
         }
         if (calibration) {
-            this.loading.calibration = calibration as unknown as ProtocolInterface; // ToDo: fix typing
+            this.loading.calibration = calibration as unknown as ProtocolInterface;
         }    
         
     }

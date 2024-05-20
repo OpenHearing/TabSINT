@@ -7,5 +7,7 @@ export interface ProtocolModelInterface {
     activeProtocol?: ProtocolInterface, 
     activeProtocolDictionary?: ProtocolDictionary,
     activeProtocolFollowOnsDictionary?: FollowOnsDictionary,
-    loadedProtocols: Array<ProtocolInterface>, 
+    loadedProtocols: {
+        [Key: string]: ProtocolInterface
+    }, 
 }

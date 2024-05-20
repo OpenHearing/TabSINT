@@ -1,8 +1,6 @@
 import _ from "lodash";
 import { ProtocolInterface } from "../models/protocol/protocol.interface";
 import { ProtocolMetaInterface } from "../models/protocol/protocol-meta.interface";
-import { DiskModel } from "../models/disk/disk.service";
-import { Logger } from "./logger.service";
 
 export function findDuplicateProtocols(p: ProtocolInterface, loadedP: ProtocolInterface[]) {
     return _.filter(loadedP, {
@@ -25,4 +23,16 @@ export function getProtocolMetaData(protocol: ProtocolInterface): ProtocolMetaIn
         admin: protocol.admin,
         contentURI: protocol.contentURI
     }
+}
+
+export function doesIdExist(id: string | undefined) {
+    return id != '' && !_.isUndefined(id);
+}
+
+export function doesProtocolIdExist(id: string | undefined) {
+    return id != '' && !_.isUndefined(id);
+}
+
+export function doesReferenceExist(reference: string | undefined) {
+    return reference != '' && !_.isUndefined(reference);
 }

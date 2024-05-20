@@ -41,7 +41,7 @@ export class DiskModel {
         preventExports: true,
         reloadingBrowser: false,
         downloadInProgress: false,
-        validateProtocols: false,
+        validateProtocols: true,
         completedResults: [],
         currentResults: undefined,
         tabletLocation: {},

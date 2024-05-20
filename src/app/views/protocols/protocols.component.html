@@ -24,20 +24,20 @@
           </tr>
         </thead>
         <tbody>
-          <div *ngFor="let p of protocolModel.loadedProtocols; index as i" class="no-border">
-          <!-- <tr *ngFor="let p of disk.loadedProtocols; index as i" *ngIf="!p.admin" [ngClass]="pclass(p)" (click)="select(p)">
-            <td class="row-Name" scope="row">{{p.name}}</td>
-            <td class="row-Version">{{p.version}}</td>
-            <td class="row-Date">{{p.server === 'gitlab' ? p.date?.replace('T', ' ')?.split('.')![0] : p.date}} </td>
+          <div *ngFor="let p of protocolModel.loadedProtocols | keyvalue" class="no-border">
+          <!-- <tr *ngFor="let p of disk.loadedProtocols; index as i" *ngIf="!p.value.admin" [ngClass]="pclass(p)" (click)="select(p)">
+            <td class="row-Name" scope="row">{{p.value.name}}</td>
+            <td class="row-Version">{{p.value.version}}</td>
+            <td class="row-Date">{{p.value.server === 'gitlab' ? p.value.date?.replace('T', ' ')?.split('.')![0] : p.value.date}} </td>
           </tr> -->
 
           <tr></tr>
 
-            <tr *ngIf="p !== undefined" [ngClass]="pclass(p)" (click)="select(p)" class="no-border">
-              <!-- *ngIf="p.admin && disk.debugMode"  -->
-              <td [ngClass]="pclass(p)" scope="row">{{p.name}}</td> 
-              <td >{{p.version}}</td>
-              <td >{{p.date}}</td>
+            <tr *ngIf="p !== undefined" [ngClass]="pclass(p.value)" (click)="select(p.value)" class="no-border">
+              <!-- *ngIf="p.value.admin && disk.debugMode"  -->
+              <td [ngClass]="pclass(p.value)" scope="row">{{p.value.name}}</td> 
+              <td >{{p.value.version}}</td>
+              <td >{{p.value.date}}</td>
             </tr>
           </div>
         </tbody>

@@ -52,9 +52,9 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let resp of results.current.testResults.responses; index as i">
+    <tr *ngFor="let resp of results.testResults.responses; index as i">
       <td scope="row">{{i+1}}</td>
-      <td>{{resp.presentationId.substr(0,15)}}</td>
+      <td>{{resp.pageId.substr(0,15)}}</td>
       <td>{{resp.response.substr(0,25)}}</td>
       <!-- <td>{{resp}}</td> -->
 
