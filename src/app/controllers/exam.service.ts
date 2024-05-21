@@ -207,11 +207,11 @@ export class ExamService {
     }
     /**
      * End Exam
-     * @summary Save results, set exam state, and scroll page back to top.
+     * @summary Save results.testResults, set exam state, and scroll page back to top.
      * @models state
      */
     private endExam() {
-        this.resultsService.save();
+        this.resultsService.save(this.results.testResults);
         this.state.examState = ExamState.Finalized;
         window.scrollTo(0, 0);
     }

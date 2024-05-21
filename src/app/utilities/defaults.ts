@@ -77,7 +77,7 @@ export const PageInterfaceDefaults: PageInterface = {
     exportToCSV: false
 }
 
-const protocolDefaults: ProtocolInterface = {
+export const protocolDefaults: ProtocolInterface = {
     ...metaDefaults,
     id: '',
     protocolId: '',
