@@ -13,26 +13,25 @@
       <tbody>
         <tr>
           <th class="align-right width-50">{{'Protocol'|translate}}:</th>
-          <td>{{results.current.protocolName}}</td>
+          <td>{{results.testResults.protocolName}}</td>
         </tr>
         <tr>
           <th class="align-right width-50">{{'Started at'|translate}}:</th>
-          <td>{{results.current.testDateTime | date:'yyyy-M-dd H:mm:ss'}}</td>
+          <td>{{results.testResults.testDateTime | date:'yyyy-M-dd H:mm:ss'}}</td>
         </tr>
         <tr>
           <th class="align-right width-50">{{'Elapsed Time'|translate}}:</th>
-          <td>{{results.current.elapsedTime}}</td>
+          <td>{{results.testResults.elapsedTime}}</td>
         </tr>
   
-        <!-- Tabsint Server details -->
-        <tr *ngIf="results.current.protocolId">
+        <tr *ngIf="results.testResults.protocolId">
           <th class="align-right width-50">{{'Site ID'|translate}}:</th>
-          <td>{{results.current.protocolId}}</td>
+          <td>{{results.testResults.protocolId}}</td>
         </tr>
-        <tr *ngIf="results.current.qrString">
+        <!-- <tr *ngIf="results.testResults.qrString">
           <th class="align-right width-50">{{'QR String'|translate}}:</th>
-          <td>{{results.current.qrString}}</td>
-        </tr>
+          <td>{{results.testResults.qrString}}</td>
+        </tr> -->
       </tbody>
     </table>
   </div>

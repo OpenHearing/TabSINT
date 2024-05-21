@@ -24,7 +24,9 @@ export class StateModel {
             appLog: false,
             protocols: true,
             protocolsSource: true,
-            chaAdvanced: false
+            chaAdvanced: false,
+            testResults: true,
+            exportedAndUploadedResults: true
         },
         examProgress: {
             pctProgress: 1,
