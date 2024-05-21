@@ -11,7 +11,7 @@ import { TestResults } from "../models/results/results.interface";
 export function constructFilename(resultFilename?: string, testDateTime?: string, suffix?: string) {
     var filename, dateTime;
 
-    dateTime = testDateTime ? testDateTime : new Date().toJSON();
+    dateTime = getDateString(testDateTime);
 
     if (resultFilename) {
         filename = resultFilename + "." + dateTime;
@@ -26,18 +26,12 @@ export function constructFilename(resultFilename?: string, testDateTime?: string
     return filename;
 };
 
-// /**
-//  * Convience method to getDateString
-//  * @summary Return result.testResults.testDateTime if it exists, otherwise return current date.
-//  * @param  testDateTime string: testResults.testDateTime
-//  * @return dateString
-//  */
-// export function getDateString(testDateTime?: string) {
-//     var dateString;
-//     if (testDateTime) {
-//         dateString = testDateTime;
-//     } else {
-//         dateString = new Date().toJSON();
-//     }
-//     return dateString;
-// }
+/**
+ * Convience method to getDateString
+ * @summary Return result.testResults.testDateTime if it exists, otherwise return current date.
+ * @param  testDateTime string: testResults.testDateTime
+ * @return dateString
+ */
+export function getDateString(testDateTime?: string) {
+    return testDateTime ? testDateTime: new Date().toJSON();
+}

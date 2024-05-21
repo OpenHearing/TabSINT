@@ -6,9 +6,12 @@ import { DiskInterface } from '../models/disk/disk.interface';
 import { ProtocolModel } from '../models/protocol/protocol-model.service';
 import { ProtocolModelInterface } from '../models/protocol/protocol-model.interface';
 import _ from 'lodash';
-import { constructFilename } from '../utilities/results-helper-functions';
+import { constructFilename, getDateString } from '../utilities/results-helper-functions';
 import { FileService } from './file.service';
 import { Logger } from '../utilities/logger.service';
+import { SqLite } from '../utilities/sqLite.service';
+import { DevicesInterface } from '../models/devices/devices.interface';
+import { DevicesModel } from '../models/devices/devices.service';
 
 @Injectable({
     providedIn: 'root',
@@ -18,10 +21,13 @@ export class ResultsService {
     results: ResultsInterface;
     disk: DiskInterface;
     protocol: ProtocolModelInterface;
+    devices: DevicesInterface;
     
     constructor (
         public resultsModel: ResultsModel,
         public protocolM: ProtocolModel,
+        public sqLite: SqLite,
+        public devicesModel: DevicesModel,
         private fileService: FileService,
         private logger: Logger,
         private diskModel: DiskModel
@@ -29,6 +35,7 @@ export class ResultsService {
         this.results = this.resultsModel.getResults();
         this.disk = this.diskModel.getDisk();
         this.protocol = this.protocolM.getProtocolModel();
+        this.devices = this.devicesModel.getDevices();
     }
     
     /** Initializes Exam results before starting the first page.
@@ -99,12 +106,19 @@ export class ResultsService {
 
     /**
      * Save exam results
-     * @summary summary
+     * @summary Safe result in SQLite db, than backup results on tablet.
      * @models result
      * @param result partial or completed result.testResults
      */
     async save(result: TestResults) {
-        // unimplemented
+        await this.sqLite.store(
+            "results", 
+            getDateString(result.testDateTime), 
+            "result", 
+            result.toString(), 
+            this.devices
+        );
+        await this.backup(result);
     }
 
     /**
@@ -125,4 +139,32 @@ export class ResultsService {
         
     }
     
+    async exportAll() {
+
+    }
+
+    async exportSingleResult(index: number) {
+        let result = await this.sqLite.getSingleResult(index);
+        result = JSON.parse(result);
+        let filename = result.filename;
+        let dir = this.disk.servers.localServer.resultsDir
+            ? this.disk.servers.localServer.resultsDir
+            : "tabsint-results";
+        await this.fileService.writeFile(dir + filename, result);
+        this.updateSummary(result);
+        await this.sqLite.deleteSingleResult(index);
+    }
+
+    private updateSummary(result: TestResults) {
+        var meta = {
+            protocolId: result.protocolId,
+            protocolName: result.protocolName,
+            testDateTime: result.testDateTime!,
+            nResponses: result.responses.length,
+            source: result.protocol.server,
+            output: result.exportLocation || result.protocol.server,
+            uploadedOn: new Date().toJSON()
+        };
+        this.disk.uploadSummary.unshift(meta);
+    }
 }

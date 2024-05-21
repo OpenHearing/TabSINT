@@ -38,7 +38,6 @@ import { ResultsModel } from './models/results/results-model.service';
 import { StateModel } from './models/state/state.service';
 
 // Utilities
-import { Json } from './utilities/json.service';
 import { Notifications } from './utilities/notifications.service';
 import { SqLite } from './utilities/sqLite.service';
 import { Logger } from './utilities/logger.service';
@@ -131,7 +130,6 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     ProtocolModel,
     ResultsModel,
     StateModel,
-    Json,
     SqLite,
     Notifications,
     Logger,

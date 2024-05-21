@@ -17,6 +17,8 @@ export interface StateInterface {
         protocols: boolean;
         protocolsSource: boolean;
         chaAdvanced: boolean;
+        testResults: boolean;
+        exportedAndUploadedResults: boolean;
     };
     examProgress: {
         pctProgress: number;

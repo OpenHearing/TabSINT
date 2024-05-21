@@ -1,3 +1,4 @@
+import { ProtocolServer } from "../../utilities/constants";
 import { ProtocolInterface } from "../protocol/protocol.interface";
 
 export interface ResultsInterface {
@@ -25,6 +26,7 @@ export interface TestResults {
     protocol: ProtocolInterface;
     testDateTime?: string;
     elapsedTime?: string;
+    exportLocation?: ProtocolServer;
     responses: any;
     partialresults?: any;
     softwareVersion: any;

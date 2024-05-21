@@ -28,7 +28,7 @@ export interface DiskInterface {
     externalMode: boolean,
     appDeveloperMode: boolean,
     appDeveloperModeCount: number,
-    uploadSummary: Array<string>,
+    uploadSummary: Array<UploadSummary>,
     suppressAlerts: boolean,
     showUploadSummary: boolean,
     resultsMode: string,
@@ -78,5 +78,14 @@ export interface DiskInterface {
     audhere: string ,
     activeProtocolMeta: ProtocolMetaInterface,
     availableProtocolsMeta: Array<ProtocolMetaInterface>
-  
+}
+
+interface UploadSummary {
+  protocolId: string;
+  protocolName: string;
+  testDateTime: string;
+  nResponses: number;
+  source: ProtocolServer;
+  uploadedOn: string;
+  output: ProtocolServer;
 }

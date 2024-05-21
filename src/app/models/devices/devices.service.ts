@@ -8,7 +8,15 @@ import { DevicesInterface } from './devices.interface';
 export class DevicesModel {
 
     devicesModel: DevicesInterface = {
-        name: "name"
+        build: "build",
+        protocolId: "protocolId",
+        uuid: "uuid",
+        tabsintUUID: "tabsintUUID",
+        version: "version",
+        platform: "platform",
+        model: "model",
+        os: "os",
+        other: "other"
     }
 
     getDevices(): DevicesInterface {
