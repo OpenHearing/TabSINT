@@ -1,19 +1,17 @@
 import { TranslateService } from "@ngx-translate/core";
 import { LoadingProtocolInterface } from "../interfaces/loading-protocol-object.interface";
-import { Tasks } from "./tasks.service";
 import { DiskModel } from "../models/disk/disk.service";
 import { Logger } from "./logger.service";
 import _ from "lodash";
 import { loadingProtocolDefaults } from "./defaults";
-import { loadJSONFromFile } from "./json";
-import { ProtocolModel } from "../models/protocol/protocol-model.service";
-import { ProtocolModelInterface } from "../models/protocol/protocol-model.interface";
+import { FileService } from "../controllers/file.service";
 
 export function initializeLoadingProtocol(
     loading: LoadingProtocolInterface,
     logger: Logger,
     translate: TranslateService,
-    diskModel: DiskModel) {
+    diskModel: DiskModel, 
+    fileService: FileService) {
 
     let msg: string='';
 
@@ -139,7 +137,7 @@ export function initializeLoadingProtocol(
             });
             if (midx !== -1) {
                 loading.protocol.commonRepo = diskModel.disk.mediaRepos[midx];
-                loading.protocol.cCommon = loadJSONFromFile(loading.protocol.commonRepo.path + "calibration.json");
+                loading.protocol.cCommon = fileService.readFile(loading.protocol.commonRepo.path + "calibration.json");
             } else {
                 msg =
                 "The media repository referenced by this protocol is not available (" +

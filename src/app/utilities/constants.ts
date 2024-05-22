@@ -68,3 +68,7 @@ export const listOfTabsintDirectories: Array<string> = [
     "tabsint-protocols",
     "tabsint-results"
 ]
+
+export const createResultsTableSql =  "CREATE TABLE IF NOT EXISTS results (msgID INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT, data TEXT, type TEXT, uuid TEXT, siteID TEXT, build TEXT, version TEXT, platform TEXT, model TEXT, os TEXT, other TEXT)";
+export const createLogsTableSql =  "CREATE TABLE IF NOT EXISTS logs (msgID INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT, data TEXT, type TEXT, uuid TEXT, siteID TEXT, build TEXT, version TEXT, platform TEXT, model TEXT, os TEXT, other TEXT)";
+export const deleteSql = "DELETE FROM logs WHERE logs.msgID IN (SELECT msgID FROM logs ORDER BY date LIMIT ?);";

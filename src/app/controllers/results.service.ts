@@ -144,8 +144,8 @@ export class ResultsService {
     }
 
     async exportSingleResult(index: number) {
-        let result = await this.sqLite.getSingleResult(index);
-        result = JSON.parse(result);
+        let result = await this.sqLite.getSingleResult(index) as any;
+        result = JSON.parse(result.toString());
         let filename = result.filename;
         let dir = this.disk.servers.localServer.resultsDir
             ? this.disk.servers.localServer.resultsDir

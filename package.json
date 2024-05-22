@@ -24,6 +24,7 @@
     "@angular/platform-server": "^17.1.0",
     "@angular/router": "^17.1.0",
     "@angular/ssr": "^17.1.1",
+    "@capacitor-community/sqlite": "^5.7.3-3",
     "@capacitor/android": "^5.6.0",
     "@capacitor/angular": "^2.0.3",
     "@capacitor/core": "latest",
@@ -40,7 +41,6 @@
     "jsonformatter": "^0.7.0",
     "lodash": "^4.17.21",
     "rxjs": "~7.8.0",
-    "sqlite": "^5.1.1",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"
   },

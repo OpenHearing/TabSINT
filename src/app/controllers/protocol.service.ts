@@ -281,7 +281,8 @@ export class ProtocolService {
             this.loading,
             this.logger,
             this.translate,
-            this.diskModel);
+            this.diskModel,
+            this.fileService);
         this.tasks.register("updating protocol", "Processing Protocol...");
         
         [this.protocolModel.activeProtocol, 
