@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';import { CapacitorSQLite, SQLiteDBConnection } from '@capacitor-community/sqlite';
+import { Injectable } from '@angular/core';import { CapacitorSQLite, CapacitorSQLitePlugin, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 
 import { DevicesInterface } from '../models/devices/devices.interface';
 import { DiskInterface } from '../models/disk/disk.interface';
@@ -7,6 +7,7 @@ import { AppModel } from '../models/app/app.service';
 import { DiskModel } from '../models/disk/disk.service';
 import { Logger } from './logger.service';
 import { createLogsTableSql, createResultsTableSql, deleteSql } from './constants';
+import { Capacitor } from '@capacitor/core';
 
 @Injectable({
     providedIn: 'root',
@@ -18,29 +19,36 @@ export class SqLite {
         logs: 0,
         results: 0
     };
+    sqlitePlugin!: CapacitorSQLitePlugin;
+    sqliteConnection!: SQLiteConnection;
     
-    private sqlite: any;
     private db!: SQLiteDBConnection;
+    ;
 
     constructor (
         private app: AppModel,
         private diskModel: DiskModel,
         private logger: Logger
     ) {
-        this.sqlite = CapacitorSQLite;
+        this.sqlitePlugin = CapacitorSQLite;
         this.disk = this.diskModel.getDisk();
-        this.init();
+        if (app.getApp().tablet) this.init();
     }
 
-    async init() {
-        const database: string = "storage";
-        const db = await this.sqlite.createConnection('storage', true);
-        await db.open();
-        this.db = db;
+    private async init() {
+        this.sqlitePlugin = CapacitorSQLite;
+        this.sqliteConnection = new SQLiteConnection(this.sqlitePlugin);
+        this.open();
+    }
+
+    private async open() {
+        const database: string = 'storage';
+        this.db = await this.sqliteConnection.createConnection(database, false, 'no-encryption', 1, false);
+        await this.db.open();
         await this.db.execute(createResultsTableSql);
         await this.db.execute(createLogsTableSql);
     }
-
+    
     async store(
         tableName: string, 
         date: string, 
@@ -90,17 +98,6 @@ export class SqLite {
         await this.db.execute("DROP TABLE IF EXISTS " + tableName);
         this.count[tableName] = 0;
     }
-    
-    // private async open() {
-    //     const database: string = "storage";
-    //     const encrypted:boolean = true;
-    //     try {
-    //       await this.db.openStore({database,encrypted});
-    //       return Promise.resolve();
-    //     } catch (err) {
-    //       return Promise.reject(err);
-    //     }      
-    // }
 
     private async deleteOlderLogsIfThereAreTooMany() {
         var delCount = this.count['logs'] - this.disk.maxLogRows + 1;

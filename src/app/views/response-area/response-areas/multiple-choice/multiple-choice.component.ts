@@ -62,10 +62,10 @@ export class MultipleChoiceComponent {
   }
 
   choose(id:any) {
-    this.results.current.response = id;
+    this.results.currentPage.response = id;
     // this.state.isSubmittable = this.examService.getSubmittableLogic(this.examService.currentPage?.responseArea);
     this.state.isSubmittable = true;
-    if (this.state.isSubmittable && this.results.current.response !== "Other") {
+    if (this.state.isSubmittable && this.results.currentPage.response !== "Other") {
       this.examService.submit = this.examService.submitDefault;
       this.examService.submit();
     }

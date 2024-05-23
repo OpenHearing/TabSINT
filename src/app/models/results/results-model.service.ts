@@ -9,11 +9,11 @@ import { protocolDefaults } from '../../utilities/defaults';
 export class ResultsModel {
 
     resultsModel: ResultsInterface = {
-        current: {
+        currentPage: {
             pageId: '',
             page: {}
         },
-        testResults: {
+        currentExam: {
             protocolName: '',
             protocolId: '',
             protocol: protocolDefaults,
@@ -23,7 +23,8 @@ export class ResultsModel {
             },
             headset: 'None',
             calibrationVersion: {}
-        }
+        },
+        completedExams: []
     }
 
     getResults(): ResultsInterface {

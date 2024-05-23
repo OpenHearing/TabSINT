@@ -82,19 +82,19 @@ export class ExamService {
     }
 
     /** Default submit function for exam pages.
-     * @summary Appends current results to previous results, calls advancePage(), and resets.
+     * @summary Appends current page results to current exam results, calls advancePage(), and resets.
      * @models results, state
     */
     submitDefault() {
         console.log("ExamService submitDefault() called");
-        this.resultsService.pushResults(this.results.current);
+        this.resultsService.pushResults(this.results.currentPage);
         // TODO: The below line might need to be async and awaited
         this.advancePage();
 
         this.state.isSubmittable = this.checkIfPageIsSubmittable();
         this.submit = this.submitDefault;        
 
-        console.log("this.results.testResults",this.results.testResults);
+        console.log("this.results.currentExam",this.results.currentExam);
     }
 
     /** Submit function for exam pages. Can be overwritten by exams.
@@ -182,7 +182,7 @@ export class ExamService {
     private findFollowOn() {
         let id: string | undefined = undefined;
         this.currentPage.followOns.forEach((followOn:any) => {
-            if (this.results.current.response == followOn.conditional.split("==")[1].replaceAll("'","")) {
+            if (this.results.currentPage.response == followOn.conditional.split("==")[1].replaceAll("'","")) {
                 id = followOn.target.reference;
             }
         });
@@ -207,11 +207,11 @@ export class ExamService {
     }
     /**
      * End Exam
-     * @summary Save results.testResults, set exam state, and scroll page back to top.
+     * @summary Save current exam results, set exam state, and scroll page back to top.
      * @models state
      */
     private endExam() {
-        this.resultsService.save(this.results.testResults);
+        this.resultsService.save(this.results.currentExam);
         this.state.examState = ExamState.Finalized;
         window.scrollTo(0, 0);
     }

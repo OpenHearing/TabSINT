@@ -67,11 +67,11 @@ export class ProtocolsComponent {
     }
   };
 
-  isButtonDisabled(): Boolean {
+  isButtonDisabled(): boolean {
     return !this.selected; // || tasks.disabled;
   };
 
-  showUpdateButton(): Boolean {
+  showUpdateButton(): boolean {
     if (!this.selected) {
       return false;
     } else if (this.selected.server === ProtocolServer.Gitlab) {
@@ -85,7 +85,7 @@ export class ProtocolsComponent {
     }
   };
 
-  showDeleteButton(): Boolean {
+  showDeleteButton(): boolean {
     if (!this.selected) {
       return false;
     }

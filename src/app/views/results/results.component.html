@@ -3,7 +3,7 @@
 <!-- <results-warnings></results-warnings> -->
 
 <div mat-accordion multi>
-    <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.testResults">
+    <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.completedExams">
         <mat-expansion-panel-header>
             <mat-panel-title>Completed Tests</mat-panel-title>
         </mat-expansion-panel-header>
@@ -24,9 +24,9 @@
             </tr>
             </thead>
             <tbody>
-            <tr *ngFor="let r in results.completedTests; index as i" (click)="viewResult(i)">
+            <tr *ngFor="let r of results.completedExams; index as i" (click)="viewResult(i)">
                 <td class="row-Name">{{r.protocol.name.substring(0,15)}}</td>
-                <td class="row-Counts">{{r.nResponses}}</td>
+                <td class="row-Counts">{{r.responses.length}}</td>
                 <td class="row-Date results"><small>{{r.testDateTime | date:'yyyy-M-dd HH:mm:ss' }}</small></td>
                 <td class="row-Date results"><small>{{r.elapsedTime | date:'HH:mm:ss' }}</small></td>
                 <td class="row-Server results">{{r.protocol.server}}</td>
@@ -53,6 +53,8 @@
         </div>
         </div>
     </mat-expansion-panel>
+
+    <br /><br />
 
     <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.exportedAndUploadedResults">
         <mat-expansion-panel-header>

@@ -5,6 +5,8 @@ import { DiskInterface } from '../../models/disk/disk.interface';
 import { StateInterface } from '../../models/state/state.interface';
 import { ResultsService } from '../../controllers/results.service';
 import { SqLite } from '../../utilities/sqLite.service';
+import { ResultsInterface } from '../../models/results/results.interface';
+import { ResultsModel } from '../../models/results/results-model.service';
 
 @Component({
   selector: 'results-view',
@@ -15,15 +17,18 @@ export class ResultsComponent {
   disk: DiskInterface;
   state: StateInterface;
   index: number = 0;
+  results: ResultsInterface;
 
   constructor (
     public diskModel: DiskModel,
     public stateModel: StateModel,
     public resultsService: ResultsService,
-    public sqLite: SqLite
+    public sqLite: SqLite,
+    public resultsModel: ResultsModel
   ){
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();
+    this.results = this.resultsModel.getResults();
   }
 
   viewResult(index: number) {

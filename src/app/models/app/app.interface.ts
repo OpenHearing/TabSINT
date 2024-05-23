@@ -1,5 +1,5 @@
 export interface AppInterface {
-    tablet: Boolean;
-    test: Boolean;
-    browser: Boolean;
+    tablet: boolean;
+    test: boolean;
+    browser: boolean;
 }

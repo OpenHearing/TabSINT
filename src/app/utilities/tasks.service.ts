@@ -7,7 +7,7 @@ import _, { Dictionary } from 'lodash';
 
 export class Tasks {
 
-    hidden: Boolean = false;
+    hidden: boolean = false;
     list: Dictionary<string> = {};
 
     register(task: string, msg: string): void {

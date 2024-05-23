@@ -29,7 +29,7 @@
   });
 
   tabsint.register("preprocessExample", function(dm) {
-    var firstResponse = dm.examResults.testResults.responses.slice(1, 2);
+    var firstResponse = dm.examResults.currentExam.responses.slice(1, 2);
     var newInstructionText =
       "Your first response to this protocol was recorded as: <br /><br /> " + angular.toJson(firstResponse, true);
     return { instructionText: newInstructionText };

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ResultsInterface, TestResults } from '../models/results/results.interface';
+import { ResultsInterface, ExamResults } from '../models/results/results.interface';
 import { ResultsModel } from '../models/results/results-model.service';
 import { DiskModel } from '../models/disk/disk.service';
 import { DiskInterface } from '../models/disk/disk.interface';
@@ -43,7 +43,7 @@ export class ResultsService {
      * @models results, protocol, disk
     */
     initializeExamResults() {
-        this.results.testResults = {
+        this.results.currentExam = {
             protocolId: this.protocol.activeProtocol!.id,
             protocolName: this.protocol.activeProtocol!.name,
             testDateTime: new Date().toJSON(),
@@ -78,7 +78,7 @@ export class ResultsService {
      * @models results, protocol, disk
     */
     initializePageResults(currentPage:any) {
-        this.results.current = {
+        this.results.currentPage = {
             pageId: currentPage.id,
             response: undefined,
             correct: undefined,
@@ -94,23 +94,24 @@ export class ResultsService {
     }
 
     /**
-     * Push current page results to exam testResults.
+     * Push current page results to current exam results.
      * @summary summary
      * @models models
      * @param parameter: description
      * @returns description:  type
      */
-    pushResults(currentResults: any) {
-        this.results.testResults.responses.push(currentResults);
+    pushResults(currentPageResults: any) {
+        this.results.currentExam.responses.push(currentPageResults);
     }
 
     /**
      * Save exam results
      * @summary Safe result in SQLite db, than backup results on tablet.
      * @models result
-     * @param result partial or completed result.testResults
+     * @param result partial or completed current exam results
      */
-    async save(result: TestResults) {
+    async save(result: ExamResults) {
+        this.results.completedExams.push(result);
         await this.sqLite.store(
             "results", 
             getDateString(result.testDateTime), 
@@ -122,11 +123,11 @@ export class ResultsService {
     }
 
     /**
-     * Save testResults on the tablet at Documents/.tabsint-results-backup/ 
+     * Save current exam results on the tablet at Documents/.tabsint-results-backup/ 
      * @models result
-     * @param result partial or completed result.testResults
+     * @param result partial or completed current exam results
      */
-    async backup(result: TestResults) {
+    async backup(result: ExamResults) {
         var filename = constructFilename(this.protocol.activeProtocol?.resultFilename, result.testDateTime);
         var dir = ".tabsint-results-backup/" + result.protocolName + "/";
 
@@ -155,7 +156,7 @@ export class ResultsService {
         await this.sqLite.deleteSingleResult(index);
     }
 
-    private updateSummary(result: TestResults) {
+    private updateSummary(result: ExamResults) {
         var meta = {
             protocolId: result.protocolId,
             protocolName: result.protocolName,

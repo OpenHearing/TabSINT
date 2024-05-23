@@ -5,7 +5,7 @@ export interface LoadingProtocolInterface {
     protocol: ProtocolInterface;
     calibration?: any;
     meta: ProtocolMetaInterface;
-    notify: Boolean;
-    requiresValidation: Boolean;
-    overwrite: Boolean;
+    notify: boolean;
+    requiresValidation: boolean;
+    overwrite: boolean;
 }

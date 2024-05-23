@@ -2,8 +2,9 @@ import { ProtocolServer } from "../../utilities/constants";
 import { ProtocolInterface } from "../protocol/protocol.interface";
 
 export interface ResultsInterface {
-    current: CurrentResults;
-    testResults: TestResults;
+    currentPage: CurrentResults;
+    currentExam: ExamResults;
+    completedExams: ExamResults[];
 }
 
 export interface CurrentResults {
@@ -20,7 +21,7 @@ export interface CurrentResults {
     }
 }
 
-export interface TestResults {
+export interface ExamResults {
     protocolName: string;
     protocolId: string;
     protocol: ProtocolInterface;

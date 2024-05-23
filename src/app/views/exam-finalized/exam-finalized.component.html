@@ -13,24 +13,24 @@
       <tbody>
         <tr>
           <th class="align-right width-50">{{'Protocol'|translate}}:</th>
-          <td>{{results.testResults.protocolName}}</td>
+          <td>{{results.currentExam.protocolName}}</td>
         </tr>
         <tr>
           <th class="align-right width-50">{{'Started at'|translate}}:</th>
-          <td>{{results.testResults.testDateTime | date:'yyyy-M-dd H:mm:ss'}}</td>
+          <td>{{results.currentExam.testDateTime | date:'yyyy-M-dd H:mm:ss'}}</td>
         </tr>
         <tr>
           <th class="align-right width-50">{{'Elapsed Time'|translate}}:</th>
-          <td>{{results.testResults.elapsedTime}}</td>
+          <td>{{results.currentExam.elapsedTime}}</td>
         </tr>
   
-        <tr *ngIf="results.testResults.protocolId">
+        <tr *ngIf="results.currentExam.protocolId">
           <th class="align-right width-50">{{'Site ID'|translate}}:</th>
-          <td>{{results.testResults.protocolId}}</td>
+          <td>{{results.currentExam.protocolId}}</td>
         </tr>
-        <!-- <tr *ngIf="results.testResults.qrString">
+        <!-- <tr *ngIf="results.currentExam.qrString">
           <th class="align-right width-50">{{'QR String'|translate}}:</th>
-          <td>{{results.testResults.qrString}}</td>
+          <td>{{results.currentExam.qrString}}</td>
         </tr> -->
       </tbody>
     </table>
@@ -51,7 +51,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let resp of results.testResults.responses; index as i">
+    <tr *ngFor="let resp of results.currentExam.responses; index as i">
       <td scope="row">{{i+1}}</td>
       <td>{{resp.pageId.substr(0,15)}}</td>
       <td>{{resp.response.substr(0,25)}}</td>

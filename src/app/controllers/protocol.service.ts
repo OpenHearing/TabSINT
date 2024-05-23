@@ -147,9 +147,9 @@ export class ProtocolService {
      * as the one on the protocolModel.activeProtocol object.
      * @models protocol
      * @param p protocol to check whether it is active or not
-     * @returns whether protocol is active: Boolean
+     * @returns whether protocol is active: boolean
      */
-    isActive(p: ProtocolInterface | undefined): Boolean {
+    isActive(p: ProtocolInterface | undefined): boolean {
         return (this.protocolModel.activeProtocol 
                 && p 
                 && this.protocolModel.activeProtocol.name == p.name 

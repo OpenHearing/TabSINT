@@ -124,7 +124,7 @@ export class FileService {
             path: path,
             directory: directory,
         }).then( (res)=> {
-            this.logger.debug("Listed dir: "+path);
+            this.logger.debug("Listed dirs: "+ path);
             return res
         }).catch( (err)=> {
             this.logger.error("Error listing dir "+path+" - "+err);
@@ -152,10 +152,14 @@ export class FileService {
         if (this.app.tablet) {
             this.existingTabsintDirectories = await this.listDirectory("");
             listOfTabsintDirectories.forEach((dir: string) => {
-                if (this.existingTabsintDirectories.includes(dir)) {
+                if (!this.doesDirectoryExist(dir)) {
                     this.createDirectory(dir);
                 }                
             })
         }
     }
+
+    private doesDirectoryExist(name: string): boolean {
+        return this.existingTabsintDirectories.files.some((file: any) => file.name === name);
+      }
 }

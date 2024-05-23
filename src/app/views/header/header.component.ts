@@ -9,7 +9,7 @@ import { ExamService } from '../../controllers/exam.service';
   styleUrl: './header.component.css'
 })
 export class HeaderComponent {
-  isExam: Boolean = false;
+  isExam: boolean = false;
   
   constructor(private stateModel: StateModel, public examService: ExamService) {}
 
