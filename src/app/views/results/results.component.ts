@@ -31,6 +31,11 @@ export class ResultsComponent {
     this.results = this.resultsModel.getResults();
   }
 
+
+  trackByIndex(index: number, item: any): number {
+    return index;
+  }
+  
   viewResult(index: number) {
     console.log("viewResult called with index: " + index);
   }

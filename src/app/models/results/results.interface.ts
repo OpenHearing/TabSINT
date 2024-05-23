@@ -4,7 +4,6 @@ import { ProtocolInterface } from "../protocol/protocol.interface";
 export interface ResultsInterface {
     currentPage: CurrentResults;
     currentExam: ExamResults;
-    completedExams: ExamResults[];
 }
 
 export interface CurrentResults {

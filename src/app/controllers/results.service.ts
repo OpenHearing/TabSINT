@@ -111,7 +111,9 @@ export class ResultsService {
      * @param result partial or completed current exam results
      */
     async save(result: ExamResults) {
-        this.results.completedExams.push(result);
+        this.disk.completedExamsResults.push(result);
+        this.diskModel.updateDiskModel("completedExamsResults", this.disk.completedExamsResults);
+        this.disk = this.diskModel.getDisk();
         await this.sqLite.store(
             "results", 
             getDateString(result.testDateTime), 
@@ -142,6 +144,13 @@ export class ResultsService {
     
     async exportAll() {
 
+    }
+
+    async deleteAll() {
+        this.disk.completedExamsResults = [];
+        this.diskModel.updateDiskModel("completedExamsResults", this.disk.completedExamsResults);
+        this.disk = this.diskModel.getDisk();
+        this.sqLite.deleteAll('results')
     }
 
     async exportSingleResult(index: number) {

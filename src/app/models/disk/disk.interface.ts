@@ -1,7 +1,7 @@
 import { MediaReposInterface } from "../../interfaces/media-repos.interface"
-import { ResultsMode, ProtocolServer } from "../../utilities/constants"
+import { ProtocolServer } from "../../utilities/constants"
 import { ProtocolMetaInterface } from "../protocol/protocol-meta.interface"
-import { ProtocolInterface } from "../protocol/protocol.interface"
+import { ExamResults } from "../results/results.interface"
 
 export interface DiskInterface {
     qrcodeConfig?: Object,
@@ -38,8 +38,6 @@ export interface DiskInterface {
     downloadInProgress: boolean,
     lastReleaseCheck: string,
     validateProtocols: boolean,
-    completedResults: Array<string>,
-    currentResults?: Array<string>,
     tabletLocation: {
       latitude?: number,
       longitude?: number,
@@ -77,7 +75,8 @@ export interface DiskInterface {
     versionCheck: boolean,
     audhere: string ,
     activeProtocolMeta: ProtocolMetaInterface,
-    availableProtocolsMeta: Array<ProtocolMetaInterface>
+    availableProtocolsMeta: Array<ProtocolMetaInterface>,
+    completedExamsResults: ExamResults[];
 }
 
 interface UploadSummary {

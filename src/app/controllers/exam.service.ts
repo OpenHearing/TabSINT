@@ -20,6 +20,7 @@ import { DialogType, ExamState } from '../utilities/constants';
 import { Notifications } from '../utilities/notifications.service';
 import { PageModel } from '../models/page/page.service';
 import { PageInterface } from '../models/page/page.interface';
+import { calculateElapsedTime } from '../utilities/exam-helper-functions';
 
 @Injectable({
     providedIn: 'root',
@@ -211,6 +212,7 @@ export class ExamService {
      * @models state
      */
     private endExam() {
+        this.results.currentExam.elapsedTime = calculateElapsedTime(this.results.currentExam.testDateTime!);
         this.resultsService.save(this.results.currentExam);
         this.state.examState = ExamState.Finalized;
         window.scrollTo(0, 0);

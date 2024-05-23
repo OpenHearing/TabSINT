@@ -23,8 +23,7 @@ export class ResultsModel {
             },
             headset: 'None',
             calibrationVersion: {}
-        },
-        completedExams: []
+        }
     }
 
     getResults(): ResultsInterface {

@@ -42,8 +42,6 @@ export class DiskModel {
         reloadingBrowser: false,
         downloadInProgress: false,
         validateProtocols: true,
-        completedResults: [],
-        currentResults: undefined,
         tabletLocation: {},
         gitlab: {
             repos: [],
@@ -71,7 +69,8 @@ export class DiskModel {
         },
         audhere: '',
         activeProtocolMeta: metaDefaults,
-        availableProtocolsMeta: []
+        availableProtocolsMeta: [],
+        completedExamsResults: []
     };
     
     constructor(@Inject(DOCUMENT) private document: Document) {
