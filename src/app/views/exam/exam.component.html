@@ -152,6 +152,12 @@
             <span class="ion-help-circled"></span> {{'Help'|translate}}
           </button>
         </div>
+        <div class="col-6">
+          <button id="reset-btn" type="button"
+                  class="btn btn-block btn-lg btn-success"
+                  (click)="examService.reset()"> {{'New Exam'|translate}}
+          </button>
+        </div>
       </div>
   
       <div class="row" style="margin-top: 30px;" *ngIf="!(examService.currentPage?.hideProgressBar || state.examState === ExamState.Ready || state.examState === ExamState.Finalized)">

@@ -113,6 +113,10 @@ export class ExamService {
         console.log("ExamService back() called");
     }
 
+    reset() {
+        this.state.examState = ExamState.Ready;
+    }
+
     /** Advance to next page in the exam
      * @summary Increments the exam page index. Advances to next page in protocolStack. If there is no next page it will
      * search for a followOn. The protocolStack will be updated.
