@@ -25,9 +25,9 @@ export enum ResultsMode {
 }
 
 export enum ProtocolServer {
-    LocalServer,
-    Gitlab,
-    Developer
+    LocalServer = "Local Server",
+    Gitlab = "Gitlab",
+    Developer = "Developer"
 }
 
 export enum DialogType {

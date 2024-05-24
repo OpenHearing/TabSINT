@@ -1,5 +1,5 @@
 import { MediaReposInterface } from "../../interfaces/media-repos.interface"
-import { ProtocolServer } from "../../utilities/constants"
+import { ProtocolServer, ResultsMode } from "../../utilities/constants"
 import { ProtocolMetaInterface } from "../protocol/protocol-meta.interface"
 import { ExamResults } from "../results/results.interface"
 
@@ -31,7 +31,7 @@ export interface DiskInterface {
     uploadSummary: Array<UploadSummary>,
     suppressAlerts: boolean,
     showUploadSummary: boolean,
-    resultsMode: string,
+    resultsMode: ResultsMode,
     preventUploads: boolean,
     preventExports: boolean,
     reloadingBrowser: boolean,

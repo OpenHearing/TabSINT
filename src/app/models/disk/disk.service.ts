@@ -5,6 +5,7 @@ import { DOCUMENT } from '@angular/common';
 import { DiskInterface } from './disk.interface';
 import { ProtocolServer, ResultsMode } from '../../utilities/constants';
 import { metaDefaults } from '../../utilities/defaults';
+import { ExamResults } from '../results/results.interface';
 
 @Injectable({
     providedIn: 'root',
@@ -36,9 +37,9 @@ export class DiskModel {
         uploadSummary: [],
         suppressAlerts: false,
         showUploadSummary: true,
-        resultsMode: ResultsMode.UploadOnly,
-        preventUploads: false,
-        preventExports: true,
+        resultsMode: ResultsMode.ExportOnly,
+        preventUploads: true,
+        preventExports: false,
         reloadingBrowser: false,
         downloadInProgress: false,
         validateProtocols: true,
@@ -77,19 +78,26 @@ export class DiskModel {
         this.window = document.defaultView;
     }
 
+    /**
+     * Get the disk model from local storage
+     * @summary When window and local storage are defined, grab diskModel if available, otherwise set diskModel to local storage
+     * @returns  DiskInterface: disk model saved on local storage
+     */
     getDisk(): DiskInterface {
-
         if (this.window !== null && !_.isUndefined(this.window!.localStorage)) {
             if (this.window.localStorage.getItem('diskModel') !== null) {
                 this.disk = JSON.parse(this.window.localStorage.getItem('diskModel')!);
             } else {
                 this.storeDisk();
             }            
-        } 
-    
+        }     
         return this.disk;
     }
 
+    /**
+     * Store disk model on local storage
+     * @summary When window and local storage are defined, store disk model on local storage\
+     */
     storeDisk(): void {
         if (this.window !== null && !_.isUndefined(this.window!.localStorage)) {
             this.window.localStorage.setItem('diskModel', JSON.stringify(this.disk));
@@ -102,5 +110,28 @@ export class DiskModel {
         this.storeDisk();
         console.log("updateDiskModel: ", this.disk);
     }
+    
+    emptyCompletedExamResults() {
+        this.disk.completedExamsResults = [];
+        this.updateDiskModel("completedExamsResults", this.disk.completedExamsResults);
+    }
 
+    removeResultFromCompletedExamResults(index: number) {
+        this.disk.completedExamsResults.splice(index, 1);
+        this.updateDiskModel("completedExamsResults", this.disk.completedExamsResults);
+    }
+
+    updateSummary(result: ExamResults) {
+        var meta = {
+            protocolId: result.protocolId,
+            protocolName: result.protocolName,
+            testDateTime: result.testDateTime!,
+            nResponses: result.responses.length,
+            source: result.protocol.server,
+            output: result.exportLocation || result.protocol.server,
+            uploadedOn: new Date().toJSON()
+        };
+        this.disk.uploadSummary.unshift(meta);
+        this.updateDiskModel("uploadSummary", this.disk.uploadSummary);
+    }
 }

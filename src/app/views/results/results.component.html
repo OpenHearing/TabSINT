@@ -33,17 +33,17 @@
         </table>
 
         <div class="row pad-top">
-            <!-- <div class="col-xs-4 admin-labels">
-            <button type="button" *ngIf="!disk.preventUploads" ng-disabled="tasks.disabled" class="btn btn-success btn-block" (click)="results.upload()">
+            <div class="col-4 admin-labels">
+            <button type="button" *ngIf="!disk.preventUploads" ng-disabled="tasks.disabled" class="btn btn-success btn-block" (click)="resultsService.upload()">
                 <i class="ion-upload"></i> {{'Upload'|translate}}
             </button>
-            </div> -->
-            <div class="col-xs-4">
+            </div>
+            <div class="col-4">
             <button type="button" *ngIf="!disk.preventExports" ng-disabled="sqLite.numLogs.results === 0 || tasks.disabled" class="btn btn-primary btn-block" (click)="resultsService.exportAll()">
                 <span class="glyphicon glyphicon-floppy-disk"></span> {{'Export'|translate}}
             </button>
             </div>
-            <div class="col-xs-4">
+            <div class="col-4">
             <button type="button" *ngIf="disk.debugMode" ng-disabled="sqLite.numLogs.results === 0 || tasks.disabled" class="btn btn-danger btn-block" (click)="resultsService.deleteAll()">
                 <i class="ion-trash-a"></i> {{'Delete'|translate}}
             </button>
