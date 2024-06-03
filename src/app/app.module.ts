@@ -9,6 +9,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
 import { MatDialogActions, MatDialogContent, MatDialogModule } from '@angular/material/dialog';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgxJsonViewerModule } from 'ngx-json-viewer';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -66,6 +67,7 @@ import { ExamFinalizedComponent } from './views/exam-finalized/exam-finalized.co
 import { ResponseAreaComponent } from './views/response-area/response-area.component';
 import { TextboxComponent } from './views/response-area/response-areas/textbox/textbox.component';
 import { MultipleChoiceComponent } from './views/response-area/response-areas/multiple-choice/multiple-choice.component';
+import { SingleResultModalComponent } from './views/single-result-modal/single-result-modal/single-result-modal.component';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -95,7 +97,8 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     ExamFinalizedComponent,
     ResponseAreaComponent,
     TextboxComponent,
-    MultipleChoiceComponent
+    MultipleChoiceComponent,
+    SingleResultModalComponent
   ],
   imports: [
     BrowserModule,
@@ -113,6 +116,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     MatDialogActions,
     MatDialogModule,
     NgbModule,
+    NgxJsonViewerModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

@@ -234,7 +234,8 @@
     <div class="row pad-top">
         <div class="col-6"><label translate for="resetConfig">Reset configuration:</label></div>
         <div class="col-4">
-            <button id="resetConfig" type="button" ng-disabled="tasks.disabled"
+            <!-- disabled based on tasks.disable -->
+            <button id="resetConfig" type="button" [disabled]="false" 
                 class="btn btn-block btn-danger" (click)="resetConfig()">
                 Reset
             </button>
@@ -336,19 +337,22 @@
     <!-- Calibration -->
     <div class="row pad-top" *ngIf="disk.debugMode">
         <div class="col-4">
-            <button type="button" ng-disabled="tasks.disabled" class="btn btn-block btn-primary"
+            <!-- disable based on tasks.disable -->
+            <button type="button" [disabled]="false" class="btn btn-block btn-primary"
                 (click)="play1kHz94dB()">
                 1 kHz <wbr> 94 dB
             </button>
         </div>
         <div class="col-4">
-            <button type="button" ng-disabled="tasks.disabled" class="btn btn-block btn-primary"
+            <!-- disable based on tasks.disable -->
+            <button type="button" [disabled]="false" class="btn btn-block btn-primary"
                 (click)="playCompAudio()">
                 Comp. Log
             </button>
         </div>
         <div class="col-4">
-            <button type="button" ng-disabled="tasks.disabled" class="btn btn-block btn-primary"
+            <!-- disable based on tasks.disable -->
+            <button type="button" [disabled]="false" class="btn btn-block btn-primary"
                 (click)="playCompAudioLinear()">
                 Comp. Linear
             </button>

@@ -7,6 +7,8 @@ import { ResultsService } from '../../controllers/results.service';
 import { SqLite } from '../../utilities/sqLite.service';
 import { ResultsInterface } from '../../models/results/results.interface';
 import { ResultsModel } from '../../models/results/results-model.service';
+import { MatDialog } from '@angular/material/dialog';
+import { SingleResultModalComponent } from '../single-result-modal/single-result-modal/single-result-modal.component';
 
 @Component({
   selector: 'results-view',
@@ -24,7 +26,8 @@ export class ResultsComponent {
     public stateModel: StateModel,
     public resultsService: ResultsService,
     public sqLite: SqLite,
-    public resultsModel: ResultsModel
+    public resultsModel: ResultsModel,
+    public dialog: MatDialog
   ){
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();
@@ -38,6 +41,9 @@ export class ResultsComponent {
 
   viewResult(index: number) {
     console.log("viewResult called with index: " + index);
+    this.dialog.open(SingleResultModalComponent, {
+      data: this.disk.completedExamsResults[index]
+    }).afterClosed().subscribe();
   }
 
   exportAndClose() {

@@ -411,9 +411,11 @@ $tabsint-training-site-theme: mat.define-light-theme((
     /*background-color: #f5f5f5;*/
   }
   
-  .modal-body {
+  .modal-body .ngx-json-viewer[_ngcontent-ng-c153363216] {
     font-size: 22px;
     background-color: #FFFFFF;
+    height: 300px;
+    overflow-y: auto;
   }
   
   @media (max-width: 500px) {
@@ -2244,7 +2246,7 @@ $tabsint-training-site-theme: mat.define-light-theme((
   .table-selected {
     background-color: #E6E6E6;
   }
-  .table tr[ng-click]:focus {
+  .table tr[click]:focus {
     background-color: #f5f5f5;
     cursor: pointer;
   }
