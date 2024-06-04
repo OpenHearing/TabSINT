@@ -28,9 +28,9 @@ export class ResultsService {
         public protocolM: ProtocolModel,
         public sqLite: SqLite,
         public devicesModel: DevicesModel,
+        public diskModel: DiskModel,
         private fileService: FileService,
-        private logger: Logger,
-        private diskModel: DiskModel
+        private logger: Logger
     ) {
         this.results = this.resultsModel.getResults();
         this.disk = this.diskModel.getDisk();
@@ -95,10 +95,8 @@ export class ResultsService {
 
     /**
      * Push current page results to current exam results.
-     * @summary summary
-     * @models models
-     * @param parameter: description
-     * @returns description:  type
+     * @models results
+     * @param currentPageResults Results for the current page.
      */
     pushResults(currentPageResults: any) {
         this.results.currentExam.responses.push(currentPageResults);
@@ -106,9 +104,9 @@ export class ResultsService {
 
     /**
      * Save exam results
-     * @summary Safe result in SQLite db, than backup results on tablet.
-     * @models result
-     * @param result partial or completed current exam results
+     * @summary Save result in SQLite db, than backup results on tablet.
+     * @models disk
+     * @param result Partial or completed current exam result.
      */
     async save(result: ExamResults) {
         this.disk.completedExamsResults.push(result);
@@ -126,8 +124,7 @@ export class ResultsService {
 
     /**
      * Save current exam results on the tablet at Documents/.tabsint-results-backup/ 
-     * @models result
-     * @param result partial or completed current exam results
+     * @param result Partial or completed current exam result
      */
     async backup(result: ExamResults) {
         var filename = constructFilename(this.protocol.activeProtocol?.resultFilename, result.testDateTime);
@@ -143,9 +140,9 @@ export class ResultsService {
     }
     
     /**
-     * Export all completed Exam Results to tablet's local storage
-     * @summary write each result to android, update disk.uploadSummary,
-     * then delete the result from the completed exams and the sqlite database
+     * Export all completed Exam Results to tablet's local storage.
+     * @summary Write each result to android, update disk.uploadSummary,
+     * then delete the result from the completed exams and the sqlite database.
      * @models disk
      */
     async exportAll() {
@@ -165,7 +162,7 @@ export class ResultsService {
     }
 
     /**
-     * Delete all exam results from the disk completed exam results and from the sqlite database
+     * Delete all exam results from the disk completed exam results and from the sqlite database.
      * @models disk
      */
     async deleteAll() {
@@ -175,9 +172,19 @@ export class ResultsService {
     }
 
     /**
-     * Export an exam result to the tablet's local storage 
+     * Delete one exam result from the disk completed exam results and from the sqlite database.
+     * @models disk
+     */
+    async deleteSingleResult(index: number) {
+        this.diskModel.removeResultFromCompletedExamResults(index);
+        this.sqLite.deleteSingleResult(index);
+        this.disk = this.diskModel.getDisk();
+    }
+
+    /**
+     * Export an exam result to the tablet's local storage.
      * @summary Get the result from sqlite, write it to Android, remove
-     * it from the disk completed exam results and from the sqlite database
+     * it from the disk completed exam results and from the sqlite database.
      * @models disk
      * @param index number: index of the result
      */
@@ -191,11 +198,10 @@ export class ResultsService {
     }
 
     /**
-     * Write result to tablet's local storage
-     * @summary Construct path and filename, write file to tablet, update disk upload summary
+     * Write result to tablet's local storage.
+     * @summary Construct path and filename, write file to tablet, update disk upload summary.
      * @models disk
      * @param result exam result
-     * @returns  type: description
      */
     private async writeFileToAndroid(result: ExamResults) {
         var filename = constructFilename(this.protocol.activeProtocol?.resultFilename, result.testDateTime);

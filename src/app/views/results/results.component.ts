@@ -1,13 +1,17 @@
 import { Component } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+
+import { ResultsService } from '../../controllers/results.service';
+
 import { DiskModel } from '../../models/disk/disk.service';
 import { StateModel } from '../../models/state/state.service';
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { StateInterface } from '../../models/state/state.interface';
-import { ResultsService } from '../../controllers/results.service';
-import { SqLite } from '../../utilities/sqLite.service';
 import { ResultsInterface } from '../../models/results/results.interface';
 import { ResultsModel } from '../../models/results/results-model.service';
-import { MatDialog } from '@angular/material/dialog';
+
+import { SqLite } from '../../utilities/sqLite.service';
+
 import { SingleResultModalComponent } from '../single-result-modal/single-result-modal/single-result-modal.component';
 
 @Component({
@@ -40,18 +44,8 @@ export class ResultsComponent {
   }
 
   viewResult(index: number) {
-    console.log("viewResult called with index: " + index);
     this.dialog.open(SingleResultModalComponent, {
-      data: this.disk.completedExamsResults[index]
+      data: index
     }).afterClosed().subscribe();
-  }
-
-  exportAndClose() {
-    this.resultsService.exportSingleResult(this.index);
-    this.close();
-  }
-
-  private close() {
-    // close result modal
   }
 }

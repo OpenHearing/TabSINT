@@ -40,9 +40,9 @@
       <div class="col-4">Battery Level:</div>
       <div class="col-4">
         <span class="cha-battery-border" [ngStyle]="{'width': cha.myCha.batteryIndicatorWidth+'%'}">
-          <div ng-if="cha.myCha.battery.level() >= 66" class="cha-battery-status" [ngStyle]="{'width': cha.myCha.battery.level()+'%', 'background-color': 'green'}"></div>
-          <div ng-if="cha.myCha.battery.level() >= 33 && cha.myCha.battery.level() < 66" class="cha-battery-status" [ngStyle]="{'width': cha.myCha.battery.level()+'%', 'background-color': 'orange'}"></div>
-          <div ng-if="cha.myCha.battery.level() < 33"class="cha-battery-status" [ngStyle]="{'width': cha.myCha.battery.level()+'%', 'background-color': 'red'}"></div>
+          <!-- <div *ngIf="cha.myCha.battery.level() >= 66" class="cha-battery-status" [ngStyle]="{'width': cha.myCha.battery.level()+'%', 'background-color': 'green'}"></div>
+          <div *ngIf="cha.myCha.battery.level() >= 33 && cha.myCha.battery.level() < 66" class="cha-battery-status" [ngStyle]="{'width': cha.myCha.battery.level()+'%', 'background-color': 'orange'}"></div>
+          <div *ngIf="cha.myCha.battery.level() < 33"class="cha-battery-status" [ngStyle]="{'width': cha.myCha.battery.level()+'%', 'background-color': 'red'}"></div> -->
         </span>
   
       </div>

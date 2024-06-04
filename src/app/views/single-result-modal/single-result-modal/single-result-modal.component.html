@@ -1,12 +1,12 @@
 <div class="modal-header">
     <div class="modal-title">
 
-            <!-- disable based on tasks.disable -->
-        <button type="button" [disabled]="false" class="btn btn-sm btn-success" ng-if="uploadable()&&!disk.preventUploads" (click)="upload()">
+            <!-- disable based on tasks.disable *ngIf="uploadable()&&!disk.preventUploads"-->
+        <button type="button" [disabled]="false" class="btn btn-sm btn-success" *ngIf="true" (click)="upload()">
           <i class="ion-upload"></i> Upload
         </button>
 
-        <button type="button" ng-if="!disk.preventExports" [disabled]="false" class="btn btn-sm btn-primary" (click)="export()">
+        <button type="button" *ngIf="!disk.preventExports" [disabled]="false" class="btn btn-sm btn-primary" (click)="export()">
           <span class="glyphicon glyphicon-floppy-disk"></span> Export
         </button>
 
@@ -22,5 +22,5 @@
 </div>
 
 <div class="modal-body">
-  <ngx-json-viewer [json]="data" style="height: 200px; overflow-y: auto;"></ngx-json-viewer>
+  <ngx-json-viewer [json]="singleExamResult"></ngx-json-viewer>
 </div>
