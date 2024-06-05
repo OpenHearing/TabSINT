@@ -68,21 +68,14 @@ export class ProtocolsComponent {
   };
 
   isButtonDisabled(): boolean {
-    return !this.selected; // || tasks.disabled;
+    return !this.selected;
   };
 
   showUpdateButton(): boolean {
     if (!this.selected) {
       return false;
-    } else if (this.selected.server === ProtocolServer.Gitlab) {
-      return true;
-    } else if (this.selected.server === ProtocolServer.LocalServer) {
-      return false;
-    } else if (this.selected.server === ProtocolServer.Developer) {
-      return false;
-    } else {
-      return false;
-    }
+    } 
+    return this.selected.server === ProtocolServer.Gitlab;
   };
 
   showDeleteButton(): boolean {

@@ -1,20 +1,20 @@
 <div class="modal-header">
     <div class="modal-title">
 
-            <!-- disable based on tasks.disable *ngIf="uploadable()&&!disk.preventUploads"-->
-        <button type="button" [disabled]="false" class="btn btn-sm btn-success" *ngIf="true" (click)="upload()">
+            <!-- *ngIf="uploadable()&&!disk.preventUploads"-->
+        <button type="button" class="btn btn-sm btn-success" *ngIf="true" (click)="upload()">
           <i class="ion-upload"></i> Upload
         </button>
 
-        <button type="button" *ngIf="!disk.preventExports" [disabled]="false" class="btn btn-sm btn-primary" (click)="export()">
+        <button type="button" *ngIf="!disk.preventExports" class="btn btn-sm btn-primary" (click)="export()">
           <span class="glyphicon glyphicon-floppy-disk"></span> Export
         </button>
 
-        <button type="button" [disabled]="false" class="btn btn-sm btn-danger" (click)="delete()">
+        <button type="button" class="btn btn-sm btn-danger" (click)="delete()">
           <span class="glyphicon glyphicon-remove"></span> Delete 
           </button>
 
-        <button type="button" [disabled]="false" class="btn btn-default pull-right" (click)="close()">
+        <button type="button" class="btn btn-default pull-right" (click)="close()">
            <i class="ion ion-ios-close-outline"></i> Close
         </button>
     </div>

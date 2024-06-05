@@ -33,5 +33,7 @@ export function constructFilename(resultFilename?: string, testDateTime?: string
  * @return dateString
  */
 export function getDateString(testDateTime?: string) {
-    return testDateTime ? testDateTime: new Date().toJSON();
+    let dateString = testDateTime ? testDateTime: new Date().toJSON();
+    dateString = dateString.replace(":","-").replace(":","-").split(".")[0];
+    return dateString;
 }

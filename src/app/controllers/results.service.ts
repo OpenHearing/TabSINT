@@ -132,45 +132,12 @@ export class ResultsService {
 
         try {
             await this.fileService.writeFile(dir + filename, result.toString());
-            this.logger.debug("Successfully exported backup result to file: " + dir + filename);
         } catch(e) {
             this.logger.error("Failed to export backup result to file with error: " + _(e).toJSON);
         }
         
     }
     
-    /**
-     * Export all completed Exam Results to tablet's local storage.
-     * @summary Write each result to android, update disk.uploadSummary,
-     * then delete the result from the completed exams and the sqlite database.
-     * @models disk
-     */
-    async exportAll() {
-        try {
-            this.disk.completedExamsResults.forEach((examResult: ExamResults) => {
-                this.writeFileToAndroid(examResult);
-            });
-            this.deleteAll();
-        } catch(e) {
-            this.logger.error("Failed to export all results to file with error: " + _(e).toJSON);
-        }
-
-    }
-
-    async upload() {
-
-    }
-
-    /**
-     * Delete all exam results from the disk completed exam results and from the sqlite database.
-     * @models disk
-     */
-    async deleteAll() {
-        this.diskModel.emptyCompletedExamResults();
-        this.sqLite.deleteAll('results');
-        this.disk = this.diskModel.getDisk();
-    }
-
     /**
      * Delete one exam result from the disk completed exam results and from the sqlite database.
      * @models disk
@@ -189,9 +156,10 @@ export class ResultsService {
      * @param index number: index of the result
      */
     async exportSingleResult(index: number) {
-        let result = await this.sqLite.getSingleResult(index) as any;
-        result = JSON.parse(result.toString());
-        this.writeFileToAndroid(result);
+        // let result = await this.sqLite.getSingleResult(index) as any;
+        // result = JSON.parse(result.toString());
+        let result = this.disk.completedExamsResults[index];
+        this.writeResultToFile(result);
         this.diskModel.removeResultFromCompletedExamResults(index);
         this.disk = this.diskModel.getDisk();
         await this.sqLite.deleteSingleResult(index);
@@ -203,7 +171,7 @@ export class ResultsService {
      * @models disk
      * @param result exam result
      */
-    private async writeFileToAndroid(result: ExamResults) {
+    async writeResultToFile(result: ExamResults) {
         var filename = constructFilename(this.protocol.activeProtocol?.resultFilename, result.testDateTime);
         let dir = this.disk.servers.localServer.resultsDir
             ? this.disk.servers.localServer.resultsDir

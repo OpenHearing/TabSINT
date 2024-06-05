@@ -92,13 +92,13 @@
         <tbody>
           <tr *ngFor="let m of disk.mediaRepos; index as i" [ngClass]="mclass(m) ? 'active-row': ''">
             <td>
-              <button *ngIf="m.server === 'gitlab'" [disabled]="tasks.disabled" class="btn btn-success btn-sm" (click)="updateMedia(m)"><i class="ion-android-sync"></i></button>
+              <button *ngIf="m.server === 'gitlab'" class="btn btn-success btn-sm" (click)="updateMedia(m)"><i class="ion-android-sync"></i></button>
             </td>
             <td>{{m.name}}</td>
             <td>{{m.version}}</td>
             <td>{{m.date.replace('T', ' ').split('.')[0]}}</td>
             <td>
-              <button class="btn btn-danger btn-sm" [disabled]="tasks.disabled" (click)="deleteMedia(m)"><i class="ion-trash-a"></i></button>
+              <button class="btn btn-danger btn-sm" (click)="deleteMedia(m)"><i class="ion-trash-a"></i></button>
             </td>
           </tr>
         </tbody>
@@ -144,7 +144,7 @@
       <div class="row pad-top">
         <div class="col-3"><label for="directory">Directory:</label></div>
         <div class="col-4">
-          <!-- <button class="btn btn-default btn-block" [disabled]="tasks.disabled" (click)="add()"> <i class="ion-plus-round"></i> 'Add'</button> -->
+          <!-- <button class="btn btn-default btn-block" (click)="add()"> <i class="ion-plus-round"></i> 'Add'</button> -->
           <button class="btn btn-default btn-block"> <i class="ion-plus-round"></i> Add</button>
         </div>
         <div class="col-3"></div>

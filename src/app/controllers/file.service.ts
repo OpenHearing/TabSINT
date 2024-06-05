@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import * as fs from 'fs';
 
 import { AppInterface } from '../models/app/app.interface';
 import { AppModel } from '../models/app/app.service';
@@ -13,7 +14,7 @@ import { listOfTabsintDirectories } from '../utilities/constants';
 export class FileService {
     app: AppInterface;
     
-    existingTabsintDirectories: any;
+    existingDirectories: any;
 
     constructor(
         public logger:Logger,
@@ -62,6 +63,7 @@ export class FileService {
     async writeFile(path:string, data:string, rootDir?:string) {
         let directory = this.directoryHandler(rootDir);
         this.logger.debug("Writing to: "+path);
+        await this.ensurePathExists(path);
         return Filesystem.writeFile({
             path: path,
             data: data,
@@ -148,18 +150,46 @@ export class FileService {
         });
     }
     
-    private async createTabsintDirectoriesIfDontExist() {
-        if (this.app.tablet) {
-            this.existingTabsintDirectories = await this.listDirectory("");
-            listOfTabsintDirectories.forEach((dir: string) => {
-                if (!this.doesDirectoryExist(dir)) {
-                    this.createDirectory(dir);
-                }                
-            })
+    /**
+     * Make sure the full path exists on the tablet before writing to it.
+     * @summary List the directories on the full path, recursively. For each, check if it exists and if not, create it.
+     * @param path Full path, from "Internal Storage/Documents".
+     */
+    private async ensurePathExists(path: string) {
+        let parentDirectoriesList = path.split("/").slice(0,-1);
+        if (parentDirectoriesList.length > 1) {
+            this.createDirectoryifDoesntExist(parentDirectoriesList[0]);
+            for (var i = 0; i < parentDirectoriesList.length-1; i++) {
+                this.existingDirectories = await this.listDirectory(parentDirectoriesList[i]);
+                await this.createDirectoryifDoesntExist(
+                    parentDirectoriesList[i+1], 
+                    parentDirectoriesList[i], 
+                    parentDirectoriesList.slice(0,i+2).join("/")
+                );
+            }
         }
     }
 
+    /**
+     * Create directories used by tabsint in the Documents folder when first installing the app.
+     * @summary Iterate through each directory expected by tabsint in the Documents folder. If it doesn't exist, create it.
+     */
+    private async createTabsintDirectoriesIfDontExist() {
+        listOfTabsintDirectories.forEach((dir: string) => {
+            this.createDirectoryifDoesntExist(dir);
+        })
+    }
+    
     private doesDirectoryExist(name: string): boolean {
-        return this.existingTabsintDirectories.files.some((file: any) => file.name === name);
+        return this.existingDirectories.files.some((file: any) => file.name === name);
       }
+
+    private async createDirectoryifDoesntExist(dir: string, rootDir: string = "", path: string = dir) {
+        if (this.app.tablet) {
+            this.existingDirectories = await this.listDirectory(rootDir);
+            if (!this.doesDirectoryExist(dir)) {
+                await this.createDirectory(path);
+            } 
+        }   
+    }            
 }

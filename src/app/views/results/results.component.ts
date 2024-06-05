@@ -7,12 +7,14 @@ import { DiskModel } from '../../models/disk/disk.service';
 import { StateModel } from '../../models/state/state.service';
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { StateInterface } from '../../models/state/state.interface';
-import { ResultsInterface } from '../../models/results/results.interface';
+import { ExamResults, ResultsInterface } from '../../models/results/results.interface';
 import { ResultsModel } from '../../models/results/results-model.service';
 
 import { SqLite } from '../../utilities/sqLite.service';
 
 import { SingleResultModalComponent } from '../single-result-modal/single-result-modal/single-result-modal.component';
+import { Logger } from '../../utilities/logger.service';
+import _ from 'lodash';
 
 @Component({
   selector: 'results-view',
@@ -31,7 +33,8 @@ export class ResultsComponent {
     public resultsService: ResultsService,
     public sqLite: SqLite,
     public resultsModel: ResultsModel,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private logger: Logger
   ){
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();
@@ -48,4 +51,37 @@ export class ResultsComponent {
       data: index
     }).afterClosed().subscribe();
   }
+
+  /**
+   * Export all completed Exam Results to tablet's local storage.
+   * @summary Write each result to android, update disk.uploadSummary,
+   * then delete the result from the completed exams and the sqlite database.
+   * @models disk
+   */
+  async exportAll() {
+      try {
+          this.disk.completedExamsResults.forEach((examResult: ExamResults) => {
+              this.resultsService.writeResultToFile(examResult);
+          });
+          this.deleteAll();
+      } catch(e) {
+          this.logger.error("Failed to export all results to file with error: " + _(e).toJSON);
+      }
+
+  }
+
+  async upload() {
+
+  }
+
+  /**
+   * Delete all exam results from the disk completed exam results and from the sqlite database.
+   * @models disk
+   */
+  async deleteAll() {
+      this.diskModel.emptyCompletedExamResults();
+      this.sqLite.deleteAll('results');
+      this.disk = this.diskModel.getDisk();
+  }
+
 }

@@ -3,16 +3,16 @@
 </div>
 <div class="row pad-top">
     <div class="col-4">
-        <button [disabled]="tasks.disabled" class="btn btn-block btn-success"
+        <button class="btn btn-block btn-success"
             (click)="logExportUpload(true)"><i class="ion-upload"></i> {{'Upload' | translate}}</button>
     </div>
     <div class="col-4">
-        <button [disabled]="tasks.disabled" class="btn btn-block btn-primary"
+        <button class="btn btn-block btn-primary"
             (click)="logExportSave(true)"><span class="ion-document"></span>
             {{'Export' | translate}}</button>
     </div>
     <div class="col-4">
-        <button [disabled]="tasks.disabled" class="btn btn-block btn-default" (click)="displayLogs()"><i
+        <button class="btn btn-block btn-default" (click)="displayLogs()"><i
                 class="ion-document-text"></i> {{'Display' | translate}}</button>
     </div>
 </div>

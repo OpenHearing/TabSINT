@@ -32,18 +32,17 @@
 
         <div class="row pad-top">
             <div class="col-4 admin-labels">
-                <!-- disable based on tasks.disable -->
-            <button type="button" *ngIf="!disk.preventUploads" [disabled]="false" class="btn btn-success btn-block" (click)="resultsService.upload()">
+            <button type="button" *ngIf="!disk.preventUploads" class="btn btn-success btn-block" (click)="upload()">
                 <i class="ion-upload"></i> {{'Upload'|translate}}
             </button>
             </div>
             <div class="col-4">
-            <button type="button" *ngIf="!disk.preventExports" [disabled]="sqLite.count['results'] === 0 || false" class="btn btn-primary btn-block" (click)="resultsService.exportAll()">
+            <button type="button" *ngIf="!disk.preventExports" [disabled]="disk.completedExamsResults.length === 0" class="btn btn-primary btn-block" (click)="exportAll()">
                 <span class="glyphicon glyphicon-floppy-disk"></span> {{'Export'|translate}}
             </button>
             </div>
             <div class="col-4">
-            <button type="button" *ngIf="disk.debugMode" [disabled]="sqLite.count['results'] === 0 || false" class="btn btn-danger btn-block" (click)="resultsService.deleteAll()">
+            <button type="button" *ngIf="disk.debugMode" [disabled]="disk.completedExamsResults.length === 0" class="btn btn-danger btn-block" (click)="deleteAll()">
                 <i class="ion-trash-a"></i> {{'Delete'|translate}}
             </button>
             </div>
