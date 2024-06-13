@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SingleResultModalComponent } from './single-result-modal.component';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { NgxJsonViewerModule } from 'ngx-json-viewer';
 
 describe('SingleResultModalComponent', () => {
   let component: SingleResultModalComponent;
@@ -8,7 +10,12 @@ describe('SingleResultModalComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SingleResultModalComponent]
+      declarations: [SingleResultModalComponent],
+      imports:[MatDialogModule, NgxJsonViewerModule],
+      providers: [
+        { provide: MAT_DIALOG_DATA, useValue: {} },
+        { provide: MatDialogRef, useValue: {} },
+      ]
     })
     .compileComponents();
     

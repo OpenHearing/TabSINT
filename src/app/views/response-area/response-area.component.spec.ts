@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
 
 import { ResponseAreaComponent } from './response-area.component';
 
@@ -8,7 +9,14 @@ describe('ResponseAreaComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ResponseAreaComponent]
+      declarations: [ResponseAreaComponent],
+      imports: [TranslateModule.forRoot({
+                  loader: {
+                    provide: TranslateLoader,
+                    useClass: TranslateFakeLoader
+                  }
+                })],
+      providers: [TranslateService, TranslateStore]
     })
     .compileComponents();
     

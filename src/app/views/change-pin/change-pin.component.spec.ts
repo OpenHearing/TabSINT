@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
 
 import { ChangePinComponent } from './change-pin.component';
 
@@ -8,7 +9,14 @@ describe('ChangePinComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ChangePinComponent]
+      imports: [ChangePinComponent,
+        TranslateModule.forRoot({
+                  loader: {
+                    provide: TranslateLoader,
+                    useClass: TranslateFakeLoader
+                  }
+                })],
+      providers: [TranslateService, TranslateStore]
     })
     .compileComponents();
     

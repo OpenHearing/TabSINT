@@ -1,6 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
 
 import { TabsintConfigComponent } from './tabsint-config.component';
+import { MatMenuModule } from '@angular/material/menu';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { FormsModule } from '@angular/forms';
 
 describe('TabsintConfigComponent', () => {
   let component: TabsintConfigComponent;
@@ -8,7 +12,18 @@ describe('TabsintConfigComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TabsintConfigComponent]
+      declarations: [TabsintConfigComponent],
+      imports: [
+        MatMenuModule, 
+        NgbModule,
+        FormsModule,
+        TranslateModule.forRoot({
+                  loader: {
+                    provide: TranslateLoader,
+                    useClass: TranslateFakeLoader
+                  }
+                })],
+      providers: [TranslateService, TranslateStore]
     })
     .compileComponents();
     

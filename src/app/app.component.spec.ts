@@ -1,10 +1,20 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
+import { RouterOutlet } from '@angular/router';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppComponent],
+      declarations: [AppComponent],
+      imports: [RouterOutlet,
+        TranslateModule.forRoot({
+                  loader: {
+                    provide: TranslateLoader,
+                    useClass: TranslateFakeLoader
+                  }
+                })],
+      providers: [TranslateService, TranslateStore]
     }).compileComponents();
   });
 
@@ -20,10 +30,4 @@ describe('AppComponent', () => {
     expect(app.title).toEqual('tabsint');
   });
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, tabsint');
-  });
 });

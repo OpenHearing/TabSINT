@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LogConfigComponent } from './log-config.component';
+import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
 
 describe('LogConfigComponent', () => {
   let component: LogConfigComponent;
@@ -8,7 +9,14 @@ describe('LogConfigComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [LogConfigComponent]
+      declarations: [LogConfigComponent],
+      imports: [TranslateModule.forRoot({
+                  loader: {
+                    provide: TranslateLoader,
+                    useClass: TranslateFakeLoader
+                  }
+                })],
+      providers: [TranslateService, TranslateStore]
     })
     .compileComponents();
     

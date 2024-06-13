@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
-import * as fs from 'fs';
 
 import { AppInterface } from '../models/app/app.interface';
 import { AppModel } from '../models/app/app.service';

@@ -15,7 +15,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 // import ngx-translate and the http loader
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClient, HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http';
 
@@ -146,7 +146,8 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     LocalServerService,
     ResultsService,
     ExamService,
-    AdminService
+    AdminService,
+    TranslateService
   ],
   bootstrap: [AppComponent]
 })
