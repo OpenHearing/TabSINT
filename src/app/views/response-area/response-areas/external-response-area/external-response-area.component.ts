@@ -60,6 +60,15 @@ export class ExternalResponseAreaComponent {
     /* For this to be fully functional we will need to put all of the exam, result, and any other relevent services 
       on the window variable. Additionally, those services will need to know to check the window when external or custom
       response areas are used to obtain results. 
+
+      Could we compile the angular code somehow? Maybe ahead of time?
+        See: https://medium.com/angular-in-depth/building-extensible-dynamic-pluggable-enterprise-application-with-angular-aed8979faba5
+
+        The basic concept here is to build a new angular app that contains only the new desired external response area. If
+        everything is done with the same angular version the compiled code can be run through an eval(). At best this would
+        result in a way larger bundle than necessary, need to use the window version of all functions, and require us to document
+        and/or maintain a method of generating the bundle. We also would need to better understand how the bundle gets produced
+        especially in regards to the html since we need to know how to inject it (we currently just add it innerHTML of a div).
     */
   }
 
