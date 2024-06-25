@@ -11,7 +11,10 @@ import { DiskModel } from '../models/disk/disk.service';
 export class AdminService {
     disk: DiskInterface;
 
-    constructor(public logger: Logger, public diskModel: DiskModel) {
+    constructor(
+        public diskModel: DiskModel, 
+        public logger: Logger
+    ) {
         this.disk = this.diskModel.getDisk();
     }
 

@@ -16,8 +16,8 @@ export class FileService {
     existingDirectories: any;
 
     constructor(
-        public logger:Logger,
-        public appModel: AppModel
+        public appModel: AppModel,
+        public logger:Logger
     ) { 
         this.app = this.appModel.getApp();
         this.createTabsintDirectoriesIfDontExist();        
