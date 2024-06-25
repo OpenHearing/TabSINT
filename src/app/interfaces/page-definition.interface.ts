@@ -105,7 +105,7 @@ export interface ResponseArea extends
     CommonResponseArea, 
     TextBoxInterface,
     MultipleChoiceInterface {
-  inputList(inputList: any, arg1: (input: any) => void): unknown;
-  html: any;
-  image: any;
+  inputList?(inputList: any, arg1: (input: any) => void): any;
+  html?: any;
+  image?: any;
 }

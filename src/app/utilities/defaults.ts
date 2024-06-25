@@ -1,5 +1,5 @@
 import { LoadingProtocolInterface } from "../interfaces/loading-protocol-object.interface";
-import { PageDefinition } from "../interfaces/page-definition.interface";
+import { PageDefinition, ProtocolReference } from "../interfaces/page-definition.interface";
 import { ProtocolSchemaInterface } from "../interfaces/protocol-schema.interface";
 import { PageInterface } from "../models/page/page.interface";
 import { ProtocolMetaInterface } from "../models/protocol/protocol-meta.interface";

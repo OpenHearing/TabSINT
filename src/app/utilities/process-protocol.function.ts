@@ -1,8 +1,7 @@
 import _ from "lodash";
 import { ProtocolSchemaInterface } from "../interfaces/protocol-schema.interface";
 import { ProtocolInterface } from "../models/protocol/protocol.interface";
-import { FollowOn, PageDefinition, ProtocolReference } from "../interfaces/page-definition.interface";
-import { PageInterface } from "../models/page/page.interface";
+import { PageDefinition, ProtocolReference } from "../interfaces/page-definition.interface";
 import { LoadingProtocolInterface } from "../interfaces/loading-protocol-object.interface";
 import { ProtocolDictionary } from "../interfaces/protocol-dictionary";
 import { FollowOnsDictionary } from "../interfaces/follow-ons-dictionary";
@@ -54,7 +53,7 @@ export function processProtocol(loading: LoadingProtocolInterface):
     }
   }
 
-  function iterateThroughPages(pages: PageDefinition | ProtocolReference | ProtocolSchemaInterface) {
+  function iterateThroughPages(pages: PageDefinition | ProtocolReference | ProtocolSchemaInterface | (PageDefinition|ProtocolReference)[]) {
     _.forEach(pages, function(page) {
       if (_.has(page, "pages")) {
         processSubProtocol(page as ProtocolSchemaInterface);
