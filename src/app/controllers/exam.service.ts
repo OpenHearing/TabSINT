@@ -1,7 +1,6 @@
 import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
 
-import { ProtocolService } from './protocol.service';
 import { ResultsService } from './results.service';
 
 import { ResultsInterface } from '../models/results/results.interface';
@@ -35,7 +34,6 @@ export class ExamService {
         public resultsService: ResultsService,
         public resultsModel: ResultsModel,
         public pageModel: PageModel,
-        public protocolService: ProtocolService,
         public protocolM: ProtocolModel,
         public stateModel: StateModel,
         private diskModel: DiskModel,

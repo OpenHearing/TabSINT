@@ -23,9 +23,9 @@
 </a>
   
 <!-- Svantek status -->
-<a href="javascript:" class="header-text" title="Svantek status">
+<a href="javascript:" class="header-text svantek-indicator-height" title="Svantek status">
     <span *ngIf="svantek.state === 'connected' || svantek.state === 'recording'">
-        <img [matMenuTriggerFor]= "DosimeterConnectedMenu" src="../../../assets/img/svantek-indicator.png" style="height:25px" alt="Svantek indicator" />
+        <img [matMenuTriggerFor]= "DosimeterConnectedMenu" src="../../../assets/img/svantek-indicator.png" alt="Svantek indicator" />
     </span>
     <mat-menu #DosimeterConnectedMenu="matMenu">
         <button mat-menu-item>
@@ -59,9 +59,9 @@
     </mat-menu>
 </a>
   
-<a href="javascript:" class="header-text" *ngIf="!networkModel.status" title="Network status: Not connected">
+<a href="javascript:" class="header-text header-icon" *ngIf="!networkModel.status" title="Network status: Not connected">
     <span>
-        <mat-icon [matMenuTriggerFor]= "WiFiNotConnectedMenu" aria-hidden="false" aria-label="Example home icon" fontIcon="signal_wifi_off" style="color:blue"></mat-icon>
+        <mat-icon [matMenuTriggerFor]= "WiFiNotConnectedMenu" aria-hidden="false" aria-label="Example home icon" fontIcon="signal_wifi_off"></mat-icon>
     </span>
     <mat-menu #WiFiNotConnectedMenu="matMenu">
         <button mat-menu-item>

@@ -6,14 +6,14 @@
       <!-- <div class="row"> -->
   
         <!-- Exam Header -->
-        <div *ngIf="isExam" style="overflow:auto;flex: 1 1 auto;">
+        <div *ngIf="isExam">
           <!-- <h1 *ngIf="page.dm.title && dm.state.mode !== 'READY'" class="surveytitle truncate">
             {{page.dm.title}}
           </h1> -->
         </div>
   
         <!-- Admin Header -->
-        <div *ngIf="!isExam" style="overflow:auto;flex: 1 1 auto;">
+        <div *ngIf="!isExam">
           <h1 class="surveytitle truncate">
             <!-- <ng-transclude></ng-transclude> -->
             Admin View
@@ -30,13 +30,6 @@
             <span (click)="tasks.unhide()"><i class="ion-clipboard"></i></span>
           </a> -->
 
-          <!-- dropdown -->
-
-          <style>
-            .dropdown-toggle::after{
-              display:none;
-            }
-          </style>
 
           <div class="col">
             <div ngbDropdown display="dynamic" class="d-inline-block">
