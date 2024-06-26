@@ -6,7 +6,7 @@ import { ResultsInterface } from '../../models/results/results.interface';
 import { ResultsModel } from '../../models/results/results-model.service';
 import { ExamService } from '../../controllers/exam.service';
 import { WINDOW } from '../../utilities/window';
-import { ProtocolModelInterface } from '../../models/protocol/protocol-model.interface';
+import { ProtocolModelInterface } from '../../models/protocol/protocol.interface';
 import { ProtocolModel } from '../../models/protocol/protocol-model.service';
 import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';

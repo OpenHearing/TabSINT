@@ -1,6 +1,6 @@
 import { MediaReposInterface } from "../../interfaces/media-repos.interface"
 import { ProtocolServer, ResultsMode } from "../../utilities/constants"
-import { ProtocolMetaInterface } from "../protocol/protocol-meta.interface"
+import { ProtocolMetaInterface } from "../protocol/protocol.interface"
 import { ExamResults } from "../results/results.interface"
 
 export interface DiskInterface {

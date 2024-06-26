@@ -4,7 +4,7 @@ import { ResultsModel } from '../models/results/results-model.service';
 import { DiskModel } from '../models/disk/disk.service';
 import { DiskInterface } from '../models/disk/disk.interface';
 import { ProtocolModel } from '../models/protocol/protocol-model.service';
-import { ProtocolModelInterface } from '../models/protocol/protocol-model.interface';
+import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
 import _ from 'lodash';
 import { constructFilename, getDateString } from '../utilities/results-helper-functions';
 import { FileService } from './file.service';

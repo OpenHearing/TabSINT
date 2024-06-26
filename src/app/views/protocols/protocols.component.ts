@@ -14,7 +14,7 @@ import { StateInterface } from '../../models/state/state.interface';
 import { DialogDataInterface } from '../../interfaces/dialog-data.interface';
 import { Notifications } from '../../utilities/notifications.service';
 import { Tasks } from '../../utilities/tasks.service';
-import { ProtocolModelInterface } from '../../models/protocol/protocol-model.interface';
+import { ProtocolModelInterface } from '../../models/protocol/protocol.interface';
 import { ExamService } from '../../controllers/exam.service';
 import { getProtocolMetaData } from '../../utilities/protocol-helper-functions';
 

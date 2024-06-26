@@ -14,7 +14,7 @@ import { StateInterface } from '../../models/state/state.interface';
 import { Notifications } from '../../utilities/notifications.service';
 import { Tasks } from '../../utilities/tasks.service';
 import { AdminService } from '../../controllers/admin.service';
-import { ProtocolModelInterface } from '../../models/protocol/protocol-model.interface';
+import { ProtocolModelInterface } from '../../models/protocol/protocol.interface';
 import { ResultsInterface } from '../../models/results/results.interface';
 import { ResultsModel } from '../../models/results/results-model.service';
 import { ExamService } from '../../controllers/exam.service';

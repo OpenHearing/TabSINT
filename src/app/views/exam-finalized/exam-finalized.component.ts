@@ -7,7 +7,7 @@ import { DiskInterface } from '../../models/disk/disk.interface';
 import { DiskModel } from '../../models/disk/disk.service';
 import { ExamService } from '../../controllers/exam.service';
 import { ProtocolModel } from '../../models/protocol/protocol-model.service';
-import { ProtocolModelInterface } from '../../models/protocol/protocol-model.interface';
+import { ProtocolModelInterface } from '../../models/protocol/protocol.interface';
 
 @Component({
   selector: 'exam-finalized-view',
