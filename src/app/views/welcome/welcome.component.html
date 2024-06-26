@@ -13,12 +13,12 @@
         <span i18n class="welcome">Scan Configurations</span>
       </a>
   
-      <a routerLink="/exam" class="welcome-row" (click)="examService.switchToExamView()">
+      <a routerLink="/exam" class="welcome-row">
         <span><mat-icon>edit</mat-icon></span>
         <span class="welcome" i18n>Exam View</span>
       </a>
   
-      <a routerLink="/admin" routerLinkActive="active" class="welcome-row" *ngIf="config.build !== 'heartrack'" (click)="examService.switchToAdminView()">
+      <a routerLink="/admin" routerLinkActive="active" class="welcome-row" *ngIf="config.build !== 'heartrack'">
         <span><mat-icon>settings</mat-icon></span>
         <span class="welcome" i18n>Admin View</span>
       </a>

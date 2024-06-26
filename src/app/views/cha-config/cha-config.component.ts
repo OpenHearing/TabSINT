@@ -20,25 +20,6 @@ export class ChaConfigComponent {
   disk: DiskInterface;
   state: StateInterface;
 
-  constructor(
-    public diskModel: DiskModel, 
-    public fileService: FileService,
-    public adminService: AdminService,
-    public configService: ConfigService,
-    public logger: Logger, 
-    public stateModel: StateModel,
-    public translate: TranslateService,
-  ) { 
-    this.disk = this.diskModel.getDisk();
-    this.state = this.stateModel.getState();
-  }
-
-  ngOnInit(): void {
-    this.stateModel.setAppState(AppState.Admin);
-  }
-
-  // VARIABLES - PROBABLY SHOULD BE MOVED?
-
   bluetoothStatus = {
     state: true
   };
@@ -57,8 +38,22 @@ export class ChaConfigComponent {
     USB: "USB Host"
   };
 
+  constructor(
+    public diskModel: DiskModel, 
+    public fileService: FileService,
+    public adminService: AdminService,
+    public configService: ConfigService,
+    public logger: Logger, 
+    public stateModel: StateModel,
+    public translate: TranslateService,
+  ) { 
+    this.disk = this.diskModel.getDisk();
+    this.state = this.stateModel.getState();
+  }
 
-  // Functions
+  ngOnInit(): void {
+    this.stateModel.setAppState(AppState.Admin);
+  }
 
   removeCha() {
     console.log("removeCha pressed");
@@ -82,9 +77,6 @@ export class ChaConfigComponent {
   getBluetoothType() {
     return this.cha.bluetoothType
   }
-
-
-  // Popovers
 
   bluetoothTypePopover = this.translate.instant(
     "Set the bluetooth type for connecting to the WAHTS. <br /><br /><b>Bluetooth 2.0</b> is used for the handheld WAHTS <br /><b>Bluetooth 3.0</b> is used for the Creare Wireless Headset"

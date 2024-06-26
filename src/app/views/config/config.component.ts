@@ -7,6 +7,7 @@ import { AppState } from '../../utilities/constants';
 import { StateModel } from '../../models/state/state.service';
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { StateInterface } from '../../models/state/state.interface';
+import { ExamService } from '../../controllers/exam.service';
 
 @Component({
   selector: 'config-view',
@@ -20,6 +21,7 @@ export class ConfigComponent {
   constructor(
     public diskModel: DiskModel, 
     public fileService: FileService,
+    public examService: ExamService,
     public logger: Logger, 
     public stateModel: StateModel,
     public translate: TranslateService
@@ -29,6 +31,7 @@ export class ConfigComponent {
   }
 
   ngOnInit(): void {
+    this.examService.switchToAdminView();
     this.stateModel.setAppState(AppState.Admin);
   }
 

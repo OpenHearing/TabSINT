@@ -53,6 +53,7 @@ export class ExamComponent {
   }
 
   ngOnInit(): void {
+    this.examService.switchToExamView();
     this.stateModel.setAppState(AppState.Exam);
   }
 
