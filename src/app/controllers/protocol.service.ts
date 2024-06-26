@@ -13,11 +13,11 @@ import { ProtocolModel } from '../models/protocol/protocol-model.service';
 import { ProtocolInterface } from '../models/protocol/protocol.interface';
 import { AppModel } from '../models/app/app.service';
 import { AppInterface } from '../models/app/app.interface';
-import { ProtocolModelInterface } from '../models/protocol/protocol-model.interface';
+import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { StateModel } from '../models/state/state.service';
 import { PageModel } from '../models/page/page.service';
-import { ProtocolMetaInterface } from '../models/protocol/protocol-meta.interface';
+import { ProtocolMetaInterface } from '../models/protocol/protocol.interface';
 
 import { ExamState } from '../utilities/constants';
 import { DeveloperProtocols, DeveloperProtocolsCalibration, DialogType, ProtocolServer} from '../utilities/constants';
@@ -28,7 +28,6 @@ import { Notifications } from '../utilities/notifications.service';
 import { loadingProtocolDefaults } from '../utilities/defaults';
 import { checkCalibrationFiles, checkControllers, checkPreProcessFunctions } from '../utilities/protocol-checks.function';
 import { processProtocol } from '../utilities/process-protocol.function';
-import { findDuplicateProtocols } from '../utilities/protocol-helper-functions';
 import { initializeLoadingProtocol } from '../utilities/initialize-loading-protocol';
 
 @Injectable({
@@ -40,7 +39,6 @@ export class ProtocolService {
     loading: LoadingProtocolInterface;
     protocolModel: ProtocolModelInterface;
     state: StateInterface;
-    ExamState = ExamState;
 
     constructor(
         public appModel: AppModel,
@@ -99,6 +97,7 @@ export class ProtocolService {
         try {
             await this.overwriteLocalFilesIfNeeded();
             await this.loadFiles();
+            this.setCalibration();
             await this.validateIfCalledFor();
             this.initializeProtocol();
                 // .then(loadCustomJs)
@@ -192,8 +191,6 @@ export class ProtocolService {
             } else {
                 this.notifyProtocolDidntLoadProperly();
             }
-
-            this.setCalibration();
 
         } catch(err) {
             this.logger.error("Error while loading files: " + err);

@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';import { CapacitorSQLite, CapacitorSQLitePlugin, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 
+import { NumDictionary } from '../interfaces/num-dictionary.interface';
 import { DevicesInterface } from '../models/devices/devices.interface';
 import { DiskInterface } from '../models/disk/disk.interface';
-import { NumDictionary } from '../interfaces/num-dictionary.interface';
 import { AppModel } from '../models/app/app.service';
 import { DiskModel } from '../models/disk/disk.service';
 import { Logger } from './logger.service';
 import { createLogsTableSql, createResultsTableSql, deleteSql } from './constants';
-import { Capacitor } from '@capacitor/core';
 
 @Injectable({
     providedIn: 'root',
@@ -23,7 +22,6 @@ export class SqLite {
     sqliteConnection!: SQLiteConnection;
     
     private db!: SQLiteDBConnection;
-    ;
 
     constructor (
         private app: AppModel,

@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 
 import { ProtocolService } from './protocol.service';
 import { ResultsService } from './results.service';
@@ -8,14 +7,13 @@ import { ResultsService } from './results.service';
 import { ResultsInterface } from '../models/results/results.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { DiskInterface } from '../models/disk/disk.interface';
-import { ProtocolModelInterface } from '../models/protocol/protocol-model.interface';
+import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
 
 import { ResultsModel } from '../models/results/results-model.service';
 import { StateModel } from '../models/state/state.service';
 import { ProtocolModel } from '../models/protocol/protocol-model.service';
 import { DiskModel } from '../models/disk/disk.service';
 
-import { Logger } from '../utilities/logger.service';
 import { DialogType, ExamState } from '../utilities/constants';
 import { Notifications } from '../utilities/notifications.service';
 import { PageModel } from '../models/page/page.service';
@@ -40,8 +38,6 @@ export class ExamService {
         public protocolService: ProtocolService,
         public protocolM: ProtocolModel,
         public stateModel: StateModel,
-        private translate: TranslateService,
-        private logger: Logger,
         private diskModel: DiskModel,
         private notifications: Notifications
     ) {
