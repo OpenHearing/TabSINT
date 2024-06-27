@@ -1,5 +1,3 @@
-import { ExamResults } from "../models/results/results.interface";
-
 /**
  * Generate a standardized filename across results
  * @summary Create filename by concatenating resultFilename (if available in protocol, 

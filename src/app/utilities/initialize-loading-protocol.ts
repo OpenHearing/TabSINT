@@ -4,7 +4,7 @@ import { DiskModel } from "../models/disk/disk.service";
 import { Logger } from "./logger.service";
 import _ from "lodash";
 import { loadingProtocolDefaults } from "./defaults";
-import { FileService } from "../controllers/file.service";
+import { FileService } from "./file.service";
 
 export function initializeLoadingProtocol(
     loading: LoadingProtocolInterface,

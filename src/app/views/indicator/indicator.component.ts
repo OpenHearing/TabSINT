@@ -2,6 +2,9 @@ import { Component } from '@angular/core';
 import { DiskModel } from '../../models/disk/disk.service';
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { TranslateService } from '@ngx-translate/core';
+import { StateModel } from '../../models/state/state.service';
+import { StateInterface } from '../../models/state/state.interface';
+import { SvantekState } from '../../utilities/constants';
 
 @Component({
   selector: 'indicator-view',
@@ -9,16 +12,18 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrl: './indicator.component.css'
 })
 export class IndicatorComponent {
-  disk: DiskInterface;
+  disk: DiskInterface;  
+  state: StateInterface;
+  SvantekState = SvantekState;
 
-  constructor(public diskModel:DiskModel, public translate:TranslateService) { 
+  constructor(
+    public diskModel:DiskModel, 
+    public stateModel: StateModel,
+    public translate:TranslateService
+  ) { 
     this.disk = this.diskModel.getDisk();
+    this.state = this.stateModel.getState();
   }
-  
-  bluetoothStatus:any = {};
-  networkModel:any = {};
-  svantek:any = {};
-  chaStreaming:any = {};
 
   WiFiNotConnectedPopover = this.translate.instant(
     "WiFi Not Connected"

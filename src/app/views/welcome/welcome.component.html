@@ -1,6 +1,6 @@
 <div class="questionbox welcome-page">
 
-    <img src="assets/img/icon.svg" style="width: 50%; min-width: 175px;max-width: 300px;" alt="{{'TabSINT logo'}}" />
+    <img src="assets/img/icon.svg" class="welcome-logo-size" alt="{{'TabSINT logo'}}" />
   
     <h1 class="welcome welcome-title" i18n>TABSINT</h1>
   
@@ -9,16 +9,16 @@
     <div class="container">
   
       <a href="#" class="welcome-row" (click)="scanQrCodeandAutoConfig()">
-        <span><img src="assets/img/QR_code.png" style="max-width: 29px" alt="{{'QR code logo'}}" /></span>
+        <span><img src="assets/img/QR_code.png" class="qrCode-logo-size" alt="{{'QR code logo'}}" /></span>
         <span i18n class="welcome">Scan Configurations</span>
       </a>
   
-      <a routerLink="/exam" class="welcome-row" (click)="examService.switchToExamView()">
+      <a routerLink="/exam" class="welcome-row">
         <span><mat-icon>edit</mat-icon></span>
         <span class="welcome" i18n>Exam View</span>
       </a>
   
-      <a routerLink="/admin" routerLinkActive="active" class="welcome-row" *ngIf="config.build !== 'heartrack'" (click)="examService.switchToAdminView()">
+      <a routerLink="/admin" routerLinkActive="active" class="welcome-row" *ngIf="config.build !== 'heartrack'">
         <span><mat-icon>settings</mat-icon></span>
         <span class="welcome" i18n>Admin View</span>
       </a>

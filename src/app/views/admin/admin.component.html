@@ -33,7 +33,7 @@
           </ng-template>
         </li>
         <li [ngbNavItem]="4">
-          <button (click)="examService.switchToExamView()" routerLink="/exam" ngbNavLink>Exam View</button>
+          <button routerLink="/exam" ngbNavLink>Exam View</button>
           <ng-template ngbNavContent>
             <p>
               <!-- <exam-view></exam-view> -->
@@ -45,7 +45,7 @@
       <div [ngbNavOutlet]="nav" class="mt-2"></div>
 
       <!-- add space for keyboard -->
-      <div class="keyboard-spacer" [style]="adminService.keyboardStyle"></div>
+      <div class="keyboard-spacer"></div>
     
     </div>
 

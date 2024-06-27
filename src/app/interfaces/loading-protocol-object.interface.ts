@@ -1,4 +1,4 @@
-import { ProtocolMetaInterface } from "../models/protocol/protocol-meta.interface";
+import { ProtocolMetaInterface } from "../models/protocol/protocol.interface";
 import { ProtocolInterface } from "../models/protocol/protocol.interface";
 
 export interface LoadingProtocolInterface {

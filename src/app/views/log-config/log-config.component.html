@@ -1,14 +1,15 @@
 <div class="row">
-    <div class="col-12">{{'Number of log messages' | translate}}: {{logs.count.newlogs}}</div>
+    <div class="col-12">{{'Number of log messages' | translate}}: {{newlogs}}</div>
 </div>
 <div class="row pad-top">
     <div class="col-4">
         <button class="btn btn-block btn-success"
-            (click)="logExportUpload(true)"><i class="ion-upload"></i> {{'Upload' | translate}}</button>
+            (click)="logExportUpload()"><i class="ion-upload"></i> 
+            {{'Upload' | translate}}</button>
     </div>
     <div class="col-4">
         <button class="btn btn-block btn-primary"
-            (click)="logExportSave(true)"><span class="ion-document"></span>
+            (click)="logExportSave()"><span class="ion-document"></span>
             {{'Export' | translate}}</button>
     </div>
     <div class="col-4">
@@ -17,7 +18,7 @@
     </div>
 </div>
 
-<div class="row pad-top" *ngIf="logs.show">
+<div class="row pad-top" *ngIf="showLogs">
     <div class="col-12">
         <div class="well admin-log-display">
             <!-- <div *ngFor="log in logs.disp.slice(0, logs.nLogs)">

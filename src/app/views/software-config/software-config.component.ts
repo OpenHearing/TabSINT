@@ -27,7 +27,7 @@ export class SoftwareConfigComponent {
     this.version = this.versionService.getVersion();
   }
 
-  // VARIABLES - PROBABLY SHOULD BE MOVED?
+  // VARIABLES - SHOULD BE MOVED TO THE RESPECTIVE MODEL WHEN IT EXISTS
 
   devices = {
     name: "Browser",
@@ -54,5 +54,9 @@ export class SoftwareConfigComponent {
     }
   }
 
+
+  toggleAppDeveloperMode() {
+    console.log("toggleAppDeveloperMode");
+  }
 
 }

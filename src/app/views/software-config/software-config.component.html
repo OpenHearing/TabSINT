@@ -18,13 +18,13 @@
         <b>TabSINT:</b>
         <span>{{version.dm.tabsint}}</span>
     </li>
-    <li (click)="adminService.toggleAppDeveloperMode()">
+    <li (click)="toggleAppDeveloperMode()">
         <b>{{'Build Name' | translate}}:</b>
         <span>
             {{config.build}}
             <span *ngIf="disk.appDeveloperMode">
                 - App-Developer Mode is on <button class="btn btn-default"
-                    (click)="adminService.toggleAppDeveloperMode()">Turn Off</button>
+                    (click)="toggleAppDeveloperMode()">Turn Off</button>
             </span>
             <span *ngIf="!disk.appDeveloperMode && disk.appDeveloperModeCount > 1">
                 - Tap {{5-disk.appDeveloperModeCount}} more times to turn on App-Developer Mode

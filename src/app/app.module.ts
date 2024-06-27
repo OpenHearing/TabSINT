@@ -46,7 +46,7 @@ import { Paths } from './utilities/paths.service';
 import { FileChooser } from './utilities/file-chooser.service';
 
 // Controllers
-import { FileService } from './controllers/file.service';
+import { FileService } from './utilities/file.service';
 import { ConfigService } from './controllers/config.service';
 import { VersionService } from './controllers/version.service';
 import { ProtocolService } from './controllers/protocol.service';

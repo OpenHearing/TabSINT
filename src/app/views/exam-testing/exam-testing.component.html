@@ -1,48 +1,22 @@
-<style>
-    .loader {
-      border: 16px solid #f3f3f3;
-      border-radius: 50%;
-      border-top: 16px solid #3498db;
-      width: 120px;
-      height: 120px;
-      -webkit-animation: spin 2s linear infinite; /* Safari */
-      animation: spin 2s linear infinite;
-      margin: 0 auto;
-      display: block;
-      margin-bottom: 1em;
-    }
-    
-    /* Safari */
-    @-webkit-keyframes spin {
-      0% { -webkit-transform: rotate(0deg); }
-      100% { -webkit-transform: rotate(360deg); }
-    }
-    
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-</style>
-
-<div *ngIf="examService?.currentPage?.loadingRequired && examService?.currentPage?.loadingActive">
+<div *ngIf="isMediaLoading">
     <h2>Media File(s) Loading...</h2>
     <div class="loader"></div>
-    <button type="button" class="button btn btn-default" (click)="examService.currentPage.loadingRequired=false; examService.finishActivateMedia()" translate disabled="true">Start Exam</button>
+    <button type="button" class="button btn btn-default" (click)="startExam()" translate disabled="true">Start Exam</button>
 </div>
 
-<div *ngIf="examService?.currentPage?.loadingRequired && !examService?.currentPage?.loadingActive">
-    <h2 style="margin-bottom:1em;">Loading Complete</h2>
-    <button type="button" class="button btn btn-default" (click)="examService.currentPage.loadingRequired=false; examService.finishActivateMedia()" translate>Start Exam</button>
+<div *ngIf="isLoadingComplete">
+    <h2 class="loading-complete">Loading Complete</h2>
+    <button type="button" class="button btn btn-default" (click)="startExam()" translate>Start Exam</button>
 </div>
 
 <div *ngIf="!examService?.currentPage?.loadingRequired">
     <!-- Title block -->
-    <h2 [textContent]="examService?.currentPage?.questionMainText" *ngIf="examService?.currentPage?.questionMainText"
-        ng-class="{medium: ((examService?.currentPage?.questionMainText?.length >= 38) && (examService?.currentPage?.questionMainText?.length < 48)), long: (examService?.currentPage?.questionMainText?.length > 42)}"></h2>
-    <p class="subtext pad-top" *ngIf="examService?.currentPage?.questionSubText">
-        <span [textContent]="examService.currentPage.questionSubText" id="subtext-testing"></span>
+    <h2 [textContent]="questionMainText" *ngIf="questionMainText"
+        [ngClass]="examTestingTitleClass"></h2>
+    <p class="subtext pad-top" *ngIf="questionSubText">
+        <span [textContent]="questionSubText" id="subtext-testing"></span>
     </p>
-    <p class="instructions" *ngIf="examService?.currentPage?.instructionText"><span [textContent]="examService?.currentPage?.instructionText" id="instructions-testing"></span></p>
+    <p class="instructions" *ngIf="instructionText"><span [textContent]="instructionText" id="instructions-testing"></span></p>
 
 
     <!-- Images -->

@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';import { CapacitorSQLite, CapacitorSQLitePlugin, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 
+import { NumDictionary } from '../interfaces/num-dictionary.interface';
 import { DevicesInterface } from '../models/devices/devices.interface';
 import { DiskInterface } from '../models/disk/disk.interface';
-import { NumDictionary } from '../interfaces/num-dictionary.interface';
 import { AppModel } from '../models/app/app.service';
 import { DiskModel } from '../models/disk/disk.service';
 import { Logger } from './logger.service';
 import { createLogsTableSql, createResultsTableSql, deleteSql } from './constants';
-import { Capacitor } from '@capacitor/core';
 
 @Injectable({
     providedIn: 'root',
@@ -23,7 +22,6 @@ export class SqLite {
     sqliteConnection!: SQLiteConnection;
     
     private db!: SQLiteDBConnection;
-    ;
 
     constructor (
         private app: AppModel,
@@ -35,20 +33,6 @@ export class SqLite {
         if (app.getApp().tablet) this.init();
     }
 
-    private async init() {
-        this.sqlitePlugin = CapacitorSQLite;
-        this.sqliteConnection = new SQLiteConnection(this.sqlitePlugin);
-        this.open();
-    }
-
-    private async open() {
-        const database: string = 'storage';
-        this.db = await this.sqliteConnection.createConnection(database, false, 'no-encryption', 1, false);
-        await this.db.open();
-        await this.db.execute(createResultsTableSql);
-        await this.db.execute(createLogsTableSql);
-    }
-    
     async store(
         tableName: string, 
         date: string, 
@@ -99,6 +83,20 @@ export class SqLite {
         this.count[tableName] = 0;
     }
 
+    private async init() {
+        this.sqlitePlugin = CapacitorSQLite;
+        this.sqliteConnection = new SQLiteConnection(this.sqlitePlugin);
+        this.open();
+    }
+
+    private async open() {
+        const database: string = 'storage';
+        this.db = await this.sqliteConnection.createConnection(database, false, 'no-encryption', 1, false);
+        await this.db.open();
+        await this.db.execute(createResultsTableSql);
+        await this.db.execute(createLogsTableSql);
+    }
+    
     private async deleteOlderLogsIfThereAreTooMany() {
         var delCount = this.count['logs'] - this.disk.maxLogRows + 1;
         if (delCount > 0) {

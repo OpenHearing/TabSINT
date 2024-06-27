@@ -238,6 +238,30 @@ $tabsint-training-site-theme: mat.define-light-theme((
   .ion-help-circled {
     color: rgb(0, 102, 204); 
   }
+  
+  .loader {
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid #3498db;
+    width: 120px;
+    height: 120px;
+    -webkit-animation: spin 2s linear infinite; /* Safari */
+    animation: spin 2s linear infinite;
+    margin: 0 auto;
+    display: block;
+    margin-bottom: 1em;
+  }
+  
+  /* Safari */
+  @-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
 
   /*-----------
   * .mat components
@@ -354,6 +378,18 @@ $tabsint-training-site-theme: mat.define-light-theme((
     .disclaimer-release {
       font-size: 12px;
     }
+  }
+
+  .disclaimer-logo-width {
+    max-width: 25%;
+  }
+  .welcome-logo-size {
+    width: 50%; 
+    min-width: 175px;
+    max-width: 300px;
+  }
+  .qrCode-logo-size {
+    max-width: 29px;
   }
   
   /* two column admin tables */
@@ -773,6 +809,11 @@ $tabsint-training-site-theme: mat.define-light-theme((
   
   .keyboard-spacer {
     padding: 5px 0 0 0;
+    padding-top: 0px;
+  }
+
+  .loading-complete {
+    margin-bottom: 1em;
   }
   
   /* debug section */
@@ -1800,11 +1841,17 @@ $tabsint-training-site-theme: mat.define-light-theme((
     margin-left: 6px;
     color: #333 !important;
   }
+  .header-icon {
+    color:  #0066cc !important; 
+  }
   .header-text span[popover-placement] {
     color:  #337ab7 !important; 
   }
   .header-text {
     cursor: default;
+  }
+  .svantek-indicator-height {
+    height:25px
   }
   
   @media (max-width: 500px) {
@@ -1887,6 +1934,9 @@ $tabsint-training-site-theme: mat.define-light-theme((
     font-weight: bold;
   }
   
+  .dropdown-toggle::after{
+    display:none;
+  }
   
   /* Protocol Table */
   table.fixed .row-Name {
@@ -2281,6 +2331,9 @@ $tabsint-training-site-theme: mat.define-light-theme((
     width: 100%;
     display: flex;
   }
+  .panel-body table {
+    margin: 0;
+  }
   
   /* need to find out what this was doing before
   .panel-body {
@@ -2532,6 +2585,10 @@ $tabsint-training-site-theme: mat.define-light-theme((
     border: 4px outset black;
     border-radius:3px;
     vertical-align: text-bottom;
+  }
+
+  .myCha {
+    word-wrap: break-word;
   }
   
   

@@ -5,7 +5,7 @@ import { ProtocolModel } from '../models/protocol/protocol-model.service';
 import { SqLite } from '../utilities/sqLite.service';
 import { DevicesModel } from '../models/devices/devices.service';
 import { DiskModel } from '../models/disk/disk.service';
-import { FileService } from './file.service';
+import { FileService } from '../utilities/file.service';
 import { Logger } from '../utilities/logger.service';
 import { AppModel } from '../models/app/app.service';
 import { protocolDefaults } from '../utilities/defaults';

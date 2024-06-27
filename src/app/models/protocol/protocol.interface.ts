@@ -1,7 +1,28 @@
+import { FollowOnsDictionary } from "../../interfaces/follow-ons-dictionary";
+import { ProtocolDictionary } from "../../interfaces/protocol-dictionary";
 import { ProtocolErrorInterface } from "../../interfaces/protocol-error.interface";
 import { ProtocolSchemaInterface } from "../../interfaces/protocol-schema.interface";
 import { ProtocolServer } from "../../utilities/constants";
 
+export interface ProtocolMetaInterface {
+  group: string;
+  name: string;
+  path: string;
+  date: string;
+  version: string;
+  creator: string;
+  server: ProtocolServer;
+  admin: boolean;
+  contentURI: string;
+}
+export interface ProtocolModelInterface {
+  activeProtocol?: ProtocolInterface, 
+  activeProtocolDictionary?: ProtocolDictionary,
+  activeProtocolFollowOnsDictionary?: FollowOnsDictionary,
+  loadedProtocols: {
+      [Key: string]: ProtocolInterface
+  }, 
+}
 export interface ProtocolInterface extends ProtocolSchemaInterface {
     group: string;
     name: string;

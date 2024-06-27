@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { ProtocolModel } from '../../models/protocol/protocol-model.service';
 import { StateInterface } from '../../models/state/state.interface';
 import { StateModel } from '../../models/state/state.service';
-import { ProtocolModelInterface } from '../../models/protocol/protocol-model.interface';
+import { ProtocolModelInterface } from '../../models/protocol/protocol.interface';
 import { ExamService } from '../../controllers/exam.service';
 
 @Component({

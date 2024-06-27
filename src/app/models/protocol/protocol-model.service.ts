@@ -3,7 +3,7 @@ import _ from 'lodash';
 
 import { ProtocolInterface } from './protocol.interface';
 import { ProtocolServer } from '../../utilities/constants';
-import { ProtocolModelInterface } from './protocol-model.interface';
+import { ProtocolModelInterface } from './protocol.interface';
 import { PageInterfaceDefaults, partialMetaDefaults } from '../../utilities/defaults';
 
 @Injectable({

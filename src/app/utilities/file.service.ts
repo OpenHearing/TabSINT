@@ -4,8 +4,8 @@ import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { AppInterface } from '../models/app/app.interface';
 import { AppModel } from '../models/app/app.service';
 
-import { Logger } from '../utilities/logger.service';
-import { listOfTabsintDirectories } from '../utilities/constants';
+import { Logger } from './logger.service';
+import { listOfTabsintDirectories } from './constants';
 @Injectable({
     providedIn: 'root',
 })
