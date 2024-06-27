@@ -1,5 +1,9 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { Tasks } from '../../utilities/tasks.service';
+import { SqLite } from '../../utilities/sqLite.service';
+import { StateModel } from '../../models/state/state.service';
+import { StateInterface } from '../../models/state/state.interface';
 
 @Component({
   selector: 'log-config-view',
@@ -8,30 +12,30 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class LogConfigComponent {
 
-  constructor(public translate: TranslateService) {  }
+  state: StateInterface;
+  showLogs: boolean;
 
-  logs = {
-    count: {
-      newlogs:"???"
-    },
-    show: false,
-    nLogs: 50,
-    disp: []
-  };
-
-  tasks = {
-    disabled: true
+  constructor(
+    public translate: TranslateService,
+    public stateModel: StateModel,
+    private sqLite: SqLite,
+    private tasks: Tasks
+  ) { 
+    this.state = this.stateModel.getState();
+    this.showLogs = this.state.isPaneOpen.appLog;
   }
+
+  newlogs = this.sqLite.count['logs'];
 
   displayLogs() {
     console.log("displayLogs pressed");
   }
 
-  logExportUpload(param:boolean) {
+  logExportUpload() {
     console.log("logExport pressed");
   }
 
-  logExportSave(param:boolean) {
+  logExportSave() {
     console.log("logExport pressed");
   }
 

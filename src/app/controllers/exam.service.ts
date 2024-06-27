@@ -26,7 +26,7 @@ import { calculateElapsedTime } from '../utilities/exam-helper-functions';
 export class ExamService {
     protocol: ProtocolModelInterface;
     disk: DiskInterface;
-    results: ResultsInterface
+    results: ResultsInterface;
     state: StateInterface;
     currentPage: PageInterface;
 

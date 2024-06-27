@@ -33,20 +33,6 @@ export class SqLite {
         if (app.getApp().tablet) this.init();
     }
 
-    private async init() {
-        this.sqlitePlugin = CapacitorSQLite;
-        this.sqliteConnection = new SQLiteConnection(this.sqlitePlugin);
-        this.open();
-    }
-
-    private async open() {
-        const database: string = 'storage';
-        this.db = await this.sqliteConnection.createConnection(database, false, 'no-encryption', 1, false);
-        await this.db.open();
-        await this.db.execute(createResultsTableSql);
-        await this.db.execute(createLogsTableSql);
-    }
-    
     async store(
         tableName: string, 
         date: string, 
@@ -97,6 +83,20 @@ export class SqLite {
         this.count[tableName] = 0;
     }
 
+    private async init() {
+        this.sqlitePlugin = CapacitorSQLite;
+        this.sqliteConnection = new SQLiteConnection(this.sqlitePlugin);
+        this.open();
+    }
+
+    private async open() {
+        const database: string = 'storage';
+        this.db = await this.sqliteConnection.createConnection(database, false, 'no-encryption', 1, false);
+        await this.db.open();
+        await this.db.execute(createResultsTableSql);
+        await this.db.execute(createLogsTableSql);
+    }
+    
     private async deleteOlderLogsIfThereAreTooMany() {
         var delCount = this.count['logs'] - this.disk.maxLogRows + 1;
         if (delCount > 0) {
