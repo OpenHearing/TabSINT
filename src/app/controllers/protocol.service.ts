@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { FileService } from './file.service';
+import { FileService } from '../utilities/file.service';
 
 import { LoadingProtocolInterface } from '../interfaces/loading-protocol-object.interface';
 import { ProtocolValidationResultInterface } from '../interfaces/protocol-validation-result.interface';

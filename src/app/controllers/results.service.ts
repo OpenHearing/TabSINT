@@ -7,7 +7,7 @@ import { ProtocolModel } from '../models/protocol/protocol-model.service';
 import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
 import _ from 'lodash';
 import { constructFilename, getDateString } from '../utilities/results-helper-functions';
-import { FileService } from './file.service';
+import { FileService } from '../utilities/file.service';
 import { Logger } from '../utilities/logger.service';
 import { SqLite } from '../utilities/sqLite.service';
 import { DevicesInterface } from '../models/devices/devices.interface';
