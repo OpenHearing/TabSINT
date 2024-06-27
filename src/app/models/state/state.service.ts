@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { StateInterface } from './state.interface';
-import { AppState, ExamState, ProtocolState } from "../../utilities/constants";
+import { AppState, ChaState, ExamState, ProtocolState } from "../../utilities/constants";
 
 @Injectable({
     providedIn: 'root',
@@ -32,7 +32,9 @@ export class StateModel {
             pctProgress: 1,
             anticipatedProtocols: [],
             activatedProtocols: []
-        }
+        },
+        bluetoothConnected: false,
+        cha: ChaState.Disconnected
     }
 
     getState(): StateInterface {

@@ -18,6 +18,12 @@ export enum ExamState {
     Testing
 }
 
+export enum ChaState {
+    Connected,
+    Disconnected,
+    Reprogram
+}
+
 export enum ResultsMode {
     UploadOnly = "Upload Only",
     ExportOnly = "Export Only",
@@ -34,6 +40,12 @@ export enum DialogType {
     Confirm,
     Alert
 }
+
+export var BluetoothType = {
+  "BLUETOOTH": "Bluetooth 2.0",
+  "BLUETOOTH_LE": "Bluetooth 3.0",
+  "USB": "USB Host"
+};
 
 import EdareAudiometry from '../../protocols/edare-audiometry/protocol.json';
 import CreareAudiometry from '../../protocols/creare-audiometry/protocol.json';

@@ -1,4 +1,4 @@
-import { AppState, ProtocolState, ExamState } from "../../utilities/constants";
+import { AppState, ProtocolState, ExamState, ChaState } from "../../utilities/constants";
 
 export interface StateInterface {
     appState: AppState;
@@ -24,5 +24,7 @@ export interface StateInterface {
         pctProgress: number;
         anticipatedProtocols: Array<any>;
         activatedProtocols: Array<any>;
-    }
+    };
+    bluetoothConnected: boolean;
+    cha: ChaState;
 }

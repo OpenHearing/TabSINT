@@ -1,10 +1,10 @@
 <!-- Cha State -->
 <div class="row pad-top">
     <div class="col-4 admin-labels">State: </div>
-    <div class="col-8" *ngIf="cha.state === 'connected'"><em>Connected</em></div>
-    <div class="col-8" *ngIf="cha.state === 'disconnected'"><em>Not Connected</em></div>
-    <div class="col-8" *ngIf="cha.state === 'reprogram'"><em>Reprogramming</em></div>
-    <div class="col-8" *ngIf="cha.state !== 'connected' && cha.state !== 'disconnected' && cha.state !== 'reprogram'"><em>Connecting</em></div>
+    <div class="col-8" *ngIf="state.cha === ChaState.Connected"><em>Connected</em></div>
+    <div class="col-8" *ngIf="state.cha === ChaState.Disconnected"><em>Not Connected</em></div>
+    <div class="col-8" *ngIf="state.cha === ChaState.Reprogram"><em>Reprogramming</em></div>
+    <div class="col-8" *ngIf="state.cha !== ChaState.Connected && state.cha !== ChaState.Disconnected && state.cha !== ChaState.Reprogram"><em>Connecting</em></div>
 </div>
 
 <!-- Preferred Cha -->
@@ -17,23 +17,24 @@
 </div>
 
 <!-- Bluetooth Message-->
-<div class="row pad-top" *ngIf="!bluetoothStatus.state">
+<div class="row pad-top" *ngIf="!state.bluetoothConnected">
     <div class="col-10 text-warning"><em>Bluetooth radio disabled</em></div>
 </div>
 
 <!-- Connection Buttons-->
 <div class="row pad-top">
-    <div class="col-4" [ngSwitch]="cha.state">
+    <div class="col-4" [ngSwitch]="state.cha">
       <button *ngSwitchDefault class="btn btn-primary btn-block disabled custom-disabled">Connect</button>
-      <button *ngSwitchCase="'disconnected'" class="btn btn-primary btn-block" [disabled]="!bluetoothStatus.state" [ngClass]="!bluetoothStatus.state ? 'disabled custom-disabled': ''" (click)="cha.connect()">Connect</button>
+      <button *ngSwitchCase="'disconnected'" class="btn btn-primary btn-block" [disabled]="!state.bluetoothConnected" 
+        [ngClass]="!state.bluetoothConnected ? 'disabled custom-disabled': ''" (click)="connectCha()">Connect</button>
     </div>
-    <div class="col-4" [ngSwitch]="cha.state">
+    <div class="col-4" [ngSwitch]="state.cha">
       <button *ngSwitchDefault class="btn btn-primary btn-block disabled custom-disabled">Disconnect</button>
-      <button *ngSwitchCase="'connected'" class="btn btn-primary btn-block" (click)="cha.disconnect()">Disconnect</button>
+      <button *ngSwitchCase="'connected'" class="btn btn-primary btn-block" (click)="disconnectCha()">Disconnect</button>
       <button *ngSwitchCase="'discovery'" class="btn btn-primary btn-block disabled custom-disabled">Disconnect</button>
     </div>
-    <div class="col-4" [ngSwitch]="cha.state">
-      <button *ngSwitchDefault class="btn btn-primary btn-block" (click)="cha.cancelConnect()">Cancel</button>
+    <div class="col-4" [ngSwitch]="state.cha">
+      <button *ngSwitchDefault class="btn btn-primary btn-block" (click)="cancelConnectCha()">Cancel</button>
       <button *ngSwitchCase="'reprogram'" class="btn btn-primary btn-block disabled custom-disabled">Cancel</button>
       <button *ngSwitchCase="'connected'" class="btn btn-primary btn-block disabled custom-disabled">Cancel</button>
       <button *ngSwitchCase="'disconnected'" class="btn btn-primary btn-block disabled custom-disabled">Cancel</button>
@@ -41,7 +42,7 @@
 </div>
 
 <!-- Connected Cha -->
-<div *ngIf="cha.state === 'connected'">
+<div *ngIf="state.cha === ChaState.Connected">
     <hr />
     <cha-info-view></cha-info-view>
 </div>
@@ -76,10 +77,10 @@
         <div class="col-5">
             <div ngbDropdown display="dynamic">                            
                 <button type="button" class="btn btn-default btn-block dropdown-toggle" id="bluetooth-type-dropdown" ngbDropdownToggle>
-                    {{bluetoothTypes[getBluetoothType()] || "None"}}
+                    {{this.disk.cha.bluetoothType || "None"}}
                 </button>
                 <div ngbDropdownMenu aria-labelledby="resultsMode">
-                    <button *ngFor="let bluetoothType of bluetoothTypes | keyvalue" ngbDropdownItem (click)="changeBluetoothType(bluetoothType.key)">{{bluetoothType.value}}</button>
+                    <button *ngFor="let bluetoothType of BluetoothType | keyvalue" ngbDropdownItem (click)="changeBluetoothType(bluetoothType.key)">{{bluetoothType.value}}</button>
                 </div>
             </div>
         </div>
