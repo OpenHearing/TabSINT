@@ -41,6 +41,12 @@ export enum DialogType {
     Alert
 }
 
+export enum SvantekState {
+    Connected,
+    Disconnected,
+    Recording
+}
+
 export var BluetoothType = {
   "BLUETOOTH": "Bluetooth 2.0",
   "BLUETOOTH_LE": "Bluetooth 3.0",

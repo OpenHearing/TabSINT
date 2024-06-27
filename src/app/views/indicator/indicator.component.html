@@ -5,7 +5,7 @@
 <!-- </a> -->
   
 <!-- CHA status -->
-<a href="javascript:" class="header-text" *ngIf="bluetoothStatus.state" title="CHA status">
+<a href="javascript:" class="header-text" *ngIf="state.bluetoothConnected" title="CHA status">
     <!-- <cha-indicator></cha-indicator> -->
     cha
 </a>
@@ -24,7 +24,7 @@
   
 <!-- Svantek status -->
 <a href="javascript:" class="header-text svantek-indicator-height" title="Svantek status">
-    <span *ngIf="svantek.state === 'connected' || svantek.state === 'recording'">
+    <span *ngIf="state.svantek === SvantekState.Connected || state.svantek === SvantekState.Recording">
         <img [matMenuTriggerFor]= "DosimeterConnectedMenu" src="../../../assets/img/svantek-indicator.png" alt="Svantek indicator" />
     </span>
     <mat-menu #DosimeterConnectedMenu="matMenu">
@@ -36,7 +36,7 @@
   
   
 <!-- bluetooth status -->
-<a href="javascript:" class="header-text" *ngIf="bluetoothStatus.state" title="Bluetooth status">
+<a href="javascript:" class="header-text" *ngIf="state.bluetoothConnected" title="Bluetooth status">
     <span>
         <i [matMenuTriggerFor]= "BluetoothConnectedMenu" class="ion-bluetooth"></i>
     </span>
@@ -48,7 +48,7 @@
 </a>
   
 <!-- network status -->
-<a href="javascript:" class="header-text" *ngIf="networkModel.status" title="Network status: Connected">
+<a href="javascript:" class="header-text" *ngIf="state.wifiConnected" title="Network status: Connected">
     <span>
         <i [matMenuTriggerFor]= "WiFiConnectedMenu" class="ion-wifi"></i>
     </span>
@@ -59,7 +59,7 @@
     </mat-menu>
 </a>
   
-<a href="javascript:" class="header-text header-icon" *ngIf="!networkModel.status" title="Network status: Not connected">
+<a href="javascript:" class="header-text header-icon" *ngIf="!state.wifiConnected" title="Network status: Not connected">
     <span>
         <mat-icon [matMenuTriggerFor]= "WiFiNotConnectedMenu" aria-hidden="false" aria-label="Example home icon" fontIcon="signal_wifi_off"></mat-icon>
     </span>

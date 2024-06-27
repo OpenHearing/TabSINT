@@ -1,4 +1,4 @@
-import { AppState, ProtocolState, ExamState, ChaState } from "../../utilities/constants";
+import { AppState, ProtocolState, ExamState, ChaState, SvantekState } from "../../utilities/constants";
 
 export interface StateInterface {
     appState: AppState;
@@ -26,5 +26,7 @@ export interface StateInterface {
         activatedProtocols: Array<any>;
     };
     bluetoothConnected: boolean;
+    wifiConnected: boolean;
     cha: ChaState;
+    svantek: SvantekState;
 }
