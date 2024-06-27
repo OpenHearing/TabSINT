@@ -1,6 +1,6 @@
 <h1> {{'Exam Complete'|translate}} </h1>
 
-<h2 *ngIf="protocol.activeProtocol?.title">{{protocol.activeProtocol?.title}}</h2>
+<h2 *ngIf="title">{{title}}</h2>
 <p>{{'Press'|translate}} <strong>{{'New Exam'|translate}}</strong> {{'to restart'|translate}}</p>
 <div class="spacer"></div>
 
@@ -13,25 +13,21 @@
       <tbody>
         <tr>
           <th class="align-right width-50">{{'Protocol'|translate}}:</th>
-          <td>{{results.currentExam.protocolName}}</td>
+          <td>{{currentExam.protocolName}}</td>
         </tr>
         <tr>
           <th class="align-right width-50">{{'Started at'|translate}}:</th>
-          <td>{{results.currentExam.testDateTime | date:'yyyy-M-dd H:mm:ss'}}</td>
+          <td>{{currentExam.testDateTime | date:'yyyy-M-dd H:mm:ss'}}</td>
         </tr>
         <tr>
           <th class="align-right width-50">{{'Elapsed Time'|translate}}:</th>
-          <td>{{results.currentExam.elapsedTime}}</td>
+          <td>{{currentExam.elapsedTime}}</td>
         </tr>
   
         <tr *ngIf="results.currentExam.protocolId">
           <th class="align-right width-50">{{'Site ID'|translate}}:</th>
-          <td>{{results.currentExam.protocolId}}</td>
+          <td>{{currentExam.protocolId}}</td>
         </tr>
-        <!-- <tr *ngIf="results.currentExam.qrString">
-          <th class="align-right width-50">{{'QR String'|translate}}:</th>
-          <td>{{results.currentExam.qrString}}</td>
-        </tr> -->
       </tbody>
     </table>
   </div>
@@ -46,16 +42,14 @@
       <th scope="col">#</th>
       <th scope="col">{{'Page ID'|translate}}</th>
       <th scope="col">{{'Response'|translate}}</th>
-      <!-- <th>Response Time</th> -->
       <th></th>
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let resp of results.currentExam.responses; index as i">
+    <tr *ngFor="let resp of currentExam.responses; index as i">
       <td scope="row">{{i+1}}</td>
       <td>{{resp.pageId.substr(0,15)}}</td>
       <td>{{resp.response.substr(0,25)}}</td>
-      <!-- <td>{{resp}}</td> -->
 
       <td [ngSwitch]="resp.correct">
         <span class="ion-checkmark" *ngSwitchCase="'true'"></span>

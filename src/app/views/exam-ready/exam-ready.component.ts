@@ -17,6 +17,10 @@ export class ExamReadyComponent {
   state: StateInterface;
   protocol: ProtocolModelInterface;
 
+  title?: string;
+  subtitle?: string;
+  instructionText?: string;
+
   constructor(
     public resultsModel: ResultsModel, 
     public examService: ExamService, 
@@ -26,6 +30,10 @@ export class ExamReadyComponent {
     this.results = this.resultsModel.getResults();
     this.state = this.stateModel.getState();
     this.protocol = this.protocolModel.getProtocolModel();
+
+    this.title = this.protocol.activeProtocol?.title;
+    this.subtitle = this.protocol.activeProtocol?.subtitle;
+    this.instructionText = this.protocol.activeProtocol?.instructionText;
   }
 
 }

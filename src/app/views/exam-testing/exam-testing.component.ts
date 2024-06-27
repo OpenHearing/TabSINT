@@ -20,6 +20,9 @@ export class ExamTestingComponent {
   results: ResultsInterface;
   protocol: ProtocolModelInterface;
   state: StateInterface;
+  questionMainText?: string;
+  questionSubText?: string;
+  instructionText?: string;
 
   constructor(
     public resultsModel: ResultsModel,
@@ -33,7 +36,20 @@ export class ExamTestingComponent {
     this.results = this.resultsModel.getResults();
     this.protocol = this.protocolModel.getProtocolModel();
     this.state = this.stateModel.getState();
+
+    this.questionMainText = this.examService?.currentPage?.questionMainText;
+    this.questionSubText = this.examService.currentPage.questionSubText;
+    this.instructionText = this.examService.currentPage.instructionText;
   }
+
+  isMediaLoading = this.examService?.currentPage?.loadingRequired && this.examService?.currentPage?.loadingActive;
+  isLoadingComplete = this.examService?.currentPage?.loadingRequired && !this.examService?.currentPage?.loadingActive;
+  
+  examTestingTitleClass = {
+    medium: ((this.examService?.currentPage?.questionMainText?.length >= 38) 
+      && (this.examService?.currentPage?.questionMainText?.length < 48)), 
+    long: (this.examService?.currentPage?.questionMainText?.length > 42)
+  };
 
   testHTML = this.sanitizer.bypassSecurityTrustHtml(`
     <button id="my-button" (click)=testFunction() >Button 1</button>
@@ -47,6 +63,11 @@ export class ExamTestingComponent {
     if (document.getElementById('my-button') as HTMLElement) {
       (document.getElementById('my-button') as HTMLElement).addEventListener('click', this.testFunction.bind(this));
     }
+  }
+
+  startExam() {
+    this.examService.currentPage.loadingRequired=false; 
+    this.examService.finishActivateMedia();
   }
 
   testing() {
