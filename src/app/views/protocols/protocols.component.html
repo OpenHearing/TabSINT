@@ -59,8 +59,8 @@
 
       <div class="row pad-top">
         <div class="col-4">
-          <button [disabled]="isButtonDisabled()" *ngIf="!protocolService.isActive(selected)" class="btn btn-primary btn-block" (click)="load()" i18n> <i class="ion-compose"></i> Load</button>
-          <button [disabled]="isButtonDisabled()" *ngIf="protocolService.isActive(selected)" class="btn btn-default btn-block" (click)="load()" i18n> <i class="ion-refresh"></i> Reload</button>
+          <button [disabled]="isButtonDisabled()" *ngIf="!isProtocolActive()" class="btn btn-primary btn-block" (click)="loadProtocol()" i18n> <i class="ion-compose"></i> Load</button>
+          <button [disabled]="isButtonDisabled()" *ngIf="isProtocolActive()" class="btn btn-default btn-block" (click)="loadProtocol()" i18n> <i class="ion-refresh"></i> Reload</button>
         </div>
         <div class="col-4">
           <button *ngIf="showUpdateButton()" [disabled]="isButtonDisabled()" class="btn btn-success btn-block" (click)="update()"><i class="ion-android-sync"></i> Update</button>
@@ -132,10 +132,10 @@
       <div class="row pad-top">
         <div class="col-5">
           <!-- <button class="btn btn-primary btn-block"  [ngClass]="disk.server === localServer ? 'active' : '' " (click)="changeServer('gitlab')">Gitlab</button> -->
-          <button class="btn btn-primary btn-block"  [ngClass]="disk.server === localServer ? 'active' : '' ">Gitlab</button>
+          <button class="btn btn-primary btn-block"  [ngClass]="gitlabButtonClass()">Gitlab</button>
         </div>
         <div class="col-5">
-          <button class="btn btn-primary btn-block"  [ngClass]="disk.server === localServer ? 'active' : '' "translate>Device Storage</button>
+          <button class="btn btn-primary btn-block"  [ngClass]="localServerButtonClass()" translate>Device Storage</button>
         </div>
       </div>
 

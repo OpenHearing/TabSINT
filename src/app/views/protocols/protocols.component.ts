@@ -27,7 +27,6 @@ export class ProtocolsComponent {
   selected?: ProtocolInterface;
   disk: DiskInterface;
   protocolModel: ProtocolModelInterface;
-  localServer: ProtocolServer = ProtocolServer.LocalServer;
   state: StateInterface;
 
   constructor (
@@ -67,6 +66,10 @@ export class ProtocolsComponent {
     }
   };
 
+  isProtocolActive(): boolean {
+    return this.protocolService.isActive(this.selected);
+  }
+
   isButtonDisabled(): boolean {
     return !this.selected;
   };
@@ -85,37 +88,17 @@ export class ProtocolsComponent {
     return this.selected.server !== ProtocolServer.Developer;
   };
 
-  load() {
+  async loadProtocol() {
     if (!this.selected) {
         return;
     }
-    
-    let loadAndReset = (reload: boolean) => {
-        // const observable = new Observable<number>(observer => {
-        this.tasks.register("updating", "Loading Protocol...");
-        // });
-        this.protocolService.load(getProtocolMetaData(this.selected!), true, reload);
-        // observable.subscribe({
-        //   next: () => {
-        //     this.protocolService.load(this.selected, this.disk.validateProtocols, true, reload);
-        //   },
-        //   error: (err) => {
-        //       console.log("error: observable error (private loadAndReset)");
-        //       console.log(err)
-        //   },
-        //   complete() {
-        //       console.log("complete: observable completed. this will only appear after protocol is loaded if there is no error.");
-        //   }
-        // })
-        
-        if (this.protocolService.isActive(this.selected)) {
-          // this.examService.reset();
-        }
-        this.tasks.deregister("updating");
-    }
+
+    this.tasks.register("updating", "Loading Protocol...");
+
+    let protocolMetaData = getProtocolMetaData(this.selected!);
 
     if (!this.protocolModel.activeProtocol) {
-        loadAndReset(false);
+      await this.protocolService.load(protocolMetaData, true, false);
     } else {
         let msg: DialogDataInterface = {
           title: "Confirm",
@@ -123,19 +106,22 @@ export class ProtocolsComponent {
           type: DialogType.Confirm
           };
         if (this.protocolService.isActive(this.selected)) {
-            msg.content = `Reload protocol ${this.selected.name} and reset the current test? The current test will be reset`;
+            msg.content = `Overwrite protocol ${this.selected.name} and reset the current test? The current test will be reset`;
         }
 
-        this.notifications.confirm(msg).subscribe(result => {
+        this.notifications.confirm(msg).subscribe(async result => {
             if (result === "OK") {
                 if (!this.protocolService.isActive(this.selected)) {
-                    loadAndReset(false);
+                  await this.protocolService.load(protocolMetaData, true, false);
                 } else if (this.protocolService.isActive(this.selected)) {
-                    loadAndReset(true);
+                  await this.protocolService.load(protocolMetaData, true, true);
+                  this.examService.reset();
                 }
             }
         });
     }
+
+    this.tasks.deregister("updating");
   };
 
   delete(): void {
@@ -243,6 +229,18 @@ export class ProtocolsComponent {
       //         return Promise.resolve();
       //     }
       // }
+  };
+
+  gitlabButtonClass(): string {
+    return this.disk.server === ProtocolServer.Gitlab
+    ? 'active' 
+    : 'disabled';
+  };
+
+  localServerButtonClass(): string {
+    return this.disk.server === ProtocolServer.LocalServer
+    ? 'active' 
+    : '';
   };
 
   validateProtocolPopover = this.translate.instant(
