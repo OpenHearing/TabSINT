@@ -61,6 +61,18 @@ export class ExternalResponseAreaComponent {
       on the window variable. Additionally, those services will need to know to check the window when external or custom
       response areas are used to obtain results. 
 
+      We might be able to only expose the relevant service functions on window if the active protocol contains a response area
+      of 'external-response-area' or 'custom-response-area'. And if the active protocol has one of those response areas, it might
+      be possible to use the window version of the functions. How can we route things to use those functions? We also need to 
+      pay special attention to the models (variables) and make sure we are reading them from the correct location. I am not sure
+      if the window variables will be directly linked to the non window variables.
+
+      It might be easier to move all variables to the window? Can we do something like "window.this = this". Would that allow us 
+      to put EVERYTHING on the window? Then are we restricted to using window.this everywhere instead of this? That does not seem
+      like the best solution either. We really just want to occasionally override the defualts with window versions. Maybe the 
+      main versions of each function can call something like checkIfWindowOverrides() and then can handle the overrides that way?
+      
+
       Could we compile the angular code somehow? Maybe ahead of time?
         See: https://medium.com/angular-in-depth/building-extensible-dynamic-pluggable-enterprise-application-with-angular-aed8979faba5
 
