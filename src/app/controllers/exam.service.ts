@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
 
 import { ResultsService } from './results.service';
+import { Logger } from '../utilities/logger.service';
 
 import { ResultsInterface } from '../models/results/results.interface';
 import { StateInterface } from '../models/state/state.interface';
@@ -31,6 +32,7 @@ export class ExamService {
     currentPage: PageInterface;
 
     constructor (
+        public logger: Logger,
         public resultsService: ResultsService,
         public resultsModel: ResultsModel,
         public pageModel: PageModel,
@@ -73,7 +75,7 @@ export class ExamService {
         this.addPagesToStack(this.protocol.activeProtocol?.pages, 0);
         this.resultsService.initializeExamResults();
         this.startPage();
-        this.state.examState = ExamState.Testing; 
+        this.state.examState = ExamState.Testing;
     }
 
     /** Default submit function for exam pages.
@@ -118,22 +120,87 @@ export class ExamService {
     */
     private advancePage() {
         let nextExamIndex = this.state.examIndex + 1;
-        var nextID;
-        if (this.currentPage.followOns) { 
-            nextID = this.findFollowOn();
-            if (nextID != undefined) {
-                if (nextID === "@END_ALL") {
-                    this.endExam();
-                    return;
-                }
+        this.setFlags();
+        
+        var [nextID, logicType] = this.checkForExamLogic();
+        if (nextID == undefined) {
+            if (logicType == 'preprocess') {
+                this.logger.debug('Protocol preProcessFunction functionality not yet implemented.');
+            } else if (logicType == 'repeat') {
+                this.logger.debug('Protocol repeatPage functionality not yet implemented.');
+            } else if (logicType == 'skip') {
+                this.logger.debug('Protocol skipIf functionality not yet implemented.');
+            } else {
+                this.logger.debug('Unknown protocol logicType, exam will likely error.');
+            }
+        } else if (nextID != undefined) {
+            if (this.checkForSpecialReference(nextID)) {
+                this.handleSpecialReferences(nextID);
+            } else {
                 let pages = this.protocolM.protocolModel.activeProtocolDictionary![nextID].pages;
                 this.addPagesToStack(pages, nextExamIndex);
-            } else {
-                this.state.examState = ExamState.NotReady;
             }
-        }        
+        } else {
+            this.logger.debug('This should be unreachable.');
+            this.state.examState = ExamState.NotReady;
+        }
+              
         this.state.examIndex = nextExamIndex;
         this.startPage();
+    }
+
+    /** Checks for follow on exam logic
+     * @summary The exam will proceed to the correct page.
+     * @models page
+    */
+    private checkForExamLogic() {
+        // TODO: This needs to correctly handle PREPROCESS, REPEATS, SKIPS, and FOLLOW ONS
+        var nextID, logicType;
+        if (this.currentPage.repeatPage) {
+            this.logger.debug("repeatPage is not yet supported");
+            logicType = 'repeat'
+        } else if (this.currentPage.skipIf) { 
+            this.logger.debug("skipIf is not yet supported");
+            logicType = 'skip'
+        } else if (this.currentPage.preProcessFunction) { 
+            this.logger.debug("preProcessFunction is not yet supported");
+            logicType = 'preprocess'
+        } else if (this.currentPage.followOns) { 
+            nextID = this.findFollowOn();
+        }
+        return [nextID, logicType]
+    }
+
+    /** Checks for flags and sets them
+     * @summary TBD.
+    */
+    private setFlags() {
+        // This function will check if flags need to be set and then set them accordingly.
+    }
+
+    /** Checks for special references
+     * @summary Returns true/false depending a id contains a special reference
+    */
+    private checkForSpecialReference(id:String | undefined) {
+        var hasSpecialReference = false;
+        if (id != undefined && id.includes("@")) {
+            hasSpecialReference = true;
+        }
+        return hasSpecialReference
+    }
+
+    /** Handles special references
+     * @summary Handles the special references
+    */
+    private handleSpecialReferences(id:String | undefined) {
+        if (id === "@PARTIAL") {
+            this.endExam();
+            this.logger.debug("@PARTIAL not implemented, instead using @END_ALL");
+            return;
+        } else if (id === "@END_ALL") {
+            this.endExam();
+            return;
+        }
     }
 
     /** Proceed to next page in the exam
@@ -181,6 +248,7 @@ export class ExamService {
     private findFollowOn() {
         let id: string | undefined = undefined;
         this.currentPage.followOns.forEach((followOn:any) => {
+            // TODO: This should be updated to use eval
             if (this.results.currentPage.response == followOn.conditional.split("==")[1].replaceAll("'","")) {
                 id = followOn.target.reference;
             }
