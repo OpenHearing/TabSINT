@@ -14,6 +14,7 @@ export class LogConfigComponent {
 
   state: StateInterface;
   showLogs: boolean;
+  logs?: String[];
 
   constructor(
     public translate: TranslateService,
@@ -25,7 +26,12 @@ export class LogConfigComponent {
     this.showLogs = this.state.isPaneOpen.appLog;
   }
 
-  newlogs = this.sqLite.count['logs'];
+  async ngOnInit() {
+    this.logs = await this.sqLite.getAll('logs');
+    console.log('LOGS', this.logs);
+  }
+
+  logsCount = this.sqLite.count['logs'];
 
   displayLogs() {
     console.log("displayLogs pressed");

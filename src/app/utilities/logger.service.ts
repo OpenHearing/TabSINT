@@ -4,6 +4,9 @@ import { Filesystem } from '@capacitor/filesystem';
 import { DiskModel } from '../models/disk/disk.service';
 import { SqLite } from './sqLite.service';
 import { DiskInterface } from '../models/disk/disk.interface';
+import { getDateString } from './results-helper-functions';
+import { DevicesModel } from '../models/devices/devices.service';
+import { DevicesInterface } from '../models/devices/devices.interface';
 
 @Injectable({
     providedIn: 'root',
@@ -11,27 +14,34 @@ import { DiskInterface } from '../models/disk/disk.interface';
 
 export class Logger {
     disk: DiskInterface;
+    devices: DevicesInterface;
 
-    constructor(public diskModel:DiskModel) { 
+    constructor(
+        public diskModel:DiskModel,
+        public devicesModel: DevicesModel,
+        public sqLite: SqLite
+    ) { 
         this.disk = this.diskModel.getDisk(); 
+        this.devices = this.devicesModel.getDevices();
     }
 
     debug(msg:string) {
-        if (!this.disk.disableLogs) {
-            console.log("Debug: "+ msg);
-        }
+        this.log(msg, "Debug: ");
     }
     
     warning(msg:string) {
-        if (!this.disk.disableLogs) {
-            console.log("WARNING: "+ msg);
-        }
+        this.log(msg, "WARNING: ");
     }
     
     error(msg:string) {
-        if (!this.disk.disableLogs) {
-            console.log("ERROR: "+ msg);
-        }
+        this.log(msg, "ERROR: ");
     }
+
+    log(msg:string, prefix:string){
+        if (!this.disk.disableLogs) {
+            console.log(prefix + msg);
+            this.sqLite.deleteOlderLogsIfThereAreTooMany();
+            this.sqLite.store('logs', msg);
+        }}
     
 }

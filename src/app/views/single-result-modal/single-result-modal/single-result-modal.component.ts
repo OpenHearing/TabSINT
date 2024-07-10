@@ -5,6 +5,7 @@ import { DiskInterface } from '../../../models/disk/disk.interface';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { ExamResults } from '../../../models/results/results.interface';
 import { ResultsService } from '../../../controllers/results.service';
+import { SqLite } from '../../../utilities/sqLite.service';
 
 @Component({
   selector: 'app-single-result-modal',
@@ -12,17 +13,21 @@ import { ResultsService } from '../../../controllers/results.service';
   styleUrl: './single-result-modal.component.css'
 })
 export class SingleResultModalComponent {
+  singleExamResult?: ExamResults;
   disk: DiskInterface;
-  singleExamResult : ExamResults;
 
   constructor(
     public dialog: MatDialog, 
-    public diskModel: DiskModel,
+    public sqLite: SqLite,
+    public diskM: DiskModel,
     public resultsService: ResultsService,
     @Inject(MAT_DIALOG_DATA) public index: number,
-  ) {
-    this.disk = this.diskModel.getDisk();
-    this.singleExamResult = this.disk.completedExamsResults[index];
+  ) { 
+    this.disk = diskM.getDisk();
+  }
+
+  async ngOnInit() {    
+    this.singleExamResult = await this.sqLite.getSingleResult(this.index) as unknown as ExamResults;
   }
 
   upload() {
