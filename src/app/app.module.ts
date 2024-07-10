@@ -68,6 +68,7 @@ import { ResponseAreaComponent } from './views/response-area/response-area.compo
 import { TextboxComponent } from './views/response-area/response-areas/textbox/textbox.component';
 import { MultipleChoiceComponent } from './views/response-area/response-areas/multiple-choice/multiple-choice.component';
 import { SingleResultModalComponent } from './views/single-result-modal/single-result-modal/single-result-modal.component';
+import { ExternalResponseAreaComponent } from './views/response-area/response-areas/external-response-area/external-response-area.component';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -98,7 +99,8 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     ResponseAreaComponent,
     TextboxComponent,
     MultipleChoiceComponent,
-    SingleResultModalComponent
+    SingleResultModalComponent,
+    ExternalResponseAreaComponent
   ],
   imports: [
     BrowserModule,
