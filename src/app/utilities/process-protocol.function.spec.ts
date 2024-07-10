@@ -139,7 +139,7 @@ const testProtocol: ProtocolInterface = {
             "returnHereAfterward": false
         }
     ],
-    pages: testProt1,
+    pages: ([testProt1]) as any,
     subProtocols: [ testProt2 ],
     group: "",
     name: "",
@@ -188,8 +188,8 @@ describe('processProtocol', () => {
         expect(activeProtocol.title).toBe('Test Protocol');
     })
     
-    it('returns active protocol dictionary', () => {
-        expect(Object.keys(activeProtocolDictionary).length).toEqual(1);
+    it('returns active protocol dictionary: '+JSON.stringify(activeProtocolDictionary), () => {
+        expect(Object.keys(activeProtocolDictionary).length).toEqual(2);
         expect(activeProtocolDictionary['TextBox']).toEqual(testProt2);
     })
 

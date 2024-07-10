@@ -286,6 +286,9 @@ export class ProtocolService {
             this.protocolModel.activeProtocolDictionary,
             this.protocolModel.activeProtocolFollowOnsDictionary
         ] = processProtocol(this.loading);
+        
+        console.log("this.loading",this.loading);
+        console.log("this.protocolModel.activeProtocolDictionary",this.protocolModel.activeProtocolDictionary);
             
         if (this.protocolModel.activeProtocol && "key" in this.protocolModel.activeProtocol) {
             if (this.protocolModel.activeProtocol.key !== undefined) {
