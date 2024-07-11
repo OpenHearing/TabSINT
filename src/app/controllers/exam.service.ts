@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
 
 import { ResultsService } from './results.service';
+import { Logger } from '../utilities/logger.service';
 
 import { ResultsInterface } from '../models/results/results.interface';
 import { StateInterface } from '../models/state/state.interface';
@@ -31,6 +32,7 @@ export class ExamService {
     currentPage: PageInterface;
 
     constructor (
+        public logger: Logger,
         public resultsService: ResultsService,
         public resultsModel: ResultsModel,
         public pageModel: PageModel,
@@ -73,7 +75,7 @@ export class ExamService {
         this.addPagesToStack(this.protocol.activeProtocol?.pages, 0);
         this.resultsService.initializeExamResults();
         this.startPage();
-        this.state.examState = ExamState.Testing; 
+        this.state.examState = ExamState.Testing;
     }
 
     /** Default submit function for exam pages.
@@ -81,7 +83,6 @@ export class ExamService {
      * @models results, state
     */
     submitDefault() {
-        console.log("ExamService submitDefault() called");
         this.resultsService.pushResults(this.results.currentPage);
         // TODO: The below line might need to be async and awaited
         this.advancePage();
@@ -89,7 +90,7 @@ export class ExamService {
         this.state.isSubmittable = this.checkIfPageIsSubmittable();
         this.submit = this.submitDefault;        
 
-        console.log("this.results.currentExam",this.results.currentExam);
+        this.logger.debug("this.results.currentExam: "+JSON.stringify(this.results.currentExam));
     }
 
     /** Submit function for exam pages. Can be overwritten by exams.
@@ -117,23 +118,82 @@ export class ExamService {
      * @models state
     */
     private advancePage() {
+        // make diagram to explain this
         let nextExamIndex = this.state.examIndex + 1;
-        var nextID;
-        if (this.currentPage.followOns) { 
-            nextID = this.findFollowOn();
-            if (nextID != undefined) {
-                if (nextID === "@END_ALL") {
-                    this.endExam();
-                    return;
-                }
-                let pages = this.protocolM.protocolModel.activeProtocolDictionary![nextID].pages;
-                this.addPagesToStack(pages, nextExamIndex);
-            } else {
-                this.state.examState = ExamState.NotReady;
+        this.setFlags();
+        let pageList = this.getPagesFromAdvancedLogic();
+        if (pageList!=undefined) {
+            if (pageList.length>0) {
+                this.addPagesToStack(pageList, nextExamIndex);
             }
-        }        
-        this.state.examIndex = nextExamIndex;
-        this.startPage();
+            this.state.examIndex = nextExamIndex;
+            this.startPage();
+        }   
+    }
+
+    /** Grabs all pages necessary from advanced logic (skips, repeats, followOns, preprocess)
+     * @summary The exam will proceed to the correct page.
+     * @models page
+    */
+    private getPagesFromAdvancedLogic() {
+        var pageList:any = [];
+        if (this.currentPage.skipIf) { 
+            this.logger.debug("skipIf is not yet supported");
+            // push pages to list if needed
+        } if (this.currentPage.repeatPage) {
+            this.logger.debug("repeatPage is not yet supported");
+            // push pages to list if needed
+        } if (this.currentPage.followOns) { 
+            let nextID = this.findFollowOn();
+            if (nextID != undefined) {
+                // TODO: Make it clear that this will break out of the function chain
+                // will end the exam if its called
+                if (this.checkForSpecialReference(nextID)) {
+                    this.handleSpecialReferences(nextID);
+                    return undefined
+                } else {
+                    (this.protocolM.protocolModel.activeProtocolDictionary![nextID].pages as any).forEach( (page:any)=> { 
+                        pageList.push(page);
+                    });
+                }
+            }
+        } if (this.currentPage.preProcessFunction) { 
+            this.logger.debug("preProcessFunction is not yet supported");
+            // push pages to list if needed and/or run preprocess function
+        }
+        return pageList
+    }
+
+    /** Checks for flags and sets them
+     * @summary TBD.
+    */
+    private setFlags() {
+        // This function will check if flags need to be set and then set them accordingly.
+    }
+
+    /** Checks for special references
+     * @summary Returns true/false depending a id contains a special reference
+    */
+    private checkForSpecialReference(id:String | undefined) {
+        var hasSpecialReference = false;
+        if (id != undefined && id.includes("@")) {
+            hasSpecialReference = true;
+        }
+        return hasSpecialReference
+    }
+
+    /** Handles special references
+     * @summary Handles the special references
+    */
+    private handleSpecialReferences(id:String | undefined) {
+        if (id === "@PARTIAL") {
+            this.endExam();
+            this.logger.debug("@PARTIAL not implemented, instead using @END_ALL");
+            return;
+        } else if (id === "@END_ALL") {
+            this.endExam();
+            return;
+        }
     }
 
     /** Proceed to next page in the exam
@@ -142,7 +202,6 @@ export class ExamService {
      * @models state
     */
     private startPage() {
-        console.log(this.pageModel.stack[this.state.examIndex]);
         this.currentPage = this.pageModel.stack[this.state.examIndex];
         this.pageModel.currentPageObservable.next(this.currentPage);
         // TODO: Could subscribe to the currentPageObservable...
@@ -159,7 +218,6 @@ export class ExamService {
     private addPagesToStack(pages:any, index:number) {
         let extraPages:any;
         pages.forEach( (page:any)=> {
-            console.log(page);
             if (page?.reference) {
                 extraPages = this.protocolM.protocolModel.activeProtocolDictionary![page?.reference].pages;
                 this.addPagesToStack(extraPages, index+1);
@@ -181,6 +239,7 @@ export class ExamService {
     private findFollowOn() {
         let id: string | undefined = undefined;
         this.currentPage.followOns.forEach((followOn:any) => {
+            // TODO: This should be updated to use eval
             if (this.results.currentPage.response == followOn.conditional.split("==")[1].replaceAll("'","")) {
                 id = followOn.target.reference;
             }
