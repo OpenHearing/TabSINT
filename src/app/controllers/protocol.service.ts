@@ -127,10 +127,6 @@ export class ProtocolService {
             return;
         }
     
-        if (this.isActive(p)) {
-            this.protocolModel.activeProtocol = undefined;
-        }
-    
         try {
             delete this.protocolModel.loadedProtocols[p.name];
             this.fileService.deleteDirectory(p.path, p.name);
@@ -139,23 +135,6 @@ export class ProtocolService {
             console.log(error);
         }
     };
-    
-    /**
-     * Checks whether a protocol is active.
-     * @summary Checks if the input protocol is the same 
-     * as the one on the protocolModel.activeProtocol object.
-     * @models protocol
-     * @param p protocol to check whether it is active or not
-     * @returns whether protocol is active: boolean
-     */
-    isActive(p: ProtocolInterface | undefined): boolean {
-        return (this.protocolModel.activeProtocol 
-                && p 
-                && this.protocolModel.activeProtocol.name == p.name 
-                && this.protocolModel.activeProtocol.path == p.path) 
-            || false;
-      };
-
     
     private async overwriteLocalFilesIfNeeded() {
         try {

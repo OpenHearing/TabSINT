@@ -23,7 +23,7 @@ export interface ProtocolSchemaInterface {
     navMenu?: NavMenuItem[];
     js?: string | string[];
     exclusiveTimingMode?: boolean;
-    pages: PageDefinition | ProtocolReference | ProtocolSchemaInterface | (PageDefinition | ProtocolReference)[];
+    pages: PageDefinition | ProtocolReference | ProtocolSchemaInterface | (PageDefinition | ProtocolReference | ProtocolSchemaInterface)[];
     subProtocols?: ProtocolSchemaInterface[];
     lookUpTables?: { name: string; table: any[] }[];
 }

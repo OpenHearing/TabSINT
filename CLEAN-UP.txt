@@ -6,10 +6,12 @@ Things that have been added to get tabsint up and running but we could revisit
   - all the css in src/styles.scss
 - look for "TODO" in code base for notes
 - remove / modify all console.log statements
-- replace any with more descriptive typings
-- search for any "ng-" and update
+- replace 'any' with more descriptive typings
+- search for any "ng-" and remove/replace it
 - try to use '() => {}' instead of 'function() {}' when defining functions
 - angular.isDefined() replace with !_.isUndefined()
 - clean up all comments, both '//' and '*/ blah /*' and replace with descriptive function names
 - create the response area interfaces programmatically from the JSON schema using 
 https://www.npmjs.com/package/json-schema-to-typescript
+- UI related functionality should live in components and not services
+- avoid deeply nested functions (soft rule of <3)

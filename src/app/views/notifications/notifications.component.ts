@@ -2,6 +2,7 @@ import {Component, Inject} from '@angular/core';
 import {
   MatDialog,
   MAT_DIALOG_DATA,
+  MatDialogContent
 } from '@angular/material/dialog';
 import {MatButtonModule} from '@angular/material/button';
 

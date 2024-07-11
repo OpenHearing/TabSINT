@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NotificationsComponent } from './notifications.component';
 import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef, MatDialogContent } from '@angular/material/dialog';
 
 describe('NotificationsComponent', () => {
   let component: NotificationsComponent;
@@ -12,6 +12,7 @@ describe('NotificationsComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [NotificationsComponent],
       imports: [MatDialogModule,
+        MatDialogContent,
         TranslateModule.forRoot({
                   loader: {
                     provide: TranslateLoader,

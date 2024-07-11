@@ -24,7 +24,7 @@ const followOn2 = {
 const testProt1 = {
     protocolId:"MainMenu",
     title:"Main Menu",
-    "pages": [
+    pages: [
         {
             id: "choose",
             title: "Response Area Testing",
@@ -139,7 +139,7 @@ const testProtocol: ProtocolInterface = {
             "returnHereAfterward": false
         }
     ],
-    pages: testProt1,
+    pages: [ testProt1 ],
     subProtocols: [ testProt2 ],
     group: "",
     name: "",
@@ -189,7 +189,7 @@ describe('processProtocol', () => {
     })
     
     it('returns active protocol dictionary', () => {
-        expect(Object.keys(activeProtocolDictionary).length).toEqual(1);
+        expect(Object.keys(activeProtocolDictionary).length).toEqual(2);
         expect(activeProtocolDictionary['TextBox']).toEqual(testProt2);
     })
 
