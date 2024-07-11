@@ -83,7 +83,6 @@ export class ExamService {
      * @models results, state
     */
     submitDefault() {
-        console.log("ExamService submitDefault() called");
         this.resultsService.pushResults(this.results.currentPage);
         // TODO: The below line might need to be async and awaited
         this.advancePage();
@@ -91,7 +90,7 @@ export class ExamService {
         this.state.isSubmittable = this.checkIfPageIsSubmittable();
         this.submit = this.submitDefault;        
 
-        console.log("this.results.currentExam",this.results.currentExam);
+        this.logger.debug("this.results.currentExam: "+JSON.stringify(this.results.currentExam));
     }
 
     /** Submit function for exam pages. Can be overwritten by exams.
@@ -119,56 +118,50 @@ export class ExamService {
      * @models state
     */
     private advancePage() {
+        // make diagram to explain this
         let nextExamIndex = this.state.examIndex + 1;
         this.setFlags();
-        
-        var [nextID, logicType] = this.checkForExamLogic();
-        if (nextID == undefined) {
-            if (logicType == 'preprocess') {
-                this.logger.debug('Protocol preProcessFunction functionality not yet implemented.');
-            } else if (logicType == 'repeat') {
-                this.logger.debug('Protocol repeatPage functionality not yet implemented.');
-            } else if (logicType == 'skip') {
-                this.logger.debug('Protocol skipIf functionality not yet implemented.');
-            } else {
-                this.logger.debug('Unknown protocol logicType, exam will likely error.');
+        let pageList = this.getPagesFromAdvancedLogic();
+        if (pageList!=undefined) {
+            if (pageList.length>0) {
+                this.addPagesToStack(pageList, nextExamIndex);
             }
-        } else if (nextID != undefined) {
-            if (this.checkForSpecialReference(nextID)) {
-                this.handleSpecialReferences(nextID);
-            } else {
-                let pages = this.protocolM.protocolModel.activeProtocolDictionary![nextID].pages;
-                this.addPagesToStack(pages, nextExamIndex);
-            }
-        } else {
-            this.logger.debug('This should be unreachable.');
-            this.state.examState = ExamState.NotReady;
-        }
-              
-        this.state.examIndex = nextExamIndex;
-        this.startPage();
+            this.state.examIndex = nextExamIndex;
+            this.startPage();
+        }   
     }
 
-    /** Checks for follow on exam logic
+    /** Grabs all pages necessary from advanced logic (skips, repeats, followOns, preprocess)
      * @summary The exam will proceed to the correct page.
      * @models page
     */
-    private checkForExamLogic() {
-        // TODO: This needs to correctly handle PREPROCESS, REPEATS, SKIPS, and FOLLOW ONS
-        var nextID, logicType;
-        if (this.currentPage.repeatPage) {
-            this.logger.debug("repeatPage is not yet supported");
-            logicType = 'repeat'
-        } else if (this.currentPage.skipIf) { 
+    private getPagesFromAdvancedLogic() {
+        var pageList:any = [];
+        if (this.currentPage.skipIf) { 
             this.logger.debug("skipIf is not yet supported");
-            logicType = 'skip'
-        } else if (this.currentPage.preProcessFunction) { 
+            // push pages to list if needed
+        } if (this.currentPage.repeatPage) {
+            this.logger.debug("repeatPage is not yet supported");
+            // push pages to list if needed
+        } if (this.currentPage.followOns) { 
+            let nextID = this.findFollowOn();
+            if (nextID != undefined) {
+                // TODO: Make it clear that this will break out of the function chain
+                // will end the exam if its called
+                if (this.checkForSpecialReference(nextID)) {
+                    this.handleSpecialReferences(nextID);
+                    return undefined
+                } else {
+                    (this.protocolM.protocolModel.activeProtocolDictionary![nextID].pages as any).forEach( (page:any)=> { 
+                        pageList.push(page);
+                    });
+                }
+            }
+        } if (this.currentPage.preProcessFunction) { 
             this.logger.debug("preProcessFunction is not yet supported");
-            logicType = 'preprocess'
-        } else if (this.currentPage.followOns) { 
-            nextID = this.findFollowOn();
+            // push pages to list if needed and/or run preprocess function
         }
-        return [nextID, logicType]
+        return pageList
     }
 
     /** Checks for flags and sets them
@@ -209,7 +202,6 @@ export class ExamService {
      * @models state
     */
     private startPage() {
-        console.log(this.pageModel.stack[this.state.examIndex]);
         this.currentPage = this.pageModel.stack[this.state.examIndex];
         this.pageModel.currentPageObservable.next(this.currentPage);
         // TODO: Could subscribe to the currentPageObservable...
@@ -226,7 +218,6 @@ export class ExamService {
     private addPagesToStack(pages:any, index:number) {
         let extraPages:any;
         pages.forEach( (page:any)=> {
-            console.log(page);
             if (page?.reference) {
                 extraPages = this.protocolM.protocolModel.activeProtocolDictionary![page?.reference].pages;
                 this.addPagesToStack(extraPages, index+1);

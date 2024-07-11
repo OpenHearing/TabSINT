@@ -139,7 +139,7 @@ const testProtocol: ProtocolInterface = {
             "returnHereAfterward": false
         }
     ],
-    pages: ([testProt1]) as any,
+    pages: testProt1,
     subProtocols: [ testProt2 ],
     group: "",
     name: "",
