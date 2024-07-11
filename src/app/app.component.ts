@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { ProtocolService } from './controllers/protocol.service';
 import { TranslateService } from "@ngx-translate/core";
 import { DiskModel } from './models/disk/disk.service';
+import { newVersionService } from './controllers/new-version.service';
 
 @Component({
   selector: 'app-root',
@@ -16,7 +17,8 @@ export class AppComponent {
     private protocolService: ProtocolService,
     private diskModel: DiskModel,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private versionService: newVersionService
   ) { 
     translate.setDefaultLang('English');
     translate.use('English');
@@ -25,5 +27,6 @@ export class AppComponent {
   ngOnInit() {
     this.protocolService.init();
     this.router.navigate([''])
+    this.versionService.getVersion()
   }
 }

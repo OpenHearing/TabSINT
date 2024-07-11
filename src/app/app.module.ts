@@ -68,6 +68,7 @@ import { ResponseAreaComponent } from './views/response-area/response-area.compo
 import { TextboxComponent } from './views/response-area/response-areas/textbox/textbox.component';
 import { MultipleChoiceComponent } from './views/response-area/response-areas/multiple-choice/multiple-choice.component';
 import { SingleResultModalComponent } from './views/single-result-modal/single-result-modal/single-result-modal.component';
+import { newVersionService } from './controllers/new-version.service';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -142,6 +143,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     FileService,
     ConfigService,
     VersionService,
+    newVersionService,
     ProtocolService,
     LocalServerService,
     ResultsService,
