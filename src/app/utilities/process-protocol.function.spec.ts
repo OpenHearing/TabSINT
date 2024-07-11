@@ -188,7 +188,7 @@ describe('processProtocol', () => {
         expect(activeProtocol.title).toBe('Test Protocol');
     })
     
-    it('returns active protocol dictionary: '+JSON.stringify(activeProtocolDictionary), () => {
+    it('returns active protocol dictionary', () => {
         expect(Object.keys(activeProtocolDictionary).length).toEqual(2);
         expect(activeProtocolDictionary['TextBox']).toEqual(testProt2);
     })
