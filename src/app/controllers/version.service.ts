@@ -1,47 +1,35 @@
 import { Injectable } from '@angular/core';
-import { FileService } from '../utilities/file.service';
+import { Logger } from '../utilities/logger.service';
 
 @Injectable({
     providedIn: 'root',
 })
 
-export class VersionService {
+export class newVersionService {
 
-    version:any = {
-        "dm": {
-            "date": "2024-01-31T16:13:53.769Z",
-            "tabsint": "?"
-        }
-    };
+    private version:any = {}
+    private versionLoaded: Promise<void>;
 
-    constructor(public fileService: FileService) {
-        let v:Object = {
-            "tabsint": "4.7.0",
-            "date": "2024-01-31T16:13:53.769Z",
-            "rev": "v4.6.0-119-gfee19e2f",
-            "version_code": "289",
-            "deps": {
-              "user_agent": "npm/6.14.17 node/v14.20.1 linux x64",
-              "node": "14.20.1",
-              "cordova": "^9.0.0"
-            },
-            "plugins": [
-              "",
-              "> tabsint@4.7.0 cordova /home/bayotte/projects/tabsint/tabsint\n> cordova "
-            ]
-        };
-
-        fileService.writeFile('version.json',JSON.stringify(v),'Data').then( (res)=> {
-            fileService.readFile('version.json', 'Data').then( (res)=> {
-                this.version.dm = JSON.parse(JSON.parse(JSON.stringify(res?.data)));
-            })
-        });
+    constructor(private logger: Logger){
+        this.versionLoaded = this.loadVersion()
     }
 
-    getVersion(): any {
+    private async loadVersion(): Promise<void> {
+        try {
+            const versionData = await import('../../version.json');
+            if (versionData.default) {
+                this.version = versionData.default;
+                this.logger.debug("Version Object processed --- " + JSON.stringify(this.version))
+            }
+        } catch (error) {
+            this.version = {}; // Return an empty object if the file is not found
+            this.logger.error('version.json file not found or failed to load. Returning empty object --- ' + JSON.stringify(this.version));
+        }
+    }
+
+    async getVersion(): Promise<any> {
+        await this.versionLoaded;
         return this.version;
     }
 
-    
-    
 }
