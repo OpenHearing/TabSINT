@@ -5,7 +5,7 @@ import { Logger } from '../utilities/logger.service';
     providedIn: 'root',
 })
 
-export class newVersionService {
+export class VersionService {
 
     private version:any = {}
     private versionLoaded: Promise<void>;
