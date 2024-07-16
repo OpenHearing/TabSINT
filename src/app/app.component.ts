@@ -4,6 +4,7 @@ import { ProtocolService } from './controllers/protocol.service';
 import { TranslateService } from "@ngx-translate/core";
 import { DiskModel } from './models/disk/disk.service';
 import { VersionService } from './controllers/version.service';
+import { DevicesModel } from './models/devices/devices.service';
 
 @Component({
   selector: 'app-root',
@@ -18,7 +19,8 @@ export class AppComponent {
     private diskModel: DiskModel,
     private router: Router,
     private translate: TranslateService,
-    private versionService: VersionService
+    private versionService: VersionService,
+    private devicesModel: DevicesModel
   ) { 
     translate.setDefaultLang('English');
     translate.use('English');
