@@ -28,9 +28,7 @@ export class DevicesModel {
     }
 
     async load() {
-        // The isPlatformBrowser check ensures that the following code only runs in the browser environment,
-        // preventing errors when running on the server where browser-specific APIs (like window) are not available.
-        if (isPlatformBrowser(this.platformId)) {
+        try {
             const info = await Device.getInfo();
             const batteryInfo = await Device.getBatteryInfo();
             const languageCode = await Device.getLanguageCode();
@@ -46,10 +44,10 @@ export class DevicesModel {
             this.devicesModel.other = `Battery level: ${batteryInfo.batteryLevel ?? 'Unknown'}, Language: ${languageCode.value ?? 'Unknown'}`;
             if (info.realDiskFree !== undefined) {
                 this.devicesModel.diskspace = String(info.realDiskFree / (1024 * 1024));
-              }
+            }
             this.logger.debug("Device info processed -- \n" + JSON.stringify((this.devicesModel)))
-        } else {
-            this.logger.debug("Device info not available on server-side");
+        } catch (error) {
+            this.logger.debug("Device info not available");
         }
     }
 
