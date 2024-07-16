@@ -28,6 +28,8 @@ export class DevicesModel {
     }
 
     async load() {
+        // The isPlatformBrowser check ensures that the following code only runs in the browser environment,
+        // preventing errors when running on the server where browser-specific APIs (like window) are not available.
         if (isPlatformBrowser(this.platformId)) {
             const info = await Device.getInfo();
             const batteryInfo = await Device.getBatteryInfo();
