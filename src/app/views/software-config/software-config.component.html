@@ -16,7 +16,7 @@
 <ul class="admin-info">
     <li>
         <b>TabSINT:</b>
-        <span>{{version.dm.tabsint}}</span>
+        <span>{{version.tabsint}}</span>
     </li>
     <li (click)="toggleAppDeveloperMode()">
         <b>{{'Build Name' | translate}}:</b>
@@ -33,7 +33,7 @@
     </li>
     <li>
         <b>{{'Build Date' | translate}}:</b>
-        <span>{{version.dm.date | date: 'yyyy-MM-dd HH:mm:ss'}}</span>
+        <span>{{version.date | date: 'yyyy-MM-dd HH:mm:ss'}}</span>
     </li>
 </ul>
 
@@ -102,15 +102,15 @@
 <ul class="admin-info">
     <li>
         <b>{{'Cordova Version' | translate}}:</b>
-        <span>{{version.dm?.deps?.cordova}}</span>
+        <span>{{version?.deps?.cordova}}</span>
     </li>
     <li>
         <b>{{'Node Version' | translate}}:</b>
-        <span>{{version.dm?.deps?.node}}</span>
+        <span>{{version?.deps?.node}}</span>
     </li>
     <li>
         <b>{{'Build System' | translate}}:</b>
-        <span>{{version.dm?.deps?.user_agent}}</span>
+        <span>{{version?.deps?.user_agent}}</span>
     </li>
 </ul>
 
