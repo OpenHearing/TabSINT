@@ -4,6 +4,7 @@ import { Logger } from '../utilities/logger.service';
 import { DiskInterface } from '../models/disk/disk.interface';
 import { DiskModel } from '../models/disk/disk.service';
 
+
 @Injectable({
     providedIn: 'root',
 })
@@ -23,7 +24,9 @@ export class AdminService {
     }
 
     toggleDisableLogs() {
-        console.log("toggleDisableLogs");
+        this.diskModel.updateDiskModel('disableLogs', !this.disk.disableLogs);
+        this.disk = this.diskModel.getDisk()
+        console.log("toggleDisableLogs: ", this.disk.disableLogs);
     }
 
     toggleDisableVolume() {

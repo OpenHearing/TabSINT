@@ -24,6 +24,7 @@ export class AppComponent {
   ) { 
     translate.setDefaultLang('English');
     translate.use('English');
+    this.diskModel.updateDiskModel('numLogRows',1)
   }
 
   ngOnInit() {

@@ -17,7 +17,9 @@ export class Logger {
     }
 
     debug(msg:string) {
-        if (!this.disk.disableLogs) {
+        if (!this.disk.disableLogs&& this.disk.numLogRows<=this.disk.maxLogRows) {
+            this.diskModel.updateDiskModel('numLogRows',this.disk.numLogRows+1)
+            this.disk = this.diskModel.getDisk()
             console.log("Debug: "+ msg);
         }
     }
@@ -29,7 +31,7 @@ export class Logger {
     }
     
     error(msg:string) {
-        if (!this.disk.disableLogs) {
+        if (!this.disk.disableLogs && this.disk.numLogRows<=this.disk.maxLogRows) {
             console.log("ERROR: "+ msg);
         }
     }

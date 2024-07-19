@@ -14,6 +14,7 @@ import { StateInterface } from '../../models/state/state.interface';
 import { ResultsMode } from '../../utilities/constants';
 import { ChangePinComponent } from '../change-pin/change-pin.component';
 import { MatDialog } from '@angular/material/dialog';
+import { ChangeMaxLogLengthComponent } from '../change-max-log-length/change-max-log-length.component';
 
 @Component({
   selector: 'tabsint-config-view',
@@ -34,7 +35,7 @@ export class TabsintConfigComponent {
     public logger: Logger, 
     public stateModel: StateModel,
     public translate: TranslateService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
   ) { 
     this.version = this.versionService.getVersion();
     this.state = this.stateModel.getState();
@@ -90,11 +91,15 @@ export class TabsintConfigComponent {
   }
 
   editAdminPin() {
-    this.dialog.open(ChangePinComponent).afterClosed().subscribe();
+    this.dialog.open(ChangePinComponent).afterClosed().subscribe(() => {
+      this.disk = this.diskModel.getDisk();
+    });
   }
 
   editMaxLogRows() {
-    console.log("editMaxLogRows pressed");
+    this.dialog.open(ChangeMaxLogLengthComponent).afterClosed().subscribe(() => {
+      this.disk = this.diskModel.getDisk();
+    });
   }
 
   resetConfig() {

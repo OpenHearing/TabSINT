@@ -28,6 +28,7 @@ export class DiskModel {
         pin: "7114",
         disableLogs: false,
         maxLogRows: 1000,
+        numLogRows:0,
         disableAudioStreaming: true,
         tabletGain: 12.34,
         server: ProtocolServer.LocalServer,

@@ -209,7 +209,7 @@
         <div class="col-6"><label translate for="QRCode">QR Code:</label></div>
         <div class="col-4">
             <button id="QRCode" class="btn btn-default btn-block"
-                (click)="configService.generateQRCode()">{{'Generate' | translate}}</button>
+                (click)="configService.echoMessage()">{{'Generate' | translate}}</button>
         </div>
         <div class="col-1" href="javascript:" title="{{'QR Code help' | translate}}">
             <i [matMenuTriggerFor]= "qrCodePopoverMenu" class="ion-help-circled"></i>

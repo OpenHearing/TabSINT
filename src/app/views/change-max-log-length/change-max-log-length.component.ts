@@ -8,25 +8,26 @@ import { DiskInterface } from '../../models/disk/disk.interface';
 import { DiskModel } from '../../models/disk/disk.service';
 
 @Component({
-  selector: 'change-pin-view',
+  selector: 'change-max-log-length-view',
   standalone: true,
-  templateUrl: './change-pin.component.html',
-  styleUrl: './change-pin.component.css',
+  templateUrl: './change-max-log-length.component.html',
+  styleUrl: './change-max-log-length.component.css',
   imports: [FormsModule, TranslateModule]
 })
-export class ChangePinComponent {
+export class ChangeMaxLogLengthComponent {
   disk: DiskInterface;
-  pin: number | undefined;
+  maxLogLength: number | undefined;
 
   constructor(public logger: Logger, public dialog: MatDialog, public diskModel: DiskModel) {
     this.disk = this.diskModel.getDisk();
+    this.maxLogLength = this.disk.maxLogRows; // Initialize with the current max log length
   }
 
-  save(pin:number | undefined) {
-    if (pin!=undefined) {
-      this.logger.debug("Admin pin changed to: "+pin.toString());
-      this.disk.pin = pin.toString();
-      this.diskModel.updateDiskModel('pin', this.disk.pin);
+  save(maxLogLength: number | undefined) {
+    if (maxLogLength != undefined) {
+      this.logger.debug("Max log length changed to: " + maxLogLength);
+      this.disk.maxLogRows = maxLogLength;
+      this.diskModel.updateDiskModel('maxLogRows', maxLogLength);
     }
     this.dialog.closeAll();
   }
@@ -34,5 +35,4 @@ export class ChangePinComponent {
   cancel() {
     this.dialog.closeAll();
   }
-
 }
