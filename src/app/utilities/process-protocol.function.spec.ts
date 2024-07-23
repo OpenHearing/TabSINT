@@ -21,7 +21,7 @@ const followOn2 = {
     }
 };
 
-const testProt1 = [{
+const testProt1 = {
     protocolId:"MainMenu",
     title:"Main Menu",
     pages: [
@@ -54,7 +54,7 @@ const testProt1 = [{
             submitText: ""
         }
       ]
-  }];
+  };
 
 const testProt2 = 
 {

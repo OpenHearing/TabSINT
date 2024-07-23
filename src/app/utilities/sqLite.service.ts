@@ -1,21 +1,18 @@
 import { Injectable } from '@angular/core';import { CapacitorSQLite, CapacitorSQLitePlugin, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 
 import { NumDictionary } from '../interfaces/num-dictionary.interface';
-import { DevicesInterface } from '../models/devices/devices.interface';
 import { DiskInterface } from '../models/disk/disk.interface';
 import { AppModel } from '../models/app/app.service';
 import { DiskModel } from '../models/disk/disk.service';
-import { createLogsTableSql, createResultsTableSql, deleteSql } from './constants';
-import { DevicesModel } from '../models/devices/devices.service';
 import { AppInterface } from '../models/app/app.interface';
+import { createLogsTableSql, createResultsTableSql, deleteSql } from './constants';
 
 @Injectable({
     providedIn: 'root',
 })
 
 export class SqLite {
-    disk: DiskInterface;   
-    devices: DevicesInterface; 
+    disk: DiskInterface;
     app: AppInterface;
     count: NumDictionary ={
         logs: 0,
@@ -29,11 +26,9 @@ export class SqLite {
     constructor (
         private appModel: AppModel,
         private diskModel: DiskModel,
-        public devicesModel: DevicesModel
     ) {
         this.sqlitePlugin = CapacitorSQLite;
         this.disk = this.diskModel.getDisk(); 
-        this.devices = this.devicesModel.getDevices();
         this.app = this.appModel.getApp();
     }
 

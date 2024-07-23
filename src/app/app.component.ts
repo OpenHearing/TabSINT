@@ -16,8 +16,10 @@ import { SqLite } from './utilities/sqLite.service';
 })
 export class AppComponent {
   title = 'tabsint';
+  app: AppInterface;
 
-  constructor(
+  constructor(    
+    public appModel: AppModel,
     private sqLite: SqLite,
     private router: Router,
     private translate: TranslateService,
@@ -26,6 +28,8 @@ export class AppComponent {
   ) {
     translate.setDefaultLang('English');
     translate.use('English');
+    this.app = appModel.getApp();
+
   }
 
   ngOnInit() {
