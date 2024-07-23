@@ -53,7 +53,7 @@ export function processProtocol(loading: LoadingProtocolInterface):
     }
   }
 
-  function iterateThroughPages(pages: PageDefinition | ProtocolReference | ProtocolSchemaInterface | (PageDefinition|ProtocolReference)[]) {
+  function iterateThroughPages(pages: PageDefinition | ProtocolReference | ProtocolSchemaInterface | (PageDefinition|ProtocolReference|ProtocolSchemaInterface)[]) {
     _.forEach(pages, function(page) {
       if (_.has(page, "pages")) {
         processSubProtocol(page as ProtocolSchemaInterface);

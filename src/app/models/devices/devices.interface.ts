@@ -7,5 +7,6 @@ export interface DevicesInterface {
     platform: string,
     model: string,
     os: string,
-    other: string
+    other: string,
+    diskspace: string
 }

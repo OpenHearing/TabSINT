@@ -55,7 +55,7 @@ export class ProtocolsComponent {
   }
 
   pclass(p: ProtocolInterface): string {
-    if (this.protocolService.isActive(p)) {
+    if (this.isActive(p)) {
       return "active-row";
     } else if (this.selected === null || this.selected === undefined) {
       return "";
@@ -67,7 +67,7 @@ export class ProtocolsComponent {
   };
 
   isProtocolActive(): boolean {
-    return this.protocolService.isActive(this.selected);
+    return this.isActive(this.selected);
   }
 
   isButtonDisabled(): boolean {
@@ -105,15 +105,15 @@ export class ProtocolsComponent {
           content: `Switch to protocol ${this.selected.name} and reset the current test? The current test results will be deleted`,
           type: DialogType.Confirm
           };
-        if (this.protocolService.isActive(this.selected)) {
+        if (this.isActive(this.selected)) {
             msg.content = `Overwrite protocol ${this.selected.name} and reset the current test? The current test will be reset`;
         }
 
         this.notifications.confirm(msg).subscribe(async result => {
             if (result === "OK") {
-                if (!this.protocolService.isActive(this.selected)) {
+                if (!this.isActive(this.selected)) {
                   await this.protocolService.load(protocolMetaData, true, false);
-                } else if (this.protocolService.isActive(this.selected)) {
+                } else if (this.isActive(this.selected)) {
                   await this.protocolService.load(protocolMetaData, true, true);
                   this.examService.reset();
                 }
@@ -128,6 +128,10 @@ export class ProtocolsComponent {
       if (!this.selected) {
           return;
       }
+
+      if (this.isActive(this.selected)) {
+        this.protocolModel.activeProtocol = undefined;
+    }
 
       this.protocolService.delete(this.selected);
       this.selected = undefined;
@@ -243,6 +247,22 @@ export class ProtocolsComponent {
     : '';
   };
 
+  /**
+   * Checks whether a protocol is active.
+   * @summary Checks if the input protocol is the same 
+   * as the one on the protocolModel.activeProtocol object.
+   * @models protocol
+   * @param p protocol to check whether it is active or not
+   * @returns whether protocol is active: boolean
+   */
+  private isActive(p: ProtocolInterface | undefined): boolean {
+    return (this.protocolModel.activeProtocol 
+            && p 
+            && this.protocolModel.activeProtocol.name == p.name 
+            && this.protocolModel.activeProtocol.path == p.path) 
+        || false;
+  };
+  
   validateProtocolPopover = this.translate.instant(
     "Validate protocols against the <b>Protocol Schema</b> before loading into the application. <br /><br /> The protocol schema defines the allowable inputs for use in protocols."
   );
