@@ -7,9 +7,7 @@ import { AppModel } from '../models/app/app.service';
 import { DiskModel } from '../models/disk/disk.service';
 import { createLogsTableSql, createResultsTableSql, deleteSql } from './constants';
 import { DevicesModel } from '../models/devices/devices.service';
-import { getDateString } from './results-helper-functions';
 import { AppInterface } from '../models/app/app.interface';
-import { resolve } from 'path';
 
 @Injectable({
     providedIn: 'root',
@@ -37,54 +35,37 @@ export class SqLite {
         this.disk = this.diskModel.getDisk(); 
         this.devices = this.devicesModel.getDevices();
         this.app = this.appModel.getApp();
-        console.log("SQLITE in constructor");       
-        this.init();
     }
 
-    private async init() {
-        console.log("SQLITE in init");  
+    async init() {
         await this.initializePlugin();
         await this.initializeWeb();
-        console.log("SQLITE in init 3");  
         await this.open();
-        return true;
     }
 
     private async initializePlugin() {
         this.sqlitePlugin = CapacitorSQLite;
         this.sqliteConnection = new SQLiteConnection(this.sqlitePlugin);
-        console.log("SQLITE done initializePlugin");
         return true;
     }
 
     private async initializeWeb() {
-        console.log("SQLITE this.app.browser: " + this.app.browser);  
         if (this.app.browser === true) {
-            console.log("SQLITE in init 2");  
             await customElements.whenDefined('jeep-sqlite');
             const jeepSqliteEl = document.querySelector('jeep-sqlite');
             if(jeepSqliteEl != null) {
                 await this.sqliteConnection.initWebStore();
-                console.log(`SQLITE >>>> isStoreOpen ${jeepSqliteEl.isStoreOpen()}`);
-            } else {
-                console.log('SQLITE >>>> jeepSqliteEl is null');
             }
         }
         return true;
     }
 
     private async open() {
-        console.log("SQLITE in open");  
         const database: string = 'storage1';
         this.db = await this.sqliteConnection.createConnection(database, false, 'no-encryption', 1, false);
-        console.log("SQLITE db connection created");
         await this.db.open();
-        console.log("SQLITE db opened");
         await this.db.execute(createResultsTableSql);
-        console.log("SQLITE results table created");
         await this.db.execute(createLogsTableSql);
-        console.log("SQLITE logs table created");
-        return true;
     }
     
     async store(
@@ -92,16 +73,9 @@ export class SqLite {
         data: string
     ) {
         try {
-            await this.db.executeSet([{ 
-                statement: "INSERT INTO " + tableName + 
-                    " (data) VALUES (?)",
-                values: [getDateString(), 
-                    data]
-                }]
-            );
-
+            const sql = "INSERT INTO " + tableName + " (data) VALUES (?)";
+            await this.db.run(sql, [data]);
             console.log("SQLITE " + tableName + " stored");
-
             this.count[tableName] += 1;
         } catch(e) {
             console.log("SQLITE Error storing " + tableName + " with error " + e);
@@ -109,21 +83,29 @@ export class SqLite {
       };
   
     async getSingleResult(index: number) {
-            let temp = (await this.db.query('SELECT data FROM results LIMIT 1 OFFSET ?', [index])).values;
-            console.log("SQLITE getSingleResult: " + temp);
-            return temp;
+        const sql = 'SELECT data FROM results LIMIT 1 OFFSET ?';
+        let res = (await this.db.query(sql, [index])).values!.map(res => res.data) as unknown as string;
+        return JSON.parse(res);
     }
 
-    async getAll(tableName: string) {
-            return (await this.db.query('SELECT data FROM ' + tableName + ';')).values;
+    async getAllResults() {
+        const sql = 'SELECT data FROM results'
+        return (await this.db.query(sql)).values?.map(res => JSON.parse(res.data));
+    }
+
+    async getAllLogs() {
+        const sql = 'SELECT data FROM logs';
+        return (await this.db.query(sql)).values?.map(log => log.data);
     }
 
     async deleteSingleResult(index: number) {
         try {
-            await this.db.executeSet([{
-                statement: 'DELETE FROM results LIMIT 1 OFFSET ?', 
-                values: [index]
-            }]);
+            const sql = `DELETE FROM results WHERE msgID in 
+                            (SELECT msgID FROM 
+                                (SELECT msgID FROM results ORDER BY msgID LIMIT 1 OFFSET ?) 
+                            AS subquery )
+                        `;
+            await this.db.run(sql, [index]);
             this.count['results'] -= 1;
         } catch(e) {
             console.log("SQLITE Error deleting result " + index + " with error " + e);
@@ -131,8 +113,12 @@ export class SqLite {
     }
 
     async deleteAll(tableName: string) {
-            await this.db.execute("DROP TABLE IF EXISTS " + tableName);
+        try {
+            await this.db.run("DELETE FROM results");
             this.count[tableName] = 0;
+        } catch (e) {
+            console.log("SQLITE Error deleting all " + tableName + " with error: " + e);
+        }
     }
 
     async deleteOlderLogsIfThereAreTooMany() {

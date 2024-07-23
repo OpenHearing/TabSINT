@@ -5,6 +5,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { DiskModel } from './models/disk/disk.service';
 import { AppModel } from './models/app/app.service';
 import { AppInterface } from './models/app/app.interface';
+import { SqLite } from './utilities/sqLite.service';
 
 @Component({
   selector: 'app-root',
@@ -17,8 +18,7 @@ export class AppComponent {
   
   constructor(
     public appModel: AppModel,
-    private protocolService: ProtocolService,
-    private diskModel: DiskModel,
+    private sqLite: SqLite,
     private router: Router,
     private translate: TranslateService
   ) { 
@@ -28,7 +28,7 @@ export class AppComponent {
   }
 
   ngOnInit() {
-    this.protocolService.init();
+    this.sqLite.init();
     this.router.navigate([''])
   }
 }

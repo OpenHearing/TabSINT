@@ -42,7 +42,7 @@ export class ResultsComponent {
   }
 
   async ngOnInit() {
-    this.results = await this.sqLite.getAll('results');
+    this.results = await this.sqLite.getAllResults();
     console.log('RESULTS', this.results);
   }
 
@@ -53,7 +53,9 @@ export class ResultsComponent {
   viewResult(index: number) {
     this.dialog.open(SingleResultModalComponent, {
       data: index
-    }).afterClosed().subscribe();
+    }).afterClosed().subscribe(async () => {
+      this.results = await this.sqLite.getAllResults();
+    });
   }
 
   /**
@@ -68,7 +70,7 @@ export class ResultsComponent {
             this.results.forEach((examResult: ExamResults) => {
                 this.resultsService.writeResultToFile(examResult);
             });
-            this.deleteAll();
+            await this.deleteAll();
           }
       } catch(e) {
           this.logger.error("Failed to export all results to file with error: " + _(e).toJSON);
@@ -85,9 +87,8 @@ export class ResultsComponent {
    * @models disk
    */
   async deleteAll() {
-      // this.diskModel.emptyCompletedExamResults();
-      this.sqLite.deleteAll('results');
-      // this.disk = this.diskModel.getDisk();
+      await this.sqLite.deleteAll('results');      
+      this.results = await this.sqLite.getAllResults();
   }
 
 }

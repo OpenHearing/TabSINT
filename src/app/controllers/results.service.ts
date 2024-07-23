@@ -109,9 +109,6 @@ export class ResultsService {
      * @param result Partial or completed current exam result.
      */
     async save(result: ExamResults) {
-        // this.disk.completedExamsResults.push(result);
-        // this.diskModel.updateDiskModel("completedExamsResults", this.disk.completedExamsResults);
-        // this.disk = this.diskModel.getDisk();
         await this.sqLite.store("results",  JSON.stringify(result));
         await this.backup(result);
     }
@@ -137,9 +134,7 @@ export class ResultsService {
      * @models disk
      */
     async deleteSingleResult(index: number) {
-        // this.diskModel.removeResultFromCompletedExamResults(index);
         this.sqLite.deleteSingleResult(index);
-        // this.disk = this.diskModel.getDisk();
     }
 
     /**
@@ -150,12 +145,8 @@ export class ResultsService {
      * @param index number: index of the result
      */
     async exportSingleResult(index: number) {
-        let result = await this.sqLite.getSingleResult(index) as any;
-        result = JSON.parse(result.toString());
-        // let result = this.disk.completedExamsResults[index];
+        let result = await this.sqLite.getSingleResult(index);
         await this.writeResultToFile(result);
-        // this.diskModel.removeResultFromCompletedExamResults(index);
-        // this.disk = this.diskModel.getDisk();
         await this.sqLite.deleteSingleResult(index);
     }
 

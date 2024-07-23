@@ -63,18 +63,6 @@ export class ProtocolService {
         this.load(this.protocolModel.loadedProtocols["develop"], true, false)
     }
 
-    init(): void  {
-        // select the source to start
-        // if (!this.app.tablet) {
-            // config.load();
-        // }
-    
-        // add root, recursively will add all dependent schemas
-        // protocolSchema = addSchema("protocol_schema");
-    
-    };
-
-
     /** Load all protocol files onto the protocolModel.activeProtocol object.
      * @summary Overwrite local protocol files if they have changed, load files into tabsint 
      * including custom protocol files, validate the protocol against the schema. 

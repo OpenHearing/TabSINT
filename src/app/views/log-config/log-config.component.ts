@@ -27,7 +27,7 @@ export class LogConfigComponent {
   }
 
   async ngOnInit() {
-    this.logs = await this.sqLite.getAll('logs');
+    this.logs = await this.sqLite.getAllLogs();
     console.log('LOGS', this.logs);
   }
 
