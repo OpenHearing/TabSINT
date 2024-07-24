@@ -1,4 +1,4 @@
-import { NavMenuItem, PageDefinition, ProtocolReference } from "./page-definition.interface";
+import { NavMenuInterface, PageDefinition, ProtocolReferenceInterface } from "./page-definition.interface";
 
 export interface ProtocolSchemaInterface {
     description?: string;
@@ -10,32 +10,29 @@ export interface ProtocolSchemaInterface {
     instructionText?: string;
     helpText?: string;
     submitText?: string;
-    tablet?: string; // Deprecated
     headset?: "VicFirth" | "VicFirthS2" | "HDA200" | "WAHTS" | "Audiometer" | "EPHD1";
     chaStream?: boolean;
     randomization?: "WithoutReplacement";
     minTabsintVersion?: string;
     commonMediaRepository?: string;
-    calibration?: Calibration[];
-    timeout?: Timeout;
+    calibration?: CalibrationInterface[];
+    timeout?: TimeoutInterface;
     hideProgressBar?: boolean;
     enableBackButton?: boolean;
-    navMenu?: NavMenuItem[];
+    navMenu?: NavMenuInterface[];
     js?: string | string[];
-    exclusiveTimingMode?: boolean;
-    pages: PageDefinition | ProtocolReference | ProtocolSchemaInterface | (PageDefinition | ProtocolReference | ProtocolSchemaInterface)[];
+    pages: PageDefinition | ProtocolReferenceInterface | ProtocolSchemaInterface | (PageDefinition | ProtocolReferenceInterface | ProtocolSchemaInterface)[];
     subProtocols?: ProtocolSchemaInterface[];
-    lookUpTables?: { name: string; table: any[] }[];
 }
 
-export interface Calibration {
+export interface CalibrationInterface {
     wavfiles: string[];
     referenceFile?: string;
     referenceLevel?: number;
     calibrationFilter?: "full" | "flat";
 }
   
-export interface Timeout {
+export interface TimeoutInterface {
     nMaxSeconds?: number;
     nMaxPages?: number;
     showAlert?: boolean;

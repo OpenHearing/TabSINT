@@ -9,41 +9,38 @@ export interface PageDefinition {
     skipIf?: string;
     hideProgressBar?: boolean;
     autoSubmitDelay?: number;
-    progressBarVal?: number | string;
     enableBackButton: boolean;
-    navMenu?: NavMenuItem[];
+    navMenu?: NavMenuInterface[];
     title: string;
     questionMainText: string;
     questionSubText: string;
     instructionText: string;
     helpText: string;
-    repeatPage?: RepeatPage;
+    repeatPage?: RepeatPageInterface;
     preProcessFunction?: string;
     wavfileStartDelayTime?: number;
-    wavfiles?: Wavfile[];
-    chaWavFiles?: ChaWavfile[];
+    wavfiles?: WavfileInterface[];
+    chaWavFiles?: ChaWavfileInterface[];
     chaStream?: boolean;
-    image?: Image;
-    video?: Video;
+    image?: ImageInterface;
+    video?: VideoInterface;
     responseArea: ResponseArea;
     submitText: string;
-    followOns: FollowOn[];
-    setFlags?: SetFlag[];
-    slm?: SLM;
-    svantek?: boolean;
+    followOns: FollowOnInterface[];
+    setFlags?: SetFlagInterface[];
 }
   
-export interface NavMenuItem {
+export interface NavMenuInterface {
     // Assuming "/definitions/navMenu.json" defines the structure of a menu item
 }
   
-export interface RepeatPage {
+export interface RepeatPageInterface {
     nRepeats: number;
     repeatIf?: string;
 }
 
-export interface Wavfile {
-    cal: any;
+export interface WavfileInterface {
+    cal: object;
     useCommonRepo?: boolean;
     path: string;
     playbackMethod?: "arbitrary" | "as-recorded";
@@ -53,7 +50,7 @@ export interface Wavfile {
     endTime?: number;
 }
 
-export interface ChaWavfile {
+export interface ChaWavfileInterface {
     Leq?: number[];
     path: string;
     SoundFileName?: string;
@@ -61,38 +58,32 @@ export interface ChaWavfile {
     UseMetaRMS?: boolean; // Alternate key
 }
 
-export interface Image {
+export interface ImageInterface {
     path: string;
     width?: string;
 }
 
-export interface Video {
+export interface VideoInterface {
     path: string;
     width?: string;
     autoplay?: boolean;
     noSkip?: boolean;
 }
 
-export interface FollowOn {
+export interface FollowOnInterface {
     conditional: string;
-    target: PageDefinition | ProtocolReference | ProtocolSchemaInterface;
+    target: PageDefinition | ProtocolReferenceInterface | ProtocolSchemaInterface;
 }
 
-export interface ProtocolReference {
+export interface ProtocolReferenceInterface {
     id?: string;
     reference: string;
     skipIf?: string;
 }
 
-export interface SetFlag {
+export interface SetFlagInterface {
     id: string;
     conditional: string;
-}
-
-export interface SLM {
-    microphone: "internal" | "dayton" | "studio6";
-    parameters: string[];
-    ignoreResults?: string[];
 }
 
 export interface CommonResponseArea {
