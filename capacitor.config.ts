@@ -6,6 +6,11 @@ const config: CapacitorConfig = {
   webDir: 'dist/tabsint/browser',
   server: {
     androidScheme: 'https'
+  },
+  plugins: {
+    TabsintFs: {
+      android:'com.creare.tabsintfs.TabsintFsPlugin'
+    }
   }
 };
 

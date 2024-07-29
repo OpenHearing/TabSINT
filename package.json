@@ -44,6 +44,7 @@
     "lodash": "^4.17.21",
     "ngx-json-viewer": "^3.2.1",
     "rxjs": "~7.8.0",
+    "tabsintfs": "file:tabsintfs",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"
   },
