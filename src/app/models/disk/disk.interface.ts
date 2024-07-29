@@ -26,6 +26,7 @@ export interface DiskInterface {
       myCha: string,
       bluetoothType: string
     },
+    contentURI: string,
     externalMode: boolean,
     appDeveloperMode: boolean,
     appDeveloperModeCount: number,

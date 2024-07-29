@@ -5,6 +5,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { DiskModel } from './models/disk/disk.service';
 import { VersionService } from './controllers/version.service';
 import { DevicesModel } from './models/devices/devices.service';
+import { TabsintFs } from 'tabsintfs';
 
 @Component({
   selector: 'app-root',
@@ -27,8 +28,17 @@ export class AppComponent {
     this.diskModel.updateDiskModel('numLogRows',1)
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.protocolService.init();
-    this.router.navigate([''])
+    this.router.navigate(['']);
+    if (this.diskModel.disk.contentURI === '') {
+      try {
+        const result = await TabsintFs.chooseFolder();
+        this.diskModel.updateDiskModel('contentURI', result.uri); // Update the contentURI with the selected folder URI
+      } catch (error) {
+        console.error('Error selecting folder:', error);
+      }
+    }
   }
 }
+

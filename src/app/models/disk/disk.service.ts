@@ -23,6 +23,7 @@ export class DiskModel {
             myCha: "",
             bluetoothType: ""
         },
+        contentURI: "",
         debugMode: true,
         adminSkipMode: false,
         pin: "7114",
