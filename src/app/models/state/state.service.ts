@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { StateInterface } from './state.interface';
-import { AppState, ChaState, ExamState, ProtocolState, SvantekState } from "../../utilities/constants";
+import { AppState, ChaState, ExamState, ProtocolState, SvantekState, TympanState } from "../../utilities/constants";
 
 @Injectable({
     providedIn: 'root',
@@ -18,6 +18,7 @@ export class StateModel {
         isPaneOpen: {
             general: true,
             advanced: false,
+            tympan: false,
             wahts: false,
             dosimeter: false,
             softwareHardware: false,
@@ -25,6 +26,7 @@ export class StateModel {
             protocols: true,
             protocolsSource: true,
             chaAdvanced: false,
+            tympanAdvanced: false,
             completedExams: true,
             exportedAndUploadedResults: true
         },
@@ -36,6 +38,7 @@ export class StateModel {
         bluetoothConnected: false,
         wifiConnected: false,
         cha: ChaState.Disconnected,
+        tympan: TympanState.Disconnected,
         svantek: SvantekState.Disconnected
     }
 

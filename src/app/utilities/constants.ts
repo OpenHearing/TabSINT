@@ -24,6 +24,13 @@ export enum ChaState {
     Reprogram
 }
 
+export enum TympanState {
+    Connected,
+    Disconnected,
+    Discovery,
+    Reprogram
+}
+
 export enum ResultsMode {
     UploadOnly = "Upload Only",
     ExportOnly = "Export Only",

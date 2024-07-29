@@ -13,8 +13,7 @@
     <button (click)="fileService.createDirectory('testing2')"> Create Dir </button>
     <button (click)="fileService.listDirectory('testing')"> Read Dir </button>
 
-    <button (click)="bleScan()"> BLE SCAN </button>
-
+    
     <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.general">
         <mat-expansion-panel-header>
             <mat-panel-title>
@@ -25,6 +24,23 @@
            
         <div class="panel-body text-left">
             <tabsint-config-view></tabsint-config-view>
+        </div>
+
+    </mat-expansion-panel>
+
+    <br />
+
+    <!-- Tympan -->
+    <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.tympan">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                {{'Tympans'| translate}}
+                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.isPaneOpen.general, "glyphicon-chevron-down": !state.isPaneOpen.general}'></i> -->
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+           
+        <div class="panel-body text-left">
+            <tympan-config-view></tympan-config-view>
         </div>
 
     </mat-expansion-panel>

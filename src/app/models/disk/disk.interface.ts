@@ -19,6 +19,12 @@ export interface DiskInterface {
     tabletGain: number,
     extStorageRootDir?: string,
     extStorageUuidDir?: string,
+    tympan: {
+      embeddedFirmwareBuildDate: string,
+      embeddedFirmwareTag: string,
+      myTympan: string,
+      bluetoothType: string
+    },
     cha: {
       embeddedFirmwareBuildDate: string,
       embeddedFirmwareTag: string,

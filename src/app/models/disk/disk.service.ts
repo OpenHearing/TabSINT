@@ -17,6 +17,12 @@ export class DiskModel {
 
     disk: DiskInterface = {
         headset: "None",
+        tympan: {
+            embeddedFirmwareBuildDate: "",
+            embeddedFirmwareTag: "",
+            myTympan: "",
+            bluetoothType: ""
+        },
         cha: {
             embeddedFirmwareBuildDate: "",
             embeddedFirmwareTag: "",
