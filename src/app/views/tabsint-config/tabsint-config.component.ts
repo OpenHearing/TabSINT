@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component,ChangeDetectorRef  } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { DiskModel } from '../../models/disk/disk.service';
@@ -36,6 +36,7 @@ export class TabsintConfigComponent {
     public stateModel: StateModel,
     public translate: TranslateService,
     public dialog: MatDialog,
+    private cdr: ChangeDetectorRef
   ) { 
     this.version = this.versionService.getVersion();
     this.state = this.stateModel.getState();
@@ -58,14 +59,14 @@ export class TabsintConfigComponent {
     "Audiometer"
   ];
 
-  languages: Array<string> = [
-    this.translate.instant("English"),
-    this.translate.instant("Japanese"),
-    this.translate.instant("French"),
-    this.translate.instant("Spanish"),
-  ];
+  // languages: Array<string> = [
+  //   this.translate.instant("English"),
+  //   this.translate.instant("Japanese"),
+  //   this.translate.instant("French"),
+  //   this.translate.instant("Spanish"),
+  // ];
 
-  resultsModeOptions = ResultsMode;
+  // resultsModeOptions = ResultsMode;
 
 
   // Functions
@@ -76,19 +77,19 @@ export class TabsintConfigComponent {
     this.logger.debug("Headset changed to: " + headset);
   }
 
-  changeLanguage(language: string) {
-    // need to update the language here
-    this.diskModel.updateDiskModel("language", language);
-    this.translate.setDefaultLang(language);
-    this.disk = this.diskModel.getDisk();
-    this.logger.debug("Language changed to: "+language);
-  }
+  // changeLanguage(language: string) {
+  //   // need to update the language here
+  //   this.diskModel.updateDiskModel("language", language);
+  //   this.translate.setDefaultLang(language);
+  //   this.disk = this.diskModel.getDisk();
+  //   this.logger.debug("Language changed to: "+language);
+  // }
 
-  changeResultsMode(resultsMode: ResultsMode) {
-    this.diskModel.updateDiskModel("resultsMode", resultsMode);
-    this.disk = this.diskModel.getDisk();
-    this.logger.debug("ResultsMode changed to: "+JSON.stringify(resultsMode));
-  }
+  // changeResultsMode(resultsMode: ResultsMode) {
+  //   this.diskModel.updateDiskModel("resultsMode", resultsMode);
+  //   this.disk = this.diskModel.getDisk();
+  //   this.logger.debug("ResultsMode changed to: "+JSON.stringify(resultsMode));
+  // }
 
   editAdminPin() {
     this.dialog.open(ChangePinComponent).afterClosed().subscribe(() => {
@@ -102,28 +103,34 @@ export class TabsintConfigComponent {
     });
   }
 
-  resetConfig() {
-    console.log("resetConfig pressed");
-  }
+  // resetConfig() {
+  //   console.log("resetConfig pressed");
+  // }
 
   toggleAutoUpload() {
-    console.log("toggleAutoUpload pressed");
+    this.diskModel.updateDiskModel('autoUpload',this.diskModel.disk.autoUpload == undefined || this.diskModel.disk.autoUpload == false ? true : false)
+    this.disk = this.diskModel.getDisk()
   }
 
   gainReset() {
     console.log("gainReset pressed");
   }
 
-  play1kHz94dB() {
-    console.log("play1kHz94dB pressed");
-  }
+  // play1kHz94dB() {
+  //   console.log("play1kHz94dB pressed");
+  // }
 
-  playCompAudio() {
-    console.log("playCompAudio pressed");
-  }
+  // playCompAudio() {
+  //   console.log("playCompAudio pressed");
+  // }
 
-  playCompAudioLinear() {
-    console.log("playCompAudioLinear pressed");
+  // playCompAudioLinear() {
+  //   console.log("playCompAudioLinear pressed");
+  // }
+
+  async changeLocalResultsDir(){
+    await this.configService.chooseLocalResultsDirectory();
+    this.cdr.detectChanges();
   }
 
   // Popovers
@@ -134,9 +141,9 @@ export class TabsintConfigComponent {
     "this value must match the value in the protocol's <code>calibration.json</code> file."
   );
 
-  languagePopover = this.translate.instant(
-    "Select preferred language for the application. This language will be used where supported. Otherwise, English will be used. Note this cannot change any text configured in protocols."
-  );
+  // languagePopover = this.translate.instant(
+  //   "Select preferred language for the application. This language will be used where supported. Otherwise, English will be used. Note this cannot change any text configured in protocols."
+  // );
 
   adminPopover = this.translate.instant(
     "Includes additional configuration options, displays expandable <b>debug</b> menus showing program state at the bottom of exam pages, and suppresses Admin Password prompts"
@@ -154,39 +161,39 @@ export class TabsintConfigComponent {
     "Set the maximum number of log records to be saved. This will prevent the logs from consuming too much memory."
   );
 
-  disableVolumePopover = this.translate.instant(
-    "This option will disable TabSINT from setting the volume to 100% on every page. This feature is essential to the functionality of TabSINT while playing calibrated audio through the speaker.<br /><br />" +
-    "Check this box if you would like to set the volume of the app manually using the buttons on the side of the device. <br /><br />In almost all cases, this box should remain unchecked."
-  );
+  // disableVolumePopover = this.translate.instant(
+  //   "This option will disable TabSINT from setting the volume to 100% on every page. This feature is essential to the functionality of TabSINT while playing calibrated audio through the speaker.<br /><br />" +
+  //   "Check this box if you would like to set the volume of the app manually using the buttons on the side of the device. <br /><br />In almost all cases, this box should remain unchecked."
+  // );
 
-  adminSkipModePopover = this.translate.instant(
-    "This option will enable skipping on every page of an Exam. This feature is should only be enabled while developing or debugging, and may cause issues with some protocols."
-  );
+  // adminSkipModePopover = this.translate.instant(
+  //   "This option will enable skipping on every page of an Exam. This feature is should only be enabled while developing or debugging, and may cause issues with some protocols."
+  // );
 
-  requireEncryptedResultsPopover = this.translate.instant(
-    "This option requires that the protocol contains a public RSA key for encrypting output results."
-  );
+  // requireEncryptedResultsPopover = this.translate.instant(
+  //   "This option requires that the protocol contains a public RSA key for encrypting output results."
+  // );
 
-  recordTestLocationPopover = this.translate.instant(
-    "This option will record the test location (latitude, longitude) in the results. The test location is only recorded when the test first starts." +
-    "<br /><br />TabSINT will request permission to access the device location when this option is enabled. The device's location services must be turned for the location to be successfully stored."
-  );
+  // recordTestLocationPopover = this.translate.instant(
+  //   "This option will record the test location (latitude, longitude) in the results. The test location is only recorded when the test first starts." +
+  //   "<br /><br />TabSINT will request permission to access the device location when this option is enabled. The device's location services must be turned for the location to be successfully stored."
+  // );
 
-  qrCodePopover = this.translate.instant(
-    "Generate a QR Code containing all the current configuration settings. Select the local directory to save the QR Code for future use."
-  );
+  // qrCodePopover = this.translate.instant(
+  //   "Generate a QR Code containing all the current configuration settings. Select the local directory to save the QR Code for future use."
+  // );
 
-  resetConfigurationPopover = this.translate.instant(
-    "Reset TabSINT configuration to the default configuration. All manual changes will be removed."
-  );
+  // resetConfigurationPopover = this.translate.instant(
+  //   "Reset TabSINT configuration to the default configuration. All manual changes will be removed."
+  // );
 
   automaticallyOutputResultsPopover = this.translate.instant(
     "Automatically upload or export the result when a test is finished. The result will be uploaded or exported on the <b>Exam Complete</b> page. <br /><br /> Once the result is uploaded to a server or exported to a local file, it will be removed from TabSINT."
   );
 
-  gainPopover = this.translate.instant(
-    "Apply a special gain in dB to the audio level output through TabSINT. " +
-    "This can be used to calibrate the audio jack output to a specified level for all audio played through the tablet."
-  );
+  // gainPopover = this.translate.instant(
+  //   "Apply a special gain in dB to the audio level output through TabSINT. " +
+  //   "This can be used to calibrate the audio jack output to a specified level for all audio played through the tablet."
+  // );
 
 }

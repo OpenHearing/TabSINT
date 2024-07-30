@@ -23,7 +23,7 @@
 </div>
 
 <!-- Select Language -->
-<div class="row pad-top">
+<!-- <div class="row pad-top">
     <div class="col-5">
         <label translate for="selectLanguage">Select Language:</label>
     </div>
@@ -45,7 +45,7 @@
         </button>
     </mat-menu>
 
-</div>
+</div> -->
 
 <!-- Show Advanced -->
 <div class="row showhideSection">
@@ -144,7 +144,7 @@
     </div>
 
     <!-- Disable Automatic Volume Control -->
-    <div class="row pad-top">
+    <!-- <div class="row pad-top">
         <div class="col-6"><label translate for="automaticVolControl"> Disable Automatic Volume Control:</label>
         </div>
         <div class="col-2"><input id="automaticVolControl" type="checkbox" [(ngModel)]="disk.disableVolume" (change)="adminService.toggleDisableVolume()"/></div>
@@ -157,10 +157,10 @@
                 <div [innerHTML]="disableVolumePopover"></div>
             </button>
         </mat-menu>
-    </div>
+    </div> -->
 
     <!-- Enable Admin Skip -->
-    <div class="row pad-top">
+    <!-- <div class="row pad-top">
         <div class="col-6"><label translate for="enableSkip">Enable Skip in Exams:</label></div>
         <div class="col-2"><input id="enableSkip" type="checkbox" [(ngModel)]="disk.adminSkipMode" (change)="adminService.toggleAdminSkipMode()"/></div>
         <div class="col-2"></div>
@@ -172,10 +172,10 @@
                 <div [innerHTML]="adminSkipModePopover"></div>
             </button>
         </mat-menu>
-    </div>
+    </div> -->
 
     <!-- Enforce Results Encryption -->
-    <div class="row pad-top">
+    <!-- <div class="row pad-top">
         <div class="col-6"><label translate for="requireEncryption">Require Encryption:</label></div>
         <div class="col-2"><input id="requireEncryption" type="checkbox" [(ngModel)]="disk.requireEncryptedResults" (change)="adminService.toggleRequireEncryptedResults()"/></div>
         <div class="col-2"></div>
@@ -187,10 +187,10 @@
                 <div [innerHTML]="requireEncryptedResultsPopover"></div>
             </button>
         </mat-menu>
-    </div>
+    </div> -->
 
     <!-- Record Test Location -->
-    <div class="row pad-top">
+    <!-- <div class="row pad-top">
         <div class="col-6"><label translate for="recordTestLocation">Record Test Location:</label></div>
         <div class="col-2"><input id="recordTestLocation" type="checkbox" [(ngModel)]="disk.recordTestLocation" (change)="adminService.toggleRecordTestLocation()"/></div>
         <div class="col-2"></div>
@@ -202,14 +202,14 @@
                 <div [innerHTML]="recordTestLocationPopover"></div>
             </button>
         </mat-menu>
-    </div>
+    </div> -->
 
     <!-- QR Code Generation -->
-    <div class="row pad-top">
+    <!-- <div class="row pad-top">
         <div class="col-6"><label translate for="QRCode">QR Code:</label></div>
         <div class="col-4">
             <button id="QRCode" class="btn btn-default btn-block"
-                (click)="configService.echoMessage()">{{'Generate' | translate}}</button>
+                (click)="configService.generateQRCode()">{{'Generate' | translate}}</button>
         </div>
         <div class="col-1" href="javascript:" title="{{'QR Code help' | translate}}">
             <i [matMenuTriggerFor]= "qrCodePopoverMenu" class="ion-help-circled"></i>
@@ -219,19 +219,19 @@
                 <div [innerHTML]="qrCodePopover"></div>
             </button>
         </mat-menu>
-    </div>
+    </div> -->
 
     <!-- Display QR Code -->
-    <div *ngIf="configService.qRCodeUrl">
+    <!-- <div *ngIf="configService.qRCodeUrl">
         <div class="row pad-top">
             <div class="col-11">
-                <!-- <img ng-src="{{config.qRCodeUrl}}" alt="{{'Generated QR Code'|translate}}" /> -->
+                <img ng-src="{{config.qRCodeUrl}}" alt="{{'Generated QR Code'|translate}}" />
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- Reset -->
-    <div class="row pad-top">
+    <!-- <div class="row pad-top">
         <div class="col-6"><label translate for="resetConfig">Reset configuration:</label></div>
         <div class="col-4">
             <button id="resetConfig" type="button"
@@ -255,7 +255,7 @@
         <div class="col-12">
             <h5>Results Preferences</h5>
         </div>
-    </div>
+    </div> -->
 
     <!-- Automatically Output Test Results -->
     <div class="row pad-top">
@@ -273,7 +273,7 @@
     </div>
 
     <!-- Results Mode -->
-    <div class="row pad-top">
+    <!-- <div class="row pad-top">
         <div class="col-6"><label for="resultsMode">Results Mode:</label></div>
         
         <div ngbDropdown class="col-6 dropdown-width" display="dynamic">                            
@@ -284,32 +284,33 @@
                 <button *ngFor="let resultsMode of resultsModeOptions | keyvalue" ngbDropdownItem (click)="changeResultsMode(resultsMode.value)">{{resultsMode.value}}</button>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- Local Results Directory -->
     <div class="row pad-top">
         <div class="col-6"><label for="localResultsDir">{{'Local Results Directory' | translate}}:</label></div>
-        <div class="col-5"><em>{{disk.servers.localServer.resultsDir}}</em></div>
+        <div class="col-5"><em>{{configService.disk.servers.localServer.resultsDir}}</em></div>
+        <!-- <div class="col-5"><em><input type="text" [(ngModel)]="disk.servers.localServer.resultsDir" disabled></em></div> -->
     </div>
     <div class="row pad-top">
         <div class="col-6"></div>
         <div class="col-6">
             <!-- <button id="localResultsDir" class="btn btn-default btn-block" (click)="localServer.changeResultsDirectory()">{{'Change Directory' | translate}}</button> -->
-            <button id="localResultsDir" class="btn btn-default btn-block">{{'Change Directory' | translate}}</button>
+            <button id="localResultsDir" class="btn btn-default btn-block"  (click)="changeLocalResultsDir()">{{'Change Directory' | translate}}</button>
         </div>
     </div>
 
-    <br />
-    <br />
+    <!-- <br />
+    <br /> -->
 
-    <div class="row pad-top">
+    <!-- <div class="row pad-top">
         <div class="col-12">
             <h5>Calibration</h5>
         </div>
-    </div>
+    </div> -->
 
     <!-- Tablet Gain -->
-    <div class="row pad-top">
+    <!-- <div class="row pad-top">
         <div class="col-6"><label translate for="tabletGain">Tablet Gain</label></div>
         <div class="col-2"><input id="tabletGain" type="number" enter-close class="form-control" [(ngModel)]="disk.tabletGain" /></div>
         <div class="col-1">
@@ -331,10 +332,10 @@
                 <div [innerHTML]="gainPopover"></div>
             </button>
         </mat-menu>
-    </div>
+    </div> -->
 
     <!-- Calibration -->
-    <div class="row pad-top" *ngIf="disk.debugMode">
+    <!-- <div class="row pad-top" *ngIf="disk.debugMode">
         <div class="col-4">
             <button type="button" class="btn btn-block btn-primary"
                 (click)="play1kHz94dB()">
@@ -353,7 +354,7 @@
                 Comp. Linear
             </button>
         </div>
-    </div>
+    </div> -->
 
 
 </div>

@@ -54,6 +54,7 @@ export interface DiskInterface {
     servers: {
       localServer: {
         resultsDir: string,
+        resultsDirUri: string
         protocolDir: string
       },
       gitlab: {

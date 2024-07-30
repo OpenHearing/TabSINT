@@ -54,6 +54,7 @@ export class DiskModel {
         servers: {
             localServer: {
                 resultsDir: "tabsint-results",
+                resultsDirUri: "",
                 protocolDir: "tabsint-protocols",
             },
             gitlab: {
@@ -107,8 +108,10 @@ export class DiskModel {
         }
     }
 
-    updateDiskModel(key: any, value: any) {
-        (this.disk as any)[key] = value; // TODO: improve typing here
+    updateDiskModel(key: string, value: any) {
+        // (this.disk as any)[key] = value; // TODO: improve typing here
+        // this.disk[key] = value;
+        _.set(this.disk, key, value);
         this.storeDisk();
         console.log("updateDiskModel: ", this.disk);
     }

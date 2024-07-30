@@ -43,10 +43,17 @@ public class TabsintFsPlugin extends Plugin {
       if (result.getResultCode() == Activity.RESULT_OK) {
           Intent data = result.getData();
           if (data != null) {
-              Uri uri = data.getData();
-              JSObject ret = new JSObject();
-              ret.put("uri", uri.toString());
-              call.resolve(ret);
+            Uri uri = data.getData();
+            DocumentFile pickedDir = DocumentFile.fromTreeUri(getContext(), uri);
+            if (pickedDir != null) {
+                String folderName = pickedDir.getName();
+                JSObject ret = new JSObject();
+                ret.put("uri", uri.toString());
+                ret.put("name", folderName);
+                call.resolve(ret);
+            } else {
+                call.reject("Failed to get the selected folder");
+            }
           } else {
               call.reject("Folder not chosen");
           }
@@ -145,7 +152,7 @@ public void createPath(PluginCall call) {
     String path = call.getString("path");
     // Remove leading and trailing slashes if present
     path = path.replaceAll("^/+|/+$", "");
-    String content = call.getString("content"); // Optional, only for files
+    String content = call.getString("content");
 
     if (rootUri == null || path == null) {
         call.reject("Must provide rootUri and path");

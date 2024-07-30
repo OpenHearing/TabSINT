@@ -20,7 +20,8 @@ export class AdminService {
     }
 
     toggleDebugMode() {
-        console.log("toggleDebugMode");
+        this.diskModel.updateDiskModel('debugMode',!this.diskModel.disk.debugMode)
+        this.disk = this.diskModel.getDisk()
     }
 
     toggleDisableLogs() {
@@ -29,20 +30,20 @@ export class AdminService {
         console.log("toggleDisableLogs: ", this.disk.disableLogs);
     }
 
-    toggleDisableVolume() {
-        console.log("toggleDisableVolume");
-    }
+    // toggleDisableVolume() {
+    //     console.log("toggleDisableVolume");
+    // }
 
-    toggleAdminSkipMode() {
-        console.log("toggleAdminSkipMode");
-    }
+    // toggleAdminSkipMode() {
+    //     console.log("toggleAdminSkipMode");
+    // }
 
-    toggleRequireEncryptedResults() {
-        console.log("toggleRequireEncryptedResults");
-    }
+    // toggleRequireEncryptedResults() {
+    //     console.log("toggleRequireEncryptedResults");
+    // }
 
-    toggleRecordTestLocation() {
-        console.log("toggleRecordTestLocation");
-    }
+    // toggleRecordTestLocation() {
+    //     console.log("toggleRecordTestLocation");
+    // }
 
 }
