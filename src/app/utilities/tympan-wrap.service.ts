@@ -1,9 +1,10 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { Logger } from './logger.service';
 import { BleClient, numberToUUID, numbersToDataView } from '@capacitor-community/bluetooth-le';
 import { BleDevice } from '../interfaces/bluetooth.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { StateModel } from '../models/state/state.service';
+import { WINDOW } from './window';
 
 @Injectable({
     providedIn: 'root',
@@ -19,7 +20,7 @@ export class TympanWrap {
     BLE_SHORTPACKET_PREFIX_BYTE = 0xcc;
     DATASTREAM_SEPARATOR = String.fromCharCode(0x03);
 
-    constructor(public stateModel: StateModel) {
+    constructor(public stateModel: StateModel, @Inject(WINDOW) private window: Window, private logger: Logger) {
         this.state = this.stateModel.getState();
         this.initialize();
     }
@@ -49,6 +50,11 @@ export class TympanWrap {
         } catch {
             this.state.bluetoothConnected = false;
         }
+        // For debugging lets add all the functions to the window. This should eventually be removed.
+        (this.window as any).tympan = {};
+        (this.window as any).tympan.scan = this.scan;
+        (this.window as any).tympan.connect = this.connect;
+        (this.window as any).tympan.write = this.write;
     }
 
     async scan(service_uuid:string=this.ADAFRUIT_SERVICE_UUID,timeout:number=5000): Promise<BleDevice[]> {
@@ -75,12 +81,20 @@ export class TympanWrap {
 
     }
 
-    async write(device:BleDevice) {
+    async write(device:BleDevice, msg:string) {
         const POLAR_PMD_SERVICE = 'fb005c80-02e7-f387-1cad-8acd2d8df0c8';
         const POLAR_PMD_CONTROL_POINT = 'fb005c81-02e7-f387-1cad-8acd2d8df0c8';
         // await BleClient.write(device.deviceId, POLAR_PMD_SERVICE, POLAR_PMD_CONTROL_POINT, numbersToDataView([1, 0]));
-        await BleClient.write(device.deviceId, POLAR_PMD_SERVICE, POLAR_PMD_CONTROL_POINT, this.stringToDataView('hellow world'));
-        console.log('written [1, 0] to control point');
+
+        // let msg_to_write = this.stringToDataView('hello world');
+        let msg_to_write = this.stringToDataView(msg);
+        let resp = await BleClient.write(device.deviceId, POLAR_PMD_SERVICE, POLAR_PMD_CONTROL_POINT, msg_to_write);
+        this.logger.debug("resp from writing: "+msg_to_write+" is: "+JSON.stringify(resp));
+
+        /*
+        Might want to try writing something like: [1, "requestId"]
+        I assume we can stringify it, ues stringToDataView(), write it, then log the response.
+        */
     }
 
     async connect(device:BleDevice) {
