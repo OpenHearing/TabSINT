@@ -25,12 +25,10 @@ export class AppComponent {
     private sqLite: SqLite,
     private router: Router,
     private translate: TranslateService,
-    private versionService: VersionService,
-    private devicesModel: DevicesModel,
     public diskModel: DiskModel
   ) {
-    translate.setDefaultLang('English');
-    translate.use('English');
+    this.translate.setDefaultLang('English');
+    this.translate.use('English');
     this.app = appModel.getApp();
     this.disk = this.diskModel.getDisk();
   }
@@ -38,7 +36,6 @@ export class AppComponent {
   async ngOnInit() {
     this.sqLite.init();
     this.router.navigate([''])
-    this.router.navigate(['']);
     if (this.diskModel.disk.contentURI === '') {
       try {
         const result = await TabsintFs.chooseFolder();
