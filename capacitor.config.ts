@@ -8,8 +8,11 @@ const config: CapacitorConfig = {
     androidScheme: 'https'
   },
   plugins: {
+    Permissions: {
+      android: ["android.permission.READ_EXTERNAL_STORAGE","android.permission.WRITE_EXTERNAL_STORAGE"]
+    },
     TabsintFs: {
-      android:'com.creare.tabsintfs.TabsintFsPlugin'
+      android: 'com.creare.tabsintfs.TabsintFsPlugin'
     }
   }
 };
