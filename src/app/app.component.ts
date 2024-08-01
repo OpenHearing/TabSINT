@@ -33,6 +33,7 @@ export class AppComponent {
     this.translate.use('English');
     this.app = appModel.getApp();
     this.disk = this.diskModel.getDisk();
+    this.diskModel.updateDiskModel('numLogRows',1)
   }
 
   async ngOnInit() {

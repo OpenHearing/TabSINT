@@ -3,9 +3,9 @@ import { WebPlugin } from '@capacitor/core';
 import type { TabsintFsPlugin } from './definitions';
 
 export class TabsintFsWeb extends WebPlugin implements TabsintFsPlugin {
-  async chooseFolder(): Promise<{ uri: string }> {
+  async chooseFolder(): Promise<{ uri: string,name: string }> {
     console.log('chooseFile from web not implemented');
-    return { uri: '' }; // Returning an empty string as a placeholder
+    return { uri: '', name: '' };
   }
 
   async createPath(options: { rootUri: string; path: string; content?: string }): Promise<{ uri: string }> {

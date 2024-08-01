@@ -31,7 +31,7 @@ export class Logger {
     }
 
     log(msg:string, prefix:string){
-        if (!this.disk.disableLogs) {
+        if (!this.disk.disableLogs && this.disk.numLogRows<=this.disk.maxLogRows) {
             console.log(prefix + msg);
             this.sqLite.deleteOlderLogsIfThereAreTooMany();
             this.sqLite.store('logs', msg);

@@ -27,10 +27,10 @@ npx cap sync
 ### chooseFolder()
 
 ```typescript
-chooseFolder() => Promise<{ uri: string; }>
+chooseFolder() => Promise<{ uri: string; name: string; }>
 ```
 
-**Returns:** <code>Promise&lt;{ uri: string; }&gt;</code>
+**Returns:** <code>Promise&lt;{ uri: string; name: string; }&gt;</code>
 
 --------------------
 

@@ -8,6 +8,7 @@ export interface DiskInterface {
     debugMode: boolean,
     disableLogs: boolean,
     maxLogRows: number,
+    numLogRows: number,
     pin: string,
     disableVolume?: boolean,
     requireEncryptedResults?: boolean,
@@ -59,6 +60,7 @@ export interface DiskInterface {
     servers: {
       localServer: {
         resultsDir: string,
+        resultsDirUri: string
         protocolDir: string
       },
       gitlab: {
