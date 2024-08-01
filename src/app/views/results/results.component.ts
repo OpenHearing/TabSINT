@@ -15,6 +15,7 @@ import { SqLite } from '../../utilities/sqLite.service';
 import { SingleResultModalComponent } from '../single-result-modal/single-result-modal/single-result-modal.component';
 import { Logger } from '../../utilities/logger.service';
 import _ from 'lodash';
+import { DBSQLiteValues } from '@capacitor-community/sqlite';
 
 @Component({
   selector: 'results-view',
@@ -25,7 +26,7 @@ export class ResultsComponent {
   disk: DiskInterface;
   state: StateInterface;
   index: number = 0;
-  results: ResultsInterface;
+  results?: ExamResults[];
 
   constructor (
     public diskModel: DiskModel,
@@ -38,9 +39,12 @@ export class ResultsComponent {
   ){
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();
-    this.results = this.resultsModel.getResults();
   }
 
+  async ngOnInit() {
+    this.results = await this.sqLite.getAllResults();
+    console.log('RESULTS', this.results);
+  }
 
   trackByIndex(index: number, item: any): number {
     return index;
@@ -49,7 +53,9 @@ export class ResultsComponent {
   viewResult(index: number) {
     this.dialog.open(SingleResultModalComponent, {
       data: index
-    }).afterClosed().subscribe();
+    }).afterClosed().subscribe(async () => {
+      this.results = await this.sqLite.getAllResults();
+    });
   }
 
   /**
@@ -60,10 +66,12 @@ export class ResultsComponent {
    */
   async exportAll() {
       try {
-          this.disk.completedExamsResults.forEach((examResult: ExamResults) => {
-              this.resultsService.writeResultToFile(examResult);
-          });
-          this.deleteAll();
+          if (!_.isUndefined(this.results)) {
+            this.results.forEach((examResult: ExamResults) => {
+                this.resultsService.writeResultToFile(examResult);
+            });
+            await this.deleteAll();
+          }
       } catch(e) {
           this.logger.error("Failed to export all results to file with error: " + _(e).toJSON);
       }
@@ -78,9 +86,8 @@ export class ResultsComponent {
    * @models disk
    */
   async deleteAll() {
-      this.diskModel.emptyCompletedExamResults();
-      this.sqLite.deleteAll('results');
-      this.disk = this.diskModel.getDisk();
+      await this.sqLite.deleteAll('results');      
+      this.results = await this.sqLite.getAllResults();
   }
 
 }

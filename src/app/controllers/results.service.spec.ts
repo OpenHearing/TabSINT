@@ -14,26 +14,25 @@ import { DiskInterface } from '../models/disk/disk.interface';
 
 describe('ResultsService', () => {
     let resultsService: ResultsService;
+    let appModel = new AppModel;
+    let diskModel = new DiskModel(new Document);
+    let sqLite = new SqLite(appModel, diskModel);
+    let logger = new Logger(diskModel, sqLite);
+    let devicesModel = new DevicesModel(logger, {'test':"test"});
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
 
         })
+
         resultsService = new ResultsService(
             new ResultsModel,
             new ProtocolModel,
-            new SqLite(
-                new AppModel, 
-                new DiskModel(new Document), 
-                new Logger(new DiskModel(new Document))
-            ),
-            new DevicesModel,
-            new DiskModel(new Document),
-            new FileService(
-                new AppModel,
-                new Logger(new DiskModel(new Document))
-            ),
-            new Logger(new DiskModel(new Document))
+            sqLite,
+            devicesModel,
+            diskModel,
+            new FileService(appModel, logger),
+            logger
         );
     })
 

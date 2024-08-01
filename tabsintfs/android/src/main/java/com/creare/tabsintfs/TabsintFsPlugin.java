@@ -65,10 +65,14 @@ public class TabsintFsPlugin extends Plugin {
   @PermissionCallback
   private void storagePermissionCallback(PluginCall call) {
     Log.d(TAG, "storagePermissionCallback called");
-    if (getPermissionState("readStorage") == PermissionState.GRANTED) {
-      openFileChooser();
+    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q) {
+        if (getPermissionState("readStorage") == PermissionState.GRANTED) {
+            openFileChooser();
+        } else {
+            call.reject("Permission is required to access the file system");
+        }
     } else {
-      call.reject("Permission is required to access the file system");
+        openFileChooser();
     }
   }
 
@@ -81,12 +85,19 @@ public class TabsintFsPlugin extends Plugin {
   @PluginMethod
   public void chooseFolder(PluginCall call) {
     Log.d(TAG, "chooseFile called");
+    Log.d(TAG, "Android SDK Version: " + android.os.Build.VERSION.SDK_INT);
     saveCall(call);
-    if (getPermissionState("readStorage") != PermissionState.GRANTED) {
-      Log.d(TAG, "Requesting read storage permission");
-      requestPermissionForAlias("readStorage", call, "storagePermissionCallback");
+    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q) {
+        // For Android 9 and below
+        if (getPermissionState("readStorage") != PermissionState.GRANTED) {
+            Log.d(TAG, "Requesting read storage permission");
+            requestPermissionForAlias("readStorage", call, "storagePermissionCallback");
+        } else {
+            openFileChooser();
+        }
     } else {
-      openFileChooser();
+        // For Android 10 and above
+        openFileChooser();
     }
   }
 
