@@ -9,6 +9,7 @@ import { TabsintFs } from 'tabsintfs';
 import { AppModel } from './models/app/app.service';
 import { AppInterface } from './models/app/app.interface';
 import { SqLite } from './utilities/sqLite.service';
+import { Logger } from './utilities/logger.service';
 
 @Component({
   selector: 'app-root',
@@ -25,7 +26,8 @@ export class AppComponent {
     private sqLite: SqLite,
     private router: Router,
     private translate: TranslateService,
-    public diskModel: DiskModel
+    private diskModel: DiskModel,
+    private logger: Logger
   ) {
     this.translate.setDefaultLang('English');
     this.translate.use('English');
@@ -36,12 +38,13 @@ export class AppComponent {
   async ngOnInit() {
     this.sqLite.init();
     this.router.navigate([''])
-    if (this.diskModel.disk.contentURI === '') {
+    console.log("this.diskModel.disk.contentURI",this.diskModel.disk.contentURI);
+    if (!this.diskModel.disk.contentURI) {
       try {
         const result = await TabsintFs.chooseFolder();
         this.diskModel.updateDiskModel('contentURI', result.uri); // Update the contentURI with the selected folder URI
       } catch (error) {
-        console.error('Error selecting folder:', error);
+        this.logger.error('Error selecting folder: '+JSON.stringify(error));
       }
     }
   }
