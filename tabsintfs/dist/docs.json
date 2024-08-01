@@ -1,0 +1,89 @@
+{
+  "api": {
+    "name": "TabsintFsPlugin",
+    "slug": "tabsintfsplugin",
+    "docs": "",
+    "tags": [],
+    "methods": [
+      {
+        "name": "chooseFolder",
+        "signature": "() => Promise<{ uri: string; }>",
+        "parameters": [],
+        "returns": "Promise<{ uri: string; }>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "choosefolder"
+      },
+      {
+        "name": "createPath",
+        "signature": "(options: { rootUri: string; path: string; content?: string; }) => Promise<{ uri: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ rootUri: string; path: string; content?: string | undefined; }"
+          }
+        ],
+        "returns": "Promise<{ uri: string; }>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "createpath"
+      },
+      {
+        "name": "getDirectoryStructure",
+        "signature": "(options: { rootUri: string; path?: string; }) => Promise<{ structure: any; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ rootUri: string; path?: string | undefined; }"
+          }
+        ],
+        "returns": "Promise<{ structure: any; }>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "getdirectorystructure"
+      },
+      {
+        "name": "copyFileOrFolder",
+        "signature": "(options: { rootUri: string; sourcePath: string; destinationPath: string; }) => Promise<{ success: boolean; message: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ rootUri: string; sourcePath: string; destinationPath: string; }"
+          }
+        ],
+        "returns": "Promise<{ success: boolean; message: string; }>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "copyfileorfolder"
+      },
+      {
+        "name": "readFile",
+        "signature": "(options: { rootUri: string; filePath: string; }) => Promise<{ contentUri: string; mimeType: string; name: string; size: number; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ rootUri: string; filePath: string; }"
+          }
+        ],
+        "returns": "Promise<{ contentUri: string; mimeType: string; name: string; size: number; }>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "readfile"
+      }
+    ],
+    "properties": []
+  },
+  "interfaces": [],
+  "enums": [],
+  "typeAliases": [],
+  "pluginConfigs": []
+}
