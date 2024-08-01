@@ -71,8 +71,7 @@ export class DiskModel {
         },
         audhere: '',
         activeProtocolMeta: metaDefaults,
-        availableProtocolsMeta: [],
-        completedExamsResults: []
+        availableProtocolsMeta: []
     };
     
     constructor(@Inject(DOCUMENT) private document: Document) {
@@ -112,16 +111,6 @@ export class DiskModel {
         console.log("updateDiskModel: ", this.disk);
     }
     
-    emptyCompletedExamResults() {
-        this.disk.completedExamsResults = [];
-        this.updateDiskModel("completedExamsResults", this.disk.completedExamsResults);
-    }
-
-    removeResultFromCompletedExamResults(index: number) {
-        this.disk.completedExamsResults.splice(index, 1);
-        this.updateDiskModel("completedExamsResults", this.disk.completedExamsResults);
-    }
-
     updateSummary(result: ExamResults) {
         var meta = {
             protocolId: result.protocolId,

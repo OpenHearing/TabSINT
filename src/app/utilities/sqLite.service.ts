@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';import { CapacitorSQLite, CapacitorSQLitePlugin, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 
 import { NumDictionary } from '../interfaces/num-dictionary.interface';
-import { DevicesInterface } from '../models/devices/devices.interface';
 import { DiskInterface } from '../models/disk/disk.interface';
 import { AppModel } from '../models/app/app.service';
 import { DiskModel } from '../models/disk/disk.service';
-import { Logger } from './logger.service';
+import { AppInterface } from '../models/app/app.interface';
 import { createLogsTableSql, createResultsTableSql, deleteSql } from './constants';
 
 @Injectable({
@@ -13,7 +12,8 @@ import { createLogsTableSql, createResultsTableSql, deleteSql } from './constant
 })
 
 export class SqLite {
-    disk: DiskInterface;    
+    disk: DiskInterface;
+    app: AppInterface;
     count: NumDictionary ={
         logs: 0,
         results: 0
@@ -24,84 +24,107 @@ export class SqLite {
     private db!: SQLiteDBConnection;
 
     constructor (
-        private app: AppModel,
+        private appModel: AppModel,
         private diskModel: DiskModel,
-        private logger: Logger
     ) {
         this.sqlitePlugin = CapacitorSQLite;
-        this.disk = this.diskModel.getDisk();
-        if (app.getApp().tablet) this.init();
+        this.disk = this.diskModel.getDisk(); 
+        this.app = this.appModel.getApp();
     }
 
-    async store(
-        tableName: string, 
-        date: string, 
-        type: string, 
-        data: string, 
-        param: DevicesInterface
-    ) {
-
-        if (tableName === "logs") {
-            this.deleteOlderLogsIfThereAreTooMany();
-        }
-
-        await this.db.executeSet([{ 
-            statement: "INSERT INTO " + tableName + 
-                " (date, data, type, uuid, siteID, build, version, platform, model, os, other) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
-            values: [date,
-                data,
-                type,
-                param.uuid,
-                param.protocolId,
-                param.build,
-                param.version,
-                param.platform,
-                param.model,
-                param.os,
-                param.other]
-            }]
-        );
-
-        this.count[tableName] += 1;
-
-      };
-  
-    async getSingleResult(index: number) {
-        return await this.db.query('SELECT * FROM results LIMIT 1 OFFSET ?', [index]);
+    async init() {
+        await this.initializePlugin();
+        await this.initializeWeb();
+        await this.open();
     }
 
-    async deleteSingleResult(index: number) {
-        await this.db.executeSet([{
-            statement: 'DELETE FROM results LIMIT 1 OFFSET ?', 
-            values: [index]
-        }]);
-        this.count['results'] -= 1;
-    }
-
-    async deleteAll(tableName: string) {
-        await this.db.execute("DROP TABLE IF EXISTS " + tableName);
-        this.count[tableName] = 0;
-    }
-
-    private async init() {
+    private async initializePlugin() {
         this.sqlitePlugin = CapacitorSQLite;
         this.sqliteConnection = new SQLiteConnection(this.sqlitePlugin);
-        this.open();
+        return true;
+    }
+
+    private async initializeWeb() {
+        if (this.app.browser === true) {
+            await customElements.whenDefined('jeep-sqlite');
+            const jeepSqliteEl = document.querySelector('jeep-sqlite');
+            if(jeepSqliteEl != null) {
+                await this.sqliteConnection.initWebStore();
+            }
+        }
+        return true;
     }
 
     private async open() {
-        const database: string = 'storage';
+        const database: string = 'storage1';
         this.db = await this.sqliteConnection.createConnection(database, false, 'no-encryption', 1, false);
         await this.db.open();
         await this.db.execute(createResultsTableSql);
         await this.db.execute(createLogsTableSql);
     }
     
-    private async deleteOlderLogsIfThereAreTooMany() {
-        var delCount = this.count['logs'] - this.disk.maxLogRows + 1;
-        if (delCount > 0) {
-            await this.db.executeSet([{statement: deleteSql, values: [delCount]}]);
-            this.count['logs'] -= delCount;
+    async store(
+        tableName: string, 
+        data: string
+    ) {
+        try {
+            const sql = "INSERT INTO " + tableName + " (data) VALUES (?)";
+            await this.db.run(sql, [data]);
+            console.log("SQLITE " + tableName + " stored");
+            this.count[tableName] += 1;
+        } catch(e) {
+            console.log("SQLITE Error storing " + tableName + " with error " + e);
         }
+      };
+  
+    async getSingleResult(index: number) {
+        const sql = 'SELECT data FROM results LIMIT 1 OFFSET ?';
+        let res = (await this.db.query(sql, [index])).values!.map(res => res.data) as unknown as string;
+        return JSON.parse(res);
+    }
+
+    async getAllResults() {
+        const sql = 'SELECT data FROM results'
+        return (await this.db.query(sql)).values?.map(res => JSON.parse(res.data));
+    }
+
+    async getAllLogs() {
+        const sql = 'SELECT data FROM logs';
+        return (await this.db.query(sql)).values?.map(log => log.data);
+    }
+
+    async deleteSingleResult(index: number) {
+        try {
+            const sql = `DELETE FROM results WHERE msgID in 
+                            (SELECT msgID FROM 
+                                (SELECT msgID FROM results ORDER BY msgID LIMIT 1 OFFSET ?) 
+                            AS subquery )
+                        `;
+            await this.db.run(sql, [index]);
+            this.count['results'] -= 1;
+        } catch(e) {
+            console.log("SQLITE Error deleting result " + index + " with error " + e);
+        }
+    }
+
+    async deleteAll(tableName: string) {
+        try {
+            await this.db.run("DELETE FROM results");
+            this.count[tableName] = 0;
+        } catch (e) {
+            console.log("SQLITE Error deleting all " + tableName + " with error: " + e);
+        }
+    }
+
+    async deleteOlderLogsIfThereAreTooMany() {
+            var delCount = this.count['logs'] - this.disk.maxLogRows + 1;
+            if (delCount > 0) {
+                try {
+                    await this.db.executeSet([{statement: deleteSql, values: [delCount]}]);
+                } catch(e) {
+                    console.log("SQLITE Error deleting " + delCount + " logs with error " + e);
+                }
+                this.count['logs'] -= delCount;
+            }
     }
 }

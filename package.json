@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "run.build": "npm run build && npx cap add android && npx cap sync android && cd android && ./gradlew assembleDebug && ./gradlew installDebug && cd ..",
+    "run.build": "npm run build && rm -rf android && npx cap add android && npx cap sync android && cd android && ./gradlew assembleDebug && ./gradlew installDebug && cd ..",
     "run.android": "npm run build && rm -rf android && npx cap add android && npx cap run android",
     "serve:ssr:tabsint": "node dist/tabsint/server/server.mjs"
   },
@@ -40,6 +40,7 @@
     "bootstrap-icons": "^1.11.3",
     "express": "^4.18.2",
     "ionicons": "^2.0.1",
+    "jeep-sqlite": "^2.7.2",
     "jsonformatter": "^0.7.0",
     "lodash": "^4.17.21",
     "ngx-json-viewer": "^3.2.1",

@@ -6,6 +6,9 @@ import { DiskModel } from './models/disk/disk.service';
 import { VersionService } from './controllers/version.service';
 import { DevicesModel } from './models/devices/devices.service';
 import { TabsintFs } from 'tabsintfs';
+import { AppModel } from './models/app/app.service';
+import { AppInterface } from './models/app/app.interface';
+import { SqLite } from './utilities/sqLite.service';
 
 @Component({
   selector: 'app-root',
@@ -14,21 +17,26 @@ import { TabsintFs } from 'tabsintfs';
 })
 export class AppComponent {
   title = 'tabsint';
-  
-  constructor(
-    private protocolService: ProtocolService,
-    private diskModel: DiskModel,
+  app: AppInterface;
+
+  constructor(    
+    public appModel: AppModel,
+    private sqLite: SqLite,
     private router: Router,
     private translate: TranslateService,
     private versionService: VersionService,
     private devicesModel: DevicesModel
-  ) { 
+  ) {
     translate.setDefaultLang('English');
     translate.use('English');
+    this.app = appModel.getApp();
+
   }
 
   async ngOnInit() {
     this.protocolService.init();
+    this.sqLite.init();
+    this.router.navigate([''])
     this.router.navigate(['']);
     if (this.diskModel.disk.contentURI === '') {
       try {
@@ -39,5 +47,6 @@ export class AppComponent {
       }
     }
   }
+
 }
 
