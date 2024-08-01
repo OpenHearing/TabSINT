@@ -7,9 +7,9 @@
     "methods": [
       {
         "name": "chooseFolder",
-        "signature": "() => Promise<{ uri: string; }>",
+        "signature": "() => Promise<{ uri: string; name: string; }>",
         "parameters": [],
-        "returns": "Promise<{ uri: string; }>",
+        "returns": "Promise<{ uri: string; name: string; }>",
         "tags": [],
         "docs": "",
         "complexTypes": [],

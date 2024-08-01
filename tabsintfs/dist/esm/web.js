@@ -2,7 +2,7 @@ import { WebPlugin } from '@capacitor/core';
 export class TabsintFsWeb extends WebPlugin {
     async chooseFolder() {
         console.log('chooseFile from web not implemented');
-        return { uri: '' }; // Returning an empty string as a placeholder
+        return { uri: '', name: '' };
     }
     async createPath(options) {
         console.log('createPath not implemented for web', options);

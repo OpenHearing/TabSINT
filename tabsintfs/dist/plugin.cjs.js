@@ -11,7 +11,7 @@ const TabsintFs = core.registerPlugin('TabsintFs', {
 class TabsintFsWeb extends core.WebPlugin {
     async chooseFolder() {
         console.log('chooseFile from web not implemented');
-        return { uri: '' }; // Returning an empty string as a placeholder
+        return { uri: '', name: '' };
     }
     async createPath(options) {
         console.log('createPath not implemented for web', options);
