@@ -7,6 +7,8 @@ import { DebugComponent } from '../debug/debug.component';
 import { IndicatorComponent } from '../indicator/indicator.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { ExamNotReadyComponent } from '../exam-not-ready/exam-not-ready.component';
+import { MAT_DIALOG_DATA, MatDialogContent, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { NotificationsComponent } from '../notifications/notifications.component';
 
 describe('ExamComponent', () => {
   let component: ExamComponent;
@@ -14,15 +16,30 @@ describe('ExamComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ExamComponent, HeaderComponent, DebugComponent, IndicatorComponent, ExamNotReadyComponent],
-      imports: [MatMenuModule,
+      declarations: [
+        ExamComponent, 
+        HeaderComponent, 
+        DebugComponent, 
+        IndicatorComponent, 
+        ExamNotReadyComponent,
+        NotificationsComponent
+      ],
+      imports: [
+        MatMenuModule,
+        MatDialogModule,
+        MatDialogContent,
         TranslateModule.forRoot({
                   loader: {
                     provide: TranslateLoader,
                     useClass: TranslateFakeLoader
                   }
                 })],
-      providers: [TranslateService, TranslateStore]
+      providers: [
+        { provide: MAT_DIALOG_DATA, useValue: {} },
+        { provide: MatDialogRef, useValue: {} },
+        TranslateService, 
+        TranslateStore
+      ]
     })
     .compileComponents();
     

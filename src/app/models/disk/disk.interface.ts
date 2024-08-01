@@ -31,6 +31,7 @@ export interface DiskInterface {
       myCha: string,
       bluetoothType: string
     },
+    contentURI: string | undefined,
     externalMode: boolean,
     appDeveloperMode: boolean,
     appDeveloperModeCount: number,
@@ -81,8 +82,7 @@ export interface DiskInterface {
     versionCheck: boolean,
     audhere: string ,
     activeProtocolMeta: ProtocolMetaInterface,
-    availableProtocolsMeta: Array<ProtocolMetaInterface>,
-    completedExamsResults: ExamResults[];
+    availableProtocolsMeta: Array<ProtocolMetaInterface>
 }
 
 interface UploadSummary {
