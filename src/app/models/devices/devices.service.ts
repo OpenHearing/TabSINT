@@ -2,7 +2,7 @@ import { Inject, Injectable,PLATFORM_ID } from '@angular/core';
 import { DevicesInterface } from './devices.interface';
 import { Device } from '@capacitor/device';
 import { Logger } from '../../utilities/logger.service';
-import { isPlatformBrowser } from '@angular/common';
+import { DiskModel } from '../disk/disk.service';
 
 @Injectable({
     providedIn: 'root',
@@ -23,7 +23,7 @@ export class DevicesModel {
         diskspace: "Unknown"
     }
 
-    constructor(private logger: Logger,@Inject(PLATFORM_ID) private platformId: Object) {
+    constructor(private logger: Logger, private diskModel:DiskModel) {
         this.load();
     }
 
@@ -45,9 +45,9 @@ export class DevicesModel {
             if (info.realDiskFree !== undefined) {
                 this.devicesModel.diskspace = String(info.realDiskFree / (1024 * 1024));
             }
-            this.logger.debug("Device info processed -- \n" + JSON.stringify((this.devicesModel)))
+                this.logger.debug("Device info processed -- \n" + JSON.stringify((this.devicesModel)))
         } catch (error) {
-            this.logger.debug("Device info not available");
+                this.logger.debug("Device info not available");
         }
     }
 

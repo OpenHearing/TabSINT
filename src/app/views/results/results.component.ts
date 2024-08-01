@@ -75,7 +75,6 @@ export class ResultsComponent {
       } catch(e) {
           this.logger.error("Failed to export all results to file with error: " + _(e).toJSON);
       }
-
   }
 
   async upload() {

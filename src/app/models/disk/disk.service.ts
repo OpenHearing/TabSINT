@@ -29,6 +29,7 @@ export class DiskModel {
         pin: "7114",
         disableLogs: false,
         maxLogRows: 1000,
+        numLogRows:0,
         disableAudioStreaming: true,
         tabletGain: 12.34,
         server: ProtocolServer.LocalServer,
@@ -53,6 +54,7 @@ export class DiskModel {
         servers: {
             localServer: {
                 resultsDir: "tabsint-results",
+                resultsDirUri: "",
                 protocolDir: "tabsint-protocols",
             },
             gitlab: {
@@ -105,8 +107,10 @@ export class DiskModel {
         }
     }
 
-    updateDiskModel(key: any, value: any) {
-        (this.disk as any)[key] = value; // TODO: improve typing here
+    updateDiskModel(key: string, value: any) {
+        // (this.disk as any)[key] = value; // TODO: improve typing here
+        // this.disk[key] = value;
+        _.set(this.disk, key, value);
         this.storeDisk();
         console.log("updateDiskModel: ", this.disk);
     }
