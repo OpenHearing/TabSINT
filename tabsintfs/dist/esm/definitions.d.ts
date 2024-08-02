@@ -1,6 +1,7 @@
 export interface TabsintFsPlugin {
     chooseFolder(): Promise<{
         uri: string;
+        name: string;
     }>;
     createPath(options: {
         rootUri: string;

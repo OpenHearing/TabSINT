@@ -3,6 +3,7 @@ import type { TabsintFsPlugin } from './definitions';
 export declare class TabsintFsWeb extends WebPlugin implements TabsintFsPlugin {
     chooseFolder(): Promise<{
         uri: string;
+        name: string;
     }>;
     createPath(options: {
         rootUri: string;
