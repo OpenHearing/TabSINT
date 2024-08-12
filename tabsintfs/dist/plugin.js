@@ -24,7 +24,19 @@ var capacitorTabsintFs = (function (exports, core) {
         }
         async readFile(_options) {
             console.log('readFile not implemented for web');
-            return { contentUri: '', mimeType: '', name: '', size: 0 };
+            return { contentUri: '', mimeType: '', name: '', size: 0, content: '' };
+        }
+        async deletePath(_options) {
+            console.log('deletePath not implemented for web');
+            return { success: false, message: 'Not implemented on web' };
+        }
+        async listFilesInDirectory(_options) {
+            console.log('listFilesInDirectory not implemented for web');
+            return { files: [] };
+        }
+        async readFileFromContentUri(_options) {
+            console.log('readFileFromContentUri not implemented for web');
+            return { content: '' };
         }
     }
 

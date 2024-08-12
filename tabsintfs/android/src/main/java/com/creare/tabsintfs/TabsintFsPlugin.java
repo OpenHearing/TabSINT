@@ -24,6 +24,8 @@ import java.io.FileInputStream;
 import android.os.ParcelFileDescriptor;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import android.provider.DocumentsContract;
+import java.nio.charset.StandardCharsets;
 
 
 @CapacitorPlugin(
@@ -102,6 +104,31 @@ public class TabsintFsPlugin extends Plugin {
   }
 
     @PluginMethod
+    public void readFileFromContentUri(PluginCall call){
+        String fileUri = call.getString("fileUri");
+        if(fileUri==null){
+            call.reject("Please provide contentURI of the file");
+            return;
+        }
+        Uri uri = Uri.parse(fileUri);
+        DocumentFile file = DocumentFile.fromTreeUri(getContext(),uri);
+        if(file==null){
+            call.reject("Invalid File content URI");
+            return;
+        }
+        String content = readFileContent(file);
+
+        if (content == null) {
+            call.reject("Failed to read content from the file with contentURI: " + fileUri);
+            return;
+        }
+
+        JSObject result = new JSObject();
+        result.put("content", content);
+        call.resolve(result);
+    }
+
+    @PluginMethod
     public void readFile(PluginCall call) {
         String rootUri = call.getString("rootUri");
         String filePath = call.getString("filePath");
@@ -128,11 +155,19 @@ public class TabsintFsPlugin extends Plugin {
             return;
         }
 
+        String content = readFileContent(file);
+
+        if (content == null) {
+            call.reject("Failed to read content from the file: " + filePath);
+            return;
+        }
+
         JSObject result = new JSObject();
         result.put("contentUri", file.getUri().toString());
         result.put("mimeType", file.getType());
         result.put("name", file.getName());
         result.put("size", file.length());
+        result.put("content", content);
         call.resolve(result);
     }
 
@@ -190,7 +225,7 @@ public void createPath(PluginCall call) {
 
         if (isFile) {
             // Create file
-            createFile(currentDir, component, content, call);
+            currentDir = createFile(currentDir, component, content, call);
         } else {
             // Create or navigate to directory
             currentDir = createOrGetDirectory(currentDir, component);
@@ -205,7 +240,7 @@ public void createPath(PluginCall call) {
     call.resolve(ret);
 }
 
-private void createFile(DocumentFile parentDir, String fileName, String content, PluginCall call) {
+private DocumentFile createFile(DocumentFile parentDir, String fileName, String content, PluginCall call) {
     String extension = fileName.substring(fileName.lastIndexOf(".") + 1);
     String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
 
@@ -216,18 +251,15 @@ private void createFile(DocumentFile parentDir, String fileName, String content,
     DocumentFile newFile = parentDir.createFile(mimeType, fileName);
     if (newFile == null) {
         call.reject("Failed to create the file: " + fileName);
-        return;
+        return null;
     }
 
     if (content != null) {
-        try (ParcelFileDescriptor pfd = getContext().getContentResolver().openFileDescriptor(newFile.getUri(), "w");
-             FileOutputStream fos = new FileOutputStream(pfd.getFileDescriptor())) {
-            fos.write(content.getBytes());
-        } catch (IOException e) {
-            call.reject("Failed to write content to the file: " + fileName, e);
-            return;
+        if (!writeFileContent(newFile, content)) {
+            call.reject("Failed to write content to the file: " + fileName);
         }
     }
+    return newFile;
 }
 
 private DocumentFile createOrGetDirectory(DocumentFile parentDir, String dirName) {
@@ -329,20 +361,24 @@ public void copyFileOrFolder(PluginCall call) {
     }
 
     DocumentFile sourceFile = getFileFromPath(rootDir, sourcePath);
-    DocumentFile destinationFolder = getFileFromPath(rootDir, destinationPath);
+
+    if(destinationPath.substring(destinationPath.lastIndexOf("/")+1).contains(".")) {
+        call.reject("Destination path specified is a file path, please specify a valid destination path");
+    }
+
+    DocumentFile destinationFolder = createOrGetDirectory(rootDir, destinationPath);
+
+    if (destinationFolder==null){
+        call.reject("Error creating destination path");
+    }
 
     if (sourceFile == null) {
         call.reject("Source file/folder not found");
         return;
     }
 
-    if (destinationFolder == null || !destinationFolder.isDirectory()) {
-        call.reject("Destination folder not found or is not a directory");
-        return;
-    }
-
     try {
-        boolean success = copyRecursively(sourceFile, destinationFolder);
+        boolean success = copyRecursively(sourceFile, destinationFolder,0);
         if (success) {
             JSObject result = new JSObject();
             result.put("success", true);
@@ -356,37 +392,154 @@ public void copyFileOrFolder(PluginCall call) {
     }
 }
 
-private boolean copyRecursively(DocumentFile source, DocumentFile destinationFolder) throws IOException {
+private boolean copyRecursively(DocumentFile source, DocumentFile destinationFolder, int layer) throws IOException {
     if (source.isDirectory()) {
-        DocumentFile newDir = destinationFolder.createDirectory(source.getName());
+        DocumentFile newDir = layer==0 ? destinationFolder : destinationFolder.createDirectory(source.getName()); 
         if (newDir == null) return false;
 
         for (DocumentFile child : source.listFiles()) {
-            if (!copyRecursively(child, newDir)) return false;
+            if (!copyRecursively(child, newDir,layer+1)) return false;
         }
     } else {
         DocumentFile newFile = destinationFolder.createFile(source.getType(), source.getName());
         if (newFile == null) return false;
-
-        ParcelFileDescriptor sourceDescriptor = getContext().getContentResolver().openFileDescriptor(source.getUri(), "r");
-        ParcelFileDescriptor destDescriptor = getContext().getContentResolver().openFileDescriptor(newFile.getUri(), "w");
-
-        if (sourceDescriptor == null || destDescriptor == null) return false;
-
-        try (FileInputStream in = new FileInputStream(sourceDescriptor.getFileDescriptor());
-             FileOutputStream out = new FileOutputStream(destDescriptor.getFileDescriptor())) {
-
-            byte[] buffer = new byte[1024];
-            int read;
-            while ((read = in.read(buffer)) != -1) {
-                out.write(buffer, 0, read);
-            }
-        } finally {
-            sourceDescriptor.close();
-            destDescriptor.close();
-        }
+        String content = readFileContent(source);
+        if (content == null) return false;
+        if (!writeFileContent(newFile, content)) return false;
     }
     return true;
 }
+
+@PluginMethod
+public void deletePath(PluginCall call) {
+    String rootUri = call.getString("rootUri");
+    String path = call.getString("path");
+
+    if (rootUri == null || path == null) {
+        call.reject("Must provide rootUri and path");
+        return;
+    }
+
+    path = path.replaceAll("^/+|/+$", "");
+
+    Uri uri = Uri.parse(rootUri);
+    DocumentFile rootDir = DocumentFile.fromTreeUri(getContext(), uri);
+
+    if (rootDir == null) {
+        call.reject("Invalid root URI");
+        return;
+    }
+
+    DocumentFile targetFile = getFileFromPath(rootDir, path);
+
+    if (targetFile == null) {
+        call.reject("Path not found");
+        return;
+    }
+
+    // Use DocumentsContract.deleteDocument to delete the file or directory
+    try {
+        boolean deleted = DocumentsContract.deleteDocument(
+            getContext().getContentResolver(), targetFile.getUri());
+        
+        if (deleted) {
+            JSObject result = new JSObject();
+            result.put("success", true);
+            result.put("message", (targetFile.isFile() ? "File" : "Directory") + " deleted successfully");
+            call.resolve(result);
+        } else {
+            call.reject("Failed to delete the " + (targetFile.isFile() ? "file" : "directory") + ": " + path);
+        }
+    } catch (Exception e) {
+        call.reject("Error deleting " + (targetFile.isFile() ? "file" : "directory") + ": " + e.getMessage());
+    }
+}
+
+private boolean writeFileContent(DocumentFile file, String content) {
+    try (ParcelFileDescriptor pfd = getContext().getContentResolver().openFileDescriptor(file.getUri(), "w");
+         FileOutputStream fos = new FileOutputStream(pfd.getFileDescriptor())) {
+
+        fos.write(content.getBytes());
+        return true;
+
+    } catch (IOException e) {
+        Log.e(TAG, "Failed to write content to the file: " + file.getName(), e);
+        return false;
+    }
+}
+
+private String readFileContent(DocumentFile file) {
+    try (ParcelFileDescriptor pfd = getContext().getContentResolver().openFileDescriptor(file.getUri(), "r");
+         FileInputStream fis = new FileInputStream(pfd.getFileDescriptor())) {
+
+        byte[] contentBytes = new byte[(int) file.length()];
+        fis.read(contentBytes);
+        return new String(contentBytes, StandardCharsets.UTF_8);
+
+    } catch (IOException e) {
+        // Handle the IOException here and return null or an appropriate value
+        Log.e("TabsintFsPlugin", "Failed to read content from the file: " + file.getName(), e);
+        return null; // Or you could return an empty string or some error message
+    }
+}
+
+@PluginMethod
+public void listFilesInDirectory(PluginCall call) {
+    String rootUri = call.getString("rootUri");
+    String folderPath = call.getString("folderPath");
+
+    if (rootUri == null || folderPath == null) {
+        call.reject("Must provide rootUri and folderPath");
+        return;
+    }
+
+    folderPath = folderPath.replaceAll("^/+|/+$", "");
+
+    Uri uri = Uri.parse(rootUri);
+    DocumentFile rootDir = DocumentFile.fromTreeUri(getContext(), uri);
+
+    if (rootDir == null) {
+        call.reject("Invalid root URI");
+        return;
+    }
+
+    DocumentFile targetDir = getFileFromPath(rootDir, folderPath);
+
+    if (targetDir == null || !targetDir.isDirectory()) {
+        call.reject("Specified path is not a directory or does not exist");
+        return;
+    }
+
+    DocumentFile[] files = targetDir.listFiles();
+    JSArray fileList = new JSArray();
+
+    if (files != null) {
+        for (DocumentFile file : files) {
+            if (file.isFile()) {
+                JSObject fileInfo = new JSObject();
+                fileInfo.put("name", file.getName());
+                fileInfo.put("uri", file.getUri().toString());
+                fileInfo.put("mimeType", file.getType());
+                fileInfo.put("size", file.length());
+
+                // Read the content using the readFileContent method
+                String content = readFileContent(file);
+                if (content != null) {
+                    fileInfo.put("content", content);
+                } else {
+                    // Handle case where content couldn't be read
+                    fileInfo.put("content", "Failed to read file content");
+                }
+
+                fileList.put(fileInfo);
+            }
+        }
+    }
+
+    JSObject result = new JSObject();
+    result.put("files", fileList);
+    call.resolve(result);
+}
+
 
 }

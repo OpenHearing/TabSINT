@@ -132,7 +132,8 @@ export class ProtocolService {
             this.logger.debug("loading.meta" + JSON.stringify(this.loading.meta));
             if (this.loading.meta.contentURI && this.loading.overwrite) {
                 this.logger.debug("re-loading protocol - copying directory");
-                return (this.fileService.copyDirectory(this.loading.meta.contentURI, this.loading.meta.name!, 'Documents', 'Documents'));
+                return
+                // return (this.fileService.copyDirectory(this.loading.meta.contentURI, this.loading.meta.name!, 'Documents', 'Documents'));
             } else {
                 return;
             }

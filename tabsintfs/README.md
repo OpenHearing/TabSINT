@@ -18,6 +18,9 @@ npx cap sync
 * [`getDirectoryStructure(...)`](#getdirectorystructure)
 * [`copyFileOrFolder(...)`](#copyfileorfolder)
 * [`readFile(...)`](#readfile)
+* [`deletePath(...)`](#deletepath)
+* [`listFilesInDirectory(...)`](#listfilesindirectory)
+* [`readFileFromContentUri(...)`](#readfilefromcontenturi)
 
 </docgen-index>
 
@@ -38,7 +41,7 @@ chooseFolder() => Promise<{ uri: string; name: string; }>
 ### createPath(...)
 
 ```typescript
-createPath(options: { rootUri: string; path: string; content?: string; }) => Promise<{ uri: string; }>
+createPath(options: { rootUri: string | undefined; path: string; content?: string; }) => Promise<{ uri: string; }>
 ```
 
 | Param         | Type                                                              |
@@ -53,7 +56,7 @@ createPath(options: { rootUri: string; path: string; content?: string; }) => Pro
 ### getDirectoryStructure(...)
 
 ```typescript
-getDirectoryStructure(options: { rootUri: string; path?: string; }) => Promise<{ structure: any; }>
+getDirectoryStructure(options: { rootUri: string | undefined; path?: string; }) => Promise<{ structure: any; }>
 ```
 
 | Param         | Type                                             |
@@ -68,7 +71,7 @@ getDirectoryStructure(options: { rootUri: string; path?: string; }) => Promise<{
 ### copyFileOrFolder(...)
 
 ```typescript
-copyFileOrFolder(options: { rootUri: string; sourcePath: string; destinationPath: string; }) => Promise<{ success: boolean; message: string; }>
+copyFileOrFolder(options: { rootUri: string | undefined; sourcePath: string; destinationPath: string; }) => Promise<{ success: boolean; message: string; }>
 ```
 
 | Param         | Type                                                                           |
@@ -83,14 +86,59 @@ copyFileOrFolder(options: { rootUri: string; sourcePath: string; destinationPath
 ### readFile(...)
 
 ```typescript
-readFile(options: { rootUri: string; filePath: string; }) => Promise<{ contentUri: string; mimeType: string; name: string; size: number; }>
+readFile(options: { rootUri: string | undefined; filePath: string; }) => Promise<{ contentUri: string; mimeType: string; name: string; size: number; content: string; }>
 ```
 
 | Param         | Type                                                |
 | ------------- | --------------------------------------------------- |
 | **`options`** | <code>{ rootUri: string; filePath: string; }</code> |
 
-**Returns:** <code>Promise&lt;{ contentUri: string; mimeType: string; name: string; size: number; }&gt;</code>
+**Returns:** <code>Promise&lt;{ contentUri: string; mimeType: string; name: string; size: number; content: string; }&gt;</code>
+
+--------------------
+
+
+### deletePath(...)
+
+```typescript
+deletePath(options: { rootUri: string | undefined; path: string; }) => Promise<{ success: boolean; message: string; }>
+```
+
+| Param         | Type                                            |
+| ------------- | ----------------------------------------------- |
+| **`options`** | <code>{ rootUri: string; path: string; }</code> |
+
+**Returns:** <code>Promise&lt;{ success: boolean; message: string; }&gt;</code>
+
+--------------------
+
+
+### listFilesInDirectory(...)
+
+```typescript
+listFilesInDirectory(options: { rootUri: string | undefined; folderPath: string; }) => Promise<{ files: { name: string; uri: string; mimeType: string; size: number; content: string; }[]; }>
+```
+
+| Param         | Type                                                  |
+| ------------- | ----------------------------------------------------- |
+| **`options`** | <code>{ rootUri: string; folderPath: string; }</code> |
+
+**Returns:** <code>Promise&lt;{ files: { name: string; uri: string; mimeType: string; size: number; content: string; }[]; }&gt;</code>
+
+--------------------
+
+
+### readFileFromContentUri(...)
+
+```typescript
+readFileFromContentUri(options: { fileUri: string; }) => Promise<{ content: string; }>
+```
+
+| Param         | Type                              |
+| ------------- | --------------------------------- |
+| **`options`** | <code>{ fileUri: string; }</code> |
+
+**Returns:** <code>Promise&lt;{ content: string; }&gt;</code>
 
 --------------------
 
