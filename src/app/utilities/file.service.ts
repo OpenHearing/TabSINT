@@ -7,6 +7,7 @@ import { listOfTabsintDirectories } from './constants';
 import { DiskModel } from '../models/disk/disk.service';
 import { DiskInterface } from '../models/disk/disk.interface';
 import { TabsintFs } from 'tabsintfs';
+import { result } from 'lodash';
 
 @Injectable({
     providedIn: 'root',
@@ -65,6 +66,15 @@ export class FileService {
     //     });
     // }
 
+    async launchFileChooser(){
+        try{
+            let result = await TabsintFs.chooseFolder();
+        } catch (error){
+            this.logger.error(""+error)
+        }
+        return result
+    }
+
     async writeFile(path:string, data?:string, rootDir:string|undefined=this.rootUri) {
         if(!rootDir){
             this.logger.error("No Root Directory selected!!")
@@ -76,6 +86,7 @@ export class FileService {
         } catch (error){
             this.logger.error("Failed to create file: " + error);
         }
+        return result
     };
       
     async readFile(path:string, rootDir:string|undefined=this.rootUri) {
@@ -91,7 +102,20 @@ export class FileService {
         catch (error){
             this.logger.error("Failed to read file: " + error);
         }
+        return result
     };
+
+    async readFileFromContentUri(contentUri:string) {
+        try{
+            let result = await TabsintFs.readFileFromContentUri({fileUri:contentUri})
+            this.logger.debug(JSON.stringify(result))
+            this.logger.debug("Read file from specified file with content -- " + result.content)
+        } 
+        catch (error){
+            this.logger.error("Failed to read file: " + error);
+        }
+        return result
+    }
 
     async createDirectory(path:string, rootDir:string|undefined=this.rootUri) {
         if(!rootDir){
@@ -105,6 +129,7 @@ export class FileService {
         } catch (error){
             this.logger.error("Failed to create folder: " + error);
         }
+        return result
     }
 
     async copyDirectory(rootDir:string|undefined=this.rootUri,sourcePath:string,destinationPath:string) {
@@ -119,6 +144,7 @@ export class FileService {
         } catch(error){
             this.logger.error("Error copying file/folder"+ error);
         }
+        return result
     }
 
     private async createTabsintDirectoriesIfDontExist() {
@@ -139,6 +165,7 @@ export class FileService {
         } catch (error){
             this.logger.error("Failed to delete specified file/folder with " + error)
         }
+        return result
     }
 
     async listDirectory(path:string, rootDir:string|undefined=this.rootUri) {
@@ -153,6 +180,7 @@ export class FileService {
         } catch (error){
             this.logger.error("Failed to list files " + error)
         }
+        return result
     }
 
     /**
