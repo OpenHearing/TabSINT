@@ -25,8 +25,8 @@ class TabsintFsWeb extends core.WebPlugin {
         console.log('copyFileOrFolder not implemented for web');
         return { success: false, message: 'Not implemented on web' };
     }
-    async readFile(_options) {
-        console.log('readFile not implemented for web');
+    async readFile(options) {
+        console.log('readFile not implemented for web', options);
         return { contentUri: '', mimeType: '', name: '', size: 0, content: '' };
     }
     async deletePath(_options) {
@@ -36,10 +36,6 @@ class TabsintFsWeb extends core.WebPlugin {
     async listFilesInDirectory(_options) {
         console.log('listFilesInDirectory not implemented for web');
         return { files: [] };
-    }
-    async readFileFromContentUri(_options) {
-        console.log('readFileFromContentUri not implemented for web');
-        return { content: '' };
     }
 }
 

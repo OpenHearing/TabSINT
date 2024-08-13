@@ -23,9 +23,9 @@ export class TabsintFsWeb extends WebPlugin implements TabsintFsPlugin {
     return { success: false, message: 'Not implemented on web' };
   }
 
-  async readFile(_options: { rootUri: string | undefined; filePath: string }): Promise<{ contentUri: string; mimeType: string; name: string; size: number;content:string }> {
-    console.log('readFile not implemented for web');
-    return { contentUri: '', mimeType: '', name: '', size: 0,content:''};
+  async readFile(options: { rootUri?: string | undefined;fileUri?: string | undefined; filePath?: string | undefined }): Promise<{ contentUri: string; mimeType: string; name: string; size: number; content: string }> {
+    console.log('readFile not implemented for web', options);
+    return { contentUri: '', mimeType: '', name: '', size: 0, content: '' };
   }
 
   async deletePath(_options: { rootUri: string | undefined; path: string }): Promise<{ success: boolean; message: string }> {
@@ -33,13 +33,8 @@ export class TabsintFsWeb extends WebPlugin implements TabsintFsPlugin {
     return { success: false, message: 'Not implemented on web' };
   }
 
-  async listFilesInDirectory(_options: { rootUri: string | undefined; folderPath: string }): Promise<{ files: { name: string; uri: string; mimeType: string; size: number; content: string }[] }> {
+  async listFilesInDirectory(_options: { rootUri?: string | undefined; folderPath?: string | undefined; contentUri?: string | undefined}): Promise<{ files: { name: string; uri: string; mimeType: string; size: number; content: string }[] }> {
     console.log('listFilesInDirectory not implemented for web');
     return { files: [] };
-  }
-
-  async readFileFromContentUri(_options: { fileUri: string }): Promise<{ content: string }> {
-    console.log('readFileFromContentUri not implemented for web');
-    return { content: '' };
   }
 }

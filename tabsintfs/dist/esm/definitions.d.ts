@@ -25,8 +25,9 @@ export interface TabsintFsPlugin {
         message: string;
     }>;
     readFile(options: {
-        rootUri: string | undefined;
-        filePath: string;
+        rootUri?: string | undefined;
+        fileUri?: string | undefined;
+        filePath?: string | undefined;
     }): Promise<{
         contentUri: string;
         mimeType: string;
@@ -42,8 +43,9 @@ export interface TabsintFsPlugin {
         message: string;
     }>;
     listFilesInDirectory(options: {
-        rootUri: string | undefined;
-        folderPath: string;
+        rootUri?: string | undefined;
+        folderPath?: string | undefined;
+        contentUri?: string | undefined;
     }): Promise<{
         files: {
             name: string;
@@ -52,10 +54,5 @@ export interface TabsintFsPlugin {
             size: number;
             content: string;
         }[];
-    }>;
-    readFileFromContentUri(options: {
-        fileUri: string;
-    }): Promise<{
-        content: string;
     }>;
 }

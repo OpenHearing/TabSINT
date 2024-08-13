@@ -20,7 +20,6 @@ npx cap sync
 * [`readFile(...)`](#readfile)
 * [`deletePath(...)`](#deletepath)
 * [`listFilesInDirectory(...)`](#listfilesindirectory)
-* [`readFileFromContentUri(...)`](#readfilefromcontenturi)
 
 </docgen-index>
 
@@ -86,12 +85,12 @@ copyFileOrFolder(options: { rootUri: string | undefined; sourcePath: string; des
 ### readFile(...)
 
 ```typescript
-readFile(options: { rootUri: string | undefined; filePath: string; }) => Promise<{ contentUri: string; mimeType: string; name: string; size: number; content: string; }>
+readFile(options: { rootUri?: string | undefined; fileUri?: string | undefined; filePath?: string | undefined; }) => Promise<{ contentUri: string; mimeType: string; name: string; size: number; content: string; }>
 ```
 
-| Param         | Type                                                |
-| ------------- | --------------------------------------------------- |
-| **`options`** | <code>{ rootUri: string; filePath: string; }</code> |
+| Param         | Type                                                                    |
+| ------------- | ----------------------------------------------------------------------- |
+| **`options`** | <code>{ rootUri?: string; fileUri?: string; filePath?: string; }</code> |
 
 **Returns:** <code>Promise&lt;{ contentUri: string; mimeType: string; name: string; size: number; content: string; }&gt;</code>
 
@@ -116,29 +115,14 @@ deletePath(options: { rootUri: string | undefined; path: string; }) => Promise<{
 ### listFilesInDirectory(...)
 
 ```typescript
-listFilesInDirectory(options: { rootUri: string | undefined; folderPath: string; }) => Promise<{ files: { name: string; uri: string; mimeType: string; size: number; content: string; }[]; }>
+listFilesInDirectory(options: { rootUri?: string | undefined; folderPath?: string | undefined; contentUri?: string | undefined; }) => Promise<{ files: { name: string; uri: string; mimeType: string; size: number; content: string; }[]; }>
 ```
 
-| Param         | Type                                                  |
-| ------------- | ----------------------------------------------------- |
-| **`options`** | <code>{ rootUri: string; folderPath: string; }</code> |
+| Param         | Type                                                                         |
+| ------------- | ---------------------------------------------------------------------------- |
+| **`options`** | <code>{ rootUri?: string; folderPath?: string; contentUri?: string; }</code> |
 
 **Returns:** <code>Promise&lt;{ files: { name: string; uri: string; mimeType: string; size: number; content: string; }[]; }&gt;</code>
-
---------------------
-
-
-### readFileFromContentUri(...)
-
-```typescript
-readFileFromContentUri(options: { fileUri: string; }) => Promise<{ content: string; }>
-```
-
-| Param         | Type                              |
-| ------------- | --------------------------------- |
-| **`options`** | <code>{ fileUri: string; }</code> |
-
-**Returns:** <code>Promise&lt;{ content: string; }&gt;</code>
 
 --------------------
 

@@ -103,73 +103,57 @@ public class TabsintFsPlugin extends Plugin {
     }
   }
 
-    @PluginMethod
-    public void readFileFromContentUri(PluginCall call){
-        String fileUri = call.getString("fileUri");
-        if(fileUri==null){
-            call.reject("Please provide contentURI of the file");
-            return;
-        }
-        Uri uri = Uri.parse(fileUri);
-        DocumentFile file = DocumentFile.fromTreeUri(getContext(),uri);
-        if(file==null){
-            call.reject("Invalid File content URI");
-            return;
-        }
-        String content = readFileContent(file);
-
-        if (content == null) {
-            call.reject("Failed to read content from the file with contentURI: " + fileUri);
-            return;
-        }
-
-        JSObject result = new JSObject();
-        result.put("content", content);
-        call.resolve(result);
-    }
-
-    @PluginMethod
-    public void readFile(PluginCall call) {
-        String rootUri = call.getString("rootUri");
-        String filePath = call.getString("filePath");
-
-        if (rootUri == null || filePath == null) {
-            call.reject("Must provide rootUri and filePath");
-            return;
-        }
-
-        filePath = filePath.replaceAll("^/+|/+$", "");
-
-        Uri uri = Uri.parse(rootUri);
-        DocumentFile rootDir = DocumentFile.fromTreeUri(getContext(), uri);
-
-        if (rootDir == null) {
-            call.reject("Invalid root URI");
-            return;
-        }
-
-        DocumentFile file = getFileFromPath(rootDir, filePath);
-
-        if (file == null || !file.isFile()) {
-            call.reject("File not found or is not a regular file");
-            return;
-        }
-
-        String content = readFileContent(file);
-
-        if (content == null) {
-            call.reject("Failed to read content from the file: " + filePath);
-            return;
-        }
-
-        JSObject result = new JSObject();
-        result.put("contentUri", file.getUri().toString());
-        result.put("mimeType", file.getType());
-        result.put("name", file.getName());
-        result.put("size", file.length());
-        result.put("content", content);
-        call.resolve(result);
-    }
+  @PluginMethod
+  public void readFile(PluginCall call) {
+      String fileUri = call.getString("fileUri");
+      String rootUri = call.getString("rootUri");
+      String filePath = call.getString("filePath");
+  
+      DocumentFile file = null;
+  
+      if (fileUri != null) {
+          // Handle the case where fileUri is provided
+          Uri uri = Uri.parse(fileUri);
+          file = DocumentFile.fromTreeUri(getContext(), uri);
+      } else if (rootUri != null && filePath != null) {
+          // Handle the case where rootUri and filePath are provided
+          filePath = filePath.replaceAll("^/+|/+$", "");
+  
+          Uri uri = Uri.parse(rootUri);
+          DocumentFile rootDir = DocumentFile.fromTreeUri(getContext(), uri);
+  
+          if (rootDir == null) {
+              call.reject("Invalid root URI");
+              return;
+          }
+  
+          file = getFileFromPath(rootDir, filePath);
+      } else {
+          call.reject("Must provide either fileUri or both rootUri and filePath");
+          return;
+      }
+  
+      if (file == null || !file.isFile()) {
+          call.reject("File not found or is not a regular file");
+          return;
+      }
+  
+      String content = readFileContent(file);
+  
+      if (content == null) {
+          call.reject("Failed to read content from the file");
+          return;
+      }
+  
+      JSObject result = new JSObject();
+      result.put("contentUri", file.getUri().toString());
+      result.put("mimeType", file.getType());
+      result.put("name", file.getName());
+      result.put("size", file.length());
+      result.put("content", content);
+      call.resolve(result);
+  }
+  
 
   @PermissionCallback
   private void writeStoragePermissionCallback(PluginCall call) {
@@ -182,7 +166,7 @@ public class TabsintFsPlugin extends Plugin {
   }
 
   @PluginMethod
-public void createPath(PluginCall call) {
+    public void createPath(PluginCall call) {
     Log.d(TAG, "createPath called");
     
     // Check for write permission
@@ -487,23 +471,31 @@ private String readFileContent(DocumentFile file) {
 public void listFilesInDirectory(PluginCall call) {
     String rootUri = call.getString("rootUri");
     String folderPath = call.getString("folderPath");
+    String contentUri = call.getString("contentUri");
 
-    if (rootUri == null || folderPath == null) {
-        call.reject("Must provide rootUri and folderPath");
+    DocumentFile targetDir = null;
+
+    if (contentUri != null) {
+        // Handle the case where contentUri is provided
+        Uri uri = Uri.parse(contentUri);
+        targetDir = DocumentFile.fromTreeUri(getContext(), uri);
+    } else if (rootUri != null && folderPath != null) {
+        // Handle the case where rootUri and folderPath are provided
+        folderPath = folderPath.replaceAll("^/+|/+$", "");
+
+        Uri uri = Uri.parse(rootUri);
+        DocumentFile rootDir = DocumentFile.fromTreeUri(getContext(), uri);
+
+        if (rootDir == null) {
+            call.reject("Invalid root URI");
+            return;
+        }
+
+        targetDir = getFileFromPath(rootDir, folderPath);
+    } else {
+        call.reject("Must provide either contentUri or both rootUri and folderPath");
         return;
     }
-
-    folderPath = folderPath.replaceAll("^/+|/+$", "");
-
-    Uri uri = Uri.parse(rootUri);
-    DocumentFile rootDir = DocumentFile.fromTreeUri(getContext(), uri);
-
-    if (rootDir == null) {
-        call.reject("Invalid root URI");
-        return;
-    }
-
-    DocumentFile targetDir = getFileFromPath(rootDir, folderPath);
 
     if (targetDir == null || !targetDir.isDirectory()) {
         call.reject("Specified path is not a directory or does not exist");
@@ -522,12 +514,11 @@ public void listFilesInDirectory(PluginCall call) {
                 fileInfo.put("mimeType", file.getType());
                 fileInfo.put("size", file.length());
 
-                // Read the content using the readFileContent method
+                // Optionally, you can read the content of the file (depends on your use case)
                 String content = readFileContent(file);
                 if (content != null) {
                     fileInfo.put("content", content);
                 } else {
-                    // Handle case where content couldn't be read
                     fileInfo.put("content", "Failed to read file content");
                 }
 
@@ -540,6 +531,5 @@ public void listFilesInDirectory(PluginCall call) {
     result.put("files", fileList);
     call.resolve(result);
 }
-
 
 }

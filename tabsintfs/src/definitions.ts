@@ -3,8 +3,7 @@ export interface TabsintFsPlugin {
   createPath(options: { rootUri: string | undefined; path: string; content?: string }): Promise<{ uri: string }>;
   getDirectoryStructure(options: { rootUri: string | undefined; path?: string }): Promise<{ structure: any }>;
   copyFileOrFolder(options: { rootUri: string | undefined; sourcePath: string; destinationPath: string }): Promise<{ success: boolean; message: string }>;
-  readFile(options: { rootUri: string | undefined; filePath: string }): Promise<{ contentUri: string; mimeType: string; name: string; size: number,content:string }>;
+  readFile(options: { rootUri?: string | undefined; fileUri?: string | undefined; filePath?: string | undefined}): Promise<{ contentUri: string; mimeType: string; name: string; size: number; content: string }>;
   deletePath(options: { rootUri: string | undefined; path: string }): Promise<{ success: boolean; message: string }>;
-  listFilesInDirectory(options: { rootUri: string | undefined; folderPath: string }): Promise<{ files: { name: string; uri: string; mimeType: string; size: number; content: string }[] }>;
-  readFileFromContentUri(options: { fileUri: string }): Promise<{ content: string }>;
+  listFilesInDirectory(options: { rootUri?: string | undefined; folderPath?: string | undefined; contentUri?: string | undefined }): Promise<{ files: { name: string; uri: string; mimeType: string; size: number; content: string }[] }>;
 }

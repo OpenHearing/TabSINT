@@ -26,9 +26,10 @@ export declare class TabsintFsWeb extends WebPlugin implements TabsintFsPlugin {
         success: boolean;
         message: string;
     }>;
-    readFile(_options: {
-        rootUri: string | undefined;
-        filePath: string;
+    readFile(options: {
+        rootUri?: string | undefined;
+        fileUri?: string | undefined;
+        filePath?: string | undefined;
     }): Promise<{
         contentUri: string;
         mimeType: string;
@@ -44,8 +45,9 @@ export declare class TabsintFsWeb extends WebPlugin implements TabsintFsPlugin {
         message: string;
     }>;
     listFilesInDirectory(_options: {
-        rootUri: string | undefined;
-        folderPath: string;
+        rootUri?: string | undefined;
+        folderPath?: string | undefined;
+        contentUri?: string | undefined;
     }): Promise<{
         files: {
             name: string;
@@ -54,10 +56,5 @@ export declare class TabsintFsWeb extends WebPlugin implements TabsintFsPlugin {
             size: number;
             content: string;
         }[];
-    }>;
-    readFileFromContentUri(_options: {
-        fileUri: string;
-    }): Promise<{
-        content: string;
     }>;
 }

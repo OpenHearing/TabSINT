@@ -75,11 +75,7 @@ export class FileService {
         return result
     }
 
-    async writeFile(path:string, data?:string, rootDir:string|undefined=this.rootUri) {
-        if(!rootDir){
-            this.logger.error("No Root Directory selected!!")
-            return;
-        }
+    async writeFile(path:string, data:string, rootDir:string|undefined=this.rootUri) {
         try {
             let result = data ? await TabsintFs.createPath({rootUri:rootDir,path:path,content:data}) : await TabsintFs.createPath({rootUri:this.rootUri,path:path})
             this.logger.debug("File created successfully at: " + result.uri);
@@ -89,13 +85,9 @@ export class FileService {
         return result
     };
       
-    async readFile(path:string, rootDir:string|undefined=this.rootUri) {
-        if (!rootDir){
-            this.logger.error("No Root Directory selected!!")
-            return;
-        }
+    async readFile(path:string | undefined = undefined, rootDir:string|undefined=this.rootUri, contentUri:string|undefined=undefined) {
         try{
-            let result = await TabsintFs.readFile({rootUri:rootDir,filePath:path})
+            let result = await TabsintFs.readFile({fileUri:contentUri,rootUri:rootDir,filePath:path})
             this.logger.debug(JSON.stringify(result))
             this.logger.debug("Read file from specified path with content -- " + result.content)
         } 
@@ -105,23 +97,7 @@ export class FileService {
         return result
     };
 
-    async readFileFromContentUri(contentUri:string) {
-        try{
-            let result = await TabsintFs.readFileFromContentUri({fileUri:contentUri})
-            this.logger.debug(JSON.stringify(result))
-            this.logger.debug("Read file from specified file with content -- " + result.content)
-        } 
-        catch (error){
-            this.logger.error("Failed to read file: " + error);
-        }
-        return result
-    }
-
     async createDirectory(path:string, rootDir:string|undefined=this.rootUri) {
-        if(!rootDir){
-            this.logger.error("No Root Directory selected!!")
-            return;
-        }
         try {
             let result = await TabsintFs.createPath({rootUri:this.rootUri,path:path})
             this.logger.debug(JSON.stringify(result))
@@ -133,10 +109,6 @@ export class FileService {
     }
 
     async copyDirectory(rootDir:string|undefined=this.rootUri,sourcePath:string,destinationPath:string) {
-        if(!rootDir){
-            this.logger.error("No Root Directory selected!!")
-            return;
-        }
         try{
             let result = await TabsintFs.copyFileOrFolder({rootUri:rootDir,sourcePath:sourcePath,destinationPath:destinationPath})
             this.logger.debug(JSON.stringify(result))
@@ -154,10 +126,6 @@ export class FileService {
     }
     
     async deleteDirectory(path:string, rootDir:string|undefined=this.rootUri) {
-        if(!rootDir){
-            this.logger.error("No Root Directory selected!!")
-            return;
-        }
         try{
             let result = await TabsintFs.deletePath({rootUri:rootDir,path:path})
             this.logger.debug(JSON.stringify(result))
@@ -168,13 +136,9 @@ export class FileService {
         return result
     }
 
-    async listDirectory(path:string, rootDir:string|undefined=this.rootUri) {
-        if(!rootDir){
-            this.logger.error("No Root Directory selected!!")
-            return;
-        }
+    async listDirectory(path:string|undefined=undefined, rootDir:string|undefined=this.rootUri,contentUri:string|undefined=undefined) {
         try{
-            let result = await TabsintFs.listFilesInDirectory({rootUri:rootDir,folderPath:path})
+            let result = await TabsintFs.listFilesInDirectory({rootUri:rootDir,folderPath:path,contentUri:contentUri})
             this.logger.debug(JSON.stringify(result))
             this.logger.debug("Successfully listed all files")
         } catch (error){
