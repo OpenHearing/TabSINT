@@ -112,21 +112,20 @@ public class TabsintFsPlugin extends Plugin {
       DocumentFile file = null;
   
       if (fileUri != null) {
+        Log.d(TAG,"Reading via content uri");
           // Handle the case where fileUri is provided
           Uri uri = Uri.parse(fileUri);
           file = DocumentFile.fromTreeUri(getContext(), uri);
       } else if (rootUri != null && filePath != null) {
+        Log.d(TAG,"Reading via file path");
           // Handle the case where rootUri and filePath are provided
           filePath = filePath.replaceAll("^/+|/+$", "");
-  
           Uri uri = Uri.parse(rootUri);
           DocumentFile rootDir = DocumentFile.fromTreeUri(getContext(), uri);
-  
           if (rootDir == null) {
               call.reject("Invalid root URI");
               return;
           }
-  
           file = getFileFromPath(rootDir, filePath);
       } else {
           call.reject("Must provide either fileUri or both rootUri and filePath");
@@ -196,7 +195,19 @@ public class TabsintFsPlugin extends Plugin {
         call.reject("Cannot write to the specified root directory");
         return;
     }
+    DocumentFile currentDir = createPathHelper(path, rootDir,content);
+    if(currentDir==null){
+        call.reject("Failed to create or access file/directory");
+    }
+    JSObject ret = new JSObject();
+    ret.put("uri", currentDir.getUri().toString());
+    call.resolve(ret);
+}
 
+private DocumentFile createPathHelper(String path,DocumentFile rootDir,String content){
+    if(path==null || path.isEmpty() || rootDir==null){
+        return null;
+    }
     // Split the path into components
     String[] pathComponents = path.split("/");
     DocumentFile currentDir = rootDir;
@@ -205,26 +216,33 @@ public class TabsintFsPlugin extends Plugin {
     for (int i = 0; i < pathComponents.length; i++) {
         String component = pathComponents[i];
         boolean isLastComponent = (i == pathComponents.length - 1);
-        boolean isFile = isLastComponent && component.contains(".");
+        boolean isFile = isLastComponent && hasFileExtension(component);
 
         if (isFile) {
             // Create file
-            currentDir = createFile(currentDir, component, content, call);
+            currentDir = createFile(currentDir, component, content);
         } else {
             // Create or navigate to directory
             currentDir = createOrGetDirectory(currentDir, component);
-            if (currentDir == null) {
-                call.reject("Failed to create or access directory: " + component);
-                return;
-            }
+        }
+        if (currentDir == null) {
+            return null;
         }
     }
-    JSObject ret = new JSObject();
-    ret.put("uri", currentDir.getUri().toString());
-    call.resolve(ret);
+    return currentDir;
 }
 
-private DocumentFile createFile(DocumentFile parentDir, String fileName, String content, PluginCall call) {
+private boolean hasFileExtension(String component) {
+    String[] fileExtensions = { "txt", "pdf", "docx", "jpg", "png", "xlsx", "csv", "json", "xml", "html" };
+    for (String extension : fileExtensions) {
+        if (component.toLowerCase().endsWith("." + extension)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+private DocumentFile createFile(DocumentFile parentDir, String fileName, String content) {
     String extension = fileName.substring(fileName.lastIndexOf(".") + 1);
     String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
 
@@ -234,13 +252,12 @@ private DocumentFile createFile(DocumentFile parentDir, String fileName, String 
 
     DocumentFile newFile = parentDir.createFile(mimeType, fileName);
     if (newFile == null) {
-        call.reject("Failed to create the file: " + fileName);
         return null;
     }
 
     if (content != null) {
         if (!writeFileContent(newFile, content)) {
-            call.reject("Failed to write content to the file: " + fileName);
+            return null;
         }
     }
     return newFile;
@@ -350,8 +367,7 @@ public void copyFileOrFolder(PluginCall call) {
         call.reject("Destination path specified is a file path, please specify a valid destination path");
     }
 
-    DocumentFile destinationFolder = createOrGetDirectory(rootDir, destinationPath);
-
+    DocumentFile destinationFolder = createPathHelper(destinationPath, rootDir,null);
     if (destinationFolder==null){
         call.reject("Error creating destination path");
     }
@@ -471,7 +487,7 @@ private String readFileContent(DocumentFile file) {
 public void listFilesInDirectory(PluginCall call) {
     String rootUri = call.getString("rootUri");
     String folderPath = call.getString("folderPath");
-    String contentUri = call.getString("contentUri");
+    String contentUri = call.getString("folderUri");
 
     DocumentFile targetDir = null;
 

@@ -117,7 +117,7 @@ export class ProtocolService {
     
         try {
             delete this.protocolModel.loadedProtocols[p.name];
-            this.fileService.deleteDirectory(p.path, p.name);
+            this.fileService.deleteDirectory(p.path);
         } catch (error) {
             console.log("Error trying to delete files");
             console.log(error);

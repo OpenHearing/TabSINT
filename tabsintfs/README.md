@@ -85,12 +85,12 @@ copyFileOrFolder(options: { rootUri: string | undefined; sourcePath: string; des
 ### readFile(...)
 
 ```typescript
-readFile(options: { rootUri?: string | undefined; fileUri?: string | undefined; filePath?: string | undefined; }) => Promise<{ contentUri: string; mimeType: string; name: string; size: number; content: string; }>
+readFile(options: { rootUri?: string | undefined; filePath?: string | undefined; fileUri?: string | undefined; }) => Promise<{ contentUri: string; mimeType: string; name: string; size: number; content: string; }>
 ```
 
 | Param         | Type                                                                    |
 | ------------- | ----------------------------------------------------------------------- |
-| **`options`** | <code>{ rootUri?: string; fileUri?: string; filePath?: string; }</code> |
+| **`options`** | <code>{ rootUri?: string; filePath?: string; fileUri?: string; }</code> |
 
 **Returns:** <code>Promise&lt;{ contentUri: string; mimeType: string; name: string; size: number; content: string; }&gt;</code>
 
@@ -115,12 +115,12 @@ deletePath(options: { rootUri: string | undefined; path: string; }) => Promise<{
 ### listFilesInDirectory(...)
 
 ```typescript
-listFilesInDirectory(options: { rootUri?: string | undefined; folderPath?: string | undefined; contentUri?: string | undefined; }) => Promise<{ files: { name: string; uri: string; mimeType: string; size: number; content: string; }[]; }>
+listFilesInDirectory(options: { rootUri?: string | undefined; folderPath?: string | undefined; folderUri?: string | undefined; }) => Promise<{ files: { name: string; uri: string; mimeType: string; size: number; content: string; }[]; }>
 ```
 
-| Param         | Type                                                                         |
-| ------------- | ---------------------------------------------------------------------------- |
-| **`options`** | <code>{ rootUri?: string; folderPath?: string; contentUri?: string; }</code> |
+| Param         | Type                                                                        |
+| ------------- | --------------------------------------------------------------------------- |
+| **`options`** | <code>{ rootUri?: string; folderPath?: string; folderUri?: string; }</code> |
 
 **Returns:** <code>Promise&lt;{ files: { name: string; uri: string; mimeType: string; size: number; content: string; }[]; }&gt;</code>
 

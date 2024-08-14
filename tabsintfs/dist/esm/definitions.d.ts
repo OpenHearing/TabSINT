@@ -26,8 +26,8 @@ export interface TabsintFsPlugin {
     }>;
     readFile(options: {
         rootUri?: string | undefined;
-        fileUri?: string | undefined;
         filePath?: string | undefined;
+        fileUri?: string | undefined;
     }): Promise<{
         contentUri: string;
         mimeType: string;
@@ -45,7 +45,7 @@ export interface TabsintFsPlugin {
     listFilesInDirectory(options: {
         rootUri?: string | undefined;
         folderPath?: string | undefined;
-        contentUri?: string | undefined;
+        folderUri?: string | undefined;
     }): Promise<{
         files: {
             name: string;
