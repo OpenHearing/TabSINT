@@ -29,6 +29,7 @@ import { loadingProtocolDefaults } from '../utilities/defaults';
 import { checkCalibrationFiles, checkControllers, checkPreProcessFunctions } from '../utilities/protocol-checks.function';
 import { processProtocol } from '../utilities/process-protocol.function';
 import { initializeLoadingProtocol } from '../utilities/initialize-loading-protocol';
+import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
 
 @Injectable({
     providedIn: 'root',
@@ -117,7 +118,7 @@ export class ProtocolService {
     
         try {
             delete this.protocolModel.loadedProtocols[p.name];
-            this.fileService.deleteDirectory(p.path);
+            // this.fileService.deleteDirectory(p.contentURI);
         } catch (error) {
             console.log("Error trying to delete files");
             console.log(error);
@@ -156,11 +157,16 @@ export class ProtocolService {
             if (this.loading.meta.server==ProtocolServer.Developer){
                 protocol = DeveloperProtocols[this.loading.meta.name!]
             } else {
-                const response = await this.fileService.readFile(this.loading.meta.contentURI)
-                protocol = response?.contentUri
+                const response = await this.fileService.readFile("protocol.json",this.loading.meta.contentURI)
+                protocol = response?.content!
+                console.log("Inside else statement--"+protocol)
             }
+            console.log("Final Printing")
+            console.log(this.loading.meta)
+            console.log(protocol as unknown as ProtocolInterface)
+            const finalProtocol: ProtocolSchemaInterface = JSON.parse(protocol)
             if (!_.isUndefined(protocol)) {
-                this.loading.protocol = {...this.loading.meta, ...protocol as unknown as ProtocolInterface};
+                this.loading.protocol = {...this.loading.meta, ...finalProtocol,id:''};
             } else {
                 this.notifyProtocolDidntLoadProperly();
             }
@@ -283,7 +289,7 @@ export class ProtocolService {
         if (this.loading.meta.server === ProtocolServer.Developer) {
             calibration = DeveloperProtocolsCalibration[this.loading.meta.name!];
         } else {
-            calibration = await this.fileService.readFile(this.loading.meta.path + "/calibration.json");
+            calibration = await this.fileService.readFile(this.loading.meta.contentURI + "/calibration.json");
         }
         if (calibration) {
             this.loading.calibration = calibration as unknown as ProtocolInterface;

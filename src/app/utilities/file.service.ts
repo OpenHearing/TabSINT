@@ -26,7 +26,7 @@ export class FileService {
         this.app = this.appModel.getApp();
         this.disk = this.diskModel.getDisk()
         this.rootUri = this.disk.contentURI
-        this.createTabsintDirectoriesIfDontExist();   
+        // this.createTabsintDirectoriesIfDontExist();   
      }
 
     // directoryHandle) {

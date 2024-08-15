@@ -84,7 +84,7 @@ export class ProtocolsComponent {
         for(const file of fileList!){
           if (file.name=="protocol.json"){
             const protocolContent:ProtocolSchemaInterface = JSON.parse(file.content)
-            const protocol:ProtocolInterface = this.protocolM.define({...partialMetaDefaults,name:protocolName! ,path: "",creator: "",contentURI:file.uri,server: ProtocolServer.LocalServer,admin: false,...protocolContent})
+            const protocol:ProtocolInterface = this.protocolM.define({...partialMetaDefaults,name:protocolName! ,path: "",creator: "",contentURI:protocolsFolderUri!,server: ProtocolServer.LocalServer,admin: false,...protocolContent})
             const protocolMetaData:ProtocolMetaInterface = getProtocolMetaData(protocol)
             let availableMetaProtocols = this.diskModel.disk.availableProtocolsMeta
             availableMetaProtocols.push(protocolMetaData)
@@ -153,7 +153,6 @@ export class ProtocolsComponent {
             }
         });
     }
-
     this.tasks.deregister("updating");
   };
 

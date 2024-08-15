@@ -50,7 +50,8 @@ export class AppComponent {
         this.logger.error('Error selecting folder: '+JSON.stringify(error));
       }
     }
+    this.fileService.rootUri = this.diskModel.getDisk().contentURI 
+    this.fileService.createTabsintDirectoriesIfDontExist();
   }
-
 }
 

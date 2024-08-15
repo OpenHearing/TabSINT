@@ -93,7 +93,7 @@ export class ProtocolModel {
         let availableMetaProtocols = this.diskModel.disk.availableProtocolsMeta
         let loadedProtocols = this.protocolModel.loadedProtocols
         availableMetaProtocols.forEach((metaProtocol:ProtocolMetaInterface) => {
-            this.fileService.readFile(metaProtocol.contentURI)
+            this.fileService.readFile("protocol.json",metaProtocol.contentURI)
                 .then(res => {
                     let content = res?.content
                     const parsedResult: ProtocolSchemaInterface = JSON.parse(content!);
