@@ -150,10 +150,15 @@ export class ProtocolService {
 
         try {
             var protocol;
-            (this.loading.meta.server === ProtocolServer.Developer)
-                ? protocol = DeveloperProtocols[this.loading.meta.name!]
-                : protocol = await this.fileService.readFile(this.loading.meta.path + "/protocol.json");
-            
+            // (this.loading.meta.server === ProtocolServer.Developer)
+            //     ? protocol = DeveloperProtocols[this.loading.meta.name!]
+            //     : protocol = await this.fileService.readFile(this.loading.meta.contentURI).then(res=>res?.content);
+            if (this.loading.meta.server==ProtocolServer.Developer){
+                protocol = DeveloperProtocols[this.loading.meta.name!]
+            } else {
+                const response = await this.fileService.readFile(this.loading.meta.contentURI)
+                protocol = response?.contentUri
+            }
             if (!_.isUndefined(protocol)) {
                 this.loading.protocol = {...this.loading.meta, ...protocol as unknown as ProtocolInterface};
             } else {

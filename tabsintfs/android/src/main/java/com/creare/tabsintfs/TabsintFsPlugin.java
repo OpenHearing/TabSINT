@@ -94,6 +94,7 @@ public class TabsintFsPlugin extends Plugin {
         if (getPermissionState("readStorage") != PermissionState.GRANTED) {
             Log.d(TAG, "Requesting read storage permission");
             requestPermissionForAlias("readStorage", call, "storagePermissionCallback");
+            requestPermissionForAlias("writeStorage", call, "writeStoragePermissionCallback");
         } else {
             openFileChooser();
         }
