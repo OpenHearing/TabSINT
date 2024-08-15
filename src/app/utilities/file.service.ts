@@ -85,10 +85,10 @@ export class FileService {
      * @param data - The content to be written to the file.
      * @returns A promise containing the content URI of the created or specified file.
      */
-    async writeFile(path:string, data:string) {
+    async writeFile(path:string, data:string,rootDir:string|undefined=this.rootUri) {
         let result = null
         try {
-            result = data ? await TabsintFs.createPath({rootUri:this.rootUri,path:path,content:data}) : await TabsintFs.createPath({rootUri:this.rootUri,path:path})
+            result = data ? await TabsintFs.createPath({rootUri:rootDir,path:path,content:data}) : await TabsintFs.createPath({rootUri:rootDir,path:path})
             this.logger.debug("File created successfully at: " + result.uri);
         } catch (error){
             this.logger.error("Failed to create file: " + error);
@@ -107,10 +107,10 @@ export class FileService {
      * @param contentUri - (Optional) The content URI of the file.
      * @returns A promise containing the file details such as content URI, MIME type, name, size, and content.
      */
-    async readFile(input:string|undefined) {
+    async readFile(input:string|undefined,rootDir:string|undefined=this.rootUri) {
         let result = null
         try{
-            result = await this.isContentUri(input) ? await TabsintFs.readFile({rootUri:this.rootUri,filePath:undefined,fileUri:input}) : await TabsintFs.readFile({rootUri:this.rootUri,filePath:input,fileUri:undefined})
+            result = await this.isContentUri(input) ? await TabsintFs.readFile({rootUri:rootDir,filePath:undefined,fileUri:input}) : await TabsintFs.readFile({rootUri:rootDir,filePath:input,fileUri:undefined})
             this.logger.debug(JSON.stringify(result))
             return result
         } 
@@ -124,10 +124,10 @@ export class FileService {
      * @param path - The relative path where the directory should be created.
      * @returns A promise containing the content URI of the created directory.
      */
-    async createDirectory(path:string) {
+    async createDirectory(path:string,rootDir:string|undefined=this.rootUri) {
         let result = null
         try {
-            result = await TabsintFs.createPath({rootUri:this.rootUri,path:path})
+            result = await TabsintFs.createPath({rootUri:rootDir,path:path})
             this.logger.debug(JSON.stringify(result))
             this.logger.debug("Folder created successfully at: " + result.uri);
         } catch (error){
@@ -141,10 +141,10 @@ export class FileService {
      * @param destinationPath - The destination directory path.
      * @returns A promise containing the status of the copy operation.
      */
-    async copyDirectory(sourcePath:string,destinationPath:string) {
+    async copyDirectory(sourcePath:string,destinationPath:string,rootDir:string|undefined=this.rootUri) {
         let result = null
         try{
-            result = await TabsintFs.copyFileOrFolder({rootUri:this.rootUri,sourcePath:sourcePath,destinationPath:destinationPath})
+            result = await TabsintFs.copyFileOrFolder({rootUri:rootDir,sourcePath:sourcePath,destinationPath:destinationPath})
             this.logger.debug(JSON.stringify(result))
             this.logger.debug("Successfully copied file/folder content")
         } catch(error){
@@ -169,10 +169,10 @@ export class FileService {
      * @param path - The relative path to the directory or file to be deleted.
      * @returns A promise containing the status of the delete operation.
      */
-    async deleteDirectory(path:string) {
+    async deleteDirectory(path:string,rootDir:string|undefined=this.rootUri) {
         let result = null
         try{
-            result = await TabsintFs.deletePath({rootUri:this.rootUri,path:path})
+            result = await TabsintFs.deletePath({rootUri:rootDir,path:path})
             this.logger.debug(JSON.stringify(result))
             this.logger.debug("Successfully deleted specified folder/file")
         } catch (error){
@@ -186,10 +186,10 @@ export class FileService {
      * @param contentUri - (Optional) The content URI of the directory.
      * @returns A promise containing an array of files in the specified directory.
      */
-    async listDirectory(input:string|undefined) {
+    async listDirectory(input:string|undefined,rootDir:string|undefined=this.rootUri) {
         let result = null
         try{
-            result = await this.isContentUri(input) ? await TabsintFs.listFilesInDirectory({rootUri:this.rootUri,folderPath:undefined,folderUri:input}) : await TabsintFs.listFilesInDirectory({rootUri:this.rootUri,folderPath:input,folderUri:undefined})
+            result = await this.isContentUri(input) ? await TabsintFs.listFilesInDirectory({rootUri:rootDir,folderPath:undefined,folderUri:input}) : await TabsintFs.listFilesInDirectory({rootUri:rootDir,folderPath:input,folderUri:undefined})
             this.logger.debug(JSON.stringify(result))
             this.logger.debug("Successfully listed all files")
         } catch (error){
