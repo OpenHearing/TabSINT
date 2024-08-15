@@ -46,6 +46,8 @@ public class TabsintFsPlugin extends Plugin {
           Intent data = result.getData();
           if (data != null) {
             Uri uri = data.getData();
+            final int takeFlags = data.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            getContext().getContentResolver().takePersistableUriPermission(uri, takeFlags);
             DocumentFile pickedDir = DocumentFile.fromTreeUri(getContext(), uri);
             if (pickedDir != null) {
                 String folderName = pickedDir.getName();
@@ -169,11 +171,11 @@ public class TabsintFsPlugin extends Plugin {
     Log.d(TAG, "createPath called");
     
     // Check for write permission
-    if (getPermissionState("writeStorage") != PermissionState.GRANTED) {
-        Log.d(TAG, "Requesting write storage permission");
-        saveCall(call);
-        requestPermissionForAlias("writeStorage", call, "writeStoragePermissionCallback");
-        return;
+    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q) {
+        if (getPermissionState("writeStorage") != PermissionState.GRANTED) {
+            requestPermissionForAlias("writeStorage", call, "writeStoragePermissionCallback");
+            return;
+        }
     }
 
     // Get parameters from the call
