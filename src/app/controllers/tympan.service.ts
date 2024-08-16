@@ -40,6 +40,13 @@ export class TympanService {
                     } catch {
                         console.log("failed to connect to tympan:",tympan);
                     }
+                    
+                    let msg = "[8,'requestId']";
+                    try {
+                        await this.tympanWrap.write(tympan,msg);
+                    } catch {
+                        console.log("failed to write to tympan with msg: ",msg);
+                    }
                 }
                 
             }

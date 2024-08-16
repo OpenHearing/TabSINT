@@ -16,9 +16,7 @@ export class TympanWrap {
     
     ADAFRUIT_SERVICE_UUID = "BC2F4CC6-AAEF-4351-9034-D66268E328F0";
     ADAFRUIT_CHARACTERISTIC_UUID = "06D1E5E7-79AD-4A71-8FAA-373789F7D93C";
-    BLE_HEADERPACKET_PREFIX = [0xab, 0xad, 0xc0, 0xde, 0xff];
-    BLE_SHORTPACKET_PREFIX_BYTE = 0xcc;
-    DATASTREAM_SEPARATOR = String.fromCharCode(0x03);
+    CRC8_TABLE = this.genCRC8Table();  
 
     constructor(public stateModel: StateModel, @Inject(WINDOW) private window: Window, private logger: Logger) {
         this.state = this.stateModel.getState();
@@ -55,14 +53,19 @@ export class TympanWrap {
         (this.window as any).tympan.scan = this.scan;
         (this.window as any).tympan.connect = this.connect;
         (this.window as any).tympan.write = this.write;
+        (this.window as any).msgToDataView = this.msgToDataView;
+        (this.window as any).genCRC8Checksum = this.genCRC8Checksum;
+        (this.window as any).handleEscaping = this.handleEscaping;
+        (this.window as any).CRC8_TABLE = this.CRC8_TABLE;
+        (this.window as any).ADAFRUIT_SERVICE_UUID = this.ADAFRUIT_SERVICE_UUID;
+        (this.window as any).ADAFRUIT_CHARACTERISTIC_UUID = this.ADAFRUIT_CHARACTERISTIC_UUID;
     }
 
     async scan(service_uuid:string=this.ADAFRUIT_SERVICE_UUID,timeout:number=5000): Promise<BleDevice[]> {
         let results:BleDevice[] = []
         try {
             console.log("starting ble scan");
-            // await BleClient.requestLEScan({services: [service_uuid],},
-            await BleClient.requestLEScan({},
+            await BleClient.requestLEScan({services: [service_uuid],},
                     (result:any) => {
                     results.push(result.device);
                 }
@@ -82,19 +85,14 @@ export class TympanWrap {
     }
 
     async write(device:BleDevice, msg:string) {
-        const POLAR_PMD_SERVICE = 'fb005c80-02e7-f387-1cad-8acd2d8df0c8';
-        const POLAR_PMD_CONTROL_POINT = 'fb005c81-02e7-f387-1cad-8acd2d8df0c8';
-        // await BleClient.write(device.deviceId, POLAR_PMD_SERVICE, POLAR_PMD_CONTROL_POINT, numbersToDataView([1, 0]));
-
-        // let msg_to_write = this.stringToDataView('hello world');
-        let msg_to_write = this.stringToDataView(msg);
-        let resp = await BleClient.write(device.deviceId, POLAR_PMD_SERVICE, POLAR_PMD_CONTROL_POINT, msg_to_write);
+        // let msg_to_write = this.msgToDataView(msg);
+        let msg_to_write = (window as any).msgToDataView(msg);
+        // let resp = await BleClient.write(device.deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID, msg_to_write);
+        
+        console.log("msg_to_write",msg_to_write);
+        
+        let resp = await BleClient.write(device.deviceId, (window as any).ADAFRUIT_SERVICE_UUID, (window as any).ADAFRUIT_CHARACTERISTIC_UUID, msg_to_write);
         this.logger.debug("resp from writing: "+msg_to_write+" is: "+JSON.stringify(resp));
-
-        /*
-        Might want to try writing something like: [1, "requestId"]
-        I assume we can stringify it, ues stringToDataView(), write it, then log the response.
-        */
     }
 
     async connect(device:BleDevice) {
@@ -115,13 +113,63 @@ export class TympanWrap {
 
 
 
-    stringToDataView(str:string): DataView {
-        let buf = new TextEncoder().encode(str);
-        return new DataView(buf.buffer, 0, buf.length)
+    msgToDataView(str:string): DataView {
+        let start_byte = new Uint8Array([5]);
+        let end_byte = new Uint8Array([2]);
+        let buf = new TextEncoder().encode(str); // this is a uint8array!
+        // let crc = this.genCRC8Checksum(buf);
+        let crc = (window as any).genCRC8Checksum(buf);
+        console.log("crc",crc);
+        // let msgToSend = new Uint8Array([...start_byte, ...this.handleEscaping(buf), ...this.handleEscaping(crc), ...end_byte])
+        let msgToSend = new Uint8Array([...start_byte, ...(window as any).handleEscaping(buf), ...(window as any).handleEscaping(crc), ...end_byte])
+        console.log("number array",Array.from(msgToSend));
+        return numbersToDataView(Array.from(msgToSend))
+        // return new DataView(msgToSend.buffer, 0, msgToSend.length)
     }
 
     dataViewToString(dv:DataView): string {
+        // needs to be updated
         return new TextDecoder().decode(dv.buffer)
+    }
+
+
+
+
+    handleEscaping(byte_array:Uint8Array) {
+        var escaped_byte_array:Uint8Array = new Uint8Array();
+        byte_array.forEach( (byte) => {
+            if (byte<=31) {
+                escaped_byte_array = new Uint8Array([...escaped_byte_array, ...[3, 80 ^ byte]]);
+            } else {
+                escaped_byte_array = new Uint8Array([...escaped_byte_array, ...[byte]]);
+            }
+        })
+        return escaped_byte_array
+    }
+
+    genCRC8Checksum(byte_array:Uint8Array) {
+        var c:any;
+        for (var i = 0; i < byte_array.length; i++ ) {
+            // c = this.CRC8_TABLE[(c ^ byte_array[i]) % 256];
+            c = (window as any).CRC8_TABLE[(c ^ byte_array[i]) % 256];
+        }
+        return new Uint8Array([c]);
+    } 
+
+    genCRC8Table() {
+        var csTable = [] // 256 max len byte array
+        for ( var i = 0; i < 256; ++i ) {
+            var curr = i
+            for ( var j = 0; j < 8; ++j ) {
+                if ((curr & 0x80) !== 0) {
+                curr = ((curr << 1) ^ 0x07) % 256
+                } else {
+                curr = (curr << 1) % 256
+                }
+            }
+            csTable[i] = curr 
+        }
+        return csTable
     }
     
 }
