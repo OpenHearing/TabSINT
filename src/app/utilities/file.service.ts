@@ -26,8 +26,8 @@ export class FileService {
         this.app = this.appModel.getApp();
         this.disk = this.diskModel.getDisk()
         this.rootUri = this.disk.contentURI
-        this.createTabsintDirectoriesIfDontExist();   
-    }
+        // this.createTabsintDirectoriesIfDontExist();   
+     }
 
     /**
      * Launches the file chooser and allows the user to select a folder.
@@ -133,8 +133,8 @@ export class FileService {
      * Ensures that directories used by the application exist in the Documents folder.
      * @private
      * @summary This method creates directories used by the application if they do not already exist.
-    */
-    private async createTabsintDirectoriesIfDontExist() {
+     */
+    public async createTabsintDirectoriesIfDontExist() {
         listOfTabsintDirectories.forEach((dir: string) => {
             this.createDirectory(dir);
         })
