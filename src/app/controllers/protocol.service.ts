@@ -83,7 +83,7 @@ export class ProtocolService {
         this.loading.overwrite = overwrite;
         
         try {
-            await this.overwriteLocalFilesIfNeeded();
+            // await this.overwriteLocalFilesIfNeeded(); // TODO: should no longer be needed, will remove after more testing
             await this.loadFiles();
             this.setCalibration();
             await this.validateIfCalledFor();

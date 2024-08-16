@@ -27,43 +27,7 @@ export class FileService {
         this.disk = this.diskModel.getDisk()
         this.rootUri = this.disk.contentURI
         this.createTabsintDirectoriesIfDontExist();   
-     }
-
-    // directoryHandle) {
-    //     /* Convert string dir to Filesystem directory plugin. Defaults to Documents. */
-    //     let directory;
-    //     if (rootDir=='Data') {
-    //         directory = Directory.Data;
-    //     } else if (rootDir=='Documents') {
-    //         directory = Directory.Documents;
-    //     } else if (rootDir=='Library') {
-    //         directory = Directory.Library;
-    //     } else if (rootDir=='Cache') {
-    //         directory = Directory.Cache;
-    //     } else if (rootDir=='External') {
-    //         directory = Directory.External;
-    //     } else if (rootDir=='ExternalStorage') {
-    //         directory = Directory.ExternalStorage;
-    //     } else if (rootDir==undefined) {
-    //         directory = Directory.Documents;
-    //     } else {
-    //         this.logger.debug("Invalid rootDir in directoryHandler, defaulting to Documents");
-    //         directory = Directory.Documents;
-    //     }
-    //     return directory;
-    // }
-
-    // async checkPermissions() {
-    //     return Filesystem.checkPermissions().then( (res)=> {
-    //         this.logger.debug("Checked file permissions: "+JSON.stringify(res));
-    //     });
-    // }
-    
-    // async requestPermissions() {
-    //     return Filesystem.requestPermissions().then( (res)=> {
-    //         this.logger.debug("Requested file permissions: "+JSON.stringify(res));
-    //     });
-    // }
+    }
 
     /**
      * Launches the file chooser and allows the user to select a folder.
@@ -102,18 +66,18 @@ export class FileService {
      * @param input - The string to check.
      * @returns A promise that resolves to true if the input is a content URI, otherwise false.
      */
-    async isContentUri(input:string|undefined){
+    async isContentUri(input:string|undefined) {
         return input?.startsWith('content://com.android')
     }
 
-     /**
+    /**
      * Reads the content from a specified file path or content URI.
      * Must specify either contentURI or file path for it to work successfully and avoid errors.
      * @param path - (Optional) The relative path to the file.
      * @param contentUri - (Optional) The content URI of the file.
      * @param rootDir - (Optional) The root directory where the file is located. Default root directory (Documents directory in most cases) is used if not specified.
      * @returns A promise containing the file details such as content URI, MIME type, name, size, and content.
-     */
+    */
     async readFile(input:string|undefined,rootDir:string|undefined=this.rootUri) {
         let result = null
         try{
@@ -126,12 +90,13 @@ export class FileService {
         }
         return result
     };
+
     /**
      * Creates a directory at the specified path.
      * @param path - The relative path where the directory should be created.
      * @param rootDir - (Optional) The root directory where the file is located. Default root directory (Documents directory in most cases) is used if not specified.
      * @returns A promise containing the content URI of the created directory.
-     */
+    */
     async createDirectory(path:string,rootDir:string|undefined=this.rootUri) {
         let result = null
         try {
@@ -143,6 +108,7 @@ export class FileService {
         }
         return result
     }
+
     /**
      * Copies a directory from a source path to a destination path.
      * Creates destinationPath if it does not exist but source path must exist to avoid errors.
@@ -150,7 +116,7 @@ export class FileService {
      * @param destinationPath - The destination directory path.
      * @param rootDir - (Optional) The root directory where the source and destination folders are located. Default root directory (Documents directory in most cases) is used if not specified.
      * @returns A promise containing the status of the copy operation.
-     */
+    */
     async copyDirectory(sourcePath:string,destinationPath:string,rootDir:string|undefined=this.rootUri) {
         let result = null
         try{
@@ -167,7 +133,7 @@ export class FileService {
      * Ensures that directories used by the application exist in the Documents folder.
      * @private
      * @summary This method creates directories used by the application if they do not already exist.
-     */
+    */
     private async createTabsintDirectoriesIfDontExist() {
         listOfTabsintDirectories.forEach((dir: string) => {
             this.createDirectory(dir);
@@ -179,7 +145,7 @@ export class FileService {
      * @param path - The relative path to the directory or file to be deleted.
      * @param rootDir - (Optional) The root directory where the file is located. Default root directory (Documents directory in most cases) is used if not specified.
      * @returns A promise containing the status of the delete operation.
-     */
+    */
     async deleteDirectory(path:string,rootDir:string|undefined=this.rootUri) {
         let result = null
         try{
@@ -191,13 +157,14 @@ export class FileService {
         }
         return result
     }
+
     /**
- * Lists the files in a specified directory by either path or content URI.
- * Must specify either the path or the contentUri to avoid errors.
- * @param input - The relative path to the directory or content URI.
- * @param rootDir - (Optional) The root directory where the file is located. Default root directory (Documents directory in most cases) is used if not specified.
- * @returns A promise containing an array of files in the specified directory.
- */
+     * Lists the files in a specified directory by either path or content URI.
+     * Must specify either the path or the contentUri to avoid errors.
+     * @param input - The relative path to the directory or content URI.
+     * @param rootDir - (Optional) The root directory where the file is located. Default root directory (Documents directory in most cases) is used if not specified.
+     * @returns A promise containing an array of files in the specified directory.
+    */
     async listDirectory(input:string|undefined,rootDir:string|undefined=this.rootUri) {
         let result = null
         try{
@@ -210,42 +177,4 @@ export class FileService {
         return result
     }
 
-    /**
-     * Make sure the full path exists on the tablet before writing to it.
-     * @summary List the directories on the full path, recursively. For each, check if it exists and if not, create it.
-     * @param path Full path, from "Internal Storage/Documents".
-     */
-    // private async ensurePathExists(path: string) {
-    //     let parentDirectoriesList = path.split("/").slice(0,-1);
-    //     if (parentDirectoriesList.length > 1) {
-    //         this.createDirectoryifDoesntExist(parentDirectoriesList[0]);
-    //         for (var i = 0; i < parentDirectoriesList.length-1; i++) {
-    //             this.existingDirectories = await this.listDirectory(parentDirectoriesList[i]);
-    //             await this.createDirectoryifDoesntExist(
-    //                 parentDirectoriesList[i+1], 
-    //                 parentDirectoriesList[i], 
-    //                 parentDirectoriesList.slice(0,i+2).join("/")
-    //             );
-    //         }
-    //     }
-    // }
-
-    /**
-     * Create directories used by tabsint in the Documents folder when first installing the app.
-     * @summary Iterate through each directory expected by tabsint in the Documents folder. If it doesn't exist, create it.
-     */
-
-    
-    // private doesDirectoryExist(name: string): boolean {
-    //     return this.existingDirectories.files.some((file: any) => file.name === name);
-    //   }
-
-    // private async createDirectoryifDoesntExist(dir: string, this.rootUri: string = "", path: string = dir) {
-    //     if (this.app.tablet) {
-    //         this.existingDirectories = await this.listDirectory(rootDir);
-    //         if (!this.doesDirectoryExist(dir)) {
-    //             await this.createDirectory(path);
-    //         } 
-    //     }   
-    // }            
 }
