@@ -118,7 +118,20 @@ export class ProtocolService {
     
         try {
             delete this.protocolModel.loadedProtocols[p.name];
-            // this.fileService.deleteDirectory(p.contentURI);
+            let currDisk = this.diskModel.getDisk()
+            let oldMetaArray = currDisk.availableProtocolsMeta
+            let newMetaArray = oldMetaArray.filter((item)=>{return (
+                item.group !== p.group ||
+                item.name !== p.name ||
+                item.path !== p.path ||
+                item.date !== p.date ||
+                item.version !== p.version ||
+                item.creator !== p.creator ||
+                item.server !== p.server ||
+                item.admin !== p.admin ||
+                item.contentURI !== p.contentURI
+              );})
+            this.diskModel.updateDiskModel('availableProtocolsMeta',newMetaArray)
         } catch (error) {
             console.log("Error trying to delete files");
             console.log(error);
@@ -151,22 +164,21 @@ export class ProtocolService {
 
         try {
             var protocol;
+            let finalProtocol:ProtocolSchemaInterface;
             // (this.loading.meta.server === ProtocolServer.Developer)
             //     ? protocol = DeveloperProtocols[this.loading.meta.name!]
             //     : protocol = await this.fileService.readFile(this.loading.meta.contentURI).then(res=>res?.content);
             if (this.loading.meta.server==ProtocolServer.Developer){
                 protocol = DeveloperProtocols[this.loading.meta.name!]
+                finalProtocol = protocol
             } else {
                 const response = await this.fileService.readFile("protocol.json",this.loading.meta.contentURI)
                 protocol = response?.content!
                 console.log("Inside else statement--"+protocol)
+                finalProtocol = JSON.parse(protocol)
             }
-            console.log("Final Printing")
-            console.log(this.loading.meta)
-            console.log(protocol as unknown as ProtocolInterface)
-            const finalProtocol: ProtocolSchemaInterface = JSON.parse(protocol)
             if (!_.isUndefined(protocol)) {
-                this.loading.protocol = {...this.loading.meta, ...finalProtocol,id:''};
+                this.loading.protocol = {...this.loading.meta, ...finalProtocol, id:''};
             } else {
                 this.notifyProtocolDidntLoadProperly();
             }
