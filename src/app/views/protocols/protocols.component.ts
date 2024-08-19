@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { DiskModel } from '../../models/disk/disk.service';
 import { Logger } from '../../utilities/logger.service';
-import { ProtocolInterface } from '../../models/protocol/protocol.interface';
+import { ProtocolInterface, ProtocolMetaInterface } from '../../models/protocol/protocol.interface';
 import { DialogType, ProtocolServer } from '../../utilities/constants';
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { ProtocolModel } from '../../models/protocol/protocol-model.service';
@@ -17,6 +17,9 @@ import { Tasks } from '../../utilities/tasks.service';
 import { ProtocolModelInterface } from '../../models/protocol/protocol.interface';
 import { ExamService } from '../../controllers/exam.service';
 import { getProtocolMetaData } from '../../utilities/protocol-helper-functions';
+import { FileService } from '../../utilities/file.service';
+import { ProtocolSchemaInterface } from '../../interfaces/protocol-schema.interface';
+import { metaDefaults, partialMetaDefaults } from '../../utilities/defaults';
 
 @Component({
   selector: 'protocols-view',
@@ -38,7 +41,8 @@ export class ProtocolsComponent {
     private logger: Logger,
     private notifications: Notifications,
     private tasks: Tasks,
-    public examService: ExamService
+    public examService: ExamService,
+    private fileService: FileService
   ) {
     this.disk = this.diskModel.getDisk();
     this.protocolModel = this.protocolM.getProtocolModel();
@@ -65,6 +69,35 @@ export class ProtocolsComponent {
       return "";
     }
   };
+
+  async addProtocols(){
+    console.log("add button clicked")
+    try{
+      const result = await this.fileService.launchFileChooser()
+      if(!result){
+        this.logger.error("There was an error in choosing the folder")
+      }
+      let protocolsFolderUri = result?.uri
+      let protocolName = result?.name
+      const resultFromListFiles = await this.fileService.listDirectory(protocolsFolderUri)
+      const fileList = resultFromListFiles?.files
+        for(const file of fileList!){
+          if (file.name=="protocol.json"){
+            const protocolContent:ProtocolSchemaInterface = JSON.parse(file.content)
+            const protocol:ProtocolInterface = this.protocolM.define({...partialMetaDefaults,name:protocolName! ,path: "",creator: "",contentURI:protocolsFolderUri!,server: ProtocolServer.LocalServer,admin: false,...protocolContent})
+            const protocolMetaData:ProtocolMetaInterface = getProtocolMetaData(protocol)
+            let availableMetaProtocols = this.diskModel.disk.availableProtocolsMeta
+            availableMetaProtocols.push(protocolMetaData)
+            this.diskModel.updateDiskModel('availableProtocolsMeta',availableMetaProtocols)
+            this.disk = this.diskModel.getDisk()
+            this.protocolModel = this.protocolM.getProtocolModel()
+          }
+      }
+  } 
+  catch(error){
+    this.logger.error(""+ error)
+  }
+  }
 
   isProtocolActive(): boolean {
     return this.isActive(this.selected);
@@ -120,7 +153,6 @@ export class ProtocolsComponent {
             }
         });
     }
-
     this.tasks.deregister("updating");
   };
 

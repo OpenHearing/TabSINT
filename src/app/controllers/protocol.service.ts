@@ -29,6 +29,7 @@ import { loadingProtocolDefaults } from '../utilities/defaults';
 import { checkCalibrationFiles, checkControllers, checkPreProcessFunctions } from '../utilities/protocol-checks.function';
 import { processProtocol } from '../utilities/process-protocol.function';
 import { initializeLoadingProtocol } from '../utilities/initialize-loading-protocol';
+import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
 
 @Injectable({
     providedIn: 'root',
@@ -83,7 +84,7 @@ export class ProtocolService {
         this.loading.overwrite = overwrite;
         
         try {
-            await this.overwriteLocalFilesIfNeeded();
+            // await this.overwriteLocalFilesIfNeeded(); // TODO: should no longer be needed, will remove after more testing
             await this.loadFiles();
             this.setCalibration();
             await this.validateIfCalledFor();
@@ -117,7 +118,20 @@ export class ProtocolService {
     
         try {
             delete this.protocolModel.loadedProtocols[p.name];
-            this.fileService.deleteDirectory(p.path, p.name);
+            let currDisk = this.diskModel.getDisk()
+            let oldMetaArray = currDisk.availableProtocolsMeta
+            let newMetaArray = oldMetaArray.filter((item)=>{return (
+                item.group !== p.group ||
+                item.name !== p.name ||
+                item.path !== p.path ||
+                item.date !== p.date ||
+                item.version !== p.version ||
+                item.creator !== p.creator ||
+                item.server !== p.server ||
+                item.admin !== p.admin ||
+                item.contentURI !== p.contentURI
+              );})
+            this.diskModel.updateDiskModel('availableProtocolsMeta',newMetaArray)
         } catch (error) {
             console.log("Error trying to delete files");
             console.log(error);
@@ -132,7 +146,8 @@ export class ProtocolService {
             this.logger.debug("loading.meta" + JSON.stringify(this.loading.meta));
             if (this.loading.meta.contentURI && this.loading.overwrite) {
                 this.logger.debug("re-loading protocol - copying directory");
-                return (this.fileService.copyDirectory(this.loading.meta.contentURI, this.loading.meta.name!, 'Documents', 'Documents'));
+                return
+                // return (this.fileService.copyDirectory(this.loading.meta.contentURI, this.loading.meta.name!, 'Documents', 'Documents'));
             } else {
                 return;
             }
@@ -149,12 +164,21 @@ export class ProtocolService {
 
         try {
             var protocol;
-            (this.loading.meta.server === ProtocolServer.Developer)
-                ? protocol = DeveloperProtocols[this.loading.meta.name!]
-                : protocol = await this.fileService.readFile(this.loading.meta.path + "/protocol.json");
-            
+            let finalProtocol:ProtocolSchemaInterface;
+            // (this.loading.meta.server === ProtocolServer.Developer)
+            //     ? protocol = DeveloperProtocols[this.loading.meta.name!]
+            //     : protocol = await this.fileService.readFile(this.loading.meta.contentURI).then(res=>res?.content);
+            if (this.loading.meta.server==ProtocolServer.Developer){
+                protocol = DeveloperProtocols[this.loading.meta.name!]
+                finalProtocol = protocol
+            } else {
+                const response = await this.fileService.readFile("protocol.json",this.loading.meta.contentURI)
+                protocol = response?.content!
+                console.log("Inside else statement--"+protocol)
+                finalProtocol = JSON.parse(protocol)
+            }
             if (!_.isUndefined(protocol)) {
-                this.loading.protocol = {...this.loading.meta, ...protocol as unknown as ProtocolInterface};
+                this.loading.protocol = {...this.loading.meta, ...finalProtocol, id:''};
             } else {
                 this.notifyProtocolDidntLoadProperly();
             }
@@ -277,7 +301,7 @@ export class ProtocolService {
         if (this.loading.meta.server === ProtocolServer.Developer) {
             calibration = DeveloperProtocolsCalibration[this.loading.meta.name!];
         } else {
-            calibration = await this.fileService.readFile(this.loading.meta.path + "/calibration.json");
+            calibration = await this.fileService.readFile(this.loading.meta.contentURI + "/calibration.json");
         }
         if (calibration) {
             this.loading.calibration = calibration as unknown as ProtocolInterface;

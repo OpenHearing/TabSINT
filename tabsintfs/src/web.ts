@@ -8,23 +8,33 @@ export class TabsintFsWeb extends WebPlugin implements TabsintFsPlugin {
     return { uri: '', name: '' };
   }
 
-  async createPath(options: { rootUri: string; path: string; content?: string }): Promise<{ uri: string }> {
+  async createPath(options: { rootUri: string | undefined; path: string; content?: string }): Promise<{ uri: string }> {
     console.log('createPath not implemented for web', options);
     return { uri: '' };
   }
 
-  async getDirectoryStructure(_options: { rootUri: string; path: string }): Promise<{ structure: any }> {
+  async getDirectoryStructure(_options: { rootUri: string | undefined; path: string }): Promise<{ structure: any }> {
     console.log('getDirectoryStructure not implemented for web');
     return { structure: null };
   }
 
-  async copyFileOrFolder(_options: { rootUri: string; sourcePath: string; destinationPath: string }): Promise<{ success: boolean; message: string }> {
+  async copyFileOrFolder(_options: { rootUri: string | undefined; sourcePath: string; destinationPath: string }): Promise<{ success: boolean; message: string }> {
     console.log('copyFileOrFolder not implemented for web');
     return { success: false, message: 'Not implemented on web' };
   }
 
-  async readFile(_options: { rootUri: string; filePath: string }): Promise<{ contentUri: string; mimeType: string; name: string; size: number }> {
-    console.log('readFile not implemented for web');
-    return { contentUri: '', mimeType: '', name: '', size: 0 };
+  async readFile(options: { rootUri?: string | undefined;fileUri?: string | undefined; filePath?: string | undefined }): Promise<{ contentUri: string; mimeType: string; name: string; size: number; content: string }> {
+    console.log('readFile not implemented for web', options);
+    return { contentUri: '', mimeType: '', name: '', size: 0, content: '' };
+  }
+
+  async deletePath(_options: { rootUri: string | undefined; path: string }): Promise<{ success: boolean; message: string }> {
+    console.log('deletePath not implemented for web');
+    return { success: false, message: 'Not implemented on web' };
+  }
+
+  async listFilesInDirectory(_options: { rootUri?: string | undefined; folderPath?: string | undefined; contentUri?: string | undefined}): Promise<{ files: { name: string; uri: string; mimeType: string; size: number; content: string }[] }> {
+    console.log('listFilesInDirectory not implemented for web');
+    return { files: [] };
   }
 }

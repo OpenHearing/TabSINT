@@ -17,12 +17,12 @@
       },
       {
         "name": "createPath",
-        "signature": "(options: { rootUri: string; path: string; content?: string; }) => Promise<{ uri: string; }>",
+        "signature": "(options: { rootUri: string | undefined; path: string; content?: string; }) => Promise<{ uri: string; }>",
         "parameters": [
           {
             "name": "options",
             "docs": "",
-            "type": "{ rootUri: string; path: string; content?: string | undefined; }"
+            "type": "{ rootUri: string | undefined; path: string; content?: string | undefined; }"
           }
         ],
         "returns": "Promise<{ uri: string; }>",
@@ -33,12 +33,12 @@
       },
       {
         "name": "getDirectoryStructure",
-        "signature": "(options: { rootUri: string; path?: string; }) => Promise<{ structure: any; }>",
+        "signature": "(options: { rootUri: string | undefined; path?: string; }) => Promise<{ structure: any; }>",
         "parameters": [
           {
             "name": "options",
             "docs": "",
-            "type": "{ rootUri: string; path?: string | undefined; }"
+            "type": "{ rootUri: string | undefined; path?: string | undefined; }"
           }
         ],
         "returns": "Promise<{ structure: any; }>",
@@ -49,12 +49,12 @@
       },
       {
         "name": "copyFileOrFolder",
-        "signature": "(options: { rootUri: string; sourcePath: string; destinationPath: string; }) => Promise<{ success: boolean; message: string; }>",
+        "signature": "(options: { rootUri: string | undefined; sourcePath: string; destinationPath: string; }) => Promise<{ success: boolean; message: string; }>",
         "parameters": [
           {
             "name": "options",
             "docs": "",
-            "type": "{ rootUri: string; sourcePath: string; destinationPath: string; }"
+            "type": "{ rootUri: string | undefined; sourcePath: string; destinationPath: string; }"
           }
         ],
         "returns": "Promise<{ success: boolean; message: string; }>",
@@ -65,19 +65,51 @@
       },
       {
         "name": "readFile",
-        "signature": "(options: { rootUri: string; filePath: string; }) => Promise<{ contentUri: string; mimeType: string; name: string; size: number; }>",
+        "signature": "(options: { rootUri?: string | undefined; filePath?: string | undefined; fileUri?: string | undefined; }) => Promise<{ contentUri: string; mimeType: string; name: string; size: number; content: string; }>",
         "parameters": [
           {
             "name": "options",
             "docs": "",
-            "type": "{ rootUri: string; filePath: string; }"
+            "type": "{ rootUri?: string | undefined; filePath?: string | undefined; fileUri?: string | undefined; }"
           }
         ],
-        "returns": "Promise<{ contentUri: string; mimeType: string; name: string; size: number; }>",
+        "returns": "Promise<{ contentUri: string; mimeType: string; name: string; size: number; content: string; }>",
         "tags": [],
         "docs": "",
         "complexTypes": [],
         "slug": "readfile"
+      },
+      {
+        "name": "deletePath",
+        "signature": "(options: { rootUri: string | undefined; path: string; }) => Promise<{ success: boolean; message: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ rootUri: string | undefined; path: string; }"
+          }
+        ],
+        "returns": "Promise<{ success: boolean; message: string; }>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "deletepath"
+      },
+      {
+        "name": "listFilesInDirectory",
+        "signature": "(options: { rootUri?: string | undefined; folderPath?: string | undefined; folderUri?: string | undefined; }) => Promise<{ files: { name: string; uri: string; mimeType: string; size: number; content: string; }[]; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ rootUri?: string | undefined; folderPath?: string | undefined; folderUri?: string | undefined; }"
+          }
+        ],
+        "returns": "Promise<{ files: { name: string; uri: string; mimeType: string; size: number; content: string; }[]; }>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "listfilesindirectory"
       }
     ],
     "properties": []
