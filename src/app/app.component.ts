@@ -10,6 +10,7 @@ import { AppModel } from './models/app/app.service';
 import { AppInterface } from './models/app/app.interface';
 import { SqLite } from './utilities/sqLite.service';
 import { Logger } from './utilities/logger.service';
+import { FileService } from './utilities/file.service';
 
 @Component({
   selector: 'app-root',
@@ -27,7 +28,8 @@ export class AppComponent {
     private router: Router,
     private translate: TranslateService,
     private diskModel: DiskModel,
-    private logger: Logger
+    private logger: Logger,
+    private fileService:FileService
   ) {
     this.translate.setDefaultLang('English');
     this.translate.use('English');
@@ -48,7 +50,8 @@ export class AppComponent {
         this.logger.error('Error selecting folder: '+JSON.stringify(error));
       }
     }
+    this.fileService.rootUri = this.diskModel.getDisk().contentURI 
+    this.fileService.createTabsintDirectoriesIfDontExist();
   }
-
 }
 
