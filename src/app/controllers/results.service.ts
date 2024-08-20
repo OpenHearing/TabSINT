@@ -44,7 +44,7 @@ export class ResultsService {
     */
     initializeExamResults() {
         this.results.currentExam = {
-            protocolId: this.protocol.activeProtocol!.id,
+            protocolId: this.protocol.activeProtocol!.protocolId || 'no protocolId',
             protocolName: this.protocol.activeProtocol!.name,
             testDateTime: new Date().toJSON(),
             elapsedTime: undefined,    

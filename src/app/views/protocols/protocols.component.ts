@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { DiskModel } from '../../models/disk/disk.service';
 import { Logger } from '../../utilities/logger.service';
-import { ProtocolInterface } from '../../models/protocol/protocol.interface';
+import { ActiveProtocolInterface, ProtocolMetaInterface } from '../../models/protocol/protocol.interface';
 import { DialogType, ProtocolServer } from '../../utilities/constants';
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { ProtocolModel } from '../../models/protocol/protocol-model.service';
@@ -24,7 +24,7 @@ import { getProtocolMetaData } from '../../utilities/protocol-helper-functions';
   styleUrl: './protocols.component.css'
 })
 export class ProtocolsComponent {
-  selected?: ProtocolInterface;
+  selected?: ProtocolMetaInterface;
   disk: DiskInterface;
   protocolModel: ProtocolModelInterface;
   state: StateInterface;
@@ -50,11 +50,11 @@ export class ProtocolsComponent {
     // sort protocols by name here
   }
 
-  select(p: ProtocolInterface): void {
+  select(p: ProtocolMetaInterface): void {
     this.selected = p;
   }
 
-  pclass(p: ProtocolInterface): string {
+  pclass(p: ProtocolMetaInterface): string {
     if (this.isActive(p)) {
       return "active-row";
     } else if (this.selected === null || this.selected === undefined) {
@@ -255,7 +255,7 @@ export class ProtocolsComponent {
    * @param p protocol to check whether it is active or not
    * @returns whether protocol is active: boolean
    */
-  private isActive(p: ProtocolInterface | undefined): boolean {
+  private isActive(p: ProtocolMetaInterface | undefined): boolean {
     return (this.protocolModel.activeProtocol 
             && p 
             && this.protocolModel.activeProtocol.name == p.name 

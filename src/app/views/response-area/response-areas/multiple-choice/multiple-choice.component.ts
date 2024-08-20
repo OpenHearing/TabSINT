@@ -8,6 +8,7 @@ import { ProtocolModelInterface } from '../../../../models/protocol/protocol.int
 import { StateInterface } from '../../../../models/state/state.interface';
 import { StateModel } from '../../../../models/state/state.service';
 import { ProtocolModel } from '../../../../models/protocol/protocol-model.service';
+import { MultipleChoiceInterface } from './multiple-choice.interface';
 
 @Component({
   selector: 'multiple-choice-view',
@@ -50,12 +51,12 @@ export class MultipleChoiceComponent {
   ];
 
   update() {
-    this.choices = _.cloneDeep(this.examService.currentPage?.responseArea.choices || this.yesNo);
-    if (this.examService.currentPage?.responseArea.other) {
+    this.choices = _.cloneDeep((this.examService.currentPage?.responseArea as MultipleChoiceInterface).choices || this.yesNo);
+    if ((this.examService.currentPage?.responseArea as MultipleChoiceInterface).other) {
       this.enableOther = true;
       this.choices.push({
         id: "Other",
-        text: this.examService.currentPage?.responseArea.other
+        text: (this.examService.currentPage?.responseArea as MultipleChoiceInterface).other
       });
     }
     console.log("choices for multiple-choice responseArea",this.choices);

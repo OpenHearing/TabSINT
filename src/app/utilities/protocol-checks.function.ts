@@ -1,8 +1,8 @@
 import { ProtocolErrorInterface } from "../interfaces/protocol-error.interface";
-import { ProtocolInterface } from "../models/protocol/protocol.interface";
+import { ActiveProtocolInterface } from "../models/protocol/protocol.interface";
 import { DialogType } from "./constants";
 
-export function checkCalibrationFiles(activeProtocol: ProtocolInterface): string | void {
+export function checkCalibrationFiles(activeProtocol: ActiveProtocolInterface): string | void {
     var msg;
     if (activeProtocol!._missingWavCalList!.length > 0 || activeProtocol!._missingCommonWavCalList!.length > 0) {
         if (activeProtocol!._missingWavCalList!.length + activeProtocol!._missingCommonWavCalList!.length < 10) {
@@ -36,12 +36,12 @@ export function checkCalibrationFiles(activeProtocol: ProtocolInterface): string
     return msg;
 }
 
-export function checkPreProcessFunctions(activeProtocol: ProtocolInterface): Array<ProtocolErrorInterface> {
+export function checkPreProcessFunctions(activeProtocol: ActiveProtocolInterface): Array<ProtocolErrorInterface> {
     var errors = [];
     var msg;
     if (
         (activeProtocol!._missingPreProcessFunctionList!.length > 0 || activeProtocol!._missingControllerList!.length > 0) &&
-        !activeProtocol!.js
+        true // !activeProtocol!.js
       ) {
         msg =
           'The protocol uses custom functions that should be found in a customJs.js file, but the protocol does not have a "js" field pointing to this file.  Please make sure the file exists and is referenced properly.';
@@ -65,7 +65,7 @@ export function checkPreProcessFunctions(activeProtocol: ProtocolInterface): Arr
       return errors;
 }
 
-export function checkControllers(activeProtocol: ProtocolInterface): Array<ProtocolErrorInterface> {
+export function checkControllers(activeProtocol: ActiveProtocolInterface): Array<ProtocolErrorInterface> {
     var errors = [];
     var msg;
 

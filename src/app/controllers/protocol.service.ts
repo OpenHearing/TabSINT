@@ -1,6 +1,8 @@
 import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import Ajv from 'ajv';
+const ajv = new Ajv()
 
 import { FileService } from '../utilities/file.service';
 
@@ -10,7 +12,7 @@ import { ProtocolErrorInterface } from '../interfaces/protocol-error.interface';
 
 import { DiskModel } from '../models/disk/disk.service';
 import { ProtocolModel } from '../models/protocol/protocol-model.service';
-import { ProtocolInterface } from '../models/protocol/protocol.interface';
+import { ActiveProtocolInterface } from '../models/protocol/protocol.interface';
 import { AppModel } from '../models/app/app.service';
 import { AppInterface } from '../models/app/app.interface';
 import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
@@ -29,6 +31,7 @@ import { loadingProtocolDefaults } from '../utilities/defaults';
 import { checkCalibrationFiles, checkControllers, checkPreProcessFunctions } from '../utilities/protocol-checks.function';
 import { processProtocol } from '../utilities/process-protocol.function';
 import { initializeLoadingProtocol } from '../utilities/initialize-loading-protocol';
+import { protocolSchema } from '../../schema/protocol.schema';
 
 @Injectable({
     providedIn: 'root',
@@ -109,7 +112,7 @@ export class ProtocolService {
      * @models protocol, app
      * @param p protocol to delete
      */
-    delete(p: ProtocolInterface): void {
+    delete(p: ProtocolMetaInterface): void {
         if (_.includes(["app", "developer"], p.group)) {
             this.logger.error("Trying to delete app or developer protocol " + p.name + ", but this is not allowed");
             return;
@@ -154,7 +157,7 @@ export class ProtocolService {
                 : protocol = await this.fileService.readFile(this.loading.meta.path + "/protocol.json");
             
             if (!_.isUndefined(protocol)) {
-                this.loading.protocol = {...this.loading.meta, ...protocol as unknown as ProtocolInterface};
+                this.loading.protocol = {...this.loading.meta, ...protocol as unknown as ActiveProtocolInterface};
             } else {
                 this.notifyProtocolDidntLoadProperly();
             }
@@ -165,9 +168,12 @@ export class ProtocolService {
     }
 
     private async validate() {
+        const validate = ajv.compile(protocolSchema);
+        console.log('AJV ERRORS: ', validate.errors);
+        const isValid = validate(this.loading.protocol);
         let ret: ProtocolValidationResultInterface = {
-            valid: true,
-            error: {}
+            valid: isValid,
+            error: validate.errors
         };
         console.log('temp validate ' + this.loading.protocol.protocolId + ' function for development');
         return ret;
@@ -280,7 +286,7 @@ export class ProtocolService {
             calibration = await this.fileService.readFile(this.loading.meta.path + "/calibration.json");
         }
         if (calibration) {
-            this.loading.calibration = calibration as unknown as ProtocolInterface;
+            this.loading.calibration = calibration as unknown as ActiveProtocolInterface;
         }    
         
     }

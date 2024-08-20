@@ -3,19 +3,18 @@ import { TextBoxInterface } from "../views/response-area/response-areas/textbox/
 import { ProtocolSchemaInterface } from "./protocol-schema.interface";
 
 export interface PageDefinition {
-    type: string;
     id: string;
     headset?: "VicFirth" | "Vic Firth S2" | "HDA200" | "WAHTS" | "Audiometer" | "EPHD1" ;
     skipIf?: string;
     hideProgressBar?: boolean;
     autoSubmitDelay?: number;
-    enableBackButton: boolean;
+    enableBackButton?: boolean;
     navMenu?: NavMenuInterface[];
-    title: string;
-    questionMainText: string;
-    questionSubText: string;
-    instructionText: string;
-    helpText: string;
+    title?: string;
+    questionMainText?: string;
+    questionSubText?: string;
+    instructionText?: string;
+    helpText?: string;
     repeatPage?: RepeatPageInterface;
     preProcessFunction?: string;
     wavfileStartDelayTime?: number;
@@ -24,9 +23,9 @@ export interface PageDefinition {
     chaStream?: boolean;
     image?: ImageInterface;
     video?: VideoInterface;
-    responseArea: ResponseArea;
-    submitText: string;
-    followOns: FollowOnInterface[];
+    responseArea?: ResponseArea;
+    submitText?: string;
+    // followOns?: FollowOnInterface[];
     setFlags?: SetFlagInterface[];
 }
   
@@ -87,16 +86,11 @@ export interface SetFlagInterface {
 }
 
 export interface CommonResponseArea {
-    enableSkip: boolean;
+    enableSkip?: boolean;
     type: string;
-    responseRequired: boolean;
+    responseRequired?: boolean;
 }
 
-export interface ResponseArea extends 
-    CommonResponseArea, 
-    TextBoxInterface,
-    MultipleChoiceInterface {
-  inputList?(inputList: any, arg1: (input: any) => void): any;
-  html?: any;
-  image?: any;
-}
+export type ResponseArea =
+    TextBoxInterface |
+    MultipleChoiceInterface;

@@ -9,7 +9,6 @@ import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 export class PageModel {
 
     currentPage: PageInterface = {
-        type: "PageDefinition",
         id: "id",
         name: "name",
         filename: "path/to/file",
@@ -24,15 +23,7 @@ export class PageModel {
         isSubmittable: true,
         canGoBack: true,
         responseArea: {
-            enableSkip: true,
             type: "type",
-            responseRequired: true,
-            choices: [],
-            inputList: function (inputList: any, arg1: (input: any) => void): unknown {
-                throw new Error('Function not implemented.');
-            },
-            html: undefined,
-            image: undefined
         },
         title: "title",
         instructionText: "instructionText",
@@ -45,7 +36,7 @@ export class PageModel {
         questionMainText: "questionMainText",
         loadingRequired: false,
         loadingActive: false,
-        followOns: [],
+        // followOns: [],
         exportToCSV: false
     };
 

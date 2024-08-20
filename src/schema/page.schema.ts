@@ -1,14 +1,14 @@
 import { JSONSchemaType } from "ajv";
-import { PageInterface } from "../app/models/page/page.interface";
 import { navMenuSchema } from "./definitions/navMenu.schema";
-import { repeatPageSchema } from "./definitions/repeat-page.schema";
 import { wavfileSchema } from "./definitions/wavfile.schema";
-import { imageSchema } from "./definitions/image.schema";
-import { videoSchema } from "./definitions/video.schema";
 import { followOnSchema } from "./definitions/follow-on.schema";
 import { setFlagSchema } from "./definitions/set-flag.schema";
+import { PageDefinition } from "../app/interfaces/page-definition.interface";
+import { chaWavFileSchema } from "./definitions/cha-wavfile.schema";
+import { textBoxSchema } from "./response-areas/textbox.schema";
+import { multipleChoiceSchema } from "./response-areas/multiple-choice.schema";
 
-export const pageSchema: JSONSchemaType<PageInterface> = {
+export const pageSchema: JSONSchemaType<PageDefinition> = {
     type: "object",
     properties: {
       id: { type: "string" },
@@ -20,10 +20,10 @@ export const pageSchema: JSONSchemaType<PageInterface> = {
       skipIf: { type: "string", nullable: true },
       hideProgressBar: { type: "boolean", nullable: true, default: false },
       autoSubmitDelay: { type: "number", nullable: true, minimum: 50 },
-      enableBackButton: { type: "boolean", nullable: true },
+      enableBackButton: { type: "boolean", nullable: true, default: false },
       navMenu: {
         type: "array",
-        items: navMenuSchema, // Replace with actual NavMenu schema
+        items: navMenuSchema,
         nullable: true,
       },
       title: { type: "string", nullable: true },
@@ -35,7 +35,14 @@ export const pageSchema: JSONSchemaType<PageInterface> = {
       helpText: { type: "string", nullable: true },
       resultMainText: { type: "string", nullable: true },
       resultSubText: { type: "string", nullable: true },
-      repeatPage: { type: repeatPageSchema, nullable: true },
+      repeatPage: { 
+        type: "object",
+        properties: {
+            nRepeats: { type: "number", default: 2 },
+            repeatIf: { type: "string", nullable: true },
+        },
+        required: ["nRepeats"],
+        nullable: true },
       preProcessFunction: { type: "string", nullable: true },
       wavfileStartDelayTime: { type: "number", nullable: true, minimum: 0, default: 1000 },
       wavfiles: {
@@ -45,26 +52,46 @@ export const pageSchema: JSONSchemaType<PageInterface> = {
       },
       chaWavFiles: {
         type: "array",
-        items: wavfileSchema,
+        items: chaWavFileSchema,
         minItems: 1,
         maxItems: 2,
         nullable: true,
       },
       chaStream: { type: "boolean", nullable: true, default: false },
-      image: { imageSchema, nullable: true },
-      video: { videoSchema, nullable: true },
+      image: { 
+        type: "object",
+        properties: {
+          path: { type: "string" },
+          width: { type: "string", nullable: true, default: "100%" },
+        },
+        required: ["path"], 
+        nullable: true 
+      },
+      video: { 
+        type: "object",
+        properties: {
+          path: { type: "string" },
+          width: { type: "string", nullable: true, default: "100%" },
+          autoplay: { type: "boolean", nullable: true, default: false },
+          noSkip: { type: "boolean", nullable: true, default: false },
+        }, 
+        nullable: true, 
+        required: ["path"] 
+      },
       responseArea: {
         type: "object",
-        nullable: true,
-        // Define oneOf for different response areas
+        oneOf: [
+          textBoxSchema,
+          multipleChoiceSchema
+        ], 
+        required: ["type"],
+        nullable: true
       },
       submitText: { type: "string", nullable: true, default: "Submit" },
-      followOns: { type: "array", items: followOnSchema, nullable: true },
+      // followOns: { type: "array", items: followOnSchema, nullable: true },
       setFlags: { type: "array", items: setFlagSchema, nullable: true }
     },
-    required: ["type", "id", "enableBackButton", "title", "questionMainText", "questionSubText",
-        "instructionText", "helpText", "responseArea", "submitText", "followOns"
-    ],
+    required: ["id"],
     additionalProperties: true,
   };
   

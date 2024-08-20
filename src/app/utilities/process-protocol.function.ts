@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { ProtocolSchemaInterface } from "../interfaces/protocol-schema.interface";
-import { ProtocolInterface } from "../models/protocol/protocol.interface";
+import { ActiveProtocolInterface } from "../models/protocol/protocol.interface";
 import { PageDefinition, ProtocolReferenceInterface } from "../interfaces/page-definition.interface";
 import { LoadingProtocolInterface } from "../interfaces/loading-protocol-object.interface";
 import { ProtocolDictionary } from "../interfaces/protocol-dictionary";
@@ -18,7 +18,7 @@ import { doesIdExist, doesProtocolIdExist, doesReferenceExist } from "./protocol
  * a dictionary of all pages, and a dictionary of all followOns
  */
 export function processProtocol(loading: LoadingProtocolInterface):
-  [ProtocolInterface, ProtocolDictionary, FollowOnsDictionary]
+  [ActiveProtocolInterface, ProtocolDictionary, FollowOnsDictionary]
 {
   let rootProtocol = loading.protocol;
   let calibration = loading.calibration;

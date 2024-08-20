@@ -10,6 +10,7 @@ import { StateModel } from '../../../../models/state/state.service';
 import { Observable } from 'rxjs/internal/Observable';
 import { PageModel } from '../../../../models/page/page.service';
 import { PageInterface } from '../../../../models/page/page.interface';
+import { TextBoxInterface } from './textbox.interface';
 
 @Component({
   selector: 'textbox-view',
@@ -30,7 +31,7 @@ export class TextboxComponent {
     this.state = this.stateModel.getState();
     this.currentPage = this.pageModel.getPage();
 
-    this.rows = this.currentPage.responseArea.rows!;
+    this.rows = (this.currentPage.responseArea as TextBoxInterface).rows!;
     this.observableVar = this.pageModel.currentPageObservable;
 
     this.observableVar.subscribe( (updatedPage:any) => {

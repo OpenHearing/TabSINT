@@ -143,20 +143,20 @@ export class ExamService {
         } if (this.currentPage.repeatPage) {
             this.logger.debug("repeatPage is not yet supported");
             // push pages to list if needed
-        } if (this.currentPage.followOns) { 
-            let nextID = this.findFollowOn();
-            if (nextID != undefined) {
-                // TODO: Make it clear that this will break out of the function chain
-                // will end the exam if its called
-                if (this.checkForSpecialReference(nextID)) {
-                    this.handleSpecialReferences(nextID);
-                    return undefined
-                } else {
-                    (this.protocolM.protocolModel.activeProtocolDictionary![nextID].pages as any).forEach( (page:any)=> { 
-                        pageList.push(page);
-                    });
-                }
-            }
+        // } if (this.currentPage.followOns) { 
+        //     let nextID = this.findFollowOn();
+        //     if (nextID != undefined) {
+        //         // TODO: Make it clear that this will break out of the function chain
+        //         // will end the exam if its called
+        //         if (this.checkForSpecialReference(nextID)) {
+        //             this.handleSpecialReferences(nextID);
+        //             return undefined
+        //         } else {
+        //             (this.protocolM.protocolModel.activeProtocolDictionary![nextID].pages as any).forEach( (page:any)=> { 
+        //                 pageList.push(page);
+        //             });
+        //         }
+        //     }
         } if (this.currentPage.preProcessFunction) { 
             this.logger.debug("preProcessFunction is not yet supported");
             // push pages to list if needed and/or run preprocess function
@@ -238,12 +238,12 @@ export class ExamService {
     */
     private findFollowOn() {
         let id: string | undefined = undefined;
-        this.currentPage.followOns.forEach((followOn:any) => {
-            // TODO: This should be updated to use eval
-            if (this.results.currentPage.response == followOn.conditional.split("==")[1].replaceAll("'","")) {
-                id = followOn.target.reference;
-            }
-        });
+        // this.currentPage.followOns?.forEach((followOn:any) => {
+        //     // TODO: This should be updated to use eval
+        //     if (this.results.currentPage.response == followOn.conditional.split("==")[1].replaceAll("'","")) {
+        //         id = followOn.target.reference;
+        //     }
+        // });
         return id;
     }
 
@@ -252,16 +252,14 @@ export class ExamService {
      * @returns boolean if page is submittable
     */
     private checkIfPageIsSubmittable() {
-        // TODO: These defaults should come from responseArea schema
-        if (this.currentPage.responseArea.responseRequired != undefined) {
-            return !this.currentPage.responseArea.responseRequired
-        } else {
-            if (this.currentPage.responseArea.type == "multipleChoiceResponseArea") {
-                return false
-            } else {
-                return true
-            }
-        }
+            return !this.currentPage.responseArea!.responseRequired;
+
+            //TODO: set response requited to false if response area is multipleChoiceResponseArea
+            // if (this.currentPage.responseArea.type == "multipleChoiceResponseArea") {
+            //     return false
+            // } else {
+            //     return true
+            // }
     }
     /**
      * End Exam

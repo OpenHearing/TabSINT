@@ -18,5 +18,5 @@ export const wavfileSchema: JSONSchemaType<WavfileInterface> = {
         startTime: { type: "number", nullable: true, default: 0 },
         endTime: { type: "number", nullable: true },
     },
-    required: ["path"],
+    required: ["cal", "path"],
 };

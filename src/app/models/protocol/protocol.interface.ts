@@ -16,24 +16,14 @@ export interface ProtocolMetaInterface {
   contentURI: string;
 }
 export interface ProtocolModelInterface {
-  activeProtocol?: ProtocolInterface, 
+  activeProtocol?: ActiveProtocolInterface, 
   activeProtocolDictionary?: ProtocolDictionary,
   activeProtocolFollowOnsDictionary?: FollowOnsDictionary,
   loadedProtocols: {
-      [Key: string]: ProtocolInterface
+      [Key: string]: ProtocolMetaInterface
   }, 
 }
-export interface ProtocolInterface extends ProtocolSchemaInterface {
-    group: string;
-    name: string;
-    path: string;
-    id: string;
-    date: string;
-    version: string;
-    creator: string;
-    server: ProtocolServer;
-    admin: boolean;
-    contentURI: string;
+export interface ActiveProtocolInterface extends ProtocolSchemaInterface, ProtocolMetaInterface {
     cCommon?: any;
     key?: string;
     commonRepo?: any;

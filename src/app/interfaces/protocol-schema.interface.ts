@@ -2,7 +2,7 @@ import { NavMenuInterface, PageDefinition, ProtocolReferenceInterface } from "./
 
 export interface ProtocolSchemaInterface {
     description?: string;
-    protocolId: string;
+    protocolId?: string;
     resultFilename?: string;
     publicKey?: string;
     title?: string;
