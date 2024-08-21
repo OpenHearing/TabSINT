@@ -24,11 +24,7 @@ const protocolSchemaBase: JSONSchemaType<ProtocolSchemaInterface> = {
     randomization: { type: "string", enum: ["WithoutReplacement"], nullable: true },
     minTabsintVersion: { type: "string", nullable: true },
     commonMediaRepository: { type: "string", nullable: true },
-    calibration: {
-      type: "array",
-      items: calibrationSchema,
-      nullable: true
-    },
+    calibration: { type: "array", items: calibrationSchema, nullable: true },
     timeout: {
       type: "object",
       properties: {
@@ -40,11 +36,7 @@ const protocolSchemaBase: JSONSchemaType<ProtocolSchemaInterface> = {
     },
     hideProgressBar: { type: "boolean", default: false, nullable: true },
     enableBackButton: { type: "boolean", default: false, nullable: true },
-    navMenu: {
-      type: "array",
-      items: navMenuSchema,
-      nullable: true
-    },
+    navMenu: { type: "array", items: navMenuSchema, nullable: true },
     js: {
       type: "object",
       oneOf: [
@@ -56,9 +48,6 @@ const protocolSchemaBase: JSONSchemaType<ProtocolSchemaInterface> = {
     },
     pages: {
       oneOf: [
-        pageSchema,
-        protocolReferenceSchema,
-        { type: "object", $ref: "schema_base", required: ["pages"] },
         { type: "array", items: pageSchema },
         { type: "array", items: protocolReferenceSchema },
         { type: "array", items: { type: "object", $ref: "schema_base", required: ["pages"] } }

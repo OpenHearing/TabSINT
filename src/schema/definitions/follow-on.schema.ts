@@ -1,20 +1,18 @@
 import { JSONSchemaType } from "ajv";
 import { FollowOnInterface } from "../../app/interfaces/page-definition.interface";
-import { pageSchema } from "../page.schema";
 import { protocolReferenceSchema } from "./protocol-reference.schema";
-import { protocolSchema } from "../protocol.schema";
 
 export const followOnSchema: JSONSchemaType<FollowOnInterface> = {
-    type: "object",
-    properties: {
-      conditional: { type: "string" },
-      target: {
-        anyOf: [
-          pageSchema,
-          protocolReferenceSchema,
-          protocolSchema,
-        ],
-      },
+  type: "object",
+  properties: {
+    conditional: { type: "string" },
+    target: {
+      oneOf: [
+        { type: "object", $ref: "page_base", required: ["id"] },
+        protocolReferenceSchema,
+        { type: "object", $ref: "schema_base", required: ["pages"] }
+      ],
     },
-    required: ["conditional", "target"],
+  },
+  required: ["conditional", "target"],
 };

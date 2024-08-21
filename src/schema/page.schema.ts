@@ -9,6 +9,7 @@ import { textBoxSchema } from "./response-areas/textbox.schema";
 import { multipleChoiceSchema } from "./response-areas/multiple-choice.schema";
 
 export const pageSchema: JSONSchemaType<PageDefinition> = {
+    $id: "page_base",
     type: "object",
     properties: {
       id: { type: "string" },
@@ -21,11 +22,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
       hideProgressBar: { type: "boolean", nullable: true, default: false },
       autoSubmitDelay: { type: "number", nullable: true, minimum: 50 },
       enableBackButton: { type: "boolean", nullable: true, default: false },
-      navMenu: {
-        type: "array",
-        items: navMenuSchema,
-        nullable: true,
-      },
+      navMenu: { type: "array", items: navMenuSchema, nullable: true },
       title: { type: "string", nullable: true },
       subtitle: { type: "string", nullable: true },
       spacing: { type: "string", nullable: true },
@@ -42,14 +39,11 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
             repeatIf: { type: "string", nullable: true },
         },
         required: ["nRepeats"],
-        nullable: true },
+        nullable: true 
+      },
       preProcessFunction: { type: "string", nullable: true },
       wavfileStartDelayTime: { type: "number", nullable: true, minimum: 0, default: 1000 },
-      wavfiles: {
-        type: "array",
-        items: wavfileSchema,
-        nullable: true,
-      },
+      wavfiles: { type: "array", items: wavfileSchema, nullable: true },
       chaWavFiles: {
         type: "array",
         items: chaWavFileSchema,
@@ -88,7 +82,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
         nullable: true
       },
       submitText: { type: "string", nullable: true, default: "Submit" },
-      // followOns: { type: "array", items: followOnSchema, nullable: true },
+      followOns: { type: "array", items: followOnSchema, nullable: true }, 
       setFlags: { type: "array", items: setFlagSchema, nullable: true }
     },
     required: ["id"],

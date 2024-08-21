@@ -7,7 +7,7 @@ export const multipleChoiceSchema: JSONSchemaType<MultipleChoiceInterface> = {
     properties: {
         enableSkip: { type: "boolean", nullable: true, default: false },
         responseRequired: { type: "boolean", nullable: true, default: true },
-        type: { type: "string", default: "multipleChoiceResponseArea" },
+        type: { type: "string", enum: ["multipleChoiceResponseArea"] },
         choices: { type: "array", nullable: true, items: choiceSchema },
         other: { type: "string", nullable: true },
         verticalSpacing: { type: "number", nullable: true },

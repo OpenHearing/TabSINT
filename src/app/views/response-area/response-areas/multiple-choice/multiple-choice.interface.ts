@@ -10,9 +10,14 @@ export interface MultipleChoiceInterface extends CommonResponseArea {
 }
   
 export interface ChoiceInterface {
-    label: string;
-    value: string;
-}
+    id: string;
+    text?: string;
+    correct?: boolean;
+    disable?: boolean;
+    textColor?: string;
+    backgroundColor?: string;
+    fontSize?: string;
+  }
 
 const defaultMultipleChoiseInterface: MultipleChoiceInterface = {
     type: "multipleChoiceResponseArea",

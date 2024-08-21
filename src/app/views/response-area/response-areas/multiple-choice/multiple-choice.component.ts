@@ -8,7 +8,7 @@ import { ProtocolModelInterface } from '../../../../models/protocol/protocol.int
 import { StateInterface } from '../../../../models/state/state.interface';
 import { StateModel } from '../../../../models/state/state.service';
 import { ProtocolModel } from '../../../../models/protocol/protocol-model.service';
-import { MultipleChoiceInterface } from './multiple-choice.interface';
+import { ChoiceInterface, MultipleChoiceInterface } from './multiple-choice.interface';
 
 @Component({
   selector: 'multiple-choice-view',
@@ -33,8 +33,8 @@ export class MultipleChoiceComponent {
     this.update();
   }
 
-  choices:any = {};
-  choice:any = {};
+  choices: ChoiceInterface[] | undefined;
+  choice: ChoiceInterface | undefined;
   enableOther = false;
   buttonDisabled = true;
   gradeResponse = false;

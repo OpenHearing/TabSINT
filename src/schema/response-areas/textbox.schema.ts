@@ -6,7 +6,7 @@ export const textBoxSchema: JSONSchemaType<TextBoxInterface> = {
     properties: {
         enableSkip: { type: "boolean", nullable: true, default: false },
         responseRequired: { type: "boolean", nullable: true, default: true },
-        type: { type: "string", default: "textboxResponseArea" },
+        type: { type: "string", enum: ["textboxResponseArea"] },
         rows: { type: "number", nullable: true, default: 1 },
         exportToCSV: { type: "boolean", nullable: true, default: false }
     },

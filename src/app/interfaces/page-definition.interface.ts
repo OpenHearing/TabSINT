@@ -25,12 +25,14 @@ export interface PageDefinition {
     video?: VideoInterface;
     responseArea?: ResponseArea;
     submitText?: string;
-    // followOns?: FollowOnInterface[];
+    followOns?: FollowOnInterface[];
     setFlags?: SetFlagInterface[];
 }
   
 export interface NavMenuInterface {
-    // Assuming "/definitions/navMenu.json" defines the structure of a menu item
+    text: string;
+    target: PageDefinition | ProtocolReferenceInterface;
+    returnHereAfterward: boolean;
 }
   
 export interface RepeatPageInterface {
