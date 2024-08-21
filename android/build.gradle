@@ -27,3 +27,15 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+plugins {
+  id "org.sonarqube" version "5.0.0.4638"
+}
+
+sonar {
+  properties {
+    property "sonar.projectKey", "Open-Hearing-TabSINT"
+    property "sonar.projectName", "Open Hearing TabSINT"
+    property "sonar.qualitygate.wait", true 
+  }
+}
