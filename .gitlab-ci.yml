@@ -1,4 +1,6 @@
-image: gradle:8.2.0-jdk17-jammy
+image:
+  name: sonarsource/sonar-scanner-cli:latest
+  entrypoint: [""]
 
 variables:
   SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar" # Defines the location of the analysis task cache
@@ -6,22 +8,20 @@ variables:
 
 stages:
 - sonarqube-check
+- sonarqube-vulnerability-report
 
 sonarqube-check:
   stage: sonarqube-check
   # dependencies:
-  #   - get-binaries
-  #   - build
+  # - get-binaries
+  # - build
   cache:
     policy: pull
     key: "${CI_COMMIT_SHORT_SHA}"
     paths:
     - sonar-scanner/
-
-
   script:
-  - cd android
-  - gradle sonar
+  - sonar-scanner
   allow_failure: true
   rules:
   - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
