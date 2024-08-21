@@ -19,7 +19,9 @@ sonarqube-check:
     - sonar-scanner/
 
 
-  script: gradle sonar
+  script:
+  - cd android
+  - gradle sonar
   allow_failure: true
   rules:
   - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
