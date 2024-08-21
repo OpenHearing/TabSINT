@@ -1,8 +1,8 @@
 import _ from "lodash";
-import { ActiveProtocolInterface } from "../models/protocol/protocol.interface";
+import { ProtocolInterface } from "../models/protocol/protocol.interface";
 import { ProtocolMetaInterface } from "../models/protocol/protocol.interface";
 
-export function findDuplicateProtocols(p: ActiveProtocolInterface, loadedP: ActiveProtocolInterface[]) {
+export function findDuplicateProtocols(p: ProtocolInterface, loadedP: ProtocolInterface[]) {
     return _.filter(loadedP, {
         name: p.name,
         path: p.path,

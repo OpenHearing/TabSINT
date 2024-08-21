@@ -1,8 +1,8 @@
 import { ProtocolErrorInterface } from "../interfaces/protocol-error.interface";
-import { ActiveProtocolInterface } from "../models/protocol/protocol.interface";
+import { ProtocolInterface } from "../models/protocol/protocol.interface";
 import { DialogType } from "./constants";
 
-export function checkCalibrationFiles(activeProtocol: ActiveProtocolInterface): string | void {
+export function checkCalibrationFiles(activeProtocol: ProtocolInterface): string | void {
     var msg;
     if (activeProtocol!._missingWavCalList!.length > 0 || activeProtocol!._missingCommonWavCalList!.length > 0) {
         if (activeProtocol!._missingWavCalList!.length + activeProtocol!._missingCommonWavCalList!.length < 10) {
@@ -36,7 +36,7 @@ export function checkCalibrationFiles(activeProtocol: ActiveProtocolInterface): 
     return msg;
 }
 
-export function checkPreProcessFunctions(activeProtocol: ActiveProtocolInterface): Array<ProtocolErrorInterface> {
+export function checkPreProcessFunctions(activeProtocol: ProtocolInterface): Array<ProtocolErrorInterface> {
     var errors = [];
     var msg;
     if (
@@ -65,7 +65,7 @@ export function checkPreProcessFunctions(activeProtocol: ActiveProtocolInterface
       return errors;
 }
 
-export function checkControllers(activeProtocol: ActiveProtocolInterface): Array<ProtocolErrorInterface> {
+export function checkControllers(activeProtocol: ProtocolInterface): Array<ProtocolErrorInterface> {
     var errors = [];
     var msg;
 

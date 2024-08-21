@@ -1,8 +1,8 @@
 import { ProtocolMetaInterface } from "../models/protocol/protocol.interface";
-import { ActiveProtocolInterface } from "../models/protocol/protocol.interface";
+import { ProtocolInterface } from "../models/protocol/protocol.interface";
 
 export interface LoadingProtocolInterface {
-    protocol: ActiveProtocolInterface;
+    protocol: ProtocolInterface;
     calibration?: any;
     meta: ProtocolMetaInterface;
     notify: boolean;

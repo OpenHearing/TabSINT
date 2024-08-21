@@ -1,5 +1,5 @@
 import { ProtocolServer } from "../../utilities/constants";
-import { ActiveProtocolInterface } from "../protocol/protocol.interface";
+import { ProtocolInterface } from "../protocol/protocol.interface";
 
 export interface ResultsInterface {
     currentPage: CurrentResults;
@@ -23,7 +23,7 @@ export interface CurrentResults {
 export interface ExamResults {
     protocolName: string;
     protocolId: string;
-    protocol: ActiveProtocolInterface;
+    protocol: ProtocolInterface;
     testDateTime?: string;
     elapsedTime?: string;
     exportLocation?: ProtocolServer;

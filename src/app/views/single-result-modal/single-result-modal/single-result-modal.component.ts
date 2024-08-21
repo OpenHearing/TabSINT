@@ -27,7 +27,7 @@ export class SingleResultModalComponent {
   }
 
   async ngOnInit() {    
-    this.singleExamResult = await this.sqLite.getSingleResult(this.index) as unknown as ExamResults;
+    this.singleExamResult = JSON.parse(await this.sqLite.getSingleResult(this.index));
   }
 
   upload() {

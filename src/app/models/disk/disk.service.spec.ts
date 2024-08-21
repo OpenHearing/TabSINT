@@ -58,21 +58,13 @@ describe('DiskModel', () => {
 
     it('updates upload summary', () => {   
         let page: PageDefinition = {
-            type: 'test',
             id: 't',
             title: 'test',
             questionMainText: 'questionMainText',
             questionSubText: 'questionSubText',
             helpText: 'helpText',
             responseArea: {
-                inputList: function (inputList: any, arg1: (input: any) => void): unknown {
-                    throw new Error('Function not implemented.');
-                },
-                html: undefined,
-                image: undefined,
-                enableSkip: false,
-                type: '',
-                responseRequired: false
+                type: 'textboxResponseArea'
             },
             submitText: 'Submit',
             followOns: [],
@@ -88,7 +80,6 @@ describe('DiskModel', () => {
                 group: 'test',
                 name: 'test',
                 path: 'test',
-                id: 't',
                 date: '0:0:0',
                 version: '0',
                 creator: 'test',

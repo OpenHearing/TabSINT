@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { DiskModel } from '../../models/disk/disk.service';
 import { Logger } from '../../utilities/logger.service';
-import { ActiveProtocolInterface, ProtocolMetaInterface } from '../../models/protocol/protocol.interface';
+import { ProtocolInterface, ProtocolMetaInterface } from '../../models/protocol/protocol.interface';
 import { DialogType, ProtocolServer } from '../../utilities/constants';
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { ProtocolModel } from '../../models/protocol/protocol-model.service';
@@ -83,9 +83,18 @@ export class ProtocolsComponent {
       const fileList = resultFromListFiles?.files
         for(const file of fileList!){
           if (file.name=="protocol.json"){
-            const protocolContent:ProtocolSchemaInterface = JSON.parse(file.content)
-            const protocol:ProtocolInterface = this.protocolM.define({...partialMetaDefaults,name:protocolName! ,path: "",creator: "",contentURI:protocolsFolderUri!,server: ProtocolServer.LocalServer,admin: false,...protocolContent})
-            const protocolMetaData:ProtocolMetaInterface = getProtocolMetaData(protocol)
+            const protocolContent: ProtocolSchemaInterface = JSON.parse(file.content)
+            const protocol: ProtocolInterface = {
+              ...partialMetaDefaults, 
+              name:protocolName!, 
+              path: "", 
+              creator: "", 
+              contentURI: protocolsFolderUri!, 
+              server: ProtocolServer.LocalServer,
+              admin: false,
+              ...protocolContent
+            }
+            const protocolMetaData: ProtocolMetaInterface = getProtocolMetaData(protocol)
             let availableMetaProtocols = this.diskModel.disk.availableProtocolsMeta
             availableMetaProtocols.push(protocolMetaData)
             this.diskModel.updateDiskModel('availableProtocolsMeta',availableMetaProtocols)

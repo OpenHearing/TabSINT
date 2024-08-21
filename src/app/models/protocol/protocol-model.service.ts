@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import _ from 'lodash';
 
-import { ActiveProtocolInterface, ProtocolMetaInterface } from './protocol.interface';
+import { ProtocolInterface, ProtocolMetaInterface } from './protocol.interface';
 import { ProtocolServer } from '../../utilities/constants';
 import { ProtocolModelInterface } from './protocol.interface';
 import { PageInterfaceDefaults, partialMetaDefaults } from '../../utilities/defaults';
@@ -73,7 +73,7 @@ export class ProtocolModel {
                 .then(res => {
                     let content = res?.content
                     const parsedResult: ProtocolSchemaInterface = JSON.parse(content!);
-                    const newProtocol: ProtocolInterface = this.define({ ...metaProtocol, ...parsedResult,id:''});
+                    const newProtocol: ProtocolInterface = { ...metaProtocol, ...parsedResult };
                     loadedProtocols[metaProtocol.name] = newProtocol;
                 })
                 .catch(error => {

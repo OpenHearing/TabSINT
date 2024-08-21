@@ -1,7 +1,7 @@
 import { LoadingProtocolInterface } from "../interfaces/loading-protocol-object.interface";
 import { PageInterface } from "../models/page/page.interface";
 import { ProtocolMetaInterface } from "../models/protocol/protocol.interface";
-import { ActiveProtocolInterface } from "../models/protocol/protocol.interface";
+import { ProtocolInterface } from "../models/protocol/protocol.interface";
 import { ProtocolServer } from "./constants";
 import { checkIfCanGoBack } from "./exam-helper-functions";
 
@@ -67,7 +67,7 @@ export const PageInterfaceDefaults: PageInterface = {
     exportToCSV: false
 }
 
-export const protocolDefaults: ActiveProtocolInterface = {
+export const protocolDefaults: ProtocolInterface = {
     ...metaDefaults,
     protocolId: '',
     pages: PageInterfaceDefaults

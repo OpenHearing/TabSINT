@@ -5,7 +5,7 @@ import { loadingProtocolDefaults } from './defaults';
 import { LoadingProtocolInterface } from '../interfaces/loading-protocol-object.interface';
 import { ProtocolServer } from './constants';
 import { checkIfCanGoBack } from './exam-helper-functions';
-import { ActiveProtocolInterface } from '../models/protocol/protocol.interface';
+import { ProtocolInterface } from '../models/protocol/protocol.interface';
 
 const followOn1 = {
     conditional: "result.response=='Text Box'",
@@ -125,7 +125,7 @@ const testProt2 =
       ]
 };
 
-const testProtocol: ActiveProtocolInterface = {
+const testProtocol: ProtocolInterface = {
     title: "Test Protocol",
     subtitle: "Developer testing of open-tabsint responseArea's.",
     instructionText: "instructionText goes here",

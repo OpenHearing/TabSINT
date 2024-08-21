@@ -12,7 +12,7 @@ import { ProtocolErrorInterface } from '../interfaces/protocol-error.interface';
 
 import { DiskModel } from '../models/disk/disk.service';
 import { ProtocolModel } from '../models/protocol/protocol-model.service';
-import { ActiveProtocolInterface } from '../models/protocol/protocol.interface';
+import { ProtocolInterface } from '../models/protocol/protocol.interface';
 import { AppModel } from '../models/app/app.service';
 import { AppInterface } from '../models/app/app.interface';
 import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
@@ -168,9 +168,6 @@ export class ProtocolService {
         try {
             var protocol;
             let finalProtocol:ProtocolSchemaInterface;
-            // (this.loading.meta.server === ProtocolServer.Developer)
-            //     ? protocol = DeveloperProtocols[this.loading.meta.name!]
-            //     : protocol = await this.fileService.readFile(this.loading.meta.contentURI).then(res=>res?.content);
             if (this.loading.meta.server==ProtocolServer.Developer){
                 protocol = DeveloperProtocols[this.loading.meta.name!]
                 finalProtocol = protocol
@@ -181,7 +178,7 @@ export class ProtocolService {
                 finalProtocol = JSON.parse(protocol)
             }
             if (!_.isUndefined(protocol)) {
-                this.loading.protocol = {...this.loading.meta, ...finalProtocol, id:''};
+                this.loading.protocol = {...this.loading.meta, ...finalProtocol };
             } else {
                 this.notifyProtocolDidntLoadProperly();
             }
@@ -310,7 +307,7 @@ export class ProtocolService {
             calibration = await this.fileService.readFile(this.loading.meta.contentURI + "/calibration.json");
         }
         if (calibration) {
-            this.loading.calibration = calibration as unknown as ActiveProtocolInterface;
+            this.loading.calibration = JSON.parse(calibration);
         }
 
     }
