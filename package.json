@@ -7,8 +7,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "run.build": "npm run build && rm -rf android && npx cap add android && npx cap sync android && cd android && ./gradlew assembleDebug && ./gradlew installDebug && cd ..",
-    "run.android": "npm run build && rm -rf android && npx cap add android && npx cap run android",
+    "run.build": "npm run build && npx cap sync android && cd android && ./gradlew assembleDebug && ./gradlew installDebug && cd ..",
+    "run.android": "npm run build && npx cap sync android && npx cap run android",
     "serve:ssr:tabsint": "node dist/tabsint/server/server.mjs"
   },
   "private": true,
@@ -46,6 +46,7 @@
     "lodash": "^4.17.21",
     "ngx-json-viewer": "^3.2.1",
     "rxjs": "~7.8.0",
+    "tabsintfs": "file:tabsintfs",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"
   },

@@ -4,6 +4,7 @@ import { Logger } from '../utilities/logger.service';
 import { DiskInterface } from '../models/disk/disk.interface';
 import { DiskModel } from '../models/disk/disk.service';
 
+
 @Injectable({
     providedIn: 'root',
 })
@@ -19,27 +20,30 @@ export class AdminService {
     }
 
     toggleDebugMode() {
-        console.log("toggleDebugMode");
+        this.diskModel.updateDiskModel('debugMode',!this.diskModel.disk.debugMode)
+        this.disk = this.diskModel.getDisk()
     }
 
     toggleDisableLogs() {
-        console.log("toggleDisableLogs");
+        this.diskModel.updateDiskModel('disableLogs', !this.disk.disableLogs);
+        this.disk = this.diskModel.getDisk()
+        console.log("toggleDisableLogs: ", this.disk.disableLogs);
     }
 
-    toggleDisableVolume() {
-        console.log("toggleDisableVolume");
-    }
+    // toggleDisableVolume() {
+    //     console.log("toggleDisableVolume");
+    // }
 
-    toggleAdminSkipMode() {
-        console.log("toggleAdminSkipMode");
-    }
+    // toggleAdminSkipMode() {
+    //     console.log("toggleAdminSkipMode");
+    // }
 
-    toggleRequireEncryptedResults() {
-        console.log("toggleRequireEncryptedResults");
-    }
+    // toggleRequireEncryptedResults() {
+    //     console.log("toggleRequireEncryptedResults");
+    // }
 
-    toggleRecordTestLocation() {
-        console.log("toggleRecordTestLocation");
-    }
+    // toggleRecordTestLocation() {
+    //     console.log("toggleRecordTestLocation");
+    // }
 
 }

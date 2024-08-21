@@ -1,0 +1,121 @@
+{
+  "api": {
+    "name": "TabsintFsPlugin",
+    "slug": "tabsintfsplugin",
+    "docs": "",
+    "tags": [],
+    "methods": [
+      {
+        "name": "chooseFolder",
+        "signature": "() => Promise<{ uri: string; name: string; }>",
+        "parameters": [],
+        "returns": "Promise<{ uri: string; name: string; }>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "choosefolder"
+      },
+      {
+        "name": "createPath",
+        "signature": "(options: { rootUri: string | undefined; path: string; content?: string; }) => Promise<{ uri: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ rootUri: string | undefined; path: string; content?: string | undefined; }"
+          }
+        ],
+        "returns": "Promise<{ uri: string; }>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "createpath"
+      },
+      {
+        "name": "getDirectoryStructure",
+        "signature": "(options: { rootUri: string | undefined; path?: string; }) => Promise<{ structure: any; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ rootUri: string | undefined; path?: string | undefined; }"
+          }
+        ],
+        "returns": "Promise<{ structure: any; }>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "getdirectorystructure"
+      },
+      {
+        "name": "copyFileOrFolder",
+        "signature": "(options: { rootUri: string | undefined; sourcePath: string; destinationPath: string; }) => Promise<{ success: boolean; message: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ rootUri: string | undefined; sourcePath: string; destinationPath: string; }"
+          }
+        ],
+        "returns": "Promise<{ success: boolean; message: string; }>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "copyfileorfolder"
+      },
+      {
+        "name": "readFile",
+        "signature": "(options: { rootUri?: string | undefined; filePath?: string | undefined; fileUri?: string | undefined; }) => Promise<{ contentUri: string; mimeType: string; name: string; size: number; content: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ rootUri?: string | undefined; filePath?: string | undefined; fileUri?: string | undefined; }"
+          }
+        ],
+        "returns": "Promise<{ contentUri: string; mimeType: string; name: string; size: number; content: string; }>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "readfile"
+      },
+      {
+        "name": "deletePath",
+        "signature": "(options: { rootUri: string | undefined; path: string; }) => Promise<{ success: boolean; message: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ rootUri: string | undefined; path: string; }"
+          }
+        ],
+        "returns": "Promise<{ success: boolean; message: string; }>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "deletepath"
+      },
+      {
+        "name": "listFilesInDirectory",
+        "signature": "(options: { rootUri?: string | undefined; folderPath?: string | undefined; folderUri?: string | undefined; }) => Promise<{ files: { name: string; uri: string; mimeType: string; size: number; content: string; }[]; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ rootUri?: string | undefined; folderPath?: string | undefined; folderUri?: string | undefined; }"
+          }
+        ],
+        "returns": "Promise<{ files: { name: string; uri: string; mimeType: string; size: number; content: string; }[]; }>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "listfilesindirectory"
+      }
+    ],
+    "properties": []
+  },
+  "interfaces": [],
+  "enums": [],
+  "typeAliases": [],
+  "pluginConfigs": []
+}

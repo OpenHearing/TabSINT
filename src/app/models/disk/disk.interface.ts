@@ -8,6 +8,7 @@ export interface DiskInterface {
     debugMode: boolean,
     disableLogs: boolean,
     maxLogRows: number,
+    numLogRows: number,
     pin: string,
     disableVolume?: boolean,
     requireEncryptedResults?: boolean,
@@ -25,6 +26,7 @@ export interface DiskInterface {
       myCha: string,
       bluetoothType: string
     },
+    contentURI: string | undefined,
     externalMode: boolean,
     appDeveloperMode: boolean,
     appDeveloperModeCount: number,
@@ -52,6 +54,7 @@ export interface DiskInterface {
     servers: {
       localServer: {
         resultsDir: string,
+        resultsDirUri: string
         protocolDir: string
       },
       gitlab: {

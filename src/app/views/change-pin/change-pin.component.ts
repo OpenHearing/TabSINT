@@ -26,6 +26,7 @@ export class ChangePinComponent {
     if (pin!=undefined) {
       this.logger.debug("Admin pin changed to: "+pin.toString());
       this.disk.pin = pin.toString();
+      this.diskModel.updateDiskModel('pin', this.disk.pin);
     }
     this.dialog.closeAll();
   }

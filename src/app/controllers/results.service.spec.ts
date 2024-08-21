@@ -31,7 +31,7 @@ describe('ResultsService', () => {
             sqLite,
             devicesModel,
             diskModel,
-            new FileService(appModel, logger),
+            new FileService(appModel, logger,diskModel),
             logger
         );
     })

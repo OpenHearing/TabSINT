@@ -32,6 +32,7 @@ import { checkCalibrationFiles, checkControllers, checkPreProcessFunctions } fro
 import { processProtocol } from '../utilities/process-protocol.function';
 import { initializeLoadingProtocol } from '../utilities/initialize-loading-protocol';
 import { protocolSchema } from '../../schema/protocol.schema';
+import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
 
 @Injectable({
     providedIn: 'root',
@@ -55,11 +56,11 @@ export class ProtocolService {
         public translate: TranslateService,
         public notifications: Notifications,
         public stateModel: StateModel
-    ) { 
+    ) {
         this.app = this.appModel.getApp();
         this.protocolModel = this.protocolM.getProtocolModel();
         this.state = this.stateModel.getState();
-        
+
         this.loading = loadingProtocolDefaults(this.diskModel.disk.validateProtocols);
 
         // For BAyotte development only, auto load protocol when tabsint loads
@@ -67,26 +68,26 @@ export class ProtocolService {
     }
 
     /** Load all protocol files onto the protocolModel.activeProtocol object.
-     * @summary Overwrite local protocol files if they have changed, load files into tabsint 
-     * including custom protocol files, validate the protocol against the schema. 
+     * @summary Overwrite local protocol files if they have changed, load files into tabsint
+     * including custom protocol files, validate the protocol against the schema.
      * Handle load errors.
      * @models protocol, disk
-     * @param meta meta data for the protocol to load, 
+     * @param meta meta data for the protocol to load,
      * @param notify whether to use task banners to notify user about progress. Default: false.
      * @param overwrite whether to overwrite local protocol files if they have changed. Default: false.
     */
     async load(
-        meta: ProtocolMetaInterface, 
-        notify: boolean = false, 
+        meta: ProtocolMetaInterface,
+        notify: boolean = false,
         overwrite: boolean = false
     ) {
         this.loading.meta = meta;
         this.loading.requiresValidation = this.diskModel.disk.validateProtocols;
         this.loading.notify = notify;
         this.loading.overwrite = overwrite;
-        
+
         try {
-            await this.overwriteLocalFilesIfNeeded();
+            // await this.overwriteLocalFilesIfNeeded(); // TODO: should no longer be needed, will remove after more testing
             await this.loadFiles();
             this.setCalibration();
             await this.validateIfCalledFor();
@@ -117,16 +118,29 @@ export class ProtocolService {
             this.logger.error("Trying to delete app or developer protocol " + p.name + ", but this is not allowed");
             return;
         }
-    
+
         try {
             delete this.protocolModel.loadedProtocols[p.name];
-            this.fileService.deleteDirectory(p.path, p.name);
+            let currDisk = this.diskModel.getDisk()
+            let oldMetaArray = currDisk.availableProtocolsMeta
+            let newMetaArray = oldMetaArray.filter((item)=>{return (
+                item.group !== p.group ||
+                item.name !== p.name ||
+                item.path !== p.path ||
+                item.date !== p.date ||
+                item.version !== p.version ||
+                item.creator !== p.creator ||
+                item.server !== p.server ||
+                item.admin !== p.admin ||
+                item.contentURI !== p.contentURI
+              );})
+            this.diskModel.updateDiskModel('availableProtocolsMeta',newMetaArray)
         } catch (error) {
             console.log("Error trying to delete files");
             console.log(error);
         }
     };
-    
+
     private async overwriteLocalFilesIfNeeded() {
         try {
             if (this.loading.notify) {
@@ -135,7 +149,8 @@ export class ProtocolService {
             this.logger.debug("loading.meta" + JSON.stringify(this.loading.meta));
             if (this.loading.meta.contentURI && this.loading.overwrite) {
                 this.logger.debug("re-loading protocol - copying directory");
-                return (this.fileService.copyDirectory(this.loading.meta.contentURI, this.loading.meta.name!, 'Documents', 'Documents'));
+                return
+                // return (this.fileService.copyDirectory(this.loading.meta.contentURI, this.loading.meta.name!, 'Documents', 'Documents'));
             } else {
                 return;
             }
@@ -152,12 +167,21 @@ export class ProtocolService {
 
         try {
             var protocol;
-            (this.loading.meta.server === ProtocolServer.Developer)
-                ? protocol = DeveloperProtocols[this.loading.meta.name!]
-                : protocol = await this.fileService.readFile(this.loading.meta.path + "/protocol.json");
-            
+            let finalProtocol:ProtocolSchemaInterface;
+            // (this.loading.meta.server === ProtocolServer.Developer)
+            //     ? protocol = DeveloperProtocols[this.loading.meta.name!]
+            //     : protocol = await this.fileService.readFile(this.loading.meta.contentURI).then(res=>res?.content);
+            if (this.loading.meta.server==ProtocolServer.Developer){
+                protocol = DeveloperProtocols[this.loading.meta.name!]
+                finalProtocol = protocol
+            } else {
+                const response = await this.fileService.readFile("protocol.json",this.loading.meta.contentURI)
+                protocol = response?.content!
+                console.log("Inside else statement--"+protocol)
+                finalProtocol = JSON.parse(protocol)
+            }
             if (!_.isUndefined(protocol)) {
-                this.loading.protocol = {...this.loading.meta, ...protocol as unknown as ActiveProtocolInterface};
+                this.loading.protocol = {...this.loading.meta, ...finalProtocol, id:''};
             } else {
                 this.notifyProtocolDidntLoadProperly();
             }
@@ -179,13 +203,13 @@ export class ProtocolService {
         return ret;
     }
 
-    private async validateIfCalledFor() {            
+    private async validateIfCalledFor() {
         if (this.loading.notify) {
             this.tasks.register("updating protocol", "Validating Protocol... This process could take several minutes");
         }
 
         if (this.loading.requiresValidation) {
-            let validationResult = await this.validate();                
+            let validationResult = await this.validate();
             if (validationResult.valid) {
                 return;
             } else {
@@ -196,8 +220,8 @@ export class ProtocolService {
         } else {
             return;
         }
-    } 
-  
+    }
+
     private handleLoadErrors() {
         this.tasks.register("updating protocol", "Checking Protocol Files...");
         let msg = checkCalibrationFiles(this.protocolModel.activeProtocol!);
@@ -210,15 +234,15 @@ export class ProtocolService {
         } else {
             this.logger.debug("All calibration files found.");
         }
-    
+
         checkPreProcessFunctions(this.protocolModel.activeProtocol!).forEach((e: ProtocolErrorInterface) => {
             this.protocolModel.activeProtocol!.errors!.push(e);
         })
-        
+
         checkControllers(this.protocolModel.activeProtocol!).forEach((e: ProtocolErrorInterface) => {
             this.protocolModel.activeProtocol!.errors!.push(e);
         })
-      
+
         if (this.protocolModel.activeProtocol!.errors!.length > 0) {
             msg ="The protocol contains the following errors and may not function properly." + " \n\n";
             for (var i = 0; i < this.protocolModel.activeProtocol!.errors!.length; i++) {
@@ -244,7 +268,7 @@ export class ProtocolService {
         }
         this.tasks.deregister("updating protocol");
     }
-    
+
     private initializeProtocol() {
         this.tasks.register("updating protocol", "Initializing Protocol...");
         this.loading = initializeLoadingProtocol(
@@ -254,24 +278,24 @@ export class ProtocolService {
             this.diskModel,
             this.fileService);
         this.tasks.register("updating protocol", "Processing Protocol...");
-        
-        [this.protocolModel.activeProtocol, 
+
+        [this.protocolModel.activeProtocol,
             this.protocolModel.activeProtocolDictionary,
             this.protocolModel.activeProtocolFollowOnsDictionary
         ] = processProtocol(this.loading);
-            
+
         if (this.protocolModel.activeProtocol && "key" in this.protocolModel.activeProtocol) {
             if (this.protocolModel.activeProtocol.key !== undefined) {
                 this.protocolModel.activeProtocol.publicKey = decodeURI(this.protocolModel.activeProtocol.key);
             }
         }
-        
+
         this.diskModel.disk.headset = this.protocolModel.activeProtocol.headset || "None";
-    
+
         if (this.loading.protocol._requiresCha) {
             this.logger.debug("This exam requires the CHA, attempting to connect...");
         // setTimeout(cha.connect, 1000);
-        }    
+        }
 
         this.state.examIndex = 0;
         this.state.examState = ExamState.Ready;
@@ -283,12 +307,12 @@ export class ProtocolService {
         if (this.loading.meta.server === ProtocolServer.Developer) {
             calibration = DeveloperProtocolsCalibration[this.loading.meta.name!];
         } else {
-            calibration = await this.fileService.readFile(this.loading.meta.path + "/calibration.json");
+            calibration = await this.fileService.readFile(this.loading.meta.contentURI + "/calibration.json");
         }
         if (calibration) {
             this.loading.calibration = calibration as unknown as ActiveProtocolInterface;
-        }    
-        
+        }
+
     }
 
     private notifyProtocolDidntLoadProperly() {
