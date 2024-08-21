@@ -165,17 +165,34 @@ export class ProtocolService {
 
     private async loadFiles() {
 
+        // let availableMetaProtocols = this.diskModel.disk.availableProtocolsMeta
+        // let loadedProtocols = this.protocolModel.loadedProtocols
+        // availableMetaProtocols.forEach((metaProtocol:ProtocolMetaInterface) => {
+        //     this.fileService.readFile("protocol.json",metaProtocol.contentURI)
+        //         .then(res => {
+        //             let content = res?.content
+        //             const parsedResult: ProtocolSchemaInterface = JSON.parse(content!);
+        //             const newProtocol: ProtocolInterface = { ...metaProtocol, ...parsedResult };
+        //             loadedProtocols[metaProtocol.name] = newProtocol;
+        //         })
+        //         .catch(error => {
+        //             console.error("Failed with:", error);
+        //         });
+        // });
+        // this.protocolModel.loadedProtocols = loadedProtocols
+        // this.disk = this.diskModel.getDisk()
+
         try {
             var protocol;
-            let finalProtocol:ProtocolSchemaInterface;
-            if (this.loading.meta.server==ProtocolServer.Developer){
-                protocol = DeveloperProtocols[this.loading.meta.name!]
-                finalProtocol = protocol
+            let finalProtocol: ProtocolSchemaInterface;
+            if (this.loading.meta.server == ProtocolServer.Developer) {
+                protocol = DeveloperProtocols[this.loading.meta.name!];
+                finalProtocol = protocol;
             } else {
-                const response = await this.fileService.readFile("protocol.json",this.loading.meta.contentURI)
-                protocol = response?.content!
-                console.log("Inside else statement--"+protocol)
-                finalProtocol = JSON.parse(protocol)
+                const response = await this.fileService.readFile("protocol.json", this.loading.meta.contentURI);
+                protocol = response?.content!;
+                console.log("Inside else statement--" + protocol);
+                finalProtocol = JSON.parse(protocol);
             }
             if (!_.isUndefined(protocol)) {
                 this.loading.protocol = {...this.loading.meta, ...finalProtocol };

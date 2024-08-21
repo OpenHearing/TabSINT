@@ -21,7 +21,7 @@ export interface ProtocolSchemaInterface {
     enableBackButton?: boolean;
     navMenu?: NavMenuInterface[];
     js?: string | string[];
-    pages: PageDefinition | ProtocolReferenceInterface | ProtocolSchemaInterface | (PageDefinition | ProtocolReferenceInterface | ProtocolSchemaInterface)[];
+    pages: (PageDefinition | ProtocolReferenceInterface | ProtocolSchemaInterface)[];
     subProtocols?: ProtocolSchemaInterface[];
 }
 

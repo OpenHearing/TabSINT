@@ -70,5 +70,5 @@ export const PageInterfaceDefaults: PageInterface = {
 export const protocolDefaults: ProtocolInterface = {
     ...metaDefaults,
     protocolId: '',
-    pages: PageInterfaceDefaults
+    pages: [PageInterfaceDefaults]
 };

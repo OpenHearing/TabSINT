@@ -75,7 +75,7 @@ describe('DiskModel', () => {
             protocolName: 'test',
             protocolId: 't',
             protocol: {
-                pages: page,
+                pages: [page],
                 protocolId: '',
                 group: 'test',
                 name: 'test',
