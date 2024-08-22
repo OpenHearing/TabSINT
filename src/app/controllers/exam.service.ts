@@ -143,20 +143,20 @@ export class ExamService {
         } if (this.currentPage.repeatPage) {
             this.logger.debug("repeatPage is not yet supported");
             // push pages to list if needed
-        // } if (this.currentPage.followOns) { 
-        //     let nextID = this.findFollowOn();
-        //     if (nextID != undefined) {
-        //         // TODO: Make it clear that this will break out of the function chain
-        //         // will end the exam if its called
-        //         if (this.checkForSpecialReference(nextID)) {
-        //             this.handleSpecialReferences(nextID);
-        //             return undefined
-        //         } else {
-        //             (this.protocolM.protocolModel.activeProtocolDictionary![nextID].pages as any).forEach( (page:any)=> { 
-        //                 pageList.push(page);
-        //             });
-        //         }
-        //     }
+        } if (this.currentPage.followOns) { 
+            let nextID = this.findFollowOn();
+            if (nextID != undefined) {
+                // TODO: Make it clear that this will break out of the function chain
+                // will end the exam if its called
+                if (this.checkForSpecialReference(nextID)) {
+                    this.handleSpecialReferences(nextID);
+                    return undefined
+                } else {
+                    (this.protocolM.protocolModel.activeProtocolDictionary![nextID].pages as any).forEach( (page:any)=> { 
+                        pageList.push(page);
+                    });
+                }
+            }
         } if (this.currentPage.preProcessFunction) { 
             this.logger.debug("preProcessFunction is not yet supported");
             // push pages to list if needed and/or run preprocess function
@@ -238,12 +238,12 @@ export class ExamService {
     */
     private findFollowOn() {
         let id: string | undefined = undefined;
-        // this.currentPage.followOns?.forEach((followOn:any) => {
-        //     // TODO: This should be updated to use eval
-        //     if (this.results.currentPage.response == followOn.conditional.split("==")[1].replaceAll("'","")) {
-        //         id = followOn.target.reference;
-        //     }
-        // });
+        this.currentPage.followOns?.forEach((followOn:any) => {
+            // TODO: This should be updated to use eval
+            if (this.results.currentPage.response == followOn.conditional.split("==")[1].replaceAll("'","")) {
+                id = followOn.target.reference;
+            }
+        });
         return id;
     }
 

@@ -35,9 +35,9 @@
 
             <tr *ngIf="p !== undefined" [ngClass]="pclass(p.value)" (click)="select(p.value)" class="no-border">
               <!-- *ngIf="p.value.admin && disk.debugMode"  -->
-              <td [ngClass]="pclass(p.value)" scope="row">{{p.value.name}}</td> 
-              <td >{{p.value.version}}</td>
-              <td >{{p.value.date}}</td>
+              <td [ngClass]="pclass(p.value)" scope="col" class="row-Name" >{{p.value.name}}</td> 
+              <td  scope="col" class="row-Version" >{{p.value.version}}</td>
+              <td  scope="col" class="row-Date" >{{p.value.date}}</td>
             </tr>
           </div>
         </tbody>
