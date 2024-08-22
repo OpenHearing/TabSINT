@@ -34,7 +34,6 @@ export class ProtocolsComponent {
   state: StateInterface;
 
   constructor (
-    public adminService: AdminService,
     public diskModel: DiskModel,
     public protocolService: ProtocolService,
     public protocolM: ProtocolModel,
@@ -305,6 +304,11 @@ export class ProtocolsComponent {
             && this.protocolModel.activeProtocol.path == p.path)
         || false;
   };
+
+  toggleValidateProtocols() {
+    this.diskModel.updateDiskModel('validateProtocols', !this.diskModel.disk.validateProtocols);
+    this.disk = this.diskModel.getDisk();
+  }
 
   validateProtocolPopover = this.translate.instant(
     "Validate protocols against the <b>Protocol Schema</b> before loading into the application. <br /><br /> The protocol schema defines the allowable inputs for use in protocols."

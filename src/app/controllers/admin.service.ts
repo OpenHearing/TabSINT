@@ -19,23 +19,6 @@ export class AdminService {
         this.disk = this.diskModel.getDisk();
     }
 
-    // TODO: these should go in tabsint-config component
-    toggleDebugMode() {
-        this.diskModel.updateDiskModel('debugMode',!this.diskModel.disk.debugMode);
-        this.disk = this.diskModel.getDisk();
-    }
-
-    toggleDisableLogs() {
-        this.diskModel.updateDiskModel('disableLogs', !this.disk.disableLogs);
-        this.disk = this.diskModel.getDisk();
-        console.log("toggleDisableLogs: ", this.disk.disableLogs);
-    }
-    
-    toggleValidateProtocols() {
-        this.diskModel.updateDiskModel('validateProtocols', !this.diskModel.disk.validateProtocols);
-        this.disk = this.diskModel.getDisk();
-    }
-
     // toggleDisableVolume() {
     //     console.log("toggleDisableVolume");
     // }
