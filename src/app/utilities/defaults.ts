@@ -20,7 +20,7 @@ export const metaDefaults: ProtocolMetaInterface = {
 export const partialMetaDefaults = {
     group: '',
     date: new Date().toJSON(),
-    version: 'not implemented',
+    version: '0.0',
     contentURI: '',
     server: ProtocolServer.Developer,
     admin: true
