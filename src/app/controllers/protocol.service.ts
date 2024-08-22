@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import Ajv from 'ajv';
+import Ajv, { ValidationError } from 'ajv';
 const ajv = new Ajv()
 
 import { FileService } from '../utilities/file.service';
@@ -89,11 +89,11 @@ export class ProtocolService {
             // await this.overwriteLocalFilesIfNeeded(); // TODO: should no longer be needed, will remove after more testing
             await this.loadFiles();
             this.setCalibration();
-            await this.validateIfCalledFor();
+            let validationError = await this.validateIfCalledFor();
             this.initializeProtocol();
                 // .then(loadCustomJs)
                 // .then(validateCustomJsIfCalledFor)
-            this.handleLoadErrors();
+            this.handleLoadErrors(validationError);
         } catch(e) {
             this.tasks.deregister("updating protocol");
             this.logger.error("Could not load protocol.  " + JSON.stringify(e));
@@ -226,8 +226,11 @@ export class ProtocolService {
             if (validationResult.valid) {
                 return;
             } else {
-                let error = ("Validation Errors: " + JSON.stringify(validationResult.error));
-                this.logger.error("validateIfCalledFor failed with error: " + error);
+                let error: ProtocolErrorInterface = {
+                    type: "Protocol Schema",
+                    error: JSON.stringify(validationResult.error)
+                };
+                this.logger.error("validateIfCalledFor failed with error: " + error.error);
                 return error;
             }
         } else {
@@ -235,7 +238,10 @@ export class ProtocolService {
         }
     }
 
-    private handleLoadErrors() {
+    private handleLoadErrors(validationError?: ProtocolErrorInterface) {
+
+        if (!_.isUndefined(validationError)) this.protocolModel.activeProtocol!.errors!.push(validationError!);
+
         this.tasks.register("updating protocol", "Checking Protocol Files...");
         let msg = checkCalibrationFiles(this.protocolModel.activeProtocol!);
         if (typeof msg === "string") {
