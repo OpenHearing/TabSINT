@@ -3,9 +3,9 @@
 </div>
 <div class="row pad-top">
     <div class="col-4">
-        <button class="btn btn-block btn-success"
+        <!-- <button class="btn btn-block btn-success"
             (click)="logExportUpload()"><i class="ion-upload"></i> 
-            {{'Upload' | translate}}</button>
+            {{'Upload' | translate}}</button> -->
     </div>
     <div class="col-4">
         <button class="btn btn-block btn-primary"
@@ -14,7 +14,7 @@
     </div>
     <div class="col-4">
         <button class="btn btn-block btn-default" (click)="displayLogs()"><i
-                class="ion-document-text"></i> {{'Display' | translate}}</button>
+                class="ion-document-text"></i> {{ showLogs ? 'Hide' : 'Display' | translate }}</button>
     </div>
 </div>
 
@@ -34,4 +34,13 @@
             </div> -->
         </div>
     </div>
+    <div class="row mt-4" *ngIf="showLogs">
+        <div class="col-12 log-textarea">
+          <div *ngFor="let log of logs; let i = index">
+            <div class="log-entry">
+              <pre>{{ log }}</pre>
+            </div>
+            <hr *ngIf="i < logs!.length - 1" /> <!-- Horizontal line to separate log entries -->
+          </div>
+        </div>
 </div>

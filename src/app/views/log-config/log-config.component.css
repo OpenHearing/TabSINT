@@ -1,0 +1,17 @@
+.log-textarea {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 15px;
+  padding: 10px;
+  margin-bottom: 20px;
+  line-height: 1.5;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  border: 1px solid #ced4da;
+  height: 50vh;  /* Set height to 70% of the viewport height */
+  max-height: 50vh;  /* Limit the height to 70% of the viewport height */
+  overflow-y: auto;  /* Enable scrolling if there are too many logs */
+}
+
+.log-entry {
+  margin-bottom: 10px; /* Add space between log messages */
+}
