@@ -51,7 +51,6 @@ export class LogConfigComponent {
   async logExportSave() {
       this.logs = await this.sqLite.getAllLogs();
       if (!this.logs || this.logs.length==0){
-        console.log("Nothing to Export");
         return;
       }
       let msg: DialogDataInterface = {
@@ -61,23 +60,27 @@ export class LogConfigComponent {
       };
       this.notifications.confirm(msg).subscribe(async (result: string) => {
         if (result === "OK") {
-          try {
-            const currentTimeStamp = new Date().toISOString();
-            const formattedLogs = this.logs!.map((log, index) => ({
-              msgID: index + 1,
-              date: currentTimeStamp,
-              data: log,
-            }));
-            const logData = JSON.stringify({ logs: formattedLogs }, null, 2);
-            const filename = `.tabsintlogs/${currentTimeStamp}.json`;
-            await this.fileService.writeFile(filename,logData)
-        } catch (error){
-          console.error('Error exporting logs:', error);
-        }
+          this.exportLogs();
         } else {
           console.log('Export canceled.');
         }
       });
+  }
+
+  private async exportLogs(){
+    try {
+      const currentTimeStamp = new Date().toISOString();
+      const formattedLogs = this.logs!.map((log, index) => ({
+        msgID: index + 1,
+        date: currentTimeStamp,
+        data: log,
+      }));
+      const logData = JSON.stringify({ logs: formattedLogs }, null, 2);
+      const filename = `.tabsintlogs/${currentTimeStamp}.json`;
+      await this.fileService.writeFile(filename,logData);
+  } catch (error){
+    console.error('Error exporting logs:', error);
+  }
   }
 
 }
