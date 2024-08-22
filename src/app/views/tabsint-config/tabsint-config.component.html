@@ -74,7 +74,7 @@
     <!-- Admin Mode -->
     <div class="row pad-top">
         <div class="col-6"><label translate for="adminMode">Admin Mode:</label></div>
-        <div class="col-2"><input id="adminMode" type="checkbox" [(ngModel)]="disk.debugMode" (change)="adminService.toggleDebugMode()"/></div>
+        <div class="col-2"><input id="adminMode" type="checkbox" [ngModel]="disk.debugMode" (change)="toggleDebugMode()"/></div>
         <div class="col-2"></div>
         <div class="col-1" title="{{'Admin Mode help' | translate}}">
             <i [matMenuTriggerFor]= "adminHelpMenu" class="ion-help-circled"></i>
@@ -108,7 +108,7 @@
     <!-- Disable Logs -->
     <div class="row pad-top">
         <div class="col-6"><label translate for="disableLogs">Disable Logs:</label></div>
-        <div class="col-2"><input id="disableLogsID" type="checkbox" [(ngModel)]="disk.disableLogs" (change)="adminService.toggleDisableLogs()"/></div>
+        <div class="col-2"><input id="disableLogsID" type="checkbox" [ngModel]="disk.disableLogs" (change)="toggleDisableLogs()"/></div>
         <div class="col-2"></div>
         <div class="col-1" title="{{'Disable Logs help' | translate}}">
             <i [matMenuTriggerFor]= "disableLogsMenu" class="ion-help-circled"></i>
@@ -260,7 +260,7 @@
     <!-- Automatically Output Test Results -->
     <div class="row pad-top">
         <div class="col-6"><label for="outputResults">{{'Automatically output test results' | translate}}:</label></div>
-        <div class="col-2"><input id="outputResults" type="checkbox" [(ngModel)]="disk.autoUpload" (change)="toggleAutoUpload()"/></div>
+        <div class="col-2"><input id="outputResults" type="checkbox" [ngModel]="disk.autoUpload" (change)="toggleAutoUpload()"/></div>
         <div class="col-2"> </div>
         <div class="col-1" href="javascript:" title="{{'Automatically output test results help' | translate}}">
             <i [matMenuTriggerFor]= "automaticallyOutputResultsPopoverMenu" class="ion-help-circled"></i>

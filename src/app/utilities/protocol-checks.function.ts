@@ -41,7 +41,7 @@ export function checkPreProcessFunctions(activeProtocol: ProtocolInterface): Arr
     var msg;
     if (
         (activeProtocol!._missingPreProcessFunctionList!.length > 0 || activeProtocol!._missingControllerList!.length > 0) &&
-        !activeProtocol!.js
+        true // !activeProtocol!.js
       ) {
         msg =
           'The protocol uses custom functions that should be found in a customJs.js file, but the protocol does not have a "js" field pointing to this file.  Please make sure the file exists and is referenced properly.';

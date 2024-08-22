@@ -11,6 +11,7 @@ import { AppModel } from '../models/app/app.service';
 import { protocolDefaults } from '../utilities/defaults';
 import { ResultsInterface } from '../models/results/results.interface';
 import { DiskInterface } from '../models/disk/disk.interface';
+import { DeveloperProtocols } from '../utilities/constants';
 
 describe('ResultsService', () => {
     let resultsService: ResultsService;
@@ -18,7 +19,7 @@ describe('ResultsService', () => {
     let diskModel = new DiskModel(new Document);
     let sqLite = new SqLite(appModel, diskModel);
     let logger = new Logger(diskModel, sqLite);
-    let devicesModel = new DevicesModel(logger, {'test':"test"});
+    let devicesModel = new DevicesModel(logger);
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -40,7 +41,10 @@ describe('ResultsService', () => {
         let returnedResults: ResultsInterface = resultsService.results;
         expect(returnedResults.currentExam.testDateTime).toBeUndefined();
         expect(returnedResults.currentExam.protocolName).toBe('');
-        resultsService.protocol.activeProtocol = resultsService.protocol.loadedProtocols['tabsint-test'];
+        resultsService.protocol.activeProtocol = {
+            ...resultsService.protocol.loadedProtocols['tabsint-test'],
+            ...DeveloperProtocols['tabsint-test']
+        };
         resultsService.initializeExamResults();
         expect(returnedResults.currentExam.testDateTime).toBeDefined();
         expect(returnedResults.currentExam.protocolName).toBe('tabsint-test');

@@ -136,7 +136,7 @@ export class ExamService {
      * @models page
     */
     private getPagesFromAdvancedLogic() {
-        var pageList:any = [];
+        var pageList: any = [];
         if (this.currentPage.skipIf) { 
             this.logger.debug("skipIf is not yet supported");
             // push pages to list if needed
@@ -238,7 +238,7 @@ export class ExamService {
     */
     private findFollowOn() {
         let id: string | undefined = undefined;
-        this.currentPage.followOns.forEach((followOn:any) => {
+        this.currentPage.followOns?.forEach((followOn:any) => {
             // TODO: This should be updated to use eval
             if (this.results.currentPage.response == followOn.conditional.split("==")[1].replaceAll("'","")) {
                 id = followOn.target.reference;
@@ -252,16 +252,14 @@ export class ExamService {
      * @returns boolean if page is submittable
     */
     private checkIfPageIsSubmittable() {
-        // TODO: These defaults should come from responseArea schema
-        if (this.currentPage.responseArea.responseRequired != undefined) {
-            return !this.currentPage.responseArea.responseRequired
-        } else {
-            if (this.currentPage.responseArea.type == "multipleChoiceResponseArea") {
-                return false
-            } else {
-                return true
-            }
-        }
+            return !this.currentPage.responseArea!.responseRequired;
+
+            //TODO: set response requited to false if response area is multipleChoiceResponseArea
+            // if (this.currentPage.responseArea.type == "multipleChoiceResponseArea") {
+            //     return false
+            // } else {
+            //     return true
+            // }
     }
     /**
      * End Exam

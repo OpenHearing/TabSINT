@@ -11,7 +11,7 @@ export function findDuplicateProtocols(p: ProtocolInterface, loadedP: ProtocolIn
     });
 }
 
-export function getProtocolMetaData(protocol: ProtocolInterface): ProtocolMetaInterface {
+export function getProtocolMetaData(protocol: ProtocolMetaInterface): ProtocolMetaInterface {
     return {
         group: protocol.group,
         name: protocol.name,

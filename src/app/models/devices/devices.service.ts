@@ -23,7 +23,7 @@ export class DevicesModel {
         diskspace: "Unknown"
     }
 
-    constructor(private logger: Logger, private diskModel:DiskModel) {
+    constructor(private logger: Logger) {
         this.load();
     }
 

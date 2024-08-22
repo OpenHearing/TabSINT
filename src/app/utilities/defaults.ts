@@ -18,12 +18,12 @@ export const metaDefaults: ProtocolMetaInterface = {
 };
 
 export const partialMetaDefaults = {
-    id: '',
     group: '',
-    name: '',
-    date: '',
-    version: '',
-    contentURI: ''
+    date: new Date().toJSON(),
+    version: '0.0',
+    contentURI: '',
+    server: ProtocolServer.Developer,
+    admin: true
 };
 
 export function loadingProtocolDefaults(_requiresValidation: boolean = true): LoadingProtocolInterface {
@@ -40,7 +40,6 @@ export function loadingProtocolDefaults(_requiresValidation: boolean = true): Lo
 };
 
 export const PageInterfaceDefaults: PageInterface = {
-    type: '',
     id: '',
     enableBackButton: false,
     title: '',
@@ -49,17 +48,10 @@ export const PageInterfaceDefaults: PageInterface = {
     instructionText: '',
     helpText: '',
     responseArea: {
-        enableSkip: false,
-        type: '',
-        responseRequired: false,
-        inputList: function (inputList: any, arg1: (input: any) => void): unknown {
-            throw new Error("Function not implemented.");
-        },
-        html: undefined,
-        image: undefined
+        type: ''
     },
     submitText: 'Begin',
-    followOns: [],
+    // followOns: [],
     name: '',
     filename: '',
     units: '',
@@ -77,7 +69,6 @@ export const PageInterfaceDefaults: PageInterface = {
 
 export const protocolDefaults: ProtocolInterface = {
     ...metaDefaults,
-    id: '',
     protocolId: '',
-    pages: PageInterfaceDefaults
+    pages: [PageInterfaceDefaults]
 };

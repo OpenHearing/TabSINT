@@ -28,9 +28,6 @@
                 "id":"Text Box"
               },
               {
-                "id":"External"
-              },
-              {
                 "id":"End All"
               }
             ]
@@ -40,12 +37,6 @@
               "conditional":"result.response=='Text Box'",
               "target":{
                 "reference":"TextBox"
-              } 
-            },
-            {
-              "conditional":"result.response=='External'",
-              "target":{
-                "reference":"External"
               } 
             },
             {
@@ -90,26 +81,6 @@
           "responseArea": {
             "type": "textboxResponseArea",
             "exportToCSV": true
-          }
-        },
-        {
-          "id": "backtomain",
-          "reference":"MainMenu"
-        }
-      ]
-    },
-    {
-      "protocolId": "External",
-      "pages":[
-        {
-          "id": "external_001",
-          "title": "External Test",
-          "instructionText": "Test Case 001",
-          "responseArea": {
-            "type": "externalResponseArea",
-            "subtype": "customTextboxResponseArea",
-            "externalHTML": "<div><textarea id='testID' autofocus='true' maxlength='5000'></textarea></div>",
-            "externalJS": "window.numRows=4;console.log('numRows:',window.numRows);let textarea=document.getElementById('testID');textarea.rows=window.numRows;htmlEle.addEventListener('input',event=>{console.log('event.target.value',event.target.value);});"
           }
         },
         {

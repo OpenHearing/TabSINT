@@ -24,28 +24,17 @@
           </tr>
         </thead>
         <tbody>
-          <div *ngFor="let p of protocolModel.loadedProtocols | keyvalue" class="no-border">
-          <!-- <tr *ngFor="let p of disk.loadedProtocols; index as i" *ngIf="!p.value.admin" [ngClass]="pclass(p)" (click)="select(p)">
-            <td class="row-Name" scope="row">{{p.value.name}}</td>
-            <td class="row-Version">{{p.value.version}}</td>
-            <td class="row-Date">{{p.value.server === 'gitlab' ? p.value.date?.replace('T', ' ')?.split('.')![0] : p.value.date}} </td>
-          </tr> -->
-
-          <tr></tr>
-
-            <tr *ngIf="p !== undefined" [ngClass]="pclass(p.value)" (click)="select(p.value)" class="no-border">
-              <!-- *ngIf="p.value.admin && disk.debugMode"  -->
-              <td [ngClass]="pclass(p.value)" scope="row">{{p.value.name}}</td> 
-              <td >{{p.value.version}}</td>
-              <td >{{p.value.date}}</td>
-            </tr>
-          </div>
+          <tr *ngFor="let p of protocolModel.loadedProtocols | keyvalue" class="no-border" [ngClass]="pclass(p.value)" (click)="select(p.value)" >
+              <td [ngClass]="pclass(p.value)" class="row-Name" >{{p.value.name}}</td> 
+              <td  class="row-Version" >{{p.value.version}}</td>
+              <td  class="row-Date" >{{p.value.date}}</td>
+          </tr>
         </tbody>
       </table>
 
       <div class="row pad-top">
         <div class="col-6"><label for="validateProtocols" i18n>Validate protocols:</label></div>
-        <div class="col-2"><input id="validateProtocols" type="checkbox" ngModel="diskService.validateProtocols" /></div>
+        <div class="col-2"><input id="validateProtocols" type="checkbox" [ngModel]="disk.validateProtocols" (change)="toggleValidateProtocols()" /></div>
         <div class="col-2"></div>
         <div class="col-1">
           <i [matMenuTriggerFor]= "validatProtocolMenu" class="ion-help-circled"></i>

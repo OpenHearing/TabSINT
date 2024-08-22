@@ -144,7 +144,6 @@ const testProtocol: ProtocolInterface = {
     group: "",
     name: "",
     path: "",
-    id: "",
     date: "",
     version: "",
     creator: "",

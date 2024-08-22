@@ -10,6 +10,7 @@ import { ProtocolModelInterface } from '../../models/protocol/protocol.interface
 import { ProtocolModel } from '../../models/protocol/protocol-model.service';
 import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
+import _ from 'lodash';
 
 @Component({
   selector: 'exam-testing-view',
@@ -46,9 +47,10 @@ export class ExamTestingComponent {
   isLoadingComplete = this.examService?.currentPage?.loadingRequired && !this.examService?.currentPage?.loadingActive;
   
   examTestingTitleClass = {
-    medium: ((this.examService?.currentPage?.questionMainText?.length >= 38) 
-      && (this.examService?.currentPage?.questionMainText?.length < 48)), 
-    long: (this.examService?.currentPage?.questionMainText?.length > 42)
+    undefined: _.isUndefined(this.examService?.currentPage?.questionMainText),
+    medium: ((this.examService?.currentPage?.questionMainText!.length >= 38) 
+      && (this.examService?.currentPage?.questionMainText!.length < 48)), 
+    long: (this.examService?.currentPage?.questionMainText!.length > 42)
   };
 
   testHTML = this.sanitizer.bypassSecurityTrustHtml(`

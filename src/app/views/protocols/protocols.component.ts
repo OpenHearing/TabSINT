@@ -20,6 +20,7 @@ import { getProtocolMetaData } from '../../utilities/protocol-helper-functions';
 import { FileService } from '../../utilities/file.service';
 import { ProtocolSchemaInterface } from '../../interfaces/protocol-schema.interface';
 import { metaDefaults, partialMetaDefaults } from '../../utilities/defaults';
+import { AdminService } from '../../controllers/admin.service';
 
 @Component({
   selector: 'protocols-view',
@@ -27,7 +28,7 @@ import { metaDefaults, partialMetaDefaults } from '../../utilities/defaults';
   styleUrl: './protocols.component.css'
 })
 export class ProtocolsComponent {
-  selected?: ProtocolInterface;
+  selected?: ProtocolMetaInterface;
   disk: DiskInterface;
   protocolModel: ProtocolModelInterface;
   state: StateInterface;
@@ -54,11 +55,11 @@ export class ProtocolsComponent {
     // sort protocols by name here
   }
 
-  select(p: ProtocolInterface): void {
+  select(p: ProtocolMetaInterface): void {
     this.selected = p;
   }
 
-  pclass(p: ProtocolInterface): string {
+  pclass(p: ProtocolMetaInterface): string {
     if (this.isActive(p)) {
       return "active-row";
     } else if (this.selected === null || this.selected === undefined) {
@@ -83,9 +84,18 @@ export class ProtocolsComponent {
       const fileList = resultFromListFiles?.files
         for(const file of fileList!){
           if (file.name=="protocol.json"){
-            const protocolContent:ProtocolSchemaInterface = JSON.parse(file.content)
-            const protocol:ProtocolInterface = this.protocolM.define({...partialMetaDefaults,name:protocolName! ,path: "",creator: "",contentURI:protocolsFolderUri!,server: ProtocolServer.LocalServer,admin: false,...protocolContent})
-            const protocolMetaData:ProtocolMetaInterface = getProtocolMetaData(protocol)
+            const protocolContent: ProtocolSchemaInterface = JSON.parse(file.content)
+            const protocol: ProtocolInterface = {
+              ...partialMetaDefaults, 
+              name:protocolName!, 
+              path: "", 
+              creator: "", 
+              contentURI: protocolsFolderUri!, 
+              server: ProtocolServer.LocalServer,
+              admin: false,
+              ...protocolContent
+            }
+            const protocolMetaData: ProtocolMetaInterface = getProtocolMetaData(protocol)
             let availableMetaProtocols = this.diskModel.disk.availableProtocolsMeta
             availableMetaProtocols.push(protocolMetaData)
             this.diskModel.updateDiskModel('availableProtocolsMeta',availableMetaProtocols)
@@ -93,7 +103,7 @@ export class ProtocolsComponent {
             this.protocolModel = this.protocolM.getProtocolModel()
           }
       }
-  } 
+  }
   catch(error){
     this.logger.error(""+ error)
   }
@@ -110,7 +120,7 @@ export class ProtocolsComponent {
   showUpdateButton(): boolean {
     if (!this.selected) {
       return false;
-    } 
+    }
     return this.selected.server === ProtocolServer.Gitlab;
   };
 
@@ -254,7 +264,7 @@ export class ProtocolsComponent {
       //                         } with error: ${angular.toJson(e)}`
       //                     );
       //                     notifications.alert(
-      //                         
+      //
       //                             "TabSINT encountered an issue while updating the repository. Please verify the repository location and version and upload the application logs if the issue persists."
       //                         )
       //                     );
@@ -269,32 +279,37 @@ export class ProtocolsComponent {
 
   gitlabButtonClass(): string {
     return this.disk.server === ProtocolServer.Gitlab
-    ? 'active' 
+    ? 'active'
     : 'disabled';
   };
 
   localServerButtonClass(): string {
     return this.disk.server === ProtocolServer.LocalServer
-    ? 'active' 
+    ? 'active'
     : '';
   };
 
   /**
    * Checks whether a protocol is active.
-   * @summary Checks if the input protocol is the same 
+   * @summary Checks if the input protocol is the same
    * as the one on the protocolModel.activeProtocol object.
    * @models protocol
    * @param p protocol to check whether it is active or not
    * @returns whether protocol is active: boolean
    */
-  private isActive(p: ProtocolInterface | undefined): boolean {
-    return (this.protocolModel.activeProtocol 
-            && p 
-            && this.protocolModel.activeProtocol.name == p.name 
-            && this.protocolModel.activeProtocol.path == p.path) 
+  private isActive(p: ProtocolMetaInterface | undefined): boolean {
+    return (this.protocolModel.activeProtocol
+            && p
+            && this.protocolModel.activeProtocol.name == p.name
+            && this.protocolModel.activeProtocol.path == p.path)
         || false;
   };
-  
+
+  toggleValidateProtocols() {
+    this.diskModel.updateDiskModel('validateProtocols', !this.diskModel.disk.validateProtocols);
+    this.disk = this.diskModel.getDisk();
+  }
+
   validateProtocolPopover = this.translate.instant(
     "Validate protocols against the <b>Protocol Schema</b> before loading into the application. <br /><br /> The protocol schema defines the allowable inputs for use in protocols."
   );
@@ -319,7 +334,7 @@ export class ProtocolsComponent {
       "The repository must be located on the host in the group defined in the <b>Gitlab Configuration</b> pane under the <i>Configuration</i> tab."
   );
 
-  serverDefaultPopover = this.translate.instant(      
+  serverDefaultPopover = this.translate.instant(
     "Reset all configuration values to the defaults set in the build configuaration file. This file can only be edited when TabSINT is built from source code."
   );
 
@@ -363,7 +378,7 @@ export class ProtocolsComponent {
   downloadCreareProtocolsPopover = this.translate.instant(
     "Select this option to download standard protocols from Creare.  Results will still go to the gitlab host, group, and repository defined in <b>Gitlab Configuration</b> on the <i>Configuration</i> tab.  When this option is not selected, protocols are downloaded from the host and group defined in <b>Gitlab Configuration</b> on the <i>Configuration</i> tab."
   );
-    
+
   localAddPopover = this.translate.instant(
     "The local directory under <code>Documents/tabsint-protocols</code> where the protocol is stored on the tablet. Press <b>Add</b> to select a protocol directory via a file chooser."
   );

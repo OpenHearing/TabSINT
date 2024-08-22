@@ -4,14 +4,12 @@ import { TranslateService } from '@ngx-translate/core';
 import { DiskModel } from '../../models/disk/disk.service';
 import { Logger } from '../../utilities/logger.service';
 import { FileService } from '../../utilities/file.service';
-import { AdminService } from '../../controllers/admin.service';
 import { VersionService } from '../../controllers/version.service';
 import { ConfigService } from '../../controllers/config.service';
 import { AppState } from '../../utilities/constants';
 import { StateModel } from '../../models/state/state.service';
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { StateInterface } from '../../models/state/state.interface';
-import { ResultsMode } from '../../utilities/constants';
 import { ChangePinComponent } from '../change-pin/change-pin.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ChangeMaxLogLengthComponent } from '../change-max-log-length/change-max-log-length.component';
@@ -29,7 +27,6 @@ export class TabsintConfigComponent {
   constructor(
     public diskModel: DiskModel, 
     public fileService: FileService,
-    public adminService: AdminService,
     public configService: ConfigService,
     public versionService: VersionService,
     public logger: Logger, 
@@ -108,8 +105,18 @@ export class TabsintConfigComponent {
   // }
 
   toggleAutoUpload() {
-    this.diskModel.updateDiskModel('autoUpload',this.diskModel.disk.autoUpload == undefined || this.diskModel.disk.autoUpload == false ? true : false)
-    this.disk = this.diskModel.getDisk()
+    this.diskModel.updateDiskModel('autoUpload', this.diskModel.disk.autoUpload == undefined || !this.diskModel.disk.autoUpload);
+    this.disk = this.diskModel.getDisk();
+  }
+
+  toggleDebugMode() {
+    this.diskModel.updateDiskModel('debugMode',!this.diskModel.disk.debugMode);
+    this.disk = this.diskModel.getDisk();
+  }
+
+  toggleDisableLogs() {
+      this.diskModel.updateDiskModel('disableLogs', !this.disk.disableLogs);
+      this.disk = this.diskModel.getDisk();
   }
 
   gainReset() {

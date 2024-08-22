@@ -20,20 +20,10 @@ export interface ProtocolModelInterface {
   activeProtocolDictionary?: ProtocolDictionary,
   activeProtocolFollowOnsDictionary?: FollowOnsDictionary,
   loadedProtocols: {
-      [Key: string]: ProtocolInterface
+      [Key: string]: ProtocolMetaInterface
   }, 
 }
-export interface ProtocolInterface extends ProtocolSchemaInterface {
-    group: string;
-    name: string;
-    path: string;
-    id: string;
-    date: string;
-    version: string;
-    creator: string;
-    server: ProtocolServer;
-    admin: boolean;
-    contentURI: string;
+export interface ProtocolInterface extends ProtocolSchemaInterface, ProtocolMetaInterface {
     cCommon?: any;
     key?: string;
     commonRepo?: any;

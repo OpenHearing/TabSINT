@@ -15,3 +15,5 @@ Things that have been added to get tabsint up and running but we could revisit
 https://www.npmjs.com/package/json-schema-to-typescript
 - UI related functionality should live in components and not services
 - avoid deeply nested functions (soft rule of <3)
+- style: do we use ; at end of lines? either way is fine but we should be consistent
+- style: space after :, spaces for if loops (i.e. if (condition) {})
