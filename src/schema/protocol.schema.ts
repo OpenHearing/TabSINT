@@ -4,6 +4,7 @@ import { ProtocolSchemaInterface } from "../app/interfaces/protocol-schema.inter
 import { calibrationSchema } from "./definitions/calibration.schema";
 import { navMenuSchema } from "./definitions/navMenu.schema";
 import { pageSchema } from "./page.schema";
+import { protocolReferenceSchema } from "./definitions/protocol-reference.schema";
 
 const protocolSchemaBase: JSONSchemaType<ProtocolSchemaInterface> = {
   $id: "schema_base",
@@ -37,15 +38,7 @@ const protocolSchemaBase: JSONSchemaType<ProtocolSchemaInterface> = {
     hideProgressBar: { type: "boolean", default: false, nullable: true },
     enableBackButton: { type: "boolean", default: false, nullable: true },
     navMenu: { type: "array", items: navMenuSchema, nullable: true },
-    js: {
-      type: "object",
-      oneOf: [
-        { type: "string", nullable: true},
-        { type: "array", items: { type: "string" }, nullable: true }
-      ], 
-      required: ["type"],
-      nullable: true
-    },
+    js: { type: "array", items: { type: "string" }, nullable: true },
     pages: {
       oneOf: [
         { type: "array", items: pageSchema },
@@ -64,10 +57,3 @@ const protocolSchemaBase: JSONSchemaType<ProtocolSchemaInterface> = {
 };
 
 export const protocolSchema: JSONSchemaType<ProtocolSchemaInterface> = protocolSchemaBase;
-
-const validate = ajv.compile(protocolSchema);
-import protocol from '../protocols/develop/protocol.json';
-import { protocolReferenceSchema } from "./definitions/protocol-reference.schema";
-const isValid = validate(protocol);
-console.log('AJV isValid? ', isValid);
-console.log('AJV ERRORS: ', validate.errors);

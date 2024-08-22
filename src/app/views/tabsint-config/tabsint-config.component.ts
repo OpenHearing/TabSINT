@@ -108,8 +108,8 @@ export class TabsintConfigComponent {
   // }
 
   toggleAutoUpload() {
-    this.diskModel.updateDiskModel('autoUpload',this.diskModel.disk.autoUpload == undefined || this.diskModel.disk.autoUpload == false ? true : false)
-    this.disk = this.diskModel.getDisk()
+    this.diskModel.updateDiskModel('autoUpload', this.diskModel.disk.autoUpload == undefined || !this.diskModel.disk.autoUpload);
+    this.disk = this.diskModel.getDisk();
   }
 
   gainReset() {

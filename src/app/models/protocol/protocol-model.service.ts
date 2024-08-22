@@ -1,13 +1,8 @@
 import { Injectable } from '@angular/core';
 import _ from 'lodash';
 
-import { ProtocolInterface, ProtocolMetaInterface } from './protocol.interface';
 import { ProtocolModelInterface } from './protocol.interface';
 import { partialMetaDefaults } from '../../utilities/defaults';
-import { DiskInterface } from '../disk/disk.interface';
-import { DiskModel } from '../disk/disk.service';
-import { ProtocolSchemaInterface } from '../../interfaces/protocol-schema.interface';
-import { FileService } from '../../utilities/file.service';
 
 @Injectable({
     providedIn: 'root',

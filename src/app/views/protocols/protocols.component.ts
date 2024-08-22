@@ -20,6 +20,7 @@ import { getProtocolMetaData } from '../../utilities/protocol-helper-functions';
 import { FileService } from '../../utilities/file.service';
 import { ProtocolSchemaInterface } from '../../interfaces/protocol-schema.interface';
 import { metaDefaults, partialMetaDefaults } from '../../utilities/defaults';
+import { AdminService } from '../../controllers/admin.service';
 
 @Component({
   selector: 'protocols-view',
@@ -33,6 +34,7 @@ export class ProtocolsComponent {
   state: StateInterface;
 
   constructor (
+    public adminService: AdminService,
     public diskModel: DiskModel,
     public protocolService: ProtocolService,
     public protocolM: ProtocolModel,

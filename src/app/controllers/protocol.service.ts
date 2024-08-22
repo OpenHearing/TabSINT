@@ -12,7 +12,6 @@ import { ProtocolErrorInterface } from '../interfaces/protocol-error.interface';
 
 import { DiskModel } from '../models/disk/disk.service';
 import { ProtocolModel } from '../models/protocol/protocol-model.service';
-import { ProtocolInterface } from '../models/protocol/protocol.interface';
 import { AppModel } from '../models/app/app.service';
 import { AppInterface } from '../models/app/app.interface';
 import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
@@ -207,13 +206,13 @@ export class ProtocolService {
 
     private async validate() {
         const validate = ajv.compile(protocolSchema);
-        console.log('AJV ERRORS: ', validate.errors);
         const isValid = validate(this.loading.protocol);
+        console.log('AJV isValid? ', isValid);
+        console.log('AJV ERRORS: ', validate.errors);
         let ret: ProtocolValidationResultInterface = {
             valid: isValid,
             error: validate.errors
         };
-        console.log('temp validate ' + this.loading.protocol.protocolId + ' function for development');
         return ret;
     }
 

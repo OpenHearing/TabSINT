@@ -20,7 +20,7 @@ export interface ProtocolSchemaInterface {
     hideProgressBar?: boolean;
     enableBackButton?: boolean;
     navMenu?: NavMenuInterface[];
-    js?: string | string[];
+    js?: string[];
     pages: (PageDefinition | ProtocolReferenceInterface | ProtocolSchemaInterface)[];
     subProtocols?: ProtocolSchemaInterface[];
 }
