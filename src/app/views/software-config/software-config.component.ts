@@ -14,7 +14,7 @@ import { DiskInterface } from '../../models/disk/disk.interface';
 })
 export class SoftwareConfigComponent {
   disk: DiskInterface;
-  version: any;
+  version: any; // TODO: add type
 
   constructor(
     public diskModel: DiskModel, 
@@ -27,7 +27,7 @@ export class SoftwareConfigComponent {
     this.version = this.versionService.getVersion();
   }
 
-  // VARIABLES - SHOULD BE MOVED TO THE RESPECTIVE MODEL WHEN IT EXISTS
+  // TODO: VARIABLES - SHOULD BE MOVED TO THE RESPECTIVE MODEL WHEN IT EXISTS
 
   devices = {
     name: "Browser",

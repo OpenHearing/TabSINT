@@ -19,6 +19,9 @@ import { Notifications } from '../utilities/notifications.service';
 import { PageModel } from '../models/page/page.service';
 import { PageInterface } from '../models/page/page.interface';
 import { calculateElapsedTime } from '../utilities/exam-helper-functions';
+import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
+import { FollowOnInterface, PageDefinition, ProtocolReferenceInterface } from '../interfaces/page-definition.interface';
+import { isPageDefinition, isProtocolReferenceInterface, isProtocolSchemaInterface } from '../guards/type.guard';
 
 @Injectable({
     providedIn: 'root',
@@ -72,7 +75,7 @@ export class ExamService {
      * @models protocol, state
     */
     async begin() {        
-        this.addPagesToStack(this.protocol.activeProtocol?.pages, 0);
+        this.addPagesToStack(this.protocol.activeProtocol?.pages!, 0);
         this.resultsService.initializeExamResults();
         this.startPage();
         this.state.examState = ExamState.Testing;
@@ -136,7 +139,7 @@ export class ExamService {
      * @models page
     */
     private getPagesFromAdvancedLogic() {
-        var pageList: any = [];
+        var pageList: (ProtocolSchemaInterface | PageDefinition | ProtocolReferenceInterface)[] = [];
         if (this.currentPage.skipIf) { 
             this.logger.debug("skipIf is not yet supported");
             // push pages to list if needed
@@ -152,8 +155,9 @@ export class ExamService {
                     this.handleSpecialReferences(nextID);
                     return undefined
                 } else {
-                    (this.protocolM.protocolModel.activeProtocolDictionary![nextID].pages as any).forEach( (page:any)=> { 
-                        pageList.push(page);
+                    (this.protocolM.protocolModel.activeProtocolDictionary![nextID].pages as (ProtocolSchemaInterface | PageDefinition | ProtocolReferenceInterface)[]).forEach( 
+                        (page: ProtocolSchemaInterface | PageDefinition | ProtocolReferenceInterface) => { 
+                            pageList.push(page);
                     });
                 }
             }
@@ -215,16 +219,19 @@ export class ExamService {
      * @models state, protocol, page
      * @param pages list of page objects
     */
-    private addPagesToStack(pages:any, index:number) {
-        let extraPages:any;
-        pages.forEach( (page:any)=> {
-            if (page?.reference) {
+    private addPagesToStack(
+        pages: (ProtocolSchemaInterface | PageDefinition | ProtocolReferenceInterface)[], 
+        index:number
+    ) {
+        let extraPages: (ProtocolSchemaInterface | PageDefinition | ProtocolReferenceInterface)[];
+        pages.forEach( (page: ProtocolSchemaInterface | PageDefinition | ProtocolReferenceInterface)=> {
+            if (isProtocolReferenceInterface(page)) {
                 extraPages = this.protocolM.protocolModel.activeProtocolDictionary![page?.reference].pages;
                 this.addPagesToStack(extraPages, index+1);
-            } else if (page.pages) {
+            } else if (isProtocolSchemaInterface(page)) {
                 extraPages = page.pages;
                 this.addPagesToStack(extraPages,index+1)
-            } else {
+            } else if (isPageDefinition(page)) {
                 this.pageModel.stack.splice(index, 0, page);
                 index = index + 1;
             }
@@ -238,10 +245,13 @@ export class ExamService {
     */
     private findFollowOn() {
         let id: string | undefined = undefined;
-        this.currentPage.followOns?.forEach((followOn:any) => {
+        this.currentPage.followOns?.forEach((followOn: FollowOnInterface) => {
             // TODO: This should be updated to use eval
             if (this.results.currentPage.response == followOn.conditional.split("==")[1].replaceAll("'","")) {
-                id = followOn.target.reference;
+                // TODO: handle if target is protocol or page
+                if (isProtocolReferenceInterface(followOn.target)) {
+                    id = followOn.target.reference;                
+                }
             }
         });
         return id;

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ResultsInterface, ExamResults } from '../models/results/results.interface';
+import { ResultsInterface, ExamResults, CurrentResults } from '../models/results/results.interface';
 import { ResultsModel } from '../models/results/results-model.service';
 import { DiskModel } from '../models/disk/disk.service';
 import { DiskInterface } from '../models/disk/disk.interface';
@@ -12,6 +12,7 @@ import { Logger } from '../utilities/logger.service';
 import { SqLite } from '../utilities/sqLite.service';
 import { DevicesInterface } from '../models/devices/devices.interface';
 import { DevicesModel } from '../models/devices/devices.service';
+import { PageInterface } from '../models/page/page.interface';
 
 @Injectable({
     providedIn: 'root',
@@ -77,7 +78,7 @@ export class ResultsService {
      * @param currentPage exam page to initialize.
      * @models results, protocol, disk
     */
-    initializePageResults(currentPage:any) {
+    initializePageResults(currentPage: PageInterface) {
         this.results.currentPage = {
             pageId: currentPage.id,
             response: undefined,
@@ -98,7 +99,7 @@ export class ResultsService {
      * @models results
      * @param currentPageResults Results for the current page.
      */
-    pushResults(currentPageResults: any) {
+    pushResults(currentPageResults: CurrentResults) {
         this.results.currentExam.responses.push(currentPageResults);
     }
 

@@ -1,4 +1,5 @@
 import { AppState, ProtocolState, ExamState, ChaState, SvantekState } from "../../utilities/constants";
+import { ProtocolInterface } from "../protocol/protocol.interface";
 
 export interface StateInterface {
     appState: AppState;
@@ -22,8 +23,8 @@ export interface StateInterface {
     };
     examProgress: {
         pctProgress: number;
-        anticipatedProtocols: Array<any>;
-        activatedProtocols: Array<any>;
+        anticipatedProtocols: Array<ProtocolInterface>;
+        activatedProtocols: Array<ProtocolInterface>;
     };
     bluetoothConnected: boolean;
     wifiConnected: boolean;
