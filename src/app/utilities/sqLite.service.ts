@@ -79,8 +79,8 @@ export class SqLite {
   
     async getSingleResult(index: number) {
         const sql = 'SELECT data FROM results LIMIT 1 OFFSET ?';
-        let res = (await this.db.query(sql, [index])).values!.map(res => res.data) as unknown as string;
-        return JSON.parse(res);
+        let res = (await this.db.query(sql, [index])).values!.map(res => res.data);
+        return JSON.parse(JSON.stringify(res));
     }
 
     async getAllResults() {
