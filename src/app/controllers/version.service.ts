@@ -12,7 +12,7 @@ export class VersionService {
     private version:any = {}
     private versionLoaded: Promise<void>;
 
-    constructor(private logger: Logger,private diskModel:DiskModel){
+    constructor(private logger: Logger,private diskModel:DiskModel) {
         this.versionLoaded = this.loadVersion()
     }
 
