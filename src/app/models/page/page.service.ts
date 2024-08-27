@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { PageInterface } from './page.interface';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { PageDefinition } from '../../interfaces/page-definition.interface';
 
 @Injectable({
     providedIn: 'root',
@@ -28,21 +29,18 @@ export class PageModel {
         title: "title",
         instructionText: "instructionText",
         subtitle: "subtitle",
-        // image: {
-        //     path: "path"
-        // },
         image: undefined,
         questionSubText: "questionSubText",
         questionMainText: "questionMainText",
         loadingRequired: false,
         loadingActive: false,
-        // followOns: [],
+        followOns: [],
         exportToCSV: false
     };
 
     currentPageObservable = new BehaviorSubject(this.currentPage);
 
-    stack: PageInterface[] = [];
+    stack: PageDefinition[] = [];
     
     getPage(): PageInterface {
         return this.currentPage;

@@ -24,15 +24,3 @@ export function getProtocolMetaData(protocol: ProtocolMetaInterface): ProtocolMe
         contentURI: protocol.contentURI
     }
 }
-
-export function doesIdExist(id: string | undefined) {
-    return id != '' && !_.isUndefined(id);
-}
-
-export function doesProtocolIdExist(id: string | undefined) {
-    return id != '' && !_.isUndefined(id);
-}
-
-export function doesReferenceExist(reference: string | undefined) {
-    return reference != '' && !_.isUndefined(reference);
-}

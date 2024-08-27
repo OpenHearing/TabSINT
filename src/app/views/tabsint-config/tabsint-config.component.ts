@@ -22,7 +22,7 @@ import { ChangeMaxLogLengthComponent } from '../change-max-log-length/change-max
 export class TabsintConfigComponent {
   disk: DiskInterface;
   state: StateInterface;
-  version: any;
+  version: any; // TODO: add type
 
   constructor(
     public diskModel: DiskModel, 

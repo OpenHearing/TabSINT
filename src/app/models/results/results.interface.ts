@@ -1,3 +1,4 @@
+import { ChaWavfileInterface, ImageInterface, ResponseArea, VideoInterface, WavfileInterface } from "../../interfaces/page-definition.interface";
 import { ProtocolServer } from "../../utilities/constants";
 import { ProtocolInterface } from "../protocol/protocol.interface";
 
@@ -11,12 +12,12 @@ export interface CurrentResults {
     response?: any;
     correct?: boolean;
     isSkipped?: boolean;
-    responseArea?: any;
+    responseArea?: string;
     page: {
-      wavfiles?: any,
-      chaWavFiles?: any,
-      image?: any,
-      video?: any
+      wavfiles?: WavfileInterface[],
+      chaWavFiles?: ChaWavfileInterface[],
+      image?: ImageInterface,
+      video?: VideoInterface
     }
 }
 
@@ -29,12 +30,12 @@ export interface ExamResults {
     exportLocation?: ProtocolServer;
     responses: any;
     partialresults?: any;
-    softwareVersion: any;
+    softwareVersion: any; // TODO: define softwareVersion interface
     tabletLocation: {
         latitude?: number,
         longitude?: number,
         accuracy?: number
       };
     headset: string;
-    calibrationVersion: any;
+    calibrationVersion: any; // TODO: define calibrationVersion interface
 }
