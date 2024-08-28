@@ -3,7 +3,7 @@
 
 <div mat-accordion multi>
   <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.protocols">
-    <!---->
+
     <mat-expansion-panel-header>
       <mat-panel-title>Protocols</mat-panel-title>
     </mat-expansion-panel-header>
@@ -26,11 +26,13 @@
         <tbody>
           <tr *ngFor="let p of protocolModel.loadedProtocols | keyvalue" class="no-border" [ngClass]="pclass(p.value)" (click)="select(p.value)" >
               <td [ngClass]="pclass(p.value)" class="row-Name" >{{p.value.name}}</td> 
-              <td  class="row-Version" >{{p.value.version}}</td>
-              <td  class="row-Date" >{{p.value.date}}</td>
+              <td [ngClass]="pclass(p.value)" class="row-Version" >{{p.value.version}}</td>
+              <td [ngClass]="pclass(p.value)" class="row-Date" >{{p.value.date}}</td>
           </tr>
         </tbody>
       </table>
+
+      <br/>
 
       <div class="row pad-top">
         <div class="col-6"><label for="validateProtocols" i18n>Validate protocols:</label></div>
@@ -119,10 +121,9 @@
       </div>
 
       <div class="row pad-top">
-        <div class="col-5">
-          <!-- <button class="btn btn-primary btn-block"  [ngClass]="disk.server === localServer ? 'active' : '' " (click)="changeServer('gitlab')">Gitlab</button> -->
+        <!-- <div class="col-5">
           <button class="btn btn-primary btn-block"  [ngClass]="gitlabButtonClass()">Gitlab</button>
-        </div>
+        </div> -->
         <div class="col-5">
           <button class="btn btn-primary btn-block"  [ngClass]="localServerButtonClass()" translate>Device Storage</button>
         </div>

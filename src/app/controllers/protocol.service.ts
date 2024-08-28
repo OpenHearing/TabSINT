@@ -277,8 +277,7 @@ export class ProtocolService {
             }).subscribe();
         } else if (this.loading.notify) {
             msg = "Successfully loaded protocol: " +
-                this.loading.meta.name +
-                "<br/>This protocol requires headset: " + this.protocolModel.activeProtocol!.headset;
+                this.loading.meta.name;
             this.notifications.alert({
                 title: "Alert",
                 content: msg,

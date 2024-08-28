@@ -53,26 +53,16 @@ export var BluetoothType = {
   "USB": "USB Host"
 };
 
-import EdareAudiometry from '../../protocols/edare-audiometry/protocol.json';
 import CreareAudiometry from '../../protocols/creare-audiometry/protocol.json';
-import TabsintTest from '../../protocols/tabsint-test/protocol.json';
-import WahtsDeviceTest from '../../protocols/wahts-device-test/protocol.json';
-import WahtsSoftwareTest from '../../protocols/wahts-software-test/protocol.json';
 import develop from '../../protocols/develop/protocol.json';
 export var DeveloperProtocols: any = {
-    "Audiometry": EdareAudiometry,
     "Creare Audiometry": CreareAudiometry,
-    "tabsint-test": TabsintTest,
-    "wahts-device-test": WahtsDeviceTest,
-    "wahts-software-test" : WahtsSoftwareTest,
     "develop" : develop
 }
 
 import WahtsDeviceTestCalibration from '../../protocols/wahts-device-test/calibration.json';
-import WahtsSoftwareTestCalibration from '../../protocols/wahts-software-test/calibration.json';
 export var DeveloperProtocolsCalibration: any = {
-    "wahts-device-test": WahtsDeviceTestCalibration,
-    "wahts-software-test" : WahtsSoftwareTestCalibration
+    "wahts-device-test": WahtsDeviceTestCalibration
 }
 
 export const bluetoothTimeout: number = 5000;
