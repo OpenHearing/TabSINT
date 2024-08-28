@@ -18,10 +18,7 @@ export interface ProtocolMetaInterface {
 export interface ProtocolModelInterface {
   activeProtocol?: ProtocolInterface, 
   activeProtocolDictionary?: ProtocolDictionary,
-  activeProtocolFollowOnsDictionary?: FollowOnsDictionary,
-  loadedProtocols: {
-      [Key: string]: ProtocolMetaInterface
-  }, 
+  activeProtocolFollowOnsDictionary?: FollowOnsDictionary
 }
 export interface ProtocolInterface extends ProtocolSchemaInterface, ProtocolMetaInterface {
     cCommon?: any;

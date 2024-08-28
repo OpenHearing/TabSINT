@@ -71,42 +71,41 @@ export class ProtocolsComponent {
     }
   };
 
-  async addProtocols(){
-    console.log("add button clicked")
-    try{
-      const result = await this.fileService.launchFileChooser()
-      if(!result){
-        this.logger.error("There was an error in choosing the folder")
+  async addProtocols() {
+    try {
+      const result = await this.fileService.launchFileChooser();
+      if (!result) {
+        this.logger.error("There was an error in choosing the folder");
       }
-      let protocolsFolderUri = result?.uri
-      let protocolName = result?.name
-      const resultFromListFiles = await this.fileService.listDirectory(protocolsFolderUri)
-      const fileList = resultFromListFiles?.files
-        for(const file of fileList!){
-          if (file.name=="protocol.json"){
-            const protocolContent: ProtocolSchemaInterface = JSON.parse(file.content)
+      let protocolsFolderUri = result?.uri;
+      let protocolName = result?.name;
+      const resultFromListFiles = await this.fileService.listDirectory(protocolsFolderUri);
+      const fileList = resultFromListFiles?.files;
+        for (const file of fileList!) {
+          if (file.name=="protocol.json") {
+            const protocolContent: ProtocolSchemaInterface = JSON.parse(file.content);
             const protocol: ProtocolInterface = {
               ...partialMetaDefaults, 
-              name:protocolName!, 
+              name: protocolName!, 
               path: "", 
               creator: "", 
               contentURI: protocolsFolderUri!, 
               server: ProtocolServer.LocalServer,
               admin: false,
               ...protocolContent
-            }
-            const protocolMetaData: ProtocolMetaInterface = getProtocolMetaData(protocol)
-            let availableMetaProtocols = this.diskModel.disk.availableProtocolsMeta
-            availableMetaProtocols.push(protocolMetaData)
-            this.diskModel.updateDiskModel('availableProtocolsMeta',availableMetaProtocols)
-            this.disk = this.diskModel.getDisk()
-            this.protocolModel = this.protocolM.getProtocolModel()
+            };
+            const protocolMetaData: ProtocolMetaInterface = getProtocolMetaData(protocol);
+            let availableMetaProtocols = this.diskModel.disk.availableProtocolsMeta;
+            availableMetaProtocols[protocolMetaData.name] = protocolMetaData;
+            this.diskModel.updateDiskModel('availableProtocolsMeta', availableMetaProtocols);
+            this.disk = this.diskModel.getDisk();
+            this.protocolModel = this.protocolM.getProtocolModel();
           }
       }
-  }
-  catch(error){
-    this.logger.error(""+ error)
-  }
+    }
+    catch (error) {
+      this.logger.error(""+ error);
+    }
   }
 
   isProtocolActive(): boolean {

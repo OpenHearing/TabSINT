@@ -4,7 +4,7 @@ import { DOCUMENT } from '@angular/common';
 
 import { DiskInterface } from './disk.interface';
 import { ProtocolServer, ResultsMode } from '../../utilities/constants';
-import { metaDefaults } from '../../utilities/defaults';
+import { metaDefaults, partialMetaDefaults } from '../../utilities/defaults';
 import { ExamResults } from '../results/results.interface';
 
 @Injectable({
@@ -73,7 +73,20 @@ export class DiskModel {
         },
         audhere: '',
         activeProtocolMeta: metaDefaults,
-        availableProtocolsMeta: []
+        availableProtocolsMeta: {
+            "Creare Audiometry": {
+                ...partialMetaDefaults,
+                name: "Creare Audiometry",
+                path: "protocols/creare-audiometry",
+                creator: "Creare"
+            },
+            "develop": {
+                ...partialMetaDefaults,
+                name: "develop",
+                path: "protocols/develop",
+                creator: "Creare"
+            }
+        }
     };
     
     constructor(@Inject(DOCUMENT) private document: Document) {
@@ -118,7 +131,7 @@ export class DiskModel {
             protocolId: result.protocolId,
             protocolName: result.protocolName,
             testDateTime: result.testDateTime!,
-            nResponses: result.responses.length,
+            nResponses: _.isUndefined(result.responses) ? 0 : result.responses.length,
             source: result.protocol.server,
             output: result.exportLocation || result.protocol.server,
             uploadedOn: new Date().toJSON()

@@ -1,3 +1,4 @@
+import { Dictionary } from "lodash";
 import { LoadingProtocolInterface } from "../interfaces/loading-protocol-object.interface";
 import { PageInterface } from "../models/page/page.interface";
 import { ProtocolMetaInterface } from "../models/protocol/protocol.interface";
@@ -72,3 +73,8 @@ export const protocolDefaults: ProtocolInterface = {
     protocolId: '',
     pages: [PageInterfaceDefaults]
 };
+
+export const responseDefaultByResponseAreaType: Dictionary<string> = {
+    'textboxResponseArea': '',
+    'multipleChoiceResponseArea': ''
+}

@@ -78,7 +78,9 @@ export interface DiskInterface {
     versionCheck: boolean,
     audhere: string ,
     activeProtocolMeta: ProtocolMetaInterface,
-    availableProtocolsMeta: Array<ProtocolMetaInterface>
+    availableProtocolsMeta: {
+      [Key: string]: ProtocolMetaInterface
+  }
 }
 
 interface UploadSummary {

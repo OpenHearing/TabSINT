@@ -13,6 +13,7 @@ import { SqLite } from '../utilities/sqLite.service';
 import { DevicesInterface } from '../models/devices/devices.interface';
 import { DevicesModel } from '../models/devices/devices.service';
 import { PageInterface } from '../models/page/page.interface';
+import { responseDefaultByResponseAreaType } from '../utilities/defaults';
 
 @Injectable({
     providedIn: 'root',
@@ -81,7 +82,7 @@ export class ResultsService {
     initializePageResults(currentPage: PageInterface) {
         this.results.currentPage = {
             pageId: currentPage.id,
-            response: undefined,
+            response: _.isUndefined(currentPage.responseArea) ? '' : responseDefaultByResponseAreaType[currentPage.responseArea.type],
             correct: undefined,
             isSkipped: false,
             responseArea: currentPage.responseArea ? currentPage.responseArea.type : undefined,
@@ -147,8 +148,8 @@ export class ResultsService {
      */
     async exportSingleResult(index: number) {
         let result = await this.sqLite.getSingleResult(index);
-        await this.writeResultToFile(result);
-        await this.sqLite.deleteSingleResult(index);
+        await this.writeResultToFile(JSON.parse(result[0]));
+        this.sqLite.deleteSingleResult(index);
     }
 
     /**

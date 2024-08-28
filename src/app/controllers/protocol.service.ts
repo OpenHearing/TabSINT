@@ -32,6 +32,7 @@ import { processProtocol } from '../utilities/process-protocol.function';
 import { initializeLoadingProtocol } from '../utilities/initialize-loading-protocol';
 import { protocolSchema } from '../../schema/protocol.schema';
 import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
+import { DiskInterface } from '../models/disk/disk.interface';
 
 @Injectable({
     providedIn: 'root',
@@ -39,6 +40,7 @@ import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface
 
 export class ProtocolService {
     app: AppInterface;
+    disk: DiskInterface;
     loading: LoadingProtocolInterface;
     protocolModel: ProtocolModelInterface;
     state: StateInterface;
@@ -57,13 +59,14 @@ export class ProtocolService {
         public stateModel: StateModel
     ) {
         this.app = this.appModel.getApp();
+        this.disk = this.diskModel.getDisk();
         this.protocolModel = this.protocolM.getProtocolModel();
         this.state = this.stateModel.getState();
 
         this.loading = loadingProtocolDefaults(this.diskModel.disk.validateProtocols);
 
         // For BAyotte development only, auto load protocol when tabsint loads
-        this.load(this.protocolModel.loadedProtocols["develop"], true, false)
+        this.load(this.disk.availableProtocolsMeta["develop"], true, false)
     }
 
     /** Load all protocol files onto the protocolModel.activeProtocol object.
@@ -119,21 +122,9 @@ export class ProtocolService {
         }
 
         try {
-            delete this.protocolModel.loadedProtocols[p.name];
-            let currDisk = this.diskModel.getDisk()
-            let oldMetaArray = currDisk.availableProtocolsMeta
-            let newMetaArray = oldMetaArray.filter((item)=>{return (
-                item.group !== p.group ||
-                item.name !== p.name ||
-                item.path !== p.path ||
-                item.date !== p.date ||
-                item.version !== p.version ||
-                item.creator !== p.creator ||
-                item.server !== p.server ||
-                item.admin !== p.admin ||
-                item.contentURI !== p.contentURI
-              );})
-            this.diskModel.updateDiskModel('availableProtocolsMeta',newMetaArray)
+            delete this.disk.availableProtocolsMeta[p.name];
+            let updatedAvailableProtocolsMeta = this.diskModel.getDisk().availableProtocolsMeta;
+            this.diskModel.updateDiskModel('availableProtocolsMeta', updatedAvailableProtocolsMeta);
         } catch (error) {
             console.log("Error trying to delete files");
             console.log(error);
