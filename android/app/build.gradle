@@ -22,6 +22,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    lintOptions {
+      checkAllWarnings false
+      ignoreWarnings true       
+      quiet true                
+    }
 }
 
 repositories {

@@ -43,7 +43,7 @@ export class DevicesModel {
             this.devicesModel.os = info.operatingSystem;
             this.devicesModel.other = `Battery level: ${batteryInfo.batteryLevel ?? 'Unknown'}, Language: ${languageCode.value ?? 'Unknown'}`;
             if (info.realDiskFree !== undefined) {
-                this.devicesModel.diskspace = String(info.realDiskFree / (1024 * 1024));
+                this.devicesModel.diskspace = String(Math.round(info.realDiskFree / (1024 * 1024)));
             }
                 this.logger.debug("Device info processed -- \n" + JSON.stringify((this.devicesModel)))
         } catch (error) {
