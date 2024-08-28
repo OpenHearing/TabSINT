@@ -22,7 +22,7 @@ export class ExternalResponseAreaComponent {
   state: StateInterface
   testHTML: string;
   testJS: string;
-  observableVar: any;
+  observableVar: any; // TODO: Blaine, what should this type be?
 
   constructor (
     public resultsModel: ResultsModel, 

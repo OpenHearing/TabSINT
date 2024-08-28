@@ -6,6 +6,8 @@ import { Logger } from '../../utilities/logger.service';
 import { AdminService } from '../../controllers/admin.service';
 import { VersionService } from '../../controllers/version.service';
 import { DiskInterface } from '../../models/disk/disk.interface';
+import { DevicesModel } from '../../models/devices/devices.service';
+import { DevicesInterface } from '../../models/devices/devices.interface';
 
 @Component({
   selector: 'software-config-view',
@@ -14,33 +16,23 @@ import { DiskInterface } from '../../models/disk/disk.interface';
 })
 export class SoftwareConfigComponent {
   disk: DiskInterface;
-  version: any;
+  devices: DevicesInterface;
+  version: any; // TODO: add type
 
   constructor(
     public diskModel: DiskModel, 
     public adminService: AdminService,
     public versionService: VersionService,
+    public devicesModel: DevicesModel,
     public logger: Logger, 
     public translate: TranslateService
   ) { 
     this.disk = this.diskModel.getDisk();
+    this.devices = this.devicesModel.getDevices();
     this.version = this.versionService.getVersion();
   }
 
-  // VARIABLES - SHOULD BE MOVED TO THE RESPECTIVE MODEL WHEN IT EXISTS
-
-  devices = {
-    name: "Browser",
-    cordova: "Browser",
-    platform: "Browser",
-    UUID: "Browser",
-    shortUUID: "Browser",
-    tabsintUUID: undefined,
-    version: "Browser",
-    model: "Browser",
-    diskSpace: "Broswer",
-    load: undefined
-  };
+  // TODO: VARIABLES - SHOULD BE MOVED TO THE RESPECTIVE MODEL WHEN IT EXISTS
 
   networkModel: any = {
     "status": false,
@@ -53,7 +45,6 @@ export class SoftwareConfigComponent {
       "???": {version:"???"}
     }
   }
-
 
   toggleAppDeveloperMode() {
     console.log("toggleAppDeveloperMode");

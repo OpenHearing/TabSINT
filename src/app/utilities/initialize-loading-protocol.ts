@@ -108,24 +108,22 @@ export function initializeLoadingProtocol(
             "calibrationPyManualReleaseDate"
         ];
         if (_.difference(_.keys(loading.calibration), reqCalProperties).length > 0) {
-            // if calibration contains wav files
-            if (_.intersection(_.keys(loading.calibration), reqCalProperties).length === reqCalProperties.length) {
-                // if calibration contains all the required properties
-                loading.protocol.headset = loading.calibration.headset;
-                loading.protocol._audioProfileVersion = loading.calibration.audioProfileVersion;
-                loading.protocol._calibrationPySVNRevision = loading.calibration.calibrationPySVNRevision;
-                loading.protocol._calibrationPyManualReleaseDate = loading.calibration.calibrationPyManualReleaseDate;
-            } else {
-                loading.protocol._audioProfileVersion = "none";
-                loading.protocol._calibrationPySVNRevision = "none";
-                loading.protocol._calibrationPyManualReleaseDate = "none";
-                msg = "The loaded protocol calibration file is missing version fields.";
-                logger.error(msg);
-                loading.protocol.errors!.push({
-                type: "Calibration",
-                error: msg
-                });
-            }
+            // if (_.intersection(_.keys(loading.calibration), reqCalProperties).length === reqCalProperties.length) {
+            //     loading.protocol.headset = loading.calibration.headset;
+            //     loading.protocol._audioProfileVersion = loading.calibration.audioProfileVersion;
+            //     loading.protocol._calibrationPySVNRevision = loading.calibration.calibrationPySVNRevision;
+            //     loading.protocol._calibrationPyManualReleaseDate = loading.calibration.calibrationPyManualReleaseDate;
+            // } else {
+            //     loading.protocol._audioProfileVersion = "none";
+            //     loading.protocol._calibrationPySVNRevision = "none";
+            //     loading.protocol._calibrationPyManualReleaseDate = "none";
+            //     msg = "The loaded protocol calibration file is missing version fields.";
+            //     logger.error(msg);
+            //     loading.protocol.errors!.push({
+            //     type: "Calibration",
+            //     error: msg
+            //     });
+            // }
         }
         loading.protocol.currentCalibration = loading.protocol.headset || "None"; 
     }

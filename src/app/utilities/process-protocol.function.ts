@@ -5,7 +5,7 @@ import { PageDefinition, ProtocolReferenceInterface } from "../interfaces/page-d
 import { LoadingProtocolInterface } from "../interfaces/loading-protocol-object.interface";
 import { ProtocolDictionary } from "../interfaces/protocol-dictionary";
 import { FollowOnsDictionary } from "../interfaces/follow-ons-dictionary";
-import { doesIdExist, doesProtocolIdExist, doesReferenceExist } from "./protocol-helper-functions";
+import { isPageDefinition, isProtocolReferenceInterface, isProtocolSchemaInterface } from "../guards/type.guard";
 
 /**
  * Adds variables to the active protocol and generates a stack of pages.
@@ -60,14 +60,13 @@ export function processProtocol(loading: LoadingProtocolInterface):
       // } else if ((page as any).reference) {
       //   processPage(page as any);
       } else if (_.has(page, "id")) {
-        processPage(page as any);
+        processPage(page as PageDefinition);
       }
     });  
   }
 
   function processPage(
-      page: any 
-      // PageDefinition | ProtocolReference | ProtocolSchemaInterface
+      page: PageDefinition
     ) {
 
     if (page.preProcessFunction) {
@@ -78,34 +77,34 @@ export function processProtocol(loading: LoadingProtocolInterface):
       _.forEach(page.wavfiles, function(wavfile) {
         if (wavfile.useCommonRepo) {
           if (rootProtocol.commonRepo && rootProtocol.commonRepo.path) {
-            if (calibration) {
-              if (calibration[wavfile.path]) {
-                wavfile.cal = calibration[wavfile.path];
-              } else {
-                rootProtocol._missingCommonWavCalList!.push(wavfile.path);
-              }
-            } else {
-                rootProtocol._missingCommonMediaRepo = true;
-                rootProtocol._missingCommonWavCalList!.push(wavfile.path);
-            }
-            wavfile.path = rootProtocol.commonRepo.path + wavfile.path;
+            // if (calibration) {
+            //   if (calibration[wavfile.path]) {
+            //     wavfile.cal = calibration[wavfile.path];
+            //   } else {
+            //     rootProtocol._missingCommonWavCalList!.push(wavfile.path);
+            //   }
+            // } else {
+            //     rootProtocol._missingCommonMediaRepo = true;
+            //     rootProtocol._missingCommonWavCalList!.push(wavfile.path);
+            // }
+            // wavfile.path = rootProtocol.commonRepo.path + wavfile.path;
           }
         }
 
         else {
-          if (calibration && calibration[wavfile.path]) {
-            wavfile.cal = calibration[wavfile.path];
-            wavfile.cal.tablet = calibration.tablet;
-          } else {
-            rootProtocol._missingWavCalList!.push(wavfile.path);
-          }
+          // if (calibration && calibration[wavfile.path]) {
+          //   wavfile.cal = calibration[wavfile.path];
+          //   wavfile.cal.tablet = calibration.tablet;
+          // } else {
+          //   rootProtocol._missingWavCalList!.push(wavfile.path);
+          // }
 
-          wavfile.path = prefix + wavfile.path;
+          // wavfile.path = prefix + wavfile.path;
         }
       });
     }
 
-    if (page.image) {
+    if (isPageDefinition(page) && page.image) {
       page.image.path = prefix + page.image.path;
     }
 
@@ -114,19 +113,19 @@ export function processProtocol(loading: LoadingProtocolInterface):
     }
 
     if (page.responseArea) {
-      if (page.responseArea.image) {
-        page.responseArea.image.path = prefix + page.responseArea.image.path;
-      }
+      // if (page.responseArea.image) {
+      //   page.responseArea.image.path = prefix + page.responseArea.image.path;
+      // }
 
-      if (page.responseArea.html) {
-        var originalHtmlFile = page.responseArea.html;
-        page.responseArea.html = prefix + page.responseArea.html;
-        rootProtocol._customHtmlList!.push({
-          name: originalHtmlFile,
-          path: page.responseArea.html,
-          id: page.id
-        });
-      }
+      // if (page.responseArea.html) {
+      //   var originalHtmlFile = page.responseArea.html;
+      //   page.responseArea.html = prefix + page.responseArea.html;
+      //   rootProtocol._customHtmlList!.push({
+      //     name: originalHtmlFile,
+      //     path: page.responseArea.html,
+      //     id: page.id
+      //   });
+      // }
 
       if (page.responseArea.type === "subjectIdResponseArea") {
         rootProtocol._hasSubjectIdResponseArea = true;
@@ -142,11 +141,11 @@ export function processProtocol(loading: LoadingProtocolInterface):
         }
       }
 
-      if (_.has(page, "exportToCSV")) {
-        if (page.exportToCSV === true) {
-            rootProtocol._exportCSV = true;
-        }
-      }
+      // if (_.has(page, "exportToCSV")) {
+      //   if (page.exportToCSV === true) {
+      //       rootProtocol._exportCSV = true;
+      //   }
+      // }
     }
 
     if (_.has(page, "followOns")) {
@@ -157,17 +156,17 @@ export function processProtocol(loading: LoadingProtocolInterface):
       });
     }
 
-    function getId(target: any): string {
-        return  doesIdExist(target.id)
+    function getId(target: PageDefinition | ProtocolReferenceInterface | ProtocolSchemaInterface): string {
+        return  isPageDefinition(target)
           ? target.id
-          : doesProtocolIdExist(target.protocolId)
-            ? target.protocolId
-            : doesReferenceExist(target.reference)
+          : isProtocolSchemaInterface(target)
+            ? target.protocolId!
+            : isProtocolReferenceInterface(target)
               ? target.reference
               : 'Should not get here';
     }
 
-    if (_.has(page, "pages")) {
+    if (_.has(page, "pages") && isProtocolSchemaInterface(page)) {
       processSubProtocol(page);
     }
   }

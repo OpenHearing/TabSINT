@@ -62,7 +62,7 @@ export class MultipleChoiceComponent {
     console.log("choices for multiple-choice responseArea",this.choices);
   }
 
-  choose(id:any) {
+  choose(id: string) {
     this.results.currentPage.response = id;
     // this.state.isSubmittable = this.examService.getSubmittableLogic(this.examService.currentPage?.responseArea);
     this.state.isSubmittable = true;

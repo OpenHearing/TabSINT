@@ -71,7 +71,11 @@ describe('ResultsService', () => {
     it('pushes current exam results', () => {
         let returnedResults: ResultsInterface = resultsService.results;
         expect(returnedResults.currentExam.responses.length).toEqual(0);
-        resultsService.pushResults('test');
+        resultsService.pushResults({
+            pageId: '01',
+            response: 'test',
+            page: {}
+        });
         expect(returnedResults.currentExam.responses.length).toEqual(1);
     });
     

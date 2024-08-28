@@ -15,7 +15,6 @@ import { TabsintFs } from 'tabsintfs';
 export class FileService {
     app: AppInterface;
     rootUri:string | undefined
-    existingDirectories: any;
     disk:DiskInterface
 
     constructor(

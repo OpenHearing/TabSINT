@@ -18,11 +18,11 @@ export class ResultsModel {
             protocolId: '',
             protocol: protocolDefaults,
             responses: [],
-            softwareVersion: {},
+            softwareVersion: '0.0',
             tabletLocation: { //unimplemented
             },
             headset: 'None',
-            calibrationVersion: {}
+            calibrationVersion: '0.0'
         }
     }
 
