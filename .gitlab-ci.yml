@@ -38,7 +38,7 @@ sonarqube-check:
 
 build-docker-image:
   stage: build-docker-image
-  image: docker:cli
+  image: docker:latest
   services:
     - docker:dind
   script:
@@ -56,7 +56,7 @@ build-docker-image:
 
 test:
   stage: test
-  image: docker:cli
+  image: docker:latest
   services:
     - docker:dind
   dependencies:
@@ -72,7 +72,7 @@ test:
 
 beta-release:
   stage: beta-release
-  image: docker:cli
+  image: docker:latest
   services:
     - docker:dind
   dependencies:
