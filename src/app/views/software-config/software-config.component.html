@@ -86,7 +86,6 @@
 <ul class="admin-info">
     <div *ngFor="let plugin of version.plugins">
         <li>
-            <!-- <b>{{plugin.key}}:</b> -->
             <span>{{plugin}}</span>
         </li>
     </div>
@@ -101,8 +100,8 @@
 </div>
 <ul class="admin-info">
     <li>
-        <b>{{'Cordova Version' | translate}}:</b>
-        <span>{{version.deps.cordova}}</span>
+        <b>{{'Capacitor Version' | translate}}:</b>
+        <span>{{version.deps.capacitor}}</span>
     </li>
     <li>
         <b>{{'Node Version' | translate}}:</b>

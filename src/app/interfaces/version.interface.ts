@@ -6,7 +6,7 @@ export interface VersionInterface {
     deps: {
         user_agent: string;
         node: string;
-        cordova: string;
+        capacitor: string;
     };
     plugins: string[];
 }

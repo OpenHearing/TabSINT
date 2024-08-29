@@ -18,8 +18,7 @@ import { VersionInterface } from '../../interfaces/version.interface';
 export class SoftwareConfigComponent {
   disk: DiskInterface;
   devices: DevicesInterface;
-  version: VersionInterface; // TODO: add type
-
+  version: VersionInterface;
   constructor(
     public diskModel: DiskModel, 
     public adminService: AdminService,
@@ -38,7 +37,7 @@ export class SoftwareConfigComponent {
       deps: {
           user_agent: '',
           node: '',
-          cordova: ''
+          capacitor: ''
       },
       plugins: []
   };

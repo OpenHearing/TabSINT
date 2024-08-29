@@ -18,7 +18,7 @@ export class VersionService {
         deps: {
             user_agent: '',
             node: '',
-            cordova: ''
+            capacitor: ''
         },
         plugins: []
     }; 
