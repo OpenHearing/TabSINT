@@ -3,12 +3,16 @@ image:
   entrypoint: [""]
 
 variables:
-  SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar" # Defines the location of the analysis task cache
-  GIT_DEPTH: "0" # Tells git to fetch all the branches of the project, required by the analysis task
+  SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
+  GIT_DEPTH: "0"
+  IMAGE_NAME: open-hearing-tabsint:$CI_COMMIT_REF_NAME
 
 stages:
-- sonarqube-check
-- sonarqube-vulnerability-report
+  - sonarqube-check
+  - sonarqube-vulnerability-report
+  - build-docker-image
+  - test
+  - beta-release
 
 sonarqube-check:
   stage: sonarqube-check
@@ -28,3 +32,55 @@ sonarqube-check:
   - if: $CI_COMMIT_BRANCH == 'master'
   - if: $CI_COMMIT_BRANCH == 'main'
   - if: $CI_COMMIT_BRANCH == 'develop'
+
+
+build-docker-image:
+  stage: build-docker-image
+  image: docker:cli
+  services:
+    - docker:dind
+  script:
+    - docker build -t $IMAGE_NAME .
+    - docker save -o $IMAGE_NAME.tar $IMAGE_NAME
+  artifacts:
+    paths:
+      - $IMAGE_NAME.tar
+    expire_in: 2 hours
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == 'master'
+    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'develop'
+
+test:
+  stage: test
+  image: docker:cli
+  services:
+    - docker:dind
+  dependencies:
+    - build-docker-image
+  script:
+    - docker load -i $IMAGE_NAME.tar
+    - docker run --rm $IMAGE_NAME npm run test:headless
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == 'master'
+    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'develop'
+
+beta-release:
+  stage: beta-release
+  image: docker:cli
+  services:
+    - docker:dind
+  dependencies:
+    - build-docker-image
+  script:
+    - docker load -i $IMAGE_NAME.tar
+    - docker run --rm $IMAGE_NAME npm run run.build:ci
+  artifacts:
+    paths:
+      - android/app/build/outputs/apk/debug/
+    expire_in: 2 hours
+  rules:
+    - when: manual
