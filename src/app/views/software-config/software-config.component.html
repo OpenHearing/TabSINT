@@ -84,10 +84,10 @@
     </div>
 </div>
 <ul class="admin-info">
-    <div *ngFor="let plugin of config.tabsintPlugins | keyvalue">
+    <div *ngFor="let plugin of version.plugins">
         <li>
-            <b>{{plugin.key}}:</b>
-            <span>{{plugin.value.version}}</span>
+            <!-- <b>{{plugin.key}}:</b> -->
+            <span>{{plugin}}</span>
         </li>
     </div>
 </ul>
@@ -102,15 +102,15 @@
 <ul class="admin-info">
     <li>
         <b>{{'Cordova Version' | translate}}:</b>
-        <span>{{version?.deps?.cordova}}</span>
+        <span>{{version.deps.cordova}}</span>
     </li>
     <li>
         <b>{{'Node Version' | translate}}:</b>
-        <span>{{version?.deps?.node}}</span>
+        <span>{{version.deps.node}}</span>
     </li>
     <li>
         <b>{{'Build System' | translate}}:</b>
-        <span>{{version?.deps?.user_agent}}</span>
+        <span>{{version.deps.user_agent}}</span>
     </li>
 </ul>
 

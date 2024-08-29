@@ -8,6 +8,7 @@ import { VersionService } from '../../controllers/version.service';
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { DevicesModel } from '../../models/devices/devices.service';
 import { DevicesInterface } from '../../models/devices/devices.interface';
+import { VersionInterface } from '../../interfaces/version.interface';
 
 @Component({
   selector: 'software-config-view',
@@ -17,7 +18,7 @@ import { DevicesInterface } from '../../models/devices/devices.interface';
 export class SoftwareConfigComponent {
   disk: DiskInterface;
   devices: DevicesInterface;
-  version: any; // TODO: add type
+  version: VersionInterface; // TODO: add type
 
   constructor(
     public diskModel: DiskModel, 
@@ -29,7 +30,30 @@ export class SoftwareConfigComponent {
   ) { 
     this.disk = this.diskModel.getDisk();
     this.devices = this.devicesModel.getDevices();
-    this.version = this.versionService.getVersion();
+    this.version = {
+      tabsint: '',
+      date: '',
+      rev: '',
+      version_code: '',
+      deps: {
+          user_agent: '',
+          node: '',
+          cordova: ''
+      },
+      plugins: []
+  };
+  }
+
+  ngOnInit(): void {
+    this.initializeVersion();
+  }
+
+  private async initializeVersion(): Promise<void> {
+    try {
+      this.version = await this.versionService.getVersion();
+    } catch (error) {
+      this.logger.error("" + error);
+    }
   }
 
   // TODO: VARIABLES - SHOULD BE MOVED TO THE RESPECTIVE MODEL WHEN IT EXISTS
