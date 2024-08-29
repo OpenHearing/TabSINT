@@ -16,23 +16,19 @@ stages:
 
 sonarqube-check:
   stage: sonarqube-check
-  # dependencies:
-  # - get-binaries
-  # - build
   cache:
     policy: pull
     key: "${CI_COMMIT_SHORT_SHA}"
     paths:
-    - sonar-scanner/
+      - sonar-scanner/
   script:
-  - sonar-scanner
+    - sonar-scanner
   allow_failure: true
   rules:
-  - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-  - if: $CI_COMMIT_BRANCH == 'master'
-  - if: $CI_COMMIT_BRANCH == 'main'
-  - if: $CI_COMMIT_BRANCH == 'develop'
-
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == 'master'
+    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'develop'
 
 build-docker-image:
   stage: build-docker-image
@@ -42,6 +38,9 @@ build-docker-image:
   variables:
     DOCKER_HOST: tcp://docker:2375/
     DOCKER_TLS_CERTDIR: ""
+  script:
+    - docker build -t $IMAGE_NAME .
+    - docker save -o $IMAGE_NAME.tar $IMAGE_NAME
   artifacts:
     paths:
       - $IMAGE_NAME.tar
