@@ -6,8 +6,6 @@ variables:
   SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
   GIT_DEPTH: "0"
   IMAGE_NAME: open-hearing-tabsint:$CI_COMMIT_REF_NAME
-  DOCKER_HOST: tcp://docker:2375/
-  DOCKER_TLS_CERTDIR: ""
 
 stages:
   - sonarqube-check
@@ -38,12 +36,12 @@ sonarqube-check:
 
 build-docker-image:
   stage: build-docker-image
-  image: docker:latest
+  image: docker:stable
   services:
-    - docker:dind
-  script:
-    - docker build -t $IMAGE_NAME .
-    - docker save -o $IMAGE_NAME.tar $IMAGE_NAME
+    - docker:stable-dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_TLS_CERTDIR: ""
   artifacts:
     paths:
       - $IMAGE_NAME.tar
@@ -56,9 +54,12 @@ build-docker-image:
 
 test:
   stage: test
-  image: docker:latest
+  image: docker:stable
   services:
-    - docker:dind
+    - docker:stable-dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_TLS_CERTDIR: ""
   dependencies:
     - build-docker-image
   script:
@@ -72,9 +73,12 @@ test:
 
 beta-release:
   stage: beta-release
-  image: docker:latest
+  image: docker:stable
   services:
-    - docker:dind
+    - docker:stable-dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_TLS_CERTDIR: ""
   dependencies:
     - build-docker-image
   script:
