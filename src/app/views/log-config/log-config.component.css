@@ -1,0 +1,17 @@
+.log-textarea {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 15px;
+  padding: 10px;
+  margin-bottom: 20px;
+  line-height: 1.5;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  border: 1px solid #ced4da;
+  height: 50vh;
+  max-height: 50vh;
+  overflow-y: auto; 
+}
+
+.log-entry {
+  margin-bottom: 10px;
+}
