@@ -14,9 +14,12 @@ export class TympanWrap {
 
     state: StateInterface;
     
-    ADAFRUIT_SERVICE_UUID = "BC2F4CC6-AAEF-4351-9034-D66268E328F0";
-    ADAFRUIT_CHARACTERISTIC_UUID = "06D1E5E7-79AD-4A71-8FAA-373789F7D93C";
-    CRC8_TABLE = this.genCRC8Table();  
+    ADAFRUIT_SERVICE_UUID = "BC2F4CC6-AAEF-4351-9034-D66268E328F0"; // custom tympan service
+    ADAFRUIT_CHARACTERISTIC_UUID = "06D1E5E7-79AD-4A71-8FAA-373789F7D93C"; // custom tympan characteristic
+    // ADAFRUIT_SERVICE_UUID = "6E400001-B5A3-f393-E0A9-E50E24DCCA9E"; // nord chip service
+    // ADAFRUIT_CHARACTERISTIC_UUID = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E"; // nord chip characteristic
+    CRC8_TABLE = this.genCRC8Table();
+    TMP_BUFFER = new DataView(new ArrayBuffer(0));
 
     constructor(public stateModel: StateModel, @Inject(WINDOW) private window: Window, private logger: Logger) {
         this.state = this.stateModel.getState();
@@ -27,20 +30,6 @@ export class TympanWrap {
     // https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/wikis/TabSINT-%E2%86%94-Tympan-Communication-Protocol?redirected_from=TabSINT-%3C-%3E-Tympan-Communication-Protocol
     // @capacitor-community/bluetooth-le ----> https://www.npmjs.com/package/@capacitor-community/bluetooth-le/v/0.5.1
 
-
-    /* needed functions
-    1) listOfTympanIDs = Scan()
-    2) resp = write(id)
-    3) connect(id)
-    4) disconnect(id)
-
-    helper functions
-    1) checksum
-    2) escaping
-    3) 
-
-    */
-
     async initialize() {
         try {
             await BleClient.initialize();
@@ -48,17 +37,6 @@ export class TympanWrap {
         } catch {
             this.state.bluetoothConnected = false;
         }
-        // For debugging lets add all the functions to the window. This should eventually be removed.
-        (this.window as any).tympan = {};
-        (this.window as any).tympan.scan = this.scan;
-        (this.window as any).tympan.connect = this.connect;
-        (this.window as any).tympan.write = this.write;
-        (this.window as any).msgToDataView = this.msgToDataView;
-        (this.window as any).genCRC8Checksum = this.genCRC8Checksum;
-        (this.window as any).handleEscaping = this.handleEscaping;
-        (this.window as any).CRC8_TABLE = this.CRC8_TABLE;
-        (this.window as any).ADAFRUIT_SERVICE_UUID = this.ADAFRUIT_SERVICE_UUID;
-        (this.window as any).ADAFRUIT_CHARACTERISTIC_UUID = this.ADAFRUIT_CHARACTERISTIC_UUID;
     }
 
     async scan(service_uuid:string=this.ADAFRUIT_SERVICE_UUID,timeout:number=5000): Promise<BleDevice[]> {
@@ -85,20 +63,28 @@ export class TympanWrap {
     }
 
     async write(device:BleDevice, msg:string) {
-        // let msg_to_write = this.msgToDataView(msg);
-        let msg_to_write = (window as any).msgToDataView(msg);
-        // let resp = await BleClient.write(device.deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID, msg_to_write);
-        
+        let msg_to_write = this.msgToDataView(msg);
         console.log("msg_to_write",msg_to_write);
+        console.log("TIME",Date.now());
         
-        let resp = await BleClient.write(device.deviceId, (window as any).ADAFRUIT_SERVICE_UUID, (window as any).ADAFRUIT_CHARACTERISTIC_UUID, msg_to_write);
+        await BleClient.startNotifications(device.deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID,(e) => {
+                console.log("e.buffer",e.buffer);
+            this.TMP_BUFFER = this.appendDataView(this.TMP_BUFFER,e);
+            console.log("appended buffer",this.TMP_BUFFER);
+            console.log(this.dataViewToMsg(this.TMP_BUFFER));
+        });
+
+        let resp = await BleClient.write(device.deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID, msg_to_write);
         this.logger.debug("resp from writing: "+msg_to_write+" is: "+JSON.stringify(resp));
     }
 
     async connect(device:BleDevice) {
         await BleClient.connect(device.deviceId, (deviceId:string) => this.onDisconnect(deviceId));
         console.log('connected to device', device);
-    }
+
+        let availableServices = await BleClient.getServices(device.deviceId);
+        console.log("availableServices",availableServices); // uneeded?
+    }   
 
     onDisconnect(deviceId:string): void {
         console.log(`device ${deviceId} disconnected`);
@@ -117,20 +103,45 @@ export class TympanWrap {
         let start_byte = new Uint8Array([5]);
         let end_byte = new Uint8Array([2]);
         let buf = new TextEncoder().encode(str); // this is a uint8array!
-        // let crc = this.genCRC8Checksum(buf);
-        let crc = (window as any).genCRC8Checksum(buf);
+        let crc = this.genCRC8Checksum(buf);
         console.log("crc",crc);
-        // let msgToSend = new Uint8Array([...start_byte, ...this.handleEscaping(buf), ...this.handleEscaping(crc), ...end_byte])
-        let msgToSend = new Uint8Array([...start_byte, ...(window as any).handleEscaping(buf), ...(window as any).handleEscaping(crc), ...end_byte])
+        let msgToSend = new Uint8Array([...start_byte, ...this.handleEscaping(buf), ...this.handleEscaping(crc), ...end_byte])
         console.log("number array",Array.from(msgToSend));
         return numbersToDataView(Array.from(msgToSend))
-        // return new DataView(msgToSend.buffer, 0, msgToSend.length)
+    }
+
+    dataViewToMsg(dv:DataView):string {
+        var msg:string = '';
+        if (dv.getUint8(0)==5 && dv.getUint8(dv.buffer.byteLength-1)==2) {
+            msg='good packet';
+            let tmp = new Uint8Array(dv.buffer.slice(0));
+            console.log("tmp",tmp);
+            let unescapedArray = this.handleUnescaping(tmp.slice(1,tmp.byteLength-1));
+            console.log("unescapedArray",unescapedArray);
+            console.log("crc",unescapedArray.slice(unescapedArray.byteLength-1));
+            let expectedChecksum = this.genCRC8Checksum(unescapedArray.slice(0,unescapedArray.byteLength-1));
+            console.log("expectedChecksum",expectedChecksum);
+            let tmpDV=new DataView(unescapedArray.slice(0,unescapedArray.byteLength-1).buffer);
+            let pkt = this.dataViewToString(tmpDV);
+            console.log("parsed pkt",pkt);
+            console.log("TIME",Date.now());
+        } else {
+            msg='bad packet';
+        }
+        return msg
     }
 
     dataViewToString(dv:DataView): string {
         // needs to be updated
         return new TextDecoder().decode(dv.buffer)
     }
+
+    appendDataView(dv1:DataView, dv2:DataView):DataView {
+        var tmp = new Uint8Array(dv1.buffer.byteLength + dv2.buffer.byteLength);
+        tmp.set(new Uint8Array(dv1.buffer), 0);
+        tmp.set(new Uint8Array(dv2.buffer), dv1.buffer.byteLength);
+        return new DataView(tmp.buffer);
+    };
 
 
 
@@ -147,11 +158,28 @@ export class TympanWrap {
         return escaped_byte_array
     }
 
+    handleUnescaping(byte_array:Uint8Array) {
+        var unescaped_byte_array:Uint8Array = new Uint8Array();
+        var skipNext:boolean = false;
+        byte_array.forEach( (byte:any) => {
+            if (skipNext==false) {
+                if (byte==3) {
+                    unescaped_byte_array = new Uint8Array([...unescaped_byte_array, ...[byte ^ 80]]);
+                    skipNext = true;
+                } else {
+                    unescaped_byte_array = new Uint8Array([...unescaped_byte_array, ...[byte]]);
+                }
+            } else {
+                skipNext=false;
+            }
+        })
+        return unescaped_byte_array
+    }
+
     genCRC8Checksum(byte_array:Uint8Array) {
         var c:any;
         for (var i = 0; i < byte_array.length; i++ ) {
-            // c = this.CRC8_TABLE[(c ^ byte_array[i]) % 256];
-            c = (window as any).CRC8_TABLE[(c ^ byte_array[i]) % 256];
+            c = this.CRC8_TABLE[(c ^ byte_array[i]) % 256];
         }
         return new Uint8Array([c]);
     } 
@@ -162,9 +190,9 @@ export class TympanWrap {
             var curr = i
             for ( var j = 0; j < 8; ++j ) {
                 if ((curr & 0x80) !== 0) {
-                curr = ((curr << 1) ^ 0x07) % 256
+                    curr = ((curr << 1) ^ 0x07) % 256
                 } else {
-                curr = (curr << 1) % 256
+                    curr = (curr << 1) % 256
                 }
             }
             csTable[i] = curr 
