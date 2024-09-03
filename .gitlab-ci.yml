@@ -3,28 +3,114 @@ image:
   entrypoint: [""]
 
 variables:
-  SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar" # Defines the location of the analysis task cache
-  GIT_DEPTH: "0" # Tells git to fetch all the branches of the project, required by the analysis task
+  SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
+  GIT_DEPTH: "0"
+  IMAGE_NAME: open-hearing-tabsint
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_DRIVER: overlay2
+  IMAGE_TAG_BASE: $CI_REGISTRY_IMAGE
 
 stages:
-- sonarqube-check
-- sonarqube-vulnerability-report
+  - sonarqube-check
+  - sonarqube-vulnerability-report
+  - build-docker-image
+  - test
+  - beta-release
+  - cleanup
 
 sonarqube-check:
   stage: sonarqube-check
-  # dependencies:
-  # - get-binaries
-  # - build
   cache:
     policy: pull
     key: "${CI_COMMIT_SHORT_SHA}"
     paths:
-    - sonar-scanner/
+      - sonar-scanner/
   script:
-  - sonar-scanner
+    - sonar-scanner
   allow_failure: true
   rules:
-  - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-  - if: $CI_COMMIT_BRANCH == 'master'
-  - if: $CI_COMMIT_BRANCH == 'main'
-  - if: $CI_COMMIT_BRANCH == 'develop'
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == 'master'
+    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'develop'
+
+build-docker-image:
+  stage: build-docker-image
+  image: docker:cli
+  services:
+    - docker:dind
+  tags:
+    - docker
+    - shell
+    - privileged
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - SAFE_COMMIT_REF_NAME=$(echo "$CI_COMMIT_REF_NAME" | tr '/' '-')
+    - IMAGE_TAG="$IMAGE_TAG_BASE:$SAFE_COMMIT_REF_NAME"
+    - docker build -t $IMAGE_TAG .
+    - docker push $IMAGE_TAG
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == 'master'
+    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'develop'
+
+test:
+  stage: test
+  image: docker:cli
+  services:
+    - docker:dind
+  tags:
+    - docker
+    - privileged
+  dependencies:
+    - build-docker-image
+  script:
+    - SAFE_COMMIT_REF_NAME=$(echo "$CI_COMMIT_REF_NAME" | tr '/' '-')
+    - IMAGE_TAG="$IMAGE_TAG_BASE:$SAFE_COMMIT_REF_NAME"
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull $IMAGE_TAG
+    - docker run --rm $IMAGE_TAG npm run test:headless
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == 'master'
+    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'develop'
+
+beta-release:
+  stage: beta-release
+  image: docker:cli
+  services:
+    - docker:dind
+  tags:
+    - docker
+    - privileged
+  dependencies:
+    - build-docker-image
+  script:
+    - SAFE_COMMIT_REF_NAME=$(echo "$CI_COMMIT_REF_NAME" | tr '/' '-')
+    - IMAGE_TAG="$IMAGE_TAG_BASE:$SAFE_COMMIT_REF_NAME"
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull $IMAGE_TAG
+    - CONTAINER_ID=$(docker run -d $IMAGE_TAG npm run run.build:ci)
+    - docker wait $CONTAINER_ID
+    - docker cp $CONTAINER_ID:/usr/src/app/android/app/build/outputs/apk/debug/app-debug.apk ./android/app/
+    - docker stop $CONTAINER_ID
+    - docker rm $CONTAINER_ID
+  artifacts:
+    paths:
+      - android/app/app-debug.apk
+    expire_in: 2 hours
+  rules:
+    - when: manual
+
+cleanup:
+  stage: cleanup
+  script:
+    - rm -f ./android/app/app-debug.apk
+  rules:
+    - if: $CI_JOB_MANUAL
+      when: on_success
+    - if: $CI_PIPELINE_SOURCE == "web"
+      when: manual
