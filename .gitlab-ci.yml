@@ -109,8 +109,8 @@ cleanup:
   stage: cleanup
   script:
     - rm -f ./android/app/app-debug.apk
-  needs: 
-    - job: beta-release
-      when: manual
   rules:
-    - when: always
+    - if: $CI_JOB_MANUAL
+      when: on_success
+    - if: $CI_PIPELINE_SOURCE == "web"
+      when: manual
