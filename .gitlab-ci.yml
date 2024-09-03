@@ -95,7 +95,7 @@ beta-release:
     - docker run --rm $IMAGE_TAG npm run run.build:ci
   artifacts:
     paths:
-      - android/app/build/outputs/apk/debug/
+      - android/app/build/outputs/apk/debug/app-debug.apk
     expire_in: 2 hours
   rules:
     - when: manual
