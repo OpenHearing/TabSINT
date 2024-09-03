@@ -17,6 +17,7 @@ stages:
   - build-docker-image
   - test
   - beta-release
+  - cleanup
 
 sonarqube-check:
   stage: sonarqube-check
@@ -100,8 +101,16 @@ beta-release:
   artifacts:
     paths:
       - android/app/app-debug.apk
-    after_script:
-      - rm -f ./android/app/app-debug.apk
     expire_in: 2 hours
   rules:
     - when: manual
+
+cleanup:
+  stage: cleanup
+  script:
+    - rm -f ./android/app/app-debug.apk
+  needs: 
+    - job: beta-release
+      when: manual
+  rules:
+    - when: always
