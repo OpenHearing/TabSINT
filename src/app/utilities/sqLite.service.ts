@@ -38,6 +38,12 @@ export class SqLite {
         await this.open();
     }
 
+    private async ensureDbInitialized() {
+        if (!this.db) {
+            await this.init(); // Initialize the DB if not already done
+        }
+    }
+
     private async initializePlugin() {
         this.sqlitePlugin = CapacitorSQLite;
         this.sqliteConnection = new SQLiteConnection(this.sqlitePlugin);
@@ -68,6 +74,7 @@ export class SqLite {
         data: string
     ) {
         try {
+            await this.ensureDbInitialized();
             const sql = "INSERT INTO " + tableName + " (data) VALUES (?)";
             await this.db.run(sql, [data]);
             console.log("SQLITE " + tableName + " stored");
