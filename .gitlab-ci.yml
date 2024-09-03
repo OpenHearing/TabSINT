@@ -9,6 +9,7 @@ variables:
   DOCKER_HOST: tcp://docker:2375
   DOCKER_TLS_CERTDIR: ""
   DOCKER_DRIVER: overlay2
+  IMAGE_TAG_BASE: $CI_REGISTRY_IMAGE
 
 stages:
   - sonarqube-check
@@ -43,12 +44,11 @@ build-docker-image:
     - shell
     - privileged
   script:
-    - docker build -t $IMAGE_NAME .
-    - docker save -o $IMAGE_NAME.tar $IMAGE_NAME
-  artifacts:
-    paths:
-      - $IMAGE_NAME.tar
-    expire_in: 2 hours
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - SAFE_COMMIT_REF_NAME=$(echo "$CI_COMMIT_REF_NAME" | tr '/' '-')
+    - IMAGE_TAG="$IMAGE_TAG_BASE:$SAFE_COMMIT_REF_NAME"
+    - docker build -t $IMAGE_TAG .
+    - docker push $IMAGE_TAG
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_BRANCH == 'master'
@@ -66,8 +66,11 @@ test:
   dependencies:
     - build-docker-image
   script:
-    - docker load -i $IMAGE_NAME.tar
-    - docker run --rm $IMAGE_NAME npm run test:headless
+    - SAFE_COMMIT_REF_NAME=$(echo "$CI_COMMIT_REF_NAME" | tr '/' '-')
+    - IMAGE_TAG="$IMAGE_TAG_BASE:$SAFE_COMMIT_REF_NAME"
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull $IMAGE_TAG
+    - docker run --rm $IMAGE_TAG npm run test:headless
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_BRANCH == 'master'
@@ -85,8 +88,11 @@ beta-release:
   dependencies:
     - build-docker-image
   script:
-    - docker load -i $IMAGE_NAME.tar
-    - docker run --rm $IMAGE_NAME npm run run.build:ci
+    - SAFE_COMMIT_REF_NAME=$(echo "$CI_COMMIT_REF_NAME" | tr '/' '-')
+    - IMAGE_TAG="$IMAGE_TAG_BASE:$SAFE_COMMIT_REF_NAME"
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull $IMAGE_TAG
+    - docker run --rm $IMAGE_TAG npm run run.build:ci
   artifacts:
     paths:
       - android/app/build/outputs/apk/debug/
