@@ -55,7 +55,7 @@ export class LogConfigComponent {
       }
       let msg: DialogDataInterface = {
         title: "Confirm Export",
-        content: "Are you sure you want to export the logs to .tabsintlogs?",
+        content: "Are you sure you want to export the logs to tabsint-logs?",
         type: DialogType.Confirm
       };
       this.notifications.confirm(msg).subscribe(async (result: string) => {
@@ -76,8 +76,8 @@ export class LogConfigComponent {
         data: log,
       }));
       const logData = JSON.stringify({ logs: formattedLogs }, null, 2);
-      const filename = `.tabsintlogs/${currentTimeStamp}.json`;
-      await this.fileService.writeFile(filename,logData);
+      const filename = `tabsint-logs/${currentTimeStamp}.json`;
+      await this.fileService.writeFile(filename, logData);
   } catch (error){
     console.error('Error exporting logs:', error);
   }
