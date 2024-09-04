@@ -87,8 +87,6 @@ export class ProtocolsComponent {
             const protocol: ProtocolInterface = {
               ...partialMetaDefaults, 
               name: protocolName!, 
-              path: "", 
-              creator: "", 
               contentURI: protocolsFolderUri!, 
               server: ProtocolServer.LocalServer,
               admin: false,

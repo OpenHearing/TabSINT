@@ -23,7 +23,7 @@ export interface CurrentResults {
 
 export interface ExamResults {
     protocolName: string;
-    protocolId: string;
+    protocolId?: string;
     protocol: ProtocolInterface;
     testDateTime?: string;
     elapsedTime?: string;

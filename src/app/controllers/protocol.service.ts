@@ -63,10 +63,7 @@ export class ProtocolService {
         this.protocolModel = this.protocolM.getProtocolModel();
         this.state = this.stateModel.getState();
 
-        this.loading = loadingProtocolDefaults(this.diskModel.disk.validateProtocols);
-
-        // For BAyotte development only, auto load protocol when tabsint loads
-        this.load(this.disk.availableProtocolsMeta["develop"], true, false)
+        this.loading = loadingProtocolDefaults(this.diskModel.disk);
     }
 
     /** Load all protocol files onto the protocolModel.activeProtocol object.
@@ -89,7 +86,6 @@ export class ProtocolService {
         this.loading.overwrite = overwrite;
 
         try {
-            // await this.overwriteLocalFilesIfNeeded(); // TODO: should no longer be needed, will remove after more testing
             await this.loadFiles();
             this.setCalibration();
             let validationError = await this.validateIfCalledFor();
@@ -130,28 +126,6 @@ export class ProtocolService {
             console.log(error);
         }
     };
-
-    private async overwriteLocalFilesIfNeeded() {
-        try {
-            if (this.loading.notify) {
-                this.tasks.register("updating protocol", "Loading Protocol Files...");
-            }
-            this.logger.debug("loading.meta" + JSON.stringify(this.loading.meta));
-            if (this.loading.meta.contentURI && this.loading.overwrite) {
-                this.logger.debug("re-loading protocol - copying directory");
-                return
-                // return (this.fileService.copyDirectory(this.loading.meta.contentURI, this.loading.meta.name!, 'Documents', 'Documents'));
-            } else {
-                return;
-            }
-        } catch(err) {
-            this.logger.debug("Error overwriting: " + err);
-            return {
-                code: 606,
-                msg: "Error overwriting protocol"
-            }
-        }
-    }
 
     private async loadFiles() {
 

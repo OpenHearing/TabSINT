@@ -55,6 +55,7 @@ export class ResultsComponent {
       data: index
     }).afterClosed().subscribe(async () => {
       this.results = await this.sqLite.getAllResults();
+      this.disk = this.diskModel.getDisk();
     });
   }
 

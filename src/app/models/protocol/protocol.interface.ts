@@ -5,15 +5,15 @@ import { ProtocolSchemaInterface } from "../../interfaces/protocol-schema.interf
 import { ProtocolServer } from "../../utilities/constants";
 
 export interface ProtocolMetaInterface {
-  group: string;
+  group?: string;
   name: string;
-  path: string;
+  path?: string;
   date: string;
   version: string;
-  creator: string;
+  creator?: string;
   server: ProtocolServer;
   admin: boolean;
-  contentURI: string;
+  contentURI?: string;
 }
 export interface ProtocolModelInterface {
   activeProtocol?: ProtocolInterface, 

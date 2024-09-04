@@ -46,7 +46,7 @@ export class ResultsService {
     */
     initializeExamResults() {
         this.results.currentExam = {
-            protocolId: this.protocol.activeProtocol!.protocolId || 'no protocolId',
+            protocolId: this.protocol.activeProtocol!.protocolId,
             protocolName: this.protocol.activeProtocol!.name,
             testDateTime: new Date().toJSON(),
             elapsedTime: undefined,    
@@ -149,7 +149,7 @@ export class ResultsService {
     async exportSingleResult(index: number) {
         let result = await this.sqLite.getSingleResult(index);
         await this.writeResultToFile(JSON.parse(result[0]));
-        this.sqLite.deleteSingleResult(index);
+        await this.sqLite.deleteSingleResult(index);
     }
 
     /**
@@ -159,11 +159,12 @@ export class ResultsService {
      * @param result exam result
      */
     async writeResultToFile(result: ExamResults) {
-        var filename = constructFilename(this.protocol.activeProtocol?.resultFilename, result.testDateTime);
+        var filename = constructFilename(this.protocol.activeProtocol?.resultFilename, result.testDateTime, '.json');
         let dir = this.disk.servers.localServer.resultsDir
             ? this.disk.servers.localServer.resultsDir
             : "tabsint-results";
-        await this.fileService.writeFile(dir + "/" + filename, result.toString());
+        dir = dir +  "/" + this.protocol.activeProtocol?.name + "/" ;
+        await this.fileService.writeFile(dir + filename, result.toString());
         this.diskModel.updateSummary(result);
         this.disk = this.diskModel.getDisk();
     }

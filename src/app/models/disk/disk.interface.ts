@@ -84,7 +84,7 @@ export interface DiskInterface {
 }
 
 interface UploadSummary {
-  protocolId: string;
+  protocolId?: string;
   protocolName: string;
   testDateTime: string;
   nResponses: number;
