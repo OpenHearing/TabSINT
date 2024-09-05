@@ -14,7 +14,7 @@ export class DevicesModel {
         build: "build",
         protocolId: "protocolId",
         uuid: "uuid",
-        tabsintUUID: "tabsintUUID",
+        // tabsintUUID: "tabsintUUID",
         version: "version",
         platform: "platform",
         model: "model",
@@ -36,7 +36,7 @@ export class DevicesModel {
             this.devicesModel.build = info.manufacturer ?? 'Unknown';
             this.devicesModel.protocolId = 'some-protocol-id'; 
             this.devicesModel.uuid = id.identifier;
-            this.devicesModel.tabsintUUID =  "tabsintUUID";
+            // this.devicesModel.tabsintUUID =  "tabsintUUID";
             this.devicesModel.version = info.osVersion ?? 'Unknown';
             this.devicesModel.platform = info.platform ?? 'Unknown';
             this.devicesModel.model = info.model ?? 'Unknown';

@@ -35,15 +35,15 @@ export class ProtocolsComponent {
 
   constructor (
     public diskModel: DiskModel,
-    public protocolService: ProtocolService,
+    public examService: ExamService,
     public protocolM: ProtocolModel,
+    public protocolService: ProtocolService,
     public stateModel: StateModel,
-    private translate: TranslateService,
+    private fileService: FileService,
     private logger: Logger,
     private notifications: Notifications,
     private tasks: Tasks,
-    public examService: ExamService,
-    private fileService: FileService
+    private translate: TranslateService,
   ) {
     this.disk = this.diskModel.getDisk();
     this.protocolModel = this.protocolM.getProtocolModel();
@@ -130,7 +130,7 @@ export class ProtocolsComponent {
 
   async loadProtocol() {
     if (!this.selected) {
-        return;
+      return;
     }
 
     this.tasks.register("updating", "Loading Protocol...");
@@ -138,27 +138,23 @@ export class ProtocolsComponent {
     let protocolMetaData = getProtocolMetaData(this.selected!);
 
     if (!this.protocolModel.activeProtocol) {
-      await this.protocolService.load(protocolMetaData, true, false);
+      await this.protocolService.load(protocolMetaData, true);
     } else {
-        let msg: DialogDataInterface = {
-          title: "Confirm",
-          content: `Switch to protocol ${this.selected.name} and reset the current test? The current test results will be deleted`,
-          type: DialogType.Confirm
-          };
-        if (this.isActive(this.selected)) {
-            msg.content = `Overwrite protocol ${this.selected.name} and reset the current test? The current test will be reset`;
-        }
+      let msg: DialogDataInterface = {
+        title: "Confirm",
+        content: `Switch to protocol ${this.selected.name} and reset the current test? The current test results will be deleted`,
+        type: DialogType.Confirm
+        };
+      if (this.isActive(this.selected)) {
+        msg.content = `Overwrite protocol ${this.selected.name} and reset the current test? The current test will be reset`;
+      }
 
-        this.notifications.confirm(msg).subscribe(async result => {
-            if (result === "OK") {
-                if (!this.isActive(this.selected)) {
-                  await this.protocolService.load(protocolMetaData, true, false);
-                } else if (this.isActive(this.selected)) {
-                  await this.protocolService.load(protocolMetaData, true, true);
-                  this.examService.reset();
-                }
-            }
-        });
+      this.notifications.confirm(msg).subscribe(async result => {
+        if (result === "OK") {
+          await this.protocolService.load(protocolMetaData, true);
+          this.examService.reset();
+        }
+      });
     }
     this.tasks.deregister("updating");
   };

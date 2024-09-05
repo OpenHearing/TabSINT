@@ -4,11 +4,11 @@ import { TranslateService } from '@ngx-translate/core';
 import Ajv, { ValidationError } from 'ajv';
 const ajv = new Ajv()
 
-import { FileService } from '../utilities/file.service';
 
 import { LoadingProtocolInterface } from '../interfaces/loading-protocol-object.interface';
 import { ProtocolValidationResultInterface } from '../interfaces/protocol-validation-result.interface';
 import { ProtocolErrorInterface } from '../interfaces/protocol-error.interface';
+import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
 
 import { DiskModel } from '../models/disk/disk.service';
 import { ProtocolModel } from '../models/protocol/protocol-model.service';
@@ -19,8 +19,10 @@ import { StateInterface } from '../models/state/state.interface';
 import { StateModel } from '../models/state/state.service';
 import { PageModel } from '../models/page/page.service';
 import { ProtocolMetaInterface } from '../models/protocol/protocol.interface';
+import { DiskInterface } from '../models/disk/disk.interface';
 
 import { ExamState } from '../utilities/constants';
+import { FileService } from '../utilities/file.service';
 import { DeveloperProtocols, DeveloperProtocolsCalibration, DialogType, ProtocolServer} from '../utilities/constants';
 import { Logger } from '../utilities/logger.service';
 import { Paths } from '../utilities/paths.service';
@@ -30,9 +32,8 @@ import { loadingProtocolDefaults } from '../utilities/defaults';
 import { checkCalibrationFiles, checkControllers, checkPreProcessFunctions } from '../utilities/protocol-checks.function';
 import { processProtocol } from '../utilities/process-protocol.function';
 import { initializeLoadingProtocol } from '../utilities/initialize-loading-protocol';
+
 import { protocolSchema } from '../../schema/protocol.schema';
-import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
-import { DiskInterface } from '../models/disk/disk.interface';
 
 @Injectable({
     providedIn: 'root',
@@ -48,42 +49,38 @@ export class ProtocolService {
     constructor(
         public appModel: AppModel,
         public diskModel: DiskModel,
-        public pageModel: PageModel,
         public fileService: FileService,
         public logger:Logger,
+        public notifications: Notifications,
+        public pageModel: PageModel,
         public paths: Paths,
         public protocolM: ProtocolModel,
-        public tasks: Tasks,
+        public stateModel: StateModel,
         public translate: TranslateService,
-        public notifications: Notifications,
-        public stateModel: StateModel
+        public tasks: Tasks,
     ) {
         this.app = this.appModel.getApp();
         this.disk = this.diskModel.getDisk();
         this.protocolModel = this.protocolM.getProtocolModel();
         this.state = this.stateModel.getState();
-
         this.loading = loadingProtocolDefaults(this.diskModel.disk);
     }
 
     /** Load all protocol files onto the protocolModel.activeProtocol object.
-     * @summary Overwrite local protocol files if they have changed, load files into tabsint
+     * @summary Read and process protocol files 
      * including custom protocol files, validate the protocol against the schema.
      * Handle load errors.
      * @models protocol, disk
      * @param meta meta data for the protocol to load,
      * @param notify whether to use task banners to notify user about progress. Default: false.
-     * @param overwrite whether to overwrite local protocol files if they have changed. Default: false.
     */
     async load(
         meta: ProtocolMetaInterface,
-        notify: boolean = false,
-        overwrite: boolean = false
+        notify: boolean = false
     ) {
         this.loading.meta = meta;
         this.loading.requiresValidation = this.diskModel.disk.validateProtocols;
         this.loading.notify = notify;
-        this.loading.overwrite = overwrite;
 
         try {
             await this.loadFiles();
@@ -128,38 +125,22 @@ export class ProtocolService {
     };
 
     private async loadFiles() {
-
-        // let availableMetaProtocols = this.diskModel.disk.availableProtocolsMeta
-        // let loadedProtocols = this.protocolModel.loadedProtocols
-        // availableMetaProtocols.forEach((metaProtocol:ProtocolMetaInterface) => {
-        //     this.fileService.readFile("protocol.json",metaProtocol.contentURI)
-        //         .then(res => {
-        //             let content = res?.content
-        //             const parsedResult: ProtocolSchemaInterface = JSON.parse(content!);
-        //             const newProtocol: ProtocolInterface = { ...metaProtocol, ...parsedResult };
-        //             loadedProtocols[metaProtocol.name] = newProtocol;
-        //         })
-        //         .catch(error => {
-        //             console.error("Failed with:", error);
-        //         });
-        // });
-        // this.protocolModel.loadedProtocols = loadedProtocols
-        // this.disk = this.diskModel.getDisk()
-
         try {
             var protocol;
             let finalProtocol: ProtocolSchemaInterface;
+
             if (this.loading.meta.server == ProtocolServer.Developer) {
                 protocol = DeveloperProtocols[this.loading.meta.name!];
                 finalProtocol = protocol;
             } else {
                 const response = await this.fileService.readFile("protocol.json", this.loading.meta.contentURI);
                 protocol = response?.content!;
-                console.log("Inside else statement--" + protocol);
                 finalProtocol = JSON.parse(protocol);
             }
+
             if (!_.isUndefined(protocol)) {
                 this.loading.protocol = {...this.loading.meta, ...finalProtocol };
+                this.diskModel.updateDiskModel('activeProtocolMeta', this.loading.meta);
             } else {
                 this.notifyProtocolDidntLoadProperly();
             }
@@ -172,8 +153,8 @@ export class ProtocolService {
     private async validate() {
         const validate = ajv.compile(protocolSchema);
         const isValid = validate(this.loading.protocol);
-        console.log('AJV isValid? ', isValid);
-        console.log('AJV ERRORS: ', validate.errors);
+        this.logger.debug('AJV isValid? ' + isValid);
+        this.logger.debug('AJV ERRORS: ' + validate.errors);
         let ret: ProtocolValidationResultInterface = {
             valid: isValid,
             error: validate.errors
