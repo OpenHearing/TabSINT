@@ -126,7 +126,7 @@ export class ProtocolService {
 
     private async loadFiles() {
         try {
-            var protocol;
+            let protocol;
             let finalProtocol: ProtocolSchemaInterface;
 
             if (this.loading.meta.server == ProtocolServer.Developer) {
@@ -210,8 +210,8 @@ export class ProtocolService {
 
         if (this.protocolModel.activeProtocol!.errors!.length > 0) {
             msg ="The protocol contains the following errors and may not function properly." + " \n\n";
-            for (var i = 0; i < this.protocolModel.activeProtocol!.errors!.length; i++) {
-                var err = this.protocolModel.activeProtocol!.errors![i];
+            for (let i = 0; i < this.protocolModel.activeProtocol!.errors!.length; i++) {
+                let err = this.protocolModel.activeProtocol!.errors![i];
                 msg += err.type + ":\n";
                 msg += " - " + err.error + "\n";
             }
@@ -267,7 +267,7 @@ export class ProtocolService {
 
     private async setCalibration() {
         this.loading.calibration = undefined;
-        var calibration;
+        let calibration;
         if (this.loading.meta.server === ProtocolServer.Developer) {
             calibration = DeveloperProtocolsCalibration[this.loading.meta.name!];
         } else {

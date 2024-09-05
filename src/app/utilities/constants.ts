@@ -47,7 +47,7 @@ export enum SvantekState {
     Recording
 }
 
-export var BluetoothType = {
+export const BluetoothType = {
   "BLUETOOTH": "Bluetooth 2.0",
   "BLUETOOTH_LE": "Bluetooth 3.0",
   "USB": "USB Host"
@@ -55,13 +55,13 @@ export var BluetoothType = {
 
 import CreareAudiometry from '../../protocols/creare-audiometry/protocol.json';
 import develop from '../../protocols/develop/protocol.json';
-export var DeveloperProtocols: any = {
+export const DeveloperProtocols: any = {
     "Creare Audiometry": CreareAudiometry,
     "develop" : develop
 }
 
 import WahtsDeviceTestCalibration from '../../protocols/wahts-device-test/calibration.json';
-export var DeveloperProtocolsCalibration: any = {
+export const DeveloperProtocolsCalibration: any = {
     "wahts-device-test": WahtsDeviceTestCalibration
 }
 

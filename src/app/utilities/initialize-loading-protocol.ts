@@ -54,10 +54,10 @@ export function initializeLoadingProtocol(
     function checkTabsintVersion() {
         loading.protocol.protocolTabsintOutdated = false;
         if (loading.protocol.minTabsintVersion) {
-            var mtv = _.map(loading.protocol.minTabsintVersion.split("."), function(s) {
+            const mtv = _.map(loading.protocol.minTabsintVersion.split("."), function(s) {
                 return parseInt(s);
             }); //
-            // var ctv = _.map(version.dm.tabsint.split("-")[0].split("."), function(s) {
+            // const ctv = _.map(version.dm.tabsint.split("-")[0].split("."), function(s) {
             //     return parseInt(s);
             // });
 
@@ -100,7 +100,7 @@ export function initializeLoadingProtocol(
     }
 
     function checkCalibration() {
-        var reqCalProperties = [
+        const reqCalProperties = [
             "headset",
             "tablet",
             "audioProfileVersion",
@@ -130,7 +130,7 @@ export function initializeLoadingProtocol(
 
     function setMediaRepo() {
         if (loading.protocol.commonMediaRepository) {
-            var midx = _.findIndex(diskModel.disk.mediaRepos, {
+            const midx = _.findIndex(diskModel.disk.mediaRepos, {
                 name: loading.protocol.commonMediaRepository
             });
             if (midx !== -1) {

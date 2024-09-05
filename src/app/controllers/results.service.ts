@@ -120,8 +120,8 @@ export class ResultsService {
      * @param result Partial or completed current exam result
      */
     async backup(result: ExamResults) {
-        var filename = constructFilename(this.protocol.activeProtocol?.resultFilename, result.testDateTime, 'json');
-        var dir = ".tabsint-results-backup/" + result.protocolName + "/";
+        let filename = constructFilename(this.protocol.activeProtocol?.resultFilename, result.testDateTime, 'json');
+        let dir = ".tabsint-results-backup/" + result.protocolName + "/";
 
         try {
             await this.fileService.writeFile(dir + filename, JSON.stringify(result));
@@ -159,7 +159,7 @@ export class ResultsService {
      * @param result exam result
      */
     async writeResultToFile(result: ExamResults) {
-        var filename = constructFilename(this.protocol.activeProtocol?.resultFilename, result.testDateTime, '.json');
+        let filename = constructFilename(this.protocol.activeProtocol?.resultFilename, result.testDateTime, '.json');
         let dir = this.disk.servers.localServer.resultsDir
             ? this.disk.servers.localServer.resultsDir
             : "tabsint-results";

@@ -139,14 +139,16 @@ export class ExamService {
      * @models page
     */
     private getPagesFromAdvancedLogic() {
-        var pageList: (ProtocolSchemaInterface | PageDefinition | ProtocolReferenceInterface)[] = [];
+        let pageList: (ProtocolSchemaInterface | PageDefinition | ProtocolReferenceInterface)[] = [];
         if (this.currentPage.skipIf) { 
             this.logger.debug("skipIf is not yet supported");
             // push pages to list if needed
-        } if (this.currentPage.repeatPage) {
+        } 
+        if (this.currentPage.repeatPage) {
             this.logger.debug("repeatPage is not yet supported");
             // push pages to list if needed
-        } if (this.currentPage.followOns) { 
+        } 
+        if (this.currentPage.followOns) { 
             let nextID = this.findFollowOn();
             if (nextID != undefined) {
                 // TODO: Make it clear that this will break out of the function chain
@@ -161,7 +163,8 @@ export class ExamService {
                     });
                 }
             }
-        } if (this.currentPage.preProcessFunction) { 
+        } 
+        if (this.currentPage.preProcessFunction) { 
             this.logger.debug("preProcessFunction is not yet supported");
             // push pages to list if needed and/or run preprocess function
         }
@@ -179,7 +182,7 @@ export class ExamService {
      * @summary Returns true/false depending a id contains a special reference
     */
     private checkForSpecialReference(id:String | undefined) {
-        var hasSpecialReference = false;
+        let hasSpecialReference = false;
         if (id != undefined && id.includes("@")) {
             hasSpecialReference = true;
         }
