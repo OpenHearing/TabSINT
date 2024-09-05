@@ -78,9 +78,9 @@ export class ResultsComponent {
       }
   }
 
-  async upload() {
+  // async upload() {
 
-  }
+  // }
 
   /**
    * Delete all exam results from the disk completed exam results and from the sqlite database.

@@ -124,7 +124,7 @@ export class SqLite {
     }
 
     async deleteOlderLogsIfThereAreTooMany() {
-            var delCount = this.count['logs'] - this.disk.maxLogRows + 1;
+            const delCount = this.count['logs'] - this.disk.maxLogRows + 1;
             if (delCount > 0) {
                 try {
                     await this.db.executeSet([{statement: deleteSql, values: [delCount]}]);
