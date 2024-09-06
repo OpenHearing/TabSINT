@@ -2,25 +2,25 @@ import { Component } from '@angular/core';
 import _ from 'lodash';
 import { TranslateService } from '@ngx-translate/core';
 
+import { ProtocolService } from '../../controllers/protocol.service';
+import { ExamService } from '../../controllers/exam.service';
+import { DialogDataInterface } from '../../interfaces/dialog-data.interface';
+import { ProtocolSchemaInterface } from '../../interfaces/protocol-schema.interface';
+
 import { DiskModel } from '../../models/disk/disk.service';
-import { Logger } from '../../utilities/logger.service';
-import { ProtocolInterface, ProtocolMetaInterface } from '../../models/protocol/protocol.interface';
-import { DialogType, ProtocolServer } from '../../utilities/constants';
+import { ProtocolInterface, ProtocolMetaInterface, ProtocolModelInterface } from '../../models/protocol/protocol.interface';
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { ProtocolModel } from '../../models/protocol/protocol-model.service';
-import { ProtocolService } from '../../controllers/protocol.service';
 import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
-import { DialogDataInterface } from '../../interfaces/dialog-data.interface';
+
+import { Logger } from '../../utilities/logger.service';
+import { DialogType, ProtocolServer } from '../../utilities/constants';
 import { Notifications } from '../../utilities/notifications.service';
 import { Tasks } from '../../utilities/tasks.service';
-import { ProtocolModelInterface } from '../../models/protocol/protocol.interface';
-import { ExamService } from '../../controllers/exam.service';
 import { getProtocolMetaData } from '../../utilities/protocol-helper-functions';
 import { FileService } from '../../utilities/file.service';
-import { ProtocolSchemaInterface } from '../../interfaces/protocol-schema.interface';
-import { metaDefaults, partialMetaDefaults } from '../../utilities/defaults';
-import { AdminService } from '../../controllers/admin.service';
+import { partialMetaDefaults } from '../../utilities/defaults';
 
 @Component({
   selector: 'protocols-view',
@@ -64,7 +64,7 @@ export class ProtocolsComponent {
       return "active-row";
     } else if (this.selected === null || this.selected === undefined) {
       return "";
-    } else if (_.isEqual(this.selected!.name, p.name)) {
+    } else if (_.isEqual(this.selected.name, p.name)) {
       return "table-selected";
     } else {
       return "";
@@ -135,7 +135,7 @@ export class ProtocolsComponent {
 
     this.tasks.register("updating", "Loading Protocol...");
 
-    let protocolMetaData = getProtocolMetaData(this.selected!);
+    let protocolMetaData = getProtocolMetaData(this.selected);
 
     if (!this.protocolModel.activeProtocol) {
       await this.protocolService.load(protocolMetaData, true);

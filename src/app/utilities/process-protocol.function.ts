@@ -111,13 +111,15 @@ export function processProtocol(loading: LoadingProtocolInterface):
   }
 
   function getId(target: PageTypes): string {
-    return  isPageDefinition(target)
-      ? target.id
-      : isProtocolSchemaInterface(target)
-        ? target.protocolId!
-        : isProtocolReferenceInterface(target)
-          ? target.reference
-          : 'Should not get here';
+    if (isPageDefinition(target)) {
+      return target.id;
+    } else if (isProtocolSchemaInterface(target)) {
+      return target.protocolId!;
+    } else if (isProtocolReferenceInterface(target)) {
+      return target.reference;
+    } else {
+      return 'Should not get here';
+    }
   }
 
 }
