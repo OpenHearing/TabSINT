@@ -43,7 +43,6 @@ export class ResultsComponent {
 
   async ngOnInit() {
     this.results = await this.sqLite.getAllResults();
-    console.log('RESULTS', this.results);
   }
 
   trackByIndex(index: number, item: any): number {

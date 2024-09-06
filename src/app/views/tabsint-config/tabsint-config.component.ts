@@ -13,6 +13,7 @@ import { StateInterface } from '../../models/state/state.interface';
 import { ChangePinComponent } from '../change-pin/change-pin.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ChangeMaxLogLengthComponent } from '../change-max-log-length/change-max-log-length.component';
+import { TabsintFs } from 'tabsintfs';
 
 @Component({
   selector: 'tabsint-config-view',
@@ -136,7 +137,18 @@ export class TabsintConfigComponent {
   // }
 
   async changeLocalResultsDir(){
-    await this.configService.chooseLocalResultsDirectory();
+
+    try {
+      const result = await TabsintFs.chooseFolder();
+      let servers = this.diskModel.disk.servers;
+      servers.localServer.resultsDir = result.name;
+      servers.localServer.resultsDirUri = result.uri;
+      this.diskModel.updateDiskModel('servers', servers);
+      this.disk = this.diskModel.getDisk();
+    } catch (error) {
+      this.logger.debug('Error choosing folder:' + error);
+    }
+    
     this.cdr.detectChanges();
   }
 

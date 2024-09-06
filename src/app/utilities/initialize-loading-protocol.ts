@@ -51,12 +51,13 @@ export function initializeLoadingProtocol(
         }
     }
 
+    // TODO: Fix this function
     function checkTabsintVersion() {
         loading.protocol.protocolTabsintOutdated = false;
         if (loading.protocol.minTabsintVersion) {
-            const mtv = _.map(loading.protocol.minTabsintVersion.split("."), function(s) {
-                return parseInt(s);
-            }); //
+            // const mtv = _.map(loading.protocol.minTabsintVersion.split("."), function(s) {
+            //     return parseInt(s);
+            // }); //
             // const ctv = _.map(version.dm.tabsint.split("-")[0].split("."), function(s) {
             //     return parseInt(s);
             // });

@@ -98,8 +98,9 @@ export class FileService {
      * @param rootDir - (Optional) The root directory where the file is located. Default root directory (Documents directory in most cases) is used if not specified.
      * @returns A promise containing the content URI of the created directory.
     */
-    async createDirectory(path:string,rootDir:string|undefined=this.rootUri) {
+    async createDirectory(path: string, rootDir: string|undefined = this.rootUri) {
         let result = null;
+
         try {
             result = await TabsintFs.createPath({rootUri:rootDir,path:path});
             this.logger.debug(JSON.stringify(result));
@@ -107,6 +108,7 @@ export class FileService {
         } catch (error) {
             this.logger.error("Failed to create folder: " + error);
         }
+
         return result;
     }
 
@@ -136,6 +138,7 @@ export class FileService {
      * @summary This method creates directories used by the application if they do not already exist.
      */
     public async createTabsintDirectoriesIfDontExist() {
+        //TODO: check if directories exist before we add them
         listOfTabsintDirectories.forEach((dir: string) => {
             this.createDirectory(dir);
         })

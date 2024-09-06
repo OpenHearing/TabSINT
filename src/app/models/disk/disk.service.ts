@@ -4,7 +4,7 @@ import { DOCUMENT } from '@angular/common';
 
 import { DiskInterface } from './disk.interface';
 import { ProtocolServer, ResultsMode } from '../../utilities/constants';
-import { metaDefaults, partialMetaDefaults } from '../../utilities/defaults';
+import { partialMetaDefaults } from '../../utilities/defaults';
 import { ExamResults } from '../results/results.interface';
 
 @Injectable({
@@ -92,7 +92,9 @@ export class DiskModel {
     
     
     
-    constructor(@Inject(DOCUMENT) private document: Document) {
+    constructor(
+        @Inject(DOCUMENT) private document: Document
+    ) {
         this.window = document.defaultView;
     }
 
@@ -119,18 +121,16 @@ export class DiskModel {
     storeDisk(): void {
         if (this.window !== null && !_.isUndefined(this.window!.localStorage)) {
             this.window.localStorage.setItem('diskModel', JSON.stringify(this.disk));
-            console.log("localStorage storeDisk: ", this.window!.localStorage);
         }
     }
 
     updateDiskModel(key: string, value: any) {
         _.set(this.disk, key, value);
         this.storeDisk();
-        console.log("updateDiskModel: ", this.disk);
     }
     
     updateSummary(result: ExamResults) {
-        var meta = {
+        const meta = {
             protocolId: result.protocolId,
             protocolName: result.protocolName,
             testDateTime: result.testDateTime!,

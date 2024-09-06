@@ -119,8 +119,7 @@ export class ProtocolService {
             let updatedAvailableProtocolsMeta = this.diskModel.getDisk().availableProtocolsMeta;
             this.diskModel.updateDiskModel('availableProtocolsMeta', updatedAvailableProtocolsMeta);
         } catch (error) {
-            console.log("Error trying to delete files");
-            console.log(error);
+            this.logger.error("Error trying to delete files: " + error);
         }
     };
 
@@ -210,8 +209,7 @@ export class ProtocolService {
 
         if (this.protocolModel.activeProtocol!.errors!.length > 0) {
             msg ="The protocol contains the following errors and may not function properly." + " \n\n";
-            for (let i = 0; i < this.protocolModel.activeProtocol!.errors!.length; i++) {
-                let err = this.protocolModel.activeProtocol!.errors![i];
+            for (let err of this.protocolModel.activeProtocol!.errors!) {
                 msg += err.type + ":\n";
                 msg += " - " + err.error + "\n";
             }

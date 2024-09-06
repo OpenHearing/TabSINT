@@ -69,7 +69,7 @@ export const bluetoothTimeout: number = 5000;
 
 export const listOfTabsintDirectories: Array<string> = [
     ".tabsint-results-backup",
-    ".tabsint-uuid",
+    // ".tabsint-uuid",
     "tabsint-configuration",
     "tabsint-logs",
     "tabsint-pdfs",

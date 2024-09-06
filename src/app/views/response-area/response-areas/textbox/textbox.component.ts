@@ -23,7 +23,7 @@ export class TextboxComponent {
   protocol: ProtocolModelInterface;
   state: StateInterface
   rows: number;
-  observableVar: Observable<any>; // TODO: Blaine, what should this type be?
+  observableVar: Observable<any>; // TODO: to replace this any, we need types for each of the possible page
 
   constructor (public resultsModel: ResultsModel, public pageModel: PageModel, public protocolModel: ProtocolModel, public stateModel: StateModel) {
     this.results = this.resultsModel.getResults();

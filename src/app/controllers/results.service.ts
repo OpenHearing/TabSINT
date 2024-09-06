@@ -164,7 +164,7 @@ export class ResultsService {
             ? this.disk.servers.localServer.resultsDir
             : "tabsint-results";
         dir = dir +  "/" + this.protocol.activeProtocol?.name + "/" ;
-        await this.fileService.writeFile(dir + filename, result.toString());
+        await this.fileService.writeFile(dir + filename, JSON.stringify(result));
         this.diskModel.updateSummary(result);
         this.disk = this.diskModel.getDisk();
     }

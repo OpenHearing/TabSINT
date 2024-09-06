@@ -22,6 +22,7 @@ import { calculateElapsedTime } from '../utilities/exam-helper-functions';
 import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
 import { FollowOnInterface, PageDefinition, ProtocolReferenceInterface } from '../interfaces/page-definition.interface';
 import { isPageDefinition, isProtocolReferenceInterface, isProtocolSchemaInterface } from '../guards/type.guard';
+import { PageTypes } from '../types/custom-types';
 
 @Injectable({
     providedIn: 'root',
@@ -139,7 +140,7 @@ export class ExamService {
      * @models page
     */
     private getPagesFromAdvancedLogic() {
-        let pageList: (ProtocolSchemaInterface | PageDefinition | ProtocolReferenceInterface)[] = [];
+        let pageList: (PageTypes)[] = [];
         if (this.currentPage.skipIf) { 
             this.logger.debug("skipIf is not yet supported");
             // push pages to list if needed
@@ -157,8 +158,8 @@ export class ExamService {
                     this.handleSpecialReferences(nextID);
                     return undefined
                 } else {
-                    (this.protocolM.protocolModel.activeProtocolDictionary![nextID].pages as (ProtocolSchemaInterface | PageDefinition | ProtocolReferenceInterface)[]).forEach( 
-                        (page: ProtocolSchemaInterface | PageDefinition | ProtocolReferenceInterface) => { 
+                    (this.protocolM.protocolModel.activeProtocolDictionary![nextID].pages as (PageTypes)[]).forEach( 
+                        (page: PageTypes) => { 
                             pageList.push(page);
                     });
                 }
@@ -223,11 +224,11 @@ export class ExamService {
      * @param pages list of page objects
     */
     private addPagesToStack(
-        pages: (ProtocolSchemaInterface | PageDefinition | ProtocolReferenceInterface)[], 
+        pages: (PageTypes)[], 
         index:number
     ) {
-        let extraPages: (ProtocolSchemaInterface | PageDefinition | ProtocolReferenceInterface)[];
-        pages.forEach( (page: ProtocolSchemaInterface | PageDefinition | ProtocolReferenceInterface)=> {
+        let extraPages: (PageTypes)[];
+        pages.forEach( (page: PageTypes)=> {
             if (isProtocolReferenceInterface(page)) {
                 extraPages = this.protocolM.protocolModel.activeProtocolDictionary![page?.reference].pages;
                 this.addPagesToStack(extraPages, index+1);

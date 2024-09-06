@@ -1,3 +1,4 @@
+import { PageTypes } from "../types/custom-types";
 import { MultipleChoiceInterface} from "../views/response-area/response-areas/multiple-choice/multiple-choice.interface";
 import { TextBoxInterface } from "../views/response-area/response-areas/textbox/textbox.interface";
 import { ProtocolSchemaInterface } from "./protocol-schema.interface";
@@ -73,7 +74,7 @@ export interface VideoInterface {
 
 export interface FollowOnInterface {
     conditional: string;
-    target: PageDefinition | ProtocolReferenceInterface | ProtocolSchemaInterface;
+    target: PageTypes;
 }
 
 export interface ProtocolReferenceInterface {

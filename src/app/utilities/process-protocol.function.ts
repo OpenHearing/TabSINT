@@ -6,6 +6,7 @@ import { LoadingProtocolInterface } from "../interfaces/loading-protocol-object.
 import { ProtocolDictionary } from "../interfaces/protocol-dictionary";
 import { FollowOnsDictionary } from "../interfaces/follow-ons-dictionary";
 import { isPageDefinition, isProtocolReferenceInterface, isProtocolSchemaInterface } from "../guards/type.guard";
+import { PageTypes } from "../types/custom-types";
 
 /**
  * Adds variables to the active protocol and generates a stack of pages.
@@ -53,7 +54,7 @@ export function processProtocol(loading: LoadingProtocolInterface):
     }
   }
 
-  function iterateThroughPages(pages: PageDefinition|ProtocolReferenceInterface|ProtocolSchemaInterface | (PageDefinition|ProtocolReferenceInterface|ProtocolSchemaInterface)[]) {
+  function iterateThroughPages(pages: PageTypes | (PageTypes)[]) {
     _.forEach(pages, function(page) {
       if (isProtocolSchemaInterface(page)) {
         processSubProtocol(page as ProtocolSchemaInterface);
@@ -109,7 +110,7 @@ export function processProtocol(loading: LoadingProtocolInterface):
     });
   }
 
-  function getId(target: PageDefinition | ProtocolReferenceInterface | ProtocolSchemaInterface): string {
+  function getId(target: PageTypes): string {
     return  isPageDefinition(target)
       ? target.id
       : isProtocolSchemaInterface(target)

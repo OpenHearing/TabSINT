@@ -8,6 +8,7 @@ import { FileService } from '../../utilities/file.service';
 import { DialogDataInterface } from '../../interfaces/dialog-data.interface';
 import { DialogType } from '../../utilities/constants';
 import { Notifications } from '../../utilities/notifications.service';
+import { Logger } from '../../utilities/logger.service';
 
 @Component({
   selector: 'log-config-view',
@@ -23,6 +24,7 @@ export class LogConfigComponent {
   constructor(
     public translate: TranslateService,
     public stateModel: StateModel,
+    public logger: Logger,
     private sqLite: SqLite,
     private tasks: Tasks,
     private fileService:FileService,
@@ -32,16 +34,11 @@ export class LogConfigComponent {
     this.showLogs = this.state.isPaneOpen.appLog;
   }
 
-  async ngOnInit() {
-    console.log('LOGS', this.logs);
-  }
-
   logsCount = this.sqLite.count['logs'];
 
   async displayLogs() {
     this.showLogs = !this.showLogs;
     this.logs = await this.sqLite.getAllLogs();
-    console.log('LOGS ARE----' + this.logs);
   }
 
   // async logExportUpload() {
@@ -62,7 +59,7 @@ export class LogConfigComponent {
         if (result === "OK") {
           this.exportLogs();
         } else {
-          console.log('Export canceled.');
+          this.logger.debug('Export canceled.');
         }
       });
   }

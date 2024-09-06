@@ -1,11 +1,10 @@
 import { ProtocolErrorInterface } from "../interfaces/protocol-error.interface";
 import { ProtocolInterface } from "../models/protocol/protocol.interface";
-import { DialogType } from "./constants";
 
 export function checkCalibrationFiles(activeProtocol: ProtocolInterface): string | void {
     let msg;
-    const missingWavCalListLength = activeProtocol!._missingWavCalList!.length;
-    const missingCommonWavCalListLength= activeProtocol!._missingCommonWavCalList!.length;
+    const missingWavCalListLength = activeProtocol._missingWavCalList!.length;
+    const missingCommonWavCalListLength= activeProtocol._missingCommonWavCalList!.length;
 
     if (areThereMissingCommonOrWavCal(missingWavCalListLength, missingCommonWavCalListLength)) {
       if (areThereMissingCommonAndWavCal(missingWavCalListLength, missingCommonWavCalListLength)) {

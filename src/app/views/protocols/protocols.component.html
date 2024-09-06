@@ -24,7 +24,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let p of disk.availableProtocolsMeta| keyvalue" class="no-border" [ngClass]="pclass(p.value)" (click)="select(p.value)" >
+          <tr *ngFor="let p of disk.availableProtocolsMeta| keyvalue" class="no-border" [ngClass]="pclass(p.value)" (click)="select(p.value)" (keypress)="select(p.value)" >
               <td [ngClass]="pclass(p.value)" class="row-Name" >{{p.value.name}}</td> 
               <td [ngClass]="pclass(p.value)" class="row-Version" >{{p.value.version}}</td>
               <td [ngClass]="pclass(p.value)" class="row-Date" >{{p.value.date}}</td>
@@ -102,7 +102,6 @@
 
   <mat-expansion-panel class="protocol-source" class="panel panel-default" [(expanded)]="state.isPaneOpen.protocolsSource">
     <mat-expansion-panel-header>
-      <!-- Source <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": isOpenSource, "glyphicon-chevron-down": !isOpenSource}'></i> -->
       <mat-panel-title>Source</mat-panel-title>
     </mat-expansion-panel-header>  
 

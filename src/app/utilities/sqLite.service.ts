@@ -77,7 +77,6 @@ export class SqLite {
             await this.ensureDbInitialized();
             const sql = "INSERT INTO " + tableName + " (data) VALUES (?)";
             await this.db.run(sql, [data]);
-            console.log("SQLITE " + tableName + " stored");
             this.count[tableName] += 1;
         } catch(e) {
             console.log("SQLITE Error storing " + tableName + " with error " + e);

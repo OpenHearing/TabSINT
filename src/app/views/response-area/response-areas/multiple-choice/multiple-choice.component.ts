@@ -9,6 +9,7 @@ import { StateInterface } from '../../../../models/state/state.interface';
 import { StateModel } from '../../../../models/state/state.service';
 import { ProtocolModel } from '../../../../models/protocol/protocol-model.service';
 import { ChoiceInterface, MultipleChoiceInterface } from './multiple-choice.interface';
+import { Logger } from '../../../../utilities/logger.service';
 
 @Component({
   selector: 'multiple-choice-view',
@@ -21,6 +22,7 @@ export class MultipleChoiceComponent {
   protocol: ProtocolModelInterface;
 
   constructor (
+    public logger: Logger,
     public resultsModel: ResultsModel, 
     public examService: ExamService,
     public stateModel: StateModel,
@@ -59,7 +61,7 @@ export class MultipleChoiceComponent {
         text: (this.examService.currentPage?.responseArea as MultipleChoiceInterface).other
       });
     }
-    console.log("choices for multiple-choice responseArea",this.choices);
+    this.logger.debug("choices for multiple-choice responseArea" + this.choices);
   }
 
   choose(id: string) {

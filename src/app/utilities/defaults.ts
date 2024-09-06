@@ -5,7 +5,6 @@ import { ProtocolMetaInterface } from "../models/protocol/protocol.interface";
 import { ProtocolInterface } from "../models/protocol/protocol.interface";
 import { ProtocolServer } from "./constants";
 import { checkIfCanGoBack } from "./exam-helper-functions";
-import { DiskModel } from "../models/disk/disk.service";
 import { DiskInterface } from "../models/disk/disk.interface";
 
 export const metaDefaults: ProtocolMetaInterface = {
