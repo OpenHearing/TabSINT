@@ -1,8 +1,7 @@
-import { Inject, Injectable,PLATFORM_ID } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { DevicesInterface } from './devices.interface';
 import { Device } from '@capacitor/device';
 import { Logger } from '../../utilities/logger.service';
-import { DiskModel } from '../disk/disk.service';
 
 @Injectable({
     providedIn: 'root',
@@ -45,7 +44,7 @@ export class DevicesModel {
             if (info.realDiskFree !== undefined) {
                 this.devicesModel.diskspace = String(Math.round(info.realDiskFree / (1024 * 1024)));
             }
-                this.logger.debug("Device info processed -- \n" + JSON.stringify((this.devicesModel)))
+                this.logger.debug("Device info processed -- \n" + JSON.stringify((this.devicesModel)));
         } catch (error) {
                 this.logger.debug("Device info not available");
         }

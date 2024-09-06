@@ -6,7 +6,7 @@ import { DiskInterface } from '../models/disk/disk.interface';
 import { ProtocolModel } from '../models/protocol/protocol-model.service';
 import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
 import _ from 'lodash';
-import { constructFilename, getDateString } from '../utilities/results-helper-functions';
+import { constructFilename } from '../utilities/results-helper-functions';
 import { FileService } from '../utilities/file.service';
 import { Logger } from '../utilities/logger.service';
 import { SqLite } from '../utilities/sqLite.service';
@@ -65,7 +65,7 @@ export class ResultsService {
             //   tabletModel: devices.model,
             },
             tabletLocation: this.disk.tabletLocation,
-            headset: this.protocol.activeProtocol!.headset || "None",
+            headset: this.protocol.activeProtocol!.headset ?? "None",
             calibrationVersion: {
                 audioProfileVersion: this.protocol.activeProtocol!._audioProfileVersion,
                 calibrationPySVNRevision: this.protocol.activeProtocol!._calibrationPySVNRevision,

@@ -20,8 +20,7 @@ import { FileService } from './utilities/file.service';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  templateUrl: './app.component.html'
 })
 export class AppComponent {
   title = 'tabsint';
