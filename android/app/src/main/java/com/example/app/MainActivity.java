@@ -1,4 +1,4 @@
-package com.example.app;
+package com.creare.tabsint;
  
 import android.os.Bundle;
 import com.getcapacitor.BridgeActivity;

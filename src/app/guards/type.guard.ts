@@ -1,7 +1,7 @@
 import { PageDefinition, ProtocolReferenceInterface } from "../interfaces/page-definition.interface";
 import { ProtocolSchemaInterface } from "../interfaces/protocol-schema.interface";
 
-export function isProtocolSchemaInterface(page: ProtocolSchemaInterface | PageDefinition | ProtocolReferenceInterface): page is ProtocolSchemaInterface {
+export function isProtocolSchemaInterface(page: PageT): page is ProtocolSchemaInterface {
     return (page as ProtocolSchemaInterface).pages !== undefined;
 }
 
