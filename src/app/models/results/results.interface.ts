@@ -1,4 +1,4 @@
-import { ChaWavfileInterface, ImageInterface, ResponseArea, VideoInterface, WavfileInterface } from "../../interfaces/page-definition.interface";
+import { ChaWavfileInterface, ImageInterface, VideoInterface, WavfileInterface } from "../../interfaces/page-definition.interface";
 import { ProtocolServer } from "../../utilities/constants";
 import { ProtocolInterface } from "../protocol/protocol.interface";
 

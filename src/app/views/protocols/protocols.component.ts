@@ -149,7 +149,7 @@ export class ProtocolsComponent {
         msg.content = `Overwrite protocol ${this.selected.name} and reset the current test? The current test will be reset`;
       }
 
-      this.notifications.confirm(msg).subscribe(async result => {
+      this.notifications.alert(msg).subscribe(async result => {
         if (result === "OK") {
           await this.protocolService.load(protocolMetaData, true);
           this.examService.reset();
@@ -170,7 +170,7 @@ export class ProtocolsComponent {
 
       this.protocolService.delete(this.selected);
       this.selected = undefined;
-      // notifications.confirm(
+      // notifications.alert(
       //     "Delete protocol ") +
       //     this.selected.name +
       //     " and remove protocol files from disk?"),
@@ -196,7 +196,7 @@ export class ProtocolsComponent {
       // }
 
       // if (protocol.isActive(selected)) {
-      //     notifications.confirm(
+      //     notifications.alert(
       //         "Update protocol ") +
       //         this.selected.name +
       //         "? " +
@@ -216,7 +216,7 @@ export class ProtocolsComponent {
       //         }
       //     );
       // } else {
-      //     notifications.confirm("Update protocol ") + this.selected.name + "?", function(
+      //     notifications.alert("Update protocol ") + this.selected.name + "?", function(
       //         buttonIndex
       //     ) {
       //         if (buttonIndex === 1) {

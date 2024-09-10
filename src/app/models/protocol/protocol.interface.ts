@@ -26,7 +26,7 @@ export interface ProtocolInterface extends ProtocolSchemaInterface, ProtocolMeta
     commonRepo?: any;
     protocolTabsintOutdated?: boolean;
     protocolUsbCMissing?: boolean;
-    currentCalibration?: "VicFirth" | "VicFirthS2" | "HDA200" | "WAHTS" | "Audiometer" | "EPHD1" | "None" | undefined;
+    currentCalibration?: "VicFirth" | "VicFirthS2" | "HDA200" | "WAHTS" | "Audiometer" | "EPHD1" | "None";
     _audioProfileVersion?: string;
     _calibrationPySVNRevision?: string;
     _calibrationPyManualReleaseDate?: string;

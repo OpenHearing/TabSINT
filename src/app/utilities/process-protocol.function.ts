@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { ProtocolSchemaInterface } from "../interfaces/protocol-schema.interface";
 import { ProtocolInterface } from "../models/protocol/protocol.interface";
-import { FollowOnInterface, PageDefinition, ProtocolReferenceInterface } from "../interfaces/page-definition.interface";
+import { FollowOnInterface, PageDefinition } from "../interfaces/page-definition.interface";
 import { LoadingProtocolInterface } from "../interfaces/loading-protocol-object.interface";
 import { ProtocolDictionary } from "../interfaces/protocol-dictionary";
 import { FollowOnsDictionary } from "../interfaces/follow-ons-dictionary";

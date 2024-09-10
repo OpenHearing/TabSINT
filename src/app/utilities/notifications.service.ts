@@ -12,15 +12,6 @@ export class Notifications {
 
     constructor(public dialog: MatDialog) {}
     
-    confirm(dialogData: DialogDataInterface): Observable<string> {
-      
-      const dialogRef = this.dialog.open(NotificationsComponent, {
-        data: dialogData
-      });
-
-      return dialogRef.afterClosed();
-    }
-    
     alert(dialogData: DialogDataInterface): Observable<string> {
       
         const dialogRef = this.dialog.open(NotificationsComponent, {

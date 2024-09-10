@@ -1,9 +1,9 @@
 import { TranslateService } from "@ngx-translate/core";
+import _ from "lodash";
+
 import { LoadingProtocolInterface } from "../interfaces/loading-protocol-object.interface";
 import { DiskModel } from "../models/disk/disk.service";
 import { Logger } from "./logger.service";
-import _ from "lodash";
-import { loadingProtocolDefaults } from "./defaults";
 import { FileService } from "./file.service";
 
 export function initializeLoadingProtocol(
@@ -126,7 +126,7 @@ export function initializeLoadingProtocol(
             //     });
             // }
         }
-        loading.protocol.currentCalibration = loading.protocol.headset || "None"; 
+        loading.protocol.currentCalibration = loading.protocol.headset ?? "None"; 
     }
 
     function setMediaRepo() {

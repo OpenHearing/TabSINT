@@ -2,10 +2,8 @@ import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { DiskModel } from '../../models/disk/disk.service';
-import { AppState, ExamState } from '../../utilities/constants';
+import { AppState, ExamState, ProtocolServer } from '../../utilities/constants';
 import { Logger } from '../../utilities/logger.service';
-import { ProtocolInterface } from '../../models/protocol/protocol.interface';
-import { ProtocolServer } from '../../utilities/constants';
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { ProtocolModel } from '../../models/protocol/protocol-model.service';
 import { ProtocolService } from '../../controllers/protocol.service';

@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
 
 import { ConfigComponent } from './config.component';
-import { MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { TabsintConfigComponent } from '../tabsint-config/tabsint-config.component';
 import { ChaConfigComponent } from '../cha-config/cha-config.component';
 import { SoftwareConfigComponent } from '../software-config/software-config.component';

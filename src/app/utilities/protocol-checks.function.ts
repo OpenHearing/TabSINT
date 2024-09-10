@@ -44,7 +44,7 @@ export function checkPreProcessFunctions(activeProtocol: ProtocolInterface): Arr
     let errors = [];
     let msg;
     if (
-        (activeProtocol!._missingPreProcessFunctionList!.length > 0 || activeProtocol!._missingControllerList!.length > 0) &&
+        (activeProtocol._missingPreProcessFunctionList!.length > 0 || activeProtocol._missingControllerList!.length > 0) &&
         true // !activeProtocol!.js
       ) {
         msg =
@@ -55,12 +55,12 @@ export function checkPreProcessFunctions(activeProtocol: ProtocolInterface): Arr
         });
       }
 
-      if (activeProtocol!._missingPreProcessFunctionList!.length > 0) {
+      if (activeProtocol._missingPreProcessFunctionList!.length > 0) {
         msg =
           "The protocol references the following undefined pre-process functions: " +
-          activeProtocol!._missingPreProcessFunctionList +
+          activeProtocol._missingPreProcessFunctionList +
           ".  Please make sure each function is defined properly in the customJs.js file.";
-        activeProtocol!.errors!.push({
+        activeProtocol.errors!.push({
           type: "Protocol",
           error: msg
         });
@@ -87,7 +87,7 @@ export function checkControllers(activeProtocol: ProtocolInterface): Array<Proto
       if (activeProtocol._missingHtmlList!.length > 0) {
         msg =
           "The protocol references the following html pages that could not be loaded:  " +
-          activeProtocol!._missingHtmlList +
+          activeProtocol._missingHtmlList +
           ".  Please make sure each html page exists and is referenced properly.";
         errors.push({
           type: "Protocol",

@@ -1,5 +1,5 @@
 import { PageTypes } from "../types/custom-types";
-import { NavMenuInterface, PageDefinition, ProtocolReferenceInterface } from "./page-definition.interface";
+import { NavMenuInterface } from "./page-definition.interface";
 
 export interface ProtocolSchemaInterface {
     description?: string;
