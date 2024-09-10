@@ -177,8 +177,6 @@ describe('processProtocol', () => {
         activeProtocolFollowOnsDictionary
     ]  = processProtocol(loadingProtocol);
 
-    console.log('TESTING', activeProtocolDictionary, activeProtocolFollowOnsDictionary);
-
     beforeEach(async () => {
         await TestBed.configureTestingModule({})
     })

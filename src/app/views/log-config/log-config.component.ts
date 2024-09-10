@@ -8,6 +8,7 @@ import { FileService } from '../../utilities/file.service';
 import { DialogDataInterface } from '../../interfaces/dialog-data.interface';
 import { DialogType } from '../../utilities/constants';
 import { Notifications } from '../../utilities/notifications.service';
+import { Logger } from '../../utilities/logger.service';
 
 @Component({
   selector: 'log-config-view',
@@ -23,6 +24,7 @@ export class LogConfigComponent {
   constructor(
     public translate: TranslateService,
     public stateModel: StateModel,
+    public logger: Logger,
     private sqLite: SqLite,
     private tasks: Tasks,
     private fileService:FileService,
@@ -32,16 +34,11 @@ export class LogConfigComponent {
     this.showLogs = this.state.isPaneOpen.appLog;
   }
 
-  async ngOnInit() {
-    console.log('LOGS', this.logs);
-  }
-
   logsCount = this.sqLite.count['logs'];
 
   async displayLogs() {
     this.showLogs = !this.showLogs;
     this.logs = await this.sqLite.getAllLogs();
-    console.log('LOGS ARE----' + this.logs);
   }
 
   // async logExportUpload() {
@@ -55,14 +52,14 @@ export class LogConfigComponent {
       }
       let msg: DialogDataInterface = {
         title: "Confirm Export",
-        content: "Are you sure you want to export the logs to .tabsintlogs?",
+        content: "Are you sure you want to export the logs to tabsint-logs?",
         type: DialogType.Confirm
       };
       this.notifications.confirm(msg).subscribe(async (result: string) => {
         if (result === "OK") {
           this.exportLogs();
         } else {
-          console.log('Export canceled.');
+          this.logger.debug('Export canceled.');
         }
       });
   }
@@ -76,8 +73,8 @@ export class LogConfigComponent {
         data: log,
       }));
       const logData = JSON.stringify({ logs: formattedLogs }, null, 2);
-      const filename = `.tabsintlogs/${currentTimeStamp}.json`;
-      await this.fileService.writeFile(filename,logData);
+      const filename = `tabsint-logs/${currentTimeStamp}.json`;
+      await this.fileService.writeFile(filename, logData);
   } catch (error){
     console.error('Error exporting logs:', error);
   }

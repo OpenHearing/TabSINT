@@ -13,6 +13,8 @@ import { StateInterface } from '../../models/state/state.interface';
 import { ChangePinComponent } from '../change-pin/change-pin.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ChangeMaxLogLengthComponent } from '../change-max-log-length/change-max-log-length.component';
+import { TabsintFs } from 'tabsintfs';
+import { VersionInterface } from '../../interfaces/version.interface';
 
 @Component({
   selector: 'tabsint-config-view',
@@ -22,7 +24,7 @@ import { ChangeMaxLogLengthComponent } from '../change-max-log-length/change-max
 export class TabsintConfigComponent {
   disk: DiskInterface;
   state: StateInterface;
-  version: any; // TODO: add type
+  version!: VersionInterface;
 
   constructor(
     public diskModel: DiskModel, 
@@ -35,12 +37,12 @@ export class TabsintConfigComponent {
     public dialog: MatDialog,
     private cdr: ChangeDetectorRef
   ) { 
-    this.version = this.versionService.getVersion();
     this.state = this.stateModel.getState();
     this.disk = this.diskModel.getDisk();
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    this.version = await this.versionService.getVersion();
     this.stateModel.setAppState(AppState.Admin);
   }
 
@@ -136,7 +138,18 @@ export class TabsintConfigComponent {
   // }
 
   async changeLocalResultsDir(){
-    await this.configService.chooseLocalResultsDirectory();
+
+    try {
+      const result = await TabsintFs.chooseFolder();
+      let servers = this.diskModel.disk.servers;
+      servers.localServer.resultsDir = result.name;
+      servers.localServer.resultsDirUri = result.uri;
+      this.diskModel.updateDiskModel('servers', servers);
+      this.disk = this.diskModel.getDisk();
+    } catch (error) {
+      this.logger.debug('Error choosing folder:' + error);
+    }
+    
     this.cdr.detectChanges();
   }
 

@@ -77,7 +77,6 @@ export class SqLite {
             await this.ensureDbInitialized();
             const sql = "INSERT INTO " + tableName + " (data) VALUES (?)";
             await this.db.run(sql, [data]);
-            console.log("SQLITE " + tableName + " stored");
             this.count[tableName] += 1;
         } catch(e) {
             console.log("SQLITE Error storing " + tableName + " with error " + e);
@@ -124,7 +123,7 @@ export class SqLite {
     }
 
     async deleteOlderLogsIfThereAreTooMany() {
-            var delCount = this.count['logs'] - this.disk.maxLogRows + 1;
+            const delCount = this.count['logs'] - this.disk.maxLogRows + 1;
             if (delCount > 0) {
                 try {
                     await this.db.executeSet([{statement: deleteSql, values: [delCount]}]);

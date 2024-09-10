@@ -56,7 +56,7 @@ export class ExternalResponseAreaComponent {
       htmlEle = <HTMLElement>document.getElementById("external-div-id");
     }
     htmlEle.innerHTML = this.testHTML;
-    eval(this.testJS);
+    eval(this.testJS); //NOSONAR
     /* For this to be fully functional we will need to put all of the exam, result, and any other relevent services 
       on the window variable. Additionally, those services will need to know to check the window when external or custom
       response areas are used to obtain results. 

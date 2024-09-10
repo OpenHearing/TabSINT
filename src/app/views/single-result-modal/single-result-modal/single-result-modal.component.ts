@@ -35,8 +35,8 @@ export class SingleResultModalComponent {
     this.close();
   }
 
-  export() {
-    this.resultsService.exportSingleResult(this.index);
+  async export() {
+    await this.resultsService.exportSingleResult(this.index);
     this.close();
   }
 

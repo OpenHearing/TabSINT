@@ -11,7 +11,7 @@
         </div>
     </div>
 
-    <div class="col-1" href="javascript:" title="{{'Default Headset help' | translate}}">
+    <div class="col-1" href="javascript:" title="{{'Default Headset Help' | translate}}">
         <i [matMenuTriggerFor]= "headsetMenu" class="ion-help-circled"></i>
     </div>
     <mat-menu #headsetMenu="matMenu">
@@ -36,7 +36,7 @@
         </div>
     </div>
 
-    <div class="col-1" href="javascript:" title="{{'Select Language help' | translate}}">
+    <div class="col-1" href="javascript:" title="{{'Select Language Help' | translate}}">
         <i [matMenuTriggerFor]= "languageMenu" class="ion-help-circled"></i>
     </div>
     <mat-menu #languageMenu="matMenu">
@@ -76,7 +76,7 @@
         <div class="col-6"><label translate for="adminMode">Admin Mode:</label></div>
         <div class="col-2"><input id="adminMode" type="checkbox" [ngModel]="disk.debugMode" (change)="toggleDebugMode()"/></div>
         <div class="col-2"></div>
-        <div class="col-1" title="{{'Admin Mode help' | translate}}">
+        <div class="col-1" title="{{'Admin Mode Help' | translate}}">
             <i [matMenuTriggerFor]= "adminHelpMenu" class="ion-help-circled"></i>
         </div>
         <mat-menu #adminHelpMenu="matMenu">
@@ -90,12 +90,12 @@
         <div class="col-6">Admin PIN:</div>
         <div class="col-2">{{disk.pin}}</div>
         
-        <div class="col-1"><a href="javascript:" title="{{'Admin PIN edit' | translate}}"
+        <div class="col-1"><a href="javascript:" title="{{'Admin PIN Edit' | translate}}"
             (click)="editAdminPin()"><i class="ion-edit"></i></a>
         </div>
 
         <div class="col-1"></div>
-        <div class="col-1" title="{{'Admin PIN help' | translate}}">
+        <div class="col-1" title="{{'Admin PIN Help' | translate}}">
             <i [matMenuTriggerFor]= "adminPinMenu" class="ion-help-circled"></i>
         </div>
         <mat-menu #adminPinMenu="matMenu">
@@ -110,7 +110,7 @@
         <div class="col-6"><label translate for="disableLogs">Disable Logs:</label></div>
         <div class="col-2"><input id="disableLogsID" type="checkbox" [ngModel]="disk.disableLogs" (change)="toggleDisableLogs()"/></div>
         <div class="col-2"></div>
-        <div class="col-1" title="{{'Disable Logs help' | translate}}">
+        <div class="col-1" title="{{'Disable Logs Help' | translate}}">
             <i [matMenuTriggerFor]= "disableLogsMenu" class="ion-help-circled"></i>
         </div>
         <mat-menu #disableLogsMenu="matMenu">
@@ -125,15 +125,12 @@
         <div class="col-6" translate>Max Log Length:</div>
         <div class="col-2">{{disk.maxLogRows}}</div>
 
-        <!-- <div class="col-1"><a href="javascript:" title="{{'Max Log Length edit' | translate}}"
-            (click)="changeLog.editMaxLogRows()"><i class="ion-edit"></i></a>
-        </div> -->
-        <div class="col-1"><a href="javascript:" title="{{'Max Log Length edit' | translate}}"
+        <div class="col-1"><a href="javascript:" title="{{'Max Log Length Edit' | translate}}"
             (click)="editMaxLogRows()"><i class="ion-edit"></i></a>
         </div>
 
         <div class="col-1"> </div>
-        <div class="col-1" href="javascript:" title="{{'Max Log Length help' | translate}}">
+        <div class="col-1" href="javascript:" title="{{'Max Log Length Help' | translate}}">
             <i [matMenuTriggerFor]= "setMaxLogRowsMenu" class="ion-help-circled"></i>
         </div>
         <mat-menu #setMaxLogRowsMenu="matMenu">
@@ -149,7 +146,7 @@
         </div>
         <div class="col-2"><input id="automaticVolControl" type="checkbox" [(ngModel)]="disk.disableVolume" (change)="adminService.toggleDisableVolume()"/></div>
         <div class="col-2"></div>
-        <div class="col-1" href="javascript:" title="{{'Automatic Volume Control help' | translate}}">
+        <div class="col-1" href="javascript:" title="{{'Automatic Volume Control Help' | translate}}">
             <i [matMenuTriggerFor]= "disableVolumeMenu" class="ion-help-circled"></i>
         </div>
         <mat-menu #disableVolumeMenu="matMenu">
@@ -164,7 +161,7 @@
         <div class="col-6"><label translate for="enableSkip">Enable Skip in Exams:</label></div>
         <div class="col-2"><input id="enableSkip" type="checkbox" [(ngModel)]="disk.adminSkipMode" (change)="adminService.toggleAdminSkipMode()"/></div>
         <div class="col-2"></div>
-        <div class="col-1" href="javascript:" title="{{'Enable Skip in Exams help' | translate}}">
+        <div class="col-1" href="javascript:" title="{{'Enable Skip in Exams Help' | translate}}">
             <i [matMenuTriggerFor]= "adminSkipModeMenu" class="ion-help-circled"></i>
         </div>
         <mat-menu #adminSkipModeMenu="matMenu">
@@ -179,7 +176,7 @@
         <div class="col-6"><label translate for="requireEncryption">Require Encryption:</label></div>
         <div class="col-2"><input id="requireEncryption" type="checkbox" [(ngModel)]="disk.requireEncryptedResults" (change)="adminService.toggleRequireEncryptedResults()"/></div>
         <div class="col-2"></div>
-        <div class="col-1" href="javascript:" title="{{'Require Encription help' | translate}}">
+        <div class="col-1" href="javascript:" title="{{'Require Encription Help' | translate}}">
             <i [matMenuTriggerFor]= "requireEncryptedResultsPopoverMenu" class="ion-help-circled"></i>
         </div>
         <mat-menu #requireEncryptedResultsPopoverMenu="matMenu">
@@ -194,7 +191,7 @@
         <div class="col-6"><label translate for="recordTestLocation">Record Test Location:</label></div>
         <div class="col-2"><input id="recordTestLocation" type="checkbox" [(ngModel)]="disk.recordTestLocation" (change)="adminService.toggleRecordTestLocation()"/></div>
         <div class="col-2"></div>
-        <div class="col-1" href="javascript:" title="{{'Record Test Location help' | translate}}">
+        <div class="col-1" href="javascript:" title="{{'Record Test Location Help' | translate}}">
             <i [matMenuTriggerFor]= "recordTestLocationPopoverMenu" class="ion-help-circled"></i>
         </div>
         <mat-menu #recordTestLocationPopoverMenu="matMenu">
@@ -211,7 +208,7 @@
             <button id="QRCode" class="btn btn-default btn-block"
                 (click)="configService.generateQRCode()">{{'Generate' | translate}}</button>
         </div>
-        <div class="col-1" href="javascript:" title="{{'QR Code help' | translate}}">
+        <div class="col-1" href="javascript:" title="{{'QR Code Help' | translate}}">
             <i [matMenuTriggerFor]= "qrCodePopoverMenu" class="ion-help-circled"></i>
         </div>
         <mat-menu #qrCodePopoverMenu="matMenu">
@@ -239,7 +236,7 @@
                 Reset
             </button>
         </div>
-        <div class="col-1" href="javascript:" title="{{'Reset configuration help' | translate}}">
+        <div class="col-1" href="javascript:" title="{{'Reset configuration Help' | translate}}">
             <i [matMenuTriggerFor]= "resetConfigurationPopoverMenu" class="ion-help-circled"></i>
         </div>
         <mat-menu #resetConfigurationPopoverMenu="matMenu">
@@ -259,10 +256,10 @@
 
     <!-- Automatically Output Test Results -->
     <div class="row pad-top">
-        <div class="col-6"><label for="outputResults">{{'Automatically output test results' | translate}}:</label></div>
+        <div class="col-6"><label for="outputResults">{{'Automatically Output Test Results' | translate}}:</label></div>
         <div class="col-2"><input id="outputResults" type="checkbox" [ngModel]="disk.autoUpload" (change)="toggleAutoUpload()"/></div>
         <div class="col-2"> </div>
-        <div class="col-1" href="javascript:" title="{{'Automatically output test results help' | translate}}">
+        <div class="col-1" href="javascript:" title="{{'Automatically Output Test Results Help' | translate}}">
             <i [matMenuTriggerFor]= "automaticallyOutputResultsPopoverMenu" class="ion-help-circled"></i>
         </div>
         <mat-menu #automaticallyOutputResultsPopoverMenu="matMenu">
@@ -324,7 +321,7 @@
             </a>
         </div>
         
-        <div class="col-1" href="javascript:" title="{{'Tablet Gain help' | translate}}">
+        <div class="col-1" href="javascript:" title="{{'Tablet Gain Help' | translate}}">
             <i [matMenuTriggerFor]= "gainPopoverMenu" class="ion-help-circled"></i>
         </div>
         <mat-menu #gainPopoverMenu="matMenu">

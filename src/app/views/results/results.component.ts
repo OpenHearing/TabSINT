@@ -43,7 +43,6 @@ export class ResultsComponent {
 
   async ngOnInit() {
     this.results = await this.sqLite.getAllResults();
-    console.log('RESULTS', this.results);
   }
 
   trackByIndex(index: number, item: any): number {
@@ -55,6 +54,7 @@ export class ResultsComponent {
       data: index
     }).afterClosed().subscribe(async () => {
       this.results = await this.sqLite.getAllResults();
+      this.disk = this.diskModel.getDisk();
     });
   }
 
@@ -77,9 +77,9 @@ export class ResultsComponent {
       }
   }
 
-  async upload() {
+  // async upload() {
 
-  }
+  // }
 
   /**
    * Delete all exam results from the disk completed exam results and from the sqlite database.

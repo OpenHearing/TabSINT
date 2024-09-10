@@ -76,8 +76,8 @@ export class ExamTestingComponent {
     /* Testing the viability of customHS using the JS built in eval method (not angularJS) */
     // console.log(this.pageModel);
     // console.log((this.window as any).pageModel);
-    eval("console.log('this logs a string!')");
-    eval("console.log(this.stateModel.stateModel)");
+    // eval("console.log('this logs a string!')");
+    // eval("console.log(this.stateModel.stateModel)");
   }
 
   testFunction() {

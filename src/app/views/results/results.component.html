@@ -32,9 +32,9 @@
 
         <div class="row pad-top">
             <div class="col-4 admin-labels">
-            <button type="button" *ngIf="!disk.preventUploads" class="btn btn-success btn-block" (click)="upload()">
+            <!-- <button type="button" *ngIf="!disk.preventUploads" class="btn btn-success btn-block" (click)="upload()">
                 <i class="ion-upload"></i> {{'Upload'|translate}}
-            </button>
+            </button> -->
             </div>
             <div class="col-4">
             <button type="button" *ngIf="!disk.preventExports" [disabled]="sqLite.count['results'] === 0" class="btn btn-primary btn-block" (click)="exportAll()">

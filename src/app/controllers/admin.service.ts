@@ -18,21 +18,4 @@ export class AdminService {
     ) {
         this.disk = this.diskModel.getDisk();
     }
-
-    // toggleDisableVolume() {
-    //     console.log("toggleDisableVolume");
-    // }
-
-    // toggleAdminSkipMode() {
-    //     console.log("toggleAdminSkipMode");
-    // }
-
-    // toggleRequireEncryptedResults() {
-    //     console.log("toggleRequireEncryptedResults");
-    // }
-
-    // toggleRecordTestLocation() {
-    //     console.log("toggleRecordTestLocation");
-    // }
-
 }

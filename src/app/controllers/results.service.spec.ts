@@ -42,12 +42,12 @@ describe('ResultsService', () => {
         expect(returnedResults.currentExam.testDateTime).toBeUndefined();
         expect(returnedResults.currentExam.protocolName).toBe('');
         resultsService.protocol.activeProtocol = {
-            ...resultsService.protocol.loadedProtocols['tabsint-test'],
-            ...DeveloperProtocols['tabsint-test']
+            ...resultsService.disk.availableProtocolsMeta['develop'],
+            ...DeveloperProtocols['develop']
         };
         resultsService.initializeExamResults();
         expect(returnedResults.currentExam.testDateTime).toBeDefined();
-        expect(returnedResults.currentExam.protocolName).toBe('tabsint-test');
+        expect(returnedResults.currentExam.protocolName).toBe('develop');
     });
     
     it('initializes page results', () => {

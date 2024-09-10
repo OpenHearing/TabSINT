@@ -1,37 +1,33 @@
+import { Dictionary } from "lodash";
 import { LoadingProtocolInterface } from "../interfaces/loading-protocol-object.interface";
 import { PageInterface } from "../models/page/page.interface";
 import { ProtocolMetaInterface } from "../models/protocol/protocol.interface";
 import { ProtocolInterface } from "../models/protocol/protocol.interface";
 import { ProtocolServer } from "./constants";
 import { checkIfCanGoBack } from "./exam-helper-functions";
+import { DiskInterface } from "../models/disk/disk.interface";
 
 export const metaDefaults: ProtocolMetaInterface = {
-    group: '',
     name: '',
-    path: '',
     date: '',
     version: '',
-    creator: '',
     server: ProtocolServer.LocalServer,
-    admin: false,
-    contentURI: ''
+    admin: false
 };
 
 export const partialMetaDefaults = {
-    group: '',
     date: new Date().toJSON(),
     version: '0.0',
-    contentURI: '',
     server: ProtocolServer.Developer,
     admin: true
 };
 
-export function loadingProtocolDefaults(_requiresValidation: boolean = true): LoadingProtocolInterface {
+export function loadingProtocolDefaults(disk: DiskInterface): LoadingProtocolInterface {
     let loadingProtocol: LoadingProtocolInterface = {
         protocol: protocolDefaults,
         calibration: undefined,
-        requiresValidation: _requiresValidation,
-        meta: metaDefaults,
+        requiresValidation: disk.validateProtocols,
+        meta: { ...metaDefaults, ...{contentURI: disk.contentURI} },
         overwrite: false,
         notify: false
     }
@@ -69,6 +65,10 @@ export const PageInterfaceDefaults: PageInterface = {
 
 export const protocolDefaults: ProtocolInterface = {
     ...metaDefaults,
-    protocolId: '',
     pages: [PageInterfaceDefaults]
 };
+
+export const responseDefaultByResponseAreaType: Dictionary<string> = {
+    'textboxResponseArea': '',
+    'multipleChoiceResponseArea': ''
+}

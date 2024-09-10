@@ -1,28 +1,25 @@
-import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
 
 import { ResultsService } from './results.service';
-import { Logger } from '../utilities/logger.service';
+import { FollowOnInterface } from '../interfaces/page-definition.interface';
+import { isPageDefinition, isProtocolReferenceInterface, isProtocolSchemaInterface } from '../guards/type.guard';
+import { PageTypes } from '../types/custom-types';
 
 import { ResultsInterface } from '../models/results/results.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { DiskInterface } from '../models/disk/disk.interface';
 import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
-
 import { ResultsModel } from '../models/results/results-model.service';
 import { StateModel } from '../models/state/state.service';
 import { ProtocolModel } from '../models/protocol/protocol-model.service';
 import { DiskModel } from '../models/disk/disk.service';
+import { PageModel } from '../models/page/page.service';
+import { PageInterface } from '../models/page/page.interface';
 
 import { DialogType, ExamState } from '../utilities/constants';
 import { Notifications } from '../utilities/notifications.service';
-import { PageModel } from '../models/page/page.service';
-import { PageInterface } from '../models/page/page.interface';
+import { Logger } from '../utilities/logger.service';
 import { calculateElapsedTime } from '../utilities/exam-helper-functions';
-import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
-import { FollowOnInterface, PageDefinition, ProtocolReferenceInterface } from '../interfaces/page-definition.interface';
-import { isPageDefinition, isProtocolReferenceInterface, isProtocolSchemaInterface } from '../guards/type.guard';
-
 @Injectable({
     providedIn: 'root',
 })
@@ -87,7 +84,7 @@ export class ExamService {
     */
     submitDefault() {
         this.resultsService.pushResults(this.results.currentPage);
-        // TODO: The below line might need to be async and awaited
+        
         this.advancePage();
 
         this.state.isSubmittable = this.checkIfPageIsSubmittable();
@@ -121,7 +118,6 @@ export class ExamService {
      * @models state
     */
     private advancePage() {
-        // make diagram to explain this
         let nextExamIndex = this.state.examIndex + 1;
         this.setFlags();
         let pageList = this.getPagesFromAdvancedLogic();
@@ -139,14 +135,16 @@ export class ExamService {
      * @models page
     */
     private getPagesFromAdvancedLogic() {
-        var pageList: (ProtocolSchemaInterface | PageDefinition | ProtocolReferenceInterface)[] = [];
+        let pageList: (PageTypes)[] = [];
         if (this.currentPage.skipIf) { 
             this.logger.debug("skipIf is not yet supported");
             // push pages to list if needed
-        } if (this.currentPage.repeatPage) {
+        } 
+        if (this.currentPage.repeatPage) {
             this.logger.debug("repeatPage is not yet supported");
             // push pages to list if needed
-        } if (this.currentPage.followOns) { 
+        } 
+        if (this.currentPage.followOns) { 
             let nextID = this.findFollowOn();
             if (nextID != undefined) {
                 // TODO: Make it clear that this will break out of the function chain
@@ -155,13 +153,14 @@ export class ExamService {
                     this.handleSpecialReferences(nextID);
                     return undefined
                 } else {
-                    (this.protocolM.protocolModel.activeProtocolDictionary![nextID].pages as (ProtocolSchemaInterface | PageDefinition | ProtocolReferenceInterface)[]).forEach( 
-                        (page: ProtocolSchemaInterface | PageDefinition | ProtocolReferenceInterface) => { 
+                    (this.protocolM.protocolModel.activeProtocolDictionary![nextID].pages).forEach( 
+                        (page: PageTypes) => { 
                             pageList.push(page);
                     });
                 }
             }
-        } if (this.currentPage.preProcessFunction) { 
+        } 
+        if (this.currentPage.preProcessFunction) { 
             this.logger.debug("preProcessFunction is not yet supported");
             // push pages to list if needed and/or run preprocess function
         }
@@ -178,9 +177,9 @@ export class ExamService {
     /** Checks for special references
      * @summary Returns true/false depending a id contains a special reference
     */
-    private checkForSpecialReference(id:String | undefined) {
-        var hasSpecialReference = false;
-        if (id != undefined && id.includes("@")) {
+    private checkForSpecialReference(id: string | undefined) {
+        let hasSpecialReference = false;
+        if (id?.includes("@")) {
             hasSpecialReference = true;
         }
         return hasSpecialReference
@@ -189,11 +188,10 @@ export class ExamService {
     /** Handles special references
      * @summary Handles the special references
     */
-    private handleSpecialReferences(id:String | undefined) {
+    private handleSpecialReferences(id:string | undefined) {
         if (id === "@PARTIAL") {
             this.endExam();
             this.logger.debug("@PARTIAL not implemented, instead using @END_ALL");
-            return;
         } else if (id === "@END_ALL") {
             this.endExam();
             return;
@@ -220,11 +218,11 @@ export class ExamService {
      * @param pages list of page objects
     */
     private addPagesToStack(
-        pages: (ProtocolSchemaInterface | PageDefinition | ProtocolReferenceInterface)[], 
+        pages: (PageTypes)[], 
         index:number
     ) {
-        let extraPages: (ProtocolSchemaInterface | PageDefinition | ProtocolReferenceInterface)[];
-        pages.forEach( (page: ProtocolSchemaInterface | PageDefinition | ProtocolReferenceInterface)=> {
+        let extraPages: (PageTypes)[];
+        pages.forEach( (page: PageTypes)=> {
             if (isProtocolReferenceInterface(page)) {
                 extraPages = this.protocolM.protocolModel.activeProtocolDictionary![page?.reference].pages;
                 this.addPagesToStack(extraPages, index+1);

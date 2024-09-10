@@ -4,7 +4,7 @@ import { DOCUMENT } from '@angular/common';
 
 import { DiskInterface } from './disk.interface';
 import { ProtocolServer, ResultsMode } from '../../utilities/constants';
-import { metaDefaults } from '../../utilities/defaults';
+import { partialMetaDefaults } from '../../utilities/defaults';
 import { ExamResults } from '../results/results.interface';
 
 @Injectable({
@@ -16,67 +16,85 @@ export class DiskModel {
     window: (Window & typeof globalThis) | null;
 
     disk: DiskInterface = {
-        headset: "None",
+        adminSkipMode: false,
+        appDeveloperMode: false,
+        appDeveloperModeCount: 0,
+        audhere: '',
+        autoUpload: true,
+        availableProtocolsMeta: {
+            "Creare Audiometry": {
+                ...partialMetaDefaults,
+                creator: "Creare",
+                name: "Creare Audiometry",
+                path: "protocols/creare-audiometry"
+            },
+            develop: {
+                ...partialMetaDefaults,
+                creator: "Creare",
+                name: "develop",
+                path: "protocols/develop"
+            }
+        },
         cha: {
-            embeddedFirmwareBuildDate: "",
-            embeddedFirmwareTag: "",
-            myCha: "",
-            bluetoothType: ""
+            bluetoothType: '',
+            embeddedFirmwareBuildDate: '',
+            embeddedFirmwareTag: '',
+            myCha: ''
         },
         contentURI: undefined,
         debugMode: true,
-        adminSkipMode: false,
-        pin: "7114",
-        disableLogs: false,
-        maxLogRows: 1000,
-        numLogRows:0,
         disableAudioStreaming: true,
-        tabletGain: 12.34,
-        server: ProtocolServer.LocalServer,
-        externalMode: false,
-        appDeveloperMode: false,
-        appDeveloperModeCount: 0,
-        uploadSummary: [],
-        suppressAlerts: false,
-        showUploadSummary: true,
-        resultsMode: ResultsMode.ExportOnly,
-        preventUploads: true,
-        preventExports: false,
-        reloadingBrowser: false,
+        disableLogs: false,
         downloadInProgress: false,
-        validateProtocols: true,
-        tabletLocation: {},
+        externalMode: false,
         gitlab: {
             repos: [],
-            useTagsOnly: true,
-            useSeperateResultsRepo: false
+            useSeperateResultsRepo: false,
+            useTagsOnly: true
         },
-        servers: {
-            localServer: {
-                resultsDir: "tabsint-results",
-                resultsDirUri: "",
-                protocolDir: "tabsint-protocols",
-            },
-            gitlab: {
-                resultsRepo: "results"
-            }
-        },
-        init: true, // when set to true, this is the initial opening of the app and disclaimer should be displayed
-        versionCheck: false,
-        lastReleaseCheck: '',
-        mediaRepos: [],
-        language: 'English',
+        headset: "None",
+        init: true, // TODO: when set to true, this is the initial opening of the app and disclaimer should be displayed
         interApp: {
             appName: '',
             dataIn: '',
             dataOut: ''
         },
-        audhere: '',
-        activeProtocolMeta: metaDefaults,
-        availableProtocolsMeta: []
+        language: "English",
+        lastReleaseCheck: '',
+        mediaRepos: [],
+        maxLogRows: 1000,
+        numLogRows: 0,
+        pin: "7114",
+        preventExports: false,
+        preventUploads: true,
+        reloadingBrowser: false,
+        requireEncryptedResults: false,
+        resultsMode: ResultsMode.ExportOnly,
+        server: ProtocolServer.LocalServer,
+        servers: {
+            gitlab: {
+                resultsRepo: "results"
+            },
+            localServer: {
+                protocolDir: "tabsint-protocols",
+                resultsDir: "tabsint-results",
+                resultsDirUri: ''
+            }
+        },
+        showUploadSummary: true,
+        suppressAlerts: false,
+        tabletGain: 12.34,
+        tabletLocation: {},
+        uploadSummary: [],
+        validateProtocols: true,
+        versionCheck: false
     };
     
-    constructor(@Inject(DOCUMENT) private document: Document) {
+    
+    
+    constructor(
+        @Inject(DOCUMENT) private document: Document
+    ) {
         this.window = document.defaultView;
     }
 
@@ -103,22 +121,20 @@ export class DiskModel {
     storeDisk(): void {
         if (this.window !== null && !_.isUndefined(this.window!.localStorage)) {
             this.window.localStorage.setItem('diskModel', JSON.stringify(this.disk));
-            console.log("localStorage storeDisk: ", this.window!.localStorage);
         }
     }
 
     updateDiskModel(key: string, value: any) {
         _.set(this.disk, key, value);
         this.storeDisk();
-        console.log("updateDiskModel: ", this.disk);
     }
     
     updateSummary(result: ExamResults) {
-        var meta = {
+        const meta = {
             protocolId: result.protocolId,
             protocolName: result.protocolName,
             testDateTime: result.testDateTime!,
-            nResponses: result.responses.length,
+            nResponses: _.isUndefined(result.responses) ? 0 : result.responses.length,
             source: result.protocol.server,
             output: result.exportLocation || result.protocol.server,
             uploadedOn: new Date().toJSON()

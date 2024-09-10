@@ -404,7 +404,7 @@ $tabsint-training-site-theme: mat.define-light-theme((
   }
   .admin-info li {
     display: grid;
-    grid-template-columns: 150px auto;
+    grid-template-columns: 180px auto;
     column-gap: 15px;
     margin-bottom: 8px;
   }
@@ -2297,10 +2297,10 @@ $tabsint-training-site-theme: mat.define-light-theme((
   * Tables
   * ------------*/
   .active-row {
-    background-color: #FFF9DC;
+    background-color: #FFF9DC !important;
   }
   .table-selected {
-    background-color: #E6E6E6;
+    background-color: #E6E6E6 !important;
   }
   .table tr[click]:focus {
     background-color: #f5f5f5;
@@ -2318,6 +2318,10 @@ $tabsint-training-site-theme: mat.define-light-theme((
 
   .table {
     text-align: left; /* reset */
+  }
+  
+  .text-left {
+    text-align: left; 
   }
   
   .panel-group .panel + .panel {
