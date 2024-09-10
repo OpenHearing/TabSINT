@@ -48,14 +48,14 @@ export function processProtocol(loading: LoadingProtocolInterface):
     }
 
     if (_.has(subProtocol, "subProtocols")) {
-      _.forEach(subProtocol.subProtocols, function(obj) {
+      _.forEach(subProtocol.subProtocols, (obj) => {
         processSubProtocol(obj);
       });
     }
   }
 
   function iterateThroughPages(pages: PageTypes | (PageTypes)[]) {
-    _.forEach(pages, function(page) {
+    _.forEach(pages, (page) => {
       if (isProtocolSchemaInterface(page)) {
         processSubProtocol(page as ProtocolSchemaInterface);
       // } else if (isProtocolReferenceInterface(page)) {
@@ -75,7 +75,7 @@ export function processProtocol(loading: LoadingProtocolInterface):
     }
 
     if (page.wavfiles) {
-      _.forEach(page.wavfiles, function(wavfile) {
+      _.forEach(page.wavfiles, (wavfile) => {
         //TODO: deal with calibration and common repo
       });
     }
@@ -103,7 +103,7 @@ export function processProtocol(loading: LoadingProtocolInterface):
   }
 
   function processFollowOns(followOns: FollowOnInterface[]) {
-    _.forEach(followOns, function(followOn) {
+    _.forEach(followOns, (followOn) => {
       let id = getId(followOn.target);
       followOnsDict[id] = followOn;
       iterateThroughPages(followOn.target);
