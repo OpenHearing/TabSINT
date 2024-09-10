@@ -45,7 +45,7 @@ export class ChaInfoComponent {
         auto_shutdown_time: "x"
       },
       battery: {
-        level: function() {return "placeholder"}
+        level: () => {return "placeholder"}
       },
       id: {
         serialNumber: "placeholder",

@@ -1,6 +1,5 @@
 import { JSONSchemaType } from "ajv";
 import { NavMenuInterface } from "../../app/interfaces/page-definition.interface";
-import { pageSchema } from "../page.schema";
 import { protocolReferenceSchema } from "./protocol-reference.schema";
 
 export const navMenuSchema: JSONSchemaType<NavMenuInterface> = {

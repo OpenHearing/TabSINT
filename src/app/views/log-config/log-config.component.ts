@@ -55,7 +55,7 @@ export class LogConfigComponent {
         content: "Are you sure you want to export the logs to tabsint-logs?",
         type: DialogType.Confirm
       };
-      this.notifications.confirm(msg).subscribe(async (result: string) => {
+      this.notifications.alert(msg).subscribe(async (result: string) => {
         if (result === "OK") {
           this.exportLogs();
         } else {

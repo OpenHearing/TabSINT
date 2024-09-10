@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import _ from 'lodash';
 
 import { ResultsService } from '../../controllers/results.service';
 
@@ -7,15 +8,13 @@ import { DiskModel } from '../../models/disk/disk.service';
 import { StateModel } from '../../models/state/state.service';
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { StateInterface } from '../../models/state/state.interface';
-import { ExamResults, ResultsInterface } from '../../models/results/results.interface';
+import { ExamResults} from '../../models/results/results.interface';
 import { ResultsModel } from '../../models/results/results-model.service';
 
 import { SqLite } from '../../utilities/sqLite.service';
+import { Logger } from '../../utilities/logger.service';
 
 import { SingleResultModalComponent } from '../single-result-modal/single-result-modal/single-result-modal.component';
-import { Logger } from '../../utilities/logger.service';
-import _ from 'lodash';
-import { DBSQLiteValues } from '@capacitor-community/sqlite';
 
 @Component({
   selector: 'results-view',

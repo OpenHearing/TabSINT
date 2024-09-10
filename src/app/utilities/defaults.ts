@@ -1,8 +1,7 @@
 import { Dictionary } from "lodash";
 import { LoadingProtocolInterface } from "../interfaces/loading-protocol-object.interface";
 import { PageInterface } from "../models/page/page.interface";
-import { ProtocolMetaInterface } from "../models/protocol/protocol.interface";
-import { ProtocolInterface } from "../models/protocol/protocol.interface";
+import { ProtocolMetaInterface, ProtocolInterface } from "../models/protocol/protocol.interface";
 import { ProtocolServer } from "./constants";
 import { checkIfCanGoBack } from "./exam-helper-functions";
 import { DiskInterface } from "../models/disk/disk.interface";

@@ -104,7 +104,7 @@ export class DiskModel {
      * @returns  DiskInterface: disk model saved on local storage
      */
     getDisk(): DiskInterface {
-        if (this.window !== null && !_.isUndefined(this.window!.localStorage)) {
+        if (this.window !== null && !_.isUndefined(this.window.localStorage)) {
             if (this.window.localStorage.getItem('diskModel') !== null) {
                 this.disk = JSON.parse(this.window.localStorage.getItem('diskModel')!);
             } else {
@@ -119,7 +119,7 @@ export class DiskModel {
      * @summary When window and local storage are defined, store disk model on local storage\
      */
     storeDisk(): void {
-        if (this.window !== null && !_.isUndefined(this.window!.localStorage)) {
+        if (this.window !== null && !_.isUndefined(this.window.localStorage)) {
             this.window.localStorage.setItem('diskModel', JSON.stringify(this.disk));
         }
     }
@@ -136,7 +136,7 @@ export class DiskModel {
             testDateTime: result.testDateTime!,
             nResponses: _.isUndefined(result.responses) ? 0 : result.responses.length,
             source: result.protocol.server,
-            output: result.exportLocation || result.protocol.server,
+            output: result.exportLocation ?? result.protocol.server,
             uploadedOn: new Date().toJSON()
         };
         this.disk.uploadSummary.unshift(meta);

@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import Ajv, { ValidationError } from 'ajv';
+import Ajv from 'ajv';
 const ajv = new Ajv()
 
 
@@ -14,16 +14,14 @@ import { DiskModel } from '../models/disk/disk.service';
 import { ProtocolModel } from '../models/protocol/protocol-model.service';
 import { AppModel } from '../models/app/app.service';
 import { AppInterface } from '../models/app/app.interface';
-import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
+import { ProtocolModelInterface, ProtocolMetaInterface } from '../models/protocol/protocol.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { StateModel } from '../models/state/state.service';
 import { PageModel } from '../models/page/page.service';
-import { ProtocolMetaInterface } from '../models/protocol/protocol.interface';
 import { DiskInterface } from '../models/disk/disk.interface';
 
-import { ExamState } from '../utilities/constants';
 import { FileService } from '../utilities/file.service';
-import { DeveloperProtocols, DeveloperProtocolsCalibration, DialogType, ProtocolServer} from '../utilities/constants';
+import { ExamState, DeveloperProtocols, DeveloperProtocolsCalibration, DialogType, ProtocolServer} from '../utilities/constants';
 import { Logger } from '../utilities/logger.service';
 import { Paths } from '../utilities/paths.service';
 import { Tasks } from '../utilities/tasks.service';
@@ -129,7 +127,7 @@ export class ProtocolService {
             let finalProtocol: ProtocolSchemaInterface;
 
             if (this.loading.meta.server == ProtocolServer.Developer) {
-                protocol = DeveloperProtocols[this.loading.meta.name!];
+                protocol = DeveloperProtocols[this.loading.meta.name];
                 finalProtocol = protocol;
             } else {
                 const response = await this.fileService.readFile("protocol.json", this.loading.meta.contentURI);
@@ -185,7 +183,7 @@ export class ProtocolService {
 
     private handleLoadErrors(validationError?: ProtocolErrorInterface) {
 
-        if (!_.isUndefined(validationError)) this.protocolModel.activeProtocol!.errors!.push(validationError!);
+        if (!_.isUndefined(validationError)) this.protocolModel.activeProtocol!.errors!.push(validationError);
 
         this.tasks.register("updating protocol", "Checking Protocol Files...");
         let msg = checkCalibrationFiles(this.protocolModel.activeProtocol!);
@@ -252,7 +250,7 @@ export class ProtocolService {
             }
         }
 
-        this.diskModel.disk.headset = this.protocolModel.activeProtocol.headset || "None";
+        this.diskModel.disk.headset = this.protocolModel.activeProtocol.headset ?? "None";
 
         if (this.loading.protocol._requiresCha) {
             this.logger.debug("This exam requires the CHA, attempting to connect...");
@@ -267,7 +265,7 @@ export class ProtocolService {
         this.loading.calibration = undefined;
         let calibration;
         if (this.loading.meta.server === ProtocolServer.Developer) {
-            calibration = DeveloperProtocolsCalibration[this.loading.meta.name!];
+            calibration = DeveloperProtocolsCalibration[this.loading.meta.name];
         } else {
             calibration = await this.fileService.readFile(this.loading.meta.contentURI + "/calibration.json");
         }
