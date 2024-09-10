@@ -27,7 +27,11 @@ export class VersionService {
     constructor(private logger: Logger,private diskModel:DiskModel) {
         this.versionLoaded = this.loadVersion()
     }
-
+    /**
+     * Load tabsint version information from version.js
+     * @summary Imports version.json, loads it into the version model.
+     * @models version
+     */
     private async loadVersion(): Promise<void> {
         try {
             const versionData = await import('../../version.json');
@@ -39,7 +43,13 @@ export class VersionService {
             this.logger.error('version.json file not found or failed to load. Returning empty object --- ' + JSON.stringify(this.version));
         }
     }
-
+    
+    /**
+     * Promise to retrieve the version model.
+     * @summary Waits for the version to be loaded, then return it.
+     * @models version
+     * @returns version model:  VersionInterface
+     */
     async getVersion(): Promise<VersionInterface> {
         await this.versionLoaded;
         return this.version;

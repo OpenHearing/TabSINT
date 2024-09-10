@@ -100,10 +100,10 @@ export class ProtocolService {
     };
 
     /**
-     * Removes a protocol from TabSINT
+     * Removes a protocol from TabSINT from the disk model
      * @summary Check if the protocol to delete exists or is an admin or developer protocol.
-     * Removes it from the protocolmodel
-     * @models protocol, app
+     * Removes it from the protocol model.
+     * @models protocol, app, disk
      * @param p protocol to delete
      */
     delete(p: ProtocolMetaInterface): void {

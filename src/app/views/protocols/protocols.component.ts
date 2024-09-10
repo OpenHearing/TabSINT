@@ -55,10 +55,19 @@ export class ProtocolsComponent {
     // sort protocols by name here
   }
 
+  /**
+   * Keep track of the selected protocol in the protocols table
+   * @param p: meta data of the protocol to select
+   */
   select(p: ProtocolMetaInterface): void {
     this.selected = p;
   }
 
+  /**
+   * Style protocol table rows based on which protocol is active and which is selected.
+   * @param p: meta data of the protocol to select
+   * @returns style class:  string
+   */
   pclass(p: ProtocolMetaInterface): string {
     if (this.isActive(p)) {
       return "active-row";
@@ -71,6 +80,12 @@ export class ProtocolsComponent {
     }
   };
 
+  /**
+   * Add protocols to protocols table
+   * @summary Launch file chooser, extract meta data from selected protocol folder, 
+   * save it to disk model, then retrieve protocol model to refresh the view.
+   * @models dik, protocol
+   */
   async addProtocols() {
     try {
       const result = await this.fileService.launchFileChooser();
@@ -128,6 +143,12 @@ export class ProtocolsComponent {
     return this.selected.server !== ProtocolServer.Developer;
   };
 
+  /**
+   * Load selected protocol: make it the active protocol.
+   * @summary Get the meta data of the selected protocol, then load all protocol files onto the protocolModel.activeProtocol object.
+   * @models protocol
+   * @param parameter: description
+   */
   async loadProtocol() {
     if (!this.selected) {
       return;
@@ -159,6 +180,11 @@ export class ProtocolsComponent {
     this.tasks.deregister("updating");
   };
 
+  /**
+   * Delete protocol from protocols table
+   * @summary Deactivate protocol if active, delete it from the disk model, un-select it.
+   * @models models
+   */
   delete(): void {
       if (!this.selected) {
           return;

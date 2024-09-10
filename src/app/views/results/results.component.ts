@@ -48,6 +48,12 @@ export class ResultsComponent {
     return index;
   }
 
+  /**
+   * View detailed exam results from a single exam.
+   * @summary Open a modal component to view exam results details. The user may export, upload or close the window. 
+   * @models disk
+   * @param index: index of the result to open from the sqLite database.
+   */
   viewResult(index: number) {
     this.dialog.open(SingleResultModalComponent, {
       data: index
@@ -82,7 +88,6 @@ export class ResultsComponent {
 
   /**
    * Delete all exam results from the disk completed exam results and from the sqlite database.
-   * @models disk
    */
   async deleteAll() {
       await this.sqLite.deleteAll('results');      
