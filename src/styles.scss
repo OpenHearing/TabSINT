@@ -82,6 +82,7 @@ $tabsint-training-site-theme: mat.define-light-theme((
   }
   
   input {
+    border-radius: 6px;
     -webkit-user-select: auto !important;
     -moz-user-select: auto !important;
     -ms-user-select: auto !important;
@@ -89,6 +90,10 @@ $tabsint-training-site-theme: mat.define-light-theme((
   }
   
   textarea {
+    resize: none;
+    width: 90%;
+    border-radius: 4px;
+    padding: 10px;
     -webkit-user-select: auto !important;
     -moz-user-select: auto !important;
     -ms-user-select: auto !important;
@@ -275,7 +280,6 @@ $tabsint-training-site-theme: mat.define-light-theme((
   * Welcome Page
   * -----------*/
   .welcome-page {
-    /*overflow-y: overlay;*/
     max-width: 680px;
     margin: 0 auto;
     height: 100vh;
@@ -444,7 +448,6 @@ $tabsint-training-site-theme: mat.define-light-theme((
   
   .modal-header {
     font-weight: bold;
-    /*background-color: #f5f5f5;*/
   }
   
   .modal-body .ngx-json-viewer[_ngcontent-ng-c153363216] {
@@ -483,6 +486,7 @@ $tabsint-training-site-theme: mat.define-light-theme((
     opacity: 0.15;
   }
   .btn-danger {
+    color: #fff;
     border-color: #d43f3a;
     background-color: #d43f3a;
   }
@@ -546,7 +550,6 @@ $tabsint-training-site-theme: mat.define-light-theme((
   }
   /* initial padding - overridden by different sizes */
   .btn:not(.dropdown-toggle) { 
-    // padding: 10px 12px;
     text-wrap: nowrap;
     min-width: 130px;
   }
@@ -588,10 +591,6 @@ $tabsint-training-site-theme: mat.define-light-theme((
     color: #fff;
     background-color: #5cb85c;
     border-color: #4cae4c;
-  }.btn-danger {
-    color: #fff;
-    border-color: #d43f3a;
-    background-color: #d43f3a;
   }
   .btn-primary {
     background-color: #337ab7;
@@ -693,11 +692,6 @@ $tabsint-training-site-theme: mat.define-light-theme((
   /*-----------
   * Exam Page
   * -----------*/
-  /*
-  .exam-page {
-    height: calc(100vh - 60px - 4em); 
-    //commenting: causing layering issues
-  }*/
   .exam-page .row .col-6:first-of-type,
   .exam-page .row .col-7:first-of-type {
     display: flex;
@@ -847,7 +841,6 @@ $tabsint-training-site-theme: mat.define-light-theme((
   
   .question {
     text-align: center;
-    /*font-size: 20px;*/
   }
   
   .question h1 {
@@ -875,16 +868,6 @@ $tabsint-training-site-theme: mat.define-light-theme((
       font-size: 20px;
     }
   }
-  
-  /*
-  .finalized-table {
-    font-size: 20px;
-  }
-  @media (max-width: 500px) {
-    .finalized-table {
-      font-size: 16px;
-    }
-  }*/
   
   .question h2 {
     color: #337ab7;
@@ -953,15 +936,9 @@ $tabsint-training-site-theme: mat.define-light-theme((
     -webkit-appearance: none;
   }
   
-  input{
-    border-radius: 6px;
-  }
   .btn.dropdown-toggle {
     text-align: left;
   }
-  /*input[type=number] {
-    text-align: center;
-  }*/
   
   input[type=checkbox] {
     transform: scale(1.25);
@@ -994,7 +971,6 @@ $tabsint-training-site-theme: mat.define-light-theme((
   .multimedia {
     position: relative;
     margin:auto;
-    /*padding: 36px;*/
   }
   
   .zoom {
@@ -1011,7 +987,6 @@ $tabsint-training-site-theme: mat.define-light-theme((
   .likert table, .likert th, .likert td {
     width: 100%;
     table-layout: fixed;
-    /*border: 1px solid black;*/
   }
   .likert-row:not(:last-of-type) {
     margin-bottom: 40px;
@@ -1178,9 +1153,6 @@ $tabsint-training-site-theme: mat.define-light-theme((
   }
   
   @media (max-width: 500px) {
-    /*.question, .dropdown-menu {
-      font-size: 16px;
-    }*/
     .question .likert-label {
       font-size: 14px;
     }
@@ -1579,7 +1551,6 @@ $tabsint-training-site-theme: mat.define-light-theme((
   }
   .button-grid button {
     font-size: 22px;
-    /*padding: 2px 3px 2px 3px;*/
   }
   
   .integer-input {
@@ -1667,7 +1638,6 @@ $tabsint-training-site-theme: mat.define-light-theme((
     width: 100%;
     table-layout: fixed;
     vertical-align:middle;
-    /*border: 1px solid black;*/
   }
   .seesaw td:first-of-type {
     text-align: right;
@@ -1689,13 +1659,6 @@ $tabsint-training-site-theme: mat.define-light-theme((
   
   .video-rounded {
     border-radius: 6px;
-  }
-  
-  textarea {
-    resize: none;
-    width: 90%;
-    border-radius: 4px;
-    padding: 10px;
   }
   
   #gapLenghtsRow {
@@ -1818,7 +1781,6 @@ $tabsint-training-site-theme: mat.define-light-theme((
     border: none;
     margin-bottom: 0px;
     box-shadow: 0 1px 6px 0px rgba(0,0,0,0.25);
-    /*box-shadow: 0 0 1px 1px rgba(0,0,0,0.25);*/
   }
   @media (max-width: 500px) {
     .navbar-fixed-top {
@@ -1835,6 +1797,7 @@ $tabsint-training-site-theme: mat.define-light-theme((
   
   /* see also surveytitle class*/
   .header-text {
+    cursor: default;
     font-size: 24px;
     text-align: center;
     margin-right: 6px;
@@ -1846,9 +1809,6 @@ $tabsint-training-site-theme: mat.define-light-theme((
   }
   .header-text span[popover-placement] {
     color:  #337ab7 !important; 
-  }
-  .header-text {
-    cursor: default;
   }
   .svantek-indicator-height {
     height:25px
@@ -2003,8 +1963,6 @@ $tabsint-training-site-theme: mat.define-light-theme((
   }
   
   .admin-labels {
-    /* display: flex;
-    align-self: stretch; */
     padding-left: 15px;
     padding-right: 5px;
   }
@@ -2173,7 +2131,6 @@ $tabsint-training-site-theme: mat.define-light-theme((
     display:block;
     width:100%;
     height:1000px;
-    /*margin-bottom: 5px;*/
   }
   
   .animate-switch.ng-animate {
@@ -2339,10 +2296,6 @@ $tabsint-training-site-theme: mat.define-light-theme((
     margin: 0;
   }
   
-  /* need to find out what this was doing before
-  .panel-body {
-    overflow: scroll;
-  }*/
   @media (max-width: 768px) {
     .panel-body > .panel-body {
       padding-left: 0;
@@ -2366,7 +2319,6 @@ $tabsint-training-site-theme: mat.define-light-theme((
     outline: none;
     min-height: 150px;
     width: 70%;
-    /*color: rgba(0, 0, 0, 0.8); */
     color: #FFFFFF;
     text-align: center;
     border-radius: 25px;
@@ -2389,7 +2341,6 @@ $tabsint-training-site-theme: mat.define-light-theme((
       outline: none;
       height: 15vh;
       width: 40%;
-      /*color: rgba(0, 0, 0, 0.8); */
       color: #FFFFFF;
       text-align: center;
       border-radius: 40px;
@@ -2411,7 +2362,6 @@ $tabsint-training-site-theme: mat.define-light-theme((
       outline: none;
       height: 15vh;
       width: 40%;
-      /*color: rgba(0, 0, 0, 0.8); */
       color: #FFFFFF;
       text-align: center;
       border-radius: 40px;
