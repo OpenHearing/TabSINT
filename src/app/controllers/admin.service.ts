@@ -13,8 +13,8 @@ export class AdminService {
     disk: DiskInterface;
 
     constructor(
-        public diskModel: DiskModel, 
-        public logger: Logger
+        private diskModel: DiskModel, 
+        private logger: Logger
     ) {
         this.disk = this.diskModel.getDisk();
     }

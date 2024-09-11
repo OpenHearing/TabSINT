@@ -8,7 +8,7 @@ import { ExamService } from '../../controllers/exam.service';
 })
 export class WelcomeComponent {
 
-  constructor(public examService: ExamService) {}
+  constructor(private examService: ExamService) {}
 
   // TODO: Replace this variable with a model?
   config:any = {};

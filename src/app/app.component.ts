@@ -29,8 +29,8 @@ export class AppComponent {
   protocol: ProtocolModelInterface;
 
   constructor(    
-    public appModel: AppModel,
-    public protocolM: ProtocolModel,
+    private appModel: AppModel,
+    private protocolM: ProtocolModel,
     private diskModel: DiskModel,
     private fileService:FileService,
     private logger: Logger,
@@ -41,7 +41,7 @@ export class AppComponent {
   ) {
     this.translate.setDefaultLang('English');
     this.translate.use('English');
-    this.app = appModel.getApp();
+    this.app = this.appModel.getApp();
     this.disk = this.diskModel.getDisk();
     this.diskModel.updateDiskModel('numLogRows',1);
     this.protocol = this.protocolM.getProtocolModel();

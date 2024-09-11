@@ -32,12 +32,12 @@ export class ExamService {
     currentPage: PageInterface;
 
     constructor (
-        public logger: Logger,
-        public resultsService: ResultsService,
-        public resultsModel: ResultsModel,
-        public pageModel: PageModel,
-        public protocolM: ProtocolModel,
-        public stateModel: StateModel,
+        private logger: Logger,
+        private resultsService: ResultsService,
+        private resultsModel: ResultsModel,
+        private pageModel: PageModel,
+        private protocolM: ProtocolModel,
+        private stateModel: StateModel,
         private diskModel: DiskModel,
         private notifications: Notifications
     ) {

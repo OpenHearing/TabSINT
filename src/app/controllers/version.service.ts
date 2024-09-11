@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Logger } from '../utilities/logger.service';
-import { DiskModel } from '../models/disk/disk.service';
 import { VersionInterface } from '../interfaces/version.interface';
-
 
 @Injectable({
     providedIn: 'root',
@@ -24,7 +22,7 @@ export class VersionService {
     }; 
     private versionLoaded: Promise<void>;
 
-    constructor(private logger: Logger,private diskModel:DiskModel) {
+    constructor(private logger: Logger) {
         this.versionLoaded = this.loadVersion()
     }
     /**

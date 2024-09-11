@@ -11,7 +11,7 @@ import { DiskModel } from '../../models/disk/disk.service';
 export class DebugComponent {
   disk: DiskInterface;
 
-  constructor(public diskModel: DiskModel) {
+  constructor(private diskModel: DiskModel) {
     this.disk = this.diskModel.getDisk();
   }
 
