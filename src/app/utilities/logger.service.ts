@@ -12,8 +12,8 @@ export class Logger {
     disk: DiskInterface;
 
     constructor(
-        public diskModel: DiskModel,
-        public sqLite: SqLite
+        private diskModel: DiskModel,
+        private sqLite: SqLite
     ) { 
         this.disk = this.diskModel.getDisk(); 
     }
