@@ -147,8 +147,6 @@ export class ExamService {
         if (this.currentPage.followOns) { 
             let nextID = this.findFollowOn();
             if (nextID != undefined) {
-                // TODO: Make it clear that this will break out of the function chain
-                // will end the exam if its called
                 if (this.checkForSpecialReference(nextID)) {
                     this.handleSpecialReferences(nextID);
                     return undefined
@@ -262,7 +260,7 @@ export class ExamService {
     private checkIfPageIsSubmittable() {
             return !this.currentPage.responseArea!.responseRequired;
 
-            //TODO: set response requited to false if response area is multipleChoiceResponseArea
+            //TODO: set response required to false if response area is multipleChoiceResponseArea
             // if (this.currentPage.responseArea.type == "multipleChoiceResponseArea") {
             //     return false
             // } else {

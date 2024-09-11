@@ -53,7 +53,7 @@ export class DiskModel {
             useTagsOnly: true
         },
         headset: "None",
-        init: true, // TODO: when set to true, this is the initial opening of the app and disclaimer should be displayed
+        init: true,
         interApp: {
             appName: '',
             dataIn: '',

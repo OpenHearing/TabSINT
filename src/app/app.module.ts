@@ -100,7 +100,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     TextboxComponent,
     MultipleChoiceComponent,
     SingleResultModalComponent,
-    ExternalResponseAreaComponent
+    ExternalResponseAreaComponent,
   ],
   imports: [
     BrowserModule,
