@@ -48,7 +48,7 @@ export class AppComponent {
   }
 
   async ngOnInit() {
-    this.sqLite.init();
+    await this.sqLite.init();
     this.router.navigate(['']);
 
     if (!this.diskModel.disk.contentURI) {
