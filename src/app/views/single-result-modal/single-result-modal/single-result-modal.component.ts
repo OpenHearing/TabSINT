@@ -35,11 +35,17 @@ export class SingleResultModalComponent {
     this.close();
   }
 
+  /**
+   * Exports single exam result to the tablet file system.
+   */
   async export() {
     await this.resultsService.exportSingleResult(this.index);
     this.close();
   }
 
+  /**
+   * Delete single exam result from tabsint.
+   */
   delete() {
     this.resultsService.deleteSingleResult(this.index);
     this.close();

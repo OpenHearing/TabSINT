@@ -87,7 +87,7 @@ export interface SetFlagInterface {
     conditional: string;
 }
 
-export interface CommonResponseArea {
+export interface CommonResponseAreaInterface {
     enableSkip?: boolean;
     type: string;
     responseRequired?: boolean;

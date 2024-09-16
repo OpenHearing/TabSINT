@@ -2,10 +2,6 @@ import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { DiskModel } from '../../models/disk/disk.service';
-import { Logger } from '../../utilities/logger.service';
-import { FileService } from '../../utilities/file.service';
-import { AdminService } from '../../controllers/admin.service';
-import { ConfigService } from '../../controllers/config.service';
 import { AppState } from '../../utilities/constants';
 import { StateModel } from '../../models/state/state.service';
 import { DiskInterface } from '../../models/disk/disk.interface';
@@ -21,13 +17,9 @@ export class ChaInfoComponent {
   state: StateInterface;
 
   constructor(
-    public diskModel: DiskModel, 
-    public fileService: FileService,
-    public adminService: AdminService,
-    public configService: ConfigService,
-    public logger: Logger, 
-    public stateModel: StateModel,
-    public translate: TranslateService,
+    private diskModel: DiskModel, 
+    private stateModel: StateModel,
+    private translate: TranslateService,
   ) { 
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();

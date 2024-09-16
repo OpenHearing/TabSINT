@@ -45,17 +45,17 @@ export class ProtocolService {
     state: StateInterface;
 
     constructor(
-        public appModel: AppModel,
-        public diskModel: DiskModel,
-        public fileService: FileService,
-        public logger:Logger,
-        public notifications: Notifications,
-        public pageModel: PageModel,
-        public paths: Paths,
-        public protocolM: ProtocolModel,
-        public stateModel: StateModel,
-        public translate: TranslateService,
-        public tasks: Tasks,
+        private appModel: AppModel,
+        private diskModel: DiskModel,
+        private fileService: FileService,
+        private logger:Logger,
+        private notifications: Notifications,
+        private pageModel: PageModel,
+        private paths: Paths,
+        private protocolM: ProtocolModel,
+        private stateModel: StateModel,
+        private translate: TranslateService,
+        private tasks: Tasks,
     ) {
         this.app = this.appModel.getApp();
         this.disk = this.diskModel.getDisk();
@@ -100,10 +100,10 @@ export class ProtocolService {
     };
 
     /**
-     * Removes a protocol from TabSINT
+     * Removes a protocol from TabSINT from the disk model
      * @summary Check if the protocol to delete exists or is an admin or developer protocol.
-     * Removes it from the protocolmodel
-     * @models protocol, app
+     * Removes it from the protocol model.
+     * @models protocol, app, disk
      * @param p protocol to delete
      */
     delete(p: ProtocolMetaInterface): void {

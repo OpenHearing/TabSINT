@@ -10,7 +10,7 @@ import { Observable } from 'rxjs/internal/Observable';
 
 export class Notifications {
 
-    constructor(public dialog: MatDialog) {}
+    constructor(private dialog: MatDialog) {}
     
     alert(dialogData: DialogDataInterface): Observable<string> {
       

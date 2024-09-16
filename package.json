@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "clean": "shx rm -rf .dist && shx rm -rf .android && shx rm -rf .cache",
+    "clean": "rm -rf dist && rm -rf .angular/cache",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",

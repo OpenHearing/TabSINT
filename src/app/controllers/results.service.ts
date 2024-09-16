@@ -26,11 +26,11 @@ export class ResultsService {
     devices: DevicesInterface;
     
     constructor (
-        public resultsModel: ResultsModel,
-        public protocolM: ProtocolModel,
-        public sqLite: SqLite,
-        public devicesModel: DevicesModel,
-        public diskModel: DiskModel,
+        private resultsModel: ResultsModel,
+        private protocolM: ProtocolModel,
+        private sqLite: SqLite,
+        private devicesModel: DevicesModel,
+        private diskModel: DiskModel,
         private fileService: FileService,
         private logger: Logger
     ) {

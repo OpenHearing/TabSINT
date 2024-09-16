@@ -1,6 +1,6 @@
-import { CommonResponseArea } from "../../../../interfaces/page-definition.interface";
+import { CommonResponseAreaInterface } from "../../../../interfaces/page-definition.interface";
 
-export interface MultipleChoiceInterface extends CommonResponseArea {
+export interface MultipleChoiceInterface extends CommonResponseAreaInterface {
     choices?: ChoiceInterface[];
     other?: string; // Text label for an 'other' choice
     verticalSpacing?: number; // Vertical spacing between buttons, given in [px]
@@ -18,9 +18,3 @@ export interface ChoiceInterface {
     backgroundColor?: string;
     fontSize?: string;
   }
-
-const defaultMultipleChoiseInterface: MultipleChoiceInterface = {
-    type: "multipleChoiceResponseArea",
-    exportToCSV: false,
-    choices: []
-};

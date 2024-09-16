@@ -1,5 +1,4 @@
 import { Component, Inject } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { ResultsInterface } from '../../models/results/results.interface';
@@ -26,12 +25,11 @@ export class ExamTestingComponent {
   instructionText?: string;
 
   constructor(
-    public resultsModel: ResultsModel,
-    public translate: TranslateService,
     public examService: ExamService,
-    public sanitizer: DomSanitizer,
-    public protocolModel: ProtocolModel,
-    public stateModel: StateModel,
+    private resultsModel: ResultsModel,
+    private sanitizer: DomSanitizer,
+    private protocolModel: ProtocolModel,
+    private stateModel: StateModel,
     @Inject(WINDOW) private window: Window
   ) { 
     this.results = this.resultsModel.getResults();
