@@ -78,6 +78,11 @@ Once you have set up your [development environment](dev-env.md), run the followi
 ```bash
 $ ng serve
 ```
+or:
+
+```bash
+$ npm run start
+```
 
 For debugging purposes, you can use the [Chrome Developer Tools](https://developer.chrome.com/devtools).
 Be aware that browser caching can cause the browser not to see local changes.
