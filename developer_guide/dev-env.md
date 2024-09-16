@@ -297,9 +297,10 @@ Install Gradle using 'apt install gradle'
 
 To build and develop the TabSINT software, you must set up your local machine with the appropriate developer dependencies.
 
-Confirm you have the following tools:
+### Install and confirm you have the following tools:
 
 - [Git](https://git-scm.com/)
+- [nvm](https://www.freecodecamp.org/news/node-version-manager-nvm-install-guide/)
 - [Node](https://nodejs.org/)
   - Make sure global `node_modules` directory is on your system path
   - **Node** comes with a command line package manager `npm`
@@ -307,9 +308,7 @@ Confirm you have the following tools:
 
 **NOTE: When installing Git for Windows, I had to add a couple extra things to my path, per this [stackoverflow post](https://stackoverflow.com/a/50833818). When installing Node, select the Current version. Do not install the LTS version.**
 
-## Setting up TabSINT and its Dependencies
-
-Once you have the required tools, clone this git repository somewhere on your local machine and enter the `tabsint` directory. If you are uncomfortable using git from the command line, we recommend [SourceTree](https://www.sourcetreeapp.com/).
+### Setting up TabSINT and its Dependencies
 
 From the `tabsint` directory, run the following command to install dependencies (npm modules and bower components):
 
@@ -317,13 +316,9 @@ From the `tabsint` directory, run the following command to install dependencies 
 $ npm install
 ```
 
-At this point, you are ready to serve the app locally in the browser for testing.
+At this point, you are ready to serve the app locally in the browser for testing. A few extra tools are necessary to build the app for mobile devices:
 
-### Tablet Dependencies
-
-A few extra tools are necessary to build the app for mobile devices:
-
-#### Android
+### Install Android Tools
 
 To build an android package you need the following tools:
 
@@ -344,7 +339,7 @@ To build an android package you need the following tools:
   - Make sure the bin directory within your Gradle installation is on your system path.
 - As of Android 12, `ANDROID_HOME` is now the preferred environment variable, and not `ANDROID_SDK_ROOT`. Depending on your environment, you may need to define these.
 
-#### iOS
+### Install iOS Tools
 
 To build an iOS package, you must be developing on a mac with the current build of XCode. Additionally, you should ensure that you have the XCode command-line-tools. Get them by entering the following into a Terminal:
 
