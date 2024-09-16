@@ -70,6 +70,7 @@ import { TextboxComponent } from './views/response-area/response-areas/textbox/t
 import { MultipleChoiceComponent } from './views/response-area/response-areas/multiple-choice/multiple-choice.component';
 import { SingleResultModalComponent } from './views/single-result-modal/single-result-modal/single-result-modal.component';
 import { ExternalResponseAreaComponent } from './views/response-area/response-areas/external-response-area/external-response-area.component';
+import { ManualAudiometryComponent } from './views/response-area/response-areas/manual-audiometry/manual-audiometry';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -100,6 +101,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     ResponseAreaComponent,
     TextboxComponent,
     MultipleChoiceComponent,
+    ManualAudiometryComponent,
     SingleResultModalComponent,
     ExternalResponseAreaComponent
   ],

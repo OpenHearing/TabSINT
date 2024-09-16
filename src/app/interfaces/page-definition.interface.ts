@@ -1,3 +1,4 @@
+import { ManualAudiometryInterface } from "../views/response-area/response-areas/manual-audiometry/manual-audiometry.interface";
 import { MultipleChoiceInterface} from "../views/response-area/response-areas/multiple-choice/multiple-choice.interface";
 import { TextBoxInterface } from "../views/response-area/response-areas/textbox/textbox.interface";
 import { ProtocolSchemaInterface } from "./protocol-schema.interface";
@@ -95,4 +96,4 @@ export interface CommonResponseArea {
 
 export type ResponseArea =
     TextBoxInterface |
-    MultipleChoiceInterface;
+    MultipleChoiceInterface | ManualAudiometryInterface;

@@ -23,7 +23,7 @@ export class TextboxComponent {
   protocol: ProtocolModelInterface;
   state: StateInterface
   rows: number;
-  observableVar: any; // TODO: Blaine, what should this type be?
+  observableVar: Observable<PageInterface>; // TODO: Blaine, what should this type be?
 
   constructor (public resultsModel: ResultsModel, public pageModel: PageModel, public protocolModel: ProtocolModel, public stateModel: StateModel) {
     this.results = this.resultsModel.getResults();
