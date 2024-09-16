@@ -1,12 +1,12 @@
 <div id="config">
-    
+
     <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.general">
         <mat-expansion-panel-header>
             <mat-panel-title>
                 {{'TabSINT' | translate}}
             </mat-panel-title>
         </mat-expansion-panel-header>
-           
+
         <div class="panel-body text-left">
             <tabsint-config-view></tabsint-config-view>
         </div>
@@ -15,15 +15,32 @@
 
     <br />
 
+    <!-- Tympan -->
+    <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.tympan">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                {{'Tympans'| translate}}
+                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.isPaneOpen.general, "glyphicon-chevron-down": !state.isPaneOpen.general}'></i> -->
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="panel-body text-left">
+            <tympan-config-view></tympan-config-view>
+        </div>
+
+    </mat-expansion-panel>
+
+    <br />
+
     <!-- WAHTS -->
-    <!--   NOT YET IMPLEMENTED, DO NOT DELETE   
+    <!--   NOT YET IMPLEMENTED, DO NOT DELETE
        <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.wahts">
         <mat-expansion-panel-header>
             <mat-panel-title>
                 {{'WAHTS'| translate}}
             </mat-panel-title>
         </mat-expansion-panel-header>
-           
+
         <div class="panel-body text-left">
             <cha-config-view></cha-config-view>
         </div>
@@ -33,14 +50,14 @@
     <br /> -->
 
     <!-- Svantek Dosimeter -->
-    <!--   NOT YET IMPLEMENTED, DO NOT DELETE   
+    <!--   NOT YET IMPLEMENTED, DO NOT DELETE
        <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.dosimeter">
         <mat-expansion-panel-header>
             <mat-panel-title>
                 {{'Dosimeter'| translate}}
             </mat-panel-title>
         </mat-expansion-panel-header>
-           
+
         <div class="panel-body text-left">
 
         </div>
@@ -56,7 +73,7 @@
                 {{'Software and Hardware'| translate}}
             </mat-panel-title>
         </mat-expansion-panel-header>
-           
+
         <div class="panel-body text-left">
             <software-config-view></software-config-view>
         </div>
@@ -72,7 +89,7 @@
                 {{'Application Log'| translate}}
             </mat-panel-title>
         </mat-expansion-panel-header>
-           
+
         <div class="panel-body text-left">
             <log-config-view></log-config-view>
         </div>

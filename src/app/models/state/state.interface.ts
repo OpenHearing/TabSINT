@@ -1,5 +1,6 @@
 import { AppState, ProtocolState, ExamState, ChaState, SvantekState } from "../../utilities/constants";
 import { ProtocolInterface } from "../protocol/protocol.interface";
+import { AppState, ProtocolState, ExamState, ChaState, SvantekState, TympanState } from "../../utilities/constants";
 
 export interface StateInterface {
     appState: AppState;
@@ -11,6 +12,7 @@ export interface StateInterface {
     isPaneOpen: {
         general: boolean;
         advanced: boolean;
+        tympan: boolean;
         wahts: boolean;
         dosimeter: boolean;
         softwareHardware: boolean;
@@ -18,6 +20,7 @@ export interface StateInterface {
         protocols: boolean;
         protocolsSource: boolean;
         chaAdvanced: boolean;
+        tympanAdvanced: boolean;
         completedExams: boolean;
         exportedAndUploadedResults: boolean;
     };
@@ -29,5 +32,6 @@ export interface StateInterface {
     bluetoothConnected: boolean;
     wifiConnected: boolean;
     cha: ChaState;
+    tympan: TympanState;
     svantek: SvantekState;
 }

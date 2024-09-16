@@ -35,6 +35,13 @@ export class DiskModel {
                 path: "protocols/develop"
             }
         },
+        headset: "None",
+        tympan: {
+            embeddedFirmwareBuildDate: "",
+            embeddedFirmwareTag: "",
+            myTympan: "",
+            bluetoothType: ""
+        },
         cha: {
             bluetoothType: '',
             embeddedFirmwareBuildDate: '',
@@ -89,9 +96,9 @@ export class DiskModel {
         validateProtocols: true,
         versionCheck: false
     };
-    
-    
-    
+
+
+
     constructor(
         @Inject(DOCUMENT) private document: Document
     ) {
@@ -109,8 +116,8 @@ export class DiskModel {
                 this.disk = JSON.parse(this.window.localStorage.getItem('diskModel')!);
             } else {
                 this.storeDisk();
-            }            
-        }     
+            }
+        }
         return this.disk;
     }
 
@@ -129,13 +136,13 @@ export class DiskModel {
      * @summary Set key: value on the disk model, then store the disk model on local storage.
      * @models disk
      * @param key: key of the parameter to update on the disk model
-     * @param value: value to change the parameter to 
+     * @param value: value to change the parameter to
      */
     updateDiskModel(key: string, value: any) {
         _.set(this.disk, key, value);
         this.storeDisk();
     }
-    
+
     /**
      * Update summary info that is used to display recently exported or uploaded results
      * @summary Add result meta data to disk.uploadSumary, then store it on local storage

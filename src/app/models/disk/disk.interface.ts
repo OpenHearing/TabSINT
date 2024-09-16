@@ -15,6 +15,29 @@ export interface DiskInterface {
   },
   cha: {
       bluetoothType: string,
+    qrcodeConfig?: Object,
+    debugMode: boolean,
+    disableLogs: boolean,
+    maxLogRows: number,
+    numLogRows: number,
+    pin: string,
+    disableVolume?: boolean,
+    requireEncryptedResults?: boolean,
+    recordTestLocation?: boolean,
+    adminSkipMode: boolean,
+    autoUpload?: boolean,
+    disableAudioStreaming?: boolean,
+    server: ProtocolServer,
+    tabletGain: number,
+    extStorageRootDir?: string,
+    extStorageUuidDir?: string,
+    tympan: {
+      embeddedFirmwareBuildDate: string,
+      embeddedFirmwareTag: string,
+      myTympan: string,
+      bluetoothType: string
+    },
+    cha: {
       embeddedFirmwareBuildDate: string,
       embeddedFirmwareTag: string,
       myCha: string

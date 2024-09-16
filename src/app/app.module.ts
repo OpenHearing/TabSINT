@@ -38,6 +38,7 @@ import { DiskModel } from './models/disk/disk.service';
 import { ProtocolModel } from './models/protocol/protocol-model.service';
 import { ResultsModel } from './models/results/results-model.service';
 import { StateModel } from './models/state/state.service';
+import { TympanModel } from './models/tympan/tympan-model.service';
 
 // Utilities
 import { Notifications } from './utilities/notifications.service';
@@ -53,6 +54,8 @@ import { ProtocolService } from './controllers/protocol.service';
 import { LocalServerService } from './controllers/local-server.service';
 import { ResultsService } from './controllers/results.service';
 import { ExamService } from './controllers/exam.service';
+import { TympanWrap } from './utilities/tympan-wrap.service';
+import { TympanService } from './controllers/tympan.service';
 import { AdminService } from './controllers/admin.service';
 import { TabsintConfigComponent } from './views/tabsint-config/tabsint-config.component';
 import { SoftwareConfigComponent } from './views/software-config/software-config.component';
@@ -69,6 +72,8 @@ import { TextboxComponent } from './views/response-area/response-areas/textbox/t
 import { MultipleChoiceComponent } from './views/response-area/response-areas/multiple-choice/multiple-choice.component';
 import { SingleResultModalComponent } from './views/single-result-modal/single-result-modal/single-result-modal.component';
 import { ExternalResponseAreaComponent } from './views/response-area/response-areas/external-response-area/external-response-area.component';
+import { TympanConfigComponent } from './views/tympan-config/tympan-config.component';
+import { TympanInfoComponent } from './views/tympan-info/tympan-info.component';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -101,6 +106,8 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     MultipleChoiceComponent,
     SingleResultModalComponent,
     ExternalResponseAreaComponent,
+    TympanConfigComponent,
+    TympanInfoComponent
   ],
   imports: [
     BrowserModule,
@@ -148,7 +155,10 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     ResultsService,
     ExamService,
     AdminService,
-    TranslateService
+    TranslateService,
+    TympanWrap,
+    TympanService,
+    TympanModel
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
