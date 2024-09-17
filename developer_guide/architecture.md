@@ -3,9 +3,9 @@
 The application is designed following a [Model-View-Controller (MVC) design pattern](https://developer.mozilla.org/en-US/docs/Glossary/MVC).
 
 - [Interfaces](https://www.typescriptlang.org/docs/handbook/interfaces.html) are used to define data structures, limiting the use of the `any` type. 
-- `Utilities` are functions and classes that don't depend on models and services, such that they can be called from anywhere. `Utilities` are [services](https://angular.dev/guide/di/creating-injectable-service) in the Angular terminology, which are injectable accross the application. Models define the data structure and save the data associated with each model. 
-- Models and Controllers are [services](https://angular.dev/guide/di/creating-injectable-service) in the Angular terminology. 
-- Views are [components](https://angular.dev/guide/components) in the angular terminology, and encompass:
+- `Utilities` are functions and classes that don't depend on models and services, such that they can be called from anywhere. Utilities are [services](https://angular.dev/guide/di/creating-injectable-service) in the Angular terminology, which are injectable accross the application. Models define the data structure and save the data associated with each model. 
+- `Models` and `Controllers` are [services](https://angular.dev/guide/di/creating-injectable-service) in the Angular terminology. 
+- `Views` are [components](https://angular.dev/guide/components) in the angular terminology, and encompass:
   * a TypeScript class with behaviors, 
   * a HTML template that renders as the UI, 
   * a CSS file that defines the component styles, and 
@@ -18,3 +18,5 @@ Separating the component's view-related features from services other kinds of pr
 [PREVIOUS: Building and Running](building-running.md)
 
 [NEXT: Repository Organization](organization.md)
+
+[BACK TO INDEX](developer-guide-index.md)

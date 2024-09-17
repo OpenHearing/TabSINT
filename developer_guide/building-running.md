@@ -129,3 +129,5 @@ Once connected, you can use the Chrome developer tools to debug TabSINT on the d
 [PREVIOUS: Development Environment](developer-environment.md)
 
 [NEXT: Architechture](architecture.md)
+
+[BACK TO INDEX](developer-guide-index.md)
