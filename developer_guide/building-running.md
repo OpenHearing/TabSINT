@@ -124,3 +124,10 @@ Here are some steps to correct the issue:
 ### Debug TabSINT on Device
 
 Once connected, you can use the Chrome developer tools to debug TabSINT on the device.  Go to `chrome://inspect/#devices`, then open the TabSINT option.
+
+
+[PREVIOUS: Development Environment](developer-environment.md)
+
+[NEXT: Architechture](architecture.md)
+
+[BACK TO INDEX](developer-guide-index.md)
