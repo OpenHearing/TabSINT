@@ -48,4 +48,5 @@ Error handling in the app can consist of many pieces:
 
 
 [PREVIOUS: Repository Organization](organization.md)
+
 [NEXT: Contributing Guidelines](contributing.md)

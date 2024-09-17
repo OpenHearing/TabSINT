@@ -16,4 +16,5 @@ Separating the component's view-related features from services other kinds of pr
 <img src="architecture.png">
 
 [PREVIOUS: Building and Running](building-running.md)
+
 [NEXT: Repository Organization](organization.md)
