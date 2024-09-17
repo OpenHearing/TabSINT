@@ -35,3 +35,7 @@ Please read [conventions](conventions.md) and follow the style guide.
 ### License
 
 By contributing your code to the `OpenHearing/TabSINT` Repository, you agree to license your contribution under the [Apache2 License](LICENSE).
+
+
+[PREVIOUS: Conventions](conventions.md)
+[NEXT: Back to index](developer-guide-index.md)

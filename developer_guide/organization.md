@@ -12,6 +12,8 @@ Below is a brief overview of the TabSINT file structure.
 - `/developer_guide`: Resources for developers and contributors.
 - `/dist`: The tabsint web application. This is the *web page* that gets packaged by Capacitor as a native mobile application.
 - `/node_modules`: *(not versioned)* Packages installed by npm
-- `/src`: App source code.
+- `/src`: App source code. Sub-folders are organized to follow the app [architecture](architecture.md) described previously.
 
 
+[PREVIOUS: Architechture](architecture.md)
+[NEXT: Conventions](conventions.md)

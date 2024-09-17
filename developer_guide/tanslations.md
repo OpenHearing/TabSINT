@@ -1,3 +1,0 @@
-## TabSINT Translations
-
-In development...

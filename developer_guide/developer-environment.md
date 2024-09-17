@@ -352,3 +352,6 @@ Cordova may have additional requirements. To find these and how to satisfy them,
 ```bash
 $ npm run cordova -- requirements
 ```
+
+[Previous: Back to index](developer-guide-index.md)
+[NEXT: Building and Running](building-running.md)
