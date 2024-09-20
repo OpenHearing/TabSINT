@@ -1,0 +1,55 @@
+const fs = require('fs');
+const path = require('path');
+const { execSync } = require('child_process');
+
+const versionJsonPath = path.join(__dirname, '../../version.json');
+const packageJsonPath = path.join(__dirname, '../../../package.json');
+const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+
+function getCurrentCommitHash() {
+  try {
+    return execSync('git rev-parse --short HEAD').toString().trim();
+  } catch (error) {
+    console.error('Error getting git commit hash:', error);
+    return 'unknown';
+  }
+}
+
+function incrementRev(rev:string) {
+  const regex = /(v\d+\.\d+\.\d+)-(\d+)-g([a-f0-9]+)/;
+  const match = regex.exec(rev);
+  if (match) {
+    const baseVersion = match[1];
+    const qualifier = parseInt(match[2], 10) + 1;
+    const commitHash = getCurrentCommitHash();
+    return `${baseVersion}-${qualifier}-g${commitHash}`;
+  }
+  return rev;
+}
+
+function getNodeVersion() {
+  return process.version;
+}
+
+const newVersionJson = {
+  tabsint: packageJson.version,
+  date: new Date().toISOString(),
+  rev: incrementRev('v4.6.0-119-gfee19e2f'),
+  version_code: "289",
+  deps: {
+    user_agent: 'angular/' + packageJson.devDependencies['@angular/cli'],
+    node: 'node/' + getNodeVersion(),
+    capacitor: 'capacitor/' + packageJson.devDependencies['@capacitor/cli']
+  },
+  plugins: []
+};
+
+
+console.log('New version.json content:', JSON.stringify(newVersionJson, null, 2));
+
+try {
+  fs.writeFileSync(versionJsonPath, JSON.stringify(newVersionJson, null, 2), 'utf-8');
+  console.log('version.json has been created and updated successfully!');
+} catch (error) {
+  console.error('Error writing to version.json:', error);
+}
