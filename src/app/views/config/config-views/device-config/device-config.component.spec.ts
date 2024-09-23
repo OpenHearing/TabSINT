@@ -1,28 +1,30 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
 
-import { ChaInfoComponent } from './cha-info.component';
+import { DeviceConfigComponent } from './device-config.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { MatMenuModule } from '@angular/material/menu';
 
-describe('ChaInfoComponent', () => {
-  let component: ChaInfoComponent;
-  let fixture: ComponentFixture<ChaInfoComponent>;
+describe('DeviceConfigComponent', () => {
+  let component: DeviceConfigComponent;
+  let fixture: ComponentFixture<DeviceConfigComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ChaInfoComponent],
-      imports: [TranslateModule.forRoot({
+      declarations: [DeviceConfigComponent],
+      imports: [NgbModule,
+        MatMenuModule,
+        TranslateModule.forRoot({
                   loader: {
                     provide: TranslateLoader,
                     useClass: TranslateFakeLoader
                   }
-                }),
-                MatMenuModule],
+                })],
       providers: [TranslateService, TranslateStore]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(ChaInfoComponent);
+    fixture = TestBed.createComponent(DeviceConfigComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -11,7 +11,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { TabsintConfigComponent } from '../tabsint-config/tabsint-config.component';
 import { ChaConfigComponent } from '../cha-config/cha-config.component';
 import { SoftwareConfigComponent } from '../software-config/software-config.component';
-import { LogConfigComponent } from '../log-config/log-config.component';
+import { LogConfigComponent } from '../config/config-views/log-config/log-config.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 

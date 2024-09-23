@@ -1,4 +1,4 @@
-import { AppState, ProtocolState, ExamState, ChaState, SvantekState } from "../../utilities/constants";
+import { AppState, ProtocolState, ExamState, ChaState, SvantekState, TympanState } from "../../utilities/constants";
 import { ProtocolInterface } from "../protocol/protocol.interface";
 
 export interface StateInterface {
@@ -18,8 +18,7 @@ export interface StateInterface {
         appLog: boolean;
         protocols: boolean;
         protocolsSource: boolean;
-        chaAdvanced: boolean;
-        tympanAdvanced: boolean;
+        deviceAdvanced: boolean;
         completedExams: boolean;
         exportedAndUploadedResults: boolean;
     };
@@ -30,6 +29,7 @@ export interface StateInterface {
     };
     bluetoothConnected: boolean;
     wifiConnected: boolean;
+    // TODO: Move this to devices
     cha: ChaState;
     tympan: TympanState;
     svantek: SvantekState;

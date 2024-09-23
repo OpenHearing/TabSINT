@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { DevicesInterface } from './devices.interface';
 import { Device } from '@capacitor/device';
 import { Logger } from '../../utilities/logger.service';
+import { TympanState } from '../../utilities/constants';
 
 @Injectable({
     providedIn: 'root',
@@ -19,7 +20,12 @@ export class DevicesModel {
         model: "model",
         os: "os",
         other: "other",
-        diskspace: "Unknown"
+        diskspace: "Unknown",
+        connectedDevices: {
+            "tympan":[],
+            "cha":[],
+            "svantek":[]
+        }
     }
 
     constructor(private logger: Logger) {

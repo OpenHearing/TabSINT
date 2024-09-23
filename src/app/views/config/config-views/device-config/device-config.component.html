@@ -1,4 +1,8 @@
-<!-- Tympan State -->
+
+
+
+
+
 <div class="row pad-top">
     <div class="col-4 admin-labels">State: </div>
     <div class="col-8" *ngIf="state.tympan === TympanState.Connected"><em>Connected</em></div>
@@ -7,14 +11,24 @@
     <div class="col-8" *ngIf="state.tympan !== TympanState.Connected && state.tympan !== TympanState.Disconnected && state.tympan !== TympanState.Reprogram"><em>Connecting</em></div>
 </div>
 
-<!-- Preferred Tympan -->
-<!-- <div class="row pad-top" *ngIf="disk.tympan?.myTympan">
-    <div class="col-4">Preferred: </div>
-    <div class="col-4 myCha">{{disk.tympan.myTympan}}</div>
-    <div class="col-4">
-        <button class="btn btn-default btn-block" (click)="removeTympan()">Remove</button>
-    </div>
-</div> -->
+
+<div class="row pad-top">
+    <button (click)="addNewConnection()">+ New Connection</button>
+</div>
+
+
+<!-- OLD STUFF BELOW -->
+
+
+
+<!-- Tympan State -->
+<div class="row pad-top">
+    <div class="col-4 admin-labels">State: </div>
+    <div class="col-8" *ngIf="state.tympan === TympanState.Connected"><em>Connected</em></div>
+    <div class="col-8" *ngIf="state.tympan === TympanState.Disconnected"><em>Not Connected</em></div>
+    <div class="col-8" *ngIf="state.tympan === TympanState.Reprogram"><em>Reprogramming</em></div>
+    <div class="col-8" *ngIf="state.tympan !== TympanState.Connected && state.tympan !== TympanState.Disconnected && state.tympan !== TympanState.Reprogram"><em>Connecting</em></div>
+</div>
 
 <!-- Bluetooth Message-->
 <div class="row pad-top" *ngIf="!state.bluetoothConnected">
@@ -50,12 +64,12 @@
 <!-- Show Advanced -->
 <div class="row showhideSection">
     <div class="col-12 text-center">
-        <a href="javascript:" (click)="state.isPaneOpen.tympanAdvanced = !state.isPaneOpen.tympanAdvanced">
-            <span *ngIf="state.isPaneOpen.tympanAdvanced" translate>
+        <a href="javascript:" (click)="state.isPaneOpen.deviceAdvanced = !state.isPaneOpen.deviceAdvanced">
+            <span *ngIf="state.isPaneOpen.deviceAdvanced" translate>
                 Hide Advanced Settings 
                 <i class="ion-chevron-up"></i>
             </span>
-            <span *ngIf="!state.isPaneOpen.tympanAdvanced" translate>
+            <span *ngIf="!state.isPaneOpen.deviceAdvanced" translate>
                 Show Advanced Settings 
                 <i class="ion-chevron-down"></i>
             </span>
@@ -63,7 +77,7 @@
     </div>
 </div>
 
-<div #collapse="ngbCollapse" [ngbCollapse]="!state.isPaneOpen.tympanAdvanced">
+<div #collapse="ngbCollapse" [ngbCollapse]="!state.isPaneOpen.deviceAdvanced">
     
     <div class="row pad-top">
         <div class="col-12">

@@ -19,52 +19,17 @@
     <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.tympan">
         <mat-expansion-panel-header>
             <mat-panel-title>
-                {{'Tympans'| translate}}
-                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.isPaneOpen.general, "glyphicon-chevron-down": !state.isPaneOpen.general}'></i> -->
+                {{'Connected Devices'| translate}}
             </mat-panel-title>
         </mat-expansion-panel-header>
            
         <div class="panel-body text-left">
-            <tympan-config-view></tympan-config-view>
+            <device-config-view></device-config-view>
         </div>
 
     </mat-expansion-panel>
 
     <br />
-
-    <!-- WAHTS -->
-    <!--   NOT YET IMPLEMENTED, DO NOT DELETE   
-       <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.wahts">
-        <mat-expansion-panel-header>
-            <mat-panel-title>
-                {{'WAHTS'| translate}}
-            </mat-panel-title>
-        </mat-expansion-panel-header>
-           
-        <div class="panel-body text-left">
-            <cha-config-view></cha-config-view>
-        </div>
-
-    </mat-expansion-panel>
-
-    <br /> -->
-
-    <!-- Svantek Dosimeter -->
-    <!--   NOT YET IMPLEMENTED, DO NOT DELETE   
-       <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.dosimeter">
-        <mat-expansion-panel-header>
-            <mat-panel-title>
-                {{'Dosimeter'| translate}}
-            </mat-panel-title>
-        </mat-expansion-panel-header>
-           
-        <div class="panel-body text-left">
-
-        </div>
-
-    </mat-expansion-panel>
-
-    <br /> -->
 
     <!-- Software and Hardware Status -->
     <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.softwareHardware">

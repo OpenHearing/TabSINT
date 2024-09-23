@@ -38,7 +38,6 @@ import { DiskModel } from './models/disk/disk.service';
 import { ProtocolModel } from './models/protocol/protocol-model.service';
 import { ResultsModel } from './models/results/results-model.service';
 import { StateModel } from './models/state/state.service';
-import { TympanModel } from './models/tympan/tympan-model.service';
 
 // Utilities
 import { Notifications } from './utilities/notifications.service';
@@ -59,9 +58,7 @@ import { TympanService } from './controllers/tympan.service';
 import { AdminService } from './controllers/admin.service';
 import { TabsintConfigComponent } from './views/tabsint-config/tabsint-config.component';
 import { SoftwareConfigComponent } from './views/software-config/software-config.component';
-import { LogConfigComponent } from './views/log-config/log-config.component';
-import { ChaConfigComponent } from './views/cha-config/cha-config.component';
-import { ChaInfoComponent } from './views/cha-info/cha-info.component';
+import { LogConfigComponent } from './views/config/config-views/log-config/log-config.component';
 import { DebugComponent } from './views/debug/debug.component';
 import { ExamReadyComponent } from './views/exam-ready/exam-ready.component';
 import { ExamNotReadyComponent } from './views/exam-not-ready/exam-not-ready.component';
@@ -72,8 +69,8 @@ import { TextboxComponent } from './views/response-area/response-areas/textbox/t
 import { MultipleChoiceComponent } from './views/response-area/response-areas/multiple-choice/multiple-choice.component';
 import { SingleResultModalComponent } from './views/single-result-modal/single-result-modal/single-result-modal.component';
 import { ExternalResponseAreaComponent } from './views/response-area/response-areas/external-response-area/external-response-area.component';
-import { TympanConfigComponent } from './views/tympan-config/tympan-config.component';
-import { TympanInfoComponent } from './views/tympan-info/tympan-info.component';
+import { DeviceConfigComponent } from './views/config/config-views/device-config/device-config.component';
+import { DeviceInfoComponent } from './views/config/config-views/device-info/device-info.component';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -94,8 +91,6 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     TabsintConfigComponent,
     SoftwareConfigComponent,
     LogConfigComponent,
-    ChaConfigComponent,
-    ChaInfoComponent,
     DebugComponent,
     ExamReadyComponent,
     ExamNotReadyComponent,
@@ -106,8 +101,8 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     MultipleChoiceComponent,
     SingleResultModalComponent,
     ExternalResponseAreaComponent,
-    TympanConfigComponent,
-    TympanInfoComponent
+    DeviceConfigComponent,
+    DeviceInfoComponent
   ],
   imports: [
     BrowserModule,
@@ -157,8 +152,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     AdminService,
     TranslateService,
     TympanWrap,
-    TympanService,
-    TympanModel
+    TympanService
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

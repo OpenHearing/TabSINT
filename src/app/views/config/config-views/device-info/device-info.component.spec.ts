@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
 
-import { TympanInfoComponent } from './tympan-info.component';
+import { TympanInfoComponent } from './device-info.component';
 import { MatMenuModule } from '@angular/material/menu';
 
 describe('ChaInfoComponent', () => {
