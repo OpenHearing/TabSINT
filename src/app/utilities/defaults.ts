@@ -1,37 +1,32 @@
+import { Dictionary } from "lodash";
 import { LoadingProtocolInterface } from "../interfaces/loading-protocol-object.interface";
 import { PageInterface } from "../models/page/page.interface";
-import { ProtocolMetaInterface } from "../models/protocol/protocol.interface";
-import { ProtocolInterface } from "../models/protocol/protocol.interface";
+import { ProtocolMetaInterface, ProtocolInterface } from "../models/protocol/protocol.interface";
 import { ProtocolServer } from "./constants";
 import { checkIfCanGoBack } from "./exam-helper-functions";
+import { DiskInterface } from "../models/disk/disk.interface";
 
 export const metaDefaults: ProtocolMetaInterface = {
-    group: '',
     name: '',
-    path: '',
     date: '',
     version: '',
-    creator: '',
     server: ProtocolServer.LocalServer,
-    admin: false,
-    contentURI: ''
+    admin: false
 };
 
 export const partialMetaDefaults = {
-    id: '',
-    group: '',
-    name: '',
-    date: '',
-    version: '',
-    contentURI: ''
+    date: new Date().toJSON(),
+    version: '0.0',
+    server: ProtocolServer.Developer,
+    admin: true
 };
 
-export function loadingProtocolDefaults(_requiresValidation: boolean = true): LoadingProtocolInterface {
+export function loadingProtocolDefaults(disk: DiskInterface): LoadingProtocolInterface {
     let loadingProtocol: LoadingProtocolInterface = {
         protocol: protocolDefaults,
         calibration: undefined,
-        requiresValidation: _requiresValidation,
-        meta: metaDefaults,
+        requiresValidation: disk.validateProtocols,
+        meta: { ...metaDefaults, ...{contentURI: disk.contentURI} },
         overwrite: false,
         notify: false
     }
@@ -40,7 +35,6 @@ export function loadingProtocolDefaults(_requiresValidation: boolean = true): Lo
 };
 
 export const PageInterfaceDefaults: PageInterface = {
-    type: '',
     id: '',
     enableBackButton: false,
     title: '',
@@ -49,17 +43,10 @@ export const PageInterfaceDefaults: PageInterface = {
     instructionText: '',
     helpText: '',
     responseArea: {
-        enableSkip: false,
-        type: '',
-        responseRequired: false,
-        inputList: function (inputList: any, arg1: (input: any) => void): unknown {
-            throw new Error("Function not implemented.");
-        },
-        html: undefined,
-        image: undefined
+        type: ''
     },
     submitText: 'Begin',
-    followOns: [],
+    // followOns: [],
     name: '',
     filename: '',
     units: '',
@@ -77,7 +64,10 @@ export const PageInterfaceDefaults: PageInterface = {
 
 export const protocolDefaults: ProtocolInterface = {
     ...metaDefaults,
-    id: '',
-    protocolId: '',
-    pages: PageInterfaceDefaults
+    pages: [PageInterfaceDefaults]
 };
+
+export const responseDefaultByResponseAreaType: Dictionary<string> = {
+    'textboxResponseArea': '',
+    'multipleChoiceResponseArea': ''
+}

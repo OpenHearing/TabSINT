@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { PageInterface } from './page.interface';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { PageDefinition } from '../../interfaces/page-definition.interface';
 
 @Injectable({
     providedIn: 'root',
@@ -9,7 +10,6 @@ import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 export class PageModel {
 
     currentPage: PageInterface = {
-        type: "PageDefinition",
         id: "id",
         name: "name",
         filename: "path/to/file",
@@ -24,22 +24,11 @@ export class PageModel {
         isSubmittable: true,
         canGoBack: true,
         responseArea: {
-            enableSkip: true,
             type: "type",
-            responseRequired: true,
-            choices: [],
-            inputList: function (inputList: any, arg1: (input: any) => void): unknown {
-                throw new Error('Function not implemented.');
-            },
-            html: undefined,
-            image: undefined
         },
         title: "title",
         instructionText: "instructionText",
         subtitle: "subtitle",
-        // image: {
-        //     path: "path"
-        // },
         image: undefined,
         questionSubText: "questionSubText",
         questionMainText: "questionMainText",
@@ -51,7 +40,7 @@ export class PageModel {
 
     currentPageObservable = new BehaviorSubject(this.currentPage);
 
-    stack: PageInterface[] = [];
+    stack: PageDefinition[] = [];
     
     getPage(): PageInterface {
         return this.currentPage;

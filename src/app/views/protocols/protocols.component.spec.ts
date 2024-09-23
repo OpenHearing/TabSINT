@@ -5,6 +5,7 @@ import { ProtocolsComponent } from './protocols.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatMenuModule } from '@angular/material/menu';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule } from '@angular/forms';
 
 describe('ProtocolsComponent', () => {
   let component: ProtocolsComponent;
@@ -13,9 +14,11 @@ describe('ProtocolsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ProtocolsComponent],
-      imports: [MatExpansionModule,
+      imports: [
+        MatExpansionModule,
         MatMenuModule,
         BrowserAnimationsModule,
+        FormsModule,
         TranslateModule.forRoot({
                   loader: {
                     provide: TranslateLoader,

@@ -10,6 +10,7 @@ import { StateModel } from '../../../../models/state/state.service';
 import { Observable } from 'rxjs/internal/Observable';
 import { PageModel } from '../../../../models/page/page.service';
 import { PageInterface } from '../../../../models/page/page.interface';
+import { TextBoxInterface } from './textbox.interface';
 
 @Component({
   selector: 'textbox-view',
@@ -22,7 +23,7 @@ export class TextboxComponent {
   protocol: ProtocolModelInterface;
   state: StateInterface
   rows: number;
-  observableVar: any;
+  observableVar: Observable<any>; // TODO: to replace this any, we need types for each of the possible page
 
   constructor (public resultsModel: ResultsModel, public pageModel: PageModel, public protocolModel: ProtocolModel, public stateModel: StateModel) {
     this.results = this.resultsModel.getResults();
@@ -30,14 +31,12 @@ export class TextboxComponent {
     this.state = this.stateModel.getState();
     this.currentPage = this.pageModel.getPage();
 
-    this.rows = this.currentPage.responseArea.rows!;
+    this.rows = (this.currentPage.responseArea as TextBoxInterface).rows!;
     this.observableVar = this.pageModel.currentPageObservable;
 
-    this.observableVar.subscribe( (updatedPage:any) => {
-      // TODO: This ternary might not be needed. Should the exam service send the default value if one is not specified?
-        this.rows = updatedPage?.responseArea?.rows ? updatedPage?.responseArea?.rows : 1;
-      }
-    );
+    this.observableVar.subscribe( (updatedPage) => {
+      this.rows = updatedPage?.responseArea?.rows;
+    });    
   }
 
 }

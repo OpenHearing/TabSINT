@@ -12,8 +12,8 @@ export class Logger {
     disk: DiskInterface;
 
     constructor(
-        public diskModel:DiskModel,
-        public sqLite: SqLite
+        private diskModel: DiskModel,
+        private sqLite: SqLite
     ) { 
         this.disk = this.diskModel.getDisk(); 
     }
@@ -32,9 +32,11 @@ export class Logger {
 
     log(msg:string, prefix:string){
         if (!this.disk.disableLogs && this.disk.numLogRows<=this.disk.maxLogRows) {
+            const timestamp = new Date().toISOString();
+            const logMessage = `[${timestamp}]: ${msg}`; 
             console.log(prefix + msg);
             this.sqLite.deleteOlderLogsIfThereAreTooMany();
-            this.sqLite.store('logs', msg);
+            this.sqLite.store('logs', logMessage);
         }}
     
 }

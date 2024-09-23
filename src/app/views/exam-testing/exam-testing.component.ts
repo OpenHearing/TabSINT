@@ -1,5 +1,4 @@
 import { Component, Inject } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { ResultsInterface } from '../../models/results/results.interface';
@@ -10,6 +9,7 @@ import { ProtocolModelInterface } from '../../models/protocol/protocol.interface
 import { ProtocolModel } from '../../models/protocol/protocol-model.service';
 import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
+import _ from 'lodash';
 
 @Component({
   selector: 'exam-testing-view',
@@ -25,12 +25,11 @@ export class ExamTestingComponent {
   instructionText?: string;
 
   constructor(
-    public resultsModel: ResultsModel,
-    public translate: TranslateService,
     public examService: ExamService,
-    public sanitizer: DomSanitizer,
-    public protocolModel: ProtocolModel,
-    public stateModel: StateModel,
+    private resultsModel: ResultsModel,
+    private sanitizer: DomSanitizer,
+    private protocolModel: ProtocolModel,
+    private stateModel: StateModel,
     @Inject(WINDOW) private window: Window
   ) { 
     this.results = this.resultsModel.getResults();
@@ -46,9 +45,10 @@ export class ExamTestingComponent {
   isLoadingComplete = this.examService?.currentPage?.loadingRequired && !this.examService?.currentPage?.loadingActive;
   
   examTestingTitleClass = {
-    medium: ((this.examService?.currentPage?.questionMainText?.length >= 38) 
-      && (this.examService?.currentPage?.questionMainText?.length < 48)), 
-    long: (this.examService?.currentPage?.questionMainText?.length > 42)
+    undefined: _.isUndefined(this.examService?.currentPage?.questionMainText),
+    medium: ((this.examService?.currentPage?.questionMainText!.length >= 38) 
+      && (this.examService?.currentPage?.questionMainText!.length < 48)), 
+    long: (this.examService?.currentPage?.questionMainText!.length > 42)
   };
 
   testHTML = this.sanitizer.bypassSecurityTrustHtml(`
@@ -74,8 +74,8 @@ export class ExamTestingComponent {
     /* Testing the viability of customHS using the JS built in eval method (not angularJS) */
     // console.log(this.pageModel);
     // console.log((this.window as any).pageModel);
-    eval("console.log('this logs a string!')");
-    eval("console.log(this.stateModel.stateModel)");
+    // eval("console.log('this logs a string!')");
+    // eval("console.log(this.stateModel.stateModel)");
   }
 
   testFunction() {

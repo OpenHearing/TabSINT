@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 
 import { DiskModel } from '../../models/disk/disk.service';
 import { Logger } from '../../utilities/logger.service';
-import { AdminService } from '../../controllers/admin.service';
 import { VersionService } from '../../controllers/version.service';
 import { DiskInterface } from '../../models/disk/disk.interface';
+import { DevicesModel } from '../../models/devices/devices.service';
+import { DevicesInterface } from '../../models/devices/devices.interface';
+import { VersionInterface } from '../../interfaces/version.interface';
 
 @Component({
   selector: 'software-config-view',
@@ -14,33 +15,43 @@ import { DiskInterface } from '../../models/disk/disk.interface';
 })
 export class SoftwareConfigComponent {
   disk: DiskInterface;
-  version: any;
-
+  devices: DevicesInterface;
+  version: VersionInterface;
   constructor(
-    public diskModel: DiskModel, 
-    public adminService: AdminService,
-    public versionService: VersionService,
-    public logger: Logger, 
-    public translate: TranslateService
+    private diskModel: DiskModel, 
+    private versionService: VersionService,
+    private devicesModel: DevicesModel,
+    private logger: Logger, 
   ) { 
     this.disk = this.diskModel.getDisk();
-    this.version = this.versionService.getVersion();
+    this.devices = this.devicesModel.getDevices();
+    this.version = {
+      tabsint: '',
+      date: '',
+      rev: '',
+      version_code: '',
+      deps: {
+          user_agent: '',
+          node: '',
+          capacitor: ''
+      },
+      plugins: []
+  };
   }
 
-  // VARIABLES - SHOULD BE MOVED TO THE RESPECTIVE MODEL WHEN IT EXISTS
+  ngOnInit(): void {
+    this.initializeVersion();
+  }
 
-  devices = {
-    name: "Browser",
-    cordova: "Browser",
-    platform: "Browser",
-    UUID: "Browser",
-    shortUUID: "Browser",
-    tabsintUUID: undefined,
-    version: "Browser",
-    model: "Browser",
-    diskSpace: "Broswer",
-    load: undefined
-  };
+  private async initializeVersion(): Promise<void> {
+    try {
+      this.version = await this.versionService.getVersion();
+    } catch (error) {
+      this.logger.error("" + error);
+    }
+  }
+
+  // TODO: VARIABLES - SHOULD BE MOVED TO THE RESPECTIVE MODEL WHEN IT EXISTS
 
   networkModel: any = {
     "status": false,
@@ -53,7 +64,6 @@ export class SoftwareConfigComponent {
       "???": {version:"???"}
     }
   }
-
 
   toggleAppDeveloperMode() {
     console.log("toggleAppDeveloperMode");

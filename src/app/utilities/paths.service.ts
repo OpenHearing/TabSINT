@@ -11,7 +11,7 @@ export class Paths {
     app: AppInterface;
 
     constructor(
-        public appModel: AppModel
+        private appModel: AppModel
     ) {
         this.app = this.appModel.getApp();
     }

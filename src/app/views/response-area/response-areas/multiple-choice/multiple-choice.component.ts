@@ -8,6 +8,8 @@ import { ProtocolModelInterface } from '../../../../models/protocol/protocol.int
 import { StateInterface } from '../../../../models/state/state.interface';
 import { StateModel } from '../../../../models/state/state.service';
 import { ProtocolModel } from '../../../../models/protocol/protocol-model.service';
+import { ChoiceInterface, MultipleChoiceInterface } from './multiple-choice.interface';
+import { Logger } from '../../../../utilities/logger.service';
 
 @Component({
   selector: 'multiple-choice-view',
@@ -20,6 +22,7 @@ export class MultipleChoiceComponent {
   protocol: ProtocolModelInterface;
 
   constructor (
+    public logger: Logger,
     public resultsModel: ResultsModel, 
     public examService: ExamService,
     public stateModel: StateModel,
@@ -32,8 +35,8 @@ export class MultipleChoiceComponent {
     this.update();
   }
 
-  choices:any = {};
-  choice:any = {};
+  choices: ChoiceInterface[] | undefined;
+  choice: ChoiceInterface | undefined;
   enableOther = false;
   buttonDisabled = true;
   gradeResponse = false;
@@ -50,18 +53,18 @@ export class MultipleChoiceComponent {
   ];
 
   update() {
-    this.choices = _.cloneDeep(this.examService.currentPage?.responseArea.choices || this.yesNo);
-    if (this.examService.currentPage?.responseArea.other) {
+    this.choices = _.cloneDeep((this.examService.currentPage?.responseArea as MultipleChoiceInterface).choices || this.yesNo);
+    if ((this.examService.currentPage?.responseArea as MultipleChoiceInterface).other) {
       this.enableOther = true;
       this.choices.push({
         id: "Other",
-        text: this.examService.currentPage?.responseArea.other
+        text: (this.examService.currentPage?.responseArea as MultipleChoiceInterface).other
       });
     }
-    console.log("choices for multiple-choice responseArea",this.choices);
+    this.logger.debug("choices for multiple-choice responseArea" + this.choices);
   }
 
-  choose(id:any) {
+  choose(id: string) {
     this.results.currentPage.response = id;
     // this.state.isSubmittable = this.examService.getSubmittableLogic(this.examService.currentPage?.responseArea);
     this.state.isSubmittable = true;

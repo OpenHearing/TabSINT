@@ -27,7 +27,7 @@ export class SingleResultModalComponent {
   }
 
   async ngOnInit() {    
-    this.singleExamResult = await this.sqLite.getSingleResult(this.index) as unknown as ExamResults;
+    this.singleExamResult = JSON.parse(await this.sqLite.getSingleResult(this.index));
   }
 
   upload() {
@@ -35,11 +35,17 @@ export class SingleResultModalComponent {
     this.close();
   }
 
-  export() {
-    this.resultsService.exportSingleResult(this.index);
+  /**
+   * Exports single exam result to the tablet file system.
+   */
+  async export() {
+    await this.resultsService.exportSingleResult(this.index);
     this.close();
   }
 
+  /**
+   * Delete single exam result from tabsint.
+   */
   delete() {
     this.resultsService.deleteSingleResult(this.index);
     this.close();

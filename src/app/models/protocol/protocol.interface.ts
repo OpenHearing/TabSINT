@@ -5,41 +5,28 @@ import { ProtocolSchemaInterface } from "../../interfaces/protocol-schema.interf
 import { ProtocolServer } from "../../utilities/constants";
 
 export interface ProtocolMetaInterface {
-  group: string;
+  group?: string;
   name: string;
-  path: string;
+  path?: string;
   date: string;
   version: string;
-  creator: string;
+  creator?: string;
   server: ProtocolServer;
   admin: boolean;
-  contentURI: string;
+  contentURI?: string;
 }
 export interface ProtocolModelInterface {
   activeProtocol?: ProtocolInterface, 
   activeProtocolDictionary?: ProtocolDictionary,
-  activeProtocolFollowOnsDictionary?: FollowOnsDictionary,
-  loadedProtocols: {
-      [Key: string]: ProtocolInterface
-  }, 
+  activeProtocolFollowOnsDictionary?: FollowOnsDictionary
 }
-export interface ProtocolInterface extends ProtocolSchemaInterface {
-    group: string;
-    name: string;
-    path: string;
-    id: string;
-    date: string;
-    version: string;
-    creator: string;
-    server: ProtocolServer;
-    admin: boolean;
-    contentURI: string;
+export interface ProtocolInterface extends ProtocolSchemaInterface, ProtocolMetaInterface {
     cCommon?: any;
     key?: string;
     commonRepo?: any;
     protocolTabsintOutdated?: boolean;
     protocolUsbCMissing?: boolean;
-    currentCalibration?: "VicFirth" | "VicFirthS2" | "HDA200" | "WAHTS" | "Audiometer" | "EPHD1" | "None" | undefined;
+    currentCalibration?: "VicFirth" | "VicFirthS2" | "HDA200" | "WAHTS" | "Audiometer" | "EPHD1" | "None";
     _audioProfileVersion?: string;
     _calibrationPySVNRevision?: string;
     _calibrationPyManualReleaseDate?: string;

@@ -1,25 +1,25 @@
-import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
 
 import { ResultsService } from './results.service';
-import { Logger } from '../utilities/logger.service';
+import { FollowOnInterface } from '../interfaces/page-definition.interface';
+import { isPageDefinition, isProtocolReferenceInterface, isProtocolSchemaInterface } from '../guards/type.guard';
+import { PageTypes } from '../types/custom-types';
 
 import { ResultsInterface } from '../models/results/results.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { DiskInterface } from '../models/disk/disk.interface';
 import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
-
 import { ResultsModel } from '../models/results/results-model.service';
 import { StateModel } from '../models/state/state.service';
 import { ProtocolModel } from '../models/protocol/protocol-model.service';
 import { DiskModel } from '../models/disk/disk.service';
+import { PageModel } from '../models/page/page.service';
+import { PageInterface } from '../models/page/page.interface';
 
 import { DialogType, ExamState } from '../utilities/constants';
 import { Notifications } from '../utilities/notifications.service';
-import { PageModel } from '../models/page/page.service';
-import { PageInterface } from '../models/page/page.interface';
+import { Logger } from '../utilities/logger.service';
 import { calculateElapsedTime } from '../utilities/exam-helper-functions';
-
 @Injectable({
     providedIn: 'root',
 })
@@ -32,12 +32,12 @@ export class ExamService {
     currentPage: PageInterface;
 
     constructor (
-        public logger: Logger,
-        public resultsService: ResultsService,
-        public resultsModel: ResultsModel,
-        public pageModel: PageModel,
-        public protocolM: ProtocolModel,
-        public stateModel: StateModel,
+        private logger: Logger,
+        private resultsService: ResultsService,
+        private resultsModel: ResultsModel,
+        private pageModel: PageModel,
+        private protocolM: ProtocolModel,
+        private stateModel: StateModel,
         private diskModel: DiskModel,
         private notifications: Notifications
     ) {
@@ -72,7 +72,7 @@ export class ExamService {
      * @models protocol, state
     */
     async begin() {        
-        this.addPagesToStack(this.protocol.activeProtocol?.pages, 0);
+        this.addPagesToStack(this.protocol.activeProtocol?.pages!, 0);
         this.resultsService.initializeExamResults();
         this.startPage();
         this.state.examState = ExamState.Testing;
@@ -84,7 +84,7 @@ export class ExamService {
     */
     submitDefault() {
         this.resultsService.pushResults(this.results.currentPage);
-        // TODO: The below line might need to be async and awaited
+        
         this.advancePage();
 
         this.state.isSubmittable = this.checkIfPageIsSubmittable();
@@ -118,7 +118,6 @@ export class ExamService {
      * @models state
     */
     private advancePage() {
-        // make diagram to explain this
         let nextExamIndex = this.state.examIndex + 1;
         this.setFlags();
         let pageList = this.getPagesFromAdvancedLogic();
@@ -136,28 +135,30 @@ export class ExamService {
      * @models page
     */
     private getPagesFromAdvancedLogic() {
-        var pageList:any = [];
+        let pageList: (PageTypes)[] = [];
         if (this.currentPage.skipIf) { 
             this.logger.debug("skipIf is not yet supported");
             // push pages to list if needed
-        } if (this.currentPage.repeatPage) {
+        } 
+        if (this.currentPage.repeatPage) {
             this.logger.debug("repeatPage is not yet supported");
             // push pages to list if needed
-        } if (this.currentPage.followOns) { 
+        } 
+        if (this.currentPage.followOns) { 
             let nextID = this.findFollowOn();
             if (nextID != undefined) {
-                // TODO: Make it clear that this will break out of the function chain
-                // will end the exam if its called
                 if (this.checkForSpecialReference(nextID)) {
                     this.handleSpecialReferences(nextID);
                     return undefined
                 } else {
-                    (this.protocolM.protocolModel.activeProtocolDictionary![nextID].pages as any).forEach( (page:any)=> { 
-                        pageList.push(page);
+                    (this.protocolM.protocolModel.activeProtocolDictionary![nextID].pages).forEach( 
+                        (page: PageTypes) => { 
+                            pageList.push(page);
                     });
                 }
             }
-        } if (this.currentPage.preProcessFunction) { 
+        } 
+        if (this.currentPage.preProcessFunction) { 
             this.logger.debug("preProcessFunction is not yet supported");
             // push pages to list if needed and/or run preprocess function
         }
@@ -174,9 +175,9 @@ export class ExamService {
     /** Checks for special references
      * @summary Returns true/false depending a id contains a special reference
     */
-    private checkForSpecialReference(id:String | undefined) {
-        var hasSpecialReference = false;
-        if (id != undefined && id.includes("@")) {
+    private checkForSpecialReference(id: string | undefined) {
+        let hasSpecialReference = false;
+        if (id?.includes("@")) {
             hasSpecialReference = true;
         }
         return hasSpecialReference
@@ -185,11 +186,10 @@ export class ExamService {
     /** Handles special references
      * @summary Handles the special references
     */
-    private handleSpecialReferences(id:String | undefined) {
+    private handleSpecialReferences(id:string | undefined) {
         if (id === "@PARTIAL") {
             this.endExam();
             this.logger.debug("@PARTIAL not implemented, instead using @END_ALL");
-            return;
         } else if (id === "@END_ALL") {
             this.endExam();
             return;
@@ -215,16 +215,19 @@ export class ExamService {
      * @models state, protocol, page
      * @param pages list of page objects
     */
-    private addPagesToStack(pages:any, index:number) {
-        let extraPages:any;
-        pages.forEach( (page:any)=> {
-            if (page?.reference) {
+    private addPagesToStack(
+        pages: (PageTypes)[], 
+        index:number
+    ) {
+        let extraPages: (PageTypes)[];
+        pages.forEach( (page: PageTypes)=> {
+            if (isProtocolReferenceInterface(page)) {
                 extraPages = this.protocolM.protocolModel.activeProtocolDictionary![page?.reference].pages;
                 this.addPagesToStack(extraPages, index+1);
-            } else if (page.pages) {
+            } else if (isProtocolSchemaInterface(page)) {
                 extraPages = page.pages;
                 this.addPagesToStack(extraPages,index+1)
-            } else {
+            } else if (isPageDefinition(page)) {
                 this.pageModel.stack.splice(index, 0, page);
                 index = index + 1;
             }
@@ -238,10 +241,13 @@ export class ExamService {
     */
     private findFollowOn() {
         let id: string | undefined = undefined;
-        this.currentPage.followOns.forEach((followOn:any) => {
+        this.currentPage.followOns?.forEach((followOn: FollowOnInterface) => {
             // TODO: This should be updated to use eval
             if (this.results.currentPage.response == followOn.conditional.split("==")[1].replaceAll("'","")) {
-                id = followOn.target.reference;
+                // TODO: handle if target is protocol or page
+                if (isProtocolReferenceInterface(followOn.target)) {
+                    id = followOn.target.reference;                
+                }
             }
         });
         return id;
@@ -252,16 +258,14 @@ export class ExamService {
      * @returns boolean if page is submittable
     */
     private checkIfPageIsSubmittable() {
-        // TODO: These defaults should come from responseArea schema
-        if (this.currentPage.responseArea.responseRequired != undefined) {
-            return !this.currentPage.responseArea.responseRequired
-        } else {
-            if (this.currentPage.responseArea.type == "multipleChoiceResponseArea") {
-                return false
-            } else {
-                return true
-            }
-        }
+            return !this.currentPage.responseArea!.responseRequired;
+
+            //TODO: set response required to false if response area is multipleChoiceResponseArea
+            // if (this.currentPage.responseArea.type == "multipleChoiceResponseArea") {
+            //     return false
+            // } else {
+            //     return true
+            // }
     }
     /**
      * End Exam

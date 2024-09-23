@@ -1,17 +1,19 @@
 import { Injectable } from '@angular/core';
-import { ResultsInterface, ExamResults } from '../models/results/results.interface';
+import { ResultsInterface, ExamResults, CurrentResults } from '../models/results/results.interface';
 import { ResultsModel } from '../models/results/results-model.service';
 import { DiskModel } from '../models/disk/disk.service';
 import { DiskInterface } from '../models/disk/disk.interface';
 import { ProtocolModel } from '../models/protocol/protocol-model.service';
 import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
 import _ from 'lodash';
-import { constructFilename, getDateString } from '../utilities/results-helper-functions';
+import { constructFilename } from '../utilities/results-helper-functions';
 import { FileService } from '../utilities/file.service';
 import { Logger } from '../utilities/logger.service';
 import { SqLite } from '../utilities/sqLite.service';
 import { DevicesInterface } from '../models/devices/devices.interface';
 import { DevicesModel } from '../models/devices/devices.service';
+import { PageInterface } from '../models/page/page.interface';
+import { responseDefaultByResponseAreaType } from '../utilities/defaults';
 
 @Injectable({
     providedIn: 'root',
@@ -24,11 +26,11 @@ export class ResultsService {
     devices: DevicesInterface;
     
     constructor (
-        public resultsModel: ResultsModel,
-        public protocolM: ProtocolModel,
-        public sqLite: SqLite,
-        public devicesModel: DevicesModel,
-        public diskModel: DiskModel,
+        private resultsModel: ResultsModel,
+        private protocolM: ProtocolModel,
+        private sqLite: SqLite,
+        private devicesModel: DevicesModel,
+        private diskModel: DiskModel,
         private fileService: FileService,
         private logger: Logger
     ) {
@@ -44,7 +46,7 @@ export class ResultsService {
     */
     initializeExamResults() {
         this.results.currentExam = {
-            protocolId: this.protocol.activeProtocol!.id,
+            protocolId: this.protocol.activeProtocol!.protocolId,
             protocolName: this.protocol.activeProtocol!.name,
             testDateTime: new Date().toJSON(),
             elapsedTime: undefined,    
@@ -63,7 +65,7 @@ export class ResultsService {
             //   tabletModel: devices.model,
             },
             tabletLocation: this.disk.tabletLocation,
-            headset: this.protocol.activeProtocol!.headset || "None",
+            headset: this.protocol.activeProtocol!.headset ?? "None",
             calibrationVersion: {
                 audioProfileVersion: this.protocol.activeProtocol!._audioProfileVersion,
                 calibrationPySVNRevision: this.protocol.activeProtocol!._calibrationPySVNRevision,
@@ -77,10 +79,10 @@ export class ResultsService {
      * @param currentPage exam page to initialize.
      * @models results, protocol, disk
     */
-    initializePageResults(currentPage:any) {
+    initializePageResults(currentPage: PageInterface) {
         this.results.currentPage = {
             pageId: currentPage.id,
-            response: undefined,
+            response: _.isUndefined(currentPage.responseArea) ? '' : responseDefaultByResponseAreaType[currentPage.responseArea.type],
             correct: undefined,
             isSkipped: false,
             responseArea: currentPage.responseArea ? currentPage.responseArea.type : undefined,
@@ -98,7 +100,7 @@ export class ResultsService {
      * @models results
      * @param currentPageResults Results for the current page.
      */
-    pushResults(currentPageResults: any) {
+    pushResults(currentPageResults: CurrentResults) {
         this.results.currentExam.responses.push(currentPageResults);
     }
 
@@ -118,8 +120,8 @@ export class ResultsService {
      * @param result Partial or completed current exam result
      */
     async backup(result: ExamResults) {
-        var filename = constructFilename(this.protocol.activeProtocol?.resultFilename, result.testDateTime, 'json');
-        var dir = ".tabsint-results-backup/" + result.protocolName + "/";
+        let filename = constructFilename(this.protocol.activeProtocol?.resultFilename, result.testDateTime, 'json');
+        let dir = ".tabsint-results-backup/" + result.protocolName + "/";
 
         try {
             await this.fileService.writeFile(dir + filename, JSON.stringify(result));
@@ -146,7 +148,7 @@ export class ResultsService {
      */
     async exportSingleResult(index: number) {
         let result = await this.sqLite.getSingleResult(index);
-        await this.writeResultToFile(result);
+        await this.writeResultToFile(JSON.parse(result[0]));
         await this.sqLite.deleteSingleResult(index);
     }
 
@@ -157,11 +159,12 @@ export class ResultsService {
      * @param result exam result
      */
     async writeResultToFile(result: ExamResults) {
-        var filename = constructFilename(this.protocol.activeProtocol?.resultFilename, result.testDateTime);
+        let filename = constructFilename(this.protocol.activeProtocol?.resultFilename, result.testDateTime, '.json');
         let dir = this.disk.servers.localServer.resultsDir
             ? this.disk.servers.localServer.resultsDir
             : "tabsint-results";
-        await this.fileService.writeFile(dir + "/" + filename, result.toString());
+        dir = dir +  "/" + this.protocol.activeProtocol?.name + "/" ;
+        await this.fileService.writeFile(dir + filename, JSON.stringify(result));
         this.diskModel.updateSummary(result);
         this.disk = this.diskModel.getDisk();
     }

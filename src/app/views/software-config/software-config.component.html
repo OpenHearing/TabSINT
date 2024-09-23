@@ -18,7 +18,7 @@
         <b>TabSINT:</b>
         <span>{{version.tabsint}}</span>
     </li>
-    <li (click)="toggleAppDeveloperMode()">
+    <!-- <li (click)="toggleAppDeveloperMode()">
         <b>{{'Build Name' | translate}}:</b>
         <span>
             {{config.build}}
@@ -30,7 +30,7 @@
                 - Tap {{5-disk.appDeveloperModeCount}} more times to turn on App-Developer Mode
             </span>
         </span>
-    </li>
+    </li> -->
     <li>
         <b>{{'Build Date' | translate}}:</b>
         <span>{{version.date | date: 'yyyy-MM-dd HH:mm:ss'}}</span>
@@ -47,12 +47,12 @@
 <ul class="admin-info">
     <li>
         <b>{{'Device UUID' | translate}}:</b>
-        <span>{{devices.UUID}}</span>
+        <span>{{devices.uuid}}</span>
     </li>
-    <li>
+    <!-- <li>
         <b>{{'TabSINT UUID' | translate}}:</b>
         <span>{{devices.tabsintUUID}}</span>
-    </li>
+    </li> -->
     <li>
         <b>{{'Device Model' | translate}}:</b>
         <span>{{devices.model}}</span>
@@ -63,34 +63,33 @@
     </li>
     <li>
         <b>{{'Free Disk Space' | translate}}:</b>
-        <span>{{devices.diskSpace}} MB</span>
+        <span>{{devices.diskspace}} MB</span>
     </li>
     <li>
         <b>{{'Network Status' | translate}}:</b>
         <span *ngIf="networkModel.status">{{'Online' | translate}}</span>
         <span *ngIf="!networkModel.status">{{'Offline' | translate}}</span>
     </li>
-    <li>
+    <!-- <li>
         <b>{{'Network Type' | translate}}:</b>
         <span>{{networkModel.type}}</span>
-    </li>
+    </li> -->
 </ul>
 
 <br />
 
-<div class="row">
+<!-- <div class="row">
     <div class="col-12">
         <h5>{{'Plugins' | translate}}</h5>
     </div>
-</div>
-<ul class="admin-info">
-    <div *ngFor="let plugin of config.tabsintPlugins | keyvalue">
+</div> -->
+<!-- <ul class="admin-info">
+    <div *ngFor="let plugin of version.plugins">
         <li>
-            <b>{{plugin.key}}:</b>
-            <span>{{plugin.value.version}}</span>
+            <span>{{plugin}}</span>
         </li>
     </div>
-</ul>
+</ul> -->
 
 <br />
 
@@ -101,16 +100,16 @@
 </div>
 <ul class="admin-info">
     <li>
-        <b>{{'Cordova Version' | translate}}:</b>
-        <span>{{version?.deps?.cordova}}</span>
+        <b>{{'Capacitor Version' | translate}}:</b>
+        <span>{{version.deps.capacitor}}</span>
     </li>
     <li>
         <b>{{'Node Version' | translate}}:</b>
-        <span>{{version?.deps?.node}}</span>
+        <span>{{version.deps.node}}</span>
     </li>
     <li>
         <b>{{'Build System' | translate}}:</b>
-        <span>{{version?.deps?.user_agent}}</span>
+        <span>{{version.deps.user_agent}}</span>
     </li>
 </ul>
 

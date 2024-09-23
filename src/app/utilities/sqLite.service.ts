@@ -19,7 +19,7 @@ export class SqLite {
         results: 0
     };
     sqlitePlugin!: CapacitorSQLitePlugin;
-    sqliteConnection!: SQLiteConnection;
+    sqliteConnection!: SQLiteConnection;    
     
     private db!: SQLiteDBConnection;
 
@@ -56,22 +56,23 @@ export class SqLite {
     }
 
     private async open() {
-        const database: string = 'storage1';
+        const database: string = 'storage';
         this.db = await this.sqliteConnection.createConnection(database, false, 'no-encryption', 1, false);
         await this.db.open();
         await this.db.execute(createResultsTableSql);
         await this.db.execute(createLogsTableSql);
     }
-    
+
     async store(
         tableName: string, 
         data: string
     ) {
         try {
-            const sql = "INSERT INTO " + tableName + " (data) VALUES (?)";
-            await this.db.run(sql, [data]);
-            console.log("SQLITE " + tableName + " stored");
-            this.count[tableName] += 1;
+            if (this.db) {
+                const sql = "INSERT INTO " + tableName + " (data) VALUES (?)";
+                await this.db.run(sql, [data]);
+                this.count[tableName] += 1;
+            } 
         } catch(e) {
             console.log("SQLITE Error storing " + tableName + " with error " + e);
         }
@@ -79,8 +80,8 @@ export class SqLite {
   
     async getSingleResult(index: number) {
         const sql = 'SELECT data FROM results LIMIT 1 OFFSET ?';
-        let res = (await this.db.query(sql, [index])).values!.map(res => res.data) as unknown as string;
-        return JSON.parse(res);
+        let res = (await this.db.query(sql, [index])).values!.map(res => res.data);
+        return JSON.parse(JSON.stringify(res));
     }
 
     async getAllResults() {
@@ -117,7 +118,7 @@ export class SqLite {
     }
 
     async deleteOlderLogsIfThereAreTooMany() {
-            var delCount = this.count['logs'] - this.disk.maxLogRows + 1;
+            const delCount = this.count['logs'] - this.disk.maxLogRows + 1;
             if (delCount > 0) {
                 try {
                     await this.db.executeSet([{statement: deleteSql, values: [delCount]}]);

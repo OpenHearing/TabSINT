@@ -1,10 +1,7 @@
 import { TestBed } from '@angular/core/testing';
-import { ProtocolModel } from '../models/protocol/protocol-model.service';
 import { processProtocol } from './process-protocol.function';
-import { loadingProtocolDefaults } from './defaults';
 import { LoadingProtocolInterface } from '../interfaces/loading-protocol-object.interface';
 import { ProtocolServer } from './constants';
-import { checkIfCanGoBack } from './exam-helper-functions';
 import { ProtocolInterface } from '../models/protocol/protocol.interface';
 
 const followOn1 = {
@@ -144,7 +141,6 @@ const testProtocol: ProtocolInterface = {
     group: "",
     name: "",
     path: "",
-    id: "",
     date: "",
     version: "",
     creator: "",
@@ -178,10 +174,8 @@ describe('processProtocol', () => {
         activeProtocolFollowOnsDictionary
     ]  = processProtocol(loadingProtocol);
 
-    console.log('TESTING', activeProtocolDictionary, activeProtocolFollowOnsDictionary);
-
     beforeEach(async () => {
-        await TestBed.configureTestingModule({})
+        TestBed.configureTestingModule({})
     })
 
     it('returns active protocol', () => {

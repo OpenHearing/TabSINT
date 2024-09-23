@@ -7,7 +7,7 @@
  * @return string: filename
  */
 export function constructFilename(resultFilename?: string, testDateTime?: string, suffix?: string) {
-    var filename, dateTime;
+    let filename, dateTime;
 
     dateTime = getDateString(testDateTime);
 
@@ -31,7 +31,7 @@ export function constructFilename(resultFilename?: string, testDateTime?: string
  * @return dateString
  */
 export function getDateString(testDateTime?: string) {
-    let dateString = testDateTime ? testDateTime: new Date().toJSON();
+    let dateString = testDateTime ?? new Date().toJSON();
     dateString = dateString.replace(":","-").replace(":","-").split(".")[0];
     return dateString;
 }

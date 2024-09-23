@@ -3,11 +3,14 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+    "clean": "rm -rf dist && rm -rf .angular/cache",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "test:headless": "ng test --browsers=ChromeHeadlessNoSandbox --watch=false",
     "run.build": "npm run build && npx cap sync android && cd android && ./gradlew assembleDebug && ./gradlew installDebug && cd ..",
+    "run.build:ci": "npm run build --yes && npx cap sync android && cd android && ./gradlew assembleDebug && cd ..",
     "run.android": "npm run build && npx cap sync android && npx cap run android",
     "serve:ssr:tabsint": "node dist/tabsint/server/server.mjs"
   },
@@ -36,6 +39,7 @@
     "@ngx-translate/core": "^15.0.0",
     "@ngx-translate/http-loader": "^8.0.0",
     "@popperjs/core": "^2.11.8",
+    "ajv": "^8.17.1",
     "angular-material-icons": "^0.7.1",
     "bootstrap": "^5.3.2",
     "bootstrap-icons": "^1.11.3",

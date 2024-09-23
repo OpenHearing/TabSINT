@@ -1,19 +1,11 @@
 import { Component } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 
 import { DiskModel } from '../../models/disk/disk.service';
-import { AppState, ExamState } from '../../utilities/constants';
-import { Logger } from '../../utilities/logger.service';
-import { ProtocolInterface } from '../../models/protocol/protocol.interface';
-import { ProtocolServer } from '../../utilities/constants';
+import { AppState, ExamState, ProtocolServer } from '../../utilities/constants';
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { ProtocolModel } from '../../models/protocol/protocol-model.service';
-import { ProtocolService } from '../../controllers/protocol.service';
 import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
-import { Notifications } from '../../utilities/notifications.service';
-import { Tasks } from '../../utilities/tasks.service';
-import { AdminService } from '../../controllers/admin.service';
 import { ProtocolModelInterface } from '../../models/protocol/protocol.interface';
 import { ResultsInterface } from '../../models/results/results.interface';
 import { ResultsModel } from '../../models/results/results-model.service';
@@ -34,17 +26,11 @@ export class ExamComponent {
   ExamState = ExamState;
 
   constructor (
-    public diskModel: DiskModel,
-    public resultsModel: ResultsModel,
-    public protocolService: ProtocolService,
-    public protocolM: ProtocolModel,
-    public stateModel: StateModel,
-    private translate: TranslateService,
-    private logger: Logger,
-    private notifications: Notifications,
-    private tasks: Tasks,
-    public adminService: AdminService,
-    public examService: ExamService
+    public examService: ExamService,
+    private diskModel: DiskModel,
+    private resultsModel: ResultsModel,
+    private protocolM: ProtocolModel,
+    private stateModel: StateModel
   ) {
     this.disk = this.diskModel.getDisk();
     this.results = this.resultsModel.getResults();

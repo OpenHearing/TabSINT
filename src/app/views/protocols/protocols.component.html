@@ -3,7 +3,7 @@
 
 <div mat-accordion multi>
   <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.protocols">
-    <!---->
+
     <mat-expansion-panel-header>
       <mat-panel-title>Protocols</mat-panel-title>
     </mat-expansion-panel-header>
@@ -24,28 +24,19 @@
           </tr>
         </thead>
         <tbody>
-          <div *ngFor="let p of protocolModel.loadedProtocols | keyvalue" class="no-border">
-          <!-- <tr *ngFor="let p of disk.loadedProtocols; index as i" *ngIf="!p.value.admin" [ngClass]="pclass(p)" (click)="select(p)">
-            <td class="row-Name" scope="row">{{p.value.name}}</td>
-            <td class="row-Version">{{p.value.version}}</td>
-            <td class="row-Date">{{p.value.server === 'gitlab' ? p.value.date?.replace('T', ' ')?.split('.')![0] : p.value.date}} </td>
-          </tr> -->
-
-          <tr></tr>
-
-            <tr *ngIf="p !== undefined" [ngClass]="pclass(p.value)" (click)="select(p.value)" class="no-border">
-              <!-- *ngIf="p.value.admin && disk.debugMode"  -->
-              <td [ngClass]="pclass(p.value)" scope="row">{{p.value.name}}</td> 
-              <td >{{p.value.version}}</td>
-              <td >{{p.value.date}}</td>
-            </tr>
-          </div>
+          <tr *ngFor="let p of disk.availableProtocolsMeta| keyvalue" class="no-border" [ngClass]="pclass(p.value)" (click)="select(p.value)" (keypress)="select(p.value)" >
+              <td [ngClass]="pclass(p.value)" class="row-Name" >{{p.value.name}}</td> 
+              <td [ngClass]="pclass(p.value)" class="row-Version" >{{p.value.version}}</td>
+              <td [ngClass]="pclass(p.value)" class="row-Date" >{{p.value.date}}</td>
+          </tr>
         </tbody>
       </table>
 
+      <br/>
+
       <div class="row pad-top">
         <div class="col-6"><label for="validateProtocols" i18n>Validate protocols:</label></div>
-        <div class="col-2"><input id="validateProtocols" type="checkbox" ngModel="diskService.validateProtocols" /></div>
+        <div class="col-2"><input id="validateProtocols" type="checkbox" [ngModel]="disk.validateProtocols" (change)="toggleValidateProtocols()" /></div>
         <div class="col-2"></div>
         <div class="col-1">
           <i [matMenuTriggerFor]= "validatProtocolMenu" class="ion-help-circled"></i>
@@ -111,7 +102,6 @@
 
   <mat-expansion-panel class="protocol-source" class="panel panel-default" [(expanded)]="state.isPaneOpen.protocolsSource">
     <mat-expansion-panel-header>
-      <!-- Source <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": isOpenSource, "glyphicon-chevron-down": !isOpenSource}'></i> -->
       <mat-panel-title>Source</mat-panel-title>
     </mat-expansion-panel-header>  
 
@@ -130,10 +120,9 @@
       </div>
 
       <div class="row pad-top">
-        <div class="col-5">
-          <!-- <button class="btn btn-primary btn-block"  [ngClass]="disk.server === localServer ? 'active' : '' " (click)="changeServer('gitlab')">Gitlab</button> -->
+        <!-- <div class="col-5">
           <button class="btn btn-primary btn-block"  [ngClass]="gitlabButtonClass()">Gitlab</button>
-        </div>
+        </div> -->
         <div class="col-5">
           <button class="btn btn-primary btn-block"  [ngClass]="localServerButtonClass()" translate>Device Storage</button>
         </div>

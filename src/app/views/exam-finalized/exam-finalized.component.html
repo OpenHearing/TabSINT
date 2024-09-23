@@ -23,11 +23,6 @@
           <th class="align-right width-50">{{'Elapsed Time'|translate}}:</th>
           <td>{{currentExam.elapsedTime}}</td>
         </tr>
-  
-        <tr *ngIf="results.currentExam.protocolId">
-          <th class="align-right width-50">{{'Site ID'|translate}}:</th>
-          <td>{{currentExam.protocolId}}</td>
-        </tr>
       </tbody>
     </table>
   </div>
@@ -47,7 +42,7 @@
     </thead>
     <tbody>
     <tr *ngFor="let resp of currentExam.responses; index as i">
-      <td scope="row">{{i+1}}</td>
+      <td>{{i+1}}</td>
       <td>{{resp.pageId.substr(0,15)}}</td>
       <td>{{resp.response.substr(0,25)}}</td>
 

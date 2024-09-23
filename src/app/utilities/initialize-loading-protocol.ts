@@ -1,9 +1,9 @@
 import { TranslateService } from "@ngx-translate/core";
+import _ from "lodash";
+
 import { LoadingProtocolInterface } from "../interfaces/loading-protocol-object.interface";
 import { DiskModel } from "../models/disk/disk.service";
 import { Logger } from "./logger.service";
-import _ from "lodash";
-import { loadingProtocolDefaults } from "./defaults";
 import { FileService } from "./file.service";
 
 export function initializeLoadingProtocol(
@@ -51,13 +51,14 @@ export function initializeLoadingProtocol(
         }
     }
 
+    // TODO: Fix this function
     function checkTabsintVersion() {
         loading.protocol.protocolTabsintOutdated = false;
         if (loading.protocol.minTabsintVersion) {
-            var mtv = _.map(loading.protocol.minTabsintVersion.split("."), function(s) {
-                return parseInt(s);
-            }); //
-            // var ctv = _.map(version.dm.tabsint.split("-")[0].split("."), function(s) {
+            // const mtv = _.map(loading.protocol.minTabsintVersion.split("."), function(s) {
+            //     return parseInt(s);
+            // }); //
+            // const ctv = _.map(version.dm.tabsint.split("-")[0].split("."), function(s) {
             //     return parseInt(s);
             // });
 
@@ -100,7 +101,7 @@ export function initializeLoadingProtocol(
     }
 
     function checkCalibration() {
-        var reqCalProperties = [
+        const reqCalProperties = [
             "headset",
             "tablet",
             "audioProfileVersion",
@@ -108,31 +109,29 @@ export function initializeLoadingProtocol(
             "calibrationPyManualReleaseDate"
         ];
         if (_.difference(_.keys(loading.calibration), reqCalProperties).length > 0) {
-            // if calibration contains wav files
-            if (_.intersection(_.keys(loading.calibration), reqCalProperties).length === reqCalProperties.length) {
-                // if calibration contains all the required properties
-                loading.protocol.headset = loading.calibration.headset;
-                loading.protocol._audioProfileVersion = loading.calibration.audioProfileVersion;
-                loading.protocol._calibrationPySVNRevision = loading.calibration.calibrationPySVNRevision;
-                loading.protocol._calibrationPyManualReleaseDate = loading.calibration.calibrationPyManualReleaseDate;
-            } else {
-                loading.protocol._audioProfileVersion = "none";
-                loading.protocol._calibrationPySVNRevision = "none";
-                loading.protocol._calibrationPyManualReleaseDate = "none";
-                msg = "The loaded protocol calibration file is missing version fields.";
-                logger.error(msg);
-                loading.protocol.errors!.push({
-                type: "Calibration",
-                error: msg
-                });
-            }
+            // if (_.intersection(_.keys(loading.calibration), reqCalProperties).length === reqCalProperties.length) {
+            //     loading.protocol.headset = loading.calibration.headset;
+            //     loading.protocol._audioProfileVersion = loading.calibration.audioProfileVersion;
+            //     loading.protocol._calibrationPySVNRevision = loading.calibration.calibrationPySVNRevision;
+            //     loading.protocol._calibrationPyManualReleaseDate = loading.calibration.calibrationPyManualReleaseDate;
+            // } else {
+            //     loading.protocol._audioProfileVersion = "none";
+            //     loading.protocol._calibrationPySVNRevision = "none";
+            //     loading.protocol._calibrationPyManualReleaseDate = "none";
+            //     msg = "The loaded protocol calibration file is missing version fields.";
+            //     logger.error(msg);
+            //     loading.protocol.errors!.push({
+            //     type: "Calibration",
+            //     error: msg
+            //     });
+            // }
         }
-        loading.protocol.currentCalibration = loading.protocol.headset || "None"; 
+        loading.protocol.currentCalibration = loading.protocol.headset ?? "None"; 
     }
 
     function setMediaRepo() {
         if (loading.protocol.commonMediaRepository) {
-            var midx = _.findIndex(diskModel.disk.mediaRepos, {
+            const midx = _.findIndex(diskModel.disk.mediaRepos, {
                 name: loading.protocol.commonMediaRepository
             });
             if (midx !== -1) {
