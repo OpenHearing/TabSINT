@@ -29,8 +29,4 @@ export interface StateInterface {
     };
     bluetoothConnected: boolean;
     wifiConnected: boolean;
-    // TODO: Move this to devices
-    cha: ChaState;
-    tympan: TympanState;
-    svantek: SvantekState;
 }

@@ -35,10 +35,7 @@ export class StateModel {
             activatedProtocols: []
         },
         bluetoothConnected: false,
-        wifiConnected: false,
-        cha: ChaState.Disconnected,
-        tympan: TympanState.Disconnected,
-        svantek: SvantekState.Disconnected
+        wifiConnected: false
     }
 
     getState(): StateInterface {
