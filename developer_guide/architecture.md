@@ -11,6 +11,19 @@ The application is designed following a [Model-View-Controller (MVC) design patt
   * a CSS file that defines the component styles, and 
   * a test file. 
 
+- `Response Areas` are how TabSINT runs and displays exam realted content. They consist of `Views`, use `Models`, and `Controllers`. `Response Areas` live in src/app/views/response-area/response-areas/ and have the following file structure (replace myResponseArea with the name of your response area):
+  * myResponseArea
+    * HTML file
+    * Typescript file
+    * CSS file
+    * test file
+  * myResponseAreaViewer
+    * HTML file
+    * Typescript file
+    * CSS file
+    * test file
+  * interface file that describes parameters required for the response area
+
 Separating the component's view-related features from services other kinds of processing makes the component classes lean and efficient. The specifics of how the models, views, controllers, and utilities related to each other in TabSINT are illustrated here. It is important to carefully follow the dependency injections to avoid circular injections.
 
 <img src="architecture.png">
