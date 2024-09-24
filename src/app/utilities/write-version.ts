@@ -1,14 +1,17 @@
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
-
+const simpleGit = require('simple-git');
 const versionJsonPath = path.join(__dirname, '../../version.json');
 const packageJsonPath = path.join(__dirname, '../../../package.json');
 const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+const git = simpleGit();
 
-function getCurrentCommitHash() {
+
+async function getCurrentCommitHash() {
   try {
-    return execSync('git rev-parse --short HEAD').toString().trim();
+    const commitHash = await git.revparse(['--short', 'HEAD']);
+    return commitHash.trim();
   } catch (error) {
     console.error('Error getting git commit hash:', error);
     return 'unknown';
