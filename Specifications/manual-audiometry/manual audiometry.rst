@@ -90,6 +90,15 @@ The GUI should look like the image below with the following features. Features i
    **Figure 2.** *GUI for the long term manual audiometry dashboard*
 
 
+Results-View
+^^^^^^^^^^^^^
+
+The GUI should display the results (audiogram and table) of the manual audiometry exam in a separate page, if specified in the protocol.
+
+The audiogram is displayed first according to `the ASHA standards <https://www.asha.org/policy/GL1990-00006/>`_.
+
+The results table is presented below according to `specs <https://cha.crearecomputing.net/cha-docs/CHA/protocols/audiometry.html#results-table-presentation>`_.
+
 Software Testing Procedures
 ---------------------------
 
