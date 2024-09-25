@@ -68,6 +68,49 @@ The GUI should look like the image below with the following features.
 
    **Figure 3.** *GUI for the calibration exam. Screen 3*
 
+Results-View
+^^^^^^^^^^^^^
+
+The GUI should display the results (calibration factors and maximum output levels) of the calibration exam, if specified in the protocol. A table as shown below should summarize the results saved on the calibration exam.
+
+.. list-table::
+    :widths: 10, 20, 20
+    :header-row: 1
+
+    * - Frequency (Hz)
+      - Calibration Factor
+      - Maximum Output Level (dB SPL)
+    * - 250 
+      -
+      -
+    * - 500 
+      -
+      -
+    * - 750 
+      -
+      -
+    * - 1000 
+      -
+      -
+    * - 2000 
+      -
+      -
+    * - 3000 
+      -
+      -
+    * - 4000 
+      -
+      -
+    * - 6000 
+      -
+      -
+    * - 8000 
+      -
+      -
+    * - 16000 
+      -
+      -
+
 
 Software Testing Procedures
 ---------------------------
