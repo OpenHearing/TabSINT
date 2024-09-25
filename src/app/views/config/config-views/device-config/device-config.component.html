@@ -1,64 +1,17 @@
-
-
-
-
-
-<div class="row pad-top">
-    <div class="col-4 admin-labels">State: </div>
-    <div class="col-8" *ngIf="state.tympan === TympanState.Connected"><em>Connected</em></div>
-    <div class="col-8" *ngIf="state.tympan === TympanState.Disconnected"><em>Not Connected</em></div>
-    <div class="col-8" *ngIf="state.tympan === TympanState.Reprogram"><em>Reprogramming</em></div>
-    <div class="col-8" *ngIf="state.tympan !== TympanState.Connected && state.tympan !== TympanState.Disconnected && state.tympan !== TympanState.Reprogram"><em>Connecting</em></div>
-</div>
-
-
-<div class="row pad-top">
-    <button (click)="addNewConnection()">+ New Connection</button>
-</div>
-
-
-<!-- OLD STUFF BELOW -->
-
-
-
-<!-- Tympan State -->
-<div class="row pad-top">
-    <div class="col-4 admin-labels">State: </div>
-    <div class="col-8" *ngIf="state.tympan === TympanState.Connected"><em>Connected</em></div>
-    <div class="col-8" *ngIf="state.tympan === TympanState.Disconnected"><em>Not Connected</em></div>
-    <div class="col-8" *ngIf="state.tympan === TympanState.Reprogram"><em>Reprogramming</em></div>
-    <div class="col-8" *ngIf="state.tympan !== TympanState.Connected && state.tympan !== TympanState.Disconnected && state.tympan !== TympanState.Reprogram"><em>Connecting</em></div>
-</div>
-
 <!-- Bluetooth Message-->
 <div class="row pad-top" *ngIf="!state.bluetoothConnected">
     <div class="col-10 text-warning"><em>Bluetooth radio disabled</em></div>
 </div>
 
-<!-- Connection Buttons-->
-<div class="row pad-top">
-    <div class="col-4" [ngSwitch]="state.tympan">
-        <button *ngSwitchDefault class="btn btn-primary btn-block disabled custom-disabled">Connect</button>
-      <button *ngSwitchCase="TympanState.Disconnected" class="btn btn-primary btn-block" [disabled]="!state.bluetoothConnected" 
-        [ngClass]="!state.bluetoothConnected ? 'disabled custom-disabled': ''" (click)="connectTympan()">Connect</button>
-    </div>
-    <div class="col-4" [ngSwitch]="state.tympan">
-      <button *ngSwitchDefault class="btn btn-primary btn-block disabled custom-disabled">Disconnect</button>
-      <button *ngSwitchCase="TympanState.Connected" class="btn btn-primary btn-block" (click)="disconnectTympan()">Disconnect</button>
-      <button *ngSwitchCase="TympanState.Discovery" class="btn btn-primary btn-block disabled custom-disabled">Disconnect</button>
-    </div>
-    <div class="col-4" [ngSwitch]="state.tympan">
-      <button *ngSwitchDefault class="btn btn-primary btn-block" (click)="cancelConnectTympan()">Cancel</button>
-      <button *ngSwitchCase="TympanState.Reprogram" class="btn btn-primary btn-block disabled custom-disabled">Cancel</button>
-      <button *ngSwitchCase="TympanState.Connected" class="btn btn-primary btn-block disabled custom-disabled">Cancel</button>
-      <button *ngSwitchCase="TympanState.Disconnected" class="btn btn-primary btn-block disabled custom-disabled">Cancel</button>
-    </div>
-</div>
+<connected-devices></connected-devices>
+<new-connection *ngIf="state.newDeviceConnection"></new-connection>
 
-<!-- Connected Tympan -->
-<div *ngIf="state.tympan === TympanState.Connected">
-    <hr />
-    <tympan-info-view></tympan-info-view>
+<br><br><br><br>
+
+<div class="row pad-top" *ngIf="!state.newDeviceConnection">
+    <div class="col-12">
+        <button (click)="addNewConnection()">+ New Connection</button>
+    </div>
 </div>
 
 <!-- Show Advanced -->
@@ -84,6 +37,5 @@
             <h5>Preferences</h5>
         </div>
     </div>
-
 
 </div>

@@ -1,10 +1,10 @@
 <div class="modal-header">
-    Tympan Devices
+    Available Devices
 </div>
 
 <div class="modal-body">
-    <button *ngFor="let tympan of availableTympans" (click)="choose(tympan)"
-    [ngClass]="selectedTympan?.name==tympan.name ? 'btn cha-selected': 'btn cha-unselected'" style="display: block;">{{tympan.name}}</button>
+    <button *ngFor="let device of availableDevices" (click)="choose(device)"
+    [ngClass]="selectedDevice?.name==device.name ? 'btn cha-selected': 'btn cha-unselected'" style="display: block;">{{device.name}}</button>
 </div>
 
 <div class="modal-footer">

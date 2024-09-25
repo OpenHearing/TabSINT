@@ -1,5 +1,4 @@
-import { Component, Inject } from '@angular/core';
-
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { ResultsInterface } from '../../../../models/results/results.interface';
 import { ResultsModel } from '../../../../models/results/results-model.service';
 import { ProtocolModel } from '../../../../models/protocol/protocol-model.service';
@@ -9,20 +8,21 @@ import { StateModel } from '../../../../models/state/state.service';
 import { WINDOW } from '../../../../utilities/window';
 import { PageModel } from '../../../../models/page/page.service';
 import { PageInterface } from '../../../../models/page/page.interface';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'external-response-area-view',
   templateUrl: './external-response-area.component.html',
   styleUrl: './external-response-area.component.css'
 })
-export class ExternalResponseAreaComponent {
+export class ExternalResponseAreaComponent implements OnInit, OnDestroy {
   currentPage: PageInterface;
   results: ResultsInterface;
   protocol: ProtocolModelInterface;
   state: StateInterface
   testHTML: string;
   testJS: string;
-  observableVar: any; // TODO: Blaine, what should this type be?
+  subscription: Subscription | undefined;
 
   constructor (
     public resultsModel: ResultsModel, 
@@ -35,18 +35,21 @@ export class ExternalResponseAreaComponent {
     this.protocol = this.protocolModel.getProtocolModel();
     this.state = this.stateModel.getState();
     this.currentPage = this.pageModel.getPage();
-
     // this.rows = this.currentPage.responseArea.rows!;
     this.testHTML = "";
     this.testJS = "";
-    this.observableVar = this.pageModel.currentPageObservable;
+  }
 
-    this.observableVar.subscribe( (updatedPage:any) => {
-        this.testHTML = updatedPage?.responseArea?.externalHTML;
-        this.testJS = updatedPage?.responseArea?.externalJS;
-        this.waitForHTMLToLoad();
-      }
-    );
+  ngOnInit() {
+    this.subscription = this.pageModel.currentPageObservable.subscribe( (updatedPage:any) => {
+      this.testHTML = updatedPage?.responseArea?.externalHTML;
+      this.testJS = updatedPage?.responseArea?.externalJS;
+      this.waitForHTMLToLoad();
+    });
+  }
+
+  ngOnDestroy() {
+    this.subscription?.unsubscribe();
   }
 
   async waitForHTMLToLoad() {

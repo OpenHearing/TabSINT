@@ -1,19 +1,19 @@
 import { Component,ChangeDetectorRef  } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { DiskModel } from '../../models/disk/disk.service';
-import { Logger } from '../../utilities/logger.service';
-import { VersionService } from '../../controllers/version.service';
-import { ConfigService } from '../../controllers/config.service';
-import { AppState } from '../../utilities/constants';
-import { StateModel } from '../../models/state/state.service';
-import { DiskInterface } from '../../models/disk/disk.interface';
-import { StateInterface } from '../../models/state/state.interface';
-import { ChangePinComponent } from '../change-pin/change-pin.component';
+import { DiskModel } from '../../../../models/disk/disk.service';
+import { Logger } from '../../../../utilities/logger.service';
+import { VersionService } from '../../../../controllers/version.service';
+import { ConfigService } from '../../../../controllers/config.service';
+import { AppState } from '../../../../utilities/constants';
+import { StateModel } from '../../../../models/state/state.service';
+import { DiskInterface } from '../../../../models/disk/disk.interface';
+import { StateInterface } from '../../../../models/state/state.interface';
+import { ChangePinComponent } from '../../../change-pin/change-pin.component';
 import { MatDialog } from '@angular/material/dialog';
-import { ChangeMaxLogLengthComponent } from '../change-max-log-length/change-max-log-length.component';
+import { ChangeMaxLogLengthComponent } from '../../../change-max-log-length/change-max-log-length.component';
 import { TabsintFs } from 'tabsintfs';
-import { VersionInterface } from '../../interfaces/version.interface';
+import { VersionInterface } from '../../../../interfaces/version.interface';
 
 @Component({
   selector: 'tabsint-config-view',

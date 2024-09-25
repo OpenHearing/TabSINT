@@ -5,15 +5,16 @@ import { BleDevice } from '../interfaces/bluetooth.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { StateModel } from '../models/state/state.service';
 import { WINDOW } from './window';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
 
 export class TympanWrap {
-
     state: StateInterface;
-    
+    scanning: boolean = false;    
+    continuousScan: boolean = false;    
     ADAFRUIT_SERVICE_UUID = "BC2F4CC6-AAEF-4351-9034-D66268E328F0"; // custom tympan service
     ADAFRUIT_CHARACTERISTIC_UUID = "06D1E5E7-79AD-4A71-8FAA-373789F7D93C"; // custom tympan characteristic
     CRC8_TABLE = this.genCRC8Table();
@@ -37,27 +38,48 @@ export class TympanWrap {
         }
     }
 
-    async scan(service_uuid:string=this.ADAFRUIT_SERVICE_UUID,timeout:number=5000): Promise<BleDevice[]> {
-        let results:BleDevice[] = []
+    async stopScanning() {
+        await BleClient.stopLEScan();
+        this.continuousScan = false;
+    }
+
+    async startScanning(observable:BehaviorSubject<BleDevice[]>, timeout:number=5000): Promise<void> {
+        this.continuousScan = true;
+        if (this.scanning) {
+            return
+        }
+
         try {
             console.log("starting ble scan");
-            await BleClient.requestLEScan({services: [service_uuid],},
-                    (result:any) => {
-                    results.push(result.device);
-                }
-            );
-        
-            setTimeout(async () => {
-                await BleClient.stopLEScan();
-                console.log('stopping ble scan');
-                console.log('detected devices:',results);
-            }, timeout);
-
+            await this.scan(observable, timeout);
         } catch (error) {
             console.error(error);
+            this.scanning = false;
+            this.continuousScan = false;
         }
-        return results
+    }
 
+    async scan(observable:BehaviorSubject<BleDevice[]>, timeout:number=5000) {
+        observable.next([]);
+        this.scanning = true;
+        let results:BleDevice[] = []
+        await BleClient.requestLEScan({services: [this.ADAFRUIT_SERVICE_UUID],}, (result:any) => {
+            console.log("found device:",result.device);
+            if (!results.includes(result.device)) {
+                results.push(result.device);
+            }
+            observable.next(results);
+        });
+        
+        setTimeout(async () => {
+            console.log('stopping ble scan');
+            console.log('detected devices:',results);
+            await BleClient.stopLEScan();
+            this.scanning = false;
+            if (this.continuousScan) {
+                this.scan(observable,timeout);
+            }
+        }, timeout);
     }
 
     async write(device:BleDevice, msg:string) {
@@ -76,17 +98,17 @@ export class TympanWrap {
         this.logger.debug("resp from writing: "+msg_to_write+" is: "+JSON.stringify(resp));
     }
 
-    async connect(device:BleDevice) {
-        await BleClient.connect(device.deviceId, (deviceId:string) => this.onDisconnect(deviceId));
+    async connect(device:BleDevice,onDisconnect:Function) {
+        await BleClient.connect(device.deviceId, (deviceId:string) => onDisconnect(deviceId));
         console.log('connected to device', device);
 
         let availableServices = await BleClient.getServices(device.deviceId);
         console.log("availableServices",availableServices); // uneeded?
     }   
 
-    onDisconnect(deviceId:string): void {
-        console.log(`device ${deviceId} disconnected`);
-    }
+    // onDisconnect(deviceId:string): void {
+    //     console.log(`device ${deviceId} disconnected`);
+    // }
 
     async disconnect(device:BleDevice) {
         await BleClient.disconnect(device.deviceId);

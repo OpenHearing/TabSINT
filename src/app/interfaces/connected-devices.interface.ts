@@ -1,8 +1,7 @@
-import { List } from "lodash";
-import { ConnectedTympan } from "./connected.tympan.interface";
+import { ConnectedTympan } from "./connected-tympan.interface";
 
 export interface ConnectedDevices {
-    tympan: List<ConnectedTympan>;
-    cha: List<Object>;
-    svantek: List<Object>;
+    tympan: Array<ConnectedTympan>;
+    cha: Array<Object>;
+    svantek: Array<Object>;
 }

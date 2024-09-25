@@ -31,6 +31,12 @@ export enum TympanState {
     Reprogram
 }
 
+export const AvailableConnectableDevices: Array<string> = [
+    "Tympan",
+    "CHA",
+    "Svantek"
+]
+
 export enum ResultsMode {
     UploadOnly = "Upload Only",
     ExportOnly = "Export Only",

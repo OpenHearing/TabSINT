@@ -18,8 +18,7 @@ export class StateModel {
         isPaneOpen: {
             general: true,
             advanced: false,
-            tympan: false,
-            wahts: false,
+            devices: false,
             dosimeter: false,
             softwareHardware: false,
             appLog: false,
@@ -35,7 +34,8 @@ export class StateModel {
             activatedProtocols: []
         },
         bluetoothConnected: false,
-        wifiConnected: false
+        wifiConnected: false,
+        newDeviceConnection: false
     }
 
     getState(): StateInterface {

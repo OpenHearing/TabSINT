@@ -56,8 +56,8 @@ import { ExamService } from './controllers/exam.service';
 import { TympanWrap } from './utilities/tympan-wrap.service';
 import { TympanService } from './controllers/tympan.service';
 import { AdminService } from './controllers/admin.service';
-import { TabsintConfigComponent } from './views/tabsint-config/tabsint-config.component';
-import { SoftwareConfigComponent } from './views/software-config/software-config.component';
+import { TabsintConfigComponent } from './views/config/config-views/tabsint-config/tabsint-config.component';
+import { SoftwareConfigComponent } from './views/config/config-views/software-config/software-config.component';
 import { LogConfigComponent } from './views/config/config-views/log-config/log-config.component';
 import { DebugComponent } from './views/debug/debug.component';
 import { ExamReadyComponent } from './views/exam-ready/exam-ready.component';
@@ -71,6 +71,8 @@ import { SingleResultModalComponent } from './views/single-result-modal/single-r
 import { ExternalResponseAreaComponent } from './views/response-area/response-areas/external-response-area/external-response-area.component';
 import { DeviceConfigComponent } from './views/config/config-views/device-config/device-config.component';
 import { DeviceInfoComponent } from './views/config/config-views/device-info/device-info.component';
+import { ConnectedDevicesComponent } from './views/config/config-views/connected-devices/connected-devices.component';
+import { NewConnectionComponent } from './views/config/config-views/new-connection/new-connection.component';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -102,7 +104,9 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     SingleResultModalComponent,
     ExternalResponseAreaComponent,
     DeviceConfigComponent,
-    DeviceInfoComponent
+    DeviceInfoComponent,
+    ConnectedDevicesComponent,
+    NewConnectionComponent
   ],
   imports: [
     BrowserModule,

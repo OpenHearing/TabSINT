@@ -1,0 +1,20 @@
+<div class="row pad-top">
+    <div class="col-12">
+        <h5>Current Devices</h5>
+    </div>
+</div>
+
+<div class="row pad-top" *ngIf="devices.connectedDevices.tympan.length > 0">
+    <!-- could we use device-info here? -->
+    <div class="col-4 admin-labels">State: </div>
+    <div class="col-8" *ngIf="devices.connectedDevices.tympan?.[0]?.state === TympanState.Connected"><em>Connected</em></div>
+    <div class="col-8" *ngIf="devices.connectedDevices.tympan?.[0]?.state === TympanState.Disconnected"><em>Not Connected</em></div>
+    <div class="col-8" *ngIf="devices.connectedDevices.tympan?.[0]?.state === TympanState.Reprogram"><em>Reprogramming</em></div>
+    <div class="col-8" *ngIf="devices.connectedDevices.tympan?.[0]?.state !== TympanState.Connected && devices.connectedDevices.tympan?.[0]?.state !== TympanState.Disconnected && devices.connectedDevices.tympan?.[0]?.state !== TympanState.Reprogram"><em>Connecting</em></div>
+
+    <!-- Connected Tympan -->
+    <div *ngIf="devices.connectedDevices.tympan?.[0]?.state === TympanState.Connected">
+        <hr />
+        <device-info-view></device-info-view>
+    </div>
+</div>

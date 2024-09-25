@@ -6,7 +6,7 @@ import { Logger } from '../../../../utilities/logger.service';
 import { FileService } from '../../../../utilities/file.service';
 import { AdminService } from '../../../../controllers/admin.service';
 import { ConfigService } from '../../../../controllers/config.service';
-import { AppState, BluetoothType, TympanState } from '../../../../utilities/constants';
+import { AppState, TympanState } from '../../../../utilities/constants';
 import { StateModel } from '../../../../models/state/state.service';
 import { DiskInterface } from '../../../../models/disk/disk.interface';
 import { StateInterface } from '../../../../models/state/state.interface';
@@ -24,7 +24,6 @@ export class DeviceConfigComponent {
   state: StateInterface;
   devices: DevicesInterface;
   TympanState = TympanState;
-  BluetoothType = BluetoothType;
 
   constructor(
     public diskModel: DiskModel, 
@@ -47,29 +46,8 @@ export class DeviceConfigComponent {
   }
 
   addNewConnection(): void {
+    this.state.newDeviceConnection = true;
     console.log("addNewConnection button pressed.");
   }
-
-  // tympanTest() {
-  //   console.log("myTympans:"+JSON.stringify(this.myTympans));
-  // }
-
-  async connectTympan() {
-    console.log("connect tympan pressed");
-    await this.tympanService.connect();
-  }
-
-  cancelConnectTympan() {
-    console.log("cancelConnect tympan pressed");
-  }
-
-  disconnectTympan() {
-    console.log("disconnect tympan pressed");
-  }
-
-  removeTympan() {
-    console.log("removeTympan pressed");
-  }
-  
 
 }

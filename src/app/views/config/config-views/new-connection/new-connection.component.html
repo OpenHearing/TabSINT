@@ -1,0 +1,21 @@
+<div class="row pad-top">
+  Add New Connection
+</div>
+
+<!-- Connection Buttons-->
+<div class="row pad-top">
+  <div class="col-4">
+    <label translate for="deviceType">Device Type:</label>
+  </div>
+  <div ngbDropdown class="col-4 dropdown-width" display="dynamic">                            
+    <button type="button" class="btn btn-default btn-block dropdown-toggle" id="deviceType" ngbDropdownToggle>
+      {{newConnectedDevice.type}}
+    </button>
+    <div ngbDropdownMenu aria-labelledby="deviceType">
+      <button *ngFor="let deviceType of deviceTypes" ngbDropdownItem (click)="changeDeviceType(deviceType)">{{deviceType}}</button>
+    </div>
+  </div>
+  <div class="col-4" *ngIf="newConnectedDevice.type!='Select One'">
+    <button class="btn btn-primary btn-block" (click)="connectTympan()">Connect</button>
+  </div>
+</div>

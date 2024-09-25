@@ -1,5 +1,5 @@
-import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { MatDialogRef } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { Logger } from '../../../../utilities/logger.service';
@@ -7,6 +7,8 @@ import { DiskInterface } from '../../../../models/disk/disk.interface';
 import { DiskModel } from '../../../../models/disk/disk.service';
 import { NgFor, NgClass } from '@angular/common';
 import { BleDevice } from '../../../../interfaces/bluetooth.interface';
+import { DevicesModel } from '../../../../models/devices/devices.service';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
 @Component({
   selector: 'device-choose-view',
@@ -15,27 +17,42 @@ import { BleDevice } from '../../../../interfaces/bluetooth.interface';
   styleUrl: './device-choose.component.css',
   imports: [FormsModule, TranslateModule, NgFor, NgClass]
 })
-export class DeviceChooseComponent {
+export class DeviceChooseComponent implements OnInit, OnDestroy {
   disk: DiskInterface;
-  availableTympans: Array<BleDevice>;
-  selectedTympan: BleDevice | undefined;
+  availableDevices: Array<BleDevice>;
+  selectedDevice: BleDevice | undefined;
+  subscription: Subscription | undefined;
 
   constructor(
+    private changeDetection: ChangeDetectorRef,
     public logger: Logger, 
     public dialogRef: MatDialogRef<DeviceChooseComponent>,
     public diskModel: DiskModel, 
-    @Inject(MAT_DIALOG_DATA) public data:any
+    public devicesModel: DevicesModel
   ) {
     this.disk = this.diskModel.getDisk();
-    this.availableTympans = data;
+    this.availableDevices = [];
   }
 
-  choose(tympan:BleDevice) {
-    this.selectedTympan = tympan;
+  ngOnInit() {
+    this.subscription = this.devicesModel.availableDevicesObservable.subscribe( (availableDevices) => {
+      console.log("new devices",availableDevices);
+      this.availableDevices = availableDevices;
+      this.changeDetection.detectChanges();
+    }); 
+  }
+
+  ngOnDestroy() {
+    this.subscription?.unsubscribe();
+  }
+
+  choose(device:BleDevice) {
+    this.selectedDevice = device;
+    console.log(this.availableDevices,this.selectedDevice);
   }
 
   select() {
-    this.dialogRef.close(this.selectedTympan);
+    this.dialogRef.close(this.selectedDevice);
   }
 
   cancel() {
