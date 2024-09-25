@@ -75,7 +75,7 @@ The GUI should display the results (calibration factors and maximum output level
 
 .. list-table::
     :widths: 10, 20, 20
-    :header-row: 1
+    :header-rows: 1
 
     * - Frequency (Hz)
       - Calibration Factor
