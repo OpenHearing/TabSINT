@@ -1,21 +1,61 @@
-<div class="row pad-top">
-  Add New Connection
+<!-- Add new connection -->
+<div class="row pad-top" *ngIf="!state.newDeviceConnection">
+  <div class="col-12">
+    <button (click)="addNewConnection()">+ New Connection</button>
+  </div>
 </div>
 
-<!-- Connection Buttons-->
-<div class="row pad-top">
-  <div class="col-4">
-    <label translate for="deviceType">Device Type:</label>
-  </div>
-  <div ngbDropdown class="col-4 dropdown-width" display="dynamic">                            
-    <button type="button" class="btn btn-default btn-block dropdown-toggle" id="deviceType" ngbDropdownToggle>
-      {{newConnectedDevice.type}}
-    </button>
-    <div ngbDropdownMenu aria-labelledby="deviceType">
-      <button *ngFor="let deviceType of deviceTypes" ngbDropdownItem (click)="changeDeviceType(deviceType)">{{deviceType}}</button>
+<!-- Configure new connection -->
+<ng-container *ngIf="state.newDeviceConnection">
+  <div class="row pad-top">
+    <div class="col-12">
+      <h5>Add New Connection</h5>
     </div>
   </div>
-  <div class="col-4" *ngIf="newConnectedDevice.type!='Select One'">
-    <button class="btn btn-primary btn-block" (click)="connectTympan()">Connect</button>
+  
+  <div class="row pad-top">
+    <!-- Device Type -->
+    <div class="col-3">
+      <label translate for="deviceType">Device Type:</label>
+    </div>
+    <div ngbDropdown class="col-2 dropdown-width" display="dynamic">                            
+      <button type="button" class="btn btn-default btn-block dropdown-toggle" id="deviceType" ngbDropdownToggle>
+        {{newConnectedDevice.type}}
+      </button>
+      <div ngbDropdownMenu aria-labelledby="deviceType">
+        <button *ngFor="let deviceType of deviceTypes" ngbDropdownItem (click)="changeDeviceType(deviceType)">{{deviceType}}</button>
+      </div>
+    </div>
+    <div class="col-2"></div>
+
+    <!-- Device ID -->
+    <ng-container *ngIf="newConnectedDevice.type!='Select One'">
+      <div class="col-2">
+        <label translate for="deviceType">Device ID:</label>
+      </div>
+      <div ngbDropdown class="col-3 dropdown-width" display="dynamic">                            
+        <button type="button" class="btn btn-default btn-block dropdown-toggle" id="deviceID" ngbDropdownToggle>
+          {{newConnectedDevice.deviceId}}
+        </button>
+        <div ngbDropdownMenu aria-labelledby="deviceID">
+          <button *ngFor="let deviceId of deviceIDs" ngbDropdownItem (click)="changeDeviceID(deviceId)">{{deviceId}}</button>
+        </div>
+      </div>
+    </ng-container>
   </div>
-</div>
+
+  <div class="row pad-top" *ngIf="newConnectedDevice.type!='Select One'">
+    <!-- Scan and connect -->
+    <div class="col-4">
+      <button class="btn btn-primary btn-block" (click)="scanAndConnect()">Scan</button>
+    </div>
+    <div class="col-2"></div>
+    
+    <!-- Cancel -->
+    <div class="col-4">
+      <button class="btn btn-primary btn-block" (click)="cancel()">Cancel</button>
+    </div>
+    <div class="col-2"></div>
+  </div>
+
+</ng-container>

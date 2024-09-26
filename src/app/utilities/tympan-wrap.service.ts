@@ -104,15 +104,20 @@ export class TympanWrap {
 
         let availableServices = await BleClient.getServices(device.deviceId);
         console.log("availableServices",availableServices); // uneeded?
+    }
+
+    async reconnect(deviceId:string,onDisconnect:Function) {
+        await BleClient.connect(deviceId, (deviceId:string) => onDisconnect(deviceId));
+        console.log('reconnected to device', deviceId);
     }   
 
     // onDisconnect(deviceId:string): void {
     //     console.log(`device ${deviceId} disconnected`);
     // }
 
-    async disconnect(device:BleDevice) {
-        await BleClient.disconnect(device.deviceId);
-        console.log('disconnected from device', device);
+    async disconnect(deviceId:string) {
+        await BleClient.disconnect(deviceId);
+        console.log('disconnected from device', deviceId);
     }
 
 

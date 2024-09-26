@@ -48,6 +48,7 @@ export class DeviceChooseComponent implements OnInit, OnDestroy {
 
   choose(device:BleDevice) {
     this.selectedDevice = device;
+    this.changeDetection.detectChanges();
     console.log(this.availableDevices,this.selectedDevice);
   }
 

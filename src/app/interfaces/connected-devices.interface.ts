@@ -1,7 +1,7 @@
-import { ConnectedTympan } from "./connected-tympan.interface";
+import { ConnectedDevice } from "./new-device.interface";
 
 export interface ConnectedDevices {
-    tympan: Array<ConnectedTympan>;
+    tympan: Array<ConnectedDevice>;
     cha: Array<Object>;
     svantek: Array<Object>;
 }

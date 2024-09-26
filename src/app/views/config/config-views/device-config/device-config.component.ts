@@ -45,9 +45,4 @@ export class DeviceConfigComponent {
     this.stateModel.setAppState(AppState.Admin);
   }
 
-  addNewConnection(): void {
-    this.state.newDeviceConnection = true;
-    console.log("addNewConnection button pressed.");
-  }
-
 }

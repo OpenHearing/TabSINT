@@ -3,16 +3,14 @@
     <div class="col-10 text-warning"><em>Bluetooth radio disabled</em></div>
 </div>
 
+<!-- Add a new connection -->
+<new-connection></new-connection>
+
+<!-- Spacing -->
+<br><br>
+
+<!-- View and manage connected devices -->
 <connected-devices></connected-devices>
-<new-connection *ngIf="state.newDeviceConnection"></new-connection>
-
-<br><br><br><br>
-
-<div class="row pad-top" *ngIf="!state.newDeviceConnection">
-    <div class="col-12">
-        <button (click)="addNewConnection()">+ New Connection</button>
-    </div>
-</div>
 
 <!-- Show Advanced -->
 <div class="row showhideSection">

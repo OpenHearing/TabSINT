@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { TympanState, AvailableConnectableDevices } from '../../../../utilities/constants';
 import { DevicesInterface } from '../../../../models/devices/devices.interface';
 import { DevicesModel } from '../../../../models/devices/devices.service';
-import { newConnectedDevice } from '../../../../interfaces/new-device.interface';
+import { ConnectedDevice } from '../../../../interfaces/new-device.interface';
 import { TympanService } from '../../../../controllers/tympan.service';
 import { StateInterface } from '../../../../models/state/state.interface';
 import { StateModel } from '../../../../models/state/state.service';
@@ -19,8 +19,9 @@ export class NewConnectionComponent {
   TympanState = TympanState;
   state: StateInterface
   devices: DevicesInterface;
-  newConnectedDevice: newConnectedDevice; //TODO: expand typing to include CHA and Svantek
+  newConnectedDevice: ConnectedDevice; //TODO: expand typing to include CHA and Svantek
   deviceTypes = AvailableConnectableDevices;
+  deviceIDs: Array<string> = [];
 
   constructor(
     public deviceModel: DevicesModel, 
@@ -38,29 +39,47 @@ export class NewConnectionComponent {
     if (this.newConnectedDevice.type=="Tympan") {
       this.newConnectedDevice.state = TympanState.Disconnected;
     }
+    // TODO: Set the deviceId to the next available ID
+    this.newConnectedDevice.deviceId = this.newConnectedDevice.type+"-1";
+    this.deviceIDs = [];
+    for (let i = 1; i < 6; i++) {
+      this.deviceIDs.push(this.newConnectedDevice.type+"-"+i.toString());
+    }
   }
 
-  async connectTympan() {
-    console.log("connectTympan() button pressed.");
-    await this.tympanService.startScan();
+  changeDeviceID(id:string) {
+    this.newConnectedDevice.deviceId = id;
+  }
 
-    this.dialog.open(DeviceChooseComponent).afterClosed().subscribe(
-      async (tympan: BleDevice | undefined) => {
-        if (tympan!=undefined) {
-          await this.tympanService.connect(tympan);
-        } else {
-          await this.tympanService.stopScan();
+  addNewConnection(): void {
+    this.state.newDeviceConnection = true;
+    console.log("addNewConnection button pressed.");
+  }
+
+  async scanAndConnect() {
+    console.log("scanAndConnect() button pressed.");
+    // TODO: Expand this to connect to other devices besides Tympans
+    if (this.newConnectedDevice.type=='Tympan') {
+      await this.tympanService.startScan();
+
+      this.dialog.open(DeviceChooseComponent).afterClosed().subscribe(
+        async (tympan: BleDevice | undefined) => {
+          if (tympan!=undefined) {
+            await this.tympanService.connect(tympan, this.newConnectedDevice);
+          } else {
+            await this.tympanService.stopScan();
+          }
+          this.state.newDeviceConnection = false;
+          this.newConnectedDevice = {"type":"Select One"};
         }
-      }
-    );
+      );
+    }
   }
 
-  disconnectTympan() {
-    console.log("disconnectTympan() button pressed.");
-  }
-
-  cancelConnectTympan() {
-    console.log("cancelConnectTympan() button pressed.");
+  cancel() {
+    console.log("cancel button pressed");
+    this.state.newDeviceConnection = false;
+    this.newConnectedDevice = {"type":"Select One"};
   }
 
 }

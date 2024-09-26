@@ -11,7 +11,8 @@ export interface StateInterface {
     isPaneOpen: {
         general: boolean;
         advanced: boolean;
-        devices: boolean
+        devices: boolean;
+        tympans: boolean;
         dosimeter: boolean;
         softwareHardware: boolean;
         appLog: boolean;
