@@ -4,7 +4,7 @@
 <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.tympans">
     <mat-expansion-panel-header>
         <mat-panel-title>
-            {{'Tympan'| translate}}
+            {{'Tympans'| translate}}
         </mat-panel-title>
     </mat-expansion-panel-header>
        
@@ -14,12 +14,12 @@
 
             <!-- Device ID -->
             <div class="col-2 admin-labels">Device ID: </div>
-            <div class="col-2"><em>{{devices.connectedDevices.tympan[0].deviceId}}</em></div>
+            <div class="col-1"><em>{{devices.connectedDevices.tympan[0].deviceId}}</em></div>
             <div class="col-1"><em> <i class="ion-information-circled"></i>  </em></div>
 
             <!-- Name -->
-            <div class="col-2 admin-labels">Name: </div>
-            <div class="col-2"><em>{{devices.connectedDevices.tympan[0].name}}</em></div>
+            <div class="col-1 admin-labels">Name: </div>
+            <div class="col-3"><em>{{devices.connectedDevices.tympan[0].name}}</em></div>
 
             <!-- State -->
             <div class="col-1 admin-labels">State: </div>
@@ -46,6 +46,7 @@
         
         
             <!-- Connected Tympan -->
+            <!-- TODO: Move this to the info button next to device ID -->
             <div *ngIf="devices.connectedDevices.tympan[0].state === TympanState.Connected">
                 <hr />
                 <!-- Show Advanced -->

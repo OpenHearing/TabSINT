@@ -8,6 +8,6 @@
 </div>
 
 <div class="modal-footer">
-    <button type="button" class="btn btn-primary btn-block" (click)="select()" [disabled]="selectedDevice==undefined">{{'Select' | translate}}</button>
+    <button type="button" class="btn btn-primary btn-block" (click)="select()" [ngClass]="!selectedDevice ? 'disabled custom-disabled': ''">{{'Select' | translate}}</button>
     <button type="button" class="btn btn-primary btn-block" (click)="cancel()">{{'Cancel' | translate}}</button>
 </div>
