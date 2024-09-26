@@ -99,19 +99,25 @@ export class TympanService {
         }
 
         await this.tympanWrap.disconnect(tympanId);
-
-        // This shouldnt be needed because it will happen onDisconnect
-        // try {
-        //     await this.tympanWrap.disconnect(tympanId);
-        //     for (let i = 0; i < this.devices.connectedDevices.tympan.length; i++) {
-        //         if (this.devices.connectedDevices.tympan[i].id==tympanId) {
-        //             this.devices.connectedDevices.tympan[i].state = TympanState.Disconnected;
-        //         }
-        //     }
-        // } catch {
-        //     console.log("failed to disconnect to tympan:",tympanId);
-        // }
     }
+
+
+
+    // TODO: Move this to a utility? Or some better place?
+    getNextFreeDeviceId() {
+        let nextFreeId: string = "1";
+        let takenIds: Array<string> = [];
+        for (const [key, devices] of Object.entries(this.devices.connectedDevices)) {
+            for (let i = 0; i < devices.length; i++) {
+                takenIds.push(devices[i].deviceId);
+            }
+        }
+        while (takenIds.includes(nextFreeId)) {
+            nextFreeId = (parseInt(nextFreeId)+1).toString();
+        }
+        return nextFreeId
+    }
+
 }
 
 

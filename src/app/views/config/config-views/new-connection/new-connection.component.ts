@@ -39,11 +39,10 @@ export class NewConnectionComponent {
     if (this.newConnectedDevice.type=="Tympan") {
       this.newConnectedDevice.state = TympanState.Disconnected;
     }
-    // TODO: Set the deviceId to the next available ID
-    this.newConnectedDevice.deviceId = this.newConnectedDevice.type+"-1";
+    this.newConnectedDevice.deviceId = this.tympanService.getNextFreeDeviceId();
     this.deviceIDs = [];
     for (let i = 1; i < 6; i++) {
-      this.deviceIDs.push(this.newConnectedDevice.type+"-"+i.toString());
+      this.deviceIDs.push(i.toString());
     }
   }
 
