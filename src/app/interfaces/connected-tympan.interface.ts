@@ -1,7 +1,7 @@
 import { TympanState } from "../utilities/constants";
 
 export interface ConnectedTympan {
-    id: string;
+    deviceId: string;
     name: string;
     state: TympanState;
 }

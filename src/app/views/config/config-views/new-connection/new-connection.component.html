@@ -29,19 +29,19 @@
     <div class="col-2"></div>
 
     <!-- Device ID -->
-    <ng-container *ngIf="newConnectedDevice.type!='Select One'">
+    <!-- <ng-container *ngIf="newConnectedDevice.type!='Select One'">
       <div class="col-2">
         <label translate for="deviceType">Device ID:</label>
       </div>
       <div ngbDropdown class="col-3 dropdown-width" display="dynamic">                            
         <button type="button" class="btn btn-default btn-block dropdown-toggle" id="deviceID" ngbDropdownToggle>
-          {{newConnectedDevice.deviceId}}
+          {{newConnectedDevice.tabsintId}}
         </button>
-        <div ngbDropdownMenu aria-labelledby="deviceID">
-          <button *ngFor="let deviceId of deviceIDs" ngbDropdownItem (click)="changeDeviceID(deviceId)">{{deviceId}}</button>
+        <div ngbDropdownMenu aria-labelledby="tabsintId">
+          <button *ngFor="let tabsintId of tabsintIds" ngbDropdownItem (click)="changeTabsintId(tabsintId)">{{tabsintId}}</button>
         </div>
       </div>
-    </ng-container>
+    </ng-container> -->
   </div>
 
   <div class="row pad-top" *ngIf="newConnectedDevice.type!='Select One'">

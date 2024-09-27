@@ -7,6 +7,7 @@ import { StateModel } from '../../../../models/state/state.service';
 import { ConnectedDevice } from '../../../../interfaces/new-device.interface';
 import { TympanService } from '../../../../controllers/tympan.service';
 import { Logger } from '../../../../utilities/logger.service';
+import { isTympanDevice } from '../../../../guards/type.guard';
 
 @Component({
   selector: 'connected-devices',
@@ -31,17 +32,17 @@ export class ConnectedDevicesComponent {
 
   reconnect(device:ConnectedDevice) {
     this.logger.debug("attempting to reconnect to device: "+JSON.stringify(device));
-    if (device.type=="Tympan") {
-      this.tympanService.reconnect(device.id);
+    if (isTympanDevice(device)) {
+      this.tympanService.reconnect(device.deviceId);
     }
   }
 
   disconnect(device:ConnectedDevice) {
     this.logger.debug("attempting to disconnect from device:"+JSON.stringify(device));
-    if (device.type=="Tympan") {
-      this.tympanService.disconnect(device.id);
+    if (isTympanDevice(device)) {
+      this.tympanService.disconnect(device.deviceId);
       for (let i = 0; i < this.devices.connectedDevices.tympan.length; i++) {
-        if (this.devices.connectedDevices.tympan[i].id==device.id) {
+        if (this.devices.connectedDevices.tympan[i].deviceId==device.deviceId) {
           this.devices.connectedDevices.tympan[i].state = TympanState.Disconnected;
         }
       }
@@ -52,9 +53,9 @@ export class ConnectedDevicesComponent {
     this.logger.debug("remove() button pressed, attempting to disconnect and remove: "+JSON.stringify(device));
     this.disconnect(device);
     let indexToRemove: number = -1;
-    if (device.type=="Tympan") {
+    if (isTympanDevice(device)) {
       for (let i = 0; i < this.devices.connectedDevices.tympan.length; i++) {
-        if (this.devices.connectedDevices.tympan[i].id==device.id) {
+        if (this.devices.connectedDevices.tympan[i].deviceId==device.deviceId) {
           indexToRemove = i;
         }
       }

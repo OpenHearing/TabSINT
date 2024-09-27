@@ -31,7 +31,7 @@ export class TympanService {
         this.logger.debug(`device ${deviceId} disconnected`);
 
         for (let i = 0; i < this.devices.connectedDevices.tympan.length; i++) {
-            if (this.devices.connectedDevices.tympan[i].id==deviceId) {
+            if (this.devices.connectedDevices.tympan[i].deviceId==deviceId) {
                 this.devices.connectedDevices.tympan[i].state = TympanState.Disconnected;
             }
         }
@@ -53,8 +53,8 @@ export class TympanService {
         try {
             await this.tympanWrap.connect(tympan,this.onDisconnect.bind(this));
 
-            var newConnection = newConnectedDevice;
-            newConnection["id"] = tympan.deviceId;
+            let newConnection = newConnectedDevice;
+            newConnection["deviceId"] = tympan.deviceId;
             newConnection["name"] = tympan.name;
             newConnection["state"] = TympanState.Connected;
 
@@ -74,7 +74,7 @@ export class TympanService {
     }
 
     async reconnect(tympanId:string | undefined) {
-        // TODO: This return is only needed for tymping, it can likely be improved
+        // TODO: This return is only needed for typing, it can likely be improved
         if (!tympanId) {
             this.logger.debug("failed to reconnect to tympan: "+JSON.stringify(tympanId));
             return
@@ -83,7 +83,7 @@ export class TympanService {
         try {
             await this.tympanWrap.reconnect(tympanId,this.onDisconnect.bind(this));
             for (let i = 0; i < this.devices.connectedDevices.tympan.length; i++) {
-                if (this.devices.connectedDevices.tympan[i].id==tympanId) {
+                if (this.devices.connectedDevices.tympan[i].deviceId==tympanId) {
                     this.devices.connectedDevices.tympan[i].state = TympanState.Connected;
                 }
             }
@@ -93,7 +93,7 @@ export class TympanService {
     }
 
     async disconnect(tympanId:string | undefined) {
-        // TODO: This return is only needed for tymping, it can likely be improved
+        // TODO: This return is only needed for typing, it can likely be improved
         if (!tympanId) {
             this.logger.debug("failed to disconnect to tympan: "+JSON.stringify(tympanId));
             return

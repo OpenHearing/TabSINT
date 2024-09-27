@@ -148,7 +148,6 @@ export class TympanWrap {
     }
 
     dataViewToString(dv:DataView): string {
-        // needs to be updated
         return new TextDecoder().decode(dv.buffer)
     }
 

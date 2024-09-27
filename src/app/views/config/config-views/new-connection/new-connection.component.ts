@@ -19,9 +19,9 @@ export class NewConnectionComponent {
   TympanState = TympanState;
   state: StateInterface
   devices: DevicesInterface;
-  newConnectedDevice: ConnectedDevice; //TODO: expand typing to include CHA and Svantek
+  newConnectedDevice: ConnectedDevice;
   deviceTypes = AvailableConnectableDevices;
-  deviceIDs: Array<string> = [];
+  // tabsintIds: Array<string> = [];
 
   constructor(
     public deviceModel: DevicesModel, 
@@ -39,16 +39,16 @@ export class NewConnectionComponent {
     if (this.newConnectedDevice.type=="Tympan") {
       this.newConnectedDevice.state = TympanState.Disconnected;
     }
-    this.newConnectedDevice.deviceId = this.tympanService.getNextFreeDeviceId();
-    this.deviceIDs = [];
-    for (let i = 1; i < 6; i++) {
-      this.deviceIDs.push(i.toString());
-    }
+    this.newConnectedDevice.tabsintId = this.tympanService.getNextFreeDeviceId();
+    // this.tabsintIds = [];
+    // for (let i = 1; i < 6; i++) {
+    //   this.tabsintIds.push(i.toString());
+    // }
   }
 
-  changeDeviceID(id:string) {
-    this.newConnectedDevice.deviceId = id;
-  }
+  // changeTabsintId(tabsintId:string) {
+  //   this.newConnectedDevice.tabsintId = tabsintId;
+  // }
 
   addNewConnection(): void {
     this.state.newDeviceConnection = true;
