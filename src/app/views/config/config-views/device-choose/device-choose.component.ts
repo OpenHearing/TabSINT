@@ -36,10 +36,9 @@ export class DeviceChooseComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscription = this.devicesModel.availableDevicesObservable.subscribe( (availableDevices) => {
-      console.log("new devices",availableDevices);
       this.availableDevices = availableDevices;
       this.changeDetection.detectChanges();
-    }); 
+    });
   }
 
   ngOnDestroy() {
@@ -49,7 +48,6 @@ export class DeviceChooseComponent implements OnInit, OnDestroy {
   choose(device:BleDevice) {
     this.selectedDevice = device;
     this.changeDetection.detectChanges();
-    console.log(this.availableDevices,this.selectedDevice);
   }
 
   select() {

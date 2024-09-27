@@ -50,7 +50,7 @@ export class TympanWrap {
         }
 
         try {
-            console.log("starting ble scan");
+            this.logger.debug("starting ble scan");
             await this.scan(observable, timeout);
         } catch (error) {
             console.error(error);
@@ -64,7 +64,7 @@ export class TympanWrap {
         this.scanning = true;
         let results:BleDevice[] = []
         await BleClient.requestLEScan({services: [this.ADAFRUIT_SERVICE_UUID],}, (result:any) => {
-            console.log("found device:",result.device);
+            this.logger.debug("found device: "+JSON.stringify(result.device));
             if (!results.includes(result.device)) {
                 results.push(result.device);
             }
@@ -72,8 +72,6 @@ export class TympanWrap {
         });
         
         setTimeout(async () => {
-            console.log('stopping ble scan');
-            console.log('detected devices:',results);
             await BleClient.stopLEScan();
             this.scanning = false;
             if (this.continuousScan) {
@@ -100,24 +98,17 @@ export class TympanWrap {
 
     async connect(device:BleDevice,onDisconnect:Function) {
         await BleClient.connect(device.deviceId, (deviceId:string) => onDisconnect(deviceId));
-        console.log('connected to device', device);
-
-        let availableServices = await BleClient.getServices(device.deviceId);
-        console.log("availableServices",availableServices); // uneeded?
+        this.logger.debug('connected to device:'+JSON.stringify(device));
     }
 
     async reconnect(deviceId:string,onDisconnect:Function) {
         await BleClient.connect(deviceId, (deviceId:string) => onDisconnect(deviceId));
-        console.log('reconnected to device', deviceId);
-    }   
-
-    // onDisconnect(deviceId:string): void {
-    //     console.log(`device ${deviceId} disconnected`);
-    // }
+        this.logger.debug('reconnected to device:'+JSON.stringify(deviceId));
+    }
 
     async disconnect(deviceId:string) {
         await BleClient.disconnect(deviceId);
-        console.log('disconnected from device', deviceId);
+        this.logger.debug('disconnected from device:'+JSON.stringify(deviceId));
     }
 
 

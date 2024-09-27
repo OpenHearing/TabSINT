@@ -52,11 +52,9 @@ export class NewConnectionComponent {
 
   addNewConnection(): void {
     this.state.newDeviceConnection = true;
-    console.log("addNewConnection button pressed.");
   }
 
   async scanAndConnect() {
-    console.log("scanAndConnect() button pressed.");
     // TODO: Expand this to connect to other devices besides Tympans
     if (this.newConnectedDevice.type=='Tympan') {
       await this.tympanService.startScan();
@@ -76,7 +74,6 @@ export class NewConnectionComponent {
   }
 
   cancel() {
-    console.log("cancel button pressed");
     this.state.newDeviceConnection = false;
     this.newConnectedDevice = {"type":"Select One"};
   }

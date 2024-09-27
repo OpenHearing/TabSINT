@@ -100,10 +100,6 @@ export class TabsintConfigComponent {
     });
   }
 
-  // resetConfig() {
-  //   console.log("resetConfig pressed");
-  // }
-
   toggleAutoUpload() {
     this.diskModel.updateDiskModel('autoUpload', this.diskModel.disk.autoUpload == undefined || !this.diskModel.disk.autoUpload);
     this.disk = this.diskModel.getDisk();
@@ -122,18 +118,6 @@ export class TabsintConfigComponent {
   gainReset() {
     console.log("gainReset pressed");
   }
-
-  // play1kHz94dB() {
-  //   console.log("play1kHz94dB pressed");
-  // }
-
-  // playCompAudio() {
-  //   console.log("playCompAudio pressed");
-  // }
-
-  // playCompAudioLinear() {
-  //   console.log("playCompAudioLinear pressed");
-  // }
 
   async changeLocalResultsDir(){
 

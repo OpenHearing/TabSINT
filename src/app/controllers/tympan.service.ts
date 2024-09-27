@@ -20,14 +20,15 @@ export class TympanService {
     constructor(
         public tympanWrap: TympanWrap, 
         public devicesModel: DevicesModel,
-        public stateModel: StateModel
+        public stateModel: StateModel,
+        public logger: Logger
     ) {
         this.devices = this.devicesModel.getDevices();
         this.state = this.stateModel.getState();
     }
 
     onDisconnect(deviceId:string): void {
-        console.log(`device ${deviceId} disconnected`);
+        this.logger.debug(`device ${deviceId} disconnected`);
 
         for (let i = 0; i < this.devices.connectedDevices.tympan.length; i++) {
             if (this.devices.connectedDevices.tympan[i].id==deviceId) {
@@ -48,7 +49,7 @@ export class TympanService {
     async connect(tympan:BleDevice, newConnectedDevice:ConnectedDevice) {
         await this.tympanWrap.stopScanning();
             
-        console.log("tympan",tympan);
+        this.logger.debug("attempting to connect to tympan : "+JSON.stringify(tympan));
         try {
             await this.tympanWrap.connect(tympan,this.onDisconnect.bind(this));
 
@@ -60,14 +61,14 @@ export class TympanService {
             this.devices.connectedDevices.tympan.push(newConnection);
             this.state.isPaneOpen.tympans = true;
         } catch {
-            console.log("failed to connect to tympan:",tympan);
+            this.logger.error("failed to connect to tympan: "+JSON.stringify(tympan));
         }
         
         // let msg = "[8,'requestId']";
         // try {
         //     await this.tympanWrap.write(tympan,msg);
         // } catch {
-        //     console.log("failed to write to tympan with msg: ",msg);
+        //     this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg));
         // }
             
     }
@@ -75,7 +76,7 @@ export class TympanService {
     async reconnect(tympanId:string | undefined) {
         // TODO: This return is only needed for tymping, it can likely be improved
         if (!tympanId) {
-            console.log("failed to reconnect to tympan:",tympanId);
+            this.logger.debug("failed to reconnect to tympan: "+JSON.stringify(tympanId));
             return
         }
 
@@ -87,14 +88,14 @@ export class TympanService {
                 }
             }
         } catch {
-            console.log("failed to reconnect to tympan:",tympanId);
+            this.logger.error("failed to reconnect to tympan: "+JSON.stringify(tympanId));
         }
     }
 
     async disconnect(tympanId:string | undefined) {
         // TODO: This return is only needed for tymping, it can likely be improved
         if (!tympanId) {
-            console.log("failed to disconnect to tympan:",tympanId);
+            this.logger.debug("failed to disconnect to tympan: "+JSON.stringify(tympanId));
             return
         }
 
