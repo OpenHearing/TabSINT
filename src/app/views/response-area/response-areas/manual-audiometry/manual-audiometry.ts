@@ -102,10 +102,8 @@ export class ManualAudiometryComponent{
     recordThreshold() {
         if (this.selectedEar === 'Left') {
             this.leftThresholds[this.currentFrequencyIndex] = this.currentDbSpl;
-            // this.leftCurrentColumn = (this.leftCurrentColumn + 1) % 3;
         } else if (this.selectedEar === 'Right') {
             this.rightThresholds[this.currentFrequencyIndex] = this.currentDbSpl;
-            // this.rightCurrentColumn = (this.rightCurrentColumn + 1) % 3;
         }
         this.currentFrequencyIndex = (this.currentFrequencyIndex + 1) % this.frequencies.length;
         this.selectedFrequency = this.frequencies[this.currentFrequencyIndex];
