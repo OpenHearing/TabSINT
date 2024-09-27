@@ -52,19 +52,19 @@ The GUI should look like the image below with the following features.
 * There should be a textbox to enter the flat plate measured level and a submit button to send the level to the Tympan. 
 * There should be a `Submit` button to submit the measured flat plate level.
 
-.. figure:: headphones-narrowband-calibration-GUI-Screen1.png
+.. figure:: headphones-narrowband-calibration-GUI-Screen1.svg
    :align: center
-   :width: 100px
+   :width: 6.5in
 
    **Figure 1.** *GUI for the headphones narrowband calibration exam. Screen 1*
 
-.. figure:: headphones-narrowband-calibration-GUI-Screen2.png
+.. figure:: headphones-narrowband-calibration-GUI-Screen2.svg
    :align: center
-   :width: 3in
+   :width: 6.5in
 
    **Figure 2.** *GUI for the headphones narrowband calibration exam. Screen 2*
 
-.. figure:: headphones-narrowband-calibration-GUI-Screen3.png
+.. figure:: headphones-narrowband-calibration-GUI-Screen3.svg
    :align: center
    :width: 6.5in
 
