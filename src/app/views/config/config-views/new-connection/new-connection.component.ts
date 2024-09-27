@@ -12,8 +12,7 @@ import { BleDevice } from '../../../../interfaces/bluetooth.interface';
 import { DeviceUtil } from '../../../../utilities/device-utility';
 @Component({
   selector: 'new-connection',
-  templateUrl: './new-connection.component.html',
-  styleUrl: './new-connection.component.css'
+  templateUrl: './new-connection.component.html'
 })
 
 export class NewConnectionComponent {

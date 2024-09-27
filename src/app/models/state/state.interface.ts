@@ -1,4 +1,4 @@
-import { AppState, ProtocolState, ExamState, ChaState, SvantekState, TympanState } from "../../utilities/constants";
+import { AppState, ProtocolState, ExamState } from "../../utilities/constants";
 import { ProtocolInterface } from "../protocol/protocol.interface";
 
 export interface StateInterface {
