@@ -10,8 +10,7 @@ import { Logger } from '../../../../utilities/logger.service';
 
 @Component({
   selector: 'connected-devices',
-  templateUrl: './connected-devices.component.html',
-  styleUrl: './connected-devices.component.css'
+  templateUrl: './connected-devices.component.html'
 })
 export class ConnectedDevicesComponent {
   devices: DevicesInterface;
@@ -52,7 +51,7 @@ export class ConnectedDevicesComponent {
   remove(device:ConnectedDevice) {
     this.logger.debug("remove() button pressed, attempting to disconnect and remove: "+JSON.stringify(device));
     this.disconnect(device);
-    var indexToRemove: number = -1;
+    let indexToRemove: number = -1;
     if (device.type=="Tympan") {
       for (let i = 0; i < this.devices.connectedDevices.tympan.length; i++) {
         if (this.devices.connectedDevices.tympan[i].id==device.id) {

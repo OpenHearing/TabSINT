@@ -8,13 +8,12 @@ import { DiskModel } from '../../../../models/disk/disk.service';
 import { NgFor, NgClass } from '@angular/common';
 import { BleDevice } from '../../../../interfaces/bluetooth.interface';
 import { DevicesModel } from '../../../../models/devices/devices.service';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'device-choose-view',
   standalone: true,
   templateUrl: './device-choose.component.html',
-  styleUrl: './device-choose.component.css',
   imports: [FormsModule, TranslateModule, NgFor, NgClass]
 })
 export class DeviceChooseComponent implements OnInit, OnDestroy {

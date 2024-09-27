@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
 import { Logger } from './logger.service';
-import { BleClient, numberToUUID, numbersToDataView } from '@capacitor-community/bluetooth-le';
+import { BleClient, numbersToDataView } from '@capacitor-community/bluetooth-le';
 import { BleDevice } from '../interfaces/bluetooth.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { StateModel } from '../models/state/state.service';
@@ -82,7 +82,7 @@ export class TympanWrap {
 
     async write(device:BleDevice, msg:string) {
         let msg_to_write = this.msgToDataView(msg);
-        console.log("msg_to_write",msg_to_write);
+        console.log("msg_to_write",JSON.stringify(msg_to_write));
         console.log("TIME",Date.now());
         
         await BleClient.startNotifications(device.deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID,(e) => {
@@ -127,7 +127,7 @@ export class TympanWrap {
     }
 
     dataViewToMsg(dv:DataView):string {
-        var msg:string = '';
+        let msg:string = '';
         if (dv.getUint8(0)==5 && dv.getUint8(dv.buffer.byteLength-1)==2) {
             msg='good packet';
             let tmp = new Uint8Array(dv.buffer.slice(0));
@@ -153,7 +153,7 @@ export class TympanWrap {
     }
 
     appendDataView(dv1:DataView, dv2:DataView):DataView {
-        var tmp = new Uint8Array(dv1.buffer.byteLength + dv2.buffer.byteLength);
+        let tmp = new Uint8Array(dv1.buffer.byteLength + dv2.buffer.byteLength);
         tmp.set(new Uint8Array(dv1.buffer), 0);
         tmp.set(new Uint8Array(dv2.buffer), dv1.buffer.byteLength);
         return new DataView(tmp.buffer);
@@ -163,7 +163,7 @@ export class TympanWrap {
 
 
     handleEscaping(byte_array:Uint8Array) {
-        var escaped_byte_array:Uint8Array = new Uint8Array();
+        let escaped_byte_array:Uint8Array = new Uint8Array();
         byte_array.forEach( (byte) => {
             if (byte<=31) {
                 escaped_byte_array = new Uint8Array([...escaped_byte_array, ...[3, 80 ^ byte]]);
@@ -175,10 +175,10 @@ export class TympanWrap {
     }
 
     handleUnescaping(byte_array:Uint8Array) {
-        var unescaped_byte_array:Uint8Array = new Uint8Array();
-        var skipNext:boolean = false;
+        let unescaped_byte_array:Uint8Array = new Uint8Array();
+        let skipNext:boolean = false;
         byte_array.forEach( (byte:any) => {
-            if (skipNext==false) {
+            if (!skipNext) {
                 if (byte==3) {
                     unescaped_byte_array = new Uint8Array([...unescaped_byte_array, ...[byte ^ 80]]);
                     skipNext = true;
@@ -193,18 +193,18 @@ export class TympanWrap {
     }
 
     genCRC8Checksum(byte_array:Uint8Array) {
-        var c:any;
-        for (var i = 0; i < byte_array.length; i++ ) {
+        let c:any;
+        for (let i = 0; i < byte_array.length; i++ ) {
             c = this.CRC8_TABLE[(c ^ byte_array[i]) % 256];
         }
         return new Uint8Array([c]);
     } 
 
     genCRC8Table() {
-        var csTable = [] // 256 max len byte array
-        for ( var i = 0; i < 256; ++i ) {
-            var curr = i
-            for ( var j = 0; j < 8; ++j ) {
+        let csTable = [] // 256 max len byte array
+        for ( let i = 0; i < 256; ++i ) {
+            let curr = i
+            for (let j = 0; j < 8; ++j) {
                 if ((curr & 0x80) !== 0) {
                     curr = ((curr << 1) ^ 0x07) % 256
                 } else {
