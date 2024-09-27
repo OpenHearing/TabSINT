@@ -1,7 +1,7 @@
 Headphones Narrowband Calibration
 =================================
 
-This test is to perform a headphones narrowband calibrate a speaker.
+This test is to perform a headphones narrowband calibration.
 
 Revision Table
 --------------
