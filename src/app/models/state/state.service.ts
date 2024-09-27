@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { StateInterface } from './state.interface';
-import { AppState, ChaState, ExamState, ProtocolState, SvantekState, TympanState } from "../../utilities/constants";
+import { AppState, ExamState, ProtocolState } from "../../utilities/constants";
 
 @Injectable({
     providedIn: 'root',

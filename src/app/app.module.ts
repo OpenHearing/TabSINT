@@ -44,6 +44,7 @@ import { Notifications } from './utilities/notifications.service';
 import { SqLite } from './utilities/sqLite.service';
 import { Logger } from './utilities/logger.service';
 import { Paths } from './utilities/paths.service';
+import { DeviceUtil } from './utilities/device-utility';
 
 // Controllers
 import { FileService } from './utilities/file.service';
@@ -146,6 +147,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     Notifications,
     Logger,
     Paths,
+    DeviceUtil,
     FileService,
     ConfigService,
     VersionService,

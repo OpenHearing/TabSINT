@@ -20,7 +20,11 @@ export class TympanWrap {
     CRC8_TABLE = this.genCRC8Table();
     TMP_BUFFER = new DataView(new ArrayBuffer(0));
 
-    constructor(public stateModel: StateModel, @Inject(WINDOW) private window: Window, private logger: Logger) {
+    constructor(
+        private stateModel: StateModel, 
+        @Inject(WINDOW) private window: Window, 
+        private logger: Logger
+    ) {
         this.state = this.stateModel.getState();
         this.initialize();
     }
@@ -93,7 +97,7 @@ export class TympanWrap {
         });
 
         let resp = await BleClient.write(device.deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID, msg_to_write);
-        this.logger.debug("resp from writing: "+msg_to_write+" is: "+JSON.stringify(resp));
+        this.logger.debug("resp from writing: "+JSON.stringify(msg_to_write)+" is: "+JSON.stringify(resp));
     }
 
     async connect(device:BleDevice,onDisconnect:Function) {
@@ -193,9 +197,9 @@ export class TympanWrap {
 
     genCRC8Checksum(byte_array:Uint8Array) {
         let c:any;
-        for (let i = 0; i < byte_array.length; i++ ) {
-            c = this.CRC8_TABLE[(c ^ byte_array[i]) % 256];
-        }
+        byte_array.forEach( (byte) => {
+            c = this.CRC8_TABLE[(c ^ byte) % 256];
+        });
         return new Uint8Array([c]);
     } 
 

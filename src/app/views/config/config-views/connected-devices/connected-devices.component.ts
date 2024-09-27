@@ -8,6 +8,7 @@ import { ConnectedDevice } from '../../../../interfaces/new-device.interface';
 import { TympanService } from '../../../../controllers/tympan.service';
 import { Logger } from '../../../../utilities/logger.service';
 import { isTympanDevice } from '../../../../guards/type.guard';
+import { DeviceUtil } from '../../../../utilities/device-utility';
 
 @Component({
   selector: 'connected-devices',
@@ -21,10 +22,11 @@ export class ConnectedDevicesComponent {
   expanded:boolean = false;
   
   constructor(
-    public deviceModel: DevicesModel, 
-    public stateModel: StateModel, 
-    public tympanService: TympanService,
-    public logger: Logger
+    private deviceModel: DevicesModel, 
+    private stateModel: StateModel, 
+    private tympanService: TympanService,
+    private logger: Logger,
+    private deviceUtil: DeviceUtil
   ) { 
     this.devices = this.deviceModel.getDevices();
     this.state = this.stateModel.getState();
@@ -41,11 +43,7 @@ export class ConnectedDevicesComponent {
     this.logger.debug("attempting to disconnect from device:"+JSON.stringify(device));
     if (isTympanDevice(device)) {
       this.tympanService.disconnect(device.deviceId);
-      for (let i = 0; i < this.devices.connectedDevices.tympan.length; i++) {
-        if (this.devices.connectedDevices.tympan[i].deviceId==device.deviceId) {
-          this.devices.connectedDevices.tympan[i].state = TympanState.Disconnected;
-        }
-      }
+      this.deviceUtil.updateDeviceState(device.deviceId,TympanState.Disconnected);
     }
   }
 

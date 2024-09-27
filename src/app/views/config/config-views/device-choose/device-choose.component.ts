@@ -2,7 +2,6 @@ import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-import { Logger } from '../../../../utilities/logger.service';
 import { DiskInterface } from '../../../../models/disk/disk.interface';
 import { DiskModel } from '../../../../models/disk/disk.service';
 import { NgFor, NgClass } from '@angular/common';
@@ -24,17 +23,16 @@ export class DeviceChooseComponent implements OnInit, OnDestroy {
 
   constructor(
     private changeDetection: ChangeDetectorRef,
-    public logger: Logger, 
-    public dialogRef: MatDialogRef<DeviceChooseComponent>,
-    public diskModel: DiskModel, 
-    public devicesModel: DevicesModel
+    private dialogRef: MatDialogRef<DeviceChooseComponent>,
+    private diskModel: DiskModel, 
+    private devicesModel: DevicesModel
   ) {
     this.disk = this.diskModel.getDisk();
     this.availableDevices = [];
   }
 
   ngOnInit() {
-    this.subscription = this.devicesModel.availableDevicesObservable.subscribe( (availableDevices) => {
+    this.subscription = this.devicesModel.availableDevicesObservable.subscribe( (availableDevices:BleDevice[]) => {
       this.availableDevices = availableDevices;
       this.changeDetection.detectChanges();
     });
@@ -54,7 +52,7 @@ export class DeviceChooseComponent implements OnInit, OnDestroy {
   }
 
   cancel() {
-    this.dialogRef.close(undefined);
+    this.dialogRef.close();
   }
 
 }

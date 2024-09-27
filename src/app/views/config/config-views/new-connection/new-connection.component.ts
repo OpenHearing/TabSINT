@@ -9,12 +9,13 @@ import { StateModel } from '../../../../models/state/state.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DeviceChooseComponent } from '../device-choose/device-choose.component';
 import { BleDevice } from '../../../../interfaces/bluetooth.interface';
-
+import { DeviceUtil } from '../../../../utilities/device-utility';
 @Component({
   selector: 'new-connection',
   templateUrl: './new-connection.component.html',
   styleUrl: './new-connection.component.css'
 })
+
 export class NewConnectionComponent {
   TympanState = TympanState;
   state: StateInterface
@@ -24,10 +25,11 @@ export class NewConnectionComponent {
   // tabsintIds: Array<string> = [];
 
   constructor(
-    public deviceModel: DevicesModel, 
-    public tympanService: TympanService, 
-    public stateModel: StateModel,
-    public dialog: MatDialog
+    private deviceModel: DevicesModel, 
+    private tympanService: TympanService, 
+    private stateModel: StateModel,
+    private dialog: MatDialog,
+    private deviceUtil: DeviceUtil
   ) {
     this.devices = this.deviceModel.getDevices();
     this.state = this.stateModel.getState();
@@ -39,7 +41,7 @@ export class NewConnectionComponent {
     if (this.newConnectedDevice.type=="Tympan") {
       this.newConnectedDevice.state = TympanState.Disconnected;
     }
-    this.newConnectedDevice.tabsintId = this.tympanService.getNextFreeDeviceId();
+    this.newConnectedDevice.tabsintId = this.deviceUtil.getNextFreeDeviceId();
     // this.tabsintIds = [];
     // for (let i = 1; i < 6; i++) {
     //   this.tabsintIds.push(i.toString());

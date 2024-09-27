@@ -8,6 +8,7 @@ import { TympanState } from '../utilities/constants';
 import { StateModel } from '../models/state/state.service';
 import { StateInterface } from '../models/state/state.interface';
 import { ConnectedDevice } from '../interfaces/new-device.interface';
+import { DeviceUtil } from '../utilities/device-utility';
 
 @Injectable({
     providedIn: 'root',
@@ -18,10 +19,11 @@ export class TympanService {
     state: StateInterface
 
     constructor(
-        public tympanWrap: TympanWrap, 
-        public devicesModel: DevicesModel,
-        public stateModel: StateModel,
-        public logger: Logger
+        private tympanWrap: TympanWrap, 
+        private devicesModel: DevicesModel,
+        private stateModel: StateModel,
+        private logger: Logger,
+        private deviceUtil: DeviceUtil
     ) {
         this.devices = this.devicesModel.getDevices();
         this.state = this.stateModel.getState();
@@ -29,12 +31,7 @@ export class TympanService {
 
     onDisconnect(deviceId:string): void {
         this.logger.debug(`device ${deviceId} disconnected`);
-
-        for (let i = 0; i < this.devices.connectedDevices.tympan.length; i++) {
-            if (this.devices.connectedDevices.tympan[i].deviceId==deviceId) {
-                this.devices.connectedDevices.tympan[i].state = TympanState.Disconnected;
-            }
-        }
+        this.deviceUtil.updateDeviceState(deviceId,TympanState.Disconnected);
     }
 
     async startScan() {
@@ -82,11 +79,7 @@ export class TympanService {
 
         try {
             await this.tympanWrap.reconnect(tympanId,this.onDisconnect.bind(this));
-            for (let i = 0; i < this.devices.connectedDevices.tympan.length; i++) {
-                if (this.devices.connectedDevices.tympan[i].deviceId==tympanId) {
-                    this.devices.connectedDevices.tympan[i].state = TympanState.Connected;
-                }
-            }
+            this.deviceUtil.updateDeviceState(tympanId,TympanState.Connected);
         } catch {
             this.logger.error("failed to reconnect to tympan: "+JSON.stringify(tympanId));
         }
@@ -100,23 +93,6 @@ export class TympanService {
         }
 
         await this.tympanWrap.disconnect(tympanId);
-    }
-
-
-
-    // TODO: Move this to a utility? Or some better place?
-    getNextFreeDeviceId() {
-        let nextFreeId: string = "1";
-        let takenIds: Array<string> = [];
-        for (const [key, devices] of Object.entries(this.devices.connectedDevices)) {
-            for (let i = 0; i < devices.length; i++) {
-                takenIds.push(devices[i].deviceId);
-            }
-        }
-        while (takenIds.includes(nextFreeId)) {
-            nextFreeId = (parseInt(nextFreeId)+1).toString();
-        }
-        return nextFreeId
     }
 
 }
