@@ -48,6 +48,7 @@ The GUI should look like the image below with the following features.
 * The current frequency, ear cup, and target level should be displayed. The frequencies proceed in the order specified in the protocol.
 * There should be a `Cal Factor` panel, that displays the current total adjusted requested level, in dB FS.
 * The `Cal Factor` panel has +3/-3 buttons to adjust the calibration factor.
+* The `Cal Factor` panel has a play/pause button to start/stop the tone. The play button is green with a play icon when a tone is not playing. It is red with a stop symbol when it is playing.
 * There should be a `Next` button to advance to the next frequency.
 * When proceeding from one frequency to the next, the `Cal Factor` should be remembered. (e.g. the initial value for “Cal Factor” at 2 kHz should be equal to the final value for “Cal Factor” at 1 kHz)
 * There should be a textbox to enter the flat plate measured level and a submit button to send the level to the Tympan. 
