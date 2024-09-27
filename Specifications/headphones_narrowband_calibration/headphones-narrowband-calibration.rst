@@ -47,6 +47,7 @@ The GUI should look like the image below with the following features.
 * The target levels and frequencies should be configurable in the protocol.
 * The current frequency, ear cup, and target level should be displayed. The frequencies proceed in the order specified in the protocol.
 * There should be a `Cal Factor` panel, that displays the current total adjusted requested level, in dB FS.
+* The `Cal Factor` panel has +3/-3 buttons to adjust the calibration factor.
 * There should be a `Next` button to advance to the next frequency.
 * When proceeding from one frequency to the next, the `Cal Factor` should be remembered. (e.g. the initial value for “Cal Factor” at 2 kHz should be equal to the final value for “Cal Factor” at 1 kHz)
 * There should be a textbox to enter the flat plate measured level and a submit button to send the level to the Tympan. 
@@ -54,19 +55,19 @@ The GUI should look like the image below with the following features.
 
 .. figure:: headphones-narrowband-calibration-GUI-Screen1.svg
    :align: center
-   :width: 100px
+   :width: 400px
 
    **Figure 1.** *GUI for the headphones narrowband calibration exam. Screen 1*
 
 .. figure:: headphones-narrowband-calibration-GUI-Screen2.svg
    :align: center
-   :width: 300px
+   :width: 400px
 
    **Figure 2.** *GUI for the headphones narrowband calibration exam. Screen 2*
 
 .. figure:: headphones-narrowband-calibration-GUI-Screen3.svg
    :align: center
-   :width: 500px
+   :width: 400px
 
    **Figure 3.** *GUI for the headphones narrowband calibration exam. Screen 3*
 
