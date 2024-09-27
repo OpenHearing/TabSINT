@@ -78,6 +78,11 @@ Once you have set up your [development environment](dev-env.md), run the followi
 ```bash
 $ ng serve
 ```
+or:
+
+```bash
+$ npm run start
+```
 
 For debugging purposes, you can use the [Chrome Developer Tools](https://developer.chrome.com/devtools).
 Be aware that browser caching can cause the browser not to see local changes.
@@ -119,3 +124,10 @@ Here are some steps to correct the issue:
 ### Debug TabSINT on Device
 
 Once connected, you can use the Chrome developer tools to debug TabSINT on the device.  Go to `chrome://inspect/#devices`, then open the TabSINT option.
+
+
+[PREVIOUS: Development Environment](developer-environment.md)
+
+[NEXT: Architechture](architecture.md)
+
+[BACK TO INDEX](developer-guide-index.md)

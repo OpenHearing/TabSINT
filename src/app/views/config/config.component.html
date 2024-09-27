@@ -1,23 +1,9 @@
 <div id="config">
-    <p>{{title}}</p>
     
-    <p>example buttons to test file service</p>
-
-    <button (click)="logTest()"> log page-m </button>
-
-    <!-- <button (click)="fileService.checkPermissions()"> Check Permissions </button>
-    <button (click)="fileService.requestPermissions()"> Request Permissions </button>
-    
-    <button (click)="fileService.writeFile('testing/test.txt','This is a test')"> Write File </button>
-    <button (click)="fileService.readFile('testing/test.txt')"> Read File </button>
-    <button (click)="fileService.createDirectory('testing2')"> Create Dir </button>
-    <button (click)="fileService.listDirectory('testing')"> Read Dir </button> -->
-
     <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.general">
         <mat-expansion-panel-header>
             <mat-panel-title>
                 {{'TabSINT' | translate}}
-                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.isPaneOpen.general, "glyphicon-chevron-down": !state.isPaneOpen.general}'></i> -->
             </mat-panel-title>
         </mat-expansion-panel-header>
            
@@ -30,11 +16,11 @@
     <br />
 
     <!-- WAHTS -->
-    <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.wahts">
+    <!--   NOT YET IMPLEMENTED, DO NOT DELETE   
+       <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.wahts">
         <mat-expansion-panel-header>
             <mat-panel-title>
                 {{'WAHTS'| translate}}
-                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.isPaneOpen.general, "glyphicon-chevron-down": !state.isPaneOpen.general}'></i> -->
             </mat-panel-title>
         </mat-expansion-panel-header>
            
@@ -44,14 +30,14 @@
 
     </mat-expansion-panel>
 
-    <br />
+    <br /> -->
 
     <!-- Svantek Dosimeter -->
-    <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.dosimeter">
+    <!--   NOT YET IMPLEMENTED, DO NOT DELETE   
+       <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.dosimeter">
         <mat-expansion-panel-header>
             <mat-panel-title>
                 {{'Dosimeter'| translate}}
-                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.isPaneOpen.general, "glyphicon-chevron-down": !state.isPaneOpen.general}'></i> -->
             </mat-panel-title>
         </mat-expansion-panel-header>
            
@@ -61,14 +47,13 @@
 
     </mat-expansion-panel>
 
-    <br />
+    <br /> -->
 
     <!-- Software and Hardware Status -->
     <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.softwareHardware">
         <mat-expansion-panel-header>
             <mat-panel-title>
                 {{'Software and Hardware'| translate}}
-                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.isPaneOpen.general, "glyphicon-chevron-down": !state.isPaneOpen.general}'></i> -->
             </mat-panel-title>
         </mat-expansion-panel-header>
            
@@ -85,7 +70,6 @@
         <mat-expansion-panel-header>
             <mat-panel-title>
                 {{'Application Log'| translate}}
-                <!-- <i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": state.isPaneOpen.general, "glyphicon-chevron-down": !state.isPaneOpen.general}'></i> -->
             </mat-panel-title>
         </mat-expansion-panel-header>
            

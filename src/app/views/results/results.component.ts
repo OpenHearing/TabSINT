@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import _ from 'lodash';
 
 import { ResultsService } from '../../controllers/results.service';
 
@@ -7,15 +8,13 @@ import { DiskModel } from '../../models/disk/disk.service';
 import { StateModel } from '../../models/state/state.service';
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { StateInterface } from '../../models/state/state.interface';
-import { ExamResults, ResultsInterface } from '../../models/results/results.interface';
+import { ExamResults} from '../../models/results/results.interface';
 import { ResultsModel } from '../../models/results/results-model.service';
 
 import { SqLite } from '../../utilities/sqLite.service';
+import { Logger } from '../../utilities/logger.service';
 
 import { SingleResultModalComponent } from '../single-result-modal/single-result-modal/single-result-modal.component';
-import { Logger } from '../../utilities/logger.service';
-import _ from 'lodash';
-import { DBSQLiteValues } from '@capacitor-community/sqlite';
 
 @Component({
   selector: 'results-view',
@@ -43,18 +42,24 @@ export class ResultsComponent {
 
   async ngOnInit() {
     this.results = await this.sqLite.getAllResults();
-    console.log('RESULTS', this.results);
   }
 
   trackByIndex(index: number, item: any): number {
     return index;
   }
 
+  /**
+   * View detailed exam results from a single exam.
+   * @summary Open a modal component to view exam results details. The user may export, upload or close the window. 
+   * @models disk
+   * @param index: index of the result to open from the sqLite database.
+   */
   viewResult(index: number) {
     this.dialog.open(SingleResultModalComponent, {
       data: index
     }).afterClosed().subscribe(async () => {
       this.results = await this.sqLite.getAllResults();
+      this.disk = this.diskModel.getDisk();
     });
   }
 
@@ -77,13 +82,12 @@ export class ResultsComponent {
       }
   }
 
-  async upload() {
+  // async upload() {
 
-  }
+  // }
 
   /**
    * Delete all exam results from the disk completed exam results and from the sqlite database.
-   * @models disk
    */
   async deleteAll() {
       await this.sqLite.deleteAll('results');      

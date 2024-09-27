@@ -8,9 +8,7 @@ import { DiskModel } from '../models/disk/disk.service';
 import { FileService } from '../utilities/file.service';
 import { Logger } from '../utilities/logger.service';
 import { AppModel } from '../models/app/app.service';
-import { protocolDefaults } from '../utilities/defaults';
 import { ResultsInterface } from '../models/results/results.interface';
-import { DiskInterface } from '../models/disk/disk.interface';
 import { DeveloperProtocols } from '../utilities/constants';
 
 describe('ResultsService', () => {
@@ -22,9 +20,7 @@ describe('ResultsService', () => {
     let devicesModel = new DevicesModel(logger);
 
     beforeEach(async () => {
-        await TestBed.configureTestingModule({
-
-        })
+        TestBed.configureTestingModule({})
 
         resultsService = new ResultsService(
             new ResultsModel,
@@ -42,12 +38,12 @@ describe('ResultsService', () => {
         expect(returnedResults.currentExam.testDateTime).toBeUndefined();
         expect(returnedResults.currentExam.protocolName).toBe('');
         resultsService.protocol.activeProtocol = {
-            ...resultsService.protocol.loadedProtocols['tabsint-test'],
-            ...DeveloperProtocols['tabsint-test']
+            ...resultsService.disk.availableProtocolsMeta['develop'],
+            ...DeveloperProtocols['develop']
         };
         resultsService.initializeExamResults();
         expect(returnedResults.currentExam.testDateTime).toBeDefined();
-        expect(returnedResults.currentExam.protocolName).toBe('tabsint-test');
+        expect(returnedResults.currentExam.protocolName).toBe('develop');
     });
     
     it('initializes page results', () => {

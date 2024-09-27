@@ -3,9 +3,6 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { DiskModel } from '../../models/disk/disk.service';
 import { Logger } from '../../utilities/logger.service';
-import { FileService } from '../../utilities/file.service';
-import { AdminService } from '../../controllers/admin.service';
-import { ConfigService } from '../../controllers/config.service';
 import { AppState, BluetoothType, ChaState } from '../../utilities/constants';
 import { StateModel } from '../../models/state/state.service';
 import { DiskInterface } from '../../models/disk/disk.interface';
@@ -23,13 +20,10 @@ export class ChaConfigComponent {
   BluetoothType = BluetoothType;
 
   constructor(
-    public diskModel: DiskModel, 
-    public fileService: FileService,
-    public adminService: AdminService,
-    public configService: ConfigService,
-    public logger: Logger, 
-    public stateModel: StateModel,
-    public translate: TranslateService,
+    private diskModel: DiskModel, 
+    private logger: Logger, 
+    private stateModel: StateModel,
+    private translate: TranslateService,
   ) { 
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();
@@ -56,7 +50,6 @@ export class ChaConfigComponent {
   }
 
   changeBluetoothType(type: string) {
-    console.log("changeBluetoothType pressed");
     if (type === BluetoothType.BLUETOOTH_LE || type === BluetoothType.BLUETOOTH || type === BluetoothType.USB) {
       if (this.disk.cha.bluetoothType !== type) {
         this.logger.debug("set cha bluetooth type to " + type);

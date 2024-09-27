@@ -1,0 +1,10 @@
+Requirement,Test Case,Acceptance,Verified
+"The exam presents tones with a specified starting frequency, level, and output channel.",Start a Manual Audiometry exam by playing a tone.,"Verify that the emitted tone is the correct level, frequency and output channel.",
+The user can increase the signal level.,Adjust the tone level up.,Verify that the tones increased by the specified level.,
+The user can decrease the signal level.,Adjust the tone level down.,Verify that the tones decreased by the specified level.,
+The user can increase the signal frequency.,Adjust the frequency up.,Verify that the frequency increased by the specified level.,
+The user can decrease the signal frequency.,Adjust the frequency down.,Verify that the frequency decreased by the specified level.,
+The exam cannot play a tone above the maximum output level.,Determine the headset's **MaximumOutputLevel** at 3 different frequencies. Attempt to adjust the sound level above the **MaximumOutputLevel** at each frequency.,Verify that the headset does not allow a tone to be played above the **MaximumOutputLevel** at each frequency.,
+The exam cannot play a tone below the minimum output level.,Attempt to adjust the sound level below the **MinimumOutputLevel** (-10 dB HL) at three different frequencies.,Verify that the headset does not allow a tone to be played below the **MinimumOutputLevel** at each frequency.,
+"Narrow-band masking noise of the type specified in Section 6.3 and 7.4 of [AnsiAudiometerSpec2018]_ should be used, where the geometric center frequency coincides with that of the test tone and the bandwidth of the noise is one-third of an octave.",Adjust the masker level so that masking noise is presented. Stop the masker and confirm it is stopped.,Analyze the waveform and verify that the masking noise has a center frequency that coincides with that of the test tone and the bandwidth of the noise is one-third of an octave.,
+The user can change the output channel.,Change the output channel.,Verify that the tones are emitted from the new output channel.,

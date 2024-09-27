@@ -3,7 +3,6 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { DiskModel } from '../../models/disk/disk.service';
 import { Logger } from '../../utilities/logger.service';
-import { FileService } from '../../utilities/file.service';
 import { VersionService } from '../../controllers/version.service';
 import { ConfigService } from '../../controllers/config.service';
 import { AppState } from '../../utilities/constants';
@@ -13,6 +12,8 @@ import { StateInterface } from '../../models/state/state.interface';
 import { ChangePinComponent } from '../change-pin/change-pin.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ChangeMaxLogLengthComponent } from '../change-max-log-length/change-max-log-length.component';
+import { TabsintFs } from 'tabsintfs';
+import { VersionInterface } from '../../interfaces/version.interface';
 
 @Component({
   selector: 'tabsint-config-view',
@@ -22,25 +23,24 @@ import { ChangeMaxLogLengthComponent } from '../change-max-log-length/change-max
 export class TabsintConfigComponent {
   disk: DiskInterface;
   state: StateInterface;
-  version: any; // TODO: add type
+  version!: VersionInterface;
 
   constructor(
-    public diskModel: DiskModel, 
-    public fileService: FileService,
     public configService: ConfigService,
-    public versionService: VersionService,
-    public logger: Logger, 
-    public stateModel: StateModel,
-    public translate: TranslateService,
-    public dialog: MatDialog,
+    private diskModel: DiskModel, 
+    private versionService: VersionService,
+    private logger: Logger, 
+    private stateModel: StateModel,
+    private translate: TranslateService,
+    private dialog: MatDialog,
     private cdr: ChangeDetectorRef
   ) { 
-    this.version = this.versionService.getVersion();
     this.state = this.stateModel.getState();
     this.disk = this.diskModel.getDisk();
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    this.version = await this.versionService.getVersion();
     this.stateModel.setAppState(AppState.Admin);
   }
 
@@ -136,7 +136,18 @@ export class TabsintConfigComponent {
   // }
 
   async changeLocalResultsDir(){
-    await this.configService.chooseLocalResultsDirectory();
+
+    try {
+      const result = await TabsintFs.chooseFolder();
+      let servers = this.diskModel.disk.servers;
+      servers.localServer.resultsDir = result.name;
+      servers.localServer.resultsDirUri = result.uri;
+      this.diskModel.updateDiskModel('servers', servers);
+      this.disk = this.diskModel.getDisk();
+    } catch (error) {
+      this.logger.debug('Error choosing folder:' + error);
+    }
+    
     this.cdr.detectChanges();
   }
 
@@ -178,7 +189,7 @@ export class TabsintConfigComponent {
   // );
 
   // requireEncryptedResultsPopover = this.translate.instant(
-  //   "This option requires that the protocol contains a public RSA key for encrypting output results."
+  //   "This option requires that the protocol contains a private RSA key for encrypting output results."
   // );
 
   // recordTestLocationPopover = this.translate.instant(

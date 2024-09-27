@@ -18,7 +18,7 @@
         <b>TabSINT:</b>
         <span>{{version.tabsint}}</span>
     </li>
-    <li (click)="toggleAppDeveloperMode()">
+    <!-- <li (click)="toggleAppDeveloperMode()">
         <b>{{'Build Name' | translate}}:</b>
         <span>
             {{config.build}}
@@ -30,7 +30,7 @@
                 - Tap {{5-disk.appDeveloperModeCount}} more times to turn on App-Developer Mode
             </span>
         </span>
-    </li>
+    </li> -->
     <li>
         <b>{{'Build Date' | translate}}:</b>
         <span>{{version.date | date: 'yyyy-MM-dd HH:mm:ss'}}</span>
@@ -49,10 +49,10 @@
         <b>{{'Device UUID' | translate}}:</b>
         <span>{{devices.uuid}}</span>
     </li>
-    <li>
+    <!-- <li>
         <b>{{'TabSINT UUID' | translate}}:</b>
         <span>{{devices.tabsintUUID}}</span>
-    </li>
+    </li> -->
     <li>
         <b>{{'Device Model' | translate}}:</b>
         <span>{{devices.model}}</span>
@@ -70,26 +70,26 @@
         <span *ngIf="networkModel.status">{{'Online' | translate}}</span>
         <span *ngIf="!networkModel.status">{{'Offline' | translate}}</span>
     </li>
-    <li>
+    <!-- <li>
         <b>{{'Network Type' | translate}}:</b>
         <span>{{networkModel.type}}</span>
-    </li>
+    </li> -->
 </ul>
 
 <br />
 
-<div class="row">
+<!-- <div class="row">
     <div class="col-12">
         <h5>{{'Plugins' | translate}}</h5>
     </div>
-</div>
-<ul class="admin-info">
+</div> -->
+<!-- <ul class="admin-info">
     <div *ngFor="let plugin of version.plugins">
         <li>
             <span>{{plugin}}</span>
         </li>
     </div>
-</ul>
+</ul> -->
 
 <br />
 

@@ -1,7 +1,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.example.app',
+  appId: 'com.creare.tabsint',
   appName: 'tabsint',
   webDir: 'dist/tabsint/browser',
   server: {

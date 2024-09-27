@@ -34,11 +34,9 @@ export class TextboxComponent {
     this.rows = (this.currentPage.responseArea as TextBoxInterface).rows!;
     this.observableVar = this.pageModel.currentPageObservable;
 
-    this.observableVar.subscribe( (updatedPage:any) => {
-      // TODO: This ternary might not be needed. Should the exam service send the default value if one is not specified?
-        this.rows = updatedPage?.responseArea?.rows ? updatedPage?.responseArea?.rows : 1;
-      }
-    );
+    this.observableVar.subscribe( (updatedPage) => {
+      this.rows = updatedPage?.responseArea?.rows;
+    });    
   }
 
 }

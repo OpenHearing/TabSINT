@@ -18,7 +18,7 @@ export class ChangePinComponent {
   disk: DiskInterface;
   pin: number | undefined;
 
-  constructor(public logger: Logger, public dialog: MatDialog, public diskModel: DiskModel) {
+  constructor(private logger: Logger, private dialog: MatDialog, private diskModel: DiskModel) {
     this.disk = this.diskModel.getDisk();
   }
 

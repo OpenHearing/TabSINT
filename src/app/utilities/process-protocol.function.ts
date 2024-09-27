@@ -1,11 +1,12 @@
 import _ from "lodash";
 import { ProtocolSchemaInterface } from "../interfaces/protocol-schema.interface";
 import { ProtocolInterface } from "../models/protocol/protocol.interface";
-import { PageDefinition, ProtocolReferenceInterface } from "../interfaces/page-definition.interface";
+import { FollowOnInterface, PageDefinition } from "../interfaces/page-definition.interface";
 import { LoadingProtocolInterface } from "../interfaces/loading-protocol-object.interface";
 import { ProtocolDictionary } from "../interfaces/protocol-dictionary";
 import { FollowOnsDictionary } from "../interfaces/follow-ons-dictionary";
 import { isPageDefinition, isProtocolReferenceInterface, isProtocolSchemaInterface } from "../guards/type.guard";
+import { PageTypes } from "../types/custom-types";
 
 /**
  * Adds variables to the active protocol and generates a stack of pages.
@@ -47,19 +48,19 @@ export function processProtocol(loading: LoadingProtocolInterface):
     }
 
     if (_.has(subProtocol, "subProtocols")) {
-      _.forEach(subProtocol.subProtocols, function(obj) {
+      _.forEach(subProtocol.subProtocols, (obj) => {
         processSubProtocol(obj);
       });
     }
   }
 
-  function iterateThroughPages(pages: PageDefinition | ProtocolReferenceInterface | ProtocolSchemaInterface | (PageDefinition|ProtocolReferenceInterface|ProtocolSchemaInterface)[]) {
-    _.forEach(pages, function(page) {
-      if (_.has(page, "pages")) {
+  function iterateThroughPages(pages: PageTypes | (PageTypes)[]) {
+    _.forEach(pages, (page) => {
+      if (isProtocolSchemaInterface(page)) {
         processSubProtocol(page as ProtocolSchemaInterface);
-      // } else if ((page as any).reference) {
-      //   processPage(page as any);
-      } else if (_.has(page, "id")) {
+      // } else if (isProtocolReferenceInterface(page)) {
+      //   processPage(page as ProtocolReferenceInterface);
+      } else if (isPageDefinition(page)) {
         processPage(page as PageDefinition);
       }
     });  
@@ -74,33 +75,8 @@ export function processProtocol(loading: LoadingProtocolInterface):
     }
 
     if (page.wavfiles) {
-      _.forEach(page.wavfiles, function(wavfile) {
-        if (wavfile.useCommonRepo) {
-          if (rootProtocol.commonRepo && rootProtocol.commonRepo.path) {
-            // if (calibration) {
-            //   if (calibration[wavfile.path]) {
-            //     wavfile.cal = calibration[wavfile.path];
-            //   } else {
-            //     rootProtocol._missingCommonWavCalList!.push(wavfile.path);
-            //   }
-            // } else {
-            //     rootProtocol._missingCommonMediaRepo = true;
-            //     rootProtocol._missingCommonWavCalList!.push(wavfile.path);
-            // }
-            // wavfile.path = rootProtocol.commonRepo.path + wavfile.path;
-          }
-        }
-
-        else {
-          // if (calibration && calibration[wavfile.path]) {
-          //   wavfile.cal = calibration[wavfile.path];
-          //   wavfile.cal.tablet = calibration.tablet;
-          // } else {
-          //   rootProtocol._missingWavCalList!.push(wavfile.path);
-          // }
-
-          // wavfile.path = prefix + wavfile.path;
-        }
+      _.forEach(page.wavfiles, (wavfile) => {
+        //TODO: deal with calibration and common repo
       });
     }
 
@@ -113,61 +89,36 @@ export function processProtocol(loading: LoadingProtocolInterface):
     }
 
     if (page.responseArea) {
-      // if (page.responseArea.image) {
-      //   page.responseArea.image.path = prefix + page.responseArea.image.path;
-      // }
-
-      // if (page.responseArea.html) {
-      //   var originalHtmlFile = page.responseArea.html;
-      //   page.responseArea.html = prefix + page.responseArea.html;
-      //   rootProtocol._customHtmlList!.push({
-      //     name: originalHtmlFile,
-      //     path: page.responseArea.html,
-      //     id: page.id
-      //   });
-      // }
-
-      if (page.responseArea.type === "subjectIdResponseArea") {
-        rootProtocol._hasSubjectIdResponseArea = true;
-      }
-
-      if (page.responseArea.type.startsWith("cha")) {
-        rootProtocol._requiresCha = true;
-      }
-
-      if (_.has(page.responseArea, "exportToCSV")) {
-        if (page.responseArea.exportToCSV === true) {
-            rootProtocol._exportCSV = true;
-        }
-      }
-
-      // if (_.has(page, "exportToCSV")) {
-      //   if (page.exportToCSV === true) {
-      //       rootProtocol._exportCSV = true;
-      //   }
-      // }
+      // TODO: deal with specific response area processing here
     }
 
     if (_.has(page, "followOns")) {
-      _.forEach(page.followOns, function(followOn) {
-        let id = getId(followOn.target);
-        followOnsDict[id] = followOn;
-        iterateThroughPages(followOn.target);
-      });
+      processFollowOns(page.followOns!);
     }
 
-    function getId(target: PageDefinition | ProtocolReferenceInterface | ProtocolSchemaInterface): string {
-        return  isPageDefinition(target)
-          ? target.id
-          : isProtocolSchemaInterface(target)
-            ? target.protocolId!
-            : isProtocolReferenceInterface(target)
-              ? target.reference
-              : 'Should not get here';
-    }
 
-    if (_.has(page, "pages") && isProtocolSchemaInterface(page)) {
+    if (isProtocolSchemaInterface(page)) {
       processSubProtocol(page);
+    }
+  }
+
+  function processFollowOns(followOns: FollowOnInterface[]) {
+    _.forEach(followOns, (followOn) => {
+      let id = getId(followOn.target);
+      followOnsDict[id] = followOn;
+      iterateThroughPages(followOn.target);
+    });
+  }
+
+  function getId(target: PageTypes): string {
+    if (isPageDefinition(target)) {
+      return target.id;
+    } else if (isProtocolSchemaInterface(target)) {
+      return target.protocolId!;
+    } else if (isProtocolReferenceInterface(target)) {
+      return target.reference;
+    } else {
+      return 'Should not get here';
     }
   }
 

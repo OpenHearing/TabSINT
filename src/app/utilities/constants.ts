@@ -47,39 +47,29 @@ export enum SvantekState {
     Recording
 }
 
-export var BluetoothType = {
+export const BluetoothType = {
   "BLUETOOTH": "Bluetooth 2.0",
   "BLUETOOTH_LE": "Bluetooth 3.0",
   "USB": "USB Host"
 };
 
-import EdareAudiometry from '../../protocols/edare-audiometry/protocol.json';
 import CreareAudiometry from '../../protocols/creare-audiometry/protocol.json';
-import TabsintTest from '../../protocols/tabsint-test/protocol.json';
-import WahtsDeviceTest from '../../protocols/wahts-device-test/protocol.json';
-import WahtsSoftwareTest from '../../protocols/wahts-software-test/protocol.json';
 import develop from '../../protocols/develop/protocol.json';
-export var DeveloperProtocols: any = {
-    "Audiometry": EdareAudiometry,
+export const DeveloperProtocols: any = {
     "Creare Audiometry": CreareAudiometry,
-    "tabsint-test": TabsintTest,
-    "wahts-device-test": WahtsDeviceTest,
-    "wahts-software-test" : WahtsSoftwareTest,
     "develop" : develop
 }
 
 import WahtsDeviceTestCalibration from '../../protocols/wahts-device-test/calibration.json';
-import WahtsSoftwareTestCalibration from '../../protocols/wahts-software-test/calibration.json';
-export var DeveloperProtocolsCalibration: any = {
-    "wahts-device-test": WahtsDeviceTestCalibration,
-    "wahts-software-test" : WahtsSoftwareTestCalibration
+export const DeveloperProtocolsCalibration: any = {
+    "wahts-device-test": WahtsDeviceTestCalibration
 }
 
 export const bluetoothTimeout: number = 5000;
 
 export const listOfTabsintDirectories: Array<string> = [
     ".tabsint-results-backup",
-    ".tabsint-uuid",
+    // ".tabsint-uuid",
     "tabsint-configuration",
     "tabsint-logs",
     "tabsint-pdfs",

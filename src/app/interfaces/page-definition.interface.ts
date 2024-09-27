@@ -1,7 +1,6 @@
 import { ManualAudiometryInterface } from "../views/response-area/response-areas/manual-audiometry/manual-audiometry.interface";
 import { MultipleChoiceInterface} from "../views/response-area/response-areas/multiple-choice/multiple-choice.interface";
 import { TextBoxInterface } from "../views/response-area/response-areas/textbox/textbox.interface";
-import { ProtocolSchemaInterface } from "./protocol-schema.interface";
 
 export interface PageDefinition {
     id: string;
@@ -74,7 +73,7 @@ export interface VideoInterface {
 
 export interface FollowOnInterface {
     conditional: string;
-    target: PageDefinition | ProtocolReferenceInterface | ProtocolSchemaInterface;
+    target: PageTypes;
 }
 
 export interface ProtocolReferenceInterface {
@@ -88,7 +87,7 @@ export interface SetFlagInterface {
     conditional: string;
 }
 
-export interface CommonResponseArea {
+export interface CommonResponseAreaInterface {
     enableSkip?: boolean;
     type: string;
     responseRequired?: boolean;

@@ -1,4 +1,4 @@
-import { PageDefinition, ResponseArea } from "../../interfaces/page-definition.interface";
+import { PageDefinition } from "../../interfaces/page-definition.interface";
 
 export interface PageInterface extends PageDefinition{
     exportToCSV?: boolean;

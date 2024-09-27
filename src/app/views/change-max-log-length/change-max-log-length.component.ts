@@ -18,7 +18,7 @@ export class ChangeMaxLogLengthComponent {
   disk: DiskInterface;
   maxLogLength: number | undefined;
 
-  constructor(public logger: Logger, public dialog: MatDialog, public diskModel: DiskModel) {
+  constructor(private logger: Logger, private dialog: MatDialog, private diskModel: DiskModel) {
     this.disk = this.diskModel.getDisk();
     this.maxLogLength = this.disk.maxLogRows; // Initialize with the current max log length
   }

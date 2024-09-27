@@ -1,4 +1,5 @@
-import { NavMenuInterface, PageDefinition, ProtocolReferenceInterface } from "./page-definition.interface";
+import { PageTypes } from "../types/custom-types";
+import { NavMenuInterface } from "./page-definition.interface";
 
 export interface ProtocolSchemaInterface {
     description?: string;
@@ -21,7 +22,7 @@ export interface ProtocolSchemaInterface {
     enableBackButton?: boolean;
     navMenu?: NavMenuInterface[];
     js?: string[];
-    pages: (PageDefinition | ProtocolReferenceInterface | ProtocolSchemaInterface)[];
+    pages: (PageTypes)[];
     subProtocols?: ProtocolSchemaInterface[];
 }
 

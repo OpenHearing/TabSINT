@@ -2,25 +2,25 @@ import { Component } from '@angular/core';
 import _ from 'lodash';
 import { TranslateService } from '@ngx-translate/core';
 
+import { ProtocolService } from '../../controllers/protocol.service';
+import { ExamService } from '../../controllers/exam.service';
+import { DialogDataInterface } from '../../interfaces/dialog-data.interface';
+import { ProtocolSchemaInterface } from '../../interfaces/protocol-schema.interface';
+
 import { DiskModel } from '../../models/disk/disk.service';
-import { Logger } from '../../utilities/logger.service';
-import { ProtocolInterface, ProtocolMetaInterface } from '../../models/protocol/protocol.interface';
-import { DialogType, ProtocolServer } from '../../utilities/constants';
+import { ProtocolInterface, ProtocolMetaInterface, ProtocolModelInterface } from '../../models/protocol/protocol.interface';
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { ProtocolModel } from '../../models/protocol/protocol-model.service';
-import { ProtocolService } from '../../controllers/protocol.service';
 import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
-import { DialogDataInterface } from '../../interfaces/dialog-data.interface';
+
+import { Logger } from '../../utilities/logger.service';
+import { DialogType, ProtocolServer } from '../../utilities/constants';
 import { Notifications } from '../../utilities/notifications.service';
 import { Tasks } from '../../utilities/tasks.service';
-import { ProtocolModelInterface } from '../../models/protocol/protocol.interface';
-import { ExamService } from '../../controllers/exam.service';
 import { getProtocolMetaData } from '../../utilities/protocol-helper-functions';
 import { FileService } from '../../utilities/file.service';
-import { ProtocolSchemaInterface } from '../../interfaces/protocol-schema.interface';
-import { metaDefaults, partialMetaDefaults } from '../../utilities/defaults';
-import { AdminService } from '../../controllers/admin.service';
+import { partialMetaDefaults } from '../../utilities/defaults';
 
 @Component({
   selector: 'protocols-view',
@@ -35,15 +35,15 @@ export class ProtocolsComponent {
 
   constructor (
     public diskModel: DiskModel,
-    public protocolService: ProtocolService,
+    public examService: ExamService,
     public protocolM: ProtocolModel,
+    public protocolService: ProtocolService,
     public stateModel: StateModel,
-    private translate: TranslateService,
+    private fileService: FileService,
     private logger: Logger,
     private notifications: Notifications,
     private tasks: Tasks,
-    public examService: ExamService,
-    private fileService: FileService
+    private translate: TranslateService,
   ) {
     this.disk = this.diskModel.getDisk();
     this.protocolModel = this.protocolM.getProtocolModel();
@@ -55,58 +55,70 @@ export class ProtocolsComponent {
     // sort protocols by name here
   }
 
+  /**
+   * Keep track of the selected protocol in the protocols table
+   * @param p: meta data of the protocol to select
+   */
   select(p: ProtocolMetaInterface): void {
     this.selected = p;
   }
 
+  /**
+   * Style protocol table rows based on which protocol is active and which is selected.
+   * @param p: meta data of the protocol to select
+   * @returns style class:  string
+   */
   pclass(p: ProtocolMetaInterface): string {
     if (this.isActive(p)) {
       return "active-row";
     } else if (this.selected === null || this.selected === undefined) {
       return "";
-    } else if (_.isEqual(this.selected!.name, p.name)) {
+    } else if (_.isEqual(this.selected.name, p.name)) {
       return "table-selected";
     } else {
       return "";
     }
   };
 
-  async addProtocols(){
-    console.log("add button clicked")
-    try{
-      const result = await this.fileService.launchFileChooser()
-      if(!result){
-        this.logger.error("There was an error in choosing the folder")
+  /**
+   * Add protocols to protocols table
+   * @summary Launch file chooser, extract meta data from selected protocol folder, 
+   * save it to disk model, then retrieve protocol model to refresh the view.
+   * @models dik, protocol
+   */
+  async addProtocols() {
+    try {
+      const result = await this.fileService.launchFileChooser();
+      if (!result) {
+        this.logger.error("There was an error in choosing the folder");
       }
-      let protocolsFolderUri = result?.uri
-      let protocolName = result?.name
-      const resultFromListFiles = await this.fileService.listDirectory(protocolsFolderUri)
-      const fileList = resultFromListFiles?.files
-        for(const file of fileList!){
-          if (file.name=="protocol.json"){
-            const protocolContent: ProtocolSchemaInterface = JSON.parse(file.content)
+      let protocolsFolderUri = result?.uri;
+      let protocolName = result?.name;
+      const resultFromListFiles = await this.fileService.listDirectory(protocolsFolderUri);
+      const fileList = resultFromListFiles?.files;
+        for (const file of fileList!) {
+          if (file.name=="protocol.json") {
+            const protocolContent: ProtocolSchemaInterface = JSON.parse(file.content);
             const protocol: ProtocolInterface = {
               ...partialMetaDefaults, 
-              name:protocolName!, 
-              path: "", 
-              creator: "", 
+              name: protocolName!, 
               contentURI: protocolsFolderUri!, 
               server: ProtocolServer.LocalServer,
               admin: false,
               ...protocolContent
-            }
-            const protocolMetaData: ProtocolMetaInterface = getProtocolMetaData(protocol)
-            let availableMetaProtocols = this.diskModel.disk.availableProtocolsMeta
-            availableMetaProtocols.push(protocolMetaData)
-            this.diskModel.updateDiskModel('availableProtocolsMeta',availableMetaProtocols)
-            this.disk = this.diskModel.getDisk()
-            this.protocolModel = this.protocolM.getProtocolModel()
+            };
+            const protocolMetaData: ProtocolMetaInterface = getProtocolMetaData(protocol);
+            let availableMetaProtocols = this.diskModel.disk.availableProtocolsMeta;
+            availableMetaProtocols[protocolMetaData.name] = protocolMetaData;
+            this.diskModel.updateDiskModel('availableProtocolsMeta', availableMetaProtocols);
+            this.disk = this.diskModel.getDisk();
+            this.protocolModel = this.protocolM.getProtocolModel();
           }
       }
-  }
-  catch(error){
-    this.logger.error(""+ error)
-  }
+    }
+    catch (error) {
+      this.logger.error(""+ error);
+    }
   }
 
   isProtocolActive(): boolean {
@@ -131,41 +143,48 @@ export class ProtocolsComponent {
     return this.selected.server !== ProtocolServer.Developer;
   };
 
+  /**
+   * Load selected protocol: make it the active protocol.
+   * @summary Get the meta data of the selected protocol, then load all protocol files onto the protocolModel.activeProtocol object.
+   * @models protocol
+   * @param parameter: description
+   */
   async loadProtocol() {
     if (!this.selected) {
-        return;
+      return;
     }
 
     this.tasks.register("updating", "Loading Protocol...");
 
-    let protocolMetaData = getProtocolMetaData(this.selected!);
+    let protocolMetaData = getProtocolMetaData(this.selected);
 
     if (!this.protocolModel.activeProtocol) {
-      await this.protocolService.load(protocolMetaData, true, false);
+      await this.protocolService.load(protocolMetaData, true);
     } else {
-        let msg: DialogDataInterface = {
-          title: "Confirm",
-          content: `Switch to protocol ${this.selected.name} and reset the current test? The current test results will be deleted`,
-          type: DialogType.Confirm
-          };
-        if (this.isActive(this.selected)) {
-            msg.content = `Overwrite protocol ${this.selected.name} and reset the current test? The current test will be reset`;
-        }
+      let msg: DialogDataInterface = {
+        title: "Confirm",
+        content: `Switch to protocol ${this.selected.name} and reset the current test? The current test results will be deleted`,
+        type: DialogType.Confirm
+        };
+      if (this.isActive(this.selected)) {
+        msg.content = `Overwrite protocol ${this.selected.name} and reset the current test? The current test will be reset`;
+      }
 
-        this.notifications.confirm(msg).subscribe(async result => {
-            if (result === "OK") {
-                if (!this.isActive(this.selected)) {
-                  await this.protocolService.load(protocolMetaData, true, false);
-                } else if (this.isActive(this.selected)) {
-                  await this.protocolService.load(protocolMetaData, true, true);
-                  this.examService.reset();
-                }
-            }
-        });
+      this.notifications.alert(msg).subscribe(async result => {
+        if (result === "OK") {
+          await this.protocolService.load(protocolMetaData, true);
+          this.examService.reset();
+        }
+      });
     }
     this.tasks.deregister("updating");
   };
 
+  /**
+   * Delete protocol from protocols table
+   * @summary Deactivate protocol if active, delete it from the disk model, un-select it.
+   * @models models
+   */
   delete(): void {
       if (!this.selected) {
           return;
@@ -177,7 +196,7 @@ export class ProtocolsComponent {
 
       this.protocolService.delete(this.selected);
       this.selected = undefined;
-      // notifications.confirm(
+      // notifications.alert(
       //     "Delete protocol ") +
       //     this.selected.name +
       //     " and remove protocol files from disk?"),
@@ -203,7 +222,7 @@ export class ProtocolsComponent {
       // }
 
       // if (protocol.isActive(selected)) {
-      //     notifications.confirm(
+      //     notifications.alert(
       //         "Update protocol ") +
       //         this.selected.name +
       //         "? " +
@@ -223,7 +242,7 @@ export class ProtocolsComponent {
       //         }
       //     );
       // } else {
-      //     notifications.confirm("Update protocol ") + this.selected.name + "?", function(
+      //     notifications.alert("Update protocol ") + this.selected.name + "?", function(
       //         buttonIndex
       //     ) {
       //         if (buttonIndex === 1) {

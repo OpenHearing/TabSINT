@@ -3,8 +3,11 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+    "clean": "rm -rf dist && rm -rf .angular/cache",
     "start": "ng serve",
-    "build": "ng build",
+    "prepare": "ts-node ./src/app/utilities/write-version.ts",
+    "build": "npm run prepare && ng build",
+    "build:plugin": "cd tabsintfs && rm -rf node_modules && npm i && npm run build && cd .. && npm i ./tabsintfs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test:headless": "ng test --browsers=ChromeHeadlessNoSandbox --watch=false",
@@ -48,6 +51,7 @@
     "lodash": "^4.17.21",
     "ngx-json-viewer": "^3.2.1",
     "rxjs": "~7.8.0",
+    "simple-git": "^3.27.0",
     "tabsintfs": "file:tabsintfs",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"
@@ -68,6 +72,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "ts-node": "^10.9.2",
     "typescript": "~5.3.2"
   }
 }

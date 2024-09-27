@@ -13,26 +13,9 @@ export class AdminService {
     disk: DiskInterface;
 
     constructor(
-        public diskModel: DiskModel, 
-        public logger: Logger
+        private diskModel: DiskModel, 
+        private logger: Logger
     ) {
         this.disk = this.diskModel.getDisk();
     }
-
-    // toggleDisableVolume() {
-    //     console.log("toggleDisableVolume");
-    // }
-
-    // toggleAdminSkipMode() {
-    //     console.log("toggleAdminSkipMode");
-    // }
-
-    // toggleRequireEncryptedResults() {
-    //     console.log("toggleRequireEncryptedResults");
-    // }
-
-    // toggleRecordTestLocation() {
-    //     console.log("toggleRecordTestLocation");
-    // }
-
 }

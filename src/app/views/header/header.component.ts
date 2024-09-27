@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { StateModel } from '../../models/state/state.service';
 import { AppState } from '../../utilities/constants';
-import { ExamService } from '../../controllers/exam.service';
 
 @Component({
   selector: 'header-view',
@@ -11,7 +10,7 @@ import { ExamService } from '../../controllers/exam.service';
 export class HeaderComponent {
   isExam: boolean = false;
   
-  constructor(private stateModel: StateModel, public examService: ExamService) {}
+  constructor(private stateModel: StateModel) {}
 
   ngOnInit(): void {
     this.isExam = this.stateModel.getState().appState === AppState.Exam;

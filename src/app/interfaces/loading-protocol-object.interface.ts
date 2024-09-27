@@ -1,5 +1,4 @@
-import { ProtocolMetaInterface } from "../models/protocol/protocol.interface";
-import { ProtocolInterface } from "../models/protocol/protocol.interface";
+import { ProtocolMetaInterface, ProtocolInterface } from "../models/protocol/protocol.interface";
 import { CalibrationInterface } from "./protocol-schema.interface";
 
 export interface LoadingProtocolInterface {

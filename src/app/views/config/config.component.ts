@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 import { DiskModel } from '../../models/disk/disk.service';
 import { Logger } from '../../utilities/logger.service';
-import { FileService } from '../../utilities/file.service';
 import { AppState } from '../../utilities/constants';
 import { StateModel } from '../../models/state/state.service';
 import { DiskInterface } from '../../models/disk/disk.interface';
@@ -19,12 +17,10 @@ export class ConfigComponent {
   state: StateInterface;
 
   constructor(
-    public diskModel: DiskModel, 
-    public fileService: FileService,
-    public examService: ExamService,
-    public logger: Logger, 
-    public stateModel: StateModel,
-    public translate: TranslateService
+    private diskModel: DiskModel, 
+    private examService: ExamService,
+    private logger: Logger, 
+    private stateModel: StateModel
   ) { 
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();

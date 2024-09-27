@@ -1,46 +1,50 @@
 import { ProtocolErrorInterface } from "../interfaces/protocol-error.interface";
 import { ProtocolInterface } from "../models/protocol/protocol.interface";
-import { DialogType } from "./constants";
 
 export function checkCalibrationFiles(activeProtocol: ProtocolInterface): string | void {
-    var msg;
-    if (activeProtocol!._missingWavCalList!.length > 0 || activeProtocol!._missingCommonWavCalList!.length > 0) {
-        if (activeProtocol!._missingWavCalList!.length + activeProtocol!._missingCommonWavCalList!.length < 10) {
-            if (activeProtocol!._missingWavCalList!.length > 0 && activeProtocol!._missingCommonWavCalList!.length > 0) {
-                msg =
-                "Missing calibration(s) for wav files(s): " +
-                activeProtocol!._missingWavCalList! +
-                ", and common media wav file(s): " +
-                activeProtocol!._missingCommonWavCalList! +
-                ".";
-            } else if (activeProtocol!._missingWavCalList!.length > 0 && activeProtocol!._missingCommonWavCalList!.length <= 0) {
-                msg = "Missing calibration(s) for wav files(s): " + activeProtocol!._missingWavCalList! + ".";
-            } else if (activeProtocol!._missingWavCalList!.length <= 0 && activeProtocol!._missingCommonWavCalList!.length > 0) {
-                msg = "Missing common media wav file(s): " + activeProtocol!._missingCommonWavCalList! + ".";
-            }
-        } else {
-            if (activeProtocol!._missingWavCalList!.length > 0 && activeProtocol!._missingCommonWavCalList!.length > 0) {
-                msg =
-                "Missing calibrations for " +
-                activeProtocol!._missingWavCalList!.length +
-                " wav files(s), and " +
-                activeProtocol!._missingCommonWavCalList!.length +
-                " common media wav files(s)";
-            } else if (activeProtocol!._missingWavCalList!.length > 0 && activeProtocol!._missingCommonWavCalList!.length <= 0) {
-                msg = "Missing calibrations for " + activeProtocol!._missingWavCalList!.length + " wav files(s). ";
-            } else {
-                msg = "Missing calibrations for " + activeProtocol!._missingCommonWavCalList!.length + " common media wav files(s)";
-            }
-        }
+    let msg;
+    const missingWavCalListLength = activeProtocol._missingWavCalList!.length;
+    const missingCommonWavCalListLength= activeProtocol._missingCommonWavCalList!.length;
+
+    if (areThereMissingCommonOrWavCal(missingWavCalListLength, missingCommonWavCalListLength)) {
+      if (areThereMissingCommonAndWavCal(missingWavCalListLength, missingCommonWavCalListLength)) {
+          msg =
+          "Missing calibration(s) for wav files(s): " +
+          missingWavCalListLength +
+          ", and common media wav file(s): " +
+          missingCommonWavCalListLength +
+          ".";
+      } else if (areThereMissingWavCal(missingWavCalListLength)) {
+          msg = "Missing calibration(s) for wav files(s): " + missingWavCalListLength + ".";
+      } else if (areThereMissingCommonWavCal(missingCommonWavCalListLength)) {
+          msg = "Missing common media wav file(s): " + missingCommonWavCalListLength + ".";
+      }
     }
+
     return msg;
 }
 
+function areThereMissingCommonOrWavCal(missingWavCalList: number, missingCommonWavCalList: number): boolean {
+  return areThereMissingWavCal(missingWavCalList) || areThereMissingCommonWavCal(missingCommonWavCalList);
+}
+
+function areThereMissingCommonAndWavCal(missingWavCalList: number, missingCommonWavCalList: number): boolean {
+  return areThereMissingWavCal(missingWavCalList) && areThereMissingCommonWavCal(missingCommonWavCalList);
+}
+
+function areThereMissingWavCal(missingWavCalList: number): boolean {
+  return missingWavCalList > 0;
+}
+
+function areThereMissingCommonWavCal(missingCommonWavCalList: number): boolean {
+  return missingCommonWavCalList > 0;
+}
+
 export function checkPreProcessFunctions(activeProtocol: ProtocolInterface): Array<ProtocolErrorInterface> {
-    var errors = [];
-    var msg;
+    let errors = [];
+    let msg;
     if (
-        (activeProtocol!._missingPreProcessFunctionList!.length > 0 || activeProtocol!._missingControllerList!.length > 0) &&
+        (activeProtocol._missingPreProcessFunctionList!.length > 0 || activeProtocol._missingControllerList!.length > 0) &&
         true // !activeProtocol!.js
       ) {
         msg =
@@ -51,12 +55,12 @@ export function checkPreProcessFunctions(activeProtocol: ProtocolInterface): Arr
         });
       }
 
-      if (activeProtocol!._missingPreProcessFunctionList!.length > 0) {
+      if (activeProtocol._missingPreProcessFunctionList!.length > 0) {
         msg =
           "The protocol references the following undefined pre-process functions: " +
-          activeProtocol!._missingPreProcessFunctionList +
+          activeProtocol._missingPreProcessFunctionList +
           ".  Please make sure each function is defined properly in the customJs.js file.";
-        activeProtocol!.errors!.push({
+        activeProtocol.errors!.push({
           type: "Protocol",
           error: msg
         });
@@ -66,8 +70,8 @@ export function checkPreProcessFunctions(activeProtocol: ProtocolInterface): Arr
 }
 
 export function checkControllers(activeProtocol: ProtocolInterface): Array<ProtocolErrorInterface> {
-    var errors = [];
-    var msg;
+    let errors = [];
+    let msg;
 
     if (activeProtocol._missingControllerList!.length > 0) {
         msg =
@@ -83,7 +87,7 @@ export function checkControllers(activeProtocol: ProtocolInterface): Array<Proto
       if (activeProtocol._missingHtmlList!.length > 0) {
         msg =
           "The protocol references the following html pages that could not be loaded:  " +
-          activeProtocol!._missingHtmlList +
+          activeProtocol._missingHtmlList +
           ".  Please make sure each html page exists and is referenced properly.";
         errors.push({
           type: "Protocol",

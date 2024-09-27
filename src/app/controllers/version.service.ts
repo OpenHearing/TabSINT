@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Logger } from '../utilities/logger.service';
-import { DiskModel } from '../models/disk/disk.service';
 import { VersionInterface } from '../interfaces/version.interface';
-
 
 @Injectable({
     providedIn: 'root',
@@ -24,10 +22,14 @@ export class VersionService {
     }; 
     private versionLoaded: Promise<void>;
 
-    constructor(private logger: Logger,private diskModel:DiskModel) {
+    constructor(private logger: Logger) {
         this.versionLoaded = this.loadVersion()
     }
-
+    /**
+     * Load tabsint version information from version.js
+     * @summary Imports version.json, loads it into the version model.
+     * @models version
+     */
     private async loadVersion(): Promise<void> {
         try {
             const versionData = await import('../../version.json');
@@ -39,7 +41,13 @@ export class VersionService {
             this.logger.error('version.json file not found or failed to load. Returning empty object --- ' + JSON.stringify(this.version));
         }
     }
-
+    
+    /**
+     * Promise to retrieve the version model.
+     * @summary Waits for the version to be loaded, then return it.
+     * @models version
+     * @returns version model:  VersionInterface
+     */
     async getVersion(): Promise<VersionInterface> {
         await this.versionLoaded;
         return this.version;
