@@ -1,0 +1,16 @@
+mat-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 64px;
+    background: #1976d2; /* Customize the background color */
+    font-size: 16px;
+    color: white;
+  }
+  
+  mat-progress-bar {
+    width: 100%;
+    height: 5px;
+    margin-top: 5px;
+  }
+  

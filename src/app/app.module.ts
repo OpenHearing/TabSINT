@@ -11,7 +11,7 @@ import { MatDialogActions, MatDialogContent, MatDialogModule } from '@angular/ma
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgxJsonViewerModule } from 'ngx-json-viewer';
 import 'jeep-sqlite';
-
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
@@ -69,6 +69,7 @@ import { TextboxComponent } from './views/response-area/response-areas/textbox/t
 import { MultipleChoiceComponent } from './views/response-area/response-areas/multiple-choice/multiple-choice.component';
 import { SingleResultModalComponent } from './views/single-result-modal/single-result-modal/single-result-modal.component';
 import { ExternalResponseAreaComponent } from './views/response-area/response-areas/external-response-area/external-response-area.component';
+import { TasksBannerComponent } from './views/tasks-banner/tasks-banner.component';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -101,6 +102,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     MultipleChoiceComponent,
     SingleResultModalComponent,
     ExternalResponseAreaComponent,
+    TasksBannerComponent,
   ],
   imports: [
     BrowserModule,
@@ -117,6 +119,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     MatDialogContent,
     MatDialogActions,
     MatDialogModule,
+    MatProgressBarModule,
     NgbModule,
     NgxJsonViewerModule,
     TranslateModule.forRoot({
