@@ -54,13 +54,13 @@ The GUI should look like the image below with the following features.
 
 .. figure:: headphones-narrowband-calibration-GUI-Screen1.png
    :align: center
-   :width: 6.5in
+   :width: 100px
 
    **Figure 1.** *GUI for the headphones narrowband calibration exam. Screen 1*
 
 .. figure:: headphones-narrowband-calibration-GUI-Screen2.png
    :align: center
-   :width: 6.5in
+   :width: 3in
 
    **Figure 2.** *GUI for the headphones narrowband calibration exam. Screen 2*
 
