@@ -49,7 +49,7 @@ The GUI should look like the image below with the following features.
 * There should be a `Cal Factor` panel, that displays the current total adjusted requested level, in dB FS.
 * The `Cal Factor` panel has +3/-3 buttons to adjust the calibration factor.
 * The `Cal Factor` panel has a play/pause button to start/stop the tone. The play button is green with a play icon when a tone is not playing. It is red with a stop symbol when it is playing.
-* There should be a `Next` button to advance to the next frequency.
+* There should be a `Next` button to advance to the next screen, allowing entering the flat plate level measurement.
 * When proceeding from one frequency to the next, the `Cal Factor` should be remembered. (e.g. the initial value for “Cal Factor” at 2 kHz should be equal to the final value for “Cal Factor” at 1 kHz)
 * There should be a textbox to enter the flat plate measured level and a submit button to send the level to the Tympan. 
 * There should be a `Submit` button to submit the measured flat plate level.
@@ -76,7 +76,7 @@ The GUI should look like the image below with the following features.
 Results-View
 ^^^^^^^^^^^^^
 
-The GUI should display the results (calibration factors and maximum output levels) of the headphones narrowband calibration exam, if specified in the protocol. A table as shown below should summarize the results saved on the headphones narrowband calibration exam.
+The GUI should display the results (calibration factors and maximum output levels) of the headphones narrowband calibration exam, if specified in the protocol. A table similar to the one shown below should summarize the results saved on the headphones narrowband calibration exam, where frequencies are the frequencies specified in the protocol.
 
 .. list-table::
     :widths: 10, 20, 20
