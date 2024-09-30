@@ -1,3 +1,4 @@
+import { PageTypes } from "../types/custom-types";
 import { ManualAudiometryInterface } from "../views/response-area/response-areas/manual-audiometry/manual-audiometry.interface";
 import { MultipleChoiceInterface} from "../views/response-area/response-areas/multiple-choice/multiple-choice.interface";
 import { TextBoxInterface } from "../views/response-area/response-areas/textbox/textbox.interface";
