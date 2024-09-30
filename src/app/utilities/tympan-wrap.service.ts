@@ -95,7 +95,7 @@ export class TympanWrap {
 
     async connect(device:BleDevice,onDisconnect:Function) {
         await BleClient.connect(device.deviceId, (deviceId:string) => onDisconnect(deviceId));
-        await BleClient.startNotifications(device.deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID,(e) => {
+        await BleClient.startNotifications(device.deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID,(e:DataView) => {
             console.log("e.buffer",e.buffer);
             this.TMP_BUFFER = this.appendDataView(this.TMP_BUFFER,e);
             console.log("appended buffer",this.TMP_BUFFER);
