@@ -10,7 +10,7 @@ import { AppState, TympanState } from '../../../../utilities/constants';
 import { StateModel } from '../../../../models/state/state.service';
 import { DiskInterface } from '../../../../models/disk/disk.interface';
 import { StateInterface } from '../../../../models/state/state.interface';
-import { TympanService } from '../../../../controllers/tympan.service';
+import { TympanService } from '../../../../controllers/devices/tympan.service';
 import { DevicesModel } from '../../../../models/devices/devices.service';
 import { DevicesInterface } from '../../../../models/devices/devices.interface';
 

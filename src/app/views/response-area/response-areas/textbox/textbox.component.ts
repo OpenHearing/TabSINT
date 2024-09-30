@@ -33,7 +33,7 @@ export class TextboxComponent {
 
   ngOnInit() {
     // TODO: replace the below any with proper typing
-    this.subscription = this.pageModel.currentPageObservable.subscribe( (updatedPage:PageInterface) => {
+    this.subscription = this.pageModel.currentPageSubject.subscribe( (updatedPage:PageInterface) => {
       const responseArea = updatedPage.responseArea as TextBoxInterface;
       this.rows = responseArea?.rows;
     }); 

@@ -18,7 +18,8 @@ export class TympanWrap {
     ADAFRUIT_SERVICE_UUID = "BC2F4CC6-AAEF-4351-9034-D66268E328F0"; // custom tympan service
     ADAFRUIT_CHARACTERISTIC_UUID = "06D1E5E7-79AD-4A71-8FAA-373789F7D93C"; // custom tympan characteristic
     CRC8_TABLE = this.genCRC8Table();
-    TMP_BUFFER = new DataView(new ArrayBuffer(0));
+    TMP_BUFFER:any = {}; // TODO: add typing here
+    
 
     constructor(
         private stateModel: StateModel, 
@@ -84,25 +85,26 @@ export class TympanWrap {
         }, timeout);
     }
 
-    async write(device:BleDevice, msg:string) {
+    async write(deviceId:string, msg:string) {
         let msg_to_write = this.msgToDataView(msg);
         console.log("msg_to_write",JSON.stringify(msg_to_write));
         console.log("TIME",Date.now());
 
-        let resp = await BleClient.write(device.deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID, msg_to_write);
+        let resp = await BleClient.write(deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID, msg_to_write);
         this.logger.debug("resp from writing: "+JSON.stringify(msg_to_write)+" is: "+JSON.stringify(resp));
     }
 
-    async connect(device:BleDevice,onDisconnect:Function) {
-        await BleClient.connect(device.deviceId, (deviceId:string) => onDisconnect(deviceId));
-        await BleClient.startNotifications(device.deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID,(e:DataView) => {
+    async connect(deviceId:string,onDisconnect:Function) {
+        await BleClient.connect(deviceId, (deviceId:string) => onDisconnect(deviceId));
+        this.TMP_BUFFER[deviceId] = new DataView(new ArrayBuffer(0));
+        await BleClient.startNotifications(deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID,(e:DataView) => {
             console.log("e.buffer",e.buffer);
-            this.TMP_BUFFER = this.appendDataView(this.TMP_BUFFER,e);
-            console.log("appended buffer",this.TMP_BUFFER);
-            console.log(this.dataViewToMsg(this.TMP_BUFFER));
+            this.TMP_BUFFER[deviceId] = this.appendDataView(this.TMP_BUFFER[deviceId],e);
+            console.log("appended buffer",this.TMP_BUFFER[deviceId]);
+            this.dataViewToMsg(this.TMP_BUFFER[deviceId]);
         });
 
-        this.logger.debug('connected to device:'+JSON.stringify(device));
+        this.logger.debug('connected to device:'+JSON.stringify(deviceId));
     }
 
     async reconnect(deviceId:string,onDisconnect:Function) {
@@ -130,7 +132,8 @@ export class TympanWrap {
         return numbersToDataView(Array.from(msgToSend))
     }
 
-    dataViewToMsg(dv:DataView):string {
+    dataViewToMsg(dv:DataView):void {
+        // TODO: trigger observable here and remove debug logging
         let msg:string = '';
         if (dv.getUint8(0)==5 && dv.getUint8(dv.buffer.byteLength-1)==2) {
             msg='good packet';
@@ -145,10 +148,11 @@ export class TympanWrap {
             let pkt = this.dataViewToString(tmpDV);
             console.log("parsed pkt",pkt);
             console.log("TIME",Date.now());
+            // TODO: Trigger observable here when a complete msg comes in
         } else {
             msg='bad packet';
         }
-        return msg
+        console.log(msg);
     }
 
     dataViewToString(dv:DataView): string {

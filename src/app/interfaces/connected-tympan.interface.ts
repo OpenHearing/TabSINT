@@ -4,4 +4,5 @@ export interface ConnectedTympan {
     deviceId: string;
     name: string;
     state: TympanState;
+    msgId: number;
 }

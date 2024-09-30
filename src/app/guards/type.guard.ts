@@ -1,4 +1,4 @@
-import { ConnectedDevice } from "../interfaces/new-device.interface";
+import { ConnectedDevice } from "../interfaces/connected-device.interface";
 import { PageDefinition, ProtocolReferenceInterface } from "../interfaces/page-definition.interface";
 import { ProtocolSchemaInterface } from "../interfaces/protocol-schema.interface";
 import { PageTypes } from "../types/custom-types";

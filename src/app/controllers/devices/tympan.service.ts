@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
-import { Logger } from '../utilities/logger.service';
-import { TympanWrap } from '../utilities/tympan-wrap.service';
-import { BleDevice } from '../interfaces/bluetooth.interface';
-import { DevicesModel } from '../models/devices/devices.service';
-import { DevicesInterface } from '../models/devices/devices.interface';
-import { TympanState } from '../utilities/constants';
-import { StateModel } from '../models/state/state.service';
-import { StateInterface } from '../models/state/state.interface';
-import { ConnectedDevice } from '../interfaces/new-device.interface';
-import { DeviceUtil } from '../utilities/device-utility';
+import { Logger } from '../../utilities/logger.service';
+import { TympanWrap } from '../../utilities/tympan-wrap.service';
+import { BleDevice } from '../../interfaces/bluetooth.interface';
+import { DevicesModel } from '../../models/devices/devices.service';
+import { DevicesInterface } from '../../models/devices/devices.interface';
+import { TympanState } from '../../utilities/constants';
+import { StateModel } from '../../models/state/state.service';
+import { StateInterface } from '../../models/state/state.interface';
+import { NewConnectedDevice, ConnectedDevice } from '../../interfaces/connected-device.interface';
+import { DeviceUtil } from '../../utilities/device-utility';
 
 @Injectable({
     providedIn: 'root',
@@ -36,38 +36,33 @@ export class TympanService {
 
     async startScan() {
         let timeout = 30000;
-        await this.tympanWrap.startScanning(this.devicesModel.availableDevicesObservable,timeout);
+        await this.tympanWrap.startScanning(this.devicesModel.availableDevicesSubject,timeout);
     }
 
     async stopScan() {
         await this.tympanWrap.stopScanning();
     }
 
-    async connect(tympan:BleDevice, newConnectedDevice:ConnectedDevice) {
+    async connect(tympan:BleDevice, newConnectedDevice:NewConnectedDevice) {
         await this.tympanWrap.stopScanning();
             
         this.logger.debug("attempting to connect to tympan : "+JSON.stringify(tympan));
         try {
-            await this.tympanWrap.connect(tympan,this.onDisconnect.bind(this));
+            await this.tympanWrap.connect(tympan.deviceId,this.onDisconnect.bind(this));
 
             let newConnection = newConnectedDevice;
+            // TODO: could all of the below happen in createDeviceConnection()? Or at least parts?
             newConnection["deviceId"] = tympan.deviceId;
             newConnection["name"] = tympan.name;
-            newConnection["state"] = TympanState.Connected;
+            newConnection["state"] = TympanState.Connected; 
+            newConnection["msgId"] = 0;
 
-            this.devices.connectedDevices.tympan.push(newConnection);
+            let connection: ConnectedDevice = this.deviceUtil.createDeviceConnection(newConnection);
+            this.devices.connectedDevices.tympan.push(connection);
             this.state.isPaneOpen.tympans = true;
         } catch {
             this.logger.error("failed to connect to tympan: "+JSON.stringify(tympan));
-        }
-        
-        // let msg = "[8,'requestId']";
-        // try {
-        //     await this.tympanWrap.write(tympan,msg);
-        // } catch {
-        //     this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg));
-        // }
-            
+        }      
     }
 
     async reconnect(tympanId:string | undefined) {
@@ -93,6 +88,15 @@ export class TympanService {
         }
 
         await this.tympanWrap.disconnect(tympanId);
+    }
+
+    async requestId(tympanId:string,msgId:string) {
+        let msg = "["+msgId+",'requestId']";
+        try {
+            await this.tympanWrap.write(tympanId,msg);
+        } catch {
+            this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg));
+        }
     }
 
 }

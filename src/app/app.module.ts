@@ -55,7 +55,7 @@ import { LocalServerService } from './controllers/local-server.service';
 import { ResultsService } from './controllers/results.service';
 import { ExamService } from './controllers/exam.service';
 import { TympanWrap } from './utilities/tympan-wrap.service';
-import { TympanService } from './controllers/tympan.service';
+import { TympanService } from './controllers/devices/tympan.service';
 import { AdminService } from './controllers/admin.service';
 import { TabsintConfigComponent } from './views/config/config-views/tabsint-config/tabsint-config.component';
 import { SoftwareConfigComponent } from './views/config/config-views/software-config/software-config.component';

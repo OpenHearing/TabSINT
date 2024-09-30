@@ -38,7 +38,7 @@ export class PageModel {
         exportToCSV: false
     };
 
-    currentPageObservable = new BehaviorSubject(this.currentPage);
+    currentPageSubject = new BehaviorSubject(this.currentPage);
 
     stack: PageDefinition[] = [];
     

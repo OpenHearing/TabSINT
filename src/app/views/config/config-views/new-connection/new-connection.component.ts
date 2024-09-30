@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { TympanState, AvailableConnectableDevices } from '../../../../utilities/constants';
 import { DevicesInterface } from '../../../../models/devices/devices.interface';
 import { DevicesModel } from '../../../../models/devices/devices.service';
-import { ConnectedDevice } from '../../../../interfaces/new-device.interface';
-import { TympanService } from '../../../../controllers/tympan.service';
+import { NewConnectedDevice } from '../../../../interfaces/connected-device.interface';
+import { TympanService } from '../../../../controllers/devices/tympan.service';
 import { StateInterface } from '../../../../models/state/state.interface';
 import { StateModel } from '../../../../models/state/state.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -19,7 +19,7 @@ export class NewConnectionComponent {
   TympanState = TympanState;
   state: StateInterface
   devices: DevicesInterface;
-  newConnectedDevice: ConnectedDevice;
+  newConnectedDevice: NewConnectedDevice;
   deviceTypes = AvailableConnectableDevices;
   // tabsintIds: Array<string> = [];
 
@@ -56,13 +56,14 @@ export class NewConnectionComponent {
   }
 
   async scanAndConnect() {
-    // TODO: Expand this to connect to other devices besides Tympans
+    // TODO: Expand this to connect to other devices besides Tympans, use device service controller
     if (this.newConnectedDevice.type=='Tympan') {
       await this.tympanService.startScan();
 
       this.dialog.open(DeviceChooseComponent).afterClosed().subscribe(
         async (tympan: BleDevice | undefined) => {
           if (tympan!=undefined) {
+            // TODO: Do we really need to pass newConnectedDevice to the tympanService?
             await this.tympanService.connect(tympan, this.newConnectedDevice);
           } else {
             await this.tympanService.stopScan();

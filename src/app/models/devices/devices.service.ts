@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { DevicesInterface } from './devices.interface';
 import { Device } from '@capacitor/device';
 import { Logger } from '../../utilities/logger.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { BleDevice } from '../../interfaces/bluetooth.interface';
 
 @Injectable({
@@ -29,7 +29,8 @@ export class DevicesModel {
         }
     }
 
-    availableDevicesObservable = new BehaviorSubject<BleDevice[]>([]);
+    availableDevicesSubject = new BehaviorSubject<BleDevice[]>([]);
+    newMsgSubject = new BehaviorSubject<any>(undefined);
 
     constructor(private logger: Logger) {
         this.load();

@@ -32,7 +32,7 @@ export class DeviceChooseComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.subscription = this.devicesModel.availableDevicesObservable.subscribe( (availableDevices:BleDevice[]) => {
+    this.subscription = this.devicesModel.availableDevicesSubject.subscribe( (availableDevices:BleDevice[]) => {
       this.availableDevices = availableDevices;
       this.changeDetection.detectChanges();
     });
