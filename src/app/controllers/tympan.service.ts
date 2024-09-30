@@ -61,12 +61,12 @@ export class TympanService {
             this.logger.error("failed to connect to tympan: "+JSON.stringify(tympan));
         }
         
-        let msg = "[8,'requestId']";
-        try {
-            await this.tympanWrap.write(tympan,msg);
-        } catch {
-            this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg));
-        }
+        // let msg = "[8,'requestId']";
+        // try {
+        //     await this.tympanWrap.write(tympan,msg);
+        // } catch {
+        //     this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg));
+        // }
             
     }
 
