@@ -55,6 +55,13 @@ export class ProtocolsComponent {
     // sort protocols by name here
   }
 
+
+  getAvailableProtocols(): { key: string; value: ProtocolMetaInterface }[] {
+    this.disk = this.diskModel.getDisk()
+    const availableProtocols = this.disk.availableProtocolsMeta;
+    return Object.entries(availableProtocols).map(([key, value]) => ({ key, value }));
+  }
+  
   /**
    * Keep track of the selected protocol in the protocols table
    * @param p: meta data of the protocol to select

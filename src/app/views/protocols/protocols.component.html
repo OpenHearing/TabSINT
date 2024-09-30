@@ -24,11 +24,16 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let p of disk.availableProtocolsMeta| keyvalue" class="no-border" [ngClass]="pclass(p.value)" (click)="select(p.value)" (keypress)="select(p.value)" >
-              <td [ngClass]="pclass(p.value)" class="row-Name" >{{p.value.name}}</td> 
-              <td [ngClass]="pclass(p.value)" class="row-Version" >{{p.value.version}}</td>
-              <td [ngClass]="pclass(p.value)" class="row-Date" >{{p.value.date}}</td>
+          <tr *ngFor="let p of getAvailableProtocols()" class="no-border" [ngClass]="pclass(p.value)" (click)="select(p.value)" (keypress)="select(p.value)">
+              <td [ngClass]="pclass(p.value)" class="row-Name">{{p.value.name}}</td>
+              <td [ngClass]="pclass(p.value)" class="row-Version">{{p.value.version}}</td>
+              <td [ngClass]="pclass(p.value)" class="row-Date">{{p.value.date}}</td>
           </tr>
+          <!-- <tr *ngFor="let p of disk.availableProtocolsMeta| keyvalue" class="no-border" [ngClass]="pclass(p.value)" (click)="select(p.value)" (keypress)="select(p.value)" >
+            <td [ngClass]="pclass(p.value)" class="row-Name" >{{p.value.name}}</td> 
+            <td [ngClass]="pclass(p.value)" class="row-Version" >{{p.value.version}}</td>
+            <td [ngClass]="pclass(p.value)" class="row-Date" >{{p.value.date}}</td>
+        </tr> -->
         </tbody>
       </table>
 
