@@ -37,5 +37,5 @@ export class ConfigComponent {
   logTest() {
     this.logger.debug("diskM: "+JSON.stringify(this.disk));
   }
-  
+
 }

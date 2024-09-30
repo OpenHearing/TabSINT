@@ -1,30 +1,35 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { DeviceChooseComponent } from './device-choose.component';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
 
-import { ChaConfigComponent } from './cha-config.component';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { MatMenuModule } from '@angular/material/menu';
-
-describe('ChaConfigComponent', () => {
-  let component: ChaConfigComponent;
-  let fixture: ComponentFixture<ChaConfigComponent>;
+describe('DeviceChooseComponent', () => {
+  let component: DeviceChooseComponent;
+  let fixture: ComponentFixture<DeviceChooseComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ChaConfigComponent],
-      imports: [NgbModule,
-        MatMenuModule,
+      declarations: [],
+      imports: [
+        DeviceChooseComponent, 
+        MatDialogModule, 
         TranslateModule.forRoot({
                   loader: {
                     provide: TranslateLoader,
                     useClass: TranslateFakeLoader
                   }
-                })],
-      providers: [TranslateService, TranslateStore]
+                })
+      ],
+      providers: [
+        TranslateService, 
+        TranslateStore,
+        { provide: MatDialogRef, useValue: {} },
+        { provide: MAT_DIALOG_DATA, useValue: {} },
+     ],
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(ChaConfigComponent);
+    fixture = TestBed.createComponent(DeviceChooseComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

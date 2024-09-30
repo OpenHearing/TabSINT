@@ -1,0 +1,13 @@
+<div class="modal-header">
+    Select Device
+</div>
+
+<div class="modal-body">
+    <button *ngFor="let device of availableDevices" (click)="choose(device)"
+    [ngClass]="selectedDevice?.name==device.name ? 'btn cha-selected': 'btn cha-unselected'" style="display: block;">{{device.name}}</button>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary btn-block" (click)="select()" [ngClass]="!selectedDevice ? 'disabled custom-disabled': ''">{{'Select' | translate}}</button>
+    <button type="button" class="btn btn-primary btn-block" (click)="cancel()">{{'Cancel' | translate}}</button>
+</div>

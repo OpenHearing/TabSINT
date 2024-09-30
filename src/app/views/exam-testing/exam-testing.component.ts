@@ -44,12 +44,7 @@ export class ExamTestingComponent {
   isMediaLoading = this.examService?.currentPage?.loadingRequired && this.examService?.currentPage?.loadingActive;
   isLoadingComplete = this.examService?.currentPage?.loadingRequired && !this.examService?.currentPage?.loadingActive;
   
-  examTestingTitleClass = {
-    undefined: _.isUndefined(this.examService?.currentPage?.questionMainText),
-    medium: ((this.examService?.currentPage?.questionMainText!.length >= 38) 
-      && (this.examService?.currentPage?.questionMainText!.length < 48)), 
-    long: (this.examService?.currentPage?.questionMainText!.length > 42)
-  };
+  examTestingTitleClass = this.shrinkTitleIfTooLong(this.examService?.currentPage?.questionMainText);
 
   testHTML = this.sanitizer.bypassSecurityTrustHtml(`
     <button id="my-button" (click)=testFunction() >Button 1</button>
@@ -57,6 +52,19 @@ export class ExamTestingComponent {
     <button onclick=console.log('test'); >Button 3</button>
     <button onclick=console.log(window.pageModel); >Button 4</button>
   `);
+
+  shrinkTitleIfTooLong(questionMainText: string | undefined) {
+    let styleObject = {"medium":false,"long":false};
+    if (!questionMainText) {
+      // will use default styling, no additions necessary
+    } 
+    else if ( ((questionMainText.length >= 38) && (questionMainText.length < 48)) ) {
+      styleObject.medium = true;
+    } else if (questionMainText.length > 42) {
+      styleObject["long"] = true;
+    }
+    return styleObject
+  }
 
   ngAfterViewInit() {
     // console.log(document.getElementById('my-button') as HTMLElement);

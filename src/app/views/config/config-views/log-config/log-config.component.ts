@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Tasks } from '../../utilities/tasks.service';
-import { SqLite } from '../../utilities/sqLite.service';
-import { StateModel } from '../../models/state/state.service';
-import { StateInterface } from '../../models/state/state.interface';
-import { FileService } from '../../utilities/file.service';
-import { DialogDataInterface } from '../../interfaces/dialog-data.interface';
-import { DialogType } from '../../utilities/constants';
-import { Notifications } from '../../utilities/notifications.service';
-import { Logger } from '../../utilities/logger.service';
+import { Tasks } from '../../../../utilities/tasks.service';
+import { SqLite } from '../../../../utilities/sqLite.service';
+import { StateModel } from '../../../../models/state/state.service';
+import { StateInterface } from '../../../../models/state/state.interface';
+import { FileService } from '../../../../utilities/file.service';
+import { DialogDataInterface } from '../../../../interfaces/dialog-data.interface';
+import { DialogType } from '../../../../utilities/constants';
+import { Notifications } from '../../../../utilities/notifications.service';
+import { Logger } from '../../../../utilities/logger.service';
 
 @Component({
   selector: 'log-config-view',

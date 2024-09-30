@@ -1,0 +1,39 @@
+<!-- Bluetooth Message-->
+<div class="row pad-top" *ngIf="!state.bluetoothConnected">
+    <div class="col-10 text-warning"><em>Bluetooth radio disabled</em></div>
+</div>
+
+<!-- Add a new connection -->
+<new-connection></new-connection>
+
+<!-- Spacing -->
+<br><br>
+
+<!-- View and manage connected devices -->
+<connected-devices></connected-devices>
+
+<!-- Show Advanced -->
+<div class="row showhideSection">
+    <div class="col-12 text-center">
+        <a href="javascript:" (click)="state.isPaneOpen.deviceAdvanced = !state.isPaneOpen.deviceAdvanced">
+            <span *ngIf="state.isPaneOpen.deviceAdvanced" translate>
+                Hide Advanced Settings 
+                <i class="ion-chevron-up"></i>
+            </span>
+            <span *ngIf="!state.isPaneOpen.deviceAdvanced" translate>
+                Show Advanced Settings 
+                <i class="ion-chevron-down"></i>
+            </span>
+        </a>
+    </div>
+</div>
+
+<div #collapse="ngbCollapse" [ngbCollapse]="!state.isPaneOpen.deviceAdvanced">
+    
+    <div class="row pad-top">
+        <div class="col-12">
+            <h5>Preferences</h5>
+        </div>
+    </div>
+
+</div>

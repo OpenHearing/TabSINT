@@ -1,3 +1,5 @@
+import { ConnectedDevices } from "../../interfaces/connected-devices.interface"
+
 export interface DevicesInterface {
     build: string,
     protocolId: string,
@@ -8,5 +10,6 @@ export interface DevicesInterface {
     model: string,
     os: string,
     other: string,
-    diskspace: string
+    diskspace: string,
+    connectedDevices: ConnectedDevices
 }

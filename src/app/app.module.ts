@@ -44,6 +44,7 @@ import { Notifications } from './utilities/notifications.service';
 import { SqLite } from './utilities/sqLite.service';
 import { Logger } from './utilities/logger.service';
 import { Paths } from './utilities/paths.service';
+import { DeviceUtil } from './utilities/device-utility';
 
 // Controllers
 import { FileService } from './utilities/file.service';
@@ -53,12 +54,12 @@ import { ProtocolService } from './controllers/protocol.service';
 import { LocalServerService } from './controllers/local-server.service';
 import { ResultsService } from './controllers/results.service';
 import { ExamService } from './controllers/exam.service';
+import { TympanWrap } from './utilities/tympan-wrap.service';
+import { TympanService } from './controllers/tympan.service';
 import { AdminService } from './controllers/admin.service';
-import { TabsintConfigComponent } from './views/tabsint-config/tabsint-config.component';
-import { SoftwareConfigComponent } from './views/software-config/software-config.component';
-import { LogConfigComponent } from './views/log-config/log-config.component';
-import { ChaConfigComponent } from './views/cha-config/cha-config.component';
-import { ChaInfoComponent } from './views/cha-info/cha-info.component';
+import { TabsintConfigComponent } from './views/config/config-views/tabsint-config/tabsint-config.component';
+import { SoftwareConfigComponent } from './views/config/config-views/software-config/software-config.component';
+import { LogConfigComponent } from './views/config/config-views/log-config/log-config.component';
 import { DebugComponent } from './views/debug/debug.component';
 import { ExamReadyComponent } from './views/exam-ready/exam-ready.component';
 import { ExamNotReadyComponent } from './views/exam-not-ready/exam-not-ready.component';
@@ -70,6 +71,10 @@ import { MultipleChoiceComponent } from './views/response-area/response-areas/mu
 import { SingleResultModalComponent } from './views/single-result-modal/single-result-modal/single-result-modal.component';
 import { ExternalResponseAreaComponent } from './views/response-area/response-areas/external-response-area/external-response-area.component';
 import { TasksBannerComponent } from './views/tasks-banner/tasks-banner.component';
+import { DeviceConfigComponent } from './views/config/config-views/device-config/device-config.component';
+import { DeviceInfoComponent } from './views/config/config-views/device-info/device-info.component';
+import { ConnectedDevicesComponent } from './views/config/config-views/connected-devices/connected-devices.component';
+import { NewConnectionComponent } from './views/config/config-views/new-connection/new-connection.component';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -90,8 +95,6 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     TabsintConfigComponent,
     SoftwareConfigComponent,
     LogConfigComponent,
-    ChaConfigComponent,
-    ChaInfoComponent,
     DebugComponent,
     ExamReadyComponent,
     ExamNotReadyComponent,
@@ -103,6 +106,10 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     SingleResultModalComponent,
     ExternalResponseAreaComponent,
     TasksBannerComponent,
+    DeviceConfigComponent,
+    DeviceInfoComponent,
+    ConnectedDevicesComponent,
+    NewConnectionComponent
   ],
   imports: [
     BrowserModule,
@@ -143,6 +150,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     Notifications,
     Logger,
     Paths,
+    DeviceUtil,
     FileService,
     ConfigService,
     VersionService,
@@ -151,7 +159,9 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     ResultsService,
     ExamService,
     AdminService,
-    TranslateService
+    TranslateService,
+    TympanWrap,
+    TympanService
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

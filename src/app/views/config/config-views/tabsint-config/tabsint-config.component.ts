@@ -1,19 +1,19 @@
 import { Component,ChangeDetectorRef  } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { DiskModel } from '../../models/disk/disk.service';
-import { Logger } from '../../utilities/logger.service';
-import { VersionService } from '../../controllers/version.service';
-import { ConfigService } from '../../controllers/config.service';
-import { AppState } from '../../utilities/constants';
-import { StateModel } from '../../models/state/state.service';
-import { DiskInterface } from '../../models/disk/disk.interface';
-import { StateInterface } from '../../models/state/state.interface';
-import { ChangePinComponent } from '../change-pin/change-pin.component';
+import { DiskModel } from '../../../../models/disk/disk.service';
+import { Logger } from '../../../../utilities/logger.service';
+import { VersionService } from '../../../../controllers/version.service';
+import { ConfigService } from '../../../../controllers/config.service';
+import { AppState } from '../../../../utilities/constants';
+import { StateModel } from '../../../../models/state/state.service';
+import { DiskInterface } from '../../../../models/disk/disk.interface';
+import { StateInterface } from '../../../../models/state/state.interface';
+import { ChangePinComponent } from '../../../change-pin/change-pin.component';
 import { MatDialog } from '@angular/material/dialog';
-import { ChangeMaxLogLengthComponent } from '../change-max-log-length/change-max-log-length.component';
+import { ChangeMaxLogLengthComponent } from '../../../change-max-log-length/change-max-log-length.component';
 import { TabsintFs } from 'tabsintfs';
-import { VersionInterface } from '../../interfaces/version.interface';
+import { VersionInterface } from '../../../../interfaces/version.interface';
 
 @Component({
   selector: 'tabsint-config-view',
@@ -100,10 +100,6 @@ export class TabsintConfigComponent {
     });
   }
 
-  // resetConfig() {
-  //   console.log("resetConfig pressed");
-  // }
-
   toggleAutoUpload() {
     this.diskModel.updateDiskModel('autoUpload', this.diskModel.disk.autoUpload == undefined || !this.diskModel.disk.autoUpload);
     this.disk = this.diskModel.getDisk();
@@ -122,18 +118,6 @@ export class TabsintConfigComponent {
   gainReset() {
     console.log("gainReset pressed");
   }
-
-  // play1kHz94dB() {
-  //   console.log("play1kHz94dB pressed");
-  // }
-
-  // playCompAudio() {
-  //   console.log("playCompAudio pressed");
-  // }
-
-  // playCompAudioLinear() {
-  //   console.log("playCompAudioLinear pressed");
-  // }
 
   async changeLocalResultsDir(){
 
