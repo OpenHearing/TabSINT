@@ -97,7 +97,7 @@ export class ExamService {
      * @models results, state
     */
     submit() {
-        console.log("ExamService submit() called");
+        this.submitDefault();
     }    
 
     skip() {
@@ -125,8 +125,14 @@ export class ExamService {
             if (pageList.length>0) {
                 this.addPagesToStack(pageList, nextExamIndex);
             }
-            this.state.examIndex = nextExamIndex;
-            this.startPage();
+            // make sure there are more pages, if not end the exam
+            if (this.pageModel.stack.length > nextExamIndex) {
+                this.state.examIndex = nextExamIndex;
+                this.startPage();
+            } else {
+                this.endExam();
+            }
+            
         }   
     }
 
@@ -253,6 +259,14 @@ export class ExamService {
         return id;
     }
 
+    /** Resets the protocol stack and exam index.
+     * @summary Resets the protocol stack to an empty array and the exam index to 0.
+    */
+    resetProtocolStack() {
+        this.pageModel.stack = [];
+        this.state.examIndex = 0;
+    }
+
     /** Checks if a page is submittable.
      * @summary Checks if a page is submittable and returns a boolean
      * @returns boolean if page is submittable
@@ -276,6 +290,7 @@ export class ExamService {
         this.results.currentExam.elapsedTime = calculateElapsedTime(this.results.currentExam.testDateTime!);
         this.resultsService.save(this.results.currentExam);
         this.state.examState = ExamState.Finalized;
+        this.resetProtocolStack();
         window.scrollTo(0, 0);
     }
 
