@@ -21,7 +21,7 @@ export class TextboxComponent {
   protocol: ProtocolModelInterface;
   state: StateInterface
   rows: number;
-  subscription: Subscription | undefined; // TODO: to replace this any, we need types for each of the possible page
+  subscription: Subscription | undefined;
 
   constructor (public resultsModel: ResultsModel, public pageModel: PageModel, public protocolModel: ProtocolModel, public stateModel: StateModel) {
     this.results = this.resultsModel.getResults();
@@ -33,8 +33,9 @@ export class TextboxComponent {
 
   ngOnInit() {
     // TODO: replace the below any with proper typing
-    this.subscription = this.pageModel.currentPageObservable.subscribe( (updatedPage:any) => {
-      this.rows = updatedPage?.responseArea?.rows;
+    this.subscription = this.pageModel.currentPageObservable.subscribe( (updatedPage:PageInterface) => {
+      const responseArea = updatedPage.responseArea as TextBoxInterface;
+      this.rows = responseArea?.rows;
     }); 
   }
 

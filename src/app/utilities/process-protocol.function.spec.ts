@@ -30,10 +30,12 @@ const testProt1 = {
                 type: "multipleChoiceResponseArea",
                 choices: [
                     {
+                        id: "1",
                         label: "Text Box",
                         value: "Text Box"
                     },
                     {
+                        id: "2",
                         label: "End All",
                         value: "End All"
                     }
