@@ -88,13 +88,6 @@ export class TympanWrap {
         let msg_to_write = this.msgToDataView(msg);
         console.log("msg_to_write",JSON.stringify(msg_to_write));
         console.log("TIME",Date.now());
-        
-        await BleClient.startNotifications(device.deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID,(e) => {
-                console.log("e.buffer",e.buffer);
-            this.TMP_BUFFER = this.appendDataView(this.TMP_BUFFER,e);
-            console.log("appended buffer",this.TMP_BUFFER);
-            console.log(this.dataViewToMsg(this.TMP_BUFFER));
-        });
 
         let resp = await BleClient.write(device.deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID, msg_to_write);
         this.logger.debug("resp from writing: "+JSON.stringify(msg_to_write)+" is: "+JSON.stringify(resp));
@@ -102,6 +95,13 @@ export class TympanWrap {
 
     async connect(device:BleDevice,onDisconnect:Function) {
         await BleClient.connect(device.deviceId, (deviceId:string) => onDisconnect(deviceId));
+        await BleClient.startNotifications(device.deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID,(e) => {
+            console.log("e.buffer",e.buffer);
+            this.TMP_BUFFER = this.appendDataView(this.TMP_BUFFER,e);
+            console.log("appended buffer",this.TMP_BUFFER);
+            console.log(this.dataViewToMsg(this.TMP_BUFFER));
+        });
+
         this.logger.debug('connected to device:'+JSON.stringify(device));
     }
 

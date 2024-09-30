@@ -9,10 +9,12 @@ import { TympanService } from '../../../../controllers/tympan.service';
 import { Logger } from '../../../../utilities/logger.service';
 import { isTympanDevice } from '../../../../guards/type.guard';
 import { DeviceUtil } from '../../../../utilities/device-utility';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'connected-devices',
-  templateUrl: './connected-devices.component.html'
+  templateUrl: './connected-devices.component.html',
+  imports: [TranslateModule]
 })
 export class ConnectedDevicesComponent {
   devices: DevicesInterface;

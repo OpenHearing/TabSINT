@@ -8,12 +8,14 @@ import { IndicatorComponent } from '../indicator/indicator.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { ConfigComponent } from '../config/config.component';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { TabsintConfigComponent } from '../tabsint-config/tabsint-config.component';
-import { ChaConfigComponent } from '../cha-config/cha-config.component';
-import { SoftwareConfigComponent } from '../software-config/software-config.component';
+import { TabsintConfigComponent } from '../config/config-views/tabsint-config/tabsint-config.component';
+import { SoftwareConfigComponent } from '../config/config-views/software-config/software-config.component';
 import { LogConfigComponent } from '../config/config-views/log-config/log-config.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
+import { DeviceConfigComponent } from '../config/config-views/device-config/device-config.component';
+import { NewConnectionComponent } from '../config/config-views/new-connection/new-connection.component';
+import { ConnectedDevicesComponent } from '../config/config-views/connected-devices/connected-devices.component';
 
 describe('AdminComponent', () => {
   let component: AdminComponent;
@@ -27,9 +29,11 @@ describe('AdminComponent', () => {
         IndicatorComponent, 
         ConfigComponent, 
         TabsintConfigComponent,
-        ChaConfigComponent,
         SoftwareConfigComponent,
-        LogConfigComponent
+        LogConfigComponent,
+        DeviceConfigComponent,
+        NewConnectionComponent,
+        ConnectedDevicesComponent
       ],
       imports: [
         FormsModule,

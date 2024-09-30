@@ -13,7 +13,7 @@ import { Subscription } from 'rxjs';
   selector: 'device-choose-view',
   standalone: true,
   templateUrl: './device-choose.component.html',
-  imports: [FormsModule, TranslateModule, NgFor, NgClass]
+  imports: [FormsModule,TranslateModule,  NgFor, NgClass]
 })
 export class DeviceChooseComponent implements OnInit, OnDestroy {
   disk: DiskInterface;
