@@ -7,7 +7,7 @@ export const manualAudiometrySchema: JSONSchemaType<ManualAudiometryInterface> =
     properties: {
         enableSkip: { type: "boolean", nullable: true, default: false },
         responseRequired: { type: "boolean", nullable: true, default: true },
-        type: { type: "string", enum: ["audiometryResponseArea"] },
+        type: { type: "string", enum: ["manualAudiometryResponseArea"] },
         exportToCSV: { type: "boolean", nullable: true, default: false },
         maxOutputLevel: { type: "number", nullable: true },
         minOutputLevel: { type: "number", nullable: true },

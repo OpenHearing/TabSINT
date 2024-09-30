@@ -106,7 +106,7 @@
           "title": "Manual Audiometry Test",
           "instructionText": "Test manual audiometry response area",
           "responseArea": {
-              "type": "audiometryResponseArea",
+              "type": "manualAudiometryResponseArea",
               "maxOutputLevel": 110,
               "minOutputLevel": -10,
               "currentDbSpl": 50,
