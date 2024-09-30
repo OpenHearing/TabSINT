@@ -1,0 +1,61 @@
+<!-- Add new connection -->
+<div class="row pad-top" *ngIf="!state.newDeviceConnection">
+  <div class="col-12">
+    <button (click)="addNewConnection()">+ New Connection</button>
+  </div>
+</div>
+
+<!-- Configure new connection -->
+<ng-container *ngIf="state.newDeviceConnection">
+  <div class="row pad-top">
+    <div class="col-12">
+      <h5>Add New Connection</h5>
+    </div>
+  </div>
+  
+  <div class="row pad-top">
+    <!-- Device Type -->
+    <div class="col-3">
+      <label translate for="deviceType">Device Type:</label>
+    </div>
+    <div ngbDropdown class="col-2 dropdown-width" display="dynamic">                            
+      <button type="button" class="btn btn-default btn-block dropdown-toggle" id="deviceType" ngbDropdownToggle>
+        {{newConnectedDevice.type}}
+      </button>
+      <div ngbDropdownMenu aria-labelledby="deviceType">
+        <button *ngFor="let deviceType of deviceTypes" ngbDropdownItem (click)="changeDeviceType(deviceType)">{{deviceType}}</button>
+      </div>
+    </div>
+    <div class="col-2"></div>
+
+    <!-- Device ID -->
+    <!-- <ng-container *ngIf="newConnectedDevice.type!='Select One'">
+      <div class="col-2">
+        <label translate for="deviceType">Device ID:</label>
+      </div>
+      <div ngbDropdown class="col-3 dropdown-width" display="dynamic">                            
+        <button type="button" class="btn btn-default btn-block dropdown-toggle" id="deviceID" ngbDropdownToggle>
+          {{newConnectedDevice.tabsintId}}
+        </button>
+        <div ngbDropdownMenu aria-labelledby="tabsintId">
+          <button *ngFor="let tabsintId of tabsintIds" ngbDropdownItem (click)="changeTabsintId(tabsintId)">{{tabsintId}}</button>
+        </div>
+      </div>
+    </ng-container> -->
+  </div>
+
+  <div class="row pad-top" *ngIf="newConnectedDevice.type!='Select One'">
+    <!-- Scan and connect -->
+    <div class="col-4">
+      <button class="btn btn-primary btn-block" (click)="scanAndConnect()">Scan</button>
+    </div>
+    <div class="col-2"></div>
+    
+    <!-- Cancel -->
+    <div class="col-4">
+      <button class="btn btn-primary btn-block" (click)="cancel()">Cancel</button>
+    </div>
+    <div class="col-2"></div>
+  </div>
+
+</ng-container>

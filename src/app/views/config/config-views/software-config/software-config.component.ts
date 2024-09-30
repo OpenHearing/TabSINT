@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 
-import { DiskModel } from '../../models/disk/disk.service';
-import { Logger } from '../../utilities/logger.service';
-import { VersionService } from '../../controllers/version.service';
-import { DiskInterface } from '../../models/disk/disk.interface';
-import { DevicesModel } from '../../models/devices/devices.service';
-import { DevicesInterface } from '../../models/devices/devices.interface';
-import { VersionInterface } from '../../interfaces/version.interface';
+import { DiskModel } from '../../../../models/disk/disk.service';
+import { Logger } from '../../../../utilities/logger.service';
+import { VersionService } from '../../../../controllers/version.service';
+import { DiskInterface } from '../../../../models/disk/disk.interface';
+import { DevicesModel } from '../../../../models/devices/devices.service';
+import { DevicesInterface } from '../../../../models/devices/devices.interface';
+import { VersionInterface } from '../../../../interfaces/version.interface';
 
 @Component({
   selector: 'software-config-view',
