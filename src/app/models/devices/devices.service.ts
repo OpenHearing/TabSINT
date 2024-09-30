@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { DevicesInterface } from './devices.interface';
 import { Device } from '@capacitor/device';
 import { Logger } from '../../utilities/logger.service';
+import { BehaviorSubject } from 'rxjs';
+import { BleDevice } from '../../interfaces/bluetooth.interface';
 
 @Injectable({
     providedIn: 'root',
@@ -19,8 +21,15 @@ export class DevicesModel {
         model: "model",
         os: "os",
         other: "other",
-        diskspace: "Unknown"
+        diskspace: "Unknown",
+        connectedDevices: {
+            "tympan":[],
+            "cha":[],
+            "svantek":[]
+        }
     }
+
+    availableDevicesObservable = new BehaviorSubject<BleDevice[]>([]);
 
     constructor(private logger: Logger) {
         this.load();

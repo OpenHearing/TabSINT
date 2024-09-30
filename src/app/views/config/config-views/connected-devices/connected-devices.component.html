@@ -1,0 +1,94 @@
+
+
+<!-- Tympans -->
+<mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.tympans">
+    <mat-expansion-panel-header>
+        <mat-panel-title>
+            {{'Tympans'| translate}}
+        </mat-panel-title>
+    </mat-expansion-panel-header>
+       
+    <div class="panel-body text-left">
+        <div class="row pad-top" *ngIf="devices.connectedDevices.tympan.length > 0">
+            <!-- TODO: All this below should be done with a template not harcoded so we can use a single template for all tympans -->
+
+            <!-- Device ID -->
+            <div class="col-2 admin-labels">TabSINT ID: </div>
+            <div class="col-1"><em>{{devices.connectedDevices.tympan[0].tabsintId}}</em></div>
+            <div class="col-1"><em> <i class="ion-information-circled"></i>  </em></div>
+
+            <!-- Name -->
+            <div class="col-2 admin-labels">DeviceName: </div>
+            <div class="col-3"><em>{{devices.connectedDevices.tympan[0].name}}</em></div>
+
+            <!-- State -->
+            <div class="col-1 admin-labels">State: </div>
+            <div class="col-2" *ngIf="devices.connectedDevices.tympan[0].state === TympanState.Connected"><em>Connected</em></div>
+            <div class="col-2" *ngIf="devices.connectedDevices.tympan[0].state === TympanState.Disconnected"><em>Not Connected</em></div>
+            <div class="col-2" *ngIf="devices.connectedDevices.tympan[0].state === TympanState.Reprogram"><em>Reprogramming</em></div>
+            <div class="col-2" *ngIf="devices.connectedDevices.tympan[0].state !== TympanState.Connected && devices.connectedDevices.tympan[0].state !== TympanState.Disconnected && devices.connectedDevices.tympan[0].state !== TympanState.Reprogram"><em>Connecting</em></div>
+        
+            <!-- Connection Buttons-->
+            <div class="row pad-top">
+                <div class="col-4" [ngSwitch]="devices.connectedDevices.tympan[0].state">
+                    <button *ngSwitchDefault class="btn btn-primary btn-block disabled custom-disabled">Connect</button>
+                    <button *ngSwitchCase="TympanState.Disconnected" class="btn btn-primary btn-block" [disabled]="!state.bluetoothConnected" 
+                        [ngClass]="!state.bluetoothConnected ? 'disabled custom-disabled': ''" (click)="reconnect(devices.connectedDevices.tympan[0])">Connect</button>
+                </div>
+                <div class="col-4" [ngSwitch]="devices.connectedDevices.tympan[0].state">
+                    <button *ngSwitchDefault class="btn btn-primary btn-block disabled custom-disabled">Disconnect</button>
+                    <button *ngSwitchCase="TympanState.Connected" class="btn btn-primary btn-block" (click)="disconnect(devices.connectedDevices.tympan[0])">Disconnect</button>
+                </div>
+                <div class="col-4">
+                    <button class="btn btn-primary btn-block" (click)="remove(devices.connectedDevices.tympan[0])">Remove</button>
+                </div>
+            </div>
+        
+        
+            <!-- Connected Tympan -->
+            <!-- TODO: Move this to the info button next to device ID -->
+            <div *ngIf="devices.connectedDevices.tympan[0].state === TympanState.Connected">
+                <hr />
+                <!-- Show Advanced -->
+                <div class="row showhideSection">
+                    <div class="col-12 text-center">
+                        <a href="javascript:" (click)="expanded = !expanded">
+                            <span *ngIf="expanded" translate>
+                                Hide Device Details 
+                                <i class="ion-chevron-up"></i>
+                            </span>
+                            <span *ngIf="!expanded" translate>
+                                Show Device Details
+                                <i class="ion-chevron-down"></i>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+                <div #collapse="ngbCollapse" [ngbCollapse]="!expanded">
+                    <device-info-view></device-info-view>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</mat-expansion-panel>
+
+
+<!-- TODO: Add above functionality for all other devices -->
+<div class="row pad-top">
+    <div class="col-12">
+        <h5>CHA</h5>
+    </div>
+</div>
+
+<div class="row pad-top">
+    <div class="col-12">
+        <h5>Svantek</h5>
+    </div>
+</div>
+
+<div class="row pad-top">
+    <div class="col-12">
+        <h5>Other</h5>
+    </div>
+</div>

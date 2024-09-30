@@ -1,18 +1,17 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-
-import { DiskModel } from '../../models/disk/disk.service';
-import { AppState } from '../../utilities/constants';
-import { StateModel } from '../../models/state/state.service';
-import { DiskInterface } from '../../models/disk/disk.interface';
-import { StateInterface } from '../../models/state/state.interface';
+import { DiskModel } from '../../../../models/disk/disk.service';
+import { AppState } from '../../../../utilities/constants';
+import { StateModel } from '../../../../models/state/state.service';
+import { DiskInterface } from '../../../../models/disk/disk.interface';
+import { StateInterface } from '../../../../models/state/state.interface';
 
 @Component({
-  selector: 'cha-info-view',
-  templateUrl: './cha-info.component.html',
-  styleUrl: './cha-info.component.css'
+  selector: 'device-info-view',
+  templateUrl: './device-info.component.html',
+  styleUrl: './device-info.component.css'
 })
-export class ChaInfoComponent {
+export class DeviceInfoComponent {
   disk: DiskInterface;
   state: StateInterface;
 
@@ -31,18 +30,18 @@ export class ChaInfoComponent {
 
   // VARIABLES - PROBABLY SHOULD BE MOVED?
 
-  cha = {
-    myCha: {
+  tympan = {
+    myTympan: {
       setting: {
         auto_shutdown_time: "x"
       },
       battery: {
-        level: () => {return "placeholder"}
+        level: function() {return "placeholder"}
       },
       id: {
         serialNumber: "placeholder",
         buildDateTime: "placeholder",
-        chaCalibrationDate: "placeholder",
+        tympanCalibrationDate: "placeholder",
         description: "placeholder",
       },
       name: "placeholder",
