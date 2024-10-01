@@ -2,11 +2,12 @@ import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
 import { RouterOutlet } from '@angular/router';
+import { TasksBannerComponent } from './views/tasks-banner/tasks-banner.component';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AppComponent],
+      declarations: [AppComponent,TasksBannerComponent],
       imports: [RouterOutlet,
         TranslateModule.forRoot({
                   loader: {

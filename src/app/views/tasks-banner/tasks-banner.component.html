@@ -1,0 +1,6 @@
+<mat-toolbar *ngIf="isVisible">
+  <div class="task-container" *ngFor="let task of getOngoingTasksMessage()">
+    <span class="task-text">{{ task }}</span>
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  </div>
+</mat-toolbar>
