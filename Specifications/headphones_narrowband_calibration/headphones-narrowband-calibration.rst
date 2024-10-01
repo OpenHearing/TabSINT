@@ -76,7 +76,7 @@ The GUI should look like the image below with the following features.
 Results-View
 ^^^^^^^^^^^^^
 
-The GUI should display the results (calibration factors and maximum output levels) of the headphones narrowband calibration exam, if specified in the protocol. A table similar to the one shown below should summarize the results saved on the headphones narrowband calibration exam, where frequencies are the frequencies specified in the protocol.
+The GUI should display the results (calibration factors and maximum output levels) of the headphones narrowband calibration exam, if specified in the protocol. A table similar to the one shown below should summarize the results saved on the headphones narrowband calibration exam, where frequencies are the frequencies specified in the protocol. There will be 1 table for the right ear (header background color red, as in audiometry results), and 1 table for the left ear (header background color blue, as in audiometry results).
 
 .. list-table::
     :widths: 10, 20, 20
