@@ -67,11 +67,6 @@ export class AppComponent {
 
     if (!_.isUndefined(this.disk.activeProtocolMeta)) await this.protocolService.load(this.disk.activeProtocolMeta);
 
-    this.tasks.register('dummyTask', 'Simulating a background process...');
-
-    setTimeout(() => {
-      this.tasks.deregister('dummyTask');
-    }, 5000);
   }
 }
 
