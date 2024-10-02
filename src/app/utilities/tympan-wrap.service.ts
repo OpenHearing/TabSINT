@@ -22,12 +22,14 @@ export class TympanWrap {
     
 
     constructor(
-        private stateModel: StateModel, 
-        @Inject(WINDOW) private window: Window, 
-        private logger: Logger
+        private readonly stateModel: StateModel, 
+        @Inject(WINDOW) private readonly window: Window, 
+        private readonly logger: Logger
     ) {
         this.state = this.stateModel.getState();
-        this.initialize();
+        setTimeout(() => {
+            this.initialize();
+        }, 1);
     }
 
     // Useful links
@@ -35,6 +37,7 @@ export class TympanWrap {
     // @capacitor-community/bluetooth-le ----> https://www.npmjs.com/package/@capacitor-community/bluetooth-le/v/0.5.1
 
     async initialize() {
+        this.logger.debug("Initializing BLE...");
         try {
             await BleClient.initialize();
             this.state.bluetoothConnected = true;

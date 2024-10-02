@@ -4,7 +4,7 @@ import { TympanWrap } from '../../utilities/tympan-wrap.service';
 import { BleDevice } from '../../interfaces/bluetooth.interface';
 import { DevicesModel } from '../../models/devices/devices.service';
 import { DevicesInterface } from '../../models/devices/devices.interface';
-import { TympanState } from '../../utilities/constants';
+import { DeviceState } from '../../utilities/constants';
 import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
 import { NewConnectedDevice, ConnectedDevice } from '../../interfaces/connected-device.interface';
@@ -19,11 +19,11 @@ export class TympanService {
     state: StateInterface
 
     constructor(
-        private tympanWrap: TympanWrap, 
-        private devicesModel: DevicesModel,
-        private stateModel: StateModel,
-        private logger: Logger,
-        private deviceUtil: DeviceUtil
+        private readonly tympanWrap: TympanWrap, 
+        private readonly devicesModel: DevicesModel,
+        private readonly stateModel: StateModel,
+        private readonly logger: Logger,
+        private readonly deviceUtil: DeviceUtil
     ) {
         this.devices = this.devicesModel.getDevices();
         this.state = this.stateModel.getState();
@@ -31,7 +31,7 @@ export class TympanService {
 
     onDisconnect(deviceId:string): void {
         this.logger.debug(`device ${deviceId} disconnected`);
-        this.deviceUtil.updateDeviceState(deviceId,TympanState.Disconnected);
+        this.deviceUtil.updateDeviceState(deviceId,DeviceState.Disconnected);
     }
 
     async startScan() {
@@ -51,11 +51,8 @@ export class TympanService {
             await this.tympanWrap.connect(tympan.deviceId,this.onDisconnect.bind(this));
 
             let newConnection = newConnectedDevice;
-            // TODO: could all of the below happen in createDeviceConnection()? Or at least parts?
             newConnection["deviceId"] = tympan.deviceId;
             newConnection["name"] = tympan.name;
-            newConnection["state"] = TympanState.Connected; 
-            newConnection["msgId"] = 0;
 
             let connection: ConnectedDevice = this.deviceUtil.createDeviceConnection(newConnection);
             this.devices.connectedDevices.tympan.push(connection);
@@ -65,29 +62,18 @@ export class TympanService {
         }      
     }
 
-    async reconnect(tympanId:string | undefined) {
-        // TODO: This return is only needed for typing, it can likely be improved
-        if (!tympanId) {
-            this.logger.debug("failed to reconnect to tympan: "+JSON.stringify(tympanId));
-            return
-        }
-
+    async reconnect(tympanId:string) {
         try {
             await this.tympanWrap.reconnect(tympanId,this.onDisconnect.bind(this));
-            this.deviceUtil.updateDeviceState(tympanId,TympanState.Connected);
+            this.deviceUtil.updateDeviceState(tympanId,DeviceState.Connected);
         } catch {
             this.logger.error("failed to reconnect to tympan: "+JSON.stringify(tympanId));
         }
     }
 
-    async disconnect(tympanId:string | undefined) {
-        // TODO: This return is only needed for typing, it can likely be improved
-        if (!tympanId) {
-            this.logger.debug("failed to disconnect to tympan: "+JSON.stringify(tympanId));
-            return
-        }
-
+    async disconnect(tympanId:string) {
         await this.tympanWrap.disconnect(tympanId);
+        this.deviceUtil.updateDeviceState(tympanId,DeviceState.Disconnected);
     }
 
     async requestId(tympanId:string,msgId:string) {

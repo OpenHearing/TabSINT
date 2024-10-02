@@ -74,6 +74,7 @@ import { DeviceConfigComponent } from './views/config/config-views/device-config
 import { DeviceInfoComponent } from './views/config/config-views/device-info/device-info.component';
 import { ConnectedDevicesComponent } from './views/config/config-views/connected-devices/connected-devices.component';
 import { NewConnectionComponent } from './views/config/config-views/new-connection/new-connection.component';
+import { DeviceService } from './controllers/devices.service';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -158,7 +159,8 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     AdminService,
     TranslateService,
     TympanWrap,
-    TympanService
+    TympanService,
+    DeviceService
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

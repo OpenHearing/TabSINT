@@ -1,8 +1,8 @@
-import { TympanState } from "../utilities/constants";
+import { DeviceState } from "../utilities/constants";
 
 export interface ConnectedTympan {
     deviceId: string;
     name: string;
-    state: TympanState;
+    state: DeviceState;
     msgId: number;
 }

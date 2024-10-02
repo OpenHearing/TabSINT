@@ -1,4 +1,4 @@
-import { ConnectedDevice } from "../interfaces/connected-device.interface";
+import { ConnectedDevice, NewConnectedDevice } from "../interfaces/connected-device.interface";
 import { PageDefinition, ProtocolReferenceInterface } from "../interfaces/page-definition.interface";
 import { ProtocolSchemaInterface } from "../interfaces/protocol-schema.interface";
 import { PageTypes } from "../types/custom-types";
@@ -15,6 +15,6 @@ export function isProtocolReferenceInterface(page: PageTypes): page is ProtocolR
     return (page as ProtocolReferenceInterface).reference !== undefined;
 }
 
-export function isTympanDevice(device: ConnectedDevice) {
+export function isTympanDevice(device: ConnectedDevice | NewConnectedDevice) {
     return device.type == "Tympan";
 }

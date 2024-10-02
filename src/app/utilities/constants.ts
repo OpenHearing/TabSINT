@@ -24,7 +24,7 @@ export enum ChaState {
     Reprogram
 }
 
-export enum TympanState {
+export enum DeviceState {
     Connected,
     Disconnected,
     Discovery,
