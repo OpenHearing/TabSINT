@@ -22,10 +22,10 @@ export class DeviceChooseComponent implements OnInit, OnDestroy {
   subscription: Subscription | undefined;
 
   constructor(
-    private changeDetection: ChangeDetectorRef,
-    private dialogRef: MatDialogRef<DeviceChooseComponent>,
-    private diskModel: DiskModel, 
-    private devicesModel: DevicesModel
+    private readonly changeDetection: ChangeDetectorRef,
+    private readonly dialogRef: MatDialogRef<DeviceChooseComponent>,
+    private readonly diskModel: DiskModel, 
+    private readonly devicesModel: DevicesModel
   ) {
     this.disk = this.diskModel.getDisk();
     this.availableDevices = [];

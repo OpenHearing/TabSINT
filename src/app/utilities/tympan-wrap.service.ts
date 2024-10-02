@@ -6,6 +6,8 @@ import { StateInterface } from '../models/state/state.interface';
 import { StateModel } from '../models/state/state.service';
 import { WINDOW } from './window';
 import { BehaviorSubject } from 'rxjs';
+import { DevicesModel } from '../models/devices/devices.service';
+import { DeviceUtil } from './device-utility';
 
 @Injectable({
     providedIn: 'root',
@@ -24,17 +26,16 @@ export class TympanWrap {
     constructor(
         private readonly stateModel: StateModel, 
         @Inject(WINDOW) private readonly window: Window, 
-        private readonly logger: Logger
+        private readonly logger: Logger,
+        private readonly devicesModel: DevicesModel,
+        private readonly deviceUtil: DeviceUtil
     ) {
         this.state = this.stateModel.getState();
-        setTimeout(() => {
-            this.initialize();
-        }, 1);
+        // TODO: Move this to generic utility for running async functions in constructor
+        setTimeout(async () => {
+            await this.initialize();
+        }, 0);
     }
-
-    // Useful links
-    // https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/wikis/TabSINT-%E2%86%94-Tympan-Communication-Protocol?redirected_from=TabSINT-%3C-%3E-Tympan-Communication-Protocol
-    // @capacitor-community/bluetooth-le ----> https://www.npmjs.com/package/@capacitor-community/bluetooth-le/v/0.5.1
 
     async initialize() {
         this.logger.debug("Initializing BLE...");
@@ -51,24 +52,24 @@ export class TympanWrap {
         this.continuousScan = false;
     }
 
-    async startScanning(observable:BehaviorSubject<BleDevice[]>, timeout:number=5000): Promise<void> {
+    async startScanning(subject:BehaviorSubject<BleDevice[]>, timeout:number=5000): Promise<void> {
         this.continuousScan = true;
         if (this.scanning) {
             return
         }
 
         try {
-            this.logger.debug("starting ble scan");
-            await this.scan(observable, timeout);
+            this.logger.debug("starting BLE scan");
+            await this.scan(subject, timeout);
         } catch (error) {
-            console.error(error);
+            this.logger.error("Error starting BLE scan: "+JSON.stringify(error));
             this.scanning = false;
             this.continuousScan = false;
         }
     }
 
-    async scan(observable:BehaviorSubject<BleDevice[]>, timeout:number=5000) {
-        observable.next([]);
+    async scan(subject:BehaviorSubject<BleDevice[]>, timeout:number=5000) {
+        subject.next([]);
         this.scanning = true;
         let results:BleDevice[] = []
         await BleClient.requestLEScan({services: [this.ADAFRUIT_SERVICE_UUID],}, (result:any) => {
@@ -76,43 +77,32 @@ export class TympanWrap {
             if (!results.includes(result.device)) {
                 results.push(result.device);
             }
-            observable.next(results);
+            subject.next(results);
         });
         
         setTimeout(async () => {
             await BleClient.stopLEScan();
             this.scanning = false;
             if (this.continuousScan) {
-                this.scan(observable,timeout);
+                this.scan(subject,timeout);
             }
         }, timeout);
     }
 
     async write(deviceId:string, msg:string) {
         let msg_to_write = this.msgToDataView(msg);
-        console.log("msg_to_write",JSON.stringify(msg_to_write));
         console.log("TIME",Date.now());
-
         let resp = await BleClient.write(deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID, msg_to_write);
-        this.logger.debug("resp from writing: "+JSON.stringify(msg_to_write)+" is: "+JSON.stringify(resp));
+        this.logger.debug("Wrote "+JSON.stringify(msg)+" to tympan with ID: "+deviceId);
     }
 
-    async connect(deviceId:string,onDisconnect:Function) {
+    async connect(deviceId:string, onDisconnect:Function) {
         await BleClient.connect(deviceId, (deviceId:string) => onDisconnect(deviceId));
-        this.TMP_BUFFER[deviceId] = new DataView(new ArrayBuffer(0));
-        await BleClient.startNotifications(deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID,(e:DataView) => {
-            console.log("e.buffer",e.buffer);
-            this.TMP_BUFFER[deviceId] = this.appendDataView(this.TMP_BUFFER[deviceId],e);
-            console.log("appended buffer",this.TMP_BUFFER[deviceId]);
-            this.dataViewToMsg(this.TMP_BUFFER[deviceId]);
+        this.clearTMPBuffer(deviceId);
+        await BleClient.startNotifications(deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID,(dv:DataView) => {
+            this.handleIncomingBytes(deviceId, dv);
         });
-
         this.logger.debug('connected to device:'+JSON.stringify(deviceId));
-    }
-
-    async reconnect(deviceId:string,onDisconnect:Function) {
-        await BleClient.connect(deviceId, (deviceId:string) => onDisconnect(deviceId));
-        this.logger.debug('reconnected to device:'+JSON.stringify(deviceId));
     }
 
     async disconnect(deviceId:string) {
@@ -120,42 +110,50 @@ export class TympanWrap {
         this.logger.debug('disconnected from device:'+JSON.stringify(deviceId));
     }
 
+    handleIncomingBytes(deviceId:string,dv:DataView) {
+        this.TMP_BUFFER[deviceId] = this.appendDataView(this.TMP_BUFFER[deviceId],dv);
+        let tabsintId:string|undefined = this.deviceUtil.getTabsintIdFromDeviceId(deviceId);
+        let msg = this.checkForCompleteMsg(deviceId);
+        if (tabsintId && msg) {
+            this.devicesModel.deviceResponseSubject.next({"tabsintId":tabsintId,"msg":msg});
+        }
+    }
 
-
-
+    /*
+        Byte parsing and DataView handling functions
+    */
 
     msgToDataView(str:string): DataView {
         let start_byte = new Uint8Array([5]);
         let end_byte = new Uint8Array([2]);
         let buf = new TextEncoder().encode(str); // this is a uint8array!
         let crc = this.genCRC8Checksum(buf);
-        console.log("crc",crc);
         let msgToSend = new Uint8Array([...start_byte, ...this.handleEscaping(buf), ...this.handleEscaping(crc), ...end_byte])
-        console.log("number array",Array.from(msgToSend));
         return numbersToDataView(Array.from(msgToSend))
     }
 
-    dataViewToMsg(dv:DataView):void {
-        // TODO: trigger observable here and remove debug logging
-        let msg:string = '';
+    checkForCompleteMsg(deviceId:string):string|undefined {
+        let dv = this.TMP_BUFFER[deviceId];
+        let msg:string|undefined;
         if (dv.getUint8(0)==5 && dv.getUint8(dv.buffer.byteLength-1)==2) {
-            msg='good packet';
             let tmp = new Uint8Array(dv.buffer.slice(0));
-            console.log("tmp",tmp);
             let unescapedArray = this.handleUnescaping(tmp.slice(1,tmp.byteLength-1));
-            console.log("unescapedArray",unescapedArray);
-            console.log("crc",unescapedArray.slice(unescapedArray.byteLength-1));
+            let crc = unescapedArray.slice(unescapedArray.byteLength-1);
             let expectedChecksum = this.genCRC8Checksum(unescapedArray.slice(0,unescapedArray.byteLength-1));
-            console.log("expectedChecksum",expectedChecksum);
-            let tmpDV=new DataView(unescapedArray.slice(0,unescapedArray.byteLength-1).buffer);
-            let pkt = this.dataViewToString(tmpDV);
-            console.log("parsed pkt",pkt);
-            console.log("TIME",Date.now());
-            // TODO: Trigger observable here when a complete msg comes in
-        } else {
-            msg='bad packet';
+            if (crc[0]==expectedChecksum[0]) {
+                let tmpDV = new DataView(unescapedArray.slice(0,unescapedArray.byteLength-1).buffer);
+                msg = this.dataViewToString(tmpDV);
+            } else {
+                msg = "invalid checksum";
+            }
+            console.log("TIME - msg parsed and checksum verified",Date.now());
+            this.clearTMPBuffer(deviceId);
         }
-        console.log(msg);
+        return msg
+    }
+
+    clearTMPBuffer(deviceId:string) {
+        this.TMP_BUFFER[deviceId] = new DataView(new ArrayBuffer(0));
     }
 
     dataViewToString(dv:DataView): string {
@@ -169,14 +167,11 @@ export class TympanWrap {
         return new DataView(tmp.buffer);
     };
 
-
-
-
     handleEscaping(byte_array:Uint8Array) {
         let escaped_byte_array:Uint8Array = new Uint8Array();
         byte_array.forEach( (byte) => {
             if (byte<=31) {
-                escaped_byte_array = new Uint8Array([...escaped_byte_array, ...[3, 80 ^ byte]]);
+                escaped_byte_array = new Uint8Array([...escaped_byte_array, ...[3, 128 ^ byte]]);
             } else {
                 escaped_byte_array = new Uint8Array([...escaped_byte_array, ...[byte]]);
             }
@@ -186,17 +181,17 @@ export class TympanWrap {
 
     handleUnescaping(byte_array:Uint8Array) {
         let unescaped_byte_array:Uint8Array = new Uint8Array();
-        let skipNext:boolean = false;
+        let esc_next:boolean = false;
         byte_array.forEach( (byte:any) => {
-            if (!skipNext) {
+            if (!esc_next) {
                 if (byte==3) {
-                    unescaped_byte_array = new Uint8Array([...unescaped_byte_array, ...[byte ^ 80]]);
-                    skipNext = true;
+                    esc_next = true;
                 } else {
                     unescaped_byte_array = new Uint8Array([...unescaped_byte_array, ...[byte]]);
-                }
+                }  
             } else {
-                skipNext=false;
+                unescaped_byte_array = new Uint8Array([...unescaped_byte_array, ...[byte ^ 128]]);
+                esc_next = false;
             }
         })
         return unescaped_byte_array

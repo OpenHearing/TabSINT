@@ -18,12 +18,6 @@ export enum ExamState {
     Testing
 }
 
-export enum ChaState {
-    Connected,
-    Disconnected,
-    Reprogram
-}
-
 export enum DeviceState {
     Connected,
     Disconnected,

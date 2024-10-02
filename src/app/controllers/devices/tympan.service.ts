@@ -57,17 +57,21 @@ export class TympanService {
             let connection: ConnectedDevice = this.deviceUtil.createDeviceConnection(newConnection);
             this.devices.connectedDevices.tympan.push(connection);
             this.state.isPaneOpen.tympans = true;
+            return connection;
         } catch {
             this.logger.error("failed to connect to tympan: "+JSON.stringify(tympan));
+            return undefined;
         }      
     }
 
     async reconnect(tympanId:string) {
         try {
-            await this.tympanWrap.reconnect(tympanId,this.onDisconnect.bind(this));
+            await this.tympanWrap.connect(tympanId,this.onDisconnect.bind(this));
             this.deviceUtil.updateDeviceState(tympanId,DeviceState.Connected);
+            return this.deviceUtil.getDeviceFromDeviceId(tympanId);
         } catch {
             this.logger.error("failed to reconnect to tympan: "+JSON.stringify(tympanId));
+            return undefined
         }
     }
 
@@ -77,7 +81,7 @@ export class TympanService {
     }
 
     async requestId(tympanId:string,msgId:string) {
-        let msg = "["+msgId+",'requestId']";
+        let msg = '['+msgId+',"requestId"]';
         try {
             await this.tympanWrap.write(tympanId,msg);
         } catch {

@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Logger } from '../utilities/logger.service';
-import { DevicesModel } from '../models/devices/devices.service';
-import { DevicesInterface } from '../models/devices/devices.interface';
 import { StateModel } from '../models/state/state.service';
 import { StateInterface } from '../models/state/state.interface';
 import { TympanService } from './devices/tympan.service';
@@ -11,31 +9,39 @@ import { isTympanDevice } from '../guards/type.guard';
 import { BleDevice } from '../interfaces/bluetooth.interface';
 import { DeviceChooseComponent } from '../views/config/config-views/device-choose/device-choose.component';
 import { MatDialog } from '@angular/material/dialog';
-
+import { DevicesModel } from '../models/devices/devices.service';
+import { DeviceResponse } from '../models/devices/devices.interface';
 
 @Injectable({
     providedIn: 'root',
 })
 
 export class DeviceService {
-    devices: DevicesInterface;
-    state: StateInterface
+    state: StateInterface;
 
     constructor(
-        private readonly devicesModel: DevicesModel,
         private readonly stateModel: StateModel,
         private readonly tympanService: TympanService,
         private readonly deviceUtil: DeviceUtil,
         private readonly logger: Logger,
-        private readonly dialog: MatDialog
+        private readonly dialog: MatDialog,
+        private readonly devicesModel: DevicesModel
     ) {
-        this.devices = this.devicesModel.getDevices();
         this.state = this.stateModel.getState();
+        this.devicesModel.deviceResponseSubject.subscribe( (deviceResponse:DeviceResponse) => {
+            console.log("deviceResponse",deviceResponse);
+            // TODO: Remove - this is for testing only
+            setTimeout( async() => {
+                let device = this.deviceUtil.getDeviceFromTabsintId(deviceResponse.tabsintId);
+                if (device) {
+                    await this.requestId(device);
+                }
+            }, 1000);
+        });
     }
 
     /** Scan for new device connection
      * @summary Scan and connect to a new device
-     * @models ???
     */
     async scan(newConnectedDevice:NewConnectedDevice) {
         if (isTympanDevice(newConnectedDevice)) {
@@ -44,8 +50,10 @@ export class DeviceService {
             this.dialog.open(DeviceChooseComponent).afterClosed().subscribe(
             async (tympan: BleDevice| undefined) => {
                 if (tympan!=undefined) {
-                    // TODO: Do we really need to pass newConnectedDevice to the tympanService?
-                    await this.tympanService.connect(tympan, newConnectedDevice);
+                    let connection = await this.tympanService.connect(tympan, newConnectedDevice);
+                    if (connection) {
+                        await this.requestId(connection);
+                    }
                 } else {
                     await this.tympanService.stopScan();
                 }
@@ -55,23 +63,8 @@ export class DeviceService {
         }
     }
 
-    /** aaa
-     * @summary bbb
-     * @models ccc
-    */
-    async connect(device:ConnectedDevice) {
-        if (isTympanDevice(device)) {
-            let msgId = device.msgId.toString();
-            await this.tympanService.requestId(device.deviceId,msgId);
-            this.deviceUtil.incrementDeviceMsgId(device);
-        } else {
-            this.logger.error("Unsupported device type: "+JSON.stringify(device.type));
-        }
-    }
-
-    /** aaa
-     * @summary bbb
-     * @models ccc
+    /** Disconnect from device
+     * @summary Disconnect from device
     */
     async disconnect(device:ConnectedDevice) {
         if (isTympanDevice(device)) {
@@ -81,21 +74,22 @@ export class DeviceService {
         }
     }
 
-    /** aaa
-     * @summary bbb
-     * @models ccc
+    /** Reconnect to device
+     * @summary Reconnect to a previously connected device
     */
     async reconnect(device:ConnectedDevice) {
         if (isTympanDevice(device)) {
-            this.tympanService.reconnect(device.deviceId);
+            let connection = await this.tympanService.reconnect(device.deviceId);
+            if (connection) {
+                await this.requestId(connection);
+            }
         } else {
             this.logger.error("Unsupported device type: "+JSON.stringify(device.type));
         }
     }
 
-    /** aaa
-     * @summary bbb
-     * @models ccc
+    /** Remove device from TabSINT
+     * @summary Removes device from connected device manager in TabSINT
     */
     async removeDevice(device:ConnectedDevice) {
         await this.disconnect(device);
@@ -104,7 +98,6 @@ export class DeviceService {
 
     /** Requests device ID.
      * @summary Requests deviceID
-     * @models devices?
     */
     async requestId(device:ConnectedDevice) {
         if (isTympanDevice(device)) {

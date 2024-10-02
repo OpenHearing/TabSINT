@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DevicesInterface } from './devices.interface';
+import { DevicesInterface, DeviceResponse } from './devices.interface';
 import { Device } from '@capacitor/device';
 import { Logger } from '../../utilities/logger.service';
 import { BehaviorSubject, Subject } from 'rxjs';
@@ -29,11 +29,14 @@ export class DevicesModel {
         }
     }
 
-    availableDevicesSubject = new BehaviorSubject<BleDevice[]>([]);
-    newMsgSubject = new BehaviorSubject<any>(undefined);
+    availableDevicesSubject = new BehaviorSubject<BleDevice[]>([]); // TODO: Should this be moved into a more specific model/service?
+    deviceResponseSubject = new Subject<DeviceResponse>(); // TODO: Should this be moved into response specific model/service?
 
-    constructor(private logger: Logger) {
-        this.load();
+    constructor(private readonly logger: Logger) {
+        // TODO: Move this to generic utility for running async functions in constructor
+        setTimeout( async () => {
+            await this.load();
+        }, 0);
     }
 
     async load() {

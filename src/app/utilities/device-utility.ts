@@ -75,5 +75,41 @@ export class DeviceUtil {
             this.devices.connectedDevices.tympan.splice(indexToRemove, 1);
         }
     }
+
+    getTabsintIdFromDeviceId(deviceId:string) {
+        let tabsintId:string|undefined;
+        for (const [ , deviceType] of Object.entries(this.devices.connectedDevices)) {
+            deviceType.forEach( (device:ConnectedDevice) => {
+                if (device.deviceId==deviceId) {
+                    tabsintId = device.tabsintId;
+                }
+            });
+        }
+        return tabsintId
+    }
+
+    getDeviceFromDeviceId(deviceId:string) {
+        let connection: ConnectedDevice|undefined;
+        for (const [ , deviceType] of Object.entries(this.devices.connectedDevices)) {
+            deviceType.forEach( (device:ConnectedDevice) => {
+                if (device.deviceId==deviceId) {
+                    connection = device;
+                }
+            });
+        }
+        return connection
+    }
+
+    getDeviceFromTabsintId(tabsintId:string) {
+        let connection: ConnectedDevice|undefined;
+        for (const [ , deviceType] of Object.entries(this.devices.connectedDevices)) {
+            deviceType.forEach( (device:ConnectedDevice) => {
+                if (device.tabsintId==tabsintId) {
+                    connection = device;
+                }
+            });
+        }
+        return connection
+    }
     
 }
