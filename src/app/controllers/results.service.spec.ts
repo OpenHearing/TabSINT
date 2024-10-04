@@ -17,7 +17,6 @@ describe('ResultsService', () => {
     let diskModel = new DiskModel(new Document);
     let sqLite = new SqLite(appModel, diskModel);
     let logger = new Logger(diskModel, sqLite);
-    let devicesModel = new DevicesModel(logger);
 
     beforeEach(async () => {
         TestBed.configureTestingModule({})
@@ -26,7 +25,7 @@ describe('ResultsService', () => {
             new ResultsModel,
             new ProtocolModel,
             sqLite,
-            devicesModel,
+            new DevicesModel(logger),
             diskModel,
             new FileService(appModel, logger,diskModel),
             logger
