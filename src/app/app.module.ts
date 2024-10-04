@@ -11,7 +11,7 @@ import { MatDialogActions, MatDialogContent, MatDialogModule } from '@angular/ma
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgxJsonViewerModule } from 'ngx-json-viewer';
 import 'jeep-sqlite';
-
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
@@ -70,6 +70,8 @@ import { TextboxComponent } from './views/response-area/response-areas/textbox/t
 import { MultipleChoiceComponent } from './views/response-area/response-areas/multiple-choice/multiple-choice.component';
 import { SingleResultModalComponent } from './views/single-result-modal/single-result-modal/single-result-modal.component';
 import { ExternalResponseAreaComponent } from './views/response-area/response-areas/external-response-area/external-response-area.component';
+import { TasksBannerComponent } from './views/tasks-banner/tasks-banner.component';
+import { ManualAudiometryComponent } from './views/response-area/response-areas/manual-audiometry/manual-audiometry';
 import { DeviceConfigComponent } from './views/config/config-views/device-config/device-config.component';
 import { DeviceInfoComponent } from './views/config/config-views/device-info/device-info.component';
 import { ConnectedDevicesComponent } from './views/config/config-views/connected-devices/connected-devices.component';
@@ -103,8 +105,10 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     ResponseAreaComponent,
     TextboxComponent,
     MultipleChoiceComponent,
+    ManualAudiometryComponent,
     SingleResultModalComponent,
     ExternalResponseAreaComponent,
+    TasksBannerComponent,
     DeviceConfigComponent,
     DeviceInfoComponent,
     ConnectedDevicesComponent,
@@ -125,6 +129,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     MatDialogContent,
     MatDialogActions,
     MatDialogModule,
+    MatProgressBarModule,
     NgbModule,
     NgxJsonViewerModule,
     TranslateModule.forRoot({

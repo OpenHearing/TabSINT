@@ -17,6 +17,7 @@ import { ProtocolModelInterface } from './models/protocol/protocol.interface';
 import { SqLite } from './utilities/sqLite.service';
 import { Logger } from './utilities/logger.service';
 import { FileService } from './utilities/file.service';
+import { Tasks } from './utilities/tasks.service';
 
 @Component({
   selector: 'app-root',
@@ -38,6 +39,7 @@ export class AppComponent {
     private router: Router,
     private sqLite: SqLite,
     private translate: TranslateService,
+    private tasks: Tasks
   ) {
     this.translate.setDefaultLang('English');
     this.translate.use('English');
@@ -64,6 +66,7 @@ export class AppComponent {
     this.fileService.createTabsintDirectoriesIfDontExist();
 
     if (!_.isUndefined(this.disk.activeProtocolMeta)) await this.protocolService.load(this.disk.activeProtocolMeta);
+
   }
 }
 

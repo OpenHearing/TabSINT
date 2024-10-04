@@ -113,9 +113,11 @@ export class ProtocolService {
         }
 
         try {
-            delete this.disk.availableProtocolsMeta[p.name];
-            let updatedAvailableProtocolsMeta = this.diskModel.getDisk().availableProtocolsMeta;
+            let availProtocols = this.diskModel.getDisk().availableProtocolsMeta;
+            delete availProtocols[p.name];
+            let updatedAvailableProtocolsMeta = availProtocols;
             this.diskModel.updateDiskModel('availableProtocolsMeta', updatedAvailableProtocolsMeta);
+            this.disk = this.diskModel.getDisk()
         } catch (error) {
             this.logger.error("Error trying to delete files: " + error);
         }

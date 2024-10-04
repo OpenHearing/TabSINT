@@ -1,5 +1,6 @@
 <div [ngSwitch]="examService.currentPage.responseArea?.type">
     <textbox-view *ngSwitchCase="'textboxResponseArea'"></textbox-view>
+    <audiometry-view *ngSwitchCase="'manualAudiometryResponseArea'"></audiometry-view>
     <multiple-choice-view *ngSwitchCase="'multipleChoiceResponseArea'"></multiple-choice-view>
     <external-response-area-view *ngSwitchCase="'externalResponseArea'"></external-response-area-view>
 </div>

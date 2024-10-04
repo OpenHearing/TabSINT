@@ -1,6 +1,6 @@
 import { PageDefinition } from "../../interfaces/page-definition.interface";
 
-export interface PageInterface extends PageDefinition{
+export interface PageInterface extends PageDefinition {
     exportToCSV?: boolean;
     name?: string;
     filename?: string;
