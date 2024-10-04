@@ -89,6 +89,50 @@ export class TympanService {
         }
     }
 
+    async queueExam(tympanId:string,msgId:string,examType:string) {
+        // TODO: Allow for multiple exams at a time rather than hardcoding "1"
+        let examId:string = "1";
+        let msg = '['+msgId+',"queueExam",'+examId+','+examType+']';
+        try {
+            await this.tympanWrap.write(tympanId,msg);
+        } catch {
+            this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg));
+        }
+    }
+
+    async examSubmission(tympanId:string,msgId:string,examProperties:Object) {
+        // TODO: Allow for multiple exams at a time rather than hardcoding "1"
+        let examId:string = "1";
+        let msg = '['+msgId+',"examSubmission",'+examId+','+JSON.stringify(examProperties)+']';
+        try {
+            await this.tympanWrap.write(tympanId,msg);
+        } catch {
+            this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg));
+        }
+    }
+
+    async abortExam(tympanId:string,msgId:string) {
+        // TODO: Allow for multiple exams at a time rather than hardcoding "1"
+        let examId:string = "1";
+        let msg = '['+msgId+',"abortExam",'+examId+']';
+        try {
+            await this.tympanWrap.write(tympanId,msg);
+        } catch {
+            this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg));
+        }
+    }
+
+    async requestResults(tympanId:string,msgId:string) {
+        // TODO: Allow for multiple exams at a time rather than hardcoding "1"
+        let examId:string = "1";
+        let msg = '['+msgId+',"requestResults",'+examId+']';
+        try {
+            await this.tympanWrap.write(tympanId,msg);
+        } catch {
+            this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg));
+        }
+    }
+
 }
 
 
