@@ -69,5 +69,6 @@ export const protocolDefaults: ProtocolInterface = {
 
 export const responseDefaultByResponseAreaType: Dictionary<string> = {
     'textboxResponseArea': '',
-    'multipleChoiceResponseArea': ''
+    'multipleChoiceResponseArea': '',
+    'manualAudiometryResponseArea' : ''
 }

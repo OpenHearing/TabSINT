@@ -28,6 +28,9 @@
                 "id":"Text Box"
               },
               {
+                "id":"Manual Audiometry"
+              },
+              {
                 "id":"End All"
               }
             ]
@@ -37,6 +40,12 @@
               "conditional":"result.response=='Text Box'",
               "target":{
                 "reference":"TextBox"
+              } 
+            },
+            {
+              "conditional":"result.response=='Manual Audiometry'",
+              "target":{
+                "reference":"ManualAudiometry"
               } 
             },
             {
@@ -84,6 +93,29 @@
           }
         },
         {
+          "id": "backtomain",
+          "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "ManualAudiometry",
+      "pages":[
+        {
+          "id": "audiometry_001",
+          "title": "Manual Audiometry Test",
+          "instructionText": "Test manual audiometry response area",
+          "responseArea": {
+              "type": "manualAudiometryResponseArea",
+              "maxOutputLevel": 110,
+              "minOutputLevel": -10,
+              "currentDbSpl": 50,
+              "frequencies": [0.5, 1, 2, 4, 8],
+              "adjustments": [15, -18, 5, 3],
+              "exportToCSV": false,
+              "responseRequired":false
+          }
+        }, {
           "id": "backtomain",
           "reference":"MainMenu"
         }
