@@ -6,7 +6,7 @@ import { DiskInterface } from '../../../../models/disk/disk.interface';
 import { DiskModel } from '../../../../models/disk/disk.service';
 import { NgFor, NgClass } from '@angular/common';
 import { BleDevice } from '../../../../interfaces/bluetooth.interface';
-import { DevicesModel } from '../../../../models/devices/devices.service';
+import { DevicesModel } from '../../../../models/devices/devices-model.service';
 import { Subscription } from 'rxjs';
 
 @Component({

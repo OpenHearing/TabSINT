@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Logger } from '../../utilities/logger.service';
 import { TympanWrap } from '../../utilities/tympan-wrap.service';
 import { BleDevice } from '../../interfaces/bluetooth.interface';
-import { DevicesModel } from '../../models/devices/devices.service';
+import { DevicesModel } from '../../models/devices/devices-model.service';
 import { DevicesInterface } from '../../models/devices/devices.interface';
 import { DeviceState } from '../../utilities/constants';
 import { StateModel } from '../../models/state/state.service';
@@ -16,7 +16,7 @@ import { DeviceUtil } from '../../utilities/device-utility';
 
 export class TympanService {
     devices: DevicesInterface;
-    state: StateInterface
+    state: StateInterface;
 
     constructor(
         private readonly tympanWrap: TympanWrap, 
@@ -29,7 +29,7 @@ export class TympanService {
         this.state = this.stateModel.getState();
     }
 
-    onDisconnect(deviceId:string): void {
+    onDisconnect(deviceId: string): void {
         this.logger.debug(`device ${deviceId} disconnected`);
         this.deviceUtil.updateDeviceState(deviceId,DeviceState.Disconnected);
     }
@@ -43,7 +43,7 @@ export class TympanService {
         await this.tympanWrap.stopScanning();
     }
 
-    async connect(tympan:BleDevice, newConnectedDevice:NewConnectedDevice) {
+    async connect(tympan: BleDevice, newConnectedDevice: NewConnectedDevice) {
         await this.tympanWrap.stopScanning();
             
         this.logger.debug("attempting to connect to tympan : "+JSON.stringify(tympan));
@@ -64,7 +64,7 @@ export class TympanService {
         }      
     }
 
-    async reconnect(tympanId:string) {
+    async reconnect(tympanId: string) {
         try {
             await this.tympanWrap.connect(tympanId,this.onDisconnect.bind(this));
             this.deviceUtil.updateDeviceState(tympanId,DeviceState.Connected);
@@ -75,12 +75,12 @@ export class TympanService {
         }
     }
 
-    async disconnect(tympanId:string) {
+    async disconnect(tympanId: string) {
         await this.tympanWrap.disconnect(tympanId);
         this.deviceUtil.updateDeviceState(tympanId,DeviceState.Disconnected);
     }
 
-    async requestId(tympanId:string,msgId:string) {
+    async requestId(tympanId: string, msgId: string) {
         let msg = '['+msgId+',"requestId"]';
         try {
             await this.tympanWrap.write(tympanId,msg);
@@ -89,10 +89,10 @@ export class TympanService {
         }
     }
 
-    async queueExam(tympanId:string,msgId:string,examType:string) {
+    async queueExam(tympanId: string, msgId: string, examType: string) {
         // TODO: Allow for multiple exams at a time rather than hardcoding "1"
-        let examId:string = "1";
-        let msg = '['+msgId+',"queueExam",'+examId+','+examType+']';
+        let examId: string = "1";
+        let msg = '['+msgId+',"queueExam",'+examId+',"'+examType+'"]';
         try {
             await this.tympanWrap.write(tympanId,msg);
         } catch {
@@ -100,9 +100,9 @@ export class TympanService {
         }
     }
 
-    async examSubmission(tympanId:string,msgId:string,examProperties:Object) {
+    async examSubmission(tympanId: string, msgId: string, examProperties: Object) {
         // TODO: Allow for multiple exams at a time rather than hardcoding "1"
-        let examId:string = "1";
+        let examId: string = "1";
         let msg = '['+msgId+',"examSubmission",'+examId+','+JSON.stringify(examProperties)+']';
         try {
             await this.tympanWrap.write(tympanId,msg);
@@ -111,10 +111,9 @@ export class TympanService {
         }
     }
 
-    async abortExam(tympanId:string,msgId:string) {
-        // TODO: Allow for multiple exams at a time rather than hardcoding "1"
-        let examId:string = "1";
-        let msg = '['+msgId+',"abortExam",'+examId+']';
+    async abortExams(tympanId:string, msgId:string) {
+        // This aborts ALL running exams
+        let msg = '['+msgId+',"abortExams"]';
         try {
             await this.tympanWrap.write(tympanId,msg);
         } catch {
@@ -122,9 +121,9 @@ export class TympanService {
         }
     }
 
-    async requestResults(tympanId:string,msgId:string) {
+    async requestResults(tympanId:string, msgId:string) {
         // TODO: Allow for multiple exams at a time rather than hardcoding "1"
-        let examId:string = "1";
+        let examId: string = "1";
         let msg = '['+msgId+',"requestResults",'+examId+']';
         try {
             await this.tympanWrap.write(tympanId,msg);

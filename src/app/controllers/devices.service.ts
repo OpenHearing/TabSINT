@@ -9,14 +9,14 @@ import { isTympanDevice } from '../guards/type.guard';
 import { BleDevice } from '../interfaces/bluetooth.interface';
 import { DeviceChooseComponent } from '../views/config/config-views/device-choose/device-choose.component';
 import { MatDialog } from '@angular/material/dialog';
-import { DevicesModel } from '../models/devices/devices.service';
+import { DevicesModel } from '../models/devices/devices-model.service';
 import { DeviceResponse } from '../models/devices/devices.interface';
 
 @Injectable({
     providedIn: 'root',
 })
 
-export class DeviceService {
+export class DevicesService {
     state: StateInterface;
 
     constructor(
@@ -30,13 +30,6 @@ export class DeviceService {
         this.state = this.stateModel.getState();
         this.devicesModel.deviceResponseSubject.subscribe( (deviceResponse:DeviceResponse) => {
             console.log("deviceResponse",deviceResponse);
-            // TODO: Remove - this is for testing only
-            setTimeout( async() => {
-                let device = this.deviceUtil.getDeviceFromTabsintId(deviceResponse.tabsintId);
-                if (device) {
-                    await this.requestId(device);
-                }
-            }, 1000);
         });
     }
 
@@ -133,10 +126,10 @@ export class DeviceService {
         }
     }
 
-    async abortExam(device:ConnectedDevice) {
+    async abortExams(device:ConnectedDevice) {
         if (isTympanDevice(device)) {
             let msgId = device.msgId.toString();
-            await this.tympanService.abortExam(device.deviceId,msgId);
+            await this.tympanService.abortExams(device.deviceId,msgId);
             this.deviceUtil.incrementDeviceMsgId(device);
         } else {
             this.logger.error("Unsupported device type: "+JSON.stringify(device.type));

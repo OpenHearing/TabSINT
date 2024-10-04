@@ -106,16 +106,18 @@
           "title": "Manual Audiometry Test",
           "instructionText": "Test manual audiometry response area",
           "responseArea": {
-              "type": "manualAudiometryResponseArea",
-              "maxOutputLevel": 110,
-              "minOutputLevel": -10,
-              "currentDbSpl": 50,
-              "frequencies": [0.5, 1, 2, 4, 8],
-              "adjustments": [15, -18, 5, 3],
-              "exportToCSV": false,
-              "responseRequired":false
+            "type": "manualAudiometryResponseArea",
+            "tabsintId": "1",
+            "maxOutputLevel": 110,
+            "minOutputLevel": -10,
+            "currentDbSpl": 50,
+            "frequencies": [0.5, 1, 2, 4, 8],
+            "adjustments": [15, -18, 5, 3],
+            "exportToCSV": false,
+            "responseRequired":false
           }
-        }, {
+        }, 
+        {
           "id": "backtomain",
           "reference":"MainMenu"
         }

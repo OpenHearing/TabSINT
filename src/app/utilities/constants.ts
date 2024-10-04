@@ -27,8 +27,8 @@ export enum DeviceState {
 
 export const AvailableConnectableDevices: Array<string> = [
     "Tympan",
-    "CHA",
-    "Svantek"
+    // "CHA",
+    // "Svantek"
 ]
 
 export enum ResultsMode {

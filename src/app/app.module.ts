@@ -33,7 +33,7 @@ import { NotificationsComponent } from './views/notifications/notifications.comp
 
 // Models
 import { AppModel } from './models/app/app.service';
-import { DevicesModel } from './models/devices/devices.service';
+import { DevicesModel } from './models/devices/devices-model.service';
 import { DiskModel } from './models/disk/disk.service';
 import { ProtocolModel } from './models/protocol/protocol-model.service';
 import { ResultsModel } from './models/results/results-model.service';
@@ -76,7 +76,7 @@ import { DeviceConfigComponent } from './views/config/config-views/device-config
 import { DeviceInfoComponent } from './views/config/config-views/device-info/device-info.component';
 import { ConnectedDevicesComponent } from './views/config/config-views/connected-devices/connected-devices.component';
 import { NewConnectionComponent } from './views/config/config-views/new-connection/new-connection.component';
-import { DeviceService } from './controllers/devices.service';
+import { DevicesService } from './controllers/devices.service';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -165,7 +165,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     TranslateService,
     TympanWrap,
     TympanService,
-    DeviceService
+    DevicesService
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

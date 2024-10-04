@@ -21,7 +21,7 @@ export class TextboxComponent {
   protocol: ProtocolModelInterface;
   state: StateInterface
   rows: number;
-  subscription: Subscription | undefined;
+  pageSubscription: Subscription|undefined;
 
   constructor (public resultsModel: ResultsModel, public pageModel: PageModel, public protocolModel: ProtocolModel, public stateModel: StateModel) {
     this.results = this.resultsModel.getResults();
@@ -32,14 +32,16 @@ export class TextboxComponent {
   }
 
   ngOnInit() {
-    this.subscription = this.pageModel.currentPageSubject.subscribe( (updatedPage:PageInterface) => {
-      const responseArea = updatedPage.responseArea as TextBoxInterface;
-      this.rows = responseArea?.rows;
+    this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage:PageInterface) => {
+      const updatedTextboxResponseArea = updatedPage.responseArea as TextBoxInterface;
+      if (updatedTextboxResponseArea) {
+        this.rows = updatedTextboxResponseArea?.rows;
+      }
     });
   }
 
   ngOnDestroy() {
-    this.subscription?.unsubscribe();
+    this.pageSubscription?.unsubscribe();
   }
 
 }

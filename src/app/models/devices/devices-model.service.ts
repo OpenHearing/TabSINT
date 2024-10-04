@@ -23,9 +23,9 @@ export class DevicesModel {
         other: "other",
         diskspace: "Unknown",
         connectedDevices: {
-            "tympan":[],
-            "cha":[],
-            "svantek":[]
+            "tympan": [],
+            "cha": [],
+            "svantek": []
         }
     }
 

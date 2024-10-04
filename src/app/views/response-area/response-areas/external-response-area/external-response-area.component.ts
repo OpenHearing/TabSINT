@@ -22,7 +22,7 @@ export class ExternalResponseAreaComponent implements OnInit, OnDestroy {
   state: StateInterface
   testHTML: string;
   testJS: string;
-  subscription: Subscription | undefined;
+  subscription: Subscription|undefined;
 
   constructor (
     public resultsModel: ResultsModel, 

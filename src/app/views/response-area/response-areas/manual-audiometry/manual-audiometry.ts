@@ -7,8 +7,14 @@ import { PageInterface } from "../../../../models/page/page.interface";
 import { ResultsInterface } from "../../../../models/results/results.interface";
 import { ProtocolModelInterface } from "../../../../models/protocol/protocol.interface";
 import { StateInterface } from "../../../../models/state/state.interface";
-import { Observable } from "rxjs/internal/Observable";
+import { Subscription } from "rxjs";
 import { ManualAudiometryInterface } from "./manual-audiometry.interface";
+import { DevicesModel } from "../../../../models/devices/devices-model.service";
+import { DeviceResponse } from "../../../../models/devices/devices.interface";
+import { DevicesService } from "../../../../controllers/devices.service";
+import { ConnectedDevice } from "../../../../interfaces/connected-device.interface";
+import { DeviceUtil } from "../../../../utilities/device-utility";
+import { Logger } from "../../../../utilities/logger.service";
 
 @Component({
     selector: 'audiometry-view',
@@ -20,7 +26,7 @@ export class ManualAudiometryComponent{
     currentPage: PageInterface;
     results: ResultsInterface;
     protocol: ProtocolModelInterface;
-    state: StateInterface
+    state: StateInterface;
     isPresentationVisible: boolean = false;
     isResultsVisible: boolean = false;
     currentDbSpl: number = 40;
@@ -33,45 +39,66 @@ export class ManualAudiometryComponent{
     rightThresholds: (number|null)[] = [null, null, null];
     leftCurrentColumn: number = 0;
     rightCurrentColumn: number = 0;
-    observableVar: Observable<PageInterface>;
+    pageSubscription: Subscription|undefined;
+    deviceSubscription: Subscription|undefined;
     initialDbSpl: number = 40;
     currentFrequencyIndex: number = 0;
-    selectedFrequency:number = this.frequencies[0]
-    constructor(public resultsModel: ResultsModel, public pageModel: PageModel, public protocolModel: ProtocolModel, public stateModel: StateModel) {
+    selectedFrequency: number = this.frequencies[0];
+    device: ConnectedDevice|undefined;
+
+    constructor(
+        private readonly resultsModel: ResultsModel, 
+        private readonly pageModel: PageModel, 
+        private readonly protocolModel: ProtocolModel, 
+        private readonly stateModel: StateModel,
+        private readonly devicesService: DevicesService,
+        private readonly devicesModel: DevicesModel,
+        private readonly deviceUtil: DeviceUtil,
+        private readonly logger: Logger
+    ) {
         this.results = this.resultsModel.getResults();
         this.protocol = this.protocolModel.getProtocolModel();
         this.state = this.stateModel.getState();
         this.currentPage = this.pageModel.getPage();
-        const audiometryResponse = this.currentPage.responseArea as ManualAudiometryInterface;
+    }
 
-        if (audiometryResponse) {
-            this.maxOutputLevel = audiometryResponse.maxOutputLevel ?? 100;
-            this.minOutputLevel = audiometryResponse.minOutputLevel ?? 0;
-            this.currentDbSpl = audiometryResponse.currentDbSpl ?? 40;
-            this.initialDbSpl = this.currentDbSpl;
-            this.frequencies = audiometryResponse.frequencies ?? [1, 2, 4];
-            this.adjustments = audiometryResponse.adjustments ?? [5, -10];
-            this.leftThresholds = new Array(this.frequencies.length).fill(null);
-            this.rightThresholds = new Array(this.frequencies.length).fill(null);
-            this.selectedFrequency = this.frequencies[0];
-        }
+    ngOnInit() {
+        this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
+            const updatedAudiometryResponseArea = updatedPage?.responseArea as ManualAudiometryInterface;
 
-        this.observableVar = this.pageModel.currentPageObservable;
-        this.observableVar.subscribe((updatedPage: PageInterface) => {
-            const updatedAudiometryResponse = updatedPage?.responseArea as ManualAudiometryInterface;
-
-            if (updatedAudiometryResponse) {
-                this.maxOutputLevel = updatedAudiometryResponse.maxOutputLevel ?? 100;
-                this.minOutputLevel = updatedAudiometryResponse.minOutputLevel ?? 0;
-                this.currentDbSpl = updatedAudiometryResponse.currentDbSpl ?? 40;
+            if (updatedAudiometryResponseArea) {
+                this.maxOutputLevel = updatedAudiometryResponseArea.maxOutputLevel ?? 100;
+                this.minOutputLevel = updatedAudiometryResponseArea.minOutputLevel ?? 0;
+                this.currentDbSpl = updatedAudiometryResponseArea.currentDbSpl ?? 40;
                 this.initialDbSpl = this.currentDbSpl; 
-                this.frequencies = updatedAudiometryResponse.frequencies ?? [1, 2, 4];
-                this.adjustments = updatedAudiometryResponse.adjustments ?? [5, -10];
+                this.frequencies = updatedAudiometryResponseArea.frequencies ?? [1, 2, 4];
+                this.adjustments = updatedAudiometryResponseArea.adjustments ?? [5, -10];
                 this.leftThresholds = new Array(this.frequencies.length).fill(null);
                 this.rightThresholds = new Array(this.frequencies.length).fill(null);
-                this.selectedFrequency = this.frequencies[0]; 
+                this.selectedFrequency = this.frequencies[0];
+
+                // TODO: Rethink this logic - this will use the specified tabsintId, or if not defined, "1"
+                this.device = this.deviceUtil.getDeviceFromTabsintId(updatedAudiometryResponseArea.tabsintId ?? "1");
+                if (this.device) {
+                    await this.devicesService.queueExam(this.device,"ManualAudiometry");
+                } else {
+                    // TODO: Improve error handling here
+                    this.logger.error("Error setting up Manual Audiometry exam");
+                }
             }
         });
+
+        this.deviceSubscription = this.devicesModel.deviceResponseSubject.subscribe((msg: DeviceResponse) => {
+            console.log("device msg:",JSON.stringify(msg));
+        });
+    }
+    
+    ngOnDestroy() {
+        if (this.device) {
+            this.devicesService.abortExams(this.device);
+        }
+        this.pageSubscription?.unsubscribe();
+        this.deviceSubscription?.unsubscribe();
     }
 
     onFrequencyChange(selectedFreq: number): void {
@@ -96,6 +123,18 @@ export class ManualAudiometryComponent{
             this.currentDbSpl = this.minOutputLevel;
         } else if (this.currentDbSpl > this.maxOutputLevel) {
             this.currentDbSpl = this.maxOutputLevel;
+        }
+    }
+
+    playTone() {
+        // TODO: Better handling for the ear (OutputChannel)?
+        let examProperties = {
+            "F": this.selectedFrequency,
+            "Level": this.currentDbSpl,
+            "OutputChannel": this.selectedEar=="Left" ? "HPL0" : "HPR0"
+        };
+        if (this.device) {
+            this.devicesService.examSubmission(this.device,examProperties);
         }
     }
 

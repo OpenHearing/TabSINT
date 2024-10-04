@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DevicesModel } from '../models/devices/devices.service';
+import { DevicesModel } from '../models/devices/devices-model.service';
 import { DevicesInterface } from '../models/devices/devices.interface';
 import { ConnectedDevice, NewConnectedDevice } from '../interfaces/connected-device.interface';
 import { DeviceState } from './constants';
@@ -49,7 +49,7 @@ export class DeviceUtil {
             "deviceId": newConnection.deviceId!,
             "name": newConnection.name!,
             "state": DeviceState.Connected,
-            "msgId": 0
+            "msgId": 1
         };
         return connection
     }
@@ -58,7 +58,11 @@ export class DeviceUtil {
         // TODO: expand this function for all device types (if necessary)
         for (let i = 0; i < this.devices.connectedDevices.tympan.length; i++) {
             if (this.devices.connectedDevices.tympan[i].deviceId==device.deviceId) {
-              this.devices.connectedDevices.tympan[i].msgId+=1;
+                if (this.devices.connectedDevices.tympan[i].msgId>=99) {
+                    this.devices.connectedDevices.tympan[i].msgId=1;
+                } else {
+                    this.devices.connectedDevices.tympan[i].msgId+=1;
+                }
             }
         }
     }

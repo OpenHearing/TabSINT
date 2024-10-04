@@ -16,9 +16,9 @@ export class DeviceInfoComponent {
   state: StateInterface;
 
   constructor(
-    private diskModel: DiskModel, 
-    private stateModel: StateModel,
-    private translate: TranslateService,
+    private readonly diskModel: DiskModel, 
+    private readonly stateModel: StateModel,
+    private readonly translate: TranslateService,
   ) { 
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();
@@ -32,20 +32,12 @@ export class DeviceInfoComponent {
 
   tympan = {
     myTympan: {
-      setting: {
-        auto_shutdown_time: "x"
-      },
-      battery: {
-        level: function() {return "placeholder"}
-      },
       id: {
         serialNumber: "placeholder",
         buildDateTime: "placeholder",
         tympanCalibrationDate: "placeholder",
         description: "placeholder",
-      },
-      name: "placeholder",
-      batteryIndicatorWidth: "placeholder"
+      }
     }
   };
 

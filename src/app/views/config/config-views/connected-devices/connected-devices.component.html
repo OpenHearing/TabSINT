@@ -15,7 +15,7 @@
             <!-- Device ID -->
             <div class="col-2 admin-labels">TabSINT ID: </div>
             <div class="col-1"><em>{{devices.connectedDevices.tympan[0].tabsintId}}</em></div>
-            <div class="col-1"><em> <i class="ion-information-circled"></i>  </em></div>
+            <div class="col-1"><em> <span (click)="expanded = !expanded"> <i class="ion-information-circled"></i> </span> </em></div>
 
             <!-- Name -->
             <div class="col-2 admin-labels">DeviceName: </div>
@@ -48,22 +48,6 @@
             <!-- Connected Tympan -->
             <!-- TODO: Move this to the info button next to device ID -->
             <div *ngIf="devices.connectedDevices.tympan[0].state === DeviceState.Connected">
-                <hr />
-                <!-- Show Advanced -->
-                <div class="row showhideSection">
-                    <div class="col-12 text-center">
-                        <a href="javascript:" (click)="expanded = !expanded">
-                            <span *ngIf="expanded" translate>
-                                Hide Device Details 
-                                <i class="ion-chevron-up"></i>
-                            </span>
-                            <span *ngIf="!expanded" translate>
-                                Show Device Details
-                                <i class="ion-chevron-down"></i>
-                            </span>
-                        </a>
-                    </div>
-                </div>
                 <div #collapse="ngbCollapse" [ngbCollapse]="!expanded">
                     <device-info-view></device-info-view>
                 </div>
@@ -75,20 +59,20 @@
 
 
 <!-- TODO: Add above functionality for all other devices -->
-<div class="row pad-top">
+<!-- <div class="row pad-top">
     <div class="col-12">
         <h5>CHA</h5>
     </div>
-</div>
+</div> -->
 
-<div class="row pad-top">
+<!-- <div class="row pad-top">
     <div class="col-12">
         <h5>Svantek</h5>
     </div>
-</div>
+</div> -->
 
-<div class="row pad-top">
+<!-- <div class="row pad-top">
     <div class="col-12">
         <h5>Other</h5>
     </div>
-</div>
+</div> -->

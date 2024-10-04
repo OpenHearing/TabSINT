@@ -11,7 +11,7 @@ import { FileService } from '../utilities/file.service';
 import { Logger } from '../utilities/logger.service';
 import { SqLite } from '../utilities/sqLite.service';
 import { DevicesInterface } from '../models/devices/devices.interface';
-import { DevicesModel } from '../models/devices/devices.service';
+import { DevicesModel } from '../models/devices/devices-model.service';
 import { PageInterface } from '../models/page/page.interface';
 import { responseDefaultByResponseAreaType } from '../utilities/defaults';
 
