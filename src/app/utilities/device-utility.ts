@@ -140,7 +140,6 @@ export class DeviceUtil {
         savedDevices.tympan.push(savedDevice);
         this.diskModel.updateDiskModel('savedDevices',savedDevices);
         this.disk = this.diskModel.getDisk();
-        console.log("this.disk",this.disk);
     }
 
     removeSavedDevice(connection: ConnectedDevice) {
@@ -158,8 +157,6 @@ export class DeviceUtil {
 
     addSavedDevices() {
         // TODO: expand to other devices as well
-        console.log("this.disk",this.disk);
-        console.log("this.disk.savedDevices.tympan",this.disk.savedDevices.tympan);
         for (const device of this.disk.savedDevices.tympan) {
             let savedConnection: ConnectedDevice = {
                 "type": "Tympan",
@@ -169,9 +166,7 @@ export class DeviceUtil {
                 "state": DeviceState.Disconnected,
                 "msgId": 1
             };
-            console.log("savedConnection",savedConnection);
             this.devices.connectedDevices.tympan.push(savedConnection);
-            console.log("this.devices.connectedDevices",this.devices.connectedDevices);
         }
     }
 }

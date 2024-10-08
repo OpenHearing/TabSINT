@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ResultsInterface } from '../../../../models/results/results.interface';
 import { ResultsModel } from '../../../../models/results/results-model.service';
 import { ProtocolModel } from '../../../../models/protocol/protocol-model.service';
@@ -15,7 +15,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './textbox.component.html',
   styleUrl: './textbox.component.css'
 })
-export class TextboxComponent {
+export class TextboxComponent implements OnInit, OnDestroy {
   currentPage: PageInterface;
   results: ResultsInterface;
   protocol: ProtocolModelInterface;
@@ -23,7 +23,12 @@ export class TextboxComponent {
   rows: number;
   pageSubscription: Subscription|undefined;
 
-  constructor (public resultsModel: ResultsModel, public pageModel: PageModel, public protocolModel: ProtocolModel, public stateModel: StateModel) {
+  constructor (
+    private readonly resultsModel: ResultsModel, 
+    private readonly pageModel: PageModel, 
+    private readonly protocolModel: ProtocolModel, 
+    private readonly stateModel: StateModel
+  ) {
     this.results = this.resultsModel.getResults();
     this.protocol = this.protocolModel.getProtocolModel();
     this.state = this.stateModel.getState();
@@ -32,10 +37,12 @@ export class TextboxComponent {
   }
 
   ngOnInit() {
-    this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage:PageInterface) => {
-      const updatedTextboxResponseArea = updatedPage.responseArea as TextBoxInterface;
-      if (updatedTextboxResponseArea) {
-        this.rows = updatedTextboxResponseArea?.rows;
+    this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
+      if (updatedPage?.responseArea?.type == "textboxResponseArea") {
+        const updatedTextboxResponseArea = updatedPage.responseArea as TextBoxInterface;
+        if (updatedTextboxResponseArea) {
+          this.rows = updatedTextboxResponseArea?.rows;
+        }
       }
     });
   }

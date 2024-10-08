@@ -64,26 +64,28 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
-            const updatedAudiometryResponseArea = updatedPage?.responseArea as ManualAudiometryInterface;
+            if (updatedPage?.responseArea?.type == "manualAudiometryResponseArea") {
+                const updatedAudiometryResponseArea = updatedPage?.responseArea as ManualAudiometryInterface;
 
-            if (updatedAudiometryResponseArea) {
-                this.maxOutputLevel = updatedAudiometryResponseArea.maxOutputLevel ?? 100;
-                this.minOutputLevel = updatedAudiometryResponseArea.minOutputLevel ?? 0;
-                this.currentDbSpl = updatedAudiometryResponseArea.currentDbSpl ?? 40;
-                this.initialDbSpl = this.currentDbSpl; 
-                this.frequencies = updatedAudiometryResponseArea.frequencies ?? [1, 2, 4];
-                this.adjustments = updatedAudiometryResponseArea.adjustments ?? [5, -10];
-                this.leftThresholds = new Array(this.frequencies.length).fill(null);
-                this.rightThresholds = new Array(this.frequencies.length).fill(null);
-                this.selectedFrequency = this.frequencies[0];
+                if (updatedAudiometryResponseArea) {
+                    this.maxOutputLevel = updatedAudiometryResponseArea.maxOutputLevel ?? 100;
+                    this.minOutputLevel = updatedAudiometryResponseArea.minOutputLevel ?? 0;
+                    this.currentDbSpl = updatedAudiometryResponseArea.currentDbSpl ?? 40;
+                    this.initialDbSpl = this.currentDbSpl; 
+                    this.frequencies = updatedAudiometryResponseArea.frequencies ?? [1, 2, 4];
+                    this.adjustments = updatedAudiometryResponseArea.adjustments ?? [5, -10];
+                    this.leftThresholds = new Array(this.frequencies.length).fill(null);
+                    this.rightThresholds = new Array(this.frequencies.length).fill(null);
+                    this.selectedFrequency = this.frequencies[0];
 
-                // TODO: Rethink this logic - this will use the specified tabsintId, or if not defined, "1"
-                this.device = this.deviceUtil.getDeviceFromTabsintId(updatedAudiometryResponseArea.tabsintId ?? "1");
-                if (this.device) {
-                    await this.devicesService.queueExam(this.device,"ManualAudiometry");
-                } else {
-                    // TODO: Improve error handling here
-                    this.logger.error("Error setting up Manual Audiometry exam");
+                    // TODO: Rethink this logic - this will use the specified tabsintId, or if not defined, "1"
+                    this.device = this.deviceUtil.getDeviceFromTabsintId(updatedAudiometryResponseArea.tabsintId ?? "1");
+                    if (this.device) {
+                        await this.devicesService.queueExam(this.device,"ManualAudiometry");
+                    } else {
+                        // TODO: Improve error handling here
+                        this.logger.error("Error setting up Manual Audiometry exam");
+                    }
                 }
             }
         });
