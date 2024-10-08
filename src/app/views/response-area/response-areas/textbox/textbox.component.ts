@@ -21,7 +21,7 @@ export class TextboxComponent implements OnInit, OnDestroy {
   protocol: ProtocolModelInterface;
   state: StateInterface
   rows: number;
-  pageSubscription: Subscription|undefined;
+  pageSubscription: Subscription | undefined;
 
   constructor (
     private readonly resultsModel: ResultsModel, 

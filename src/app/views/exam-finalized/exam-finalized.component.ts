@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
+import { Subscription } from 'rxjs';
 
 import { ExamResults, ResultsInterface } from '../../models/results/results.interface';
-import { ResultsModel } from '../../models/results/results-model.service';
+import { ProtocolModelInterface } from '../../models/protocol/protocol.interface';
 import { DiskInterface } from '../../models/disk/disk.interface';
+
+import { ResultsModel } from '../../models/results/results-model.service';
 import { DiskModel } from '../../models/disk/disk.service';
 import { ProtocolModel } from '../../models/protocol/protocol-model.service';
-import { ProtocolModelInterface } from '../../models/protocol/protocol.interface';
 
 @Component({
   selector: 'exam-finalized-view',
@@ -15,14 +17,15 @@ import { ProtocolModelInterface } from '../../models/protocol/protocol.interface
 export class ExamFinalizedComponent {
   results: ResultsInterface;
   disk: DiskInterface;
+  diskSubject: Subscription | undefined;
   protocol: ProtocolModelInterface;
   title?: string;
   currentExam: ExamResults;
 
   constructor(
-    private resultsModel: ResultsModel, 
-    private diskModel: DiskModel,
-    private protocolModel: ProtocolModel
+    private readonly diskModel: DiskModel, 
+    private readonly protocolModel: ProtocolModel,
+    private readonly resultsModel: ResultsModel
   ) { 
     this.results = this.resultsModel.getResults();
     this.disk = this.diskModel.getDisk();
@@ -30,6 +33,16 @@ export class ExamFinalizedComponent {
 
     this.title = this.protocol.activeProtocol?.title;
     this.currentExam = this.results.currentExam;
+  }
+
+  ngOnInit() {
+    this.diskSubject = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+        this.disk = updatedDisk;
+    })    
+  }
+
+  ngOnDestroy() {
+    this.diskSubject?.unsubscribe();
   }
 
 }

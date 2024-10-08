@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 
-import { Logger } from '../../utilities/logger.service';
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { DiskModel } from '../../models/disk/disk.service';
 
@@ -16,10 +16,24 @@ import { DiskModel } from '../../models/disk/disk.service';
 })
 export class DisclaimerComponent {
   disk: DiskInterface;
+  diskSubject: Subscription | undefined;
   pin: number | undefined;
 
-  constructor(private logger: Logger, private dialog: MatDialog, private diskModel: DiskModel) {
+  constructor(
+    private readonly dialog: MatDialog, 
+    private readonly diskModel: DiskModel
+  ) {
     this.disk = this.diskModel.getDisk();
+  }
+
+  ngOnInit() {
+    this.diskSubject = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+        this.disk = updatedDisk;
+    })    
+  }
+
+  ngOnDestroy() {
+    this.diskSubject?.unsubscribe();
   }
 
   cancel() {

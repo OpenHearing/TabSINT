@@ -2,22 +2,22 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from "@ngx-translate/core";
 import _ from 'lodash';
+import { Subscription } from 'rxjs';
+
 
 import { TabsintFs } from 'tabsintfs';
 
-import { ProtocolService } from './controllers/protocol.service';
-
 import { DiskInterface } from './models/disk/disk.interface';
-import { DiskModel } from './models/disk/disk.service';
-import { AppModel } from './models/app/app.service';
 import { AppInterface } from './models/app/app.interface';
-import { ProtocolModel } from './models/protocol/protocol-model.service';
 import { ProtocolModelInterface } from './models/protocol/protocol.interface';
 
+import { DiskModel } from './models/disk/disk.service';
+import { AppModel } from './models/app/app.service';
+import { ProtocolService } from './controllers/protocol.service';
+import { ProtocolModel } from './models/protocol/protocol-model.service';
 import { SqLite } from './utilities/sqLite.service';
 import { Logger } from './utilities/logger.service';
 import { FileService } from './utilities/file.service';
-import { Tasks } from './utilities/tasks.service';
 import { DeviceUtil } from './utilities/device-utility';
 
 @Component({
@@ -28,34 +28,38 @@ export class AppComponent implements OnInit {
   title = 'tabsint';
   app: AppInterface;
   disk: DiskInterface;
+  diskSubject: Subscription |undefined;
   protocol: ProtocolModelInterface;
 
   constructor(    
     private readonly appModel: AppModel,
-    private readonly protocolM: ProtocolModel,
+    private readonly deviceUtil: DeviceUtil,
     private readonly diskModel: DiskModel,
     private readonly fileService:FileService,
     private readonly logger: Logger,
+    private readonly protocolM: ProtocolModel,
     private readonly protocolService: ProtocolService,
     private readonly router: Router,
     private readonly sqLite: SqLite,
-    private readonly translate: TranslateService,
-    private readonly tasks: Tasks,
-    private readonly deviceUtil: DeviceUtil
+    private readonly translate: TranslateService
   ) {
     this.translate.setDefaultLang('English');
     this.translate.use('English');
     this.app = this.appModel.getApp();
-    this.disk = this.diskModel.getDisk();
     this.protocol = this.protocolM.getProtocolModel();
     this.diskModel.updateDiskModel('numLogRows',1);
+    this.disk = this.diskModel.getDisk();
   }
 
   async ngOnInit() {
+    this.diskSubject = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+        this.disk = updatedDisk;
+    })
+
     await this.sqLite.init();
     this.router.navigate(['']);
 
-    if (!this.diskModel.disk.contentURI) {
+    if (!this.disk.contentURI) {
       try {
         const result = await TabsintFs.chooseFolder();
         this.diskModel.updateDiskModel('contentURI', result.uri);
@@ -63,7 +67,7 @@ export class AppComponent implements OnInit {
         this.logger.error('Error selecting folder: '+JSON.stringify(error));
       }
     }
-    this.fileService.rootUri = this.diskModel.getDisk().contentURI ;
+    this.fileService.rootUri = this.disk.contentURI ;
     
     this.fileService.createTabsintDirectoriesIfDontExist();
 
@@ -71,5 +75,10 @@ export class AppComponent implements OnInit {
 
     this.deviceUtil.addSavedDevices();
   }
+  
+  ngOnDestroy() {
+    this.diskSubject?.unsubscribe();
+  }
+
 }
 

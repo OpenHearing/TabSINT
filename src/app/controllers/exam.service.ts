@@ -7,12 +7,10 @@ import { PageTypes } from '../types/custom-types';
 
 import { ResultsInterface } from '../models/results/results.interface';
 import { StateInterface } from '../models/state/state.interface';
-import { DiskInterface } from '../models/disk/disk.interface';
 import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
 import { ResultsModel } from '../models/results/results-model.service';
 import { StateModel } from '../models/state/state.service';
 import { ProtocolModel } from '../models/protocol/protocol-model.service';
-import { DiskModel } from '../models/disk/disk.service';
 import { PageModel } from '../models/page/page.service';
 import { PageInterface } from '../models/page/page.interface';
 
@@ -26,25 +24,22 @@ import { calculateElapsedTime } from '../utilities/exam-helper-functions';
 
 export class ExamService {
     protocol: ProtocolModelInterface;
-    disk: DiskInterface;
     results: ResultsInterface;
     state: StateInterface;
     currentPage: PageInterface;
 
     constructor (
-        private logger: Logger,
-        private resultsService: ResultsService,
-        private resultsModel: ResultsModel,
-        private pageModel: PageModel,
-        private protocolM: ProtocolModel,
-        private stateModel: StateModel,
-        private diskModel: DiskModel,
-        private notifications: Notifications
+        private readonly logger: Logger,
+        private readonly resultsService: ResultsService,
+        private readonly resultsModel: ResultsModel,
+        private readonly pageModel: PageModel,
+        private readonly protocolM: ProtocolModel,
+        private readonly stateModel: StateModel,
+        private readonly notifications: Notifications
     ) {
         this.results = this.resultsModel.getResults();
         this.currentPage = this.pageModel.getPage();
         this.state = this.stateModel.getState();
-        this.disk = this.diskModel.getDisk();
         this.protocol = this.protocolM.getProtocolModel();
     }
 

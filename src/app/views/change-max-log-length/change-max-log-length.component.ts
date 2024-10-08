@@ -2,9 +2,10 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 
-import { Logger } from '../../utilities/logger.service';
 import { DiskInterface } from '../../models/disk/disk.interface';
+import { Logger } from '../../utilities/logger.service';
 import { DiskModel } from '../../models/disk/disk.service';
 
 @Component({
@@ -16,11 +17,26 @@ import { DiskModel } from '../../models/disk/disk.service';
 })
 export class ChangeMaxLogLengthComponent {
   disk: DiskInterface;
+  diskSubject: Subscription | undefined;
   maxLogLength: number | undefined;
 
-  constructor(private logger: Logger, private dialog: MatDialog, private diskModel: DiskModel) {
+  constructor(
+    private readonly logger: Logger, 
+    private readonly dialog: MatDialog, 
+    private readonly diskModel: DiskModel
+  ) {
     this.disk = this.diskModel.getDisk();
     this.maxLogLength = this.disk.maxLogRows; // Initialize with the current max log length
+  }
+
+  ngOnInit() {
+    this.diskSubject = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+        this.disk = updatedDisk;
+    })    
+  }
+
+  ngOnDestroy() {
+    this.diskSubject?.unsubscribe();
   }
 
   save(maxLogLength: number | undefined) {
@@ -35,4 +51,5 @@ export class ChangeMaxLogLengthComponent {
   cancel() {
     this.dialog.closeAll();
   }
+  
 }

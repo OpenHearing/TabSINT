@@ -1,11 +1,12 @@
 import { Inject, Injectable } from '@angular/core';
 import _ from 'lodash';
 import { DOCUMENT } from '@angular/common';
+import { BehaviorSubject } from 'rxjs';
 
 import { DiskInterface } from './disk.interface';
+import { ExamResults } from '../results/results.interface';
 import { ProtocolServer, ResultsMode } from '../../utilities/constants';
 import { partialMetaDefaults } from '../../utilities/defaults';
-import { ExamResults } from '../results/results.interface';
 
 @Injectable({
     providedIn: 'root',
@@ -91,7 +92,7 @@ export class DiskModel {
         savedDevices: {"tympan": [], "cha": [], "svantek": []}
     };
     
-    
+    diskSubject = new BehaviorSubject<DiskInterface>(this.disk);
     
     constructor(
         @Inject(DOCUMENT) private readonly document: Document
@@ -123,6 +124,7 @@ export class DiskModel {
         if (this.window !== null && !_.isUndefined(this.window.localStorage)) {
             this.window.localStorage.setItem('diskModel', JSON.stringify(this.disk));
         }
+        this.diskSubject.next(this.getDisk());
     }
 
     /**

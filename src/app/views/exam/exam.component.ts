@@ -1,15 +1,18 @@
 import { Component } from '@angular/core';
+import { Subscription } from 'rxjs';
 
-import { DiskModel } from '../../models/disk/disk.service';
-import { AppState, ExamState, ProtocolServer } from '../../utilities/constants';
 import { DiskInterface } from '../../models/disk/disk.interface';
-import { ProtocolModel } from '../../models/protocol/protocol-model.service';
-import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
 import { ProtocolModelInterface } from '../../models/protocol/protocol.interface';
 import { ResultsInterface } from '../../models/results/results.interface';
+
+import { DiskModel } from '../../models/disk/disk.service';
+import { ProtocolModel } from '../../models/protocol/protocol-model.service';
+import { StateModel } from '../../models/state/state.service';
 import { ResultsModel } from '../../models/results/results-model.service';
 import { ExamService } from '../../controllers/exam.service';
+
+import { AppState, ExamState, ProtocolServer } from '../../utilities/constants';
 
 @Component({
   selector: 'exam-view',
@@ -19,6 +22,7 @@ import { ExamService } from '../../controllers/exam.service';
 
 export class ExamComponent {
   disk: DiskInterface;
+  diskSubject: Subscription | undefined;
   results: ResultsInterface
   protocol: ProtocolModelInterface;
   localServer: ProtocolServer = ProtocolServer.LocalServer;
@@ -27,10 +31,10 @@ export class ExamComponent {
 
   constructor (
     public examService: ExamService,
-    private diskModel: DiskModel,
-    private resultsModel: ResultsModel,
-    private protocolM: ProtocolModel,
-    private stateModel: StateModel
+    private readonly diskModel: DiskModel,
+    private readonly protocolM: ProtocolModel,
+    private readonly resultsModel: ResultsModel,
+    private readonly stateModel: StateModel
   ) {
     this.disk = this.diskModel.getDisk();
     this.results = this.resultsModel.getResults();
@@ -39,11 +43,15 @@ export class ExamComponent {
   }
 
   ngOnInit(): void {
+    this.diskSubject = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+        this.disk = updatedDisk;
+    })    
     this.examService.switchToExamView();
     this.stateModel.setAppState(AppState.Exam);
   }
 
   ngOnDestroy(): void {
+    this.diskSubject?.unsubscribe();
     this.stateModel.setAppState(AppState.null);
   }
 

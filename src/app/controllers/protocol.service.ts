@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 import Ajv from 'ajv';
 const ajv = new Ajv()
 
@@ -9,21 +10,18 @@ import { LoadingProtocolInterface } from '../interfaces/loading-protocol-object.
 import { ProtocolValidationResultInterface } from '../interfaces/protocol-validation-result.interface';
 import { ProtocolErrorInterface } from '../interfaces/protocol-error.interface';
 import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
+import { DiskInterface } from '../models/disk/disk.interface';
+import { AppInterface } from '../models/app/app.interface';
+import { ProtocolModelInterface, ProtocolMetaInterface } from '../models/protocol/protocol.interface';
+import { StateInterface } from '../models/state/state.interface';
 
 import { DiskModel } from '../models/disk/disk.service';
 import { ProtocolModel } from '../models/protocol/protocol-model.service';
 import { AppModel } from '../models/app/app.service';
-import { AppInterface } from '../models/app/app.interface';
-import { ProtocolModelInterface, ProtocolMetaInterface } from '../models/protocol/protocol.interface';
-import { StateInterface } from '../models/state/state.interface';
 import { StateModel } from '../models/state/state.service';
-import { PageModel } from '../models/page/page.service';
-import { DiskInterface } from '../models/disk/disk.interface';
-
 import { FileService } from '../utilities/file.service';
 import { ExamState, DeveloperProtocols, DeveloperProtocolsCalibration, DialogType, ProtocolServer} from '../utilities/constants';
 import { Logger } from '../utilities/logger.service';
-import { Paths } from '../utilities/paths.service';
 import { Tasks } from '../utilities/tasks.service';
 import { Notifications } from '../utilities/notifications.service';
 import { loadingProtocolDefaults } from '../utilities/defaults';
@@ -40,28 +38,31 @@ import { protocolSchema } from '../../schema/protocol.schema';
 export class ProtocolService {
     app: AppInterface;
     disk: DiskInterface;
+    diskSubject: Subscription | undefined;
     loading: LoadingProtocolInterface;
     protocolModel: ProtocolModelInterface;
     state: StateInterface;
 
     constructor(
-        private appModel: AppModel,
-        private diskModel: DiskModel,
-        private fileService: FileService,
-        private logger:Logger,
-        private notifications: Notifications,
-        private pageModel: PageModel,
-        private paths: Paths,
-        private protocolM: ProtocolModel,
-        private stateModel: StateModel,
-        private translate: TranslateService,
-        private tasks: Tasks,
+        private readonly appModel: AppModel,
+        private readonly diskModel: DiskModel,
+        private readonly fileService: FileService,
+        private readonly logger:Logger,
+        private readonly notifications: Notifications,
+        private readonly protocolM: ProtocolModel,
+        private readonly stateModel: StateModel,
+        private readonly translate: TranslateService,
+        private readonly tasks: Tasks,
     ) {
         this.app = this.appModel.getApp();
-        this.disk = this.diskModel.getDisk();
         this.protocolModel = this.protocolM.getProtocolModel();
         this.state = this.stateModel.getState();
-        this.loading = loadingProtocolDefaults(this.diskModel.disk);
+        this.disk = this.diskModel.getDisk();
+        this.diskSubject = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+            this.disk = updatedDisk;
+        })    
+        // TODO: can we grab defaults from schema instead?
+        this.loading = loadingProtocolDefaults(this.disk);
     }
 
     /** Load all protocol files onto the protocolModel.activeProtocol object.
@@ -77,7 +78,6 @@ export class ProtocolService {
         notify: boolean = false
     ) {
         this.loading.meta = meta;
-        this.loading.requiresValidation = this.diskModel.disk.validateProtocols;
         this.loading.notify = notify;
 
         try {
@@ -113,11 +113,10 @@ export class ProtocolService {
         }
 
         try {
-            let availProtocols = this.diskModel.getDisk().availableProtocolsMeta;
+            let availProtocols = this.disk.availableProtocolsMeta;
             delete availProtocols[p.name];
             let updatedAvailableProtocolsMeta = availProtocols;
             this.diskModel.updateDiskModel('availableProtocolsMeta', updatedAvailableProtocolsMeta);
-            this.disk = this.diskModel.getDisk()
         } catch (error) {
             this.logger.error("Error trying to delete files: " + error);
         }
@@ -166,7 +165,7 @@ export class ProtocolService {
             this.tasks.register("updating protocol", "Validating Protocol... This process could take several minutes");
         }
 
-        if (this.loading.requiresValidation) {
+        if (this.disk.validateProtocols) {
             let validationResult = await this.validate();
             if (validationResult.valid) {
                 return;
@@ -237,7 +236,7 @@ export class ProtocolService {
             this.loading,
             this.logger,
             this.translate,
-            this.diskModel,
+            this.disk,
             this.fileService);
         this.tasks.register("updating protocol", "Processing Protocol...");
 
@@ -252,7 +251,7 @@ export class ProtocolService {
             }
         }
 
-        this.diskModel.disk.headset = this.protocolModel.activeProtocol.headset ?? "None";
+        this.diskModel.updateDiskModel('headset', this.protocolModel.activeProtocol.headset ?? "None");
 
         if (this.loading.protocol._requiresCha) {
             this.logger.debug("This exam requires the CHA, attempting to connect...");
@@ -279,7 +278,7 @@ export class ProtocolService {
 
     private notifyProtocolDidntLoadProperly() {
         this.logger.error("Protocol did not load properly");
-        if (this.diskModel.disk.audhere) {
+        if (this.disk.audhere) {
           this.notifications.alert(
             this.translate.instant("The protocol specified is not available, please see the administrator.")
           ).subscribe();

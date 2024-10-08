@@ -1,27 +1,28 @@
 import { Component } from '@angular/core';
 import _ from 'lodash';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 
-import { ProtocolService } from '../../controllers/protocol.service';
-import { ExamService } from '../../controllers/exam.service';
+
 import { DialogDataInterface } from '../../interfaces/dialog-data.interface';
 import { ProtocolSchemaInterface } from '../../interfaces/protocol-schema.interface';
-
-import { DiskModel } from '../../models/disk/disk.service';
+import { StateInterface } from '../../models/state/state.interface';
 import { ProtocolInterface, ProtocolMetaInterface, ProtocolModelInterface } from '../../models/protocol/protocol.interface';
 import { DiskInterface } from '../../models/disk/disk.interface';
+
+import { DiskModel } from '../../models/disk/disk.service';
 import { ProtocolModel } from '../../models/protocol/protocol-model.service';
 import { StateModel } from '../../models/state/state.service';
-import { StateInterface } from '../../models/state/state.interface';
-
+import { ProtocolService } from '../../controllers/protocol.service';
+import { ExamService } from '../../controllers/exam.service';
 import { Logger } from '../../utilities/logger.service';
-import { DialogType, ProtocolServer } from '../../utilities/constants';
 import { Notifications } from '../../utilities/notifications.service';
 import { Tasks } from '../../utilities/tasks.service';
-import { getProtocolMetaData } from '../../utilities/protocol-helper-functions';
 import { FileService } from '../../utilities/file.service';
-import { partialMetaDefaults } from '../../utilities/defaults';
 
+import { DialogType, ProtocolServer } from '../../utilities/constants';
+import { getProtocolMetaData } from '../../utilities/protocol-helper-functions';
+import { partialMetaDefaults } from '../../utilities/defaults';
 @Component({
   selector: 'protocols-view',
   templateUrl: './protocols.component.html',
@@ -30,6 +31,7 @@ import { partialMetaDefaults } from '../../utilities/defaults';
 export class ProtocolsComponent {
   selected?: ProtocolMetaInterface;
   disk: DiskInterface;
+  diskSubject: Subscription | undefined;
   protocolModel: ProtocolModelInterface;
   state: StateInterface;
 
@@ -38,12 +40,12 @@ export class ProtocolsComponent {
     public examService: ExamService,
     public protocolM: ProtocolModel,
     public protocolService: ProtocolService,
-    public stateModel: StateModel,
-    private fileService: FileService,
-    private logger: Logger,
-    private notifications: Notifications,
-    private tasks: Tasks,
-    private translate: TranslateService,
+    private readonly fileService: FileService,
+    private readonly logger: Logger,
+    private readonly notifications: Notifications,
+    private readonly stateModel: StateModel,
+    private readonly tasks: Tasks,
+    private readonly translate: TranslateService,
   ) {
     this.disk = this.diskModel.getDisk();
     this.protocolModel = this.protocolM.getProtocolModel();
@@ -51,13 +53,18 @@ export class ProtocolsComponent {
   }
 
   ngOnInit(): void {
+    this.diskSubject = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+        this.disk = updatedDisk;
+    })    
     this.logger.debug("protocols");
     // sort protocols by name here
   }
 
+  ngOnDestroy() {
+    this.diskSubject?.unsubscribe();
+  }
 
   getAvailableProtocols(): { key: string; value: ProtocolMetaInterface }[] {
-    this.disk = this.diskModel.getDisk()
     const availableProtocols = this.disk.availableProtocolsMeta;
     return Object.entries(availableProtocols).map(([key, value]) => ({ key, value }));
   }
@@ -115,11 +122,10 @@ export class ProtocolsComponent {
               ...protocolContent
             };
             const protocolMetaData: ProtocolMetaInterface = getProtocolMetaData(protocol);
-            let availableMetaProtocols = this.diskModel.disk.availableProtocolsMeta;
+            let availableMetaProtocols = this.disk.availableProtocolsMeta;
             availableMetaProtocols[protocolMetaData.name] = protocolMetaData;
             this.diskModel.updateDiskModel('availableProtocolsMeta', availableMetaProtocols);
-            this.disk = this.diskModel.getDisk();
-            this.protocolModel = this.protocolM.getProtocolModel();
+           this.protocolModel = this.protocolM.getProtocolModel();
           }
       }
     }
@@ -332,8 +338,7 @@ export class ProtocolsComponent {
   };
 
   toggleValidateProtocols() {
-    this.diskModel.updateDiskModel('validateProtocols', !this.diskModel.disk.validateProtocols);
-    this.disk = this.diskModel.getDisk();
+    this.diskModel.updateDiskModel('validateProtocols', !this.disk.validateProtocols);
   }
 
   validateProtocolPopover = this.translate.instant(
