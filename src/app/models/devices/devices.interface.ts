@@ -13,3 +13,8 @@ export interface DevicesInterface {
     diskspace: string,
     connectedDevices: ConnectedDevices
 }
+
+export interface DeviceResponse {
+    tabsintId: string,
+    msg: string
+}

@@ -33,7 +33,7 @@ import { NotificationsComponent } from './views/notifications/notifications.comp
 
 // Models
 import { AppModel } from './models/app/app.service';
-import { DevicesModel } from './models/devices/devices.service';
+import { DevicesModel } from './models/devices/devices-model.service';
 import { DiskModel } from './models/disk/disk.service';
 import { ProtocolModel } from './models/protocol/protocol-model.service';
 import { ResultsModel } from './models/results/results-model.service';
@@ -55,7 +55,7 @@ import { LocalServerService } from './controllers/local-server.service';
 import { ResultsService } from './controllers/results.service';
 import { ExamService } from './controllers/exam.service';
 import { TympanWrap } from './utilities/tympan-wrap.service';
-import { TympanService } from './controllers/tympan.service';
+import { TympanService } from './controllers/devices/tympan.service';
 import { AdminService } from './controllers/admin.service';
 import { TabsintConfigComponent } from './views/config/config-views/tabsint-config/tabsint-config.component';
 import { SoftwareConfigComponent } from './views/config/config-views/software-config/software-config.component';
@@ -76,6 +76,7 @@ import { DeviceConfigComponent } from './views/config/config-views/device-config
 import { DeviceInfoComponent } from './views/config/config-views/device-info/device-info.component';
 import { ConnectedDevicesComponent } from './views/config/config-views/connected-devices/connected-devices.component';
 import { NewConnectionComponent } from './views/config/config-views/new-connection/new-connection.component';
+import { DevicesService } from './controllers/devices.service';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -163,7 +164,8 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     AdminService,
     TranslateService,
     TympanWrap,
-    TympanService
+    TympanService,
+    DevicesService
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

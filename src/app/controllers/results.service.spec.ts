@@ -3,7 +3,7 @@ import { ResultsService } from './results.service';
 import { ResultsModel } from '../models/results/results-model.service';
 import { ProtocolModel } from '../models/protocol/protocol-model.service';
 import { SqLite } from '../utilities/sqLite.service';
-import { DevicesModel } from '../models/devices/devices.service';
+import { DevicesModel } from '../models/devices/devices-model.service';
 import { DiskModel } from '../models/disk/disk.service';
 import { FileService } from '../utilities/file.service';
 import { Logger } from '../utilities/logger.service';
@@ -17,7 +17,6 @@ describe('ResultsService', () => {
     let diskModel = new DiskModel(new Document);
     let sqLite = new SqLite(appModel, diskModel);
     let logger = new Logger(diskModel, sqLite);
-    let devicesModel = new DevicesModel(logger);
 
     beforeEach(async () => {
         TestBed.configureTestingModule({})
@@ -26,7 +25,7 @@ describe('ResultsService', () => {
             new ResultsModel,
             new ProtocolModel,
             sqLite,
-            devicesModel,
+            new DevicesModel(logger),
             diskModel,
             new FileService(appModel, logger,diskModel),
             logger

@@ -19,7 +19,7 @@ export class FileService {
     constructor(
         public appModel: AppModel,
         public logger: Logger,
-        private diskModel: DiskModel
+        private readonly diskModel: DiskModel
     ) { 
         this.app = this.appModel.getApp();
         this.disk = this.diskModel.getDisk();

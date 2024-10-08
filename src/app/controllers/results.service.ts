@@ -11,7 +11,7 @@ import { FileService } from '../utilities/file.service';
 import { Logger } from '../utilities/logger.service';
 import { SqLite } from '../utilities/sqLite.service';
 import { DevicesInterface } from '../models/devices/devices.interface';
-import { DevicesModel } from '../models/devices/devices.service';
+import { DevicesModel } from '../models/devices/devices-model.service';
 import { PageInterface } from '../models/page/page.interface';
 import { responseDefaultByResponseAreaType } from '../utilities/defaults';
 
@@ -26,13 +26,13 @@ export class ResultsService {
     devices: DevicesInterface;
     
     constructor (
-        private resultsModel: ResultsModel,
-        private protocolM: ProtocolModel,
-        private sqLite: SqLite,
-        private devicesModel: DevicesModel,
-        private diskModel: DiskModel,
-        private fileService: FileService,
-        private logger: Logger
+        private readonly resultsModel: ResultsModel,
+        private readonly protocolM: ProtocolModel,
+        private readonly sqLite: SqLite,
+        private readonly devicesModel: DevicesModel,
+        private readonly diskModel: DiskModel,
+        private readonly fileService: FileService,
+        private readonly logger: Logger
     ) {
         this.results = this.resultsModel.getResults();
         this.disk = this.diskModel.getDisk();

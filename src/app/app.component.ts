@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from "@ngx-translate/core";
 import _ from 'lodash';
@@ -18,35 +18,37 @@ import { SqLite } from './utilities/sqLite.service';
 import { Logger } from './utilities/logger.service';
 import { FileService } from './utilities/file.service';
 import { Tasks } from './utilities/tasks.service';
+import { DeviceUtil } from './utilities/device-utility';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html'
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'tabsint';
   app: AppInterface;
   disk: DiskInterface;
   protocol: ProtocolModelInterface;
 
   constructor(    
-    private appModel: AppModel,
-    private protocolM: ProtocolModel,
-    private diskModel: DiskModel,
-    private fileService:FileService,
-    private logger: Logger,
-    private protocolService: ProtocolService,
-    private router: Router,
-    private sqLite: SqLite,
-    private translate: TranslateService,
-    private tasks: Tasks
+    private readonly appModel: AppModel,
+    private readonly protocolM: ProtocolModel,
+    private readonly diskModel: DiskModel,
+    private readonly fileService:FileService,
+    private readonly logger: Logger,
+    private readonly protocolService: ProtocolService,
+    private readonly router: Router,
+    private readonly sqLite: SqLite,
+    private readonly translate: TranslateService,
+    private readonly tasks: Tasks,
+    private readonly deviceUtil: DeviceUtil
   ) {
     this.translate.setDefaultLang('English');
     this.translate.use('English');
     this.app = this.appModel.getApp();
     this.disk = this.diskModel.getDisk();
-    this.diskModel.updateDiskModel('numLogRows',1);
     this.protocol = this.protocolM.getProtocolModel();
+    this.diskModel.updateDiskModel('numLogRows',1);
   }
 
   async ngOnInit() {
@@ -67,6 +69,7 @@ export class AppComponent {
 
     if (!_.isUndefined(this.disk.activeProtocolMeta)) await this.protocolService.load(this.disk.activeProtocolMeta);
 
+    this.deviceUtil.addSavedDevices();
   }
 }
 

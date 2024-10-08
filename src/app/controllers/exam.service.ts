@@ -209,8 +209,8 @@ export class ExamService {
     */
     private startPage() {
         this.currentPage = this.pageModel.stack[this.state.examIndex];
-        this.pageModel.currentPageObservable.next(this.currentPage);
-        // TODO: Could subscribe to the currentPageObservable...
+        this.pageModel.currentPageSubject.next(this.currentPage);
+        // TODO: Could subscribe to the currentPageSubject...
         this.resultsService.initializePageResults(this.currentPage);
         this.state.isSubmittable = this.checkIfPageIsSubmittable();
     }

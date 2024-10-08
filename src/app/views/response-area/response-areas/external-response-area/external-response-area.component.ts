@@ -22,7 +22,7 @@ export class ExternalResponseAreaComponent implements OnInit, OnDestroy {
   state: StateInterface
   testHTML: string;
   testJS: string;
-  subscription: Subscription | undefined;
+  subscription: Subscription|undefined;
 
   constructor (
     public resultsModel: ResultsModel, 
@@ -41,7 +41,7 @@ export class ExternalResponseAreaComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.subscription = this.pageModel.currentPageObservable.subscribe( (updatedPage:any) => {
+    this.subscription = this.pageModel.currentPageSubject.subscribe( (updatedPage:any) => {
       this.testHTML = updatedPage?.responseArea?.externalHTML;
       this.testJS = updatedPage?.responseArea?.externalJS;
       this.waitForHTMLToLoad();

@@ -1,7 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import * as _ from 'lodash';
 
-import { ExamService } from '../../../../controllers/exam.service';
 import { ResultsInterface } from '../../../../models/results/results.interface';
 import { ResultsModel } from '../../../../models/results/results-model.service';
 import { ProtocolModelInterface } from '../../../../models/protocol/protocol.interface';
@@ -10,29 +9,35 @@ import { StateModel } from '../../../../models/state/state.service';
 import { ProtocolModel } from '../../../../models/protocol/protocol-model.service';
 import { ChoiceInterface, MultipleChoiceInterface } from './multiple-choice.interface';
 import { Logger } from '../../../../utilities/logger.service';
+import { Subscription } from 'rxjs';
+import { PageInterface } from '../../../../models/page/page.interface';
+import { PageModel } from '../../../../models/page/page.service';
+import { ExamService } from '../../../../controllers/exam.service';
 
 @Component({
   selector: 'multiple-choice-view',
   templateUrl: './multiple-choice.component.html',
   styleUrl: './multiple-choice.component.css'
 })
-export class MultipleChoiceComponent {
+export class MultipleChoiceComponent implements OnInit, OnDestroy {
   results: ResultsInterface;
   state: StateInterface;
   protocol: ProtocolModelInterface;
+  currentPage: PageInterface;
+  pageSubscription: Subscription|undefined;
 
   constructor (
-    public logger: Logger,
-    public resultsModel: ResultsModel, 
-    public examService: ExamService,
-    public stateModel: StateModel,
-    public protocolModel: ProtocolModel
+    private readonly logger: Logger,
+    private readonly resultsModel: ResultsModel, 
+    private readonly stateModel: StateModel,
+    private readonly pageModel: PageModel,
+    private readonly protocolModel: ProtocolModel,
+    private readonly examService: ExamService
   ) {
     this.results = this.resultsModel.getResults();
     this.protocol = this.protocolModel.getProtocolModel();
     this.state = this.stateModel.getState();
-
-    this.update();
+    this.currentPage = this.pageModel.getPage();
   }
 
   choices: ChoiceInterface[] | undefined;
@@ -52,21 +57,31 @@ export class MultipleChoiceComponent {
     }
   ];
 
-  update() {
-    this.choices = _.cloneDeep((this.examService.currentPage?.responseArea as MultipleChoiceInterface).choices || this.yesNo);
-    if ((this.examService.currentPage?.responseArea as MultipleChoiceInterface).other) {
-      this.enableOther = true;
-      this.choices.push({
-        id: "Other",
-        text: (this.examService.currentPage?.responseArea as MultipleChoiceInterface).other
-      });
-    }
-    this.logger.debug("choices for multiple-choice responseArea" + this.choices);
+  ngOnInit() {
+    this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage:PageInterface) => {
+      if (updatedPage?.responseArea?.type == "multipleChoiceResponseArea") {
+        const updatedMultipleChoiceResponseArea = updatedPage.responseArea as MultipleChoiceInterface;
+        if (updatedMultipleChoiceResponseArea) {
+          this.choices = _.cloneDeep(updatedMultipleChoiceResponseArea.choices || this.yesNo);
+          if (updatedMultipleChoiceResponseArea.other) {
+            this.enableOther = true;
+            this.choices.push({
+              id: "Other",
+              text: updatedMultipleChoiceResponseArea.other
+            });
+          }
+          this.logger.debug("choices for multiple-choice responseArea" + JSON.stringify(this.choices));
+        }
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.pageSubscription?.unsubscribe();
   }
 
   choose(id: string) {
     this.results.currentPage.response = id;
-    // this.state.isSubmittable = this.examService.getSubmittableLogic(this.examService.currentPage?.responseArea);
     this.state.isSubmittable = true;
     if (this.state.isSubmittable && this.results.currentPage.response !== "Other") {
       this.examService.submit = this.examService.submitDefault;

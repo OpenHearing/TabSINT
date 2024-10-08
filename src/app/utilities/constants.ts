@@ -18,13 +18,7 @@ export enum ExamState {
     Testing
 }
 
-export enum ChaState {
-    Connected,
-    Disconnected,
-    Reprogram
-}
-
-export enum TympanState {
+export enum DeviceState {
     Connected,
     Disconnected,
     Discovery,
@@ -33,8 +27,8 @@ export enum TympanState {
 
 export const AvailableConnectableDevices: Array<string> = [
     "Tympan",
-    "CHA",
-    "Svantek"
+    // "CHA",
+    // "Svantek"
 ]
 
 export enum ResultsMode {

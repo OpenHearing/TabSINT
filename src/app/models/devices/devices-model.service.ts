@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { DevicesInterface } from './devices.interface';
+import { DevicesInterface, DeviceResponse } from './devices.interface';
 import { Device } from '@capacitor/device';
 import { Logger } from '../../utilities/logger.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { BleDevice } from '../../interfaces/bluetooth.interface';
 
 @Injectable({
@@ -23,16 +23,20 @@ export class DevicesModel {
         other: "other",
         diskspace: "Unknown",
         connectedDevices: {
-            "tympan":[],
-            "cha":[],
-            "svantek":[]
+            "tympan": [],
+            "cha": [],
+            "svantek": []
         }
     }
 
-    availableDevicesObservable = new BehaviorSubject<BleDevice[]>([]);
+    availableDevicesSubject = new BehaviorSubject<BleDevice[]>([]);
+    deviceResponseSubject = new Subject<DeviceResponse>();
 
-    constructor(private logger: Logger) {
-        this.load();
+    constructor(private readonly logger: Logger) {
+        // TODO: Move this to generic utility for running async functions in constructor
+        setTimeout( async () => {
+            await this.load();
+        }, 0);
     }
 
     async load() {

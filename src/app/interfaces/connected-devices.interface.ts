@@ -1,4 +1,4 @@
-import { ConnectedDevice } from "./new-device.interface";
+import { ConnectedDevice } from "./connected-device.interface";
 
 export interface ConnectedDevices {
     tympan: Array<ConnectedDevice>;

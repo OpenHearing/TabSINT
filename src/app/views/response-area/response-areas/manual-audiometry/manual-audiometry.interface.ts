@@ -2,6 +2,7 @@ import { CommonResponseAreaInterface } from "../../../../interfaces/page-definit
 
 export interface ManualAudiometryInterface extends CommonResponseAreaInterface {
     exportToCSV?: boolean;
+    tabsintId?: string;
     maxOutputLevel?: number;
     minOutputLevel?: number;
     currentDbSpl?: number; 

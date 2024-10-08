@@ -1,69 +1,33 @@
 <div class="cha-info cha-info-space-fix">
-    <div class="row">
-      <div class="col-12">
-        <h5>Tympan</h5>
-      </div>
+  <div class="row">
+    <div class="col-12">
+      <h5></h5>
     </div>
-  
-    <div class="row pad-top" >
-      <div class="col-4">Name:</div>
-      <div class="col-8">{{tympan.myTympan.name}}</div>
-    </div>
-  
-    <!-- Connected Tympan Description -->
-    <div class="row pad-top">
-      <div class="col-4">Description:</div>
-      <div class="col-8">{{tympan.myTympan.id.description}}</div>
-    </div>
-  
-    <!-- Calibration Date -->
-    <div class="row pad-top">
-      <div class="col-4">Calibration Date: </div>
-      <div class="col-8" >{{tympan.myTympan.id.tympanCalibrationDate}}</div>
-    </div>
-  
-  
-    <!-- Connected Tympan Firmware-->
-    <div class="row pad-top">
-      <div class="col-4">Firmware:</div>
-      <div class="col-8">{{tympan.myTympan.id.buildDateTime}}</div>
-    </div>
-  
-    <!-- Connected Tympan Serial-->
-    <div class="row pad-top">
-      <div class="col-4">Serial number:</div>
-      <div class="col-8">{{tympan.myTympan.id.serialNumber}}</div>
-    </div>
-  
-    <!-- Battery Level-->
-    <div class="row pad-top">
-      <div class="col-4">Battery Level:</div>
-      <div class="col-4">
-        <span class="cha-battery-border" [ngStyle]="{'width': tympan.myTympan.batteryIndicatorWidth+'%'}">
-          <!-- <div *ngIf="cha.myCha.battery.level() >= 66" class="cha-battery-status" [ngStyle]="{'width': cha.myCha.battery.level()+'%', 'background-color': 'green'}"></div>
-          <div *ngIf="cha.myCha.battery.level() >= 33 && cha.myCha.battery.level() < 66" class="cha-battery-status" [ngStyle]="{'width': cha.myCha.battery.level()+'%', 'background-color': 'orange'}"></div>
-          <div *ngIf="cha.myCha.battery.level() < 33"class="cha-battery-status" [ngStyle]="{'width': cha.myCha.battery.level()+'%', 'background-color': 'red'}"></div> -->
-        </span>
-  
-      </div>
-      <div class="col-4"><small>{{tympan.myTympan.battery.level()}}%</small></div>
-    </div>
-  
-    <!-- Connected Tympan Auto Shutdown Time-->
-    <div class="row pad-top">
-      <div class="col-6">Auto Shutdown Time:</div>
-      <div class="col-2">{{tympan.myTympan.setting["auto_shutdown_time"]}} mins </div>
-      <div class="col-2"> </div>
-      <div class="col-1" href="javascript:" title="{{'Tympan Shutdown Timer help' | translate}}">
-        <i [matMenuTriggerFor]= "setShutdownTimerMenu" class="ion-help-circled"></i>
-    </div>
-    <mat-menu #setShutdownTimerMenu="matMenu">
-        <button mat-menu-item>
-            <div [innerHTML]="setShutdownTimerPopover"></div>
-        </button>
-    </mat-menu>
-  
-    </div>
+  </div>
+
+  <!-- Connected Tympan Description -->
+  <div class="row pad-top">
+    <div class="col-4">Description:</div>
+    <div class="col-8">{{devices?.connectedDevices?.tympan?.[0]?.description}}</div>
+  </div>
+
+  <!-- Calibration Date -->
+  <!-- <div class="row pad-top">
+    <div class="col-4">Calibration Date: </div>
+    <div class="col-8" >{{devices?.connectedDevices?.tympan?.[0]?.tympanCalibrationDate}}</div>
+  </div> -->
+
+  <!-- Connected Tympan Firmware-->
+  <div class="row pad-top">
+    <div class="col-4">Firmware:</div>
+    <div class="col-8">{{devices?.connectedDevices?.tympan?.[0]?.buildDateTime}}</div>
+  </div>
+
+  <!-- Connected Tympan Serial-->
+  <div class="row pad-top">
+    <div class="col-4">Serial number:</div>
+    <div class="col-8">{{devices?.connectedDevices?.tympan?.[0]?.serialNumber}}</div>
+  </div>
   
 </div>
   
