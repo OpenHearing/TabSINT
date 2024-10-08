@@ -4,10 +4,17 @@
     <!-- navbar -->
 <!-- </a> -->
   
-<!-- CHA status -->
-<a href="javascript:" class="header-text" *ngIf="state.bluetoothConnected" title="CHA status">
-    <!-- <cha-indicator></cha-indicator> -->
-    cha
+
+<!-- tympan status -->
+<a href="javascript:" class="header-text" *ngIf="devices?.connectedDevices?.tympan?.[0]?.state==DeviceState.Connected" title="Tympan Connected">
+    <span>
+        <i [matMenuTriggerFor]= "TympanConnectedMenu" class="ion-trophy"></i>
+    </span>
+    <mat-menu #TympanConnectedMenu="matMenu">
+        <button mat-menu-item>
+            <div [innerHTML]="TympanConnectedPopover"></div>
+        </button>
+    </mat-menu>
 </a>
 
 <!-- Streaming Status -->
