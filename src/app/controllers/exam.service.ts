@@ -1,18 +1,20 @@
 import { Injectable } from '@angular/core';
+import { Subscription } from 'rxjs';
 
-import { ResultsService } from './results.service';
-import { FollowOnInterface } from '../interfaces/page-definition.interface';
 import { isPageDefinition, isProtocolReferenceInterface, isProtocolSchemaInterface } from '../guards/type.guard';
 import { PageTypes } from '../types/custom-types';
 
+import { FollowOnInterface } from '../interfaces/page-definition.interface';
 import { ResultsInterface } from '../models/results/results.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
+import { PageInterface } from '../models/page/page.interface';
+
+import { ResultsService } from './results.service';
 import { ResultsModel } from '../models/results/results-model.service';
 import { StateModel } from '../models/state/state.service';
 import { ProtocolModel } from '../models/protocol/protocol-model.service';
 import { PageModel } from '../models/page/page.service';
-import { PageInterface } from '../models/page/page.interface';
 
 import { DialogType, ExamState } from '../utilities/constants';
 import { Notifications } from '../utilities/notifications.service';
@@ -27,6 +29,7 @@ export class ExamService {
     results: ResultsInterface;
     state: StateInterface;
     currentPage: PageInterface;
+    pageSubscription: Subscription | undefined;
 
     constructor (
         private readonly logger: Logger,
@@ -39,6 +42,9 @@ export class ExamService {
     ) {
         this.results = this.resultsModel.getResults();
         this.currentPage = this.pageModel.getPage();
+        this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
+            this.currentPage = updatedPage;
+        });
         this.state = this.stateModel.getState();
         this.protocol = this.protocolM.getProtocolModel();
     }
@@ -203,9 +209,7 @@ export class ExamService {
      * @models state
     */
     private startPage() {
-        this.currentPage = this.pageModel.stack[this.state.examIndex];
-        this.pageModel.currentPageSubject.next(this.currentPage);
-        // TODO: Could subscribe to the currentPageSubject...
+        this.pageModel.currentPageSubject.next(this.pageModel.stack[this.state.examIndex]);
         this.resultsService.initializePageResults(this.currentPage);
         this.state.isSubmittable = this.checkIfPageIsSubmittable();
     }
