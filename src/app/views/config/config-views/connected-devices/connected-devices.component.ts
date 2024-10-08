@@ -45,6 +45,7 @@ export class ConnectedDevicesComponent {
 
   remove(device:ConnectedDevice) {
     this.logger.debug("remove() button pressed, attempting to disconnect and remove: "+JSON.stringify(device));
+    this.deviceUtil.removeSavedDevice(device);
     this.devicesService.removeDevice(device);
   }
 

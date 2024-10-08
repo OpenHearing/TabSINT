@@ -5,6 +5,8 @@ import { AppState } from '../../../../utilities/constants';
 import { StateModel } from '../../../../models/state/state.service';
 import { DiskInterface } from '../../../../models/disk/disk.interface';
 import { StateInterface } from '../../../../models/state/state.interface';
+import { DevicesModel } from '../../../../models/devices/devices-model.service';
+import { DevicesInterface } from '../../../../models/devices/devices.interface';
 
 @Component({
   selector: 'device-info-view',
@@ -14,39 +16,25 @@ import { StateInterface } from '../../../../models/state/state.interface';
 export class DeviceInfoComponent {
   disk: DiskInterface;
   state: StateInterface;
+  devices: DevicesInterface;
 
   constructor(
     private readonly diskModel: DiskModel, 
     private readonly stateModel: StateModel,
     private readonly translate: TranslateService,
+    private readonly devicesModel: DevicesModel
   ) { 
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();
+    this.devices = this.devicesModel.getDevices();
   }
 
   ngOnInit(): void {
     this.stateModel.setAppState(AppState.Admin);
   }
 
-  // VARIABLES - PROBABLY SHOULD BE MOVED?
-
-  tympan = {
-    myTympan: {
-      id: {
-        serialNumber: "placeholder",
-        buildDateTime: "placeholder",
-        tympanCalibrationDate: "placeholder",
-        description: "placeholder",
-      }
-    }
-  };
-
-
-  // Popovers
-
   setShutdownTimerPopover = this.translate.instant(
     "Auto shutdown time (in minutes) for the WAHTS headset."
   );
 
-  
 }

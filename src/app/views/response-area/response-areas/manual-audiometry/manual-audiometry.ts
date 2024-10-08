@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { PageModel } from "../../../../models/page/page.service";
 import { StateModel } from "../../../../models/state/state.service";
 import { ProtocolModel } from "../../../../models/protocol/protocol-model.service";
@@ -22,7 +22,7 @@ import { Logger } from "../../../../utilities/logger.service";
     styleUrl: './manual-audiometry.css'
   })
 
-export class ManualAudiometryComponent{
+export class ManualAudiometryComponent implements OnInit, OnDestroy {
     currentPage: PageInterface;
     results: ResultsInterface;
     protocol: ProtocolModelInterface;

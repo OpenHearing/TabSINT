@@ -1,7 +1,6 @@
 import { MediaReposInterface } from "../../interfaces/media-repos.interface"
 import { ProtocolServer, ResultsMode } from "../../utilities/constants"
 import { ProtocolMetaInterface } from "../protocol/protocol.interface"
-import { ExamResults } from "../results/results.interface"
 
 export interface DiskInterface {
   activeProtocolMeta?: ProtocolMetaInterface,
@@ -80,16 +79,29 @@ export interface DiskInterface {
   },
   uploadSummary: Array<UploadSummary>,
   validateProtocols: boolean,
-  versionCheck: boolean
+  versionCheck: boolean,
+  savedDevices: SavedDevices
 }
 
 
 interface UploadSummary {
-  protocolId?: string;
-  protocolName: string;
-  testDateTime: string;
-  nResponses: number;
-  source: ProtocolServer;
-  uploadedOn: string;
-  output: ProtocolServer;
+    protocolId?: string;
+    protocolName: string;
+    testDateTime: string;
+    nResponses: number;
+    source: ProtocolServer;
+    uploadedOn: string;
+    output: ProtocolServer;
+}
+
+interface SavedDevices {
+    tympan: Array<SavedDevice>;
+    cha: Array<SavedDevice>;
+    svantek: Array<SavedDevice>;
+}
+
+interface SavedDevice {
+    tabsintId: string;
+    name: string;
+    deviceId: string;
 }

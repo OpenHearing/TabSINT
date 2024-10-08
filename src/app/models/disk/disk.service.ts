@@ -87,13 +87,14 @@ export class DiskModel {
         tabletLocation: {},
         uploadSummary: [],
         validateProtocols: true,
-        versionCheck: false
+        versionCheck: false,
+        savedDevices: {"tympan": [], "cha": [], "svantek": []}
     };
     
     
     
     constructor(
-        @Inject(DOCUMENT) private document: Document
+        @Inject(DOCUMENT) private readonly document: Document
     ) {
         this.window = document.defaultView;
     }

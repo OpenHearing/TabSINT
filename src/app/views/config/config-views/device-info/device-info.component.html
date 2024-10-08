@@ -1,35 +1,33 @@
 <div class="cha-info cha-info-space-fix">
-    <div class="row">
-      <div class="col-12">
-        <h5>Details</h5>
-      </div>
+  <div class="row">
+    <div class="col-12">
+      <h5></h5>
     </div>
-  
-    <!-- Connected Tympan Description -->
-    <div class="row pad-top">
-      <div class="col-4">Description:</div>
-      <div class="col-8">{{tympan.myTympan.id.description}}</div>
-    </div>
-  
-    <!-- Calibration Date -->
-    <!-- <div class="row pad-top">
-      <div class="col-4">Calibration Date: </div>
-      <div class="col-8" >{{tympan.myTympan.id.tympanCalibrationDate}}</div>
-    </div> -->
-  
-    <!-- Connected Tympan Firmware-->
-    <div class="row pad-top">
-      <div class="col-4">Firmware:</div>
-      <div class="col-8">{{tympan.myTympan.id.buildDateTime}}</div>
-    </div>
-  
-    <!-- Connected Tympan Serial-->
-    <div class="row pad-top">
-      <div class="col-4">Serial number:</div>
-      <div class="col-8">{{tympan.myTympan.id.serialNumber}}</div>
-    </div>
-  
-    </div>
+  </div>
+
+  <!-- Connected Tympan Description -->
+  <div class="row pad-top">
+    <div class="col-4">Description:</div>
+    <div class="col-8">{{devices.connectedDevices.tympan[0].description}}</div>
+  </div>
+
+  <!-- Calibration Date -->
+  <!-- <div class="row pad-top">
+    <div class="col-4">Calibration Date: </div>
+    <div class="col-8" >{{devices.connectedDevices.tympan[0].tympanCalibrationDate}}</div>
+  </div> -->
+
+  <!-- Connected Tympan Firmware-->
+  <div class="row pad-top">
+    <div class="col-4">Firmware:</div>
+    <div class="col-8">{{devices.connectedDevices.tympan[0].buildDateTime}}</div>
+  </div>
+
+  <!-- Connected Tympan Serial-->
+  <div class="row pad-top">
+    <div class="col-4">Serial number:</div>
+    <div class="col-8">{{devices.connectedDevices.tympan[0].serialNumber}}</div>
+  </div>
   
 </div>
   
