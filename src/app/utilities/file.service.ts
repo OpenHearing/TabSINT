@@ -20,7 +20,7 @@ export class FileService {
     app: AppInterface;
     rootUri:string | undefined;
     disk:DiskInterface;
-    diskSubject: Subscription | undefined;
+    diskSubscription: Subscription | undefined;
 
     constructor(
         public appModel: AppModel,
@@ -29,7 +29,7 @@ export class FileService {
     ) { 
         this.app = this.appModel.getApp();
         this.disk = this.diskModel.getDisk();
-        this.diskSubject = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+        this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
             this.disk = updatedDisk;
         })    
         this.rootUri = this.disk.contentURI;

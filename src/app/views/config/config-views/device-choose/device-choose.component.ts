@@ -18,10 +18,10 @@ import { DevicesModel } from '../../../../models/devices/devices-model.service';
 })
 export class DeviceChooseComponent implements OnInit, OnDestroy {
   disk: DiskInterface;
-  diskSubject: Subscription | undefined;
+  diskSubscription: Subscription | undefined;
   availableDevices: Array<BleDevice>;
   selectedDevice: BleDevice | undefined;
-  devicesSubject: Subscription | undefined;
+  devicesSubscription: Subscription | undefined;
 
   constructor(
     private readonly changeDetection: ChangeDetectorRef,
@@ -34,19 +34,19 @@ export class DeviceChooseComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.diskSubject = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
         this.disk = updatedDisk;
     })    
 
-    this.devicesSubject = this.devicesModel.availableDevicesSubject.subscribe( (availableDevices:BleDevice[]) => {
+    this.devicesSubscription = this.devicesModel.availableDevicesSubject.subscribe( (availableDevices:BleDevice[]) => {
       this.availableDevices = availableDevices;
       this.changeDetection.detectChanges();
     });
   }
 
   ngOnDestroy() {
-    this.diskSubject?.unsubscribe();
-    this.devicesSubject?.unsubscribe();
+    this.diskSubscription?.unsubscribe();
+    this.devicesSubscription?.unsubscribe();
   }
 
   choose(device:BleDevice) {

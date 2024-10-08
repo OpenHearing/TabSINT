@@ -17,7 +17,7 @@ import { SqLite } from '../../../utilities/sqLite.service';
 export class SingleResultModalComponent {
   singleExamResult?: ExamResults;
   disk: DiskInterface;
-  diskSubject: Subscription | undefined;
+  diskSubscription: Subscription | undefined;
 
   constructor(
     public dialog: MatDialog, 
@@ -30,14 +30,14 @@ export class SingleResultModalComponent {
   }
 
   async ngOnInit() {    
-    this.diskSubject = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
         this.disk = updatedDisk;
     })    
     this.singleExamResult = JSON.parse(await this.sqLite.getSingleResult(this.index));
   }
 
   ngOnDestroy() {
-    this.diskSubject?.unsubscribe();
+    this.diskSubscription?.unsubscribe();
   }
 
   upload() {

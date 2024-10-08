@@ -23,7 +23,7 @@ import { SingleResultModalComponent } from '../single-result-modal/single-result
 })
 export class ResultsComponent {
   disk: DiskInterface;
-  diskSubject: Subscription | undefined;
+  diskSubscription: Subscription | undefined;
   state: StateInterface;
   index: number = 0;
   results?: ExamResults[];
@@ -42,14 +42,14 @@ export class ResultsComponent {
   }
 
   async ngOnInit() {
-    this.diskSubject = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
         this.disk = updatedDisk;
     })    
     this.results = await this.sqLite.getAllResults();
   }
 
   ngOnDestroy() {
-    this.diskSubject?.unsubscribe();
+    this.diskSubscription?.unsubscribe();
   }
   trackByIndex(index: number, item: any): number {
     return index;

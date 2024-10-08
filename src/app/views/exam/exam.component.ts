@@ -22,7 +22,7 @@ import { AppState, ExamState, ProtocolServer } from '../../utilities/constants';
 
 export class ExamComponent {
   disk: DiskInterface;
-  diskSubject: Subscription | undefined;
+  diskSubscription: Subscription | undefined;
   results: ResultsInterface
   protocol: ProtocolModelInterface;
   localServer: ProtocolServer = ProtocolServer.LocalServer;
@@ -43,7 +43,7 @@ export class ExamComponent {
   }
 
   ngOnInit(): void {
-    this.diskSubject = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
         this.disk = updatedDisk;
     })    
     this.examService.switchToExamView();
@@ -51,7 +51,7 @@ export class ExamComponent {
   }
 
   ngOnDestroy(): void {
-    this.diskSubject?.unsubscribe();
+    this.diskSubscription?.unsubscribe();
     this.stateModel.setAppState(AppState.null);
   }
 

@@ -17,7 +17,7 @@ import { ProtocolModel } from '../../models/protocol/protocol-model.service';
 export class ExamFinalizedComponent {
   results: ResultsInterface;
   disk: DiskInterface;
-  diskSubject: Subscription | undefined;
+  diskSubscription: Subscription | undefined;
   protocol: ProtocolModelInterface;
   title?: string;
   currentExam: ExamResults;
@@ -36,13 +36,13 @@ export class ExamFinalizedComponent {
   }
 
   ngOnInit() {
-    this.diskSubject = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
         this.disk = updatedDisk;
     })    
   }
 
   ngOnDestroy() {
-    this.diskSubject?.unsubscribe();
+    this.diskSubscription?.unsubscribe();
   }
 
 }

@@ -17,7 +17,7 @@ import { DiskModel } from '../../models/disk/disk.service';
 })
 export class ChangePinComponent {
   disk: DiskInterface;
-  diskSubject: Subscription | undefined;
+  diskSubscription: Subscription | undefined;
   pin: number | undefined;
 
   constructor(
@@ -29,13 +29,13 @@ export class ChangePinComponent {
   }
 
   ngOnInit() {
-    this.diskSubject = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
         this.disk = updatedDisk;
     })    
   }
 
   ngOnDestroy() {
-    this.diskSubject?.unsubscribe();
+    this.diskSubscription?.unsubscribe();
   }
 
   save(pin:number | undefined) {

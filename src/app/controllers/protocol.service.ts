@@ -38,7 +38,7 @@ import { protocolSchema } from '../../schema/protocol.schema';
 export class ProtocolService {
     app: AppInterface;
     disk: DiskInterface;
-    diskSubject: Subscription | undefined;
+    diskSubscription: Subscription | undefined;
     loading: LoadingProtocolInterface;
     protocolModel: ProtocolModelInterface;
     state: StateInterface;
@@ -58,7 +58,7 @@ export class ProtocolService {
         this.protocolModel = this.protocolM.getProtocolModel();
         this.state = this.stateModel.getState();
         this.disk = this.diskModel.getDisk();
-        this.diskSubject = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+        this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
             this.disk = updatedDisk;
         })    
         // TODO: can we grab defaults from schema instead?

@@ -17,12 +17,12 @@ import { DeviceState } from './constants';
 export class DeviceUtil {
     devices: DevicesInterface;
     disk: DiskInterface;
-    diskSubject: Subscription | undefined;
+    diskSubscription: Subscription | undefined;
 
     constructor(private readonly devicesModel: DevicesModel, private readonly diskModel: DiskModel) {
         this.devices = this.devicesModel.getDevices();
         this.disk = this.diskModel.getDisk();
-        this.diskSubject = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+        this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
             this.disk = updatedDisk;
         })    
     }

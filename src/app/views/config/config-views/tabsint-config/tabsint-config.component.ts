@@ -26,7 +26,7 @@ import { ChangeMaxLogLengthComponent } from '../../../change-max-log-length/chan
 })
 export class TabsintConfigComponent {
   disk: DiskInterface;
-  diskSubject: Subscription | undefined;
+  diskSubscription: Subscription | undefined;
   state: StateInterface;
   version!: VersionInterface;
 
@@ -45,7 +45,7 @@ export class TabsintConfigComponent {
   }
 
   async ngOnInit(): Promise<void> {
-    this.diskSubject = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
         this.disk = updatedDisk;
     })    
     this.version = await this.versionService.getVersion();
@@ -53,7 +53,7 @@ export class TabsintConfigComponent {
   }
 
   ngOnDestroy() {
-    this.diskSubject?.unsubscribe();
+    this.diskSubscription?.unsubscribe();
   }
 
   // VARIABLES - SHOULD BE MOVED?

@@ -17,7 +17,7 @@ import { DisclaimerComponent } from '../disclaimer/disclaimer.component';
 })
 export class WelcomeComponent {
   disk: DiskInterface;
-  diskSubject: Subscription | undefined;
+  diskSubscription: Subscription | undefined;
   app: AppInterface;
 
   constructor(
@@ -36,13 +36,13 @@ export class WelcomeComponent {
   }
 
   ngOnInit() {
-    this.diskSubject = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
         this.disk = updatedDisk;
     })    
   }
 
   ngOnDestroy() {
-    this.diskSubject?.unsubscribe();
+    this.diskSubscription?.unsubscribe();
   }
 
   // TODO: Replace this variable with a model?

@@ -12,14 +12,14 @@ import { SqLite } from './sqLite.service';
 
 export class Logger {
     disk: DiskInterface;
-    diskSubject: Subscription | undefined;
+    diskSubscription: Subscription | undefined;
 
     constructor(
         private readonly diskModel: DiskModel,
         private readonly sqLite: SqLite
     ) { 
         this.disk = this.diskModel.getDisk(); 
-        this.diskSubject = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+        this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
             this.disk = updatedDisk;
         })    
     }

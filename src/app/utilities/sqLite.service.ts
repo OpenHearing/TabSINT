@@ -17,7 +17,7 @@ import { createLogsTableSql, createResultsTableSql, deleteSql } from './constant
 
 export class SqLite {
     disk: DiskInterface;
-    diskSubject: Subscription | undefined;
+    diskSubscription: Subscription | undefined;
     app: AppInterface;
     count: NumDictionary ={
         logs: 0,
@@ -34,7 +34,7 @@ export class SqLite {
     ) {
         this.sqlitePlugin = CapacitorSQLite;
         this.disk = this.diskModel.getDisk(); 
-        this.diskSubject = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+        this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
             this.disk = updatedDisk;
         })    
         this.app = this.appModel.getApp();

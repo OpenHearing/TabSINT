@@ -28,7 +28,7 @@ export class AppComponent implements OnInit {
   title = 'tabsint';
   app: AppInterface;
   disk: DiskInterface;
-  diskSubject: Subscription |undefined;
+  diskSubscription: Subscription |undefined;
   protocol: ProtocolModelInterface;
 
   constructor(    
@@ -52,7 +52,7 @@ export class AppComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.diskSubject = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
         this.disk = updatedDisk;
     })
 
@@ -77,7 +77,7 @@ export class AppComponent implements OnInit {
   }
   
   ngOnDestroy() {
-    this.diskSubject?.unsubscribe();
+    this.diskSubscription?.unsubscribe();
   }
 
 }

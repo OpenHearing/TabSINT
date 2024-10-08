@@ -27,7 +27,7 @@ export class ResultsService {
     protocol: ProtocolModelInterface;
     devices: DevicesInterface;
     disk: DiskInterface;
-    diskSubject: Subscription | undefined;
+    diskSubscription: Subscription | undefined;
     
     constructor (
         private readonly devicesModel: DevicesModel,
@@ -42,7 +42,7 @@ export class ResultsService {
         this.protocol = this.protocolM.getProtocolModel();
         this.devices = this.devicesModel.getDevices();
         this.disk = this.diskModel.getDisk();
-        this.diskSubject = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+        this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
             this.disk = updatedDisk;
         })
     }

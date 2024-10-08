@@ -17,7 +17,7 @@ import { DevicesModel } from '../../../../models/devices/devices-model.service';
 })
 export class SoftwareConfigComponent {
   disk: DiskInterface;
-  diskSubject: Subscription | undefined;
+  diskSubscription: Subscription | undefined;
   devices: DevicesInterface;
   version: VersionInterface;
   
@@ -44,14 +44,14 @@ export class SoftwareConfigComponent {
   }
 
   ngOnInit(): void {
-    this.diskSubject = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
         this.disk = updatedDisk;
     })    
     this.initializeVersion();
   }
 
   ngOnDestroy() {
-    this.diskSubject?.unsubscribe();
+    this.diskSubscription?.unsubscribe();
   }
 
   private async initializeVersion(): Promise<void> {

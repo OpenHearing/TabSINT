@@ -31,7 +31,7 @@ import { partialMetaDefaults } from '../../utilities/defaults';
 export class ProtocolsComponent {
   selected?: ProtocolMetaInterface;
   disk: DiskInterface;
-  diskSubject: Subscription | undefined;
+  diskSubscription: Subscription | undefined;
   protocolModel: ProtocolModelInterface;
   state: StateInterface;
 
@@ -53,7 +53,7 @@ export class ProtocolsComponent {
   }
 
   ngOnInit(): void {
-    this.diskSubject = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
         this.disk = updatedDisk;
     })    
     this.logger.debug("protocols");
@@ -61,7 +61,7 @@ export class ProtocolsComponent {
   }
 
   ngOnDestroy() {
-    this.diskSubject?.unsubscribe();
+    this.diskSubscription?.unsubscribe();
   }
 
   getAvailableProtocols(): { key: string; value: ProtocolMetaInterface }[] {
