@@ -18,8 +18,7 @@ export class ConnectedDevicesComponent {
   devices: DevicesInterface;
   state: StateInterface
   DeviceState = DeviceState;
-  // TODO: move 'expanded' variable below generalizable to state model and extend to multiple devices
-  expanded:boolean = false;
+  expanded: boolean = false;
   
   constructor(
     private readonly deviceModel: DevicesModel, 
@@ -33,17 +32,17 @@ export class ConnectedDevicesComponent {
     this.state = this.stateModel.getState();
   }
 
-  reconnect(device:ConnectedDevice) {
+  reconnect(device: ConnectedDevice) {
     this.logger.debug("attempting to reconnect to device: "+JSON.stringify(device));
     this.devicesService.reconnect(device);
   }
 
-  disconnect(device:ConnectedDevice) {
+  disconnect(device: ConnectedDevice) {
     this.logger.debug("attempting to disconnect from device:"+JSON.stringify(device));
     this.devicesService.disconnect(device);
   }
 
-  remove(device:ConnectedDevice) {
+  remove(device: ConnectedDevice) {
     this.logger.debug("remove() button pressed, attempting to disconnect and remove: "+JSON.stringify(device));
     this.deviceUtil.removeSavedDevice(device);
     this.devicesService.removeDevice(device);

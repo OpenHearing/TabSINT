@@ -10,7 +10,6 @@
        
     <div class="panel-body text-left">
         <div class="row pad-top" *ngIf="devices.connectedDevices.tympan.length > 0">
-            <!-- TODO: All this below should be done with a template not harcoded so we can use a single template for all tympans -->
 
             <!-- Device ID -->
             <div class="col-2 admin-labels">TabSINT ID: </div>
@@ -46,7 +45,6 @@
         
         
             <!-- Connected Tympan -->
-            <!-- TODO: Move this to the info button next to device ID -->
             <div *ngIf="devices.connectedDevices.tympan[0].state === DeviceState.Connected">
                 <div #collapse="ngbCollapse" [ngbCollapse]="!expanded">
                     <device-info-view></device-info-view>
@@ -58,7 +56,6 @@
 </mat-expansion-panel>
 
 
-<!-- TODO: Add above functionality for all other devices -->
 <!-- <div class="row pad-top">
     <div class="col-12">
         <h5>CHA</h5>

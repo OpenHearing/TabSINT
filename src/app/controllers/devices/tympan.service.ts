@@ -90,7 +90,6 @@ export class TympanService {
     }
 
     async queueExam(tympanId: string, msgId: string, examType: string) {
-        // TODO: Allow for multiple exams at a time rather than hardcoding "1"
         let examId: string = "1";
         let msg = '['+msgId+',"queueExam",'+examId+',"'+examType+'"]';
         try {
@@ -101,7 +100,6 @@ export class TympanService {
     }
 
     async examSubmission(tympanId: string, msgId: string, examProperties: Object) {
-        // TODO: Allow for multiple exams at a time rather than hardcoding "1"
         let examId: string = "1";
         let msg = '['+msgId+',"examSubmission",'+examId+','+JSON.stringify(examProperties)+']';
         try {
@@ -122,7 +120,6 @@ export class TympanService {
     }
 
     async requestResults(tympanId:string, msgId:string) {
-        // TODO: Allow for multiple exams at a time rather than hardcoding "1"
         let examId: string = "1";
         let msg = '['+msgId+',"requestResults",'+examId+']';
         try {

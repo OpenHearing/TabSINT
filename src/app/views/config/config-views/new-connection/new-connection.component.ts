@@ -17,7 +17,7 @@ export class NewConnectionComponent {
   devices: DevicesInterface;
   newConnectedDevice: NewConnectedDevice;
   deviceTypes = AvailableConnectableDevices;
-  maxConnectedDevices: number = 1; // TODO: Increase the number of allowed conections
+  maxConnectedDevices: number = 1;
 
   constructor(
     private readonly deviceModel: DevicesModel, 

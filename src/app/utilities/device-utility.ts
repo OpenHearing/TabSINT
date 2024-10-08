@@ -20,7 +20,6 @@ export class DeviceUtil {
     }
 
     updateDeviceState(deviceId: string|undefined, newState: DeviceState) {
-        // TODO: expand this function for all device types (not just tympan)
         for (const device of this.devices.connectedDevices.tympan) {
             if (device.deviceId==deviceId) {
                 device.state = newState;
@@ -57,7 +56,6 @@ export class DeviceUtil {
     }
 
     incrementDeviceMsgId(deviceId: string) {
-        // TODO: expand this function for all device types (if necessary)
         for (const device of this.devices.connectedDevices.tympan) {
             if (device.deviceId==deviceId) {
                 if (device.msgId>=99) {
@@ -70,7 +68,6 @@ export class DeviceUtil {
     }
 
     removeDevice(device: ConnectedDevice) {
-        // TODO: expand this function for all device types (not just tympan)
         let indexToRemove: number = -1;
         for (let i = 0; i < this.devices.connectedDevices.tympan.length; i++) {
             if (this.devices.connectedDevices.tympan[i].deviceId==device.deviceId) {
@@ -119,7 +116,6 @@ export class DeviceUtil {
     }
 
     updateDeviceInfo(tabsintId: string, info: {[key: string]: string}) {
-        // TODO: expand this function for all device types (not just tympan)
         for (const device of this.devices.connectedDevices.tympan) {
             if (device.tabsintId==tabsintId) {
                 device.description = info?.["description"];
@@ -130,7 +126,6 @@ export class DeviceUtil {
     }
     
     addNewSavedDevice(connection: ConnectedDevice) {
-        // TODO: expand this function for all device types (not just tympan)
         let savedDevice = {
             "tabsintId": connection.tabsintId,
             "name": connection.name,
@@ -143,7 +138,6 @@ export class DeviceUtil {
     }
 
     removeSavedDevice(connection: ConnectedDevice) {
-        // TODO: expand this function for all device types (not just tympan)
         let savedDevices = this.disk.savedDevices;
         for (const device of this.disk.savedDevices.tympan) {
             if (device.tabsintId==connection.tabsintId) {
@@ -156,7 +150,6 @@ export class DeviceUtil {
     }
 
     addSavedDevices() {
-        // TODO: expand to other devices as well
         for (const device of this.disk.savedDevices.tympan) {
             let savedConnection: ConnectedDevice = {
                 "type": "Tympan",

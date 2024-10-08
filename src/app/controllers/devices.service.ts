@@ -29,7 +29,6 @@ export class DevicesService {
     ) {
         this.state = this.stateModel.getState();
         this.devicesModel.deviceResponseSubject.subscribe( (deviceResponse: DeviceResponse) => {
-            // TODO: improve how we determine which msg's are which - use msgId?
             if (deviceResponse.msg.includes("serialNumber")) {
                 let parsedMsg = JSON.parse(deviceResponse.msg);
                 this.deviceUtil.updateDeviceInfo(deviceResponse.tabsintId,parsedMsg[1]);

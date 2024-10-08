@@ -29,8 +29,8 @@ export class DevicesModel {
         }
     }
 
-    availableDevicesSubject = new BehaviorSubject<BleDevice[]>([]); // TODO: Should this be moved into a more specific model/service?
-    deviceResponseSubject = new Subject<DeviceResponse>(); // TODO: Should this be moved into response specific model/service?
+    availableDevicesSubject = new BehaviorSubject<BleDevice[]>([]);
+    deviceResponseSubject = new Subject<DeviceResponse>();
 
     constructor(private readonly logger: Logger) {
         // TODO: Move this to generic utility for running async functions in constructor

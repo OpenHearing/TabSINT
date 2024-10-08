@@ -78,12 +78,10 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
                     this.rightThresholds = new Array(this.frequencies.length).fill(null);
                     this.selectedFrequency = this.frequencies[0];
 
-                    // TODO: Rethink this logic - this will use the specified tabsintId, or if not defined, "1"
                     this.device = this.deviceUtil.getDeviceFromTabsintId(updatedAudiometryResponseArea.tabsintId ?? "1");
                     if (this.device) {
                         await this.devicesService.queueExam(this.device,"ManualAudiometry");
                     } else {
-                        // TODO: Improve error handling here
                         this.logger.error("Error setting up Manual Audiometry exam");
                     }
                 }
@@ -129,7 +127,6 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     }
 
     playTone() {
-        // TODO: Better handling for the ear (OutputChannel)?
         let examProperties = {
             "F": this.selectedFrequency,
             "Level": this.currentDbSpl,
