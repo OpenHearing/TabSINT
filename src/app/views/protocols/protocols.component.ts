@@ -77,7 +77,6 @@ export class ProtocolsComponent {
    * @param p: meta data of the protocol to select
    */
   select(p: ProtocolMetaInterface): void {
-    console.log('select fired');
     this.selected = p;
   }
 
@@ -129,7 +128,7 @@ export class ProtocolsComponent {
             let availableMetaProtocols = this.disk.availableProtocolsMeta;
             availableMetaProtocols[protocolMetaData.name] = protocolMetaData;
             this.diskModel.updateDiskModel('availableProtocolsMeta', availableMetaProtocols);
-           this.protocolModel = this.protocolM.getProtocolModel();
+            this.protocolModel = this.protocolM.getProtocolModel();
           }
       }
     }
