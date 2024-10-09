@@ -43,6 +43,7 @@ export class ResultsService {
         this.devices = this.devicesModel.getDevices();
         this.disk = this.diskModel.getDisk();
         this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+            console.log("diskSubscription fired");
             this.disk = updatedDisk;
         })
     }

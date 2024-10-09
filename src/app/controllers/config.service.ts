@@ -10,10 +10,4 @@ export class ConfigService {
   constructor() {
   }
 
-    // qRCodeUrl = false;
-
-    // generateQRCode() {
-    //     console.log("generateQRCode button pressed");
-    // }
-
-  }
+}
