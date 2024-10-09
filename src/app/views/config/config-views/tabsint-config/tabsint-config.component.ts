@@ -7,7 +7,7 @@ import { TabsintFs } from 'tabsintfs';
 
 import { DiskInterface } from '../../../../models/disk/disk.interface';
 import { StateInterface } from '../../../../models/state/state.interface';
-import { VersionInterface } from '../../../../interfaces/version.interface';
+import { VersionInterface } from '../../../../models/version/version.interface';
 
 import { DiskModel } from '../../../../models/disk/disk.service';
 import { Logger } from '../../../../utilities/logger.service';

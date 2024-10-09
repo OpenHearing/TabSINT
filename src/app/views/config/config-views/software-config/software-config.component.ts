@@ -3,14 +3,10 @@ import { Subscription } from 'rxjs';
 
 import { DiskInterface } from '../../../../models/disk/disk.interface';
 import { DevicesInterface } from '../../../../models/devices/devices.interface';
-import { VersionInterface } from '../../../../interfaces/version.interface';
-import { DevicesInterface } from '../../../../models/devices/devices.interface';
 import { VersionInterface } from '../../../../models/version/version.interface';
-import { DiskInterface } from '../../../../models/disk/disk.interface';
 
 import { DiskModel } from '../../../../models/disk/disk.service';
 import { Logger } from '../../../../utilities/logger.service';
-import { VersionService } from '../../../../controllers/version.service';
 import { VersionModel } from '../../../../models/version/version.service';
 import { DevicesModel } from '../../../../models/devices/devices-model.service';
 
@@ -29,7 +25,6 @@ export class SoftwareConfigComponent {
     private readonly devicesModel: DevicesModel,
     private readonly diskModel: DiskModel,
     private readonly logger: Logger,
-    private readonly versionService: VersionService,
     private versionModel: VersionModel,
   ) {
     this.disk = this.diskModel.getDisk();
@@ -61,7 +56,7 @@ export class SoftwareConfigComponent {
 
   private async initializeVersion(): Promise<void> {
     try {
-      this.version = await this.VersionModel.getVersion();
+      this.version = await this.versionModel.getVersion();
     } catch (error) {
       this.logger.error("" + error);
     }
