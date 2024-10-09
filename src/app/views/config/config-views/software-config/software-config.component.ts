@@ -2,11 +2,11 @@ import { Component } from '@angular/core';
 
 import { DiskModel } from '../../../../models/disk/disk.service';
 import { Logger } from '../../../../utilities/logger.service';
-import { VersionService } from '../../../../controllers/version.service';
+import { VersionModel } from '../../../../models/version/version.service';
 import { DiskInterface } from '../../../../models/disk/disk.interface';
 import { DevicesModel } from '../../../../models/devices/devices-model.service';
 import { DevicesInterface } from '../../../../models/devices/devices.interface';
-import { VersionInterface } from '../../../../interfaces/version.interface';
+import { VersionInterface } from '../../../../models/version/version.interface';
 
 @Component({
   selector: 'software-config-view',
@@ -19,7 +19,7 @@ export class SoftwareConfigComponent {
   version: VersionInterface;
   constructor(
     private diskModel: DiskModel, 
-    private versionService: VersionService,
+    private VersionModel: VersionModel,
     private devicesModel: DevicesModel,
     private logger: Logger, 
   ) { 
@@ -45,7 +45,7 @@ export class SoftwareConfigComponent {
 
   private async initializeVersion(): Promise<void> {
     try {
-      this.version = await this.versionService.getVersion();
+      this.version = await this.VersionModel.getVersion();
     } catch (error) {
       this.logger.error("" + error);
     }

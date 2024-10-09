@@ -14,6 +14,8 @@ import { DevicesInterface } from '../models/devices/devices.interface';
 import { DevicesModel } from '../models/devices/devices-model.service';
 import { PageInterface } from '../models/page/page.interface';
 import { responseDefaultByResponseAreaType } from '../utilities/defaults';
+import { VersionInterface } from '../models/version/version.interface';
+import { VersionModel } from '../models/version/version.service';
 
 @Injectable({
     providedIn: 'root',
@@ -24,6 +26,7 @@ export class ResultsService {
     disk: DiskInterface;
     protocol: ProtocolModelInterface;
     devices: DevicesInterface;
+    version: VersionInterface;
     
     constructor (
         private readonly resultsModel: ResultsModel,
@@ -32,12 +35,14 @@ export class ResultsService {
         private readonly devicesModel: DevicesModel,
         private readonly diskModel: DiskModel,
         private readonly fileService: FileService,
-        private readonly logger: Logger
+        private readonly logger: Logger,
+        private readonly versionModel: VersionModel
     ) {
         this.results = this.resultsModel.getResults();
         this.disk = this.diskModel.getDisk();
         this.protocol = this.protocolM.getProtocolModel();
         this.devices = this.devicesModel.getDevices();
+        this.version = this.versionModel.version;
     }
     
     /** Initializes Exam results before starting the first page.
@@ -52,18 +57,8 @@ export class ResultsService {
             elapsedTime: undefined,    
             protocol: _.cloneDeep(this.protocol.activeProtocol!),
             responses: [],
-            softwareVersion: {
-            // version: version.dm.tabsint,
-            // date: version.dm.date,
-            // rev: version.dm.rev
-            //   tabsintPlugins: config.tabsintPlugins,
-            //   platform: devices.platform,
-            //   platformVersion: devices.version,
-            //   network: null,
-            //   tabletUUID: devices.UUID,
-            //   tabsintUUID: devices.tabsintUUID,
-            //   tabletModel: devices.model,
-            },
+            softwareVersion: this.version,
+            devices: this.devices,
             tabletLocation: this.disk.tabletLocation,
             headset: this.protocol.activeProtocol!.headset ?? "None",
             calibrationVersion: {

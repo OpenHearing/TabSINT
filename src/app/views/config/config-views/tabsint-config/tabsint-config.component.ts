@@ -3,7 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { DiskModel } from '../../../../models/disk/disk.service';
 import { Logger } from '../../../../utilities/logger.service';
-import { VersionService } from '../../../../controllers/version.service';
+import { VersionModel } from '../../../../models/version/version.service';
 import { ConfigService } from '../../../../controllers/config.service';
 import { AppState } from '../../../../utilities/constants';
 import { StateModel } from '../../../../models/state/state.service';
@@ -13,7 +13,7 @@ import { ChangePinComponent } from '../../../change-pin/change-pin.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ChangeMaxLogLengthComponent } from '../../../change-max-log-length/change-max-log-length.component';
 import { TabsintFs } from 'tabsintfs';
-import { VersionInterface } from '../../../../interfaces/version.interface';
+import { VersionInterface } from '../../../../models/version/version.interface';
 
 @Component({
   selector: 'tabsint-config-view',
@@ -28,7 +28,7 @@ export class TabsintConfigComponent {
   constructor(
     public configService: ConfigService,
     private diskModel: DiskModel, 
-    private versionService: VersionService,
+    private VersionModel: VersionModel,
     private logger: Logger, 
     private stateModel: StateModel,
     private translate: TranslateService,
@@ -40,7 +40,7 @@ export class TabsintConfigComponent {
   }
 
   async ngOnInit(): Promise<void> {
-    this.version = await this.versionService.getVersion();
+    this.version = await this.VersionModel.getVersion();
     this.stateModel.setAppState(AppState.Admin);
   }
 
