@@ -10,6 +10,7 @@ import { Logger } from '../utilities/logger.service';
 import { AppModel } from '../models/app/app.service';
 import { ResultsInterface } from '../models/results/results.interface';
 import { DeveloperProtocols } from '../utilities/constants';
+import { VersionModel } from '../models/version/version.service';
 
 describe('ResultsService', () => {
     let resultsService: ResultsService;
@@ -17,18 +18,20 @@ describe('ResultsService', () => {
     let diskModel = new DiskModel(new Document);
     let sqLite = new SqLite(appModel, diskModel);
     let logger = new Logger(diskModel, sqLite);
+    let version = new VersionModel(logger);
 
     beforeEach(async () => {
         TestBed.configureTestingModule({})
 
         resultsService = new ResultsService(
-            new ResultsModel,
+            new ResultsModel(new DevicesModel(logger), version),
             new ProtocolModel,
             sqLite,
             new DevicesModel(logger),
             diskModel,
             new FileService(appModel, logger,diskModel),
-            logger
+            logger, 
+            version
         );
     })
 
