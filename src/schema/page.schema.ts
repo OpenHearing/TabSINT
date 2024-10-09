@@ -5,7 +5,7 @@ import { followOnSchema } from "./definitions/follow-on.schema";
 import { setFlagSchema } from "./definitions/set-flag.schema";
 import { PageDefinition } from "../app/interfaces/page-definition.interface";
 import { chaWavFileSchema } from "./definitions/cha-wavfile.schema";
-import { textBoxSchema } from "./response-areas/textbox.schema";
+import { textBoxResultViewerSchema, textBoxSchema } from "./response-areas/textbox.schema";
 import { multipleChoiceSchema } from "./response-areas/multiple-choice.schema";
 import { manualAudiometrySchema } from "./response-areas/manual-audiometry.schema";
 
@@ -77,6 +77,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
         type: "object",
         oneOf: [
           textBoxSchema,
+          textBoxResultViewerSchema,
           multipleChoiceSchema,
           manualAudiometrySchema
         ], 
