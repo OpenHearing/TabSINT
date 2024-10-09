@@ -2,15 +2,15 @@ import { TranslateService } from "@ngx-translate/core";
 import _ from "lodash";
 
 import { LoadingProtocolInterface } from "../interfaces/loading-protocol-object.interface";
-import { DiskModel } from "../models/disk/disk.service";
 import { Logger } from "./logger.service";
 import { FileService } from "./file.service";
+import { DiskInterface } from "../models/disk/disk.interface";
 
 export function initializeLoadingProtocol(
     loading: LoadingProtocolInterface,
     logger: Logger,
     translate: TranslateService,
-    diskModel: DiskModel, 
+    disk: DiskInterface, 
     fileService: FileService) {
 
     let msg: string='';
@@ -40,7 +40,7 @@ export function initializeLoadingProtocol(
     }
 
     function checkPublicKeyError () {
-        if (diskModel.disk.requireEncryptedResults && !loading.protocol.publicKey) {
+        if (disk.requireEncryptedResults && !loading.protocol.publicKey) {
             loading.protocol.errors!.push({
                 type: translate.instant("Public Key"),
                 error: translate.instant(
@@ -131,11 +131,11 @@ export function initializeLoadingProtocol(
 
     function setMediaRepo() {
         if (loading.protocol.commonMediaRepository) {
-            const midx = _.findIndex(diskModel.disk.mediaRepos, {
+            const midx = _.findIndex(disk.mediaRepos, {
                 name: loading.protocol.commonMediaRepository
             });
             if (midx !== -1) {
-                loading.protocol.commonRepo = diskModel.disk.mediaRepos[midx];
+                loading.protocol.commonRepo = disk.mediaRepos[midx];
                 loading.protocol.cCommon = fileService.readFile(loading.protocol.commonRepo.path + "calibration.json");
             } else {
                 msg =

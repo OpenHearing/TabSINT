@@ -1,10 +1,14 @@
-import { Injectable } from '@angular/core';import { CapacitorSQLite, CapacitorSQLitePlugin, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
+import { Injectable } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { CapacitorSQLite, CapacitorSQLitePlugin, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 
 import { NumDictionary } from '../interfaces/num-dictionary.interface';
 import { DiskInterface } from '../models/disk/disk.interface';
+import { AppInterface } from '../models/app/app.interface';
+
 import { AppModel } from '../models/app/app.service';
 import { DiskModel } from '../models/disk/disk.service';
-import { AppInterface } from '../models/app/app.interface';
+
 import { createLogsTableSql, createResultsTableSql, deleteSql } from './constants';
 
 @Injectable({
@@ -13,6 +17,7 @@ import { createLogsTableSql, createResultsTableSql, deleteSql } from './constant
 
 export class SqLite {
     disk: DiskInterface;
+    diskSubscription: Subscription | undefined;
     app: AppInterface;
     count: NumDictionary ={
         logs: 0,
@@ -24,11 +29,14 @@ export class SqLite {
     private db!: SQLiteDBConnection;
 
     constructor (
-        private appModel: AppModel,
-        private diskModel: DiskModel,
+        private readonly appModel: AppModel,
+        private readonly diskModel: DiskModel,
     ) {
         this.sqlitePlugin = CapacitorSQLite;
         this.disk = this.diskModel.getDisk(); 
+        this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+            this.disk = updatedDisk;
+        })    
         this.app = this.appModel.getApp();
     }
 
@@ -36,31 +44,6 @@ export class SqLite {
         await this.initializePlugin();
         await this.initializeWeb();
         await this.open();
-    }
-
-    private async initializePlugin() {
-        this.sqlitePlugin = CapacitorSQLite;
-        this.sqliteConnection = new SQLiteConnection(this.sqlitePlugin);
-        return true;
-    }
-
-    private async initializeWeb() {
-        if (this.app.browser === true) {
-            await customElements.whenDefined('jeep-sqlite');
-            const jeepSqliteEl = document.querySelector('jeep-sqlite');
-            if(jeepSqliteEl != null) {
-                await this.sqliteConnection.initWebStore();
-            }
-        }
-        return true;
-    }
-
-    private async open() {
-        const database: string = 'storage';
-        this.db = await this.sqliteConnection.createConnection(database, false, 'no-encryption', 1, false);
-        await this.db.open();
-        await this.db.execute(createResultsTableSql);
-        await this.db.execute(createLogsTableSql);
     }
 
     async store(
@@ -128,4 +111,30 @@ export class SqLite {
                 this.count['logs'] -= delCount;
             }
     }
+    
+    private async initializePlugin() {
+        this.sqlitePlugin = CapacitorSQLite;
+        this.sqliteConnection = new SQLiteConnection(this.sqlitePlugin);
+        return true;
+    }
+
+    private async initializeWeb() {
+        if (this.app.browser === true) {
+            await customElements.whenDefined('jeep-sqlite');
+            const jeepSqliteEl = document.querySelector('jeep-sqlite');
+            if(jeepSqliteEl != null) {
+                await this.sqliteConnection.initWebStore();
+            }
+        }
+        return true;
+    }
+
+    private async open() {
+        const database: string = 'storage';
+        this.db = await this.sqliteConnection.createConnection(database, false, 'no-encryption', 1, false);
+        await this.db.open();
+        await this.db.execute(createResultsTableSql);
+        await this.db.execute(createLogsTableSql);
+    }
+
 }

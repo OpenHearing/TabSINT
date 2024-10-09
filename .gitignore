@@ -5,6 +5,7 @@
 /tmp
 /out-tsc
 /bazel-out
+version.json
 
 # Node
 /node_modules

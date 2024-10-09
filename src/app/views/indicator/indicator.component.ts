@@ -1,12 +1,16 @@
 import { Component } from '@angular/core';
-import { DiskModel } from '../../models/disk/disk.service';
-import { DiskInterface } from '../../models/disk/disk.interface';
+import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
-import { StateModel } from '../../models/state/state.service';
+
+import { DiskInterface } from '../../models/disk/disk.interface';
 import { StateInterface } from '../../models/state/state.interface';
-import { DeviceState, SvantekState } from '../../utilities/constants';
-import { DevicesModel } from '../../models/devices/devices-model.service';
 import { DevicesInterface } from '../../models/devices/devices.interface';
+
+import { DiskModel } from '../../models/disk/disk.service';
+import { StateModel } from '../../models/state/state.service';
+import { DevicesModel } from '../../models/devices/devices-model.service';
+
+import { DeviceState, SvantekState } from '../../utilities/constants';
 
 @Component({
   selector: 'indicator-view',
@@ -15,20 +19,31 @@ import { DevicesInterface } from '../../models/devices/devices.interface';
 })
 export class IndicatorComponent {
   disk: DiskInterface;  
+  diskSubscription: Subscription | undefined;
   state: StateInterface;
   devices: DevicesInterface;
   SvantekState = SvantekState;
   DeviceState = DeviceState;
 
   constructor(
-    private readonly diskModel:DiskModel, 
+    private readonly deviceModel: DevicesModel,
+    private readonly diskModel: DiskModel, 
     private readonly stateModel: StateModel,
-    private readonly translate:TranslateService,
-    private readonly deviceModel: DevicesModel
+    private readonly translate: TranslateService,
   ) { 
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();
     this.devices = this.deviceModel.getDevices();
+  }
+
+  ngOnInit() {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+        this.disk = updatedDisk;
+    })    
+  }
+
+  ngOnDestroy() {
+    this.diskSubscription?.unsubscribe();
   }
 
   WiFiNotConnectedPopover = this.translate.instant(

@@ -1,9 +1,11 @@
 import { Component, Inject } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
+
+import { DiskInterface } from '../../../models/disk/disk.interface';
+import { ExamResults } from '../../../models/results/results.interface';
 
 import { DiskModel } from '../../../models/disk/disk.service';
-import { DiskInterface } from '../../../models/disk/disk.interface';
-import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
-import { ExamResults } from '../../../models/results/results.interface';
 import { ResultsService } from '../../../controllers/results.service';
 import { SqLite } from '../../../utilities/sqLite.service';
 
@@ -15,19 +17,27 @@ import { SqLite } from '../../../utilities/sqLite.service';
 export class SingleResultModalComponent {
   singleExamResult?: ExamResults;
   disk: DiskInterface;
+  diskSubscription: Subscription | undefined;
 
   constructor(
     public dialog: MatDialog, 
-    public sqLite: SqLite,
-    public diskM: DiskModel,
+    public diskModel: DiskModel,
     public resultsService: ResultsService,
+    public sqLite: SqLite,
     @Inject(MAT_DIALOG_DATA) public index: number,
   ) { 
-    this.disk = diskM.getDisk();
+    this.disk = diskModel.getDisk();
   }
 
   async ngOnInit() {    
+    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+        this.disk = updatedDisk;
+    })    
     this.singleExamResult = JSON.parse(await this.sqLite.getSingleResult(this.index));
+  }
+
+  ngOnDestroy() {
+    this.diskSubscription?.unsubscribe();
   }
 
   upload() {

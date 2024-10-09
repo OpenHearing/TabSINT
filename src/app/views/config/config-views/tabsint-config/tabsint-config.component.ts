@@ -1,19 +1,23 @@
 import { Component,ChangeDetectorRef  } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
+
+import { TabsintFs } from 'tabsintfs';
+
+import { DiskInterface } from '../../../../models/disk/disk.interface';
+import { StateInterface } from '../../../../models/state/state.interface';
+import { VersionInterface } from '../../../../interfaces/version.interface';
 
 import { DiskModel } from '../../../../models/disk/disk.service';
 import { Logger } from '../../../../utilities/logger.service';
 import { VersionModel } from '../../../../models/version/version.service';
 import { ConfigService } from '../../../../controllers/config.service';
-import { AppState } from '../../../../utilities/constants';
 import { StateModel } from '../../../../models/state/state.service';
-import { DiskInterface } from '../../../../models/disk/disk.interface';
-import { StateInterface } from '../../../../models/state/state.interface';
+
+import { AppState } from '../../../../utilities/constants';
 import { ChangePinComponent } from '../../../change-pin/change-pin.component';
-import { MatDialog } from '@angular/material/dialog';
 import { ChangeMaxLogLengthComponent } from '../../../change-max-log-length/change-max-log-length.component';
-import { TabsintFs } from 'tabsintfs';
-import { VersionInterface } from '../../../../models/version/version.interface';
 
 @Component({
   selector: 'tabsint-config-view',
@@ -22,29 +26,37 @@ import { VersionInterface } from '../../../../models/version/version.interface';
 })
 export class TabsintConfigComponent {
   disk: DiskInterface;
+  diskSubscription: Subscription | undefined;
   state: StateInterface;
   version!: VersionInterface;
 
   constructor(
     public configService: ConfigService,
-    private diskModel: DiskModel, 
+    private readonly cdr: ChangeDetectorRef,
+    private readonly diskModel: DiskModel,
+    private readonly logger: Logger,
+    private readonly dialog: MatDialog,
+    private readonly stateModel: StateModel,
+    private readonly translate: TranslateService,
     private VersionModel: VersionModel,
-    private logger: Logger, 
-    private stateModel: StateModel,
-    private translate: TranslateService,
-    private dialog: MatDialog,
-    private cdr: ChangeDetectorRef
-  ) { 
+  ) {
     this.state = this.stateModel.getState();
     this.disk = this.diskModel.getDisk();
   }
 
   async ngOnInit(): Promise<void> {
     this.version = await this.VersionModel.getVersion();
+    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+        this.disk = updatedDisk;
+    })
     this.stateModel.setAppState(AppState.Admin);
   }
 
-  // VARIABLES - PROBABLY SHOULD BE MOVED?
+  ngOnDestroy() {
+    this.diskSubscription?.unsubscribe();
+  }
+
+  // VARIABLES - SHOULD BE MOVED?
 
   headsets: Array<string> = [
     "None",
@@ -70,7 +82,6 @@ export class TabsintConfigComponent {
 
   changeHeadset(headset: string) {
     this.diskModel.updateDiskModel("headset", headset);
-    this.disk = this.diskModel.getDisk();
     this.logger.debug("Headset changed to: " + headset);
   }
 
@@ -78,41 +89,32 @@ export class TabsintConfigComponent {
   //   // need to update the language here
   //   this.diskModel.updateDiskModel("language", language);
   //   this.translate.setDefaultLang(language);
-  //   this.disk = this.diskModel.getDisk();
   //   this.logger.debug("Language changed to: "+language);
   // }
 
   // changeResultsMode(resultsMode: ResultsMode) {
   //   this.diskModel.updateDiskModel("resultsMode", resultsMode);
-  //   this.disk = this.diskModel.getDisk();
   //   this.logger.debug("ResultsMode changed to: "+JSON.stringify(resultsMode));
   // }
 
   editAdminPin() {
-    this.dialog.open(ChangePinComponent).afterClosed().subscribe(() => {
-      this.disk = this.diskModel.getDisk();
-    });
+    this.dialog.open(ChangePinComponent);
   }
 
   editMaxLogRows() {
-    this.dialog.open(ChangeMaxLogLengthComponent).afterClosed().subscribe(() => {
-      this.disk = this.diskModel.getDisk();
-    });
+    this.dialog.open(ChangeMaxLogLengthComponent);
   }
 
   toggleAutoUpload() {
     this.diskModel.updateDiskModel('autoUpload', this.diskModel.disk.autoUpload == undefined || !this.diskModel.disk.autoUpload);
-    this.disk = this.diskModel.getDisk();
   }
 
   toggleDebugMode() {
     this.diskModel.updateDiskModel('debugMode',!this.diskModel.disk.debugMode);
-    this.disk = this.diskModel.getDisk();
   }
 
   toggleDisableLogs() {
       this.diskModel.updateDiskModel('disableLogs', !this.disk.disableLogs);
-      this.disk = this.diskModel.getDisk();
   }
 
   gainReset() {
@@ -123,15 +125,14 @@ export class TabsintConfigComponent {
 
     try {
       const result = await TabsintFs.chooseFolder();
-      let servers = this.diskModel.disk.servers;
+      let servers = this.disk.servers;
       servers.localServer.resultsDir = result.name;
       servers.localServer.resultsDirUri = result.uri;
       this.diskModel.updateDiskModel('servers', servers);
-      this.disk = this.diskModel.getDisk();
     } catch (error) {
       this.logger.debug('Error choosing folder:' + error);
     }
-    
+
     this.cdr.detectChanges();
   }
 

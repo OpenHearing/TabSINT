@@ -30,7 +30,7 @@ describe('ResultsService', () => {
             new DevicesModel(logger),
             diskModel,
             new FileService(appModel, logger,diskModel),
-            logger, 
+            logger,
             version
         );
     })
@@ -47,12 +47,12 @@ describe('ResultsService', () => {
         expect(returnedResults.currentExam.testDateTime).toBeDefined();
         expect(returnedResults.currentExam.protocolName).toBe('develop');
     });
-    
+
     it('initializes page results', () => {
         let returnedResults: ResultsInterface = resultsService.results;
         expect(returnedResults.currentPage.pageId).toBe('');
         expect(returnedResults.currentPage.responseArea).toBeUndefined();
-        let testCurrentPage = 
+        let testCurrentPage =
         {
          "id": "001",
          "title": "Test",
@@ -76,5 +76,5 @@ describe('ResultsService', () => {
         });
         expect(returnedResults.currentExam.responses.length).toEqual(1);
     });
-    
+
 })

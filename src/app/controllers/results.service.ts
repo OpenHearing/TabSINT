@@ -1,21 +1,26 @@
 import { Injectable } from '@angular/core';
+import _ from 'lodash';
+import { Subscription } from 'rxjs';
+
+
 import { ResultsInterface, ExamResults, CurrentResults } from '../models/results/results.interface';
+import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
+import { DevicesInterface } from '../models/devices/devices.interface';
+import { PageInterface } from '../models/page/page.interface';
+import { DiskInterface } from '../models/disk/disk.interface';
+import { VersionInterface } from '../models/version/version.interface';
+
 import { ResultsModel } from '../models/results/results-model.service';
 import { DiskModel } from '../models/disk/disk.service';
-import { DiskInterface } from '../models/disk/disk.interface';
 import { ProtocolModel } from '../models/protocol/protocol-model.service';
-import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
-import _ from 'lodash';
 import { constructFilename } from '../utilities/results-helper-functions';
 import { FileService } from '../utilities/file.service';
 import { Logger } from '../utilities/logger.service';
 import { SqLite } from '../utilities/sqLite.service';
-import { DevicesInterface } from '../models/devices/devices.interface';
 import { DevicesModel } from '../models/devices/devices-model.service';
-import { PageInterface } from '../models/page/page.interface';
-import { responseDefaultByResponseAreaType } from '../utilities/defaults';
-import { VersionInterface } from '../models/version/version.interface';
 import { VersionModel } from '../models/version/version.service';
+
+import { responseDefaultByResponseAreaType } from '../utilities/defaults';
 
 @Injectable({
     providedIn: 'root',
@@ -23,30 +28,34 @@ import { VersionModel } from '../models/version/version.service';
 
 export class ResultsService {
     results: ResultsInterface;
-    disk: DiskInterface;
     protocol: ProtocolModelInterface;
     devices: DevicesInterface;
     version: VersionInterface;
-    
+    disk: DiskInterface;
+    diskSubscription: Subscription | undefined;
+
     constructor (
-        private readonly resultsModel: ResultsModel,
-        private readonly protocolM: ProtocolModel,
-        private readonly sqLite: SqLite,
         private readonly devicesModel: DevicesModel,
         private readonly diskModel: DiskModel,
         private readonly fileService: FileService,
         private readonly logger: Logger,
+        private readonly protocolM: ProtocolModel,
+        private readonly resultsModel: ResultsModel,
+        private readonly sqLite: SqLite,
         private readonly versionModel: VersionModel
     ) {
         this.results = this.resultsModel.getResults();
-        this.disk = this.diskModel.getDisk();
         this.protocol = this.protocolM.getProtocolModel();
         this.devices = this.devicesModel.getDevices();
         this.version = this.versionModel.version;
+        this.disk = this.diskModel.getDisk();
+        this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+            this.disk = updatedDisk;
+        })
     }
-    
+
     /** Initializes Exam results before starting the first page.
-     * @summary Initializes results with protocol ID, test date and other information. 
+     * @summary Initializes results with protocol ID, test date and other information.
      * @models results, protocol, disk
     */
     initializeExamResults() {
@@ -54,7 +63,7 @@ export class ResultsService {
             protocolId: this.protocol.activeProtocol!.protocolId,
             protocolName: this.protocol.activeProtocol!.name,
             testDateTime: new Date().toJSON(),
-            elapsedTime: undefined,    
+            elapsedTime: undefined,
             protocol: _.cloneDeep(this.protocol.activeProtocol!),
             responses: [],
             softwareVersion: this.version,
@@ -68,11 +77,11 @@ export class ResultsService {
             }
         }
     };
-    
+
     /** Initializes page results before starting the page.
-     * @summary Initializes results with page ID, response and other information. 
+     * @summary Initializes results with page ID, response and other information.
      * @param currentPage exam page to initialize.
-     * @models results, protocol, disk
+     * @models results
     */
     initializePageResults(currentPage: PageInterface) {
         this.results.currentPage = {
@@ -102,7 +111,6 @@ export class ResultsService {
     /**
      * Save exam results
      * @summary Save result in SQLite db, than backup results on tablet.
-     * @models disk
      * @param result Partial or completed current exam result.
      */
     async save(result: ExamResults) {
@@ -111,7 +119,7 @@ export class ResultsService {
     }
 
     /**
-     * Save current exam results on the tablet at Documents/.tabsint-results-backup/ 
+     * Save current exam results on the tablet at Documents/.tabsint-results-backup/
      * @param result Partial or completed current exam result
      */
     async backup(result: ExamResults) {
@@ -123,12 +131,11 @@ export class ResultsService {
         } catch(e) {
             this.logger.error("Failed to export backup result to file with error: " + _(e).toJSON);
         }
-        
+
     }
-    
+
     /**
-     * Delete one exam result from the disk completed exam results and from the sqlite database.
-     * @models disk
+     * Delete one exam result from the sqlite database.
      */
     async deleteSingleResult(index: number) {
         this.sqLite.deleteSingleResult(index);
@@ -137,8 +144,7 @@ export class ResultsService {
     /**
      * Export an exam result to the tablet's local storage.
      * @summary Get the result from sqlite, write it to Android, remove
-     * it from the disk completed exam results and from the sqlite database.
-     * @models disk
+     * it from the sqlite database.
      * @param index number: index of the result
      */
     async exportSingleResult(index: number) {
@@ -161,7 +167,6 @@ export class ResultsService {
         dir = dir +  "/" + this.protocol.activeProtocol?.name + "/" ;
         await this.fileService.writeFile(dir + filename, JSON.stringify(result));
         this.diskModel.updateSummary(result);
-        this.disk = this.diskModel.getDisk();
     }
 
 }

@@ -1,11 +1,16 @@
 import { Injectable } from '@angular/core';
+import { Subscription } from 'rxjs';
+
+import { TabsintFs } from 'tabsintfs';
+
 import { AppInterface } from '../models/app/app.interface';
+import { DiskInterface } from '../models/disk/disk.interface';
+
 import { AppModel } from '../models/app/app.service';
 import { Logger } from './logger.service';
-import { listOfTabsintDirectories } from './constants';
 import { DiskModel } from '../models/disk/disk.service';
-import { DiskInterface } from '../models/disk/disk.interface';
-import { TabsintFs } from 'tabsintfs';
+
+import { listOfTabsintDirectories } from './constants';
 
 @Injectable({
     providedIn: 'root',
@@ -15,6 +20,7 @@ export class FileService {
     app: AppInterface;
     rootUri:string | undefined;
     disk:DiskInterface;
+    diskSubscription: Subscription | undefined;
 
     constructor(
         public appModel: AppModel,
@@ -23,6 +29,9 @@ export class FileService {
     ) { 
         this.app = this.appModel.getApp();
         this.disk = this.diskModel.getDisk();
+        this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+            this.disk = updatedDisk;
+        })    
         this.rootUri = this.disk.contentURI;
      }
 

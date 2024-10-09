@@ -1,10 +1,14 @@
 import { Injectable } from '@angular/core';
-import { DevicesModel } from '../models/devices/devices-model.service';
+import { Subscription } from 'rxjs';
+
 import { DevicesInterface } from '../models/devices/devices.interface';
-import { ConnectedDevice, NewConnectedDevice } from '../interfaces/connected-device.interface';
-import { DeviceState } from './constants';
 import { DiskInterface } from '../models/disk/disk.interface';
+
+import { ConnectedDevice, NewConnectedDevice } from '../interfaces/connected-device.interface';
+import { DevicesModel } from '../models/devices/devices-model.service';
 import { DiskModel } from '../models/disk/disk.service';
+
+import { DeviceState } from './constants';
 
 @Injectable({
     providedIn: 'root',
@@ -13,10 +17,14 @@ import { DiskModel } from '../models/disk/disk.service';
 export class DeviceUtil {
     devices: DevicesInterface;
     disk: DiskInterface;
+    diskSubscription: Subscription | undefined;
 
     constructor(private readonly devicesModel: DevicesModel, private readonly diskModel: DiskModel) {
         this.devices = this.devicesModel.getDevices();
         this.disk = this.diskModel.getDisk();
+        this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+            this.disk = updatedDisk;
+        })    
     }
 
     updateDeviceState(deviceId: string|undefined, newState: DeviceState) {
@@ -134,7 +142,6 @@ export class DeviceUtil {
         let savedDevices = JSON.parse(JSON.stringify(this.disk.savedDevices));
         savedDevices.tympan.push(savedDevice);
         this.diskModel.updateDiskModel('savedDevices',savedDevices);
-        this.disk = this.diskModel.getDisk();
     }
 
     removeSavedDevice(connection: ConnectedDevice) {
@@ -144,7 +151,6 @@ export class DeviceUtil {
                 let indexToRemove = this.disk.savedDevices.tympan.indexOf(connection);
                 savedDevices.tympan.splice(indexToRemove, 1);
                 this.diskModel.updateDiskModel('savedDevices',savedDevices);
-                this.disk = this.diskModel.getDisk();
             }
         }
     }
