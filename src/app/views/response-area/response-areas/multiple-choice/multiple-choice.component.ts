@@ -23,7 +23,6 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
   results: ResultsInterface;
   state: StateInterface;
   protocol: ProtocolModelInterface;
-  currentPage: PageInterface;
   pageSubscription: Subscription|undefined;
 
   constructor (
@@ -37,7 +36,6 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
     this.results = this.resultsModel.getResults();
     this.protocol = this.protocolModel.getProtocolModel();
     this.state = this.stateModel.getState();
-    this.currentPage = this.pageModel.getPage();
   }
 
   choices: ChoiceInterface[] | undefined;

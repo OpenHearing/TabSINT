@@ -22,13 +22,13 @@ describe('ResultsService', () => {
         TestBed.configureTestingModule({})
 
         resultsService = new ResultsService(
-            new ResultsModel,
-            new ProtocolModel,
-            sqLite,
             new DevicesModel(logger),
             diskModel,
             new FileService(appModel, logger,diskModel),
-            logger
+            logger,
+            new ProtocolModel,
+            new ResultsModel,
+            sqLite,
         );
     })
 

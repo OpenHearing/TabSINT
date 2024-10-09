@@ -24,7 +24,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let p of getAvailableProtocols()" class="no-border" [ngClass]="pclass(p.value)" (click)="select(p.value)" (keypress)="select(p.value)">
+          <tr *ngFor="let p of getAvailableProtocols(); trackBy: trackByIndex; let i = index" class="no-border" (click)="select(p.value)" (keypress)="select(p.value)">
               <td [ngClass]="pclass(p.value)" class="row-Name">{{p.value.name}}</td>
               <td [ngClass]="pclass(p.value)" class="row-Version">{{p.value.version}}</td>
               <td [ngClass]="pclass(p.value)" class="row-Date">{{p.value.date}}</td>
