@@ -135,8 +135,10 @@ export class DiskModel {
      * @param value: value to change the parameter to 
      */
     updateDiskModel(key: string, value: any) {
-        _.set(this.disk, key, value);
-        this.storeDisk();
+        if (_.has(this.disk, key)) {
+            _.set(this.disk, key, value);
+            this.storeDisk();
+        }
     }
     
     /**
