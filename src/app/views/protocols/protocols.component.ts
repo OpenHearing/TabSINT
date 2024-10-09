@@ -36,10 +36,10 @@ export class ProtocolsComponent {
   state: StateInterface;
 
   constructor (
-    public diskModel: DiskModel,
-    public examService: ExamService,
-    public protocolM: ProtocolModel,
-    public protocolService: ProtocolService,
+    private readonly diskModel: DiskModel,
+    private readonly examService: ExamService,
+    private readonly protocolM: ProtocolModel,
+    private readonly protocolService: ProtocolService,
     private readonly fileService: FileService,
     private readonly logger: Logger,
     private readonly notifications: Notifications,
@@ -48,15 +48,14 @@ export class ProtocolsComponent {
     private readonly translate: TranslateService,
   ) {
     this.disk = this.diskModel.getDisk();
-    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
-        this.disk = updatedDisk;
-    })    
     this.protocolModel = this.protocolM.getProtocolModel();
     this.state = this.stateModel.getState();
   }
 
   ngOnInit(): void {
-    this.logger.debug("protocols");
+    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+    })    
     // sort protocols by name here
   }
 
@@ -69,11 +68,16 @@ export class ProtocolsComponent {
     return Object.entries(availableProtocols).map(([key, value]) => ({ key, value }));
   }
   
+  trackByIndex(index: number, item: any): number {
+    return index;
+  }
+
   /**
    * Keep track of the selected protocol in the protocols table
    * @param p: meta data of the protocol to select
    */
   select(p: ProtocolMetaInterface): void {
+    console.log('select fired');
     this.selected = p;
   }
 
