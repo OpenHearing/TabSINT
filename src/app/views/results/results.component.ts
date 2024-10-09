@@ -51,6 +51,7 @@ export class ResultsComponent {
   ngOnDestroy() {
     this.diskSubscription?.unsubscribe();
   }
+  
   trackByIndex(index: number, item: any): number {
     return index;
   }

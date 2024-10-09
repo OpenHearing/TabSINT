@@ -48,14 +48,14 @@ export class ProtocolsComponent {
     private readonly translate: TranslateService,
   ) {
     this.disk = this.diskModel.getDisk();
+    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+        this.disk = updatedDisk;
+    })    
     this.protocolModel = this.protocolM.getProtocolModel();
     this.state = this.stateModel.getState();
   }
 
   ngOnInit(): void {
-    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
-        this.disk = updatedDisk;
-    })    
     this.logger.debug("protocols");
     // sort protocols by name here
   }
