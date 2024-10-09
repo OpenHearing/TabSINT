@@ -7,11 +7,11 @@ import { TabsintFs } from 'tabsintfs';
 
 import { DiskInterface } from '../../../../models/disk/disk.interface';
 import { StateInterface } from '../../../../models/state/state.interface';
-import { VersionInterface } from '../../../../interfaces/version.interface';
+import { VersionInterface } from '../../../../models/version/version.interface';
 
 import { DiskModel } from '../../../../models/disk/disk.service';
 import { Logger } from '../../../../utilities/logger.service';
-import { VersionService } from '../../../../controllers/version.service';
+import { VersionModel } from '../../../../models/version/version.service';
 import { ConfigService } from '../../../../controllers/config.service';
 import { StateModel } from '../../../../models/state/state.service';
 
@@ -33,22 +33,22 @@ export class TabsintConfigComponent {
   constructor(
     public configService: ConfigService,
     private readonly cdr: ChangeDetectorRef,
-    private readonly diskModel: DiskModel, 
-    private readonly logger: Logger, 
+    private readonly diskModel: DiskModel,
+    private readonly logger: Logger,
     private readonly dialog: MatDialog,
     private readonly stateModel: StateModel,
     private readonly translate: TranslateService,
-    private readonly versionService: VersionService,
-  ) { 
+    private VersionModel: VersionModel,
+  ) {
     this.state = this.stateModel.getState();
     this.disk = this.diskModel.getDisk();
   }
 
   async ngOnInit(): Promise<void> {
+    this.version = await this.VersionModel.getVersion();
     this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
         this.disk = updatedDisk;
-    })    
-    this.version = await this.versionService.getVersion();
+    })
     this.stateModel.setAppState(AppState.Admin);
   }
 
@@ -132,7 +132,7 @@ export class TabsintConfigComponent {
     } catch (error) {
       this.logger.debug('Error choosing folder:' + error);
     }
-    
+
     this.cdr.detectChanges();
   }
 

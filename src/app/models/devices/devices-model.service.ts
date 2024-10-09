@@ -13,7 +13,6 @@ export class DevicesModel {
 
     devicesModel: DevicesInterface = {
         build: "build",
-        protocolId: "protocolId",
         uuid: "uuid",
         // tabsintUUID: "tabsintUUID",
         version: "version",
@@ -46,7 +45,6 @@ export class DevicesModel {
             const languageCode = await Device.getLanguageCode();
             const id = await Device.getId();
             this.devicesModel.build = info.manufacturer ?? 'Unknown';
-            this.devicesModel.protocolId = 'some-protocol-id'; 
             this.devicesModel.uuid = id.identifier;
             // this.devicesModel.tabsintUUID =  "tabsintUUID";
             this.devicesModel.version = info.osVersion ?? 'Unknown';

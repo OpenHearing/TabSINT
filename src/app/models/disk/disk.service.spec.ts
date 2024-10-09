@@ -5,15 +5,30 @@ import { DiskInterface } from './disk.interface';
 import { ExamResults } from '../results/results.interface';
 import { ProtocolServer } from '../../utilities/constants';
 import { PageDefinition } from '../../interfaces/page-definition.interface';
+import { DevicesModel } from '../devices/devices-model.service';
+import { VersionModel } from '../version/version.service';
+import { Logger } from '../../utilities/logger.service';
+import { SqLite } from '../../utilities/sqLite.service';
+import { AppModel } from '../app/app.service';
 
 describe('DiskModel', () => {
     let diskModel: DiskModel;
+    let appModel: AppModel;
+    let sqLite: SqLite;
+    let logger: Logger;
+    let devicesModel: DevicesModel;
+    let versionModel: VersionModel;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             
         })
         diskModel = new DiskModel(new Document);
+        appModel = new AppModel;
+        sqLite = new SqLite(appModel, diskModel);
+        logger = new Logger(diskModel, sqLite);
+        devicesModel = new DevicesModel(logger);
+        versionModel = new VersionModel(logger);
     })
 
     it('gets disk model from local storage', () => { 
@@ -88,7 +103,8 @@ describe('DiskModel', () => {
                 contentURI: 'test'
             },
             responses: [1,2,3],
-            softwareVersion: 0,
+            softwareVersion: versionModel.version,
+            devices: devicesModel.getDevices(),
             tabletLocation: {},
             headset: 'mock',
             calibrationVersion: 0

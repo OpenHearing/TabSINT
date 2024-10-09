@@ -49,7 +49,7 @@ import { DeviceUtil } from './utilities/device-utility';
 // Controllers
 import { FileService } from './utilities/file.service';
 import { ConfigService } from './controllers/config.service';
-import { VersionService } from './controllers/version.service';
+import { VersionModel } from './models/version/version.service';
 import { ProtocolService } from './controllers/protocol.service';
 import { LocalServerService } from './controllers/local-server.service';
 import { ResultsService } from './controllers/results.service';
@@ -156,7 +156,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     DeviceUtil,
     FileService,
     ConfigService,
-    VersionService,
+    VersionModel,
     ProtocolService,
     LocalServerService,
     ResultsService,
