@@ -71,7 +71,7 @@ export class AppComponent implements OnInit {
     
     this.fileService.createTabsintDirectoriesIfDontExist();
 
-    if (!_.isUndefined(this.disk.activeProtocolMeta)) await this.protocolService.load(this.disk.activeProtocolMeta);
+    if (!_.isUndefined(this.disk.activeProtocolMeta) && (this.disk.activeProtocolMeta.name != '')) await this.protocolService.load(this.disk.activeProtocolMeta);
 
     this.deviceUtil.addSavedDevices();
   }

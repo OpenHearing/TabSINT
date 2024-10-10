@@ -6,7 +6,7 @@ import { BehaviorSubject } from 'rxjs';
 import { DiskInterface } from './disk.interface';
 import { ExamResults } from '../results/results.interface';
 import { ProtocolServer, ResultsMode } from '../../utilities/constants';
-import { partialMetaDefaults } from '../../utilities/defaults';
+import { metaDefaults, partialMetaDefaults } from '../../utilities/defaults';
 
 @Injectable({
     providedIn: 'root',
@@ -17,6 +17,7 @@ export class DiskModel {
     window: (Window & typeof globalThis) | null;
 
     disk: DiskInterface = {
+        activeProtocolMeta: metaDefaults,
         adminSkipMode: false,
         appDeveloperMode: false,
         appDeveloperModeCount: 0,

@@ -1,0 +1,6 @@
+<div *ngFor="let r of responses">
+    <h2 [textContent]="r.questionMainText" *ngIf="r.questionMainText"></h2>
+    <p class="subtext pad-top" *ngIf="r.questionSubText">{{r.questionSubText}}</p>
+    <p class="instructions" *ngIf="r.instructionText">{{r.instructionText}}</p>    
+    <p> {{r.response}} </p>
+</div>
