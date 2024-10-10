@@ -9,6 +9,7 @@ import { PageModel } from '../../../../models/page/page.service';
 import { PageInterface } from '../../../../models/page/page.interface';
 import { TextBoxInterface } from './textbox.interface';
 import { Subscription } from 'rxjs';
+import { textBoxSchema } from '../../../../../schema/response-areas/textbox.schema';
 
 @Component({
   selector: 'textbox-view',
@@ -16,7 +17,6 @@ import { Subscription } from 'rxjs';
   styleUrl: './textbox.component.css'
 })
 export class TextboxComponent implements OnInit, OnDestroy {
-  currentPage: PageInterface;
   results: ResultsInterface;
   protocol: ProtocolModelInterface;
   state: StateInterface
@@ -32,8 +32,7 @@ export class TextboxComponent implements OnInit, OnDestroy {
     this.results = this.resultsModel.getResults();
     this.protocol = this.protocolModel.getProtocolModel();
     this.state = this.stateModel.getState();
-    this.currentPage = this.pageModel.getPage();
-    this.rows = (this.currentPage.responseArea as TextBoxInterface).rows!; 
+    this.rows = textBoxSchema.properties.rows.default;
   }
 
   ngOnInit() {

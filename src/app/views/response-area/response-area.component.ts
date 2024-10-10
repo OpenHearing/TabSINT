@@ -1,9 +1,7 @@
-import { Component } from '@angular/core';
-import { ProtocolModel } from '../../models/protocol/protocol-model.service';
-import { StateInterface } from '../../models/state/state.interface';
-import { StateModel } from '../../models/state/state.service';
-import { ProtocolModelInterface } from '../../models/protocol/protocol.interface';
-import { ExamService } from '../../controllers/exam.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { PageInterface } from '../../models/page/page.interface';
+import { PageModel } from '../../models/page/page.service';
 
 @Component({
   selector: 'response-area',
@@ -11,16 +9,21 @@ import { ExamService } from '../../controllers/exam.service';
   template: 'response-area',
   styleUrl: './response-area.component.css'
 })
-export class ResponseAreaComponent {
-  state: StateInterface;
-  protocol: ProtocolModelInterface;
+export class ResponseAreaComponent implements OnInit, OnDestroy {
+  pageSubscription: Subscription | undefined;
+  currentPage: PageInterface;
 
-  constructor (
-    public stateModel: StateModel,
-    public protocolModel: ProtocolModel,
-    public examService: ExamService
-  ) {
-    this.state = this.stateModel.getState();
-    this.protocol = this.protocolModel.getProtocolModel();
+  constructor (private readonly pageModel: PageModel) {
+    this.currentPage = pageModel.getPage();
+  }
+
+  ngOnInit() {
+    this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
+      this.currentPage = updatedPage;
+    });
+  }
+
+  ngOnDestroy() {
+    this.pageSubscription?.unsubscribe();
   }
 }
