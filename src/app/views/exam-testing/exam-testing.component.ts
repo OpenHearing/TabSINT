@@ -52,7 +52,6 @@ export class ExamTestingComponent implements OnInit, OnDestroy {
   }
 
   startExam() {
-    this.examService.currentPage.loadingRequired=false; // TODO: is this needed?
     this.examService.finishActivateMedia();
   }
 
