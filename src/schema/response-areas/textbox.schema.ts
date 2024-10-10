@@ -20,7 +20,7 @@ export const textBoxResultViewerSchema: JSONSchemaType<TextBoxResultViewerInterf
         enableSkip: { type: "boolean", nullable: true, default: false },
         responseRequired: { type: "boolean", nullable: true, default: true },
         type: { type: "string", enum: ["textboxResponseAreaResultViewer"] },
-        pageIdToDisplay: { type: "string", default: '' },
+        pageIdsToDisplay: { type: "array", items: {type: "string", default: '' }},
     },
     required: ["type"]
 };

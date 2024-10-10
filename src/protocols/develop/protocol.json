@@ -74,15 +74,6 @@
           }
         },
         {
-          "id": "textbox_001_result_viewer",
-          "title": "Text Box Result Viewer",
-          "instructionText": "Test Case 001 Result Viewer",
-          "responseArea": {
-            "type": "textboxResponseAreaResultViewer",
-            "pageIdToDisplay": "textbox_001"
-          }
-        },
-        {
           "id": "textbox_002",
           "title": "Text Box",
           "instructionText": "Test Cases 002",
@@ -99,6 +90,15 @@
           "responseArea": {
             "type": "textboxResponseArea",
             "exportToCSV": true
+          }
+        },
+        {
+          "id": "textbox_001_result_viewer",
+          "title": "Text Box Result Viewer",
+          "instructionText": "Test Case 001 Result Viewer",
+          "responseArea": {
+            "type": "textboxResponseAreaResultViewer",
+            "pageIdsToDisplay": ["textbox_001", "textbox_002","textbox_003"]
           }
         },
         {

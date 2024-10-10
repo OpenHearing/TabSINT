@@ -20,8 +20,6 @@ import { SqLite } from '../utilities/sqLite.service';
 import { DevicesModel } from '../models/devices/devices-model.service';
 import { VersionModel } from '../models/version/version.service';
 
-import { responseDefaultByResponseAreaType } from '../utilities/defaults';
-
 @Injectable({
     providedIn: 'root',
 })
@@ -86,16 +84,11 @@ export class ResultsService {
     initializePageResults(currentPage: PageInterface) {
         this.results.currentPage = {
             pageId: currentPage.id,
-            response: _.isUndefined(currentPage.responseArea) ? '' : responseDefaultByResponseAreaType[currentPage.responseArea.type],
+            response: '',
             correct: undefined,
             isSkipped: false,
             responseArea: currentPage.responseArea ? currentPage.responseArea.type : undefined,
-            page: {
-              wavfiles: currentPage.wavfiles,
-              chaWavFiles: currentPage.chaWavFiles,
-              image: currentPage.image,
-              video: currentPage.video
-            }
+            page: currentPage
           };
     }
 

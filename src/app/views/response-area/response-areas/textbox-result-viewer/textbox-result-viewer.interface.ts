@@ -2,5 +2,5 @@ import { CommonResponseAreaInterface } from "../../../../interfaces/page-definit
 
 
 export interface TextBoxResultViewerInterface extends CommonResponseAreaInterface {
-    pageIdToDisplay: string;
+    pageIdsToDisplay: string[];
 }

@@ -8,14 +8,23 @@ import { TextBoxResultViewerInterface } from './textbox-result-viewer.interface'
 import { ResultsModel } from '../../../../models/results/results-model.service';
 import { PageModel } from '../../../../models/page/page.service';
 
+interface Response {
+  title?: string;
+  questionMainText?: string;
+  questionSubText?: string;
+  instructionText?: string;
+  response?: string;
+}
+
 @Component({
   selector: 'textbox-result-viewer-view',
   templateUrl: './textbox-result-viewer.component.html'
 })
+
 export class TextboxResultViewerComponent implements OnInit, OnDestroy {
   currentPage: PageInterface;
   results: ResultsInterface;
-  response: string = '';
+  responses?: Response[];
   pageSubscription: Subscription | undefined;
 
   constructor (
@@ -31,10 +40,15 @@ export class TextboxResultViewerComponent implements OnInit, OnDestroy {
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
       if (updatedPage.responseArea?.type === "textboxResponseAreaResultViewer") {
         const textboxResponseAreaResultViewer = updatedPage.responseArea as TextBoxResultViewerInterface;
-        let reverseResponses = [...this.results.currentExam.responses].reverse();
-        let findResultOfPageIdToDisplay = ( response: {pageId: string} ) => 
-          response.pageId === textboxResponseAreaResultViewer.pageIdToDisplay        
-        this.response = reverseResponses.find(findResultOfPageIdToDisplay).response;
+        this.responses = this.results.currentExam.responses
+          .filter((response: { pageId: string; }) => textboxResponseAreaResultViewer.pageIdsToDisplay.includes(response.pageId))
+          .map( (response: any) => ({
+            title: response.page.title,
+            questionMainText: response.page.questionMainText,
+            questionSubText: response.page.questionSubText,
+            instructionText: response.page.instructionText,
+            response: response.response,
+          }));
       }
     });
   }
