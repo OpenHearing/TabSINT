@@ -10,7 +10,7 @@ import { DeviceUtil } from '../device-utility';
 
 const msg: string = '[1,"requestId"]';
 const DataView1: DataView = new DataView((new Uint8Array([5,91,49,44,34,114,101,113,117,101,115,116,73,100,34,93,3,143,2])).buffer);
-const DataView2: DataView = new DataView((new Uint8Array([91,49,44,34,114,101,113,117,101,115,116,73,100,34,93,3])).buffer);
+const DataView2: DataView = new DataView((new Uint8Array([91,49,44,34,114,101,113,117,101,115,116,73,100,34,93])).buffer);
 const bytes1: Uint8Array = new Uint8Array([15]);
 const bytes_1_escaped: Uint8Array = new Uint8Array([3,143]);
 const bytes2: Uint8Array = new Uint8Array([3,143]);
@@ -57,6 +57,12 @@ describe('tympanWrap', () => {
         // @ts-expect-error
         let unescaped_bytes = tympanWrap.handleUnescaping(bytes2);
         expect(unescaped_bytes).toEqual(bytes_2_unescaped);
+    })
+
+    it('genCRC8Checksum', () => {
+        // @ts-expect-error
+        let crc = tympanWrap.genCRC8Checksum(new Uint8Array(DataView2.buffer));
+        expect(crc).toEqual(new Uint8Array([15]));
     })
 
 })

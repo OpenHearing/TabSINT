@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
 import { Logger } from './logger.service';
-import { BleClient, numbersToDataView } from '@capacitor-community/bluetooth-le';
+import { BleClient } from '@capacitor-community/bluetooth-le';
 import { BleDevice } from '../interfaces/bluetooth.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { StateModel } from '../models/state/state.service';
@@ -129,8 +129,6 @@ export class TympanWrap {
         let buf = new TextEncoder().encode(str); // this is a uint8array!
         let crc = this.genCRC8Checksum(buf);
         let msgToSend = new Uint8Array([...start_byte, ...this.handleEscaping(buf), ...this.handleEscaping(crc), ...end_byte])
-        console.log("msgToSend",msgToSend);
-        // return numbersToDataView(Array.from(msgToSend))
         return new DataView(msgToSend.buffer)
     }
 
@@ -170,7 +168,6 @@ export class TympanWrap {
     };
 
     private handleEscaping(byte_array: Uint8Array) {
-        console.log("before escaping",byte_array);
         let escaped_byte_array: Uint8Array = new Uint8Array();
         byte_array.forEach( (byte) => {
             if (byte<=31) {
@@ -179,12 +176,10 @@ export class TympanWrap {
                 escaped_byte_array = new Uint8Array([...escaped_byte_array, ...[byte]]);
             }
         });
-        console.log("after escaping",escaped_byte_array);
         return escaped_byte_array
     }
 
     private handleUnescaping(byte_array: Uint8Array) {
-        console.log("before unescaping",byte_array);
         let unescaped_byte_array: Uint8Array = new Uint8Array();
         let esc_next: boolean = false;
         byte_array.forEach( (byte:any) => {
@@ -199,17 +194,14 @@ export class TympanWrap {
                 esc_next = false;
             }
         });
-        console.log("after unescaping",unescaped_byte_array);
         return unescaped_byte_array
     }
 
     private genCRC8Checksum(byte_array: Uint8Array) {
-        console.log("before checksum",byte_array);
         let c: any;
         byte_array.forEach( (byte) => {
             c = this.CRC8_TABLE[(c ^ byte) % 256];
         });
-        console.log("after checksum",new Uint8Array([c]));
         return new Uint8Array([c]);
     } 
 
