@@ -1,4 +1,4 @@
-<div [ngSwitch]="examService.currentPage.responseArea?.type">
+<div [ngSwitch]="currentPage.responseArea?.type">
     <textbox-view *ngSwitchCase="'textboxResponseArea'"></textbox-view>
     <textbox-result-viewer-view *ngSwitchCase="'textboxResponseAreaResultViewer'"></textbox-result-viewer-view>
     <audiometry-view *ngSwitchCase="'manualAudiometryResponseArea'"></audiometry-view>
