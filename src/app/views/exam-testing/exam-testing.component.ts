@@ -1,57 +1,42 @@
-import { Component, Inject } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
-
-import { ResultsInterface } from '../../models/results/results.interface';
-import { ResultsModel } from '../../models/results/results-model.service';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { ExamService } from '../../controllers/exam.service';
 import { WINDOW } from '../../utilities/window';
-import { ProtocolModelInterface } from '../../models/protocol/protocol.interface';
-import { ProtocolModel } from '../../models/protocol/protocol-model.service';
-import { StateModel } from '../../models/state/state.service';
-import { StateInterface } from '../../models/state/state.interface';
-import _ from 'lodash';
+import { Subscription } from 'rxjs';
+import { PageInterface } from '../../models/page/page.interface';
+import { PageModel } from '../../models/page/page.service';
 
 @Component({
   selector: 'exam-testing-view',
   templateUrl: './exam-testing.component.html',
   styleUrl: './exam-testing.component.css'
 })
-export class ExamTestingComponent {
-  results: ResultsInterface;
-  protocol: ProtocolModelInterface;
-  state: StateInterface;
+export class ExamTestingComponent implements OnInit, OnDestroy {
+  pageSubscription: Subscription | undefined;
+  examTestingTitleClass?: Object;
+  title?: string;
   questionMainText?: string;
   questionSubText?: string;
   instructionText?: string;
 
   constructor(
-    public examService: ExamService,
-    private resultsModel: ResultsModel,
-    private sanitizer: DomSanitizer,
-    private protocolModel: ProtocolModel,
-    private stateModel: StateModel,
-    @Inject(WINDOW) private window: Window
-  ) { 
-    this.results = this.resultsModel.getResults();
-    this.protocol = this.protocolModel.getProtocolModel();
-    this.state = this.stateModel.getState();
+    private readonly examService: ExamService,
+    private readonly pageModel: PageModel,
+    @Inject(WINDOW) private readonly window: Window
+  ) {  }
 
-    this.questionMainText = this.examService?.currentPage?.questionMainText;
-    this.questionSubText = this.examService.currentPage.questionSubText;
-    this.instructionText = this.examService.currentPage.instructionText;
+  ngOnInit(): void {
+    this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
+      this.title = updatedPage?.title;
+      this.examTestingTitleClass = this.shrinkTitleIfTooLong(updatedPage?.questionMainText);
+      this.questionMainText = updatedPage?.questionMainText;
+      this.questionSubText = updatedPage?.questionSubText;
+      this.instructionText = updatedPage?.instructionText;
+    });
   }
 
-  isMediaLoading = this.examService?.currentPage?.loadingRequired && this.examService?.currentPage?.loadingActive;
-  isLoadingComplete = this.examService?.currentPage?.loadingRequired && !this.examService?.currentPage?.loadingActive;
-  
-  examTestingTitleClass = this.shrinkTitleIfTooLong(this.examService?.currentPage?.questionMainText);
-
-  testHTML = this.sanitizer.bypassSecurityTrustHtml(`
-    <button id="my-button" (click)=testFunction() >Button 1</button>
-    <button (click)=console.log('test'); >Button 2</button>
-    <button onclick=console.log('test'); >Button 3</button>
-    <button onclick=console.log(window.pageModel); >Button 4</button>
-  `);
+  ngOnDestroy(): void {
+    this.pageSubscription?.unsubscribe();
+  }
 
   shrinkTitleIfTooLong(questionMainText: string | undefined) {
     let styleObject = {"medium":false,"long":false};
@@ -66,31 +51,9 @@ export class ExamTestingComponent {
     return styleObject
   }
 
-  ngAfterViewInit() {
-    // console.log(document.getElementById('my-button') as HTMLElement);
-    if (document.getElementById('my-button') as HTMLElement) {
-      (document.getElementById('my-button') as HTMLElement).addEventListener('click', this.testFunction.bind(this));
-    }
-  }
-
   startExam() {
-    this.examService.currentPage.loadingRequired=false; 
+    this.examService.currentPage.loadingRequired=false; // TODO: is this needed?
     this.examService.finishActivateMedia();
-  }
-
-  testing() {
-    /* Testing the viability of customHS using the JS built in eval method (not angularJS) */
-    // console.log(this.pageModel);
-    // console.log((this.window as any).pageModel);
-    // eval("console.log('this logs a string!')");
-    // eval("console.log(this.stateModel.stateModel)");
-  }
-
-  testFunction() {
-    console.log('this is a test');
-    // console.log(this.page.questionMainText);
-    // this.page.questionMainText = 'different question main text';
-    // console.log(this.page.questionMainText);
   }
 
 }
