@@ -10,6 +10,7 @@ import { Logger } from '../utilities/logger.service';
 import { AppModel } from '../models/app/app.service';
 import { ResultsInterface } from '../models/results/results.interface';
 import { DeveloperProtocols } from '../utilities/constants';
+import { VersionModel } from '../models/version/version.service';
 
 describe('ResultsService', () => {
     let resultsService: ResultsService;
@@ -17,18 +18,20 @@ describe('ResultsService', () => {
     let diskModel = new DiskModel(new Document);
     let sqLite = new SqLite(appModel, diskModel);
     let logger = new Logger(diskModel, sqLite);
+    let version = new VersionModel(logger);
 
     beforeEach(async () => {
         TestBed.configureTestingModule({})
 
         resultsService = new ResultsService(
-            new ResultsModel,
-            new ProtocolModel,
-            sqLite,
             new DevicesModel(logger),
             diskModel,
             new FileService(appModel, logger,diskModel),
-            logger
+            logger,
+            new ProtocolModel,
+            new ResultsModel(new DevicesModel(logger), version),
+            sqLite,
+            version
         );
     })
 
@@ -44,12 +47,12 @@ describe('ResultsService', () => {
         expect(returnedResults.currentExam.testDateTime).toBeDefined();
         expect(returnedResults.currentExam.protocolName).toBe('develop');
     });
-    
+
     it('initializes page results', () => {
         let returnedResults: ResultsInterface = resultsService.results;
         expect(returnedResults.currentPage.pageId).toBe('');
         expect(returnedResults.currentPage.responseArea).toBeUndefined();
-        let testCurrentPage = 
+        let testCurrentPage =
         {
          "id": "001",
          "title": "Test",
@@ -73,5 +76,5 @@ describe('ResultsService', () => {
         });
         expect(returnedResults.currentExam.responses.length).toEqual(1);
     });
-    
+
 })

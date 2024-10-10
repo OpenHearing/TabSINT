@@ -1,6 +1,8 @@
 import { ChaWavfileInterface, ImageInterface, VideoInterface, WavfileInterface } from "../../interfaces/page-definition.interface";
 import { ProtocolServer } from "../../utilities/constants";
+import { DevicesInterface } from "../devices/devices.interface";
 import { ProtocolInterface } from "../protocol/protocol.interface";
+import { VersionInterface } from "../version/version.interface";
 
 export interface ResultsInterface {
     currentPage: CurrentResults;
@@ -30,7 +32,7 @@ export interface ExamResults {
     exportLocation?: ProtocolServer;
     responses: any;
     partialresults?: any;
-    softwareVersion: any; // TODO: define softwareVersion interface
+    softwareVersion: VersionInterface; 
     tabletLocation: {
         latitude?: number,
         longitude?: number,
@@ -38,4 +40,5 @@ export interface ExamResults {
       };
     headset: string;
     calibrationVersion: any; // TODO: define calibrationVersion interface
+    devices: DevicesInterface
 }

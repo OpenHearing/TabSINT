@@ -5,13 +5,6 @@
 <main id="maincontent">
   <div class="has-header">
 
-    <!-- <div *ngIf="protocol.protocolTabsintOutdated" style="background-color:#F25858; color: white; padding: 20px; text-align: center;" (click)="link('builds')">
-        This protocol requires a newer version of TabSINT. Press here to update to the latest version.
-    </div> -->
-    <!-- <div *ngIf="protocol.activeProtocol?.protocolUsbCMissing" style="background-color:#F25858; color: white; padding: 20px; text-align: center;">
-        This protocol requires the Essential USB-C headset. Please plug the headset in prior to beginning the exam.
-    </div> -->
-
     <div class="questionbox exam-page">
 
       <div class="question">
@@ -44,9 +37,6 @@
   </div>
 </main>
 
-<!-- Active Task overlay -->
-<!-- <active-tasks></active-tasks> -->
-
 <!-- Footer (incl. buttons) -->
 <nav class="navbar-fixed-bottom exam-footer">
     <div class="container-fluid">
@@ -54,82 +44,82 @@
         <div class="col-6">
           <button id="help-btn" type="button"
                   class="btn btn-block btn-lg btn-default btn-centered"
-                  [ngClass]="(examService.currentPage.helpText)?'':'disabled custom-disabled'"
-                  (click)="examService.help()">
+                  [ngClass]="currentPage?.helpText ? '' : 'disabled custom-disabled'"
+                  (click)="help()">
             <span class="ion-help-circled"></span> {{'Help'|translate}}
           </button>
         </div>
         <div class="col-6">
           <button id="begin-btn" type="button"
                   class="btn btn-block btn-lg btn-primary btn-centered"
-                  (click)="examService.begin()"
+                  (click)="begin()"
                   *ngIf="state.examState===ExamState.Ready">
             {{'Begin'|translate}}
           </button>
         </div>
       </div>
       <div *ngIf="state.examState===ExamState.Testing">
-        <div class="row response-buttons" *ngIf="(disk.debugMode && disk.adminSkipMode) || examService.currentPage?.responseArea?.enableSkip">
+        <div class="row response-buttons" *ngIf="(disk.debugMode && disk.adminSkipMode) || currentPage?.responseArea?.enableSkip">
           <div class="col-4">
             <button id="help-btn" type="button"
                     class="btn btn-block btn-lg btn-default btn-centered"
-                    [ngClass]="(examService.currentPage.helpText)?'':'disabled custom-disabled'"
-                    *ngIf="!examService.currentPage?.enableBackButton"
-                    (click)="examService.help()">
+                    [ngClass]="currentPage.helpText ? '' : 'disabled custom-disabled'"
+                    *ngIf="!currentPage?.enableBackButton"
+                    (click)="help()">
               <span class="ion-help-circled"></span> {{'Help'|translate}}
             </button>
             <button id="back-btn" type="button"
                 class="btn btn-block btn-lg btn-default btn-centered"
-                [ngClass]="(state.canGoBack())?'':'disabled custom-disabled'"
-                *ngIf="!!examService.currentPage?.enableBackButton"
-                (click)="examService.back()">
+                [ngClass]="state.canGoBack() ? '' : 'disabled custom-disabled'"
+                *ngIf="!!currentPage?.enableBackButton"
+                (click)="back()">
               <span class="ion-arrow-left"></span> {{'Back'|translate}}
             </button>
           </div>
           <div class="col-4">
             <button id="submit-btn" type="button"
                     class="btn btn-block btn-lg btn-primary btn-centered"
-                    (click)="examService.skip()">
+                    (click)="skip()">
               <span class="ion-arrow-right"></span> {{'Skip'|translate}}
             </button>
           </div>
           <div class="col-4">
             <button id="submit-btn" type="button"
                     class="btn btn-block btn-lg btn-primary btn-centered"
-                    [ngClass]="(state.isSubmittable)?'':'disabled custom-disabled'"
+                    [ngClass]="state.isSubmittable ? '' : 'disabled custom-disabled'"
                     [disabled]= "!state.isSubmittable"
-                    (click)="examService.submit()">
-                <div *ngIf="examService.currentPage?.submitText"> {{examService.currentPage.submitText}}</div>
-                <div *ngIf="examService.currentPage?.submitText===undefined"> {{'Submit' | translate}}</div>
+                    (click)="submit()">
+                <div *ngIf="currentPage?.submitText"> {{currentPage.submitText}}</div>
+                <div *ngIf="currentPage?.submitText===undefined"> {{'Submit' | translate}}</div>
             </button>
           </div>
         </div>
-        <div class="row response-buttons" *ngIf="!((disk.debugMode && disk.adminSkipMode) || examService.currentPage?.responseArea?.enableSkip)">
+        <div class="row response-buttons" *ngIf="!((disk.debugMode && disk.adminSkipMode) || currentPage?.responseArea?.enableSkip)">
           <div class="col-6">
             <button id="help-btn" type="button"
                     class="btn btn-block btn-lg btn-default btn-centered"
-                    [ngClass]="(examService.currentPage.helpText)?'':'disabled custom-disabled'"
-                    *ngIf="!examService.currentPage?.enableBackButton"
-                    (click)="examService.help()">
+                    [ngClass]="currentPage.helpText ? '' : 'disabled custom-disabled'"
+                    *ngIf="!currentPage?.enableBackButton"
+                    (click)="help()">
               <span class="ion-help-circled"></span> {{'Help'|translate}}
             </button>
             <button id="back-btn" type="button"
                 class="btn btn-block btn-lg btn-default btn-centered"
                 [ngClass]="state.canGoBack() ? '' : 'disabled custom-disabled'"
                 [disabled]= "!state.canGoBack()"
-                *ngIf="!!examService.currentPage?.enableBackButton"
-                (click)="examService.back()">
+                *ngIf="!!currentPage?.enableBackButton"
+                (click)="back()">
               <span class="ion-arrow-left"></span> {{'Back'|translate}}
             </button>
           </div>
           <div class="col-6">
             <button id="submit-btn" type="button"
                     class="btn btn-block btn-lg btn-primary btn-centered"
-                    [ngClass]="(state.isSubmittable)?'':'disabled custom-disabled'"
+                    [ngClass]="state.isSubmittable ? '' : 'disabled custom-disabled'"
                     [disabled]= "!state.isSubmittable"
-                    (click)="examService.submit()">
-                <div *ngIf="examService.currentPage?.submitText"> {{examService.currentPage.submitText}}</div>
-                <div *ngIf="examService.currentPage?.submitText===undefined"> {{'Submit' | translate}}</div>
+                    (click)="submit()">
+                <div *ngIf="currentPage?.submitText"> {{currentPage.submitText}}</div>
+                <div *ngIf="currentPage?.submitText===undefined"> {{'Submit' | translate}}</div>
             </button>
           </div>
         </div>
@@ -138,15 +128,15 @@
         <div class="col-6">
           <button id="help-btn" type="button"
                   class="btn btn-block btn-lg btn-default btn-centered"
-                  [ngClass]="(examService.currentPage.helpText)?'':'disabled custom-disabled'"
-                  (click)="examService.help()">
+                  [ngClass]="currentPage.helpText ? '' : 'disabled custom-disabled'"
+                  (click)="help()">
             <span class="ion-help-circled"></span> {{'Help'|translate}}
           </button>
         </div>
         <div class="col-6">
           <button id="reset-btn" type="button"
                   class="btn btn-block btn-lg btn-success btn-centered"
-                  (click)="examService.reset()"> {{'New Exam'|translate}}
+                  (click)="reset()"> {{'New Exam'|translate}}
           </button>
         </div>
       </div>

@@ -66,10 +66,3 @@ export const protocolDefaults: ProtocolInterface = {
     ...metaDefaults,
     pages: [PageInterfaceDefaults]
 };
-
-export const responseDefaultByResponseAreaType: Dictionary<string> = {
-    'textboxResponseArea': '',
-    'multipleChoiceResponseArea': '',
-    'manualAudiometryResponseArea' : '',
-    'calibrationResponseArea':''
-}

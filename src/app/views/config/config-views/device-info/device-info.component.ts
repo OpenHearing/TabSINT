@@ -1,12 +1,16 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { DiskModel } from '../../../../models/disk/disk.service';
-import { AppState } from '../../../../utilities/constants';
-import { StateModel } from '../../../../models/state/state.service';
+import { Subscription } from 'rxjs';
+
 import { DiskInterface } from '../../../../models/disk/disk.interface';
 import { StateInterface } from '../../../../models/state/state.interface';
-import { DevicesModel } from '../../../../models/devices/devices-model.service';
 import { DevicesInterface } from '../../../../models/devices/devices.interface';
+
+import { DiskModel } from '../../../../models/disk/disk.service';
+import { StateModel } from '../../../../models/state/state.service';
+import { DevicesModel } from '../../../../models/devices/devices-model.service';
+
+import { AppState } from '../../../../utilities/constants';
 
 @Component({
   selector: 'device-info-view',
@@ -15,14 +19,15 @@ import { DevicesInterface } from '../../../../models/devices/devices.interface';
 })
 export class DeviceInfoComponent {
   disk: DiskInterface;
+  diskSubscription: Subscription | undefined;
   state: StateInterface;
   devices: DevicesInterface;
 
   constructor(
+    private readonly devicesModel: DevicesModel,
     private readonly diskModel: DiskModel, 
     private readonly stateModel: StateModel,
     private readonly translate: TranslateService,
-    private readonly devicesModel: DevicesModel
   ) { 
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();
@@ -30,7 +35,14 @@ export class DeviceInfoComponent {
   }
 
   ngOnInit(): void {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+        this.disk = updatedDisk;
+    })    
     this.stateModel.setAppState(AppState.Admin);
+  }
+
+  ngOnDestroy() {
+    this.diskSubscription?.unsubscribe();
   }
 
   setShutdownTimerPopover = this.translate.instant(

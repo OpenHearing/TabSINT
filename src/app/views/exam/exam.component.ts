@@ -1,15 +1,13 @@
 import { Component } from '@angular/core';
-
-import { DiskModel } from '../../models/disk/disk.service';
-import { AppState, ExamState, ProtocolServer } from '../../utilities/constants';
+import { Subscription } from 'rxjs';
 import { DiskInterface } from '../../models/disk/disk.interface';
-import { ProtocolModel } from '../../models/protocol/protocol-model.service';
-import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
-import { ProtocolModelInterface } from '../../models/protocol/protocol.interface';
-import { ResultsInterface } from '../../models/results/results.interface';
-import { ResultsModel } from '../../models/results/results-model.service';
+import { DiskModel } from '../../models/disk/disk.service';
+import { StateModel } from '../../models/state/state.service';
 import { ExamService } from '../../controllers/exam.service';
+import { AppState, ExamState } from '../../utilities/constants';
+import { PageInterface } from '../../models/page/page.interface';
+import { PageModel } from '../../models/page/page.service';
 
 @Component({
   selector: 'exam-view',
@@ -19,38 +17,62 @@ import { ExamService } from '../../controllers/exam.service';
 
 export class ExamComponent {
   disk: DiskInterface;
-  results: ResultsInterface
-  protocol: ProtocolModelInterface;
-  localServer: ProtocolServer = ProtocolServer.LocalServer;
+  diskSubscription: Subscription | undefined;
+  currentPage: PageInterface;
+  pageSubscription: Subscription | undefined;
   state: StateInterface;
   ExamState = ExamState;
 
   constructor (
-    public examService: ExamService,
-    private diskModel: DiskModel,
-    private resultsModel: ResultsModel,
-    private protocolM: ProtocolModel,
-    private stateModel: StateModel
+    private readonly examService: ExamService,
+    private readonly diskModel: DiskModel,
+    private readonly stateModel: StateModel,
+    private readonly pageModel: PageModel
   ) {
     this.disk = this.diskModel.getDisk();
-    this.results = this.resultsModel.getResults();
-    this.protocol = this.protocolM.getProtocolModel();
     this.state = this.stateModel.getState();
+    this.currentPage = this.pageModel.getPage();
   }
 
   ngOnInit(): void {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+    });
+    this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
+      this.currentPage = updatedPage;
+    });
     this.examService.switchToExamView();
     this.stateModel.setAppState(AppState.Exam);
   }
 
   ngOnDestroy(): void {
+    this.diskSubscription?.unsubscribe();
+    this.pageSubscription?.unsubscribe();
     this.stateModel.setAppState(AppState.null);
   }
 
-
-  link(variable:any) {
-    console.log("link button pressed");
+  begin() {
+    this.examService.begin();
   }
 
+  submit() {
+    this.examService.submit();
+  }
+
+  back() {
+    this.examService.back();
+  }
+
+  skip() {
+    this.examService.skip();
+  }
+
+  reset() {
+    this.examService.reset();
+  }
+
+  help() {
+    this.examService.help();
+  }
 
 }

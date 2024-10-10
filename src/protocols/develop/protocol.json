@@ -102,6 +102,15 @@
           }
         },
         {
+          "id": "textbox_001_result_viewer",
+          "title": "Text Box Result Viewer",
+          "instructionText": "Test Case 001 Result Viewer",
+          "responseArea": {
+            "type": "textboxResponseAreaResultViewer",
+            "pageIdsToDisplay": ["textbox_001", "textbox_002","textbox_003"]
+          }
+        },
+        {
           "id": "backtomain",
           "reference":"MainMenu"
         }

@@ -1,57 +1,11 @@
-<div *ngIf="isMediaLoading">
-    <h2>Media File(s) Loading...</h2>
-    <div class="loader"></div>
-    <button type="button" class="button btn btn-default" (click)="startExam()" translate disabled="true">Start Exam</button>
-</div>
-
-<div *ngIf="isLoadingComplete">
-    <h2 class="loading-complete">Loading Complete</h2>
-    <button type="button" class="button btn btn-default" (click)="startExam()" translate>Start Exam</button>
-</div>
-
-<div *ngIf="!examService?.currentPage?.loadingRequired">
+<div>
     <!-- Title block -->
-    <h2 [textContent]="questionMainText" *ngIf="questionMainText"
-        [ngClass]="examTestingTitleClass"></h2>
-    <p class="subtext pad-top" *ngIf="questionSubText">
-        <span [textContent]="questionSubText" id="subtext-testing"></span>
-    </p>
+    <h1 [innerHtml]="title" *ngIf="title"></h1>
+    <h2 [textContent]="questionMainText" *ngIf="questionMainText" [ngClass]="examTestingTitleClass"></h2>
+    <p class="subtext pad-top" *ngIf="questionSubText"><span [textContent]="questionSubText" id="subtext-testing"></span></p>
     <p class="instructions" *ngIf="instructionText"><span [textContent]="instructionText" id="instructions-testing"></span></p>
-
-
-    <!-- Images -->
-    <!-- <div class="multimedia" *ngIf="examService.currentPage.image" [ngStyle]="{width:examService.currentPage.image.width}">
-        <img [src]="{{examService.currentPage.image.path}}" class="img-responsive img-rounded" alt="" style="margin:0 auto;max-height:40vh;" />
-    </div> -->
-
-
-    <!-- Videos -->
-    <!-- <div class="multimedia" *ngIf="examService.currentPage.video" [ngStyle]="{width:examService.currentPage.video.width}">
-        <row *ngIf="examService.currentPage.video.autoplay">
-        <video id="video1" [src]="{{examService.currentPage.video.path}}" class="video-responsive video-rounded"  preload="examService.currentPage.video.autoplay" controls />
-        </row>
-        <row *ngIf="!examService.currentPage.video.autoplay">
-        <video id="video1" [src]="{{examService.currentPage.video.path}}" class="video-responsive video-rounded"  controls />
-        </row>
-    </div> -->
 
     <br />
 
-    <!-- Response area content -->
-    <!-- <div *ngIf="examService.currentPage.responseArea" ng-controller="ResponseAreaCtrl as ra">
-        <div ng-repeat="(type, spec) in ra.responseAreas">
-            <response-area *ngIf="type === examService.currentPage.responseArea.type" ng-include="spec.templateUrl"></response-area>
-        </div>
-    </div> -->
-
-    
-
     <response-area></response-area>
-
-    <!-- Below 2 lines are for testing the loading of repsonse areas that are not hard-coded into tabsint -->
-
-    <!-- <div *ngIf="examService.currentPage.responseArea" [innerHTML]="testHTML"></div> -->
-    <!-- <button (click)="testing()">test button</button> -->
-
-
 </div>

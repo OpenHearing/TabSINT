@@ -3,6 +3,7 @@ import { PageTypes } from "../types/custom-types";
 import { ManualAudiometryInterface } from "../views/response-area/response-areas/manual-audiometry/manual-audiometry.interface";
 import { MultipleChoiceInterface} from "../views/response-area/response-areas/multiple-choice/multiple-choice.interface";
 import { TextBoxInterface } from "../views/response-area/response-areas/textbox/textbox.interface";
+import { TextBoxResultViewerInterface } from "../views/response-area/response-areas/textbox-result-viewer/textbox-result-viewer.interface";
 
 export interface PageDefinition {
     id: string;
@@ -96,5 +97,5 @@ export interface CommonResponseAreaInterface {
 }
 
 export type ResponseArea =
-    TextBoxInterface |
+    TextBoxInterface | TextBoxResultViewerInterface |
     MultipleChoiceInterface | ManualAudiometryInterface | CalibrationExamInterface ;

@@ -23,7 +23,6 @@ import { Logger } from "../../../../utilities/logger.service";
   })
 
 export class ManualAudiometryComponent implements OnInit, OnDestroy {
-    currentPage: PageInterface;
     results: ResultsInterface;
     protocol: ProtocolModelInterface;
     state: StateInterface;
@@ -59,7 +58,6 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         this.results = this.resultsModel.getResults();
         this.protocol = this.protocolModel.getProtocolModel();
         this.state = this.stateModel.getState();
-        this.currentPage = this.pageModel.getPage();
     }
 
     ngOnInit() {

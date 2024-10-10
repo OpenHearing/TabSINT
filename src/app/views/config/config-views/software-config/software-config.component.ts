@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
+import { Subscription } from 'rxjs';
+
+import { DiskInterface } from '../../../../models/disk/disk.interface';
+import { DevicesInterface } from '../../../../models/devices/devices.interface';
+import { VersionInterface } from '../../../../models/version/version.interface';
 
 import { DiskModel } from '../../../../models/disk/disk.service';
 import { Logger } from '../../../../utilities/logger.service';
-import { VersionService } from '../../../../controllers/version.service';
-import { DiskInterface } from '../../../../models/disk/disk.interface';
+import { VersionModel } from '../../../../models/version/version.service';
 import { DevicesModel } from '../../../../models/devices/devices-model.service';
-import { DevicesInterface } from '../../../../models/devices/devices.interface';
-import { VersionInterface } from '../../../../interfaces/version.interface';
 
 @Component({
   selector: 'software-config-view',
@@ -15,14 +17,16 @@ import { VersionInterface } from '../../../../interfaces/version.interface';
 })
 export class SoftwareConfigComponent {
   disk: DiskInterface;
+  diskSubscription: Subscription | undefined;
   devices: DevicesInterface;
   version: VersionInterface;
+
   constructor(
-    private diskModel: DiskModel, 
-    private versionService: VersionService,
-    private devicesModel: DevicesModel,
-    private logger: Logger, 
-  ) { 
+    private readonly devicesModel: DevicesModel,
+    private readonly diskModel: DiskModel,
+    private readonly logger: Logger,
+    private versionModel: VersionModel,
+  ) {
     this.disk = this.diskModel.getDisk();
     this.devices = this.devicesModel.getDevices();
     this.version = {
@@ -40,12 +44,19 @@ export class SoftwareConfigComponent {
   }
 
   ngOnInit(): void {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+        this.disk = updatedDisk;
+    })
     this.initializeVersion();
+  }
+
+  ngOnDestroy() {
+    this.diskSubscription?.unsubscribe();
   }
 
   private async initializeVersion(): Promise<void> {
     try {
-      this.version = await this.versionService.getVersion();
+      this.version = await this.versionModel.getVersion();
     } catch (error) {
       this.logger.error("" + error);
     }

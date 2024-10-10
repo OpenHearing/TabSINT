@@ -2,7 +2,6 @@ import { ConnectedDevices } from "../../interfaces/connected-devices.interface"
 
 export interface DevicesInterface {
     build: string,
-    protocolId: string,
     uuid: string,
     // tabsintUUID: string,
     version: string,

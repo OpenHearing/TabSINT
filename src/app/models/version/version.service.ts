@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
-import { Logger } from '../utilities/logger.service';
-import { VersionInterface } from '../interfaces/version.interface';
+import { Logger } from '../../utilities/logger.service';
+import { VersionInterface } from './version.interface';
 
 @Injectable({
     providedIn: 'root',
 })
 
-export class VersionService {
+export class VersionModel {
 
-    private version: VersionInterface = {
+    version: VersionInterface = {
         tabsint: '',
         date: '',
         rev: '',
@@ -32,7 +32,7 @@ export class VersionService {
      */
     private async loadVersion(): Promise<void> {
         try {
-            const versionData = await import('../../version.json');
+            const versionData = await import('../../../version.json');
             if (versionData.default) {
                 this.version = versionData.default as VersionInterface;
                 this.logger.debug("Version Object processed --- " + JSON.stringify(this.version))
