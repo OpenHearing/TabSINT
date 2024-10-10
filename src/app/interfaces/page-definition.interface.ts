@@ -1,3 +1,4 @@
+import { CalibrationExamInterface } from "../models/calibration-exam/calibration-exam.interface";
 import { PageTypes } from "../types/custom-types";
 import { ManualAudiometryInterface } from "../views/response-area/response-areas/manual-audiometry/manual-audiometry.interface";
 import { MultipleChoiceInterface} from "../views/response-area/response-areas/multiple-choice/multiple-choice.interface";
@@ -96,4 +97,4 @@ export interface CommonResponseAreaInterface {
 
 export type ResponseArea =
     TextBoxInterface |
-    MultipleChoiceInterface | ManualAudiometryInterface;
+    MultipleChoiceInterface | ManualAudiometryInterface | CalibrationExamInterface ;

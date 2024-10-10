@@ -76,6 +76,10 @@ import { DeviceConfigComponent } from './views/config/config-views/device-config
 import { DeviceInfoComponent } from './views/config/config-views/device-info/device-info.component';
 import { ConnectedDevicesComponent } from './views/config/config-views/connected-devices/connected-devices.component';
 import { NewConnectionComponent } from './views/config/config-views/new-connection/new-connection.component';
+import { CalibrationExamComponent } from './views/calibration-exam/calibration-exam.component';
+import { CalibrationScreenComponent } from './views/calibration-screen/calibration-screen.component';
+import { MeasurementScreenComponent } from './views/measurement-screen/measurement-screen.component';
+import { MaxOutputScreenComponent } from './views/max-output-screen/max-output-screen.component';
 import { DevicesService } from './controllers/devices.service';
 
 // required for AOT compilation
@@ -112,7 +116,11 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     DeviceConfigComponent,
     DeviceInfoComponent,
     ConnectedDevicesComponent,
-    NewConnectionComponent
+    NewConnectionComponent,
+    CalibrationExamComponent,
+    CalibrationScreenComponent,
+    MeasurementScreenComponent,
+    MaxOutputScreenComponent
   ],
   imports: [
     BrowserModule,

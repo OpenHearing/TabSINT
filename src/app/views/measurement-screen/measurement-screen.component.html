@@ -1,0 +1,34 @@
+<div class="measurement-container">
+  <h2 class="measurement-title">Measurement Screen</h2>
+  
+  <div class="measurement-info">
+    <p class="info-item">Current Frequency: {{ currentFrequency }} Hz</p>
+    <p class="info-item">Target Level: {{ targetLevel }} dB</p>
+  </div>
+  
+  <div class="measurement-box">
+    <label for="measurementInput" class="measured-value-label">Enter Measured Value:</label>
+    <div class="input-group">
+      <input id="measurementInput"
+             type="number"
+             [ngModel]="userInput"
+             (ngModelChange)="userInput = $event"
+             class="measured-value-input"
+             step="0.1">
+      <span class="unit">dB SPL</span>
+    </div>
+    
+    <div class="play-button-container">
+      <button class="play-pause-button" (click)="onTogglePlay()">
+        <svg *ngIf="!isPlaying" viewBox="0 0 24 24" class="play-icon">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+        <svg *ngIf="isPlaying" viewBox="0 0 24 24" class="pause-icon">
+          <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+  
+  <button class="next-button" (click)="next()">Next</button>
+</div>

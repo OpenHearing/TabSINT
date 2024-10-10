@@ -8,6 +8,7 @@ import { chaWavFileSchema } from "./definitions/cha-wavfile.schema";
 import { textBoxSchema } from "./response-areas/textbox.schema";
 import { multipleChoiceSchema } from "./response-areas/multiple-choice.schema";
 import { manualAudiometrySchema } from "./response-areas/manual-audiometry.schema";
+import { calibrationExamSchema } from "./response-areas/calibration-exam.schema";
 
 export const pageSchema: JSONSchemaType<PageDefinition> = {
     $id: "page_base",
@@ -78,7 +79,8 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
         oneOf: [
           textBoxSchema,
           multipleChoiceSchema,
-          manualAudiometrySchema
+          manualAudiometrySchema,
+          calibrationExamSchema
         ], 
         required: ["type"],
         nullable: true

@@ -31,6 +31,9 @@
                 "id":"Manual Audiometry"
               },
               {
+                "id": "Calibration Exam" 
+              },
+              {
                 "id":"End All"
               }
             ]
@@ -47,6 +50,12 @@
               "target":{
                 "reference":"ManualAudiometry"
               } 
+            },
+            {
+              "conditional": "result.response=='Calibration Exam'",
+              "target": {
+                "reference": "CalibrationExam"
+              }
             },
             {
               "conditional":"result.response=='End All'",
@@ -120,6 +129,27 @@
         {
           "id": "backtomain",
           "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "CalibrationExam",
+      "pages": [
+        {
+          "id": "calibration_001",
+          "title": "Calibration Exam",
+          "instructionText": "Test calibration response area",
+          "responseArea": {
+            "type": "calibrationResponseArea",
+            "frequencies": [500, 1000, 2000],
+            "targetLevels": [60, 70, 80],
+            "exportToCSV": true,
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
         }
       ]
     }
