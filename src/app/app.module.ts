@@ -78,6 +78,7 @@ import { DeviceInfoComponent } from './views/config/config-views/device-info/dev
 import { ConnectedDevicesComponent } from './views/config/config-views/connected-devices/connected-devices.component';
 import { NewConnectionComponent } from './views/config/config-views/new-connection/new-connection.component';
 import { DevicesService } from './controllers/devices.service';
+import { ManualAudiometryResultViewerComponent } from './views/response-area/response-areas/manual-audiometry-result-viewer/manual-audiometry-result-viewer';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -108,6 +109,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     TextboxResultViewerComponent,
     MultipleChoiceComponent,
     ManualAudiometryComponent,
+    ManualAudiometryResultViewerComponent,
     SingleResultModalComponent,
     ExternalResponseAreaComponent,
     TasksBannerComponent,

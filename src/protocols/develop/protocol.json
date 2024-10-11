@@ -127,6 +127,15 @@
           }
         }, 
         {
+          "id": "audiometry_001_result_viewer",
+          "title": "Audiometry Result Viewer",
+          "instructionText": "View manual audiometry results",
+          "responseArea": {
+            "type": "manualAudiometryResponseAreaResultViewer",
+            "pageIdsToDisplay": ["audiometry_001"]
+          }
+        },
+        {
           "id": "backtomain",
           "reference":"MainMenu"
         }
