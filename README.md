@@ -1,6 +1,6 @@
 # OpenTabSINT
 
-[![](android\app\src\main\res\drawable-land-xxhdpi\splash.png)](https://github.com/OpenHearing/TabSINT)
+[![](android\app\src\main\res\drawable-land-xxhdpi\drawable-xxhdpi-icon.png)](https://github.com/OpenHearing/TabSINT)
 
 - [TabSINT Documentation](http://tabsint.org)
 - [Open Hearing Website](http://openhearing.org/)
@@ -41,7 +41,7 @@ TabSINT is Copyright (C) 2015-2024 Creare. Use for educational or research purpo
 License at LICENSE or http://www.apache.org/licenses/LICENSE-2.0. All rights reserved.
 License agreements for open source libraries used in the project can be found in [NOTICE](https://github.com/OpenHearing/TabSINT/blob/main/NOTICE.md).
 
-### II.	Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.   **Use for Other than Educational and Research Purposes and Other than Government Users**
+### II.	Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.   Use for Other than Educational and Research Purposes and Other than Government Users
 
 Except for use by government users, use of TabSINT for any purpose other than educational or research purposes is licensed under the Commercial License at [link](https://github.com/OpenHearing/TabSINT/blob/main/COMMERCIAL_LICENSE.md); a Commercial License Agreement must be executed and returned to Creare prior to downloading TABSINT. Regardless of execution of such agreement, use or distribution of TabSINT for other than educational or research purposes constitutes agreement to all terms of the Commercial License Agreement under which, among other provisions, you agree to indemnify, defend, and hold harmless Creare, its officers, employees, agents, and subcontractors for any liability incurred by, or claims asserted against, them arising from or relating to your use or distribution of TabSINT or any derivatives of it.
 
