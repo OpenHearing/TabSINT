@@ -129,6 +129,8 @@ export class ProtocolsComponent {
             availableMetaProtocols[protocolMetaData.name] = protocolMetaData;
             this.diskModel.updateDiskModel('availableProtocolsMeta', availableMetaProtocols);
             this.protocolModel = this.protocolM.getProtocolModel();
+            this.select(protocolMetaData);
+            this.loadProtocol();
           }
       }
     }
