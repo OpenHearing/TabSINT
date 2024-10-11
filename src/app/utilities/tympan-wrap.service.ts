@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
 import { Logger } from './logger.service';
-import { BleClient, numbersToDataView } from '@capacitor-community/bluetooth-le';
+import { BleClient } from '@capacitor-community/bluetooth-le';
 import { BleDevice } from '../interfaces/bluetooth.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { StateModel } from '../models/state/state.service';
@@ -129,7 +129,7 @@ export class TympanWrap {
         let buf = new TextEncoder().encode(str); // this is a uint8array!
         let crc = this.genCRC8Checksum(buf);
         let msgToSend = new Uint8Array([...start_byte, ...this.handleEscaping(buf), ...this.handleEscaping(crc), ...end_byte])
-        return numbersToDataView(Array.from(msgToSend))
+        return new DataView(msgToSend.buffer)
     }
 
     private checkForCompleteMsg(deviceId: string): string|undefined {
@@ -175,7 +175,7 @@ export class TympanWrap {
             } else {
                 escaped_byte_array = new Uint8Array([...escaped_byte_array, ...[byte]]);
             }
-        })
+        });
         return escaped_byte_array
     }
 
@@ -193,7 +193,7 @@ export class TympanWrap {
                 unescaped_byte_array = new Uint8Array([...unescaped_byte_array, ...[byte ^ 128]]);
                 esc_next = false;
             }
-        })
+        });
         return unescaped_byte_array
     }
 

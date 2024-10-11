@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { processProtocol } from './process-protocol.function';
-import { LoadingProtocolInterface } from '../interfaces/loading-protocol-object.interface';
-import { ProtocolServer } from './constants';
-import { ProtocolInterface } from '../models/protocol/protocol.interface';
+import { processProtocol } from '../process-protocol.function';
+import { LoadingProtocolInterface } from '../../interfaces/loading-protocol-object.interface';
+import { ProtocolServer } from '../constants';
+import { ProtocolInterface } from '../../models/protocol/protocol.interface';
 
 const followOn1 = {
     conditional: "result.response=='Text Box'",
