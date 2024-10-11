@@ -1,4 +1,3 @@
-import { Dictionary } from "lodash";
 import { LoadingProtocolInterface } from "../interfaces/loading-protocol-object.interface";
 import { PageInterface } from "../models/page/page.interface";
 import { ProtocolMetaInterface, ProtocolInterface } from "../models/protocol/protocol.interface";

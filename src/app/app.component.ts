@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from "@ngx-translate/core";
 import _ from 'lodash';
@@ -24,7 +24,7 @@ import { DeviceUtil } from './utilities/device-utility';
   selector: 'app-root',
   templateUrl: './app.component.html'
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   title = 'tabsint';
   app: AppInterface;
   disk: DiskInterface;
@@ -47,13 +47,13 @@ export class AppComponent implements OnInit {
     this.translate.use('English');
     this.app = this.appModel.getApp();
     this.protocol = this.protocolM.getProtocolModel();
-    this.diskModel.updateDiskModel('numLogRows',1);
     this.disk = this.diskModel.getDisk();
+    this.diskModel.updateDiskModel('numLogRows',1);
   }
 
   async ngOnInit() {
     this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
-        this.disk = updatedDisk;
+      this.disk = updatedDisk;
     })
 
     await this.sqLite.init();
@@ -67,7 +67,8 @@ export class AppComponent implements OnInit {
         this.logger.error('Error selecting folder: '+JSON.stringify(error));
       }
     }
-    this.fileService.rootUri = this.disk.contentURI ;
+
+    this.fileService.rootUri = this.disk.contentURI;
     
     this.fileService.createTabsintDirectoriesIfDontExist();
 
