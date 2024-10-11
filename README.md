@@ -1,6 +1,6 @@
 # OpenTabSINT
 
-[![](android\app\src\main\res\drawable-land-xxhdpi\drawable-xxhdpi-icon.png)](https://github.com/OpenHearing/TabSINT)
+[![](src\assets\img\drawable-xxhdpi-icon.png)](https://github.com/OpenHearing/TabSINT)
 
 - [TabSINT Documentation](http://tabsint.org)
 - [Open Hearing Website](http://openhearing.org/)

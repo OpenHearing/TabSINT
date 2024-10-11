@@ -35,6 +35,7 @@ Absent Developer’s agreement to the terms below, Developer shall have no right
 
 “Copyright Notice. The software incorporated herein is Copyright ©2015-2024 CREARE. All Rights Reserved.
 The name ‘CREARE’ (alone or as part of another name) or any logos, seals, insignia or other words, names, symbols or devices that identify CREARE or any CREARE division or affiliate may not be used to endorse or promote products derived from this software without specific prior written permission.”
+
 7.	**NO WARRANTIES.** THE SOFTWARE IS PROVIDED “AS IS.” TO THE FULLEST EXTENT PERMITTED BY LAW, CREARE HEREBY DISCLAIMS ALL WARRANTIES OF ANY KIND (EXPRESS, IMPLIED OR OTHERWISE) REGARDING THE SOFTWARE, INCLUDING BUT NOT LIMITED TO ANY IMPLIED WARRANTIES OF MERCHANTABILITY, DESIGN, FITNESS FOR A PARTICULAR PURPOSE, SATISFACTORY QUALITY, OWNERSHIP, AND NON-INFRINGEMENT. CREARE MAKES NO WARRANTY ABOUT THE ACCURACY, RELIABILITY, COMPLETENESS, TIMELINESS, SUFFICIENCY OR QUALITY OF THE SOFTWARE. CREARE DOES NOT WARRANT THAT THE SOFTWARE WILL OPERATE WITHOUT ERROR OR INTERRUPTION, OR THAT THE SOFTWARE IS FREE OF COMPUTER VIRUSES OR OTHER HARMFUL COMPUTER CODE.
 
 8.	**LIMITATION OF LIABILITY.** TO THE FULLEST EXTENT PERMITTED BY LAW, CREARE SHALL NOT BE LIABLE TO DEVELOPER IN CONTRACT, TORT OR UNDER ANY OTHER CAUSE OF ACTION, FOR ANY DIRECT, INDIRECT, SPECIAL, INCIDENTAL, CONSEQUENTIAL, PUNITIVE OR OTHER DAMAGES OF ANY KIND WHATSOEVER ARISING OUT OF OR IN CONNECTION WITH THE SOFTWARE, OR USE OF THE SOFTWARE, EVEN IF CREARE IS NEGLIGENT OR OTHERWISE AT FAULT, AND REGARDLESS OF WHETHER CREARE IS ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
@@ -53,6 +54,7 @@ Developer will obtain and carry general commercial liability insurance and umbre
 
 
 **DEVELOPER Information**
+
  Company/Organization: 
  Address 1:
  Address 2: 
@@ -61,6 +63,7 @@ Developer will obtain and carry general commercial liability insurance and umbre
  Contact email:
  
 **COMPANY/ORGANIZATION**
+
  Signature:
  Typed/Printed Name:
  Title:
@@ -68,7 +71,8 @@ Developer will obtain and carry general commercial liability insurance and umbre
 
 Licenses are single signature. If a fully executed license agreement is required, please request by email to contractsmgr@creare.com prior to submitting signed license.
 
- 
+
+----------
 
  
 **Exhibit A**
