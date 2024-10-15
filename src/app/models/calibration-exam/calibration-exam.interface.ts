@@ -8,3 +8,8 @@ export interface CalibrationExamInterface extends CommonResponseAreaInterface{
     targetLevels?:number[];
     responseRequired?:boolean
 }
+
+export interface CalibrationResultViewerInterface extends CommonResponseAreaInterface {
+    displayRightEar: boolean;
+    displayLeftEar: boolean;
+  }

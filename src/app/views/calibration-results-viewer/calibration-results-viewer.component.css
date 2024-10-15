@@ -1,0 +1,60 @@
+/* Styling for the main container */
+.results-container {
+    margin: 20px;
+  }
+  
+  /* General styling for each ear results section */
+  .ear-results {
+    margin-bottom: 30px;
+  }
+  
+  /* Styling for the calibration results tables */
+  .results-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 18px;
+    text-align: left;
+  }
+  
+  /* Add a border around the table */
+  .results-table, th, td {
+    border: 1px solid #ddd;
+  }
+  
+  /* Styling for table headers */
+  th, td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  /* Header background color */
+  thead th {
+    background-color: #f4f4f4;
+    color: #333;
+    font-weight: bold;
+  }
+  
+  /* Row hover effect */
+  tbody tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  /* Alternating row colors */
+  tbody tr:nth-child(even) {
+    background-color: #fafafa;
+  }
+  
+  /* Left-align numbers */
+  td {
+    text-align: left;
+  }
+  
+  /* Make the table responsive on smaller screens */
+  @media screen and (max-width: 600px) {
+    .results-table, th, td {
+      font-size: 16px;
+      padding: 8px;
+    }
+  }
+  

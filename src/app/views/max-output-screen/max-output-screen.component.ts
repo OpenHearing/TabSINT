@@ -12,14 +12,21 @@ export class MaxOutputScreenComponent {
   @Input() earCup: string = '';
   @Output() nextStep = new EventEmitter<void>();
   @Output() togglePlay = new EventEmitter<void>();
+  @Output() maxOutputUpdated = new EventEmitter<number>();
+  
   maxOutputValue: number | null = null;
+
 
   onTogglePlay(): void {
     this.togglePlay.emit();
   }
 
   next(): void {
+    if (this.maxOutputValue !== null) {
+      this.maxOutputUpdated.emit(this.maxOutputValue);
+    }
     this.nextStep.emit();
+    this.maxOutputValue = null
   }
 
 }

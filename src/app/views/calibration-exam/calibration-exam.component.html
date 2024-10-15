@@ -17,7 +17,8 @@
     [targetLevel]="targetLevel"
     [isPlaying]="isPlaying"
     (nextStep)="nextStep()"
-    (togglePlay)="togglePlay()">
+    (togglePlay)="togglePlay()"
+    (measurementUpdated)="handleMeasurementUpdate($event)">
   </app-measurement-screen>
 
   <app-max-output-screen
@@ -27,10 +28,11 @@
     [earCup]="earCup"
     [isPlaying]="isPlaying"
     (nextStep)="nextStep()"
-    (togglePlay)="togglePlay()">
+    (togglePlay)="togglePlay()"
+    (maxOutputUpdated)="handleMaxOutputUpdate($event)">
   </app-max-output-screen>
 
   <div *ngSwitchCase="'finished'">
-    <h2>Calibration Exam Completed!</h2>
+    <app-calibration-results-viewer></app-calibration-results-viewer>
   </div>
 </div>

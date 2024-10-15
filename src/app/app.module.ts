@@ -82,6 +82,7 @@ import { CalibrationScreenComponent } from './views/calibration-screen/calibrati
 import { MeasurementScreenComponent } from './views/measurement-screen/measurement-screen.component';
 import { MaxOutputScreenComponent } from './views/max-output-screen/max-output-screen.component';
 import { DevicesService } from './controllers/devices.service';
+import { CalibrationResultsViewerComponent } from './views/calibration-results-viewer/calibration-results-viewer.component';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -122,7 +123,8 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     CalibrationExamComponent,
     CalibrationScreenComponent,
     MeasurementScreenComponent,
-    MaxOutputScreenComponent
+    MaxOutputScreenComponent,
+    CalibrationResultsViewerComponent,
   ],
   imports: [
     BrowserModule,

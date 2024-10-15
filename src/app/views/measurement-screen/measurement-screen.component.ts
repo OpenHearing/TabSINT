@@ -10,11 +10,17 @@ export class MeasurementScreenComponent {
   @Input() currentFrequency: number = 0;
   @Input() targetLevel: number = 0;
   @Output() nextStep = new EventEmitter<void>();
-  userInput: number | null = null;
   @Output() togglePlay = new EventEmitter<void>();
+  @Output() measurementUpdated = new EventEmitter<number>();
+  userInput: number | null = null;
+
   next(): void {
+    if (this.userInput !== null) {
+      this.measurementUpdated.emit(this.userInput);
+    }
     this.nextStep.emit();
   }
+  
   onTogglePlay(): void {
     this.togglePlay.emit();
   }

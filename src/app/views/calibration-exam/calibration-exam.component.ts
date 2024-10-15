@@ -9,6 +9,22 @@ import { DeviceUtil } from '../../utilities/device-utility';
 import { ConnectedDevice } from '../../interfaces/connected-device.interface';
 import { Logger } from '../../utilities/logger.service';
 import { DeviceResponse } from '../../models/devices/devices.interface';
+import { ResultsService } from '../../controllers/results.service';
+import { ContentObserver } from '@angular/cdk/observers';
+import { ResultsModel } from '../../models/results/results-model.service';
+import { ResultsInterface } from '../../models/results/results.interface';
+
+export interface EarData {
+  calFactor: number;
+  measurement: string | number;
+  maxOutput: string | number;
+}
+
+export interface ExamResponse {
+  pageId: string;
+  response: string;
+  responseArea: string;
+}
 
 @Component({
   selector: 'app-calibration-exam',
@@ -28,10 +44,16 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   device: ConnectedDevice|undefined;
   earCup: string = 'Left';
   isPlaying: boolean = false;
+  leftEarData: Record<number, EarData> = {};
+  rightEarData: Record<number, EarData> = {};
+  results: ResultsInterface;
+
   constructor(private readonly pageModel: PageModel,
     private readonly devicesService: DevicesService,
     private readonly devicesModel: DevicesModel,
-    private readonly deviceUtil: DeviceUtil,private readonly logger: Logger) {}
+    private readonly deviceUtil: DeviceUtil,private readonly logger: Logger,private readonly resultsService: ResultsService,private readonly resultsModel: ResultsModel,) {
+      this.results = this.resultsModel.getResults()
+    }
 
   ngOnInit(): void {
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
@@ -41,6 +63,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
         this.frequencies = calibrationResponse.frequencies ?? [500, 1000, 2000];
         this.targetLevels = calibrationResponse.targetLevels ?? [60, 70, 80];
         this.updateFrequencyAndTargetLevel();
+        this.initializeEarData();
         this.device = this.deviceUtil.getDeviceFromTabsintId(calibrationResponse.tabsintId ?? "1");
                     if (this.device) {
                         await this.devicesService.queueExam(this.device,"ManualAudiometry");
@@ -52,7 +75,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     this.deviceSubscription = this.devicesModel.deviceResponseSubject.subscribe((msg: DeviceResponse) => {
       console.log("device msg:",JSON.stringify(msg));
   });
-
+  this.results.currentExam.responses = []
   }
 
   ngOnDestroy(): void {
@@ -102,6 +125,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       this.currentStep = 'calibration';
     } else {
       this.currentStep = 'finished'
+      this.saveResults(); 
     }
   }
 
@@ -109,6 +133,29 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     this.currentFrequency = this.frequencies[this.currentFrequencyIndex];
     this.targetLevel = this.targetLevels[this.currentFrequencyIndex];
   }
+
+  private initializeEarData(): void {
+    this.frequencies.forEach(freq => {
+      this.leftEarData[freq] = { calFactor: 0, measurement:'',maxOutput: '' };
+      this.rightEarData[freq] = { calFactor: 0, measurement:'',maxOutput: '' };
+    });
+  }
+
+  updateCalibrationData(frequency: number, calFactor: number | null, measurement: number | null = null, maxOutput: number | null = null): void {
+    const currentEarData = this.earCup === 'Left' ? this.leftEarData : this.rightEarData;
+    if (calFactor!==null){
+      currentEarData[frequency].calFactor = calFactor;
+    }
+
+    if (measurement !== null) {
+      currentEarData[frequency].measurement = measurement;
+    }
+
+    if (maxOutput !== null) {
+      currentEarData[frequency].maxOutput = maxOutput;
+    }
+  }
+
 
   isExamFinished(): boolean {
     return this.currentStep === 'finished';
@@ -131,4 +178,31 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     }
   }
 
+  handleMeasurementUpdate(measurement: number): void {
+    console.log("Update measurement with -- " + measurement)
+    this.updateCalibrationData(this.currentFrequency, this.calFactor, measurement,null);
+    console.log(this.leftEarData)
+    console.log(this.rightEarData)
+  }
+
+  handleMaxOutputUpdate(maxOutput: number): void {
+    this.updateCalibrationData(this.currentFrequency, null, null, maxOutput);
+  }
+
+  saveResults(): void {
+    console.log("save results called")
+    console.log(this.leftEarData)
+    console.log(this.rightEarData)
+    const calibrationResults = {
+      leftEar: this.leftEarData,
+      rightEar: this.rightEarData
+    };
+    const newResponse: ExamResponse = {
+      pageId: 'calibration-results',
+      response: JSON.stringify(calibrationResults),
+      responseArea: 'calibrationExam'
+    };
+  
+    this.results.currentExam.responses.push(newResponse);
+  }
 }
