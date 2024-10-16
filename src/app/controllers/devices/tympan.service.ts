@@ -89,9 +89,12 @@ export class TympanService {
         }
     }
 
-    async queueExam(tympanId: string, msgId: string, examType: string) {
+    async queueExam(tympanId: string, msgId: string, examType: string,outputChannel?:object) {
         let examId: string = "1";
-        let msg = '['+msgId+',"queueExam",'+examId+',"'+examType+'"]';
+        // let msg = '['+msgId+',"queueExam",'+examId+',"'+examType+'"]';
+        let msg = `[${msgId},"queueExam",${examId},"${examType}"`;
+        msg += `,${JSON.stringify(outputChannel)}`;
+        msg += `]`;
         try {
             await this.tympanWrap.write(tympanId,msg);
         } catch {

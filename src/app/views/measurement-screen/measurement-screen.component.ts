@@ -21,7 +21,7 @@ export class MeasurementScreenComponent {
     this.nextStep.emit();
   }
   
-  onTogglePlay(): void {
-    this.togglePlay.emit();
-  }
+  // onTogglePlay(): void {
+  //   this.togglePlay.emit();
+  // }
 }

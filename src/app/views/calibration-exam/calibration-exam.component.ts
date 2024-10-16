@@ -66,9 +66,9 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
         this.initializeEarData();
         this.device = this.deviceUtil.getDeviceFromTabsintId(calibrationResponse.tabsintId ?? "1");
                     if (this.device) {
-                        await this.devicesService.queueExam(this.device,"ManualAudiometry");
+                        await this.devicesService.queueExam(this.device,"HNCalibration",{"OutputChannel": this.earCup=="Left" ? "HPL0" : "HPR0"});
                     } else {
-                        this.logger.error("Error setting up Manual Audiometry exam");
+                        this.logger.error("Error setting up HNCalibration exam");
                     }
       }
     });
@@ -88,13 +88,18 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
 
   adjustCalFactor(amount: number): void {
     this.calFactor += amount;
+    this.playTone();
   }
 
   togglePlay(): void {
     this.isPlaying = !this.isPlaying;
     if (this.isPlaying) {
-      this.playTone();
-    } else {
+      if (this.currentStep === 'max-output') {
+          this.sendMaxOutputTone();
+      } else {
+          this.playTone();
+      }
+  } else {
       this.stopTone();
     }
   }
@@ -106,14 +111,19 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       if (this.currentFrequencyIndex < this.frequencies.length - 1) {
         this.currentFrequencyIndex++;
         this.currentStep = 'calibration';
+        this.isPlaying = false;
       } else {
         this.currentStep = 'max-output';
+        this.isPlaying = false;
         this.currentFrequencyIndex = 0;
       }
     } else if (this.currentStep === 'max-output') {
         this.handleNextEarOrFinish();
     }
     this.updateFrequencyAndTargetLevel()
+    if (this.isPlaying && this.currentStep=='max-output') {
+      this.sendMaxOutputTone();
+  }
   }
 
   handleNextEarOrFinish(): void {
@@ -123,8 +133,11 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       this.earCup = 'Right';
       this.currentFrequencyIndex = 0;
       this.currentStep = 'calibration';
+      this.isPlaying = false;
+      this.writeCalibrationResults();
     } else {
       this.currentStep = 'finished'
+      this.writeCalibrationResults();
       this.saveResults(); 
     }
   }
@@ -164,25 +177,43 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   playTone() {
     let examProperties = {
         "F": this.currentFrequency,
-        "Level": this.targetLevel,
-        "OutputChannel": this.earCup=="Left" ? "HPL0" : "HPR0"
+        "Level": this.calFactor,
+        EnableOutput: true
     };
     if (this.device) {
         this.devicesService.examSubmission(this.device,examProperties);
     }
   }
 
+  sendMaxOutputTone(): void {
+    const measuredLevel = this.getMeasuredLevelForFrequency(this.currentFrequency);
+
+    const examProperties = {
+        "F": this.currentFrequency,
+        "RequestedLevel": 0,
+        "EnableOutput": true,
+        "MeasuredLevel": measuredLevel,
+        "Mode": "MaximumOutputLevel"
+    };
+
+    if (this.device) {
+        this.devicesService.examSubmission(this.device, examProperties);
+    }
+  }
+
+  getMeasuredLevelForFrequency(frequency: number):string|number {
+    const currentEarData = this.earCup === 'Left' ? this.leftEarData : this.rightEarData;
+    return currentEarData[frequency].maxOutput
+  }
+
   stopTone() {
     if (this.device) {
-      this.devicesService.examSubmission(this.device, { "Command": "Stop" });
+      this.devicesService.examSubmission(this.device, { "EnableOutput": false });
     }
   }
 
   handleMeasurementUpdate(measurement: number): void {
-    console.log("Update measurement with -- " + measurement)
     this.updateCalibrationData(this.currentFrequency, this.calFactor, measurement,null);
-    console.log(this.leftEarData)
-    console.log(this.rightEarData)
   }
 
   handleMaxOutputUpdate(maxOutput: number): void {
@@ -205,4 +236,14 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   
     this.results.currentExam.responses.push(newResponse);
   }
+
+  writeCalibrationResults(): void {
+    const calibrationData = {
+        "WriteCalibration": true
+    };
+
+    if (this.device) {
+        this.devicesService.examSubmission(this.device, calibrationData);
+    }
+}
 }
