@@ -15,6 +15,14 @@ interface ResponsesInterface {
     rightThresholds: (number|null)[],
 }
 
+interface AudiogramDataInterface {
+    frequencies: number[],
+    thresholds: (number|null)[],
+    channels: string[],
+    resultTypes: string[],
+    masking: boolean[]
+  }
+
 @Component({
     selector: 'manual-audiometry-result-viewer-view',
     templateUrl: './manual-audiometry-result-viewer.html',
@@ -29,6 +37,13 @@ export class ManualAudiometryResultViewerComponent implements OnInit, OnDestroy 
         leftThresholds: [null, null, null],
         rightThresholds: [null, null, null],
     }]
+    audiogramData: AudiogramDataInterface = {
+        frequencies: [1000],
+        thresholds: [null],
+        channels: [''],
+        resultTypes: [''],
+        masking: [false]
+    };
     pageSubscription: Subscription | undefined;
 
     constructor(
@@ -53,6 +68,30 @@ export class ManualAudiometryResultViewerComponent implements OnInit, OnDestroy 
                         rightThresholds: response.response.rightThresholds,
                 }));
 
+                this.audiogramData = this.results.currentExam.responses
+                    .filter((response: { pageId: string; }) => 
+                        updatedAudiometryResponseAreaResultViewer.pageIdsToDisplay.includes(response.pageId))
+                    .map( (response: any) => {
+
+                        const leftThresholds = response.response.leftThresholds || [];
+                        const rightThresholds = response.response.rightThresholds || [];
+                        const frequencies = response.page.responseArea.frequencies;
+
+                        const leftChannels = Array(leftThresholds.length).fill('left');
+                        const rightChannels = Array(rightThresholds.length).fill('right');
+                        const channels = leftChannels.concat(rightChannels);
+
+                        const masking = Array(channels.length).fill(false);
+                        const resultTypes = Array(channels.length).fill('Threshold');
+                
+                        return {
+                            frequencies: frequencies.concat(frequencies),
+                            thresholds: leftThresholds.concat(rightThresholds),
+                            channels,
+                            resultTypes,
+                            masking,
+                        };
+                    })[0];
             }
         });
     }
