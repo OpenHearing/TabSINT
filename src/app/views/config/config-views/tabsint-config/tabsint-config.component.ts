@@ -139,7 +139,7 @@ export class TabsintConfigComponent {
   // Popovers
 
   headsetPopover = this.translate.instant(
-    "Select the deafult headset used to adminster hearing tests. " +
+    "Select the default headset used to administer hearing tests. " +
     "This selection is overridden by the <code>headset</code> parameter in protocols. <br /><br /> If the protocol does not specify a <code>headset</code>, " +
     "this value must match the value in the protocol's <code>calibration.json</code> file."
   );

@@ -13,7 +13,7 @@ export interface ProtocolMetaInterface {
   creator?: string;
   server: ProtocolServer;
   admin: boolean;
-  contentURI?: string;
+  contentURI?: string | null;
 }
 export interface ProtocolModelInterface {
   activeProtocol?: ProtocolInterface, 

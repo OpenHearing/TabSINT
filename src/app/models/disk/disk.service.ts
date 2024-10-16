@@ -43,7 +43,7 @@ export class DiskModel {
             embeddedFirmwareTag: '',
             myCha: ''
         },
-        contentURI: undefined,
+        contentURI: null,
         debugMode: true,
         disableAudioStreaming: true,
         disableLogs: false,
@@ -112,8 +112,8 @@ export class DiskModel {
                 this.disk = JSON.parse(this.window.localStorage.getItem('diskModel')!);
             } else {
                 this.storeDisk();
-            }            
-        }     
+            }
+        }
         return this.disk;
     }
 
