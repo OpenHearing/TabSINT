@@ -18,8 +18,8 @@ import { listOfTabsintDirectories } from './constants';
 
 export class FileService {
     app: AppInterface;
-    rootUri:string | undefined;
-    disk:DiskInterface;
+    rootUri: string | null;
+    disk: DiskInterface;
     diskSubscription: Subscription | undefined;
 
     constructor(
@@ -56,7 +56,7 @@ export class FileService {
      * @param rootDir - (Optional) The root directory where the file should be created. Default root directory is used if not specified
      * @returns A promise containing the content URI of the created or specified file.
      */
-    async writeFile(path:string, data:string,rootDir:string|undefined=this.rootUri) {
+    async writeFile(path: string, data: string, rootDir: string|null=this.rootUri) {
         let result = null;
         try {
             result = data 
@@ -86,7 +86,7 @@ export class FileService {
      * @param rootDir - (Optional) The root directory where the file is located. Default root directory (Documents directory in most cases) is used if not specified.
      * @returns A promise containing the file details such as content URI, MIME type, name, size, and content.
     */
-    async readFile(input:string|undefined,rootDir:string|undefined=this.rootUri) {
+    async readFile(input: string|undefined, rootDir: string|null=this.rootUri) {
         let result = null;
         try{
             result = await this.isContentUri(input) 
@@ -107,7 +107,7 @@ export class FileService {
      * @param rootDir - (Optional) The root directory where the file is located. Default root directory (Documents directory in most cases) is used if not specified.
      * @returns A promise containing the content URI of the created directory.
     */
-    async createDirectory(path: string, rootDir: string|undefined = this.rootUri) {
+    async createDirectory(path: string, rootDir: string|null = this.rootUri) {
         let result = null;
 
         try {
@@ -129,7 +129,7 @@ export class FileService {
      * @param rootDir - (Optional) The root directory where the source and destination folders are located. Default root directory (Documents directory in most cases) is used if not specified.
      * @returns A promise containing the status of the copy operation.
     */
-    async copyDirectory(sourcePath:string, destinationPath:string, rootDir:string|undefined=this.rootUri) {
+    async copyDirectory(sourcePath:string, destinationPath:string, rootDir:string|null=this.rootUri) {
         let result = null;
         try {
             result = await TabsintFs.copyFileOrFolder({rootUri:rootDir,sourcePath:sourcePath,destinationPath:destinationPath});
@@ -159,7 +159,7 @@ export class FileService {
      * @param rootDir - (Optional) The root directory where the file is located. Default root directory (Documents directory in most cases) is used if not specified.
      * @returns A promise containing the status of the delete operation.
     */
-    async deleteDirectory(path:string,rootDir:string|undefined=this.rootUri) {
+    async deleteDirectory(path: string, rootDir: string|null=this.rootUri) {
         let result = null;
         try{
             result = await TabsintFs.deletePath({rootUri:rootDir,path:path});
@@ -178,7 +178,7 @@ export class FileService {
      * @param rootDir - (Optional) The root directory where the file is located. Default root directory (Documents directory in most cases) is used if not specified.
      * @returns A promise containing an array of files in the specified directory.
     */
-    async listDirectory(input:string|undefined,rootDir:string|undefined=this.rootUri) {
+    async listDirectory(input: string|undefined, rootDir: string|null=this.rootUri) {
         let result = null;
         try{
             result = await this.isContentUri(input) 

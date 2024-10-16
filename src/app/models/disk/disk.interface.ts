@@ -18,7 +18,7 @@ export interface DiskInterface {
       embeddedFirmwareTag: string,
       myCha: string
   },
-  contentURI: string | undefined,
+  contentURI: string | null,
   debugMode: boolean,
   disableAudioStreaming?: boolean,
   disableLogs: boolean,

@@ -129,6 +129,8 @@ export class ProtocolsComponent {
             availableMetaProtocols[protocolMetaData.name] = protocolMetaData;
             this.diskModel.updateDiskModel('availableProtocolsMeta', availableMetaProtocols);
             this.protocolModel = this.protocolM.getProtocolModel();
+            this.select(protocolMetaData);
+            this.loadProtocol();
           }
       }
     }
@@ -349,7 +351,7 @@ export class ProtocolsComponent {
   );
 
   protocolServerPopover = this.translate.instant(
-    "Choose the data store to use as the protocol source and results output. <br /><br />Additional configuration for the <b>TabSINT Server</b> and <b>Gitlab</b> will become active below this box when a server is selected"
+    "Choose the location to use as the protocol source and results output. <br /><br />Additional configuration for the <b>TabSINT Server</b> and <b>Gitlab</b> will become active below this box when a server is selected"
   );
 
   protocolTablePopover = this.translate.instant(
