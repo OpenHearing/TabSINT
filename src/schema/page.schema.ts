@@ -7,7 +7,7 @@ import { PageDefinition } from "../app/interfaces/page-definition.interface";
 import { chaWavFileSchema } from "./definitions/cha-wavfile.schema";
 import { textBoxResultViewerSchema, textBoxSchema } from "./response-areas/textbox.schema";
 import { multipleChoiceSchema } from "./response-areas/multiple-choice.schema";
-import { manualAudiometrySchema } from "./response-areas/manual-audiometry.schema";
+import { manualAudiometryResultViewerSchema, manualAudiometrySchema } from "./response-areas/manual-audiometry.schema";
 
 export const pageSchema: JSONSchemaType<PageDefinition> = {
     $id: "page_base",
@@ -79,7 +79,8 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
           textBoxSchema,
           textBoxResultViewerSchema,
           multipleChoiceSchema,
-          manualAudiometrySchema
+          manualAudiometrySchema,
+          manualAudiometryResultViewerSchema
         ], 
         required: ["type"],
         nullable: true

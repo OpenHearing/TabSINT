@@ -3,18 +3,11 @@ import { Subscription } from 'rxjs';
 
 import { ResultsInterface } from '../../../../models/results/results.interface';
 import { PageInterface } from '../../../../models/page/page.interface';
-import { TextBoxResultViewerInterface } from './textbox-result-viewer.interface';
 
 import { ResultsModel } from '../../../../models/results/results-model.service';
 import { PageModel } from '../../../../models/page/page.service';
-
-interface Response {
-  title?: string;
-  questionMainText?: string;
-  questionSubText?: string;
-  instructionText?: string;
-  response?: string;
-}
+import { TextBoxResultViewerInterface } from './textbox-result-viewer.interface';
+import { ResultViewResponsesInterface } from '../../../../interfaces/result-view-responses.interface';
 
 @Component({
   selector: 'textbox-result-viewer-view',
@@ -24,7 +17,7 @@ interface Response {
 export class TextboxResultViewerComponent implements OnInit, OnDestroy {
   currentPage: PageInterface;
   results: ResultsInterface;
-  responses?: Response[];
+  responses?: ResultViewResponsesInterface[];
   pageSubscription: Subscription | undefined;
 
   constructor (
