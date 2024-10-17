@@ -31,6 +31,7 @@ export class DevicesService {
         this.devicesModel.deviceResponseSubject.subscribe( (deviceResponse: DeviceResponse) => {
             if (deviceResponse.msg.includes("serialNumber")) {
                 let parsedMsg = JSON.parse(deviceResponse.msg);
+                logger.debug("requestId Response: "+JSON.stringify(parsedMsg));
                 this.deviceUtil.updateDeviceInfo(deviceResponse.tabsintId,parsedMsg[1]);
             }
         });
