@@ -159,6 +159,7 @@ export class AudiogramComponent implements OnInit{
         (yScale(data[k + 1].threshold) - yScale(data[k].threshold)) /
           (xScale(data[k + 1].frequency*1000) - xScale(data[k].frequency*1000))
       );
+      
       if (data[k].channel === "left" && data[k + 1].channel === "left") {
         if (data[k].resultType === "Threshold" && data[k + 1].resultType === "Threshold") {
           dline

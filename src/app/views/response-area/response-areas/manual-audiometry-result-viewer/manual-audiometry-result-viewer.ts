@@ -10,9 +10,13 @@ import { ResultsModel } from "../../../../models/results/results-model.service";
 import { Logger } from "../../../../utilities/logger.service";
 
 interface ResponsesInterface {
-    frequencies: number[],
-    leftThresholds: (number|null)[],
-    rightThresholds: (number|null)[],
+    title?: string;
+    questionMainText?: string;
+    questionSubText?: string;
+    instructionText?: string;
+    frequencies: number[];
+    leftThresholds: (number|null)[];
+    rightThresholds: (number|null)[];
 }
 
 interface AudiogramDataInterface {
@@ -37,13 +41,13 @@ export class ManualAudiometryResultViewerComponent implements OnInit, OnDestroy 
         leftThresholds: [null, null, null],
         rightThresholds: [null, null, null],
     }]
-    audiogramData: AudiogramDataInterface = {
+    audiogramData: AudiogramDataInterface[] = [{
         frequencies: [1000],
         thresholds: [null],
         channels: [''],
         resultTypes: [''],
         masking: [false]
-    };
+    }];
     pageSubscription: Subscription | undefined;
 
     constructor(
@@ -61,8 +65,13 @@ export class ManualAudiometryResultViewerComponent implements OnInit, OnDestroy 
                 const updatedAudiometryResponseAreaResultViewer = updatedPage?.responseArea as ManualAudiometryResultViewerInterface;
 
                 this.responses = this.results.currentExam.responses
-                    .filter((response: { pageId: string; }) => updatedAudiometryResponseAreaResultViewer.pageIdsToDisplay.includes(response.pageId))
+                    .filter((response: { pageId: string; }) => 
+                        updatedAudiometryResponseAreaResultViewer.pageIdsToDisplay.includes(response.pageId))
                     .map( (response: any) => ({
+                        title: response.page.title,
+                        questionMainText: response.page.questionMainText,
+                        questionSubText: response.page.questionSubText,
+                        instructionText: response.page.instructionText,
                         frequencies: response.page.responseArea.frequencies,
                         leftThresholds: response.response.leftThresholds,
                         rightThresholds: response.response.rightThresholds,
@@ -91,7 +100,7 @@ export class ManualAudiometryResultViewerComponent implements OnInit, OnDestroy 
                             resultTypes,
                             masking,
                         };
-                    })[0];
+                    });
             }
         });
     }
