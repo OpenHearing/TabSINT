@@ -1,0 +1,125 @@
+{
+  "title": "TabSINT Demonstration",
+  "subtitle": "Textbox, Manual Audiometry, and Calibration Response Areas.",
+  "instructionText": "Choose the exam to demonstrate, then view results.",
+  "hideProgressBar": true,
+  "navMenu":[
+    {
+      "text": "Back to Main Menu",
+      "target": {
+        "reference": "MainMenu"
+      },
+      "returnHereAfterward": false
+    }
+  ],
+  "pages": [
+    {
+      "protocolId":"MainMenu",
+      "title":"Main Menu",
+      "pages":[
+        {
+          "id":"choose",
+          "title":"Response Area Testing",
+          "questionMainText":"Please select a response area to demonstrate:",
+          "responseArea":{
+            "type":"multipleChoiceResponseArea",
+            "choices":[
+              {
+                "id":"Text Box"
+              },
+              {
+                "id":"Manual Audiometry"
+              },
+              {
+                "id":"End All"
+              }
+            ]
+          }, 
+          "followOns":[
+            {
+              "conditional":"result.response=='Text Box'",
+              "target":{
+                "reference":"TextBox"
+              } 
+            },
+            {
+              "conditional":"result.response=='Manual Audiometry'",
+              "target":{
+                "reference":"ManualAudiometry"
+              } 
+            },
+            {
+              "conditional":"result.response=='End All'",
+              "target":{
+                "reference":"@END_ALL"
+              } 
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "subProtocols":[
+    {
+      "protocolId": "TextBox",
+      "pages":[
+        {
+          "id": "textbox_001",
+          "title": "Subject ID",
+          "instructionText": "Enter the subject ID",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "textbox_001_result_viewer",
+          "title": "Text Box Result Viewer",
+          "instructionText": "Test Case 001 Result Viewer",
+          "responseArea": {
+            "type": "textboxResponseAreaResultViewer",
+            "pageIdsToDisplay": ["textbox_001"]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "ManualAudiometry",
+      "pages":[
+        {
+          "id": "audiometry_001",
+          "title": "Manual Audiometry Test",
+          "instructionText": "Test manual audiometry response area",
+          "responseArea": {
+            "type": "manualAudiometryResponseArea",
+            "tabsintId": "1",
+            "maxOutputLevel": 110,
+            "minOutputLevel": -10,
+            "currentDbSpl": 50,
+            "frequencies": [0.5, 1, 2, 4, 8],
+            "adjustments": [15, -18, 5, 3],
+            "exportToCSV": false,
+            "responseRequired":false
+          }
+        }, 
+        {
+          "id": "audiometry_001_result_viewer",
+          "title": "Audiometry Result Viewer",
+          "instructionText": "View manual audiometry results",
+          "responseArea": {
+            "type": "manualAudiometryResponseAreaResultViewer",
+            "pageIdsToDisplay": ["audiometry_001"]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference":"MainMenu"
+        }
+      ]
+    }
+  ]
+}

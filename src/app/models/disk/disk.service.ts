@@ -24,11 +24,11 @@ export class DiskModel {
         audhere: '',
         autoUpload: true,
         availableProtocolsMeta: {
-            "Creare Audiometry": {
+            PurdueDemo: {
                 ...partialMetaDefaults,
                 creator: "Creare",
-                name: "Creare Audiometry",
-                path: "protocols/creare-audiometry"
+                name: "Purdue Demo",
+                path: "protocols/purdue-demo"
             },
             develop: {
                 ...partialMetaDefaults,

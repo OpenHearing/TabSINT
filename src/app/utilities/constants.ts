@@ -60,10 +60,10 @@ export const BluetoothType = {
   "USB": "USB Host"
 };
 
-import CreareAudiometry from '../../protocols/creare-audiometry/protocol.json';
+import PurdueDemo from '../../protocols/purdue-demo/protocol.json';
 import develop from '../../protocols/develop/protocol.json';
 export const DeveloperProtocols: any = {
-    "Creare Audiometry": CreareAudiometry,
+    "Purdue Demo": PurdueDemo,
     "develop" : develop
 }
 

@@ -6,7 +6,8 @@ import { PageInterface } from '../../../../models/page/page.interface';
 
 import { ResultsModel } from '../../../../models/results/results-model.service';
 import { PageModel } from '../../../../models/page/page.service';
-import { ResultViewerResponseAreaInterface, ResultViewResponsesInterface } from '../../../../interfaces/result-view-responses.interface';
+import { TextBoxResultViewerInterface } from './textbox-result-viewer.interface';
+import { ResultViewResponsesInterface } from '../../../../interfaces/result-view-responses.interface';
 
 @Component({
   selector: 'textbox-result-viewer-view',
@@ -31,7 +32,7 @@ export class TextboxResultViewerComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
       if (updatedPage.responseArea?.type === "textboxResponseAreaResultViewer") {
-        const textboxResponseAreaResultViewer = updatedPage.responseArea as ResultViewerResponseAreaInterface;
+        const textboxResponseAreaResultViewer = updatedPage.responseArea as TextBoxResultViewerInterface;
         this.responses = this.results.currentExam.responses
           .filter((response: { pageId: string; }) => textboxResponseAreaResultViewer.pageIdsToDisplay.includes(response.pageId))
           .map( (response: any) => ({
