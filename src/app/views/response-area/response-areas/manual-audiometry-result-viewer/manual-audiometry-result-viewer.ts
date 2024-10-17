@@ -3,29 +3,12 @@ import { Subscription } from "rxjs";
 
 import { PageInterface } from "../../../../models/page/page.interface";
 import { ResultsInterface } from "../../../../models/results/results.interface";
-import { ManualAudiometryResultViewerInterface } from "./manual-audiometry-result-viewer.interface";
 
 import { PageModel } from "../../../../models/page/page.service";
 import { ResultsModel } from "../../../../models/results/results-model.service";
 import { Logger } from "../../../../utilities/logger.service";
-
-interface ResponsesInterface {
-    title?: string;
-    questionMainText?: string;
-    questionSubText?: string;
-    instructionText?: string;
-    frequencies: number[];
-    leftThresholds: (number|null)[];
-    rightThresholds: (number|null)[];
-}
-
-interface AudiogramDataInterface {
-    frequencies: number[],
-    thresholds: (number|null)[],
-    channels: string[],
-    resultTypes: string[],
-    masking: boolean[]
-  }
+import { AudiogramDataStructInterface } from "../../../../interfaces/audiogram.interface";
+import { ResultViewerResponseAreaInterface, ResultViewResponsesInterface } from "../../../../interfaces/result-view-responses.interface";
 
 @Component({
     selector: 'manual-audiometry-result-viewer-view',
@@ -36,12 +19,8 @@ interface AudiogramDataInterface {
 export class ManualAudiometryResultViewerComponent implements OnInit, OnDestroy {
     currentPage: PageInterface;
     results: ResultsInterface;
-    responses: ResponsesInterface[] = [{
-        frequencies: [1, 2, 4],
-        leftThresholds: [null, null, null],
-        rightThresholds: [null, null, null],
-    }]
-    audiogramData: AudiogramDataInterface[] = [{
+    responses: ResultViewResponsesInterface[] = [{}];
+    audiogramData: AudiogramDataStructInterface[] = [{
         frequencies: [1000],
         thresholds: [null],
         channels: [''],
@@ -62,24 +41,21 @@ export class ManualAudiometryResultViewerComponent implements OnInit, OnDestroy 
     ngOnInit() {
         this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
             if (updatedPage?.responseArea?.type == "manualAudiometryResponseAreaResultViewer") {
-                const updatedAudiometryResponseAreaResultViewer = updatedPage?.responseArea as ManualAudiometryResultViewerInterface;
+                const updatedAudiometryResponseAreaResultViewer = updatedPage?.responseArea as ResultViewerResponseAreaInterface;
 
-                this.responses = this.results.currentExam.responses
+                let responsesToDisplay = this.results.currentExam.responses
                     .filter((response: { pageId: string; }) => 
-                        updatedAudiometryResponseAreaResultViewer.pageIdsToDisplay.includes(response.pageId))
+                        updatedAudiometryResponseAreaResultViewer.pageIdsToDisplay.includes(response.pageId));
+
+                this.responses = responsesToDisplay
                     .map( (response: any) => ({
                         title: response.page.title,
                         questionMainText: response.page.questionMainText,
                         questionSubText: response.page.questionSubText,
-                        instructionText: response.page.instructionText,
-                        frequencies: response.page.responseArea.frequencies,
-                        leftThresholds: response.response.leftThresholds,
-                        rightThresholds: response.response.rightThresholds,
+                        instructionText: response.page.instructionText
                 }));
 
-                this.audiogramData = this.results.currentExam.responses
-                    .filter((response: { pageId: string; }) => 
-                        updatedAudiometryResponseAreaResultViewer.pageIdsToDisplay.includes(response.pageId))
+                this.audiogramData = responsesToDisplay
                     .map( (response: any) => {
 
                         const leftThresholds = response.response.leftThresholds || [];

@@ -3,18 +3,10 @@ import { Subscription } from 'rxjs';
 
 import { ResultsInterface } from '../../../../models/results/results.interface';
 import { PageInterface } from '../../../../models/page/page.interface';
-import { TextBoxResultViewerInterface } from './textbox-result-viewer.interface';
 
 import { ResultsModel } from '../../../../models/results/results-model.service';
 import { PageModel } from '../../../../models/page/page.service';
-
-interface Response {
-  title?: string;
-  questionMainText?: string;
-  questionSubText?: string;
-  instructionText?: string;
-  response?: string;
-}
+import { ResultViewerResponseAreaInterface, ResultViewResponsesInterface } from '../../../../interfaces/result-view-responses.interface';
 
 @Component({
   selector: 'textbox-result-viewer-view',
@@ -24,7 +16,7 @@ interface Response {
 export class TextboxResultViewerComponent implements OnInit, OnDestroy {
   currentPage: PageInterface;
   results: ResultsInterface;
-  responses?: Response[];
+  responses?: ResultViewResponsesInterface[];
   pageSubscription: Subscription | undefined;
 
   constructor (
@@ -39,7 +31,7 @@ export class TextboxResultViewerComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
       if (updatedPage.responseArea?.type === "textboxResponseAreaResultViewer") {
-        const textboxResponseAreaResultViewer = updatedPage.responseArea as TextBoxResultViewerInterface;
+        const textboxResponseAreaResultViewer = updatedPage.responseArea as ResultViewerResponseAreaInterface;
         this.responses = this.results.currentExam.responses
           .filter((response: { pageId: string; }) => textboxResponseAreaResultViewer.pageIdsToDisplay.includes(response.pageId))
           .map( (response: any) => ({

@@ -1,6 +1,5 @@
 <div *ngFor="let aD of audiogramData; let i=index">
 
-  
   <h2 [textContent]="responses[i].questionMainText" *ngIf="responses[i].questionMainText"></h2>
   <p class="subtext pad-top" *ngIf="responses[i].questionSubText">{{responses[i].questionSubText}}</p>
   <p class="instructions" *ngIf="responses[i].instructionText">{{responses[i].instructionText}}</p>    
@@ -16,13 +15,21 @@
         <thead>
           <tr>
             <th>Frequency (kHz)</th>
-            <th *ngFor="let freq of responses[i].frequencies">{{ freq }}</th>
+            <ng-container *ngFor="let freq of aD.frequencies; let k=index">
+              <th *ngIf="aD.channels[k]==='left'">
+                {{ freq }}
+              </th>
+            </ng-container>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td>Threshold (dB SPL)</td>
-            <td *ngFor="let threshold of responses[i].leftThresholds">{{ threshold || '' }}</td>
+            <ng-container  *ngFor="let threshold of aD.thresholds; let k=index">
+              <td *ngIf="aD.channels[k]==='left'">
+                {{ threshold || '' }}
+              </td>
+            </ng-container>
           </tr>
         </tbody>
       </table>
@@ -35,13 +42,22 @@
         <thead>
           <tr>
             <th>Frequency (kHz)</th>
-            <th *ngFor="let freq of responses[i].frequencies">{{ freq }}</th>
+            <ng-container *ngFor="let freq of aD.frequencies; let k=index">
+              <th *ngIf="aD.channels[k]==='right'">
+                {{ freq }}
+              </th>
+            </ng-container>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td>Threshold (dB SPL)</td>
-            <td *ngFor="let threshold of responses[i].rightThresholds">{{ threshold || '' }}</td>
+            
+            <ng-container  *ngFor="let threshold of aD.thresholds; let k=index"> 
+              <td *ngIf="aD.channels[k]==='right'">
+                {{ threshold || '' }}
+              </td>
+            </ng-container>
           </tr>
         </tbody>
       </table>
