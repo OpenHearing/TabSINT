@@ -1,14 +1,14 @@
-import { CalibrationExamInterface } from "../models/calibration-exam/calibration-exam.interface";
+import { CalibrationExamInterface } from "../views/response-area/calibration-exam/calibration-exam-component/calibration-exam.interface";
 import { PageTypes } from "../types/custom-types";
 import { ManualAudiometryResultViewerInterface } from "../views/response-area/response-areas/manual-audiometry-result-viewer/manual-audiometry-result-viewer.interface";
 import { ManualAudiometryInterface } from "../views/response-area/response-areas/manual-audiometry/manual-audiometry.interface";
-import { MultipleChoiceInterface} from "../views/response-area/response-areas/multiple-choice/multiple-choice.interface";
+import { MultipleChoiceInterface } from "../views/response-area/response-areas/multiple-choice/multiple-choice.interface";
 import { TextBoxResultViewerInterface } from "../views/response-area/response-areas/textbox-result-viewer/textbox-result-viewer.interface";
 import { TextBoxInterface } from "../views/response-area/response-areas/textbox/textbox.interface";
 
 export interface PageDefinition {
     id: string;
-    headset?: "VicFirth" | "Vic Firth S2" | "HDA200" | "WAHTS" | "Audiometer" | "EPHD1" ;
+    headset?: "VicFirth" | "Vic Firth S2" | "HDA200" | "WAHTS" | "Audiometer" | "EPHD1";
     skipIf?: string;
     hideProgressBar?: boolean;
     autoSubmitDelay?: number;
@@ -32,13 +32,13 @@ export interface PageDefinition {
     followOns?: FollowOnInterface[];
     setFlags?: SetFlagInterface[];
 }
-  
+
 export interface NavMenuInterface {
     text: string;
     target: PageDefinition | ProtocolReferenceInterface;
     returnHereAfterward: boolean;
 }
-  
+
 export interface RepeatPageInterface {
     nRepeats: number;
     repeatIf?: string;
@@ -99,5 +99,5 @@ export interface CommonResponseAreaInterface {
 
 export type ResponseArea =
     TextBoxInterface | TextBoxResultViewerInterface |
-    MultipleChoiceInterface | ManualAudiometryInterface | CalibrationExamInterface  |
+    MultipleChoiceInterface | ManualAudiometryInterface | CalibrationExamInterface |
     ManualAudiometryResultViewerInterface;

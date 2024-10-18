@@ -1,11 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
-
-import { ResultsInterface } from '../../models/results/results.interface';
-import { PageInterface } from '../../models/page/page.interface';
-import { ExamResponse } from '../calibration-exam/calibration-exam.component';
-import { ResultsModel } from '../../models/results/results-model.service';
-import { PageModel } from '../../models/page/page.service';
+import { Component, OnInit } from '@angular/core';
+import { ExamResponse } from '../calibration-exam-component/calibration-exam.component';
+import { ResultsModel } from '../../../../models/results/results-model.service';
 
 interface CalibrationResults {
   leftEar: any;
@@ -20,12 +15,12 @@ interface CalibrationResults {
 export class CalibrationResultsViewerComponent implements OnInit {
   results: CalibrationResults | undefined;
 
-  constructor(private readonly resultsModel: ResultsModel) {}
+  constructor(private readonly resultsModel: ResultsModel) { }
 
   ngOnInit(): void {
     console.log(this.resultsModel.getResults().currentExam.responses)
     const calibrationResult = this.resultsModel.getResults().currentExam.responses
-      .filter((response:ExamResponse ) => response.responseArea === 'calibrationExam');
+      .filter((response: ExamResponse) => response.responseArea === 'calibrationExam');
     if (calibrationResult.length > 0) {
       this.results = JSON.parse(calibrationResult[0].response) as CalibrationResults;
     }

@@ -1,5 +1,5 @@
 import { JSONSchemaType } from "ajv";
-import { CalibrationExamInterface } from "../../app/models/calibration-exam/calibration-exam.interface";
+import { CalibrationExamInterface } from "../../app/views/response-area/calibration-exam/calibration-exam-component/calibration-exam.interface";
 
 
 export const calibrationExamSchema: JSONSchemaType<CalibrationExamInterface> = {
@@ -23,5 +23,5 @@ export const calibrationExamSchema: JSONSchemaType<CalibrationExamInterface> = {
         },
     },
     required: ["type"],
-    additionalProperties: false 
+    additionalProperties: false
 };

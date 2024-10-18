@@ -1,18 +1,17 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { PageModel } from "../../models/page/page.service";
+import { PageModel } from "../../../../models/page/page.service";
 import { Subscription } from 'rxjs';
-import { CalibrationExamInterface } from '../../models/calibration-exam/calibration-exam.interface';
-import { PageInterface } from "../../models/page/page.interface";
-import { DevicesService } from '../../controllers/devices.service';
-import { DevicesModel } from '../../models/devices/devices-model.service';
-import { DeviceUtil } from '../../utilities/device-utility';
-import { ConnectedDevice } from '../../interfaces/connected-device.interface';
-import { Logger } from '../../utilities/logger.service';
-import { DeviceResponse } from '../../models/devices/devices.interface';
-import { ResultsService } from '../../controllers/results.service';
-import { ContentObserver } from '@angular/cdk/observers';
-import { ResultsModel } from '../../models/results/results-model.service';
-import { ResultsInterface } from '../../models/results/results.interface';
+import { CalibrationExamInterface } from './calibration-exam.interface';
+import { PageInterface } from "../../../../models/page/page.interface";
+import { DevicesService } from '../../../../controllers/devices.service';
+import { DevicesModel } from '../../../../models/devices/devices-model.service';
+import { DeviceUtil } from '../../../../utilities/device-utility';
+import { ConnectedDevice } from '../../../../interfaces/connected-device.interface';
+import { Logger } from '../../../../utilities/logger.service';
+import { DeviceResponse } from '../../../../models/devices/devices.interface';
+import { ResultsService } from '../../../../controllers/results.service';
+import { ResultsModel } from '../../../../models/results/results-model.service';
+import { ResultsInterface } from '../../../../models/results/results.interface';
 
 export interface EarData {
   calFactor: number;
@@ -40,8 +39,8 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   targetLevel: number = 0;
   calFactor: number = -40;
   pageSubscription: Subscription | undefined;
-  deviceSubscription: Subscription|undefined;
-  device: ConnectedDevice|undefined;
+  deviceSubscription: Subscription | undefined;
+  device: ConnectedDevice | undefined;
   earCup: string = 'Left';
   isPlaying: boolean = false;
   leftEarData: Record<number, EarData> = {};
@@ -52,9 +51,9 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   constructor(private readonly pageModel: PageModel,
     private readonly devicesService: DevicesService,
     private readonly devicesModel: DevicesModel,
-    private readonly deviceUtil: DeviceUtil,private readonly logger: Logger,private readonly resultsService: ResultsService,private readonly resultsModel: ResultsModel,) {
-      this.results = this.resultsModel.getResults()
-    }
+    private readonly deviceUtil: DeviceUtil, private readonly logger: Logger, private readonly resultsService: ResultsService, private readonly resultsModel: ResultsModel,) {
+    this.results = this.resultsModel.getResults()
+  }
 
   ngOnInit(): void {
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
@@ -67,17 +66,17 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
         this.initializeEarData();
         this.showResults = calibrationResponse.showResults ?? true;
         this.device = this.deviceUtil.getDeviceFromTabsintId(calibrationResponse.tabsintId ?? "1");
-                    if (this.device) {
-                        await this.devicesService.queueExam(this.device,"HNCalibration",{"OutputChannel": this.earCup=="Left" ? "HPL0" : "HPR0"});
-                    } else {
-                        this.logger.error("Error setting up HNCalibration exam");
-                    }
+        if (this.device) {
+          await this.devicesService.queueExam(this.device, "HNCalibration", { "OutputChannel": this.earCup == "Left" ? "HPL0" : "HPR0" });
+        } else {
+          this.logger.error("Error setting up HNCalibration exam");
+        }
       }
     });
     this.deviceSubscription = this.devicesModel.deviceResponseSubject.subscribe((msg: DeviceResponse) => {
-      console.log("device msg:",JSON.stringify(msg));
-  });
-  this.results.currentExam.responses = [];
+      console.log("device msg:", JSON.stringify(msg));
+    });
+    this.results.currentExam.responses = [];
   }
 
   ngOnDestroy(): void {
@@ -101,11 +100,11 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     this.isPlaying = !this.isPlaying;
     if (this.isPlaying) {
       if (this.currentStep === 'max-output') {
-          this.sendMaxOutputTone();
+        this.sendMaxOutputTone();
       } else {
-          this.playTone();
+        this.playTone();
       }
-  } else {
+    } else {
       this.stopTone();
     }
   }
@@ -128,12 +127,12 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       this.handleNextEarOrFinish();
     }
     this.updateFrequencyAndTargetLevel()
-    if (this.isPlaying && this.currentStep=='max-output') {
+    if (this.isPlaying && this.currentStep == 'max-output') {
       this.sendMaxOutputTone();
-  }
-  if (this.isPlaying && this.currentStep=="calibration"){
-    this.playTone();
-  }
+    }
+    if (this.isPlaying && this.currentStep == "calibration") {
+      this.playTone();
+    }
   }
 
   async handleNextEarOrFinish(): Promise<void> {
@@ -147,11 +146,11 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       this.isPlaying = false
       this.stopTone()
       await this.devicesService.abortExams(this.device!)
-      await this.devicesService.queueExam(this.device!, "HNCalibration",{"OutputChannel": this.earCup=="Left" ? "HPL0" : "HPR0"})
+      await this.devicesService.queueExam(this.device!, "HNCalibration", { "OutputChannel": this.earCup == "Left" ? "HPL0" : "HPR0" })
     } else {
       this.currentStep = 'finished'
       this.writeCalibrationResults();
-      this.saveResults(); 
+      this.saveResults();
     }
   }
 
@@ -162,14 +161,14 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
 
   private initializeEarData(): void {
     this.frequencies.forEach(freq => {
-      this.leftEarData[freq] = { calFactor: 0, measurement:'',maxOutput: '' };
-      this.rightEarData[freq] = { calFactor: 0, measurement:'',maxOutput: '' };
+      this.leftEarData[freq] = { calFactor: 0, measurement: '', maxOutput: '' };
+      this.rightEarData[freq] = { calFactor: 0, measurement: '', maxOutput: '' };
     });
   }
 
   updateCalibrationData(frequency: number, calFactor: number | null, measurement: number | null = null, maxOutput: number | null = null): void {
     const currentEarData = this.earCup === 'Left' ? this.leftEarData : this.rightEarData;
-    if (calFactor!==null){
+    if (calFactor !== null) {
       currentEarData[frequency].calFactor = calFactor;
     }
 
@@ -190,12 +189,12 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   playTone() {
     const enableOutput = this.isPlaying
     let examProperties = {
-        "F": this.currentFrequency,
-        "RequestedLevel": this.calFactor,
-        EnableOutput: enableOutput
+      "F": this.currentFrequency,
+      "RequestedLevel": this.calFactor,
+      EnableOutput: enableOutput
     };
     if (this.device) {
-        this.devicesService.examSubmission(this.device,examProperties);
+      this.devicesService.examSubmission(this.device, examProperties);
     }
   }
 
@@ -203,15 +202,15 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     const measuredLevel = this.getMeasuredLevelForFrequency(this.currentFrequency);
     const enableOutput = this.isPlaying
     const examProperties = {
-        "F": this.currentFrequency,
-        "RequestedLevel": 0,
-        "EnableOutput": enableOutput,
-        "MeasuredLevel": measuredLevel,
-        "Mode": "MaximumOutputLevel"
+      "F": this.currentFrequency,
+      "RequestedLevel": 0,
+      "EnableOutput": enableOutput,
+      "MeasuredLevel": measuredLevel,
+      "Mode": "MaximumOutputLevel"
     };
 
     if (this.device) {
-        this.devicesService.examSubmission(this.device, examProperties);
+      this.devicesService.examSubmission(this.device, examProperties);
     }
   }
 
@@ -224,10 +223,10 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       "EnableOutput": enableOutput,
       "MeasuredLevel": measuredLevel,
       "Mode": "CalibrationFactor"
-  };
-  if (this.device) {
-    this.devicesService.examSubmission(this.device, examProperties);
-  }
+    };
+    if (this.device) {
+      this.devicesService.examSubmission(this.device, examProperties);
+    }
   }
 
   getMeasuredLevelForFrequency(currentFrequency: number) {
@@ -243,7 +242,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   }
 
   handleMeasurementUpdate(measurement: number): void {
-    this.updateCalibrationData(this.currentFrequency, this.calFactor, measurement,null);
+    this.updateCalibrationData(this.currentFrequency, this.calFactor, measurement, null);
   }
 
   handleMaxOutputUpdate(maxOutput: number): void {
@@ -260,17 +259,17 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       response: JSON.stringify(calibrationResults),
       responseArea: 'calibrationExam'
     };
-  
+
     this.results.currentExam.responses.push(newResponse);
   }
 
   writeCalibrationResults(): void {
     const calibrationData = {
-        "WriteCalibration": true
+      "WriteCalibration": true
     };
 
     if (this.device) {
-        this.devicesService.examSubmission(this.device, calibrationData);
+      this.devicesService.examSubmission(this.device, calibrationData);
     }
-}
+  }
 }
