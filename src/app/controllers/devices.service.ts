@@ -121,7 +121,7 @@ export class DevicesService {
         }
     }
 
-    async examSubmission(device: ConnectedDevice, examProperties: Object) {
+    async examSubmission(device: ConnectedDevice, examProperties: object) {
         if (isTympanDevice(device)) {
             let msgId = device.msgId.toString();
             await this.tympanService.examSubmission(device.deviceId,msgId,examProperties);

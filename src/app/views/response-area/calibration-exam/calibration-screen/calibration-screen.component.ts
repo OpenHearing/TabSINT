@@ -14,6 +14,7 @@ export class CalibrationScreenComponent {
   @Output() calFactorAdjusted = new EventEmitter<number>();
   @Output() nextStep = new EventEmitter<void>();
   @Output() togglePlay = new EventEmitter<void>();
+  
   adjustCalFactor(amount: number): void {
     this.calFactorAdjusted.emit(amount);
   }

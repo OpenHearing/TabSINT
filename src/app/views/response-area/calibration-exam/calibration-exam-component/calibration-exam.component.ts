@@ -51,7 +51,11 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   constructor(private readonly pageModel: PageModel,
     private readonly devicesService: DevicesService,
     private readonly devicesModel: DevicesModel,
-    private readonly deviceUtil: DeviceUtil, private readonly logger: Logger, private readonly resultsService: ResultsService, private readonly resultsModel: ResultsModel,) {
+    private readonly deviceUtil: DeviceUtil, 
+    private readonly logger: Logger, 
+    private readonly resultsService: ResultsService, 
+    private readonly resultsModel: ResultsModel
+  ) {
     this.results = this.resultsModel.getResults()
   }
 
