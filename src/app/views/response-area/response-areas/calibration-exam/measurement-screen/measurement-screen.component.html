@@ -1,0 +1,27 @@
+<div class="measurement-container">
+  <h2 class="measurement-title">Measurement Screen</h2>
+  
+  <div class="measurement-info">
+    <p class="info-item">Current Frequency: {{ currentFrequency }} Hz</p>
+    <p class="info-item">Target Level: {{ targetLevel }} dB</p>
+  </div>
+  
+  <div class="measurement-box">
+    <label for="measurementInput" class="measured-value-label">Flat Plate Measured Value:</label>
+    <div class="input-group">
+      <input id="measurementInput"
+             type="number"
+             [ngModel]="userInput"
+             (ngModelChange)="userInput = $event"
+             [ngClass]="{'input-error': showValidationError}"
+             class="measured-value-input"
+             step="0.1">
+      <span class="unit">dB SPL</span>
+    </div>
+    <div *ngIf="showValidationError" class="error-message">
+      Please enter a value before proceeding.
+    </div>
+  </div>
+  
+  <button class="next-button" (click)="next()">Next</button>
+</div>

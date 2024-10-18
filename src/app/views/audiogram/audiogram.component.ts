@@ -135,7 +135,7 @@ export class AudiogramComponent implements OnInit{
       .append('g')
       .attr('class', 'node')
       .attr('transform', d => {
-        const x = xScale(d!.frequency*1000);
+        const x = xScale(d!.frequency);
         const y = yScale(d!.threshold);
         return `translate(${x},${y})`;
       });
@@ -157,7 +157,7 @@ export class AudiogramComponent implements OnInit{
     for (let k = 0; k < data.length - 1; k++) {
       let theta = Math.atan(
         (yScale(data[k + 1].threshold) - yScale(data[k].threshold)) /
-          (xScale(data[k + 1].frequency*1000) - xScale(data[k].frequency*1000))
+          (xScale(data[k + 1].frequency) - xScale(data[k].frequency))
       );
       
       if (data[k].channel === "left" && data[k + 1].channel === "left") {
@@ -165,9 +165,9 @@ export class AudiogramComponent implements OnInit{
           dline
             .enter()
             .append("line")
-            .attr("x1", xScale(data[k].frequency*1000) + r * Math.cos(theta))
+            .attr("x1", xScale(data[k].frequency) + r * Math.cos(theta))
             .attr("y1", yScale(data[k].threshold) + r * Math.sin(theta))
-            .attr("x2", xScale(data[k + 1].frequency*1000) - r * Math.cos(theta))
+            .attr("x2", xScale(data[k + 1].frequency) - r * Math.cos(theta))
             .attr("y2", yScale(data[k + 1].threshold) - r * Math.sin(theta))
             .attr("stroke", colorMap(data[k]))
             .attr("stroke-width", strokeWidthMap);
@@ -177,9 +177,9 @@ export class AudiogramComponent implements OnInit{
           dline
             .enter()
             .append("line")
-            .attr("x1", xScale(data[k].frequency*1000) + r * Math.cos(theta))
+            .attr("x1", xScale(data[k].frequency) + r * Math.cos(theta))
             .attr("y1", yScale(data[k].threshold) + r * Math.sin(theta))
-            .attr("x2", xScale(data[k + 1].frequency*1000) - r * Math.cos(theta))
+            .attr("x2", xScale(data[k + 1].frequency) - r * Math.cos(theta))
             .attr("y2", yScale(data[k + 1].threshold) - r * Math.sin(theta))
             .attr("stroke", colorMap(data[k]))
             .attr("stroke-width", strokeWidthMap);

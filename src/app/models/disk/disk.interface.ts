@@ -47,7 +47,7 @@ export interface DiskInterface {
   pin: string,
   preventExports: boolean,
   preventUploads: boolean,
-  qrcodeConfig?: Object,
+  qrcodeConfig?: object,
   recordTestLocation?: boolean,
   reloadingBrowser: boolean,
   requireEncryptedResults: boolean,

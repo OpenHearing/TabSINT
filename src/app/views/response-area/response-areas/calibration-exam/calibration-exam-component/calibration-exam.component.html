@@ -1,0 +1,39 @@
+<div [ngSwitch]="currentStep">
+  <app-calibration-screen
+    *ngSwitchCase="'calibration'"
+    [currentFrequency]="currentFrequency"
+    [targetLevel]="targetLevel"
+    [calFactor]="calFactor"
+    [earCup]="earCup"
+    [isPlaying]="isPlaying"
+    (calFactorAdjusted)="adjustCalFactor($event)"
+    (nextStep)="nextStep()"
+    (togglePlay)="togglePlay()">
+  </app-calibration-screen>
+
+  <app-measurement-screen
+    *ngSwitchCase="'measurement'"
+    [currentFrequency]="currentFrequency"
+    [targetLevel]="targetLevel"
+    [isPlaying]="isPlaying"
+    (nextStep)="nextStep()"
+    (togglePlay)="togglePlay()"
+    (measurementUpdated)="handleMeasurementUpdate($event)">
+  </app-measurement-screen>
+
+  <app-max-output-screen
+    *ngSwitchCase="'max-output'"
+    [currentFrequency]="currentFrequency"
+    [targetLevel]="targetLevel"
+    [earCup]="earCup"
+    [isPlaying]="isPlaying"
+    (nextStep)="nextStep()"
+    (togglePlay)="togglePlay()"
+    (maxOutputUpdated)="handleMaxOutputUpdate($event)">
+  </app-max-output-screen>
+
+  <div *ngSwitchCase="'finished'">
+    <h3 *ngIf="!showResults" style="color: #0369ad;">Calibration Exam Finished!!</h3>
+    <app-calibration-results-viewer *ngIf="showResults"></app-calibration-results-viewer>
+  </div>
+</div>
