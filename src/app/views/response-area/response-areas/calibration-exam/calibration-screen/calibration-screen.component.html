@@ -1,0 +1,30 @@
+<div class="calibration-container">
+  <h1 class="calibration-title">Calibration for {{ currentFrequency }} Hz</h1>
+  
+  <div class="calibration-info">
+    <p class="info-item">Target Level: {{ targetLevel }} dB</p>
+    <p class="info-item">Ear Cup: {{ earCup }}</p>
+  </div>
+  
+  <div class="calibration-box">
+    <div class="cal-factor-container">
+      <p class="cal-factor-label">Cal Factor:</p>
+      <p class="cal-factor-value">{{ calFactor }} dB FS</p>
+    </div>
+    
+    <div class="button-container">
+      <button class="adjust-button" (click)="adjustCalFactor(3)">+3 dB</button>
+      <button class="adjust-button" (click)="adjustCalFactor(-3)">-3 dB</button>
+    </div>
+    <button class="play-pause-button" (click)="onTogglePlay()">
+      <svg *ngIf="!isPlaying" viewBox="0 0 24 24" class="play-icon">
+        <path d="M8 5v14l11-7z"/>
+      </svg>
+      <svg *ngIf="isPlaying" viewBox="0 0 24 24" class="pause-icon">
+        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+      </svg>
+    </button>
+  </div>
+  
+  <button class="next-button" (click)="next()">Next</button>
+</div>

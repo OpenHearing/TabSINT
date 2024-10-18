@@ -31,6 +31,7 @@ export class DevicesService {
         this.devicesModel.deviceResponseSubject.subscribe( (deviceResponse: DeviceResponse) => {
             if (deviceResponse.msg.includes("serialNumber")) {
                 let parsedMsg = JSON.parse(deviceResponse.msg);
+                logger.debug("requestId Response: "+JSON.stringify(parsedMsg));
                 this.deviceUtil.updateDeviceInfo(deviceResponse.tabsintId,parsedMsg[1]);
             }
         });
@@ -110,17 +111,17 @@ export class DevicesService {
      * @summary Starts an exam on the device
      * @models devices?
     */
-    async queueExam(device: ConnectedDevice, examType: string) {
+    async queueExam(device: ConnectedDevice, examType: string, examProperties: object) {
         if (isTympanDevice(device)) {
             let msgId = device.msgId.toString();
-            await this.tympanService.queueExam(device.deviceId,msgId,examType);
+            await this.tympanService.queueExam(device.deviceId, msgId, examType, examProperties);
             this.deviceUtil.incrementDeviceMsgId(device.deviceId);
         } else {
             this.logger.error("Unsupported device type: "+JSON.stringify(device.type));
         }
     }
 
-    async examSubmission(device: ConnectedDevice, examProperties: Object) {
+    async examSubmission(device: ConnectedDevice, examProperties: object) {
         if (isTympanDevice(device)) {
             let msgId = device.msgId.toString();
             await this.tympanService.examSubmission(device.deviceId,msgId,examProperties);

@@ -1,5 +1,4 @@
 <div class="audiometry-container">
-  <!-- Static Header Section -->
   <div class="header-section">
     <h2>Minimum Output Level = {{minOutputLevel}} dB HL and Maximum Output Level = {{maxOutputLevel}} dB HL</h2>
     <p>Use to verify GUI section</p>
@@ -13,7 +12,6 @@
     </select>
   </div>
 
-  <!-- Collapsible Presentation Level Section -->
   <div class="collapsible-section">
     <button class="collapsible-header" (click)="toggleSection('presentation')">
       Presentation Level <span class="arrow">▼</span>
@@ -22,7 +20,6 @@
       <div class="presentation-container">
         <p class="db-value">{{currentDbSpl}} dB SPL</p>
 
-        <!-- Dropdown for Left or Right ear -->
         <div class="ear-selection">
           <label for="ear">Select Ear</label>
           <select id="ear" [(ngModel)]="selectedEar">
@@ -31,14 +28,12 @@
           </select>
         </div>
 
-        <!-- Buttons to adjust dB -->
         <div class="adjustment-buttons">
           <button class="adjust-btn" *ngFor="let adjustment of adjustments" (click)="adjustDbSpl(adjustment)">
             {{ adjustment > 0 ? '+' + adjustment : adjustment }} dB {{ adjustment > 0 ? '↑' : '↓' }}
           </button>
         </div>
 
-        <!-- Play Tone and Record Threshold Buttons -->
         <div class="action-buttons">
           <button class="btn play-tone" (click)="playTone()">Play Tone</button>
           <button class="btn record-threshold" (click)="recordThreshold()">Record Threshold</button>
@@ -47,13 +42,11 @@
     </div>
   </div>
 
-  <!-- Collapsible Results Table Section -->
   <div class="collapsible-section">
     <button class="collapsible-header" (click)="toggleSection('results')">
       Results Table <span class="arrow">▼</span>
     </button>
     <div *ngIf="isResultsVisible" class="collapsible-content">
-      <!-- Left Ear Table -->
       <div class="ear-table left-ear">
         <h3 class="ear-title">Left</h3>
         <table class="results-table">
@@ -72,7 +65,6 @@
         </table>
       </div>
 
-      <!-- Right Ear Table -->
       <div class="ear-table right-ear">
         <h3 class="ear-title">Right</h3>
         <table class="results-table">
@@ -91,7 +83,6 @@
         </table>
       </div>
 
-      <!-- Legend Section -->
       <div class="legend">
         <p><strong>Legend:</strong></p>
         <p>DNC = Did not converge</p>

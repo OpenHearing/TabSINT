@@ -1,0 +1,39 @@
+<div class="max-output-container">
+  <h2 class="max-output-title">Max Output: {{ currentFrequency }} Hz</h2>
+  
+  <div class="max-output-info">
+    <p class="info-item">Frequency: {{ currentFrequency }} Hz</p>
+    <p class="info-item">Ear Cup: {{ earCup }}</p>
+  </div>
+  
+  <div class="instruction-text">
+    Press Play/Stop to start/stop the tone. Then enter the level reported by the flat plate.
+  </div>
+  
+  <div class="max-output-box">
+
+    <div class="input-group">
+      <label for="maxOutputInput" class="input-label">Flat Plate Measured Level:</label>
+      <input id="maxOutputInput" 
+             type="number" 
+             [(ngModel)]="maxOutputValue"
+             [ngClass]="{'input-error': showValidationError}" 
+             class="max-output-input" 
+             step="0.1">
+      <span class="unit">dB SPL</span>
+    </div>
+    <button class="play-pause-button" (click)="onTogglePlay()">
+      <svg *ngIf="!isPlaying" viewBox="0 0 24 24" class="play-icon">
+        <path d="M8 5v14l11-7z"/>
+      </svg>
+      <svg *ngIf="isPlaying" viewBox="0 0 24 24" class="pause-icon">
+        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+      </svg>
+    </button>
+    <div *ngIf="showValidationError" class="error-message">
+      Please enter a value before proceeding
+    </div>
+  </div>
+  
+  <button class="next-button" (click)="next()">Next</button>
+</div>

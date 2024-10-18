@@ -62,7 +62,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
-            if (updatedPage?.responseArea?.type == "manualAudiometryResponseArea") {
+            if (updatedPage?.responseArea?.type === "manualAudiometryResponseArea") {
                 const updatedAudiometryResponseArea = updatedPage?.responseArea as ManualAudiometryInterface;
 
                 if (updatedAudiometryResponseArea) {
@@ -78,7 +78,8 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
 
                     this.device = this.deviceUtil.getDeviceFromTabsintId(updatedAudiometryResponseArea.tabsintId ?? "1");
                     if (this.device) {
-                        await this.devicesService.queueExam(this.device,"ManualAudiometry");
+                        let examProperties = {};
+                        await this.devicesService.queueExam(this.device, "ManualAudiometry", examProperties);
                     } else {
                         this.logger.error("Error setting up Manual Audiometry exam");
                     }
@@ -100,11 +101,9 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     }
 
     onFrequencyChange(selectedFreq: number): void {
-        console.log("Selected Frequency:", selectedFreq);
         selectedFreq = Number(selectedFreq);
-        console.log(typeof(selectedFreq));
         this.currentFrequencyIndex = this.frequencies.indexOf(selectedFreq);
-        console.log("Updated Frequency Index:", this.currentFrequencyIndex);
+        this.selectedFrequency = this.frequencies[this.currentFrequencyIndex];
     }
 
     toggleSection(section: string): void {
@@ -128,10 +127,10 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         let examProperties = {
             "F": this.selectedFrequency,
             "Level": this.currentDbSpl,
-            "OutputChannel": this.selectedEar=="Left" ? "HPL0" : "HPR0"
+            "OutputChannel": this.selectedEar==="Left" ? "HPL0" : "HPR0"
         };
         if (this.device) {
-            this.devicesService.examSubmission(this.device,examProperties);
+            this.devicesService.examSubmission(this.device, examProperties);
         }
     }
 
