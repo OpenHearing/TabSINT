@@ -12,7 +12,7 @@ import { PageModel } from '../../models/page/page.service';
 })
 export class ExamTestingComponent implements OnInit, OnDestroy {
   pageSubscription: Subscription | undefined;
-  examTestingTitleClass?: Object;
+  examTestingTitleClass?: object;
   title?: string;
   questionMainText?: string;
   questionSubText?: string;
