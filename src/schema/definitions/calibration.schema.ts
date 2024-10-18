@@ -1,6 +1,6 @@
 import { JSONSchemaType } from "ajv";
 import { CalibrationInterface } from "../../app/interfaces/protocol-schema.interface";
-import { CalibrationResultViewerInterface } from "../../app/views/response-area/calibration-exam/calibration-exam-component/calibration-exam.interface";
+import { CalibrationResultViewerInterface } from "../../app/views/response-area/response-areas/calibration-exam/calibration-exam-component/calibration-exam.interface";
 
 export const calibrationSchema: JSONSchemaType<CalibrationInterface> = {
   type: "object",

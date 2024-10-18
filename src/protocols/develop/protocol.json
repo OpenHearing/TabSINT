@@ -130,9 +130,7 @@
             "minOutputLevel": -10,
             "currentDbSpl": 50,
             "frequencies": [500, 1000, 2000, 4000, 8000],
-            "adjustments": [15, -18, 5, 3],
-            "exportToCSV": false,
-            "responseRequired":false
+            "adjustments": [15, -18, 5, 3]
           }
         }, 
         {
@@ -161,8 +159,6 @@
             "type": "calibrationResponseArea",
             "frequencies": [500, 1000, 2000],
             "targetLevels": [60, 70, 80],
-            "exportToCSV": true,
-            "responseRequired": false,
             "showResults": true
           }
         },

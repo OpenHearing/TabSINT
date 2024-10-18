@@ -1,4 +1,4 @@
-import { CommonResponseAreaInterface } from "../../../../interfaces/page-definition.interface";
+import { CommonResponseAreaInterface } from "../../../../../interfaces/page-definition.interface";
 
 
 export interface CalibrationExamInterface extends CommonResponseAreaInterface {

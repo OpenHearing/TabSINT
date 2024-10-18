@@ -1,17 +1,17 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { PageModel } from "../../../../models/page/page.service";
+import { PageModel } from "../../../../../models/page/page.service";
 import { Subscription } from 'rxjs';
 import { CalibrationExamInterface } from './calibration-exam.interface';
-import { PageInterface } from "../../../../models/page/page.interface";
-import { DevicesService } from '../../../../controllers/devices.service';
-import { DevicesModel } from '../../../../models/devices/devices-model.service';
-import { DeviceUtil } from '../../../../utilities/device-utility';
-import { ConnectedDevice } from '../../../../interfaces/connected-device.interface';
-import { Logger } from '../../../../utilities/logger.service';
-import { DeviceResponse } from '../../../../models/devices/devices.interface';
-import { ResultsService } from '../../../../controllers/results.service';
-import { ResultsModel } from '../../../../models/results/results-model.service';
-import { ResultsInterface } from '../../../../models/results/results.interface';
+import { PageInterface } from "../../../../../models/page/page.interface";
+import { DevicesService } from '../../../../../controllers/devices.service';
+import { DevicesModel } from '../../../../../models/devices/devices-model.service';
+import { DeviceUtil } from '../../../../../utilities/device-utility';
+import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
+import { Logger } from '../../../../../utilities/logger.service';
+import { DeviceResponse } from '../../../../../models/devices/devices.interface';
+import { ResultsService } from '../../../../../controllers/results.service';
+import { ResultsModel } from '../../../../../models/results/results-model.service';
+import { ResultsInterface } from '../../../../../models/results/results.interface';
 
 export interface EarData {
   calFactor: number;
@@ -135,7 +135,15 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     }
   }
 
-  async handleNextEarOrFinish(): Promise<void> {
+  handleMeasurementUpdate(measurement: number): void {
+    this.updateCalibrationData(this.currentFrequency, this.calFactor, measurement, null);
+  }
+
+  handleMaxOutputUpdate(maxOutput: number): void {
+    this.updateCalibrationData(this.currentFrequency, null, null, maxOutput);
+  }
+
+  private async handleNextEarOrFinish(): Promise<void> {
     if (this.currentFrequencyIndex < this.frequencies.length - 1) {
       this.currentFrequencyIndex++;
     } else if (this.earCup === 'Left') {
@@ -154,7 +162,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     }
   }
 
-  updateFrequencyAndTargetLevel(): void {
+  private updateFrequencyAndTargetLevel(): void {
     this.currentFrequency = this.frequencies[this.currentFrequencyIndex];
     this.targetLevel = this.targetLevels[this.currentFrequencyIndex];
   }
@@ -166,7 +174,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     });
   }
 
-  updateCalibrationData(frequency: number, calFactor: number | null, measurement: number | null = null, maxOutput: number | null = null): void {
+  private updateCalibrationData(frequency: number, calFactor: number | null, measurement: number | null = null, maxOutput: number | null = null): void {
     const currentEarData = this.earCup === 'Left' ? this.leftEarData : this.rightEarData;
     if (calFactor !== null) {
       currentEarData[frequency].calFactor = calFactor;
@@ -181,12 +189,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     }
   }
 
-
-  isExamFinished(): boolean {
-    return this.currentStep === 'finished';
-  }
-
-  playTone() {
+  private playTone() {
     const enableOutput = this.isPlaying
     let examProperties = {
       "F": this.currentFrequency,
@@ -198,7 +201,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     }
   }
 
-  sendMaxOutputTone(): void {
+  private sendMaxOutputTone(): void {
     const measuredLevel = this.getMeasuredLevelForFrequency(this.currentFrequency);
     const enableOutput = this.isPlaying
     const examProperties = {
@@ -214,7 +217,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     }
   }
 
-  sendMeasurementLevel(): void {
+  private sendMeasurementLevel(): void {
     const measuredLevel = this.getMeasuredLevelForFrequency(this.currentFrequency);
     const enableOutput = this.isPlaying
     const examProperties = {
@@ -229,27 +232,19 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     }
   }
 
-  getMeasuredLevelForFrequency(currentFrequency: number) {
+  private getMeasuredLevelForFrequency(currentFrequency: number) {
     const currentEarData = this.earCup === 'Left' ? this.leftEarData : this.rightEarData;
     return currentEarData[currentFrequency].measurement
   }
 
 
-  stopTone() {
+  private stopTone() {
     if (this.device) {
       this.devicesService.examSubmission(this.device, { "EnableOutput": false });
     }
   }
 
-  handleMeasurementUpdate(measurement: number): void {
-    this.updateCalibrationData(this.currentFrequency, this.calFactor, measurement, null);
-  }
-
-  handleMaxOutputUpdate(maxOutput: number): void {
-    this.updateCalibrationData(this.currentFrequency, null, null, maxOutput);
-  }
-
-  saveResults(): void {
+  private saveResults(): void {
     const calibrationResults = {
       leftEar: this.leftEarData,
       rightEar: this.rightEarData
@@ -263,7 +258,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     this.results.currentExam.responses.push(newResponse);
   }
 
-  writeCalibrationResults(): void {
+  private writeCalibrationResults(): void {
     const calibrationData = {
       "WriteCalibration": true
     };

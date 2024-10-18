@@ -1,5 +1,5 @@
 import { JSONSchemaType } from "ajv";
-import { CalibrationExamInterface } from "../../app/views/response-area/calibration-exam/calibration-exam-component/calibration-exam.interface";
+import { CalibrationExamInterface } from "../../app/views/response-area/response-areas/calibration-exam/calibration-exam-component/calibration-exam.interface";
 
 
 export const calibrationExamSchema: JSONSchemaType<CalibrationExamInterface> = {

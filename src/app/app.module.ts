@@ -77,12 +77,12 @@ import { DeviceConfigComponent } from './views/config/config-views/device-config
 import { DeviceInfoComponent } from './views/config/config-views/device-info/device-info.component';
 import { ConnectedDevicesComponent } from './views/config/config-views/connected-devices/connected-devices.component';
 import { NewConnectionComponent } from './views/config/config-views/new-connection/new-connection.component';
-import { CalibrationExamComponent } from './views/response-area/calibration-exam/calibration-exam-component/calibration-exam.component';
-import { CalibrationScreenComponent } from './views/response-area/calibration-exam/calibration-screen/calibration-screen.component';
-import { MeasurementScreenComponent } from './views/response-area/calibration-exam/measurement-screen/measurement-screen.component';
-import { MaxOutputScreenComponent } from './views/response-area/calibration-exam/max-output-screen/max-output-screen.component';
+import { CalibrationExamComponent } from './views/response-area/response-areas/calibration-exam/calibration-exam-component/calibration-exam.component';
+import { CalibrationScreenComponent } from './views/response-area/response-areas/calibration-exam/calibration-screen/calibration-screen.component';
+import { MeasurementScreenComponent } from './views/response-area/response-areas/calibration-exam/measurement-screen/measurement-screen.component';
+import { MaxOutputScreenComponent } from './views/response-area/response-areas/calibration-exam/max-output-screen/max-output-screen.component';
 import { DevicesService } from './controllers/devices.service';
-import { CalibrationResultsViewerComponent } from './views/response-area/calibration-exam/calibration-results-viewer/calibration-results-viewer.component';
+import { CalibrationResultsViewerComponent } from './views/response-area/response-areas/calibration-exam/calibration-results-viewer/calibration-results-viewer.component';
 import { ManualAudiometryResultViewerComponent } from './views/response-area/response-areas/manual-audiometry-result-viewer/manual-audiometry-result-viewer';
 import { AudiogramComponent } from './views/audiogram/audiogram.component';
 
