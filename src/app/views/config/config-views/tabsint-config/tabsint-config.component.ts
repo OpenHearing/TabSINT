@@ -38,14 +38,14 @@ export class TabsintConfigComponent {
     private readonly dialog: MatDialog,
     private readonly stateModel: StateModel,
     private readonly translate: TranslateService,
-    private VersionModel: VersionModel,
+    private readonly versionModel: VersionModel,
   ) {
     this.state = this.stateModel.getState();
     this.disk = this.diskModel.getDisk();
   }
 
   async ngOnInit(): Promise<void> {
-    this.version = await this.VersionModel.getVersion();
+    this.version = await this.versionModel.getVersion();
     this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
         this.disk = updatedDisk;
     })
@@ -58,15 +58,15 @@ export class TabsintConfigComponent {
 
   // VARIABLES - SHOULD BE MOVED?
 
-  headsets: Array<string> = [
-    "None",
-    "HDA200",
-    "VicFirth",
-    "VicFirthS2",
-    "WAHTS",
-    "EPHD1",
-    "Audiometer"
-  ];
+  // headsets: Array<string> = [
+  //   "None",
+  //   "HDA200",
+  //   "VicFirth",
+  //   "VicFirthS2",
+  //   "WAHTS",
+  //   "EPHD1",
+  //   "Audiometer"
+  // ];
 
   // languages: Array<string> = [
   //   this.translate.instant("English"),
@@ -80,10 +80,10 @@ export class TabsintConfigComponent {
 
   // Functions
 
-  changeHeadset(headset: string) {
-    this.diskModel.updateDiskModel("headset", headset);
-    this.logger.debug("Headset changed to: " + headset);
-  }
+  // changeHeadset(headset: string) {
+  //   this.diskModel.updateDiskModel("headset", headset);
+  //   this.logger.debug("Headset changed to: " + headset);
+  // }
 
   // changeLanguage(language: string) {
   //   // need to update the language here
