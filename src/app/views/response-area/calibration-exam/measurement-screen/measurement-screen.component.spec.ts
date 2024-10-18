@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MeasurementScreenComponent } from './measurement-screen.component';
+import { FormsModule } from '@angular/forms';
 
 describe('MeasurementScreenComponent', () => {
   let component: MeasurementScreenComponent;
@@ -8,7 +9,8 @@ describe('MeasurementScreenComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [MeasurementScreenComponent]
+      declarations: [MeasurementScreenComponent],
+      imports: [FormsModule]
     })
     .compileComponents();
     

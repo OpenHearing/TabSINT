@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MaxOutputScreenComponent } from './max-output-screen.component';
+import { FormsModule } from '@angular/forms';
 
 describe('MaxOutputScreenComponent', () => {
   let component: MaxOutputScreenComponent;
@@ -8,7 +9,8 @@ describe('MaxOutputScreenComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [MaxOutputScreenComponent]
+      declarations: [MaxOutputScreenComponent],
+      imports: [FormsModule]
     })
     .compileComponents();
     
