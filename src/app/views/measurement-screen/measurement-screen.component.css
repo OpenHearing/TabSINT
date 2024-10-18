@@ -103,3 +103,14 @@
   .next-button:hover {
     background-color: #0056b3;
   }
+
+  .measured-value-input.input-error {
+    border: 2px solid red;
+    background-color: #ffe6e6;
+  }
+
+  .error-message {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }

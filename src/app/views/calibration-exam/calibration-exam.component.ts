@@ -38,7 +38,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   currentFrequencyIndex: number = 0;
   currentFrequency: number = 0;
   targetLevel: number = 0;
-  calFactor: number = 0;
+  calFactor: number = -40;
   pageSubscription: Subscription | undefined;
   deviceSubscription: Subscription|undefined;
   device: ConnectedDevice|undefined;
@@ -74,12 +74,15 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     });
     this.deviceSubscription = this.devicesModel.deviceResponseSubject.subscribe((msg: DeviceResponse) => {
       console.log("device msg:",JSON.stringify(msg));
+      this.logger.debug(JSON.stringify(msg))
   });
-  this.results.currentExam.responses = []
+  this.results.currentExam.responses = [];
   }
 
   ngOnDestroy(): void {
     if (this.device) {
+      this.isPlaying = false
+      this.stopTone()
       this.devicesService.abortExams(this.device);
     }
     this.pageSubscription?.unsubscribe();
@@ -88,7 +91,9 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
 
   adjustCalFactor(amount: number): void {
     this.calFactor += amount;
-    this.playTone();
+    if (this.isPlaying) {
+      this.playTone();
+    }
   }
 
   togglePlay(): void {
@@ -109,12 +114,13 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       this.currentStep = 'measurement';
     } else if (this.currentStep === 'measurement') {
       if (this.currentFrequencyIndex < this.frequencies.length - 1) {
+        this.sendMeasurementLevel()
         this.currentFrequencyIndex++;
         this.currentStep = 'calibration';
-        this.isPlaying = false;
       } else {
         this.currentStep = 'max-output';
         this.isPlaying = false;
+        this.stopTone()
         this.currentFrequencyIndex = 0;
       }
     } else if (this.currentStep === 'max-output') {
@@ -124,17 +130,24 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     if (this.isPlaying && this.currentStep=='max-output') {
       this.sendMaxOutputTone();
   }
+  if (this.isPlaying && this.currentStep=="calibration"){
+    console.log("playing tone at calibration screen");
+    this.playTone();
+  }
   }
 
-  handleNextEarOrFinish(): void {
+  async handleNextEarOrFinish(): Promise<void> {
     if (this.currentFrequencyIndex < this.frequencies.length - 1) {
       this.currentFrequencyIndex++;
     } else if (this.earCup === 'Left') {
       this.earCup = 'Right';
       this.currentFrequencyIndex = 0;
       this.currentStep = 'calibration';
-      this.isPlaying = false;
       this.writeCalibrationResults();
+      this.isPlaying = false
+      this.stopTone()
+      await this.devicesService.abortExams(this.device!)
+      await this.devicesService.queueExam(this.device!, "HNCalibration",{"OutputChannel": this.earCup=="Left" ? "HPL0" : "HPR0"})
     } else {
       this.currentStep = 'finished'
       this.writeCalibrationResults();
@@ -175,10 +188,11 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   }
 
   playTone() {
+    const enableOutput = this.isPlaying
     let examProperties = {
         "F": this.currentFrequency,
-        "Level": this.calFactor,
-        EnableOutput: true
+        "RequestedLevel": this.calFactor,
+        EnableOutput: enableOutput
     };
     if (this.device) {
         this.devicesService.examSubmission(this.device,examProperties);
@@ -187,11 +201,11 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
 
   sendMaxOutputTone(): void {
     const measuredLevel = this.getMeasuredLevelForFrequency(this.currentFrequency);
-
+    const enableOutput = this.isPlaying
     const examProperties = {
         "F": this.currentFrequency,
         "RequestedLevel": 0,
-        "EnableOutput": true,
+        "EnableOutput": enableOutput,
         "MeasuredLevel": measuredLevel,
         "Mode": "MaximumOutputLevel"
     };
@@ -201,10 +215,26 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     }
   }
 
-  getMeasuredLevelForFrequency(frequency: number):string|number {
-    const currentEarData = this.earCup === 'Left' ? this.leftEarData : this.rightEarData;
-    return currentEarData[frequency].maxOutput
+  sendMeasurementLevel(): void {
+    const measuredLevel = this.getMeasuredLevelForFrequency(this.currentFrequency);
+    const enableOutput = this.isPlaying
+    const examProperties = {
+      "F": this.currentFrequency,
+      "RequestedLevel": this.calFactor,
+      "EnableOutput": enableOutput,
+      "MeasuredLevel": measuredLevel,
+      "Mode": "CalibrationFactor"
+  };
+  if (this.device) {
+    this.devicesService.examSubmission(this.device, examProperties);
   }
+  }
+
+  getMeasuredLevelForFrequency(currentFrequency: number) {
+    const currentEarData = this.earCup === 'Left' ? this.leftEarData : this.rightEarData;
+    return currentEarData[currentFrequency].measurement
+  }
+
 
   stopTone() {
     if (this.device) {

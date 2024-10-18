@@ -13,12 +13,14 @@ export class MeasurementScreenComponent {
   @Output() togglePlay = new EventEmitter<void>();
   @Output() measurementUpdated = new EventEmitter<number>();
   userInput: number | null = null;
-
+  showValidationError: boolean = false;
   next(): void {
     if (this.userInput !== null) {
+      this.showValidationError = false;
       this.measurementUpdated.emit(this.userInput);
+      this.nextStep.emit();
     }
-    this.nextStep.emit();
+    this.showValidationError = true
   }
   
   // onTogglePlay(): void {

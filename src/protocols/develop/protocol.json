@@ -153,7 +153,9 @@
             "frequencies": [500, 1000, 2000],
             "targetLevels": [60, 70, 80],
             "exportToCSV": true,
-            "responseRequired": false
+            "responseRequired": false,
+            "showLeftTable": false,
+            "showRightTable": false
           }
         },
         {

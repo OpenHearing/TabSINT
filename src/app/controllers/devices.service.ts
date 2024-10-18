@@ -111,10 +111,10 @@ export class DevicesService {
      * @summary Starts an exam on the device
      * @models devices?
     */
-    async queueExam(device: ConnectedDevice, examType: string,outputChannel:object) {
+    async queueExam(device: ConnectedDevice, examType: string, examProperties: object) {
         if (isTympanDevice(device)) {
             let msgId = device.msgId.toString();
-            await this.tympanService.queueExam(device.deviceId, msgId, examType, outputChannel);
+            await this.tympanService.queueExam(device.deviceId, msgId, examType, examProperties);
             this.deviceUtil.incrementDeviceMsgId(device.deviceId);
         } else {
             this.logger.error("Unsupported device type: "+JSON.stringify(device.type));

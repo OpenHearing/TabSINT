@@ -13,9 +13,13 @@
              type="number"
              [ngModel]="userInput"
              (ngModelChange)="userInput = $event"
+             [ngClass]="{'input-error': showValidationError}"
              class="measured-value-input"
              step="0.1">
       <span class="unit">dB SPL</span>
+    </div>
+    <div *ngIf="showValidationError" class="error-message">
+      Please enter a value before proceeding.
     </div>
   </div>
   

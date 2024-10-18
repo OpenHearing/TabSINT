@@ -15,7 +15,7 @@ export class MaxOutputScreenComponent {
   @Output() maxOutputUpdated = new EventEmitter<number>();
   
   maxOutputValue: number | null = null;
-
+  showValidationError: boolean = false;
 
   onTogglePlay(): void {
     this.togglePlay.emit();
@@ -23,10 +23,13 @@ export class MaxOutputScreenComponent {
 
   next(): void {
     if (this.maxOutputValue !== null) {
+      this.showValidationError = false
       this.maxOutputUpdated.emit(this.maxOutputValue);
+      this.nextStep.emit();
+      this.maxOutputValue = null
+    } else {
+    this.showValidationError = true
     }
-    this.nextStep.emit();
-    this.maxOutputValue = null
   }
 
 }
