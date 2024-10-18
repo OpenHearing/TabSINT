@@ -125,7 +125,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
 
     playTone() {
         let examProperties = {
-            "F": this.selectedFrequency*1000, // convert from kHz to Hz
+            "F": this.selectedFrequency,
             "Level": this.currentDbSpl,
             "OutputChannel": this.selectedEar==="Left" ? "HPL0" : "HPR0"
         };

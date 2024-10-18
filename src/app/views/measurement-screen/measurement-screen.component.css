@@ -43,7 +43,7 @@
   .input-group {
     display: flex;
     align-items: center;
-    margin-bottom: 20px; /* Add space between input and play button */
+    margin-bottom: 20px; 
   }
   
   .measured-value-input {
@@ -65,7 +65,7 @@
   .play-button-container {
     display: flex;
     justify-content: center;
-    margin-top: 20px; /* Add space above the play button */
+    margin-top: 20px;
   }
   
   .play-pause-button {

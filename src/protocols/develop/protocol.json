@@ -129,7 +129,7 @@
             "maxOutputLevel": 110,
             "minOutputLevel": -10,
             "currentDbSpl": 50,
-            "frequencies": [0.5, 1, 2, 4, 8],
+            "frequencies": [500, 1000, 2000, 4000, 8000],
             "adjustments": [15, -18, 5, 3],
             "exportToCSV": false,
             "responseRequired":false
@@ -163,8 +163,7 @@
             "targetLevels": [60, 70, 80],
             "exportToCSV": true,
             "responseRequired": false,
-            "showLeftTable": false,
-            "showRightTable": false
+            "showResults": true
           }
         },
         {

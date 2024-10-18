@@ -6,6 +6,7 @@ export const calibrationExamSchema: JSONSchemaType<CalibrationExamInterface> = {
     type: "object",
     properties: {
         enableSkip: { type: "boolean", nullable: true, default: false },
+        showResults: { type: "boolean", nullable: true, default: false },
         responseRequired: { type: "boolean", nullable: true, default: true },
         type: { type: "string", enum: ["calibrationResponseArea"] },
         tabsintId: { type: "string", nullable: true },

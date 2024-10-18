@@ -1,7 +1,5 @@
 <div class="results-container" *ngIf="results">
-    <h2>Calibration Results</h2>
-  
-    <!-- Left Ear Table -->
+    <h2  style="color: #0369ad;">Calibration Results</h2>
     <div class="ear-results left-ear">
       <h3>Left Ear</h3>
       <table class="results-table">
@@ -14,7 +12,6 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Use the getKeys method to loop through the object keys -->
           <tr *ngFor="let freq of getKeys(results.leftEar)">
             <td>{{ freq }}</td>
             <td>{{ results.leftEar[freq].calFactor }}</td>
@@ -24,8 +21,7 @@
         </tbody>
       </table>
     </div>
-  
-    <!-- Right Ear Table -->
+
     <div class="ear-results right-ear">
       <h3>Right Ear</h3>
       <table class="results-table">

@@ -47,6 +47,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   leftEarData: Record<number, EarData> = {};
   rightEarData: Record<number, EarData> = {};
   results: ResultsInterface;
+  showResults: boolean = true;
 
   constructor(private readonly pageModel: PageModel,
     private readonly devicesService: DevicesService,
@@ -64,6 +65,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
         this.targetLevels = calibrationResponse.targetLevels ?? [60, 70, 80];
         this.updateFrequencyAndTargetLevel();
         this.initializeEarData();
+        this.showResults = calibrationResponse.showResults ?? true;
         this.device = this.deviceUtil.getDeviceFromTabsintId(calibrationResponse.tabsintId ?? "1");
                     if (this.device) {
                         await this.devicesService.queueExam(this.device,"HNCalibration",{"OutputChannel": this.earCup=="Left" ? "HPL0" : "HPR0"});
@@ -74,7 +76,6 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     });
     this.deviceSubscription = this.devicesModel.deviceResponseSubject.subscribe((msg: DeviceResponse) => {
       console.log("device msg:",JSON.stringify(msg));
-      this.logger.debug(JSON.stringify(msg))
   });
   this.results.currentExam.responses = [];
   }
@@ -124,14 +125,13 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
         this.currentFrequencyIndex = 0;
       }
     } else if (this.currentStep === 'max-output') {
-        this.handleNextEarOrFinish();
+      this.handleNextEarOrFinish();
     }
     this.updateFrequencyAndTargetLevel()
     if (this.isPlaying && this.currentStep=='max-output') {
       this.sendMaxOutputTone();
   }
   if (this.isPlaying && this.currentStep=="calibration"){
-    console.log("playing tone at calibration screen");
     this.playTone();
   }
   }
@@ -251,9 +251,6 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   }
 
   saveResults(): void {
-    console.log("save results called")
-    console.log(this.leftEarData)
-    console.log(this.rightEarData)
     const calibrationResults = {
       leftEar: this.leftEarData,
       rightEar: this.rightEarData

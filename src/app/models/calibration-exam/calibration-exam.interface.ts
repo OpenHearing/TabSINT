@@ -7,6 +7,7 @@ export interface CalibrationExamInterface extends CommonResponseAreaInterface{
     frequencies?: number[];
     targetLevels?:number[];
     responseRequired?:boolean
+    showResults?:boolean
 }
 
 export interface CalibrationResultViewerInterface extends CommonResponseAreaInterface {

@@ -23,7 +23,4 @@ export class MeasurementScreenComponent {
     this.showValidationError = true
   }
   
-  // onTogglePlay(): void {
-  //   this.togglePlay.emit();
-  // }
 }
