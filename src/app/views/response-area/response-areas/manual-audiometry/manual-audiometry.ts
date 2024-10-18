@@ -17,7 +17,7 @@ import { DeviceUtil } from "../../../../utilities/device-utility";
 import { Logger } from "../../../../utilities/logger.service";
 
 @Component({
-    selector: 'audiometry-view',
+    selector: 'manual-audiometry-view',
     templateUrl: './manual-audiometry.html',
     styleUrl: './manual-audiometry.css'
   })
@@ -143,5 +143,9 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         this.currentFrequencyIndex = (this.currentFrequencyIndex + 1) % this.frequencies.length;
         this.selectedFrequency = this.frequencies[this.currentFrequencyIndex];
         this.currentDbSpl = this.initialDbSpl;
+        this.results.currentPage.response = {
+            rightThresholds: this.rightThresholds,
+            leftThresholds: this.leftThresholds
+        }
     }
 }

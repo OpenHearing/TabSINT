@@ -45,4 +45,11 @@ export class ExamFinalizedComponent {
     this.diskSubscription?.unsubscribe();
   }
 
+  truncatedResponse(resp: any) {
+    if (typeof resp.response === 'string') {
+      return resp.response.substr(0, 25);
+    }
+    return '';
+  }
+
 }

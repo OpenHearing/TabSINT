@@ -1,0 +1,14 @@
+/* Solid grid line for major ticks */
+.grid .x-grid line, .grid .y-grid line {
+    stroke: black;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+  }
+  
+  /* Dotted grid line for minor x-axis ticks */
+  .grid .x-grid-minor line {
+    stroke: black;
+    stroke-width: 1;
+    stroke-dasharray: 2,2;
+  }
+  

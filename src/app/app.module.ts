@@ -83,6 +83,8 @@ import { MeasurementScreenComponent } from './views/measurement-screen/measureme
 import { MaxOutputScreenComponent } from './views/max-output-screen/max-output-screen.component';
 import { DevicesService } from './controllers/devices.service';
 import { CalibrationResultsViewerComponent } from './views/calibration-results-viewer/calibration-results-viewer.component';
+import { ManualAudiometryResultViewerComponent } from './views/response-area/response-areas/manual-audiometry-result-viewer/manual-audiometry-result-viewer';
+import { AudiogramComponent } from './views/audiogram/audiogram.component';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -113,6 +115,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     TextboxResultViewerComponent,
     MultipleChoiceComponent,
     ManualAudiometryComponent,
+    ManualAudiometryResultViewerComponent,
     SingleResultModalComponent,
     ExternalResponseAreaComponent,
     TasksBannerComponent,
@@ -120,6 +123,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     DeviceInfoComponent,
     ConnectedDevicesComponent,
     NewConnectionComponent,
+    AudiogramComponent,
     CalibrationExamComponent,
     CalibrationScreenComponent,
     MeasurementScreenComponent,

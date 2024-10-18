@@ -1,7 +1,7 @@
 {
-  "title": "Development Protocol",
-  "subtitle": "Developer testing of open-tabsint responseArea's.",
-  "instructionText": "instructionText goes here",
+  "title": "TabSINT Demonstration",
+  "subtitle": "Textbox, Manual Audiometry, and Calibration Response Areas.",
+  "instructionText": "Choose the exam to demonstrate, then view results.",
   "hideProgressBar": true,
   "navMenu":[
     {
@@ -20,7 +20,7 @@
         {
           "id":"choose",
           "title":"Response Area Testing",
-          "questionMainText":"Please select a response area to test:",
+          "questionMainText":"Please select a response area to demonstrate:",
           "responseArea":{
             "type":"multipleChoiceResponseArea",
             "choices":[
@@ -29,9 +29,6 @@
               },
               {
                 "id":"Manual Audiometry"
-              },
-              {
-                "id": "Calibration Exam" 
               },
               {
                 "id":"End All"
@@ -52,12 +49,6 @@
               } 
             },
             {
-              "conditional": "result.response=='Calibration Exam'",
-              "target": {
-                "reference": "CalibrationExam"
-              }
-            },
-            {
               "conditional":"result.response=='End All'",
               "target":{
                 "reference":"@END_ALL"
@@ -74,31 +65,11 @@
       "pages":[
         {
           "id": "textbox_001",
-          "title": "Text Box",
-          "instructionText": "Test Case 001",
+          "title": "Subject ID",
+          "instructionText": "Enter the subject ID",
           "responseArea": {
             "type": "textboxResponseArea",
-            "rows": 5,
             "responseRequired": false
-          }
-        },
-        {
-          "id": "textbox_002",
-          "title": "Text Box",
-          "instructionText": "Test Cases 002",
-          "responseArea": {
-            "type": "textboxResponseArea",
-            "exportToCSV": true,
-            "rows": 3
-          }
-        },
-        {
-          "id": "textbox_003",
-          "title": "Text Box",
-          "instructionText": "Test Cases 003",
-          "responseArea": {
-            "type": "textboxResponseArea",
-            "exportToCSV": true
           }
         },
         {
@@ -107,7 +78,7 @@
           "instructionText": "Test Case 001 Result Viewer",
           "responseArea": {
             "type": "textboxResponseAreaResultViewer",
-            "pageIdsToDisplay": ["textbox_001", "textbox_002","textbox_003"]
+            "pageIdsToDisplay": ["textbox_001"]
           }
         },
         {
@@ -147,29 +118,6 @@
         {
           "id": "backtomain",
           "reference":"MainMenu"
-        }
-      ]
-    },
-    {
-      "protocolId": "CalibrationExam",
-      "pages": [
-        {
-          "id": "calibration_001",
-          "title": "Calibration Exam",
-          "instructionText": "Test calibration response area",
-          "responseArea": {
-            "type": "calibrationResponseArea",
-            "frequencies": [500, 1000, 2000],
-            "targetLevels": [60, 70, 80],
-            "exportToCSV": true,
-            "responseRequired": false,
-            "showLeftTable": false,
-            "showRightTable": false
-          }
-        },
-        {
-          "id": "backtomain",
-          "reference": "MainMenu"
         }
       ]
     }

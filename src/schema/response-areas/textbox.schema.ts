@@ -1,6 +1,6 @@
 import { JSONSchemaType } from "ajv"
 import { TextBoxInterface } from "../../app/views/response-area/response-areas/textbox/textbox.interface"
-import { TextBoxResultViewerInterface } from "../../app/views/response-area/response-areas/textbox-result-viewer/textbox-result-viewer.interface"
+import { TextBoxResultViewerInterface } from "../../app/views/response-area/response-areas/textbox-result-viewer/textbox-result-viewer.interface";
 
 export const textBoxSchema: JSONSchemaType<TextBoxInterface> = {
     type: "object",

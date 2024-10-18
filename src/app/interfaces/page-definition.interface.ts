@@ -1,9 +1,10 @@
 import { CalibrationExamInterface } from "../models/calibration-exam/calibration-exam.interface";
 import { PageTypes } from "../types/custom-types";
+import { ManualAudiometryResultViewerInterface } from "../views/response-area/response-areas/manual-audiometry-result-viewer/manual-audiometry-result-viewer.interface";
 import { ManualAudiometryInterface } from "../views/response-area/response-areas/manual-audiometry/manual-audiometry.interface";
 import { MultipleChoiceInterface} from "../views/response-area/response-areas/multiple-choice/multiple-choice.interface";
-import { TextBoxInterface } from "../views/response-area/response-areas/textbox/textbox.interface";
 import { TextBoxResultViewerInterface } from "../views/response-area/response-areas/textbox-result-viewer/textbox-result-viewer.interface";
+import { TextBoxInterface } from "../views/response-area/response-areas/textbox/textbox.interface";
 
 export interface PageDefinition {
     id: string;
@@ -98,4 +99,5 @@ export interface CommonResponseAreaInterface {
 
 export type ResponseArea =
     TextBoxInterface | TextBoxResultViewerInterface |
-    MultipleChoiceInterface | ManualAudiometryInterface | CalibrationExamInterface ;
+    MultipleChoiceInterface | ManualAudiometryInterface | CalibrationExamInterface  |
+    ManualAudiometryResultViewerInterface;
