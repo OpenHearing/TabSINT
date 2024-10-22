@@ -95,7 +95,7 @@ export class AudiogramComponent implements OnInit{
       .attr('y', -60)
       .attr('x', -height / 2)
       .style('text-anchor', 'middle')
-      .text('Hearing Level (dB)');
+      .text('Hearing Level (dB SPL)');
 
     // Major X Axis Gridlines, Solid
     svg
