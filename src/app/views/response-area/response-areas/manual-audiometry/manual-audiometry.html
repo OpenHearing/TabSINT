@@ -8,7 +8,7 @@
   <div class="frequency-control">
     <label for="frequency">Frequency</label>
     <select id="frequency"  [(ngModel)]="selectedFrequency" (ngModelChange)="onFrequencyChange($event)">
-      <option *ngFor="let freq of frequencies" [value]="freq">{{ freq }} kHz</option>
+      <option *ngFor="let freq of frequencies" [value]="freq">{{ freq }} Hz</option>
     </select>
   </div>
 
@@ -52,7 +52,7 @@
         <table class="results-table">
           <thead>
             <tr>
-              <th>Frequency (kHz)</th>
+              <th>Frequency (Hz)</th>
               <th *ngFor="let freq of frequencies">{{ freq }}</th>
             </tr>
           </thead>
@@ -70,7 +70,7 @@
         <table class="results-table">
           <thead>
             <tr>
-              <th>Frequency (kHz)</th>
+              <th>Frequency (Hz)</th>
               <th *ngFor="let freq of frequencies">{{ freq }}</th>
             </tr>
           </thead>
