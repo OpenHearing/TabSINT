@@ -22,7 +22,6 @@ export class MeasurementScreenComponent {
       this.showValidationError = false;
       this.validationMessage = ''; 
       this.measurementUpdated.emit(this.userInput);
-      // this.nextStep.emit();
       return true;
     } else {
       this.showValidationError = true;
@@ -30,14 +29,5 @@ export class MeasurementScreenComponent {
       return false;
     }
   }
-
-  // next(): void {
-  //   if (this.userInput !== null) {
-  //     this.showValidationError = false;
-  //     this.measurementUpdated.emit(this.userInput);
-  //     this.nextStep.emit();
-  //   }
-  //   this.showValidationError = true
-  // }
   
 }

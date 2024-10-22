@@ -1,4 +1,4 @@
-import { ThisReceiver } from '@angular/compiler';
+
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
@@ -26,7 +26,6 @@ export class MaxOutputScreenComponent {
       this.showValidationError = false;
       this.validationMessage = ''; 
       this.maxOutputUpdated.emit(this.maxOutputValue);
-      // this.nextStep.emit();
       this.maxOutputValue = null
       return true;
     } else {
@@ -39,16 +38,5 @@ export class MaxOutputScreenComponent {
   onTogglePlay(): void {
     this.togglePlay.emit();
   }
-
-  // next(): void {
-  //   if (this.maxOutputValue !== null) {
-  //     this.showValidationError = false
-  //     this.maxOutputUpdated.emit(this.maxOutputValue);
-  //     this.nextStep.emit();
-  //     this.maxOutputValue = null
-  //   } else {
-  //   this.showValidationError = true
-  //   }
-  // }
 
 }

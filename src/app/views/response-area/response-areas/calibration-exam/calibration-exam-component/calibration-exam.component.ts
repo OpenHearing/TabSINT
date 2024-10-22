@@ -167,9 +167,6 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       this.handleNextEarOrFinish();
     }
     this.updateFrequencyAndTargetLevel()
-    // if (this.isPlaying && this.currentStep == 'max-output') {
-    //   this.sendMaxOutputTone();
-    // }
     if (this.isPlaying && this.currentStep == "calibration") {
       this.playTone();
     }
