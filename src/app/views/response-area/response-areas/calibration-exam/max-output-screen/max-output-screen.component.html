@@ -31,9 +31,9 @@
       </svg>
     </button>
     <div *ngIf="showValidationError" class="error-message">
-      Please enter a value before proceeding
+      {{ validationMessage }}
     </div>
   </div>
   
-  <button class="next-button" (click)="next()">Next</button>
+  <!-- <button class="next-button" (click)="next()">Next</button> -->
 </div>

@@ -15,14 +15,29 @@ export class MeasurementScreenComponent {
   
   userInput: number | null = null;
   showValidationError: boolean = false;
+  validationMessage: string = '';
 
-  next(): void {
+  validateAndProceed(): boolean {
     if (this.userInput !== null) {
       this.showValidationError = false;
+      this.validationMessage = ''; 
       this.measurementUpdated.emit(this.userInput);
-      this.nextStep.emit();
+      // this.nextStep.emit();
+      return true;
+    } else {
+      this.showValidationError = true;
+      this.validationMessage = 'Please enter a value to proceed.';
+      return false;
     }
-    this.showValidationError = true
   }
+
+  // next(): void {
+  //   if (this.userInput !== null) {
+  //     this.showValidationError = false;
+  //     this.measurementUpdated.emit(this.userInput);
+  //     this.nextStep.emit();
+  //   }
+  //   this.showValidationError = true
+  // }
   
 }
