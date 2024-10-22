@@ -8,6 +8,7 @@ import { ExamService } from '../../controllers/exam.service';
 import { AppState, ExamState } from '../../utilities/constants';
 import { PageInterface } from '../../models/page/page.interface';
 import { PageModel } from '../../models/page/page.service';
+import { ButtonTextService } from '../../controllers/button-text.service';
 
 @Component({
   selector: 'exam-view',
@@ -22,12 +23,14 @@ export class ExamComponent {
   pageSubscription: Subscription | undefined;
   state: StateInterface;
   ExamState = ExamState;
-
+  buttonText: string = 'Submit';
+  buttonTextSubscription: Subscription | undefined;
   constructor (
     private readonly examService: ExamService,
     private readonly diskModel: DiskModel,
     private readonly stateModel: StateModel,
-    private readonly pageModel: PageModel
+    private readonly pageModel: PageModel,
+    private buttonTextService: ButtonTextService
   ) {
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();
@@ -43,12 +46,16 @@ export class ExamComponent {
     });
     this.examService.switchToExamView();
     this.stateModel.setAppState(AppState.Exam);
+    this.buttonTextSubscription = this.buttonTextService.buttonText$.subscribe((newText: string) => {
+      this.buttonText = newText;
+    });
   }
 
   ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
     this.pageSubscription?.unsubscribe();
     this.stateModel.setAppState(AppState.null);
+    this.buttonTextSubscription?.unsubscribe();
   }
 
   begin() {
@@ -74,5 +81,4 @@ export class ExamComponent {
   help() {
     this.examService.help();
   }
-
 }

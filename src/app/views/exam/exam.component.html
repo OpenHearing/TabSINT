@@ -90,7 +90,7 @@
                     [disabled]= "!state.isSubmittable"
                     (click)="submit()">
                 <div *ngIf="currentPage?.submitText"> {{currentPage.submitText}}</div>
-                <div *ngIf="currentPage?.submitText===undefined"> {{'Submit' | translate}}</div>
+                <div *ngIf="currentPage?.submitText===undefined"> {{buttonText || 'Submit' | translate}}</div>
             </button>
           </div>
         </div>
@@ -119,7 +119,7 @@
                     [disabled]= "!state.isSubmittable"
                     (click)="submit()">
                 <div *ngIf="currentPage?.submitText"> {{currentPage.submitText}}</div>
-                <div *ngIf="currentPage?.submitText===undefined"> {{'Submit' | translate}}</div>
+                <div *ngIf="currentPage?.submitText===undefined"> {{buttonText || 'Submit'| translate}}</div>
             </button>
           </div>
         </div>

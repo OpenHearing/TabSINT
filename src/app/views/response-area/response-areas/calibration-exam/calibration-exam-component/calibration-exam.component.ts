@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, EventEmitter, Output } from '@angular/core';
 import { PageModel } from "../../../../../models/page/page.service";
 import { Subscription } from 'rxjs';
 import { CalibrationExamInterface } from './calibration-exam.interface';
@@ -12,6 +12,10 @@ import { DeviceResponse } from '../../../../../models/devices/devices.interface'
 import { ResultsService } from '../../../../../controllers/results.service';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { ResultsInterface } from '../../../../../models/results/results.interface';
+import { ExamService } from '../../../../../controllers/exam.service';
+import { MeasurementScreenComponent } from '../measurement-screen/measurement-screen.component';
+import { MaxOutputScreenComponent } from '../max-output-screen/max-output-screen.component';
+import { ButtonTextService } from '../../../../../controllers/button-text.service';
 
 export interface EarData {
   calFactor: number;
@@ -31,6 +35,9 @@ export interface ExamResponse {
   styleUrls: ['./calibration-exam.component.css']
 })
 export class CalibrationExamComponent implements OnInit, OnDestroy {
+  @ViewChild(MeasurementScreenComponent) measurementScreen!: MeasurementScreenComponent
+  @ViewChild(MaxOutputScreenComponent) maxOutputScreen!: MaxOutputScreenComponent
+  @Output() buttonTextChange = new EventEmitter<string>();
   frequencies: number[] = [];
   targetLevels: number[] = [];
   currentStep: string = 'calibration';
@@ -54,26 +61,29 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     private readonly deviceUtil: DeviceUtil, 
     private readonly logger: Logger, 
     private readonly resultsService: ResultsService, 
-    private readonly resultsModel: ResultsModel
+    private readonly resultsModel: ResultsModel,
+    private examService: ExamService, private buttonTextService: ButtonTextService
   ) {
     this.results = this.resultsModel.getResults()
+    this.examService.submit = this.nextStep.bind(this);
   }
 
   ngOnInit(): void {
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
-      const calibrationResponse = updatedPage?.responseArea as CalibrationExamInterface;
-
-      if (calibrationResponse) {
-        this.frequencies = calibrationResponse.frequencies ?? [500, 1000, 2000];
-        this.targetLevels = calibrationResponse.targetLevels ?? [60, 70, 80];
-        this.updateFrequencyAndTargetLevel();
-        this.initializeEarData();
-        this.showResults = calibrationResponse.showResults ?? true;
-        this.device = this.deviceUtil.getDeviceFromTabsintId(calibrationResponse.tabsintId ?? "1");
-        if (this.device) {
-          await this.devicesService.queueExam(this.device, "HNCalibration", { "OutputChannel": this.earCup == "Left" ? "HPL0" : "HPR0" });
-        } else {
-          this.logger.error("Error setting up HNCalibration exam");
+      if (updatedPage?.responseArea?.type === "calibrationResponseArea") {
+        const calibrationResponse = updatedPage?.responseArea as CalibrationExamInterface;
+        if (calibrationResponse) {
+          this.frequencies = calibrationResponse.frequencies ?? [500, 1000, 2000];
+          this.targetLevels = calibrationResponse.targetLevels ?? [60, 70, 80];
+          this.updateFrequencyAndTargetLevel();
+          this.initializeEarData();
+          this.showResults = calibrationResponse.showResults ?? true;
+          this.device = this.deviceUtil.getDeviceFromTabsintId(calibrationResponse.tabsintId ?? "1");
+          if (this.device) {
+            await this.devicesService.queueExam(this.device, "HNCalibration", { "OutputChannel": this.earCup == "Left" ? "HPL0" : "HPR0" });
+          } else {
+            this.logger.error("Error setting up HNCalibration exam");
+          }
         }
       }
     });
@@ -81,16 +91,19 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       console.log("device msg:", JSON.stringify(msg));
     });
     this.results.currentExam.responses = [];
+    this.updateButtonLabel()
   }
 
-  ngOnDestroy(): void {
+  async ngOnDestroy(): Promise<void> {
     if (this.device) {
       this.isPlaying = false
-      this.stopTone()
-      this.devicesService.abortExams(this.device);
+      await this.stopTone()
+      await this.devicesService.abortExams(this.device);
     }
+    this.examService.submit = this.examService.submitDefault.bind(this.examService);
     this.pageSubscription?.unsubscribe();
     this.deviceSubscription?.unsubscribe();
+    this.buttonTextService.updateButtonText("Submit")
   }
 
   adjustCalFactor(amount: number): void {
@@ -113,30 +126,51 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     }
   }
 
+  updateButtonLabel(): void {
+    if (this.currentStep === 'calibration') {
+      this.buttonTextService.updateButtonText('Next');
+    } else if (this.currentStep === 'measurement') {
+      this.buttonTextService.updateButtonText('Submit');
+    } else if (this.currentStep === 'finished') {
+      this.buttonTextService.updateButtonText('Finish Calibration');
+    }
+  }
+
   nextStep(): void {
     if (this.currentStep === 'calibration') {
+      this.playTone()
       this.currentStep = 'measurement';
     } else if (this.currentStep === 'measurement') {
+      const isValid = this.measurementScreen?.validateAndProceed();
+      if (!isValid) {
+        return;
+      }
       if (this.currentFrequencyIndex < this.frequencies.length - 1) {
-        this.sendMeasurementLevel()
+        console.log("Updating frequency")
         this.currentFrequencyIndex++;
+        this.sendMeasurementLevel()
         this.currentStep = 'calibration';
+        console.log(this.currentFrequency)
       } else {
         this.currentStep = 'max-output';
         this.isPlaying = false;
+        this.sendMeasurementLevel()
         this.stopTone()
         this.currentFrequencyIndex = 0;
       }
     } else if (this.currentStep === 'max-output') {
+      const isValid = this.maxOutputScreen?.validateAndProceed();
+      if (!isValid) {
+        return;
+      }
+      this.sendMaxOutputTone();
       this.handleNextEarOrFinish();
     }
     this.updateFrequencyAndTargetLevel()
-    if (this.isPlaying && this.currentStep == 'max-output') {
-      this.sendMaxOutputTone();
-    }
     if (this.isPlaying && this.currentStep == "calibration") {
       this.playTone();
     }
+    this.updateButtonLabel();
   }
 
   handleMeasurementUpdate(measurement: number): void {
@@ -154,14 +188,15 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       this.earCup = 'Right';
       this.currentFrequencyIndex = 0;
       this.currentStep = 'calibration';
-      this.writeCalibrationResults();
+      await this.writeCalibrationResults();
       this.isPlaying = false
-      this.stopTone()
+      await this.stopTone()
       await this.devicesService.abortExams(this.device!)
       await this.devicesService.queueExam(this.device!, "HNCalibration", { "OutputChannel": this.earCup == "Left" ? "HPL0" : "HPR0" })
     } else {
       this.currentStep = 'finished'
-      this.writeCalibrationResults();
+      this.examService.submit = this.examService.submitDefault.bind(this.examService);
+      await this.writeCalibrationResults();
       this.saveResults();
     }
   }
@@ -242,7 +277,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   }
 
 
-  private stopTone() {
+  private async stopTone() {
     if (this.device) {
       this.devicesService.examSubmission(this.device, { "EnableOutput": false });
     }
@@ -262,7 +297,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     this.results.currentExam.responses.push(newResponse);
   }
 
-  private writeCalibrationResults(): void {
+  private async writeCalibrationResults(): Promise<void> {
     const calibrationData = {
       "WriteCalibration": true
     };
@@ -271,4 +306,6 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       this.devicesService.examSubmission(this.device, calibrationData);
     }
   }
+
+
 }
