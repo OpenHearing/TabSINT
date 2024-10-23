@@ -109,7 +109,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   adjustCalFactor(amount: number): void {
     this.calFactor += amount;
     if (this.isPlaying) {
-      this.playTone();
+      this.playTone(this.calFactor);
     }
   }
 
@@ -117,9 +117,9 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     this.isPlaying = !this.isPlaying;
     if (this.isPlaying) {
       if (this.currentStep === 'max-output') {
-        this.sendMaxOutputTone();
+        this.playTone(0)
       } else {
-        this.playTone();
+        this.playTone(this.calFactor);
       }
     } else {
       this.stopTone();
@@ -138,7 +138,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
 
   nextStep(): void {
     if (this.currentStep === 'calibration') {
-      this.playTone()
+      this.playTone(this.calFactor)
       this.currentStep = 'measurement';
     } else if (this.currentStep === 'measurement') {
       const isValid = this.measurementScreen?.validateAndProceed();
@@ -167,8 +167,13 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       this.handleNextEarOrFinish();
     }
     this.updateFrequencyAndTargetLevel()
-    if (this.isPlaying && this.currentStep == "calibration") {
-      this.playTone();
+    if (this.isPlaying) {
+      if (this.currentStep=="calibration"){
+        this.playTone(this.calFactor);
+      } 
+      else if (this.currentStep=="max-output"){
+        this.playTone(0)
+      }   
     }
     this.updateButtonLabel();
   }
@@ -228,11 +233,11 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     }
   }
 
-  private playTone() {
+  private playTone(requestedLevel:number) {
     const enableOutput = this.isPlaying
     let examProperties = {
       "F": this.currentFrequency,
-      "RequestedLevel": this.calFactor,
+      "RequestedLevel": requestedLevel,
       EnableOutput: enableOutput
     };
     if (this.device) {
@@ -241,16 +246,15 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   }
 
   private sendMaxOutputTone(): void {
-    const measuredLevel = this.getMeasuredLevelForFrequency(this.currentFrequency);
+    const maxOutputLevel = this.getMaxOutputLevelForFrequency(this.currentFrequency);
     const enableOutput = this.isPlaying
     const examProperties = {
       "F": this.currentFrequency,
       "RequestedLevel": 0,
       "EnableOutput": enableOutput,
-      "MeasuredLevel": measuredLevel,
+      "MeasuredLevel": maxOutputLevel,
       "Mode": "MaximumOutputLevel"
     };
-
     if (this.device) {
       this.devicesService.examSubmission(this.device, examProperties);
     }
@@ -274,6 +278,11 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   private getMeasuredLevelForFrequency(currentFrequency: number) {
     const currentEarData = this.earCup === 'Left' ? this.leftEarData : this.rightEarData;
     return currentEarData[currentFrequency].measurement
+  }
+
+  private getMaxOutputLevelForFrequency(currentFrequency:number){
+    const currentEarData = this.earCup === 'Left' ? this.leftEarData : this.rightEarData;
+    return currentEarData[currentFrequency].maxOutput
   }
 
 
