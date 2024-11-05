@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DevicesInterface, DeviceResponse } from './devices.interface';
+import { DevicesInterface, TympanResponse } from './devices.interface';
 import { Device } from '@capacitor/device';
 import { Logger } from '../../utilities/logger.service';
 import { BehaviorSubject, Subject } from 'rxjs';
@@ -29,7 +29,7 @@ export class DevicesModel {
     }
 
     availableDevicesSubject = new BehaviorSubject<BleDevice[]>([]);
-    deviceResponseSubject = new Subject<DeviceResponse>();
+    tympanResponseSubject = new Subject<TympanResponse>();
 
     constructor(private readonly logger: Logger) {
         // TODO: Move this to generic utility for running async functions in constructor

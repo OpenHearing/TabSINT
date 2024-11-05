@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { DevicesInterface } from '../models/devices/devices.interface';
+import { DevicesInterface, TympanResponse } from '../models/devices/devices.interface';
 import { DiskInterface } from '../models/disk/disk.interface';
 
 import { ConnectedDevice, NewConnectedDevice } from '../interfaces/connected-device.interface';
@@ -73,6 +73,16 @@ export class DeviceUtil {
                 }
             }
         }
+    }
+
+    checkTympanResponse(expectedMsgInfo: any, response: TympanResponse) {
+        let resp = false;
+        if (expectedMsgInfo.tabsintId === parseInt(response.tabsintId)) {
+            if (-parseInt(expectedMsgInfo.msgId) === JSON.parse(response.msg)[0]) {
+                resp = true;
+            }
+        }
+        return resp
     }
 
     removeDevice(device: ConnectedDevice) {

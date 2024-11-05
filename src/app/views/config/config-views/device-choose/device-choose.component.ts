@@ -35,8 +35,8 @@ export class DeviceChooseComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
-        this.disk = updatedDisk;
-    })    
+      this.disk = updatedDisk;
+    });
 
     this.devicesSubscription = this.devicesModel.availableDevicesSubject.subscribe( (availableDevices:BleDevice[]) => {
       this.availableDevices = availableDevices;

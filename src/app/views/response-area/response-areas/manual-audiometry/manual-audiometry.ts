@@ -10,7 +10,6 @@ import { StateInterface } from "../../../../models/state/state.interface";
 import { Subscription } from "rxjs";
 import { ManualAudiometryInterface } from "./manual-audiometry.interface";
 import { DevicesModel } from "../../../../models/devices/devices-model.service";
-import { DeviceResponse } from "../../../../models/devices/devices.interface";
 import { DevicesService } from "../../../../controllers/devices.service";
 import { ConnectedDevice } from "../../../../interfaces/connected-device.interface";
 import { DeviceUtil } from "../../../../utilities/device-utility";
@@ -39,7 +38,6 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     leftCurrentColumn: number = 0;
     rightCurrentColumn: number = 0;
     pageSubscription: Subscription|undefined;
-    deviceSubscription: Subscription|undefined;
     initialDbSpl: number = 40;
     currentFrequencyIndex: number = 0;
     selectedFrequency: number = this.frequencies[0];
@@ -79,25 +77,22 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
                     this.device = this.deviceUtil.getDeviceFromTabsintId(updatedAudiometryResponseArea.tabsintId ?? "1");
                     if (this.device) {
                         let examProperties = {};
-                        await this.devicesService.queueExam(this.device, "ManualAudiometry", examProperties);
+                        let resp = await this.devicesService.queueExam(this.device, "ManualAudiometry", examProperties);
+                        console.log("resp from tympan after manual audiometry queue exam:",resp);
                     } else {
                         this.logger.error("Error setting up Manual Audiometry exam");
                     }
                 }
             }
         });
-
-        this.deviceSubscription = this.devicesModel.deviceResponseSubject.subscribe((msg: DeviceResponse) => {
-            console.log("device msg:",JSON.stringify(msg));
-        });
     }
     
-    ngOnDestroy() {
+    async ngOnDestroy() {
         if (this.device) {
-            this.devicesService.abortExams(this.device);
+            let resp = await this.devicesService.abortExams(this.device);
+            console.log("resp from tympan after manual audiometry abort exams:",resp);
         }
         this.pageSubscription?.unsubscribe();
-        this.deviceSubscription?.unsubscribe();
     }
 
     onFrequencyChange(selectedFreq: number): void {
@@ -123,14 +118,15 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         }
     }
 
-    playTone() {
+    async playTone() {
         let examProperties = {
             "F": this.selectedFrequency,
             "Level": this.currentDbSpl,
             "OutputChannel": this.selectedEar==="Left" ? "HPL0" : "HPR0"
         };
         if (this.device) {
-            this.devicesService.examSubmission(this.device, examProperties);
+            let resp = await this.devicesService.examSubmission(this.device, examProperties);
+            console.log("resp from tympan after manual audiometry exam submission:",resp);
         }
     }
 
