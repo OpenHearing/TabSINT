@@ -113,6 +113,14 @@ export class ExamService {
         this.state.examState = ExamState.Ready;
     }
 
+    submitPartial() {
+        this.currentPage.followOns = [{
+            conditional: "true",
+            target: { reference: "@PARTIAL"}
+        }];
+        this.submit();
+    }
+
     /** Advance to next page in the exam
      * @summary Increments the exam page index. Advances to next page in protocolStack. If there is no next page it will
      * search for a followOn. The protocolStack will be updated.
@@ -247,8 +255,12 @@ export class ExamService {
     private findFollowOn() {
         let id: string | undefined = undefined;
         this.currentPage.followOns?.forEach((followOn: FollowOnInterface) => {
-            // TODO: This should be updated to use eval
-            if (this.results.currentPage.response == followOn.conditional.split("==")[1].replaceAll("'","")) {
+            // backward compatibility
+            if (followOn.conditional.split("==")[0] == "result.response") {
+                followOn.conditional = followOn.conditional.replace("result.response","this.results.currentPage.response");
+            }
+
+            if (eval(followOn.conditional)) {
                 // TODO: handle if target is protocol or page
                 if (isProtocolReferenceInterface(followOn.target)) {
                     id = followOn.target.reference;                

@@ -351,7 +351,7 @@ export class ProtocolsComponent {
   );
 
   protocolServerPopover = this.translate.instant(
-    "Choose the location to use as the protocol source and results output. <br /><br />Additional configuration for the <b>TabSINT Server</b> and <b>Gitlab</b> will become active below this box when a server is selected"
+    "Choose the location to use as the protocol source and results output. <br /><br />Additional configuration for <b>Gitlab</b> will become active below this box when it is selected"
   );
 
   protocolTablePopover = this.translate.instant(
@@ -417,26 +417,6 @@ export class ProtocolsComponent {
 
   localAddPopover = this.translate.instant(
     "The local directory under <code>Documents/tabsint-protocols</code> where the protocol is stored on the tablet. Press <b>Add</b> to select a protocol directory via a file chooser."
-  );
-
-  tabsintAddPopover = this.translate.instant(
-    "Type in the <b>Site Name</b> to download from the TabSINT Server defined in the <b>TabSINT Server Configuration</b> advanced settings below."
-  );
-
-  tabsintUrlPopover = this.translate.instant(
-    'Host URL of the TabSINT server. Generally this will be "https://hffd.crearecomputing.com/"'
-  );
-
-  tabsintUsernamePopover = this.translate.instant(
-    "The username used to access the TabSINT server"
-  );
-
-  tabsintPasswordPopover = this.translate.instant(
-    "The password used to access the TabSINT server"
-  );
-
-  serverAuthorizePopover = this.translate.instant(
-    "If TabSINT Server configuration values are not valid, TabSINT will not be able to download protocols or upload results. Tap <strong>Validate Now</strong> to ensure configuration parameters are valid. <br /><br /> Validation may take up to 15 seconds."
   );
 
 }
