@@ -15,6 +15,7 @@ import { DevicesService } from "../../../../controllers/devices.service";
 import { ConnectedDevice } from "../../../../interfaces/connected-device.interface";
 import { DeviceUtil } from "../../../../utilities/device-utility";
 import { Logger } from "../../../../utilities/logger.service";
+import { ExamService } from "../../../../controllers/exam.service";
 
 @Component({
     selector: 'manual-audiometry-view',
@@ -44,6 +45,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     currentFrequencyIndex: number = 0;
     selectedFrequency: number = this.frequencies[0];
     device: ConnectedDevice|undefined;
+    currentStep: string = 'Exam';
 
     constructor(
         private readonly resultsModel: ResultsModel, 
@@ -53,11 +55,13 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         private readonly devicesService: DevicesService,
         private readonly devicesModel: DevicesModel,
         private readonly deviceUtil: DeviceUtil,
+        private readonly examService: ExamService, 
         private readonly logger: Logger
     ) {
         this.results = this.resultsModel.getResults();
         this.protocol = this.protocolModel.getProtocolModel();
         this.state = this.stateModel.getState();
+        
     }
 
     ngOnInit() {
@@ -75,6 +79,10 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
                     this.leftThresholds = new Array(this.frequencies.length).fill(null);
                     this.rightThresholds = new Array(this.frequencies.length).fill(null);
                     this.selectedFrequency = this.frequencies[0];
+
+                    if (updatedAudiometryResponseArea.showResults === true) {
+                        this.examService.submit = this.submitResults.bind(this);
+                    }
 
                     this.device = this.deviceUtil.getDeviceFromTabsintId(updatedAudiometryResponseArea.tabsintId ?? "1");
                     if (this.device) {
@@ -147,5 +155,10 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
             rightThresholds: this.rightThresholds,
             leftThresholds: this.leftThresholds
         }
+    }
+
+    submitResults(): void {
+        this.currentStep = 'Results';
+        this.examService.submit = this.examService.submitDefault.bind(this.examService);
     }
 }

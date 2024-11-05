@@ -1,5 +1,5 @@
 <div [ngSwitch]="currentStep">
-  <div *ngSwitchCase="" class="audiometry-container">
+  <div *ngSwitchCase="'Exam'" class="audiometry-container">
     <div class="header-section">
       <h2>Minimum Output Level = {{minOutputLevel}} dB HL and Maximum Output Level = {{maxOutputLevel}} dB HL</h2>
       <p>Use to verify GUI section</p>
@@ -94,9 +94,8 @@
     </div>
   </div>
   
-  <div *ngSwitchCase="'finished'">
-    <h3 *ngIf="!showResults" style="color: #0369ad;">Calibration Exam Finished!!</h3>
-    <manual-audiometry-results-viewer *ngIf="showResults"></manual-audiometry-results-viewer>
+  <div *ngSwitchCase="'Results'">
+    <manual-audiometry-results-viewer-view></manual-audiometry-results-viewer-view>
   </div>
 
 </div>

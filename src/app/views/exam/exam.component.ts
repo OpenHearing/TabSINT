@@ -30,7 +30,7 @@ export class ExamComponent {
     private readonly diskModel: DiskModel,
     private readonly stateModel: StateModel,
     private readonly pageModel: PageModel,
-    private buttonTextService: ButtonTextService
+    private readonly buttonTextService: ButtonTextService
   ) {
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();
