@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { StateInterface } from './state.interface';
 import { AppState, ExamState, ProtocolState } from "../../utilities/constants";
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -39,16 +40,9 @@ export class StateModel {
         newDeviceConnection: false
     }
 
+    stateModelSubject = new BehaviorSubject<StateInterface>(this.stateModel);
+
     getState(): StateInterface {
         return this.stateModel;
     }
-
-    setAppState(_appState: AppState) {
-        this.stateModel.appState = _appState;
-    }
-
-    setProtocolState(_protocolState: ProtocolState) {
-        this.stateModel.protocolState = _protocolState;
-    }
-
 }

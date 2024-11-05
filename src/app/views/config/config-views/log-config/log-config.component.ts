@@ -25,10 +25,9 @@ export class LogConfigComponent {
     public translate: TranslateService,
     public stateModel: StateModel,
     public logger: Logger,
-    private sqLite: SqLite,
-    private tasks: Tasks,
-    private fileService:FileService,
-    private notifications: Notifications
+    private readonly sqLite: SqLite,
+    private readonly fileService:FileService,
+    private readonly notifications: Notifications
   ) { 
     this.state = this.stateModel.getState();
     this.showLogs = this.state.isPaneOpen.appLog;

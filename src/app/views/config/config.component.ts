@@ -23,7 +23,7 @@ export class ConfigComponent {
 
   ngOnInit(): void {
     this.examService.switchToAdminView();
-    this.stateModel.setAppState(AppState.Admin);
+    this.state.appState = AppState.Admin;
   }
 
   title = 'config';

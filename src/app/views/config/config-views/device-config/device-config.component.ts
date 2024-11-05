@@ -21,7 +21,7 @@ export class DeviceConfigComponent {
   }
 
   ngOnInit(): void {
-    this.stateModel.setAppState(AppState.Admin);
+    this.state.appState = AppState.Admin;
   }
 
 }

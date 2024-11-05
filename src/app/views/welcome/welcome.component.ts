@@ -9,6 +9,9 @@ import { DiskModel } from '../../models/disk/disk.service';
 import { AppModel } from '../../models/app/app.service';
 
 import { DisclaimerComponent } from '../disclaimer/disclaimer.component';
+import { StateModel } from '../../models/state/state.service';
+import { AppState } from '../../utilities/constants';
+import { StateInterface } from '../../models/state/state.interface';
 
 @Component({
   selector: 'app-welcome',
@@ -19,14 +22,17 @@ export class WelcomeComponent {
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
   app: AppInterface;
+  state: StateInterface;
 
   constructor(
     private readonly appModel: AppModel,
     private readonly dialog: MatDialog,
     private readonly diskModel: DiskModel,
+    private readonly stateModel: StateModel
   ) {
     this.disk = this.diskModel.getDisk();
     this.app = this.appModel.getApp();
+    this.state = this.stateModel.getState();
 
     if (this.disk.init && !this.app.browser) {
       this.dialog.open(DisclaimerComponent).afterClosed().subscribe(() => {
@@ -39,10 +45,12 @@ export class WelcomeComponent {
     this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
         this.disk = updatedDisk;
     })    
+    this.state.appState = AppState.Welcome;
   }
 
   ngOnDestroy() {
     this.diskSubscription?.unsubscribe();
+    this.state.appState = AppState.null;
   }
 
   // TODO: Replace this variable with a model?
