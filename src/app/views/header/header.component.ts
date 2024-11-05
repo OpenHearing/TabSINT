@@ -5,7 +5,6 @@ import { DialogDataInterface } from '../../interfaces/dialog-data.interface';
 import { Notifications } from '../../utilities/notifications.service';
 import { ExamService } from '../../controllers/exam.service';
 import { Logger } from '../../utilities/logger.service';
-import { Subscription } from 'rxjs';
 import { StateInterface } from '../../models/state/state.interface';
 
 @Component({
@@ -14,26 +13,17 @@ import { StateInterface } from '../../models/state/state.interface';
   styleUrl: './header.component.css'
 })
 export class HeaderComponent {
-  stateModelSubscription: Subscription | undefined;
-  isExam: boolean = false;
-  isTesting: boolean = false;
+  state: StateInterface;
+  ExamState = ExamState;
+  AppState = AppState;
   
   constructor(
     private readonly examService: ExamService,
     private readonly logger: Logger,
     private readonly notifications: Notifications,
     private readonly stateModel: StateModel
-  ) {}
-
-  ngOnInit(): void {
-    this.stateModelSubscription = this.stateModel.stateModelSubject.subscribe( (updatedStateModel: StateInterface) => {
-      this.isExam = updatedStateModel.appState === AppState.Exam;
-      this.isTesting = updatedStateModel.examState === ExamState.Testing;
-    })
-  }
-
-  ngOnDestroy(): void {
-    this.stateModelSubscription?.unsubscribe();
+  ) {
+    this.state = this.stateModel.getState();
   }
 
   resetExam() {

@@ -6,14 +6,14 @@
       <!-- <div class="row"> -->
   
         <!-- Exam Header -->
-        <div *ngIf="isExam">
+        <div *ngIf="state.appState === AppState.Exam">
           <!-- <h1 *ngIf="page.dm.title && dm.state.mode !== 'READY'" class="surveytitle truncate">
             {{page.dm.title}}
           </h1> -->
         </div>
   
         <!-- Admin Header -->
-        <div *ngIf="!isExam">
+        <div *ngIf="state.appState !== AppState.Exam">
           <h1 class="surveytitle truncate">
             <!-- <ng-transclude></ng-transclude> -->
             Admin View
@@ -41,10 +41,10 @@
                 <button routerLink="/exam" ngbDropdownItem>Exam View</button>
                 <button routerLink="/admin" ngbDropdownItem>Admin View</button>
                 <a href="https://tabsint.org/"><button ngbDropdownItem>Documentation</button></a> 
-                <div *ngIf="isExam">
+                <div *ngIf="state.examState === ExamState.Testing && state.appState === AppState.Exam">
                   <div class="dropdown-divider"></div>
-                  <button *ngIf="isExam" (click)="resetExam()" ngbDropdownItem><i class="ion-close"></i> {{'Reset Exam and Discard Results'|translate}}</button>
-                  <button *ngIf="isExam" (click)="submitPartialExam()" ngbDropdownItem><i class="ion-refresh"></i> {{'Reset Exam and Submit Partial Results'|translate}}</button>
+                  <button (click)="resetExam()" ngbDropdownItem><i class="ion-close"></i> {{'Reset Exam and Discard Results'|translate}}</button>
+                  <button (click)="submitPartialExam()" ngbDropdownItem><i class="ion-refresh"></i> {{'Reset Exam and Submit Partial Results'|translate}}</button>
                 </div>
     
               </div>

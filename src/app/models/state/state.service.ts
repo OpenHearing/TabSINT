@@ -40,8 +40,6 @@ export class StateModel {
         newDeviceConnection: false
     }
 
-    stateModelSubject = new BehaviorSubject<StateInterface>(this.stateModel);
-
     getState(): StateInterface {
         return this.stateModel;
     }
