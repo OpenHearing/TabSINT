@@ -132,15 +132,6 @@
             "frequencies": [500, 1000, 2000, 4000, 8000],
             "adjustments": [15, -18, 5, 3]
           }
-        }, 
-        {
-          "id": "audiometry_001_result_viewer",
-          "title": "Audiometry Result Viewer",
-          "instructionText": "View manual audiometry results",
-          "responseArea": {
-            "type": "manualAudiometryResponseAreaResultViewer",
-            "pageIdsToDisplay": ["audiometry_001"]
-          }
         },
         {
           "id": "backtomain",

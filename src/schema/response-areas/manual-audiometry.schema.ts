@@ -1,7 +1,6 @@
 
 import { JSONSchemaType } from "ajv"
 import { ManualAudiometryInterface } from "../../app/views/response-area/response-areas/manual-audiometry/manual-audiometry.interface";
-import { ManualAudiometryResultViewerInterface } from "../../app/views/response-area/response-areas/manual-audiometry-result-viewer/manual-audiometry-result-viewer.interface";
 
 export const manualAudiometrySchema: JSONSchemaType<ManualAudiometryInterface> = {
     type: "object",
@@ -23,18 +22,14 @@ export const manualAudiometrySchema: JSONSchemaType<ManualAudiometryInterface> =
             type: "array",
             items: { type: "number" },
             nullable: true
-        }
-    },
-    required: ["type"]
-};
+        },
+        retspls: {
+            type: "array",
+            items: { type: "number" },
+            nullable: true
+        },
+        showResults: {type: "boolean", nullable: true, default: true}
 
-export const manualAudiometryResultViewerSchema: JSONSchemaType<ManualAudiometryResultViewerInterface> = {
-    type: "object",
-    properties: {
-        enableSkip: { type: "boolean", nullable: true, default: false },
-        responseRequired: { type: "boolean", nullable: true, default: true },
-        type: { type: "string", enum: ["manualAudiometryResponseAreaResultViewer"] },
-        pageIdsToDisplay: { type: "array", items: {type: "string", default: '' }},
     },
     required: ["type"]
 };

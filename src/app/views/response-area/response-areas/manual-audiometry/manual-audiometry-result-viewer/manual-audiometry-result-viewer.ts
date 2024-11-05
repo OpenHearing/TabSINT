@@ -1,14 +1,14 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { Subscription } from "rxjs";
 
-import { PageInterface } from "../../../../models/page/page.interface";
-import { ResultsInterface } from "../../../../models/results/results.interface";
+import { PageInterface } from "../../../../../models/page/page.interface";
+import { ResultsInterface } from "../../../../../models/results/results.interface";
 
-import { PageModel } from "../../../../models/page/page.service";
-import { ResultsModel } from "../../../../models/results/results-model.service";
-import { Logger } from "../../../../utilities/logger.service";
-import { AudiogramDataStructInterface } from "../../../../interfaces/audiogram.interface";
-import { ResultViewerResponseAreaInterface, ResultViewResponsesInterface } from "../../../../interfaces/result-view-responses.interface";
+import { PageModel } from "../../../../../models/page/page.service";
+import { ResultsModel } from "../../../../../models/results/results-model.service";
+import { Logger } from "../../../../../utilities/logger.service";
+import { AudiogramDataStructInterface } from "../../../../../interfaces/audiogram.interface";
+import { ResultViewerResponseAreaInterface, ResultViewResponsesInterface } from "../../../../../interfaces/result-view-responses.interface";
 
 @Component({
     selector: 'manual-audiometry-result-viewer-view',

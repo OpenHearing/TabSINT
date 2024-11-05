@@ -62,7 +62,8 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     private readonly logger: Logger, 
     private readonly resultsService: ResultsService, 
     private readonly resultsModel: ResultsModel,
-    private examService: ExamService, private buttonTextService: ButtonTextService
+    private readonly examService: ExamService, 
+    private readonly buttonTextService: ButtonTextService
   ) {
     this.results = this.resultsModel.getResults()
     this.examService.submit = this.nextStep.bind(this);

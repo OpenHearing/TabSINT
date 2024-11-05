@@ -8,4 +8,6 @@ export interface ManualAudiometryInterface extends CommonResponseAreaInterface {
     currentDbSpl?: number; 
     frequencies?: number[];  
     adjustments?: number[];
+    retspls?: number[];
+    showResults?: boolean;
 }

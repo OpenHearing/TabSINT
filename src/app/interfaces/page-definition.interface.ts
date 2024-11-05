@@ -1,6 +1,6 @@
 import { CalibrationExamInterface } from "../views/response-area/response-areas/calibration-exam/calibration-exam-component/calibration-exam.interface";
 import { PageTypes } from "../types/custom-types";
-import { ManualAudiometryResultViewerInterface } from "../views/response-area/response-areas/manual-audiometry-result-viewer/manual-audiometry-result-viewer.interface";
+import { ManualAudiometryResultViewerInterface } from "../views/response-area/response-areas/manual-audiometry/manual-audiometry-result-viewer/manual-audiometry-result-viewer.interface";
 import { ManualAudiometryInterface } from "../views/response-area/response-areas/manual-audiometry/manual-audiometry.interface";
 import { MultipleChoiceInterface } from "../views/response-area/response-areas/multiple-choice/multiple-choice.interface";
 import { TextBoxResultViewerInterface } from "../views/response-area/response-areas/textbox-result-viewer/textbox-result-viewer.interface";
