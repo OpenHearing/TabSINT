@@ -1,14 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Subscription } from 'rxjs';
-
 import { DevicesInterface, TympanResponse } from '../models/devices/devices.interface';
 import { DiskInterface } from '../models/disk/disk.interface';
-
 import { ConnectedDevice, NewConnectedDevice } from '../interfaces/connected-device.interface';
 import { DevicesModel } from '../models/devices/devices-model.service';
 import { DiskModel } from '../models/disk/disk.service';
-
 import { DeviceState } from './constants';
+import { PendingMsgInfo } from '../controllers/devices/tympan.service';
 
 @Injectable({
     providedIn: 'root',
@@ -75,10 +73,10 @@ export class DeviceUtil {
         }
     }
 
-    checkTympanResponse(expectedMsgInfo: any, response: TympanResponse) {
+    checkTympanResponse(expectedMsgInfo: PendingMsgInfo|null, response: TympanResponse) {
         let resp = false;
-        if (expectedMsgInfo.tabsintId === parseInt(response.tabsintId)) {
-            if (-parseInt(expectedMsgInfo.msgId) === JSON.parse(response.msg)[0]) {
+        if (expectedMsgInfo!.tabsintId === parseInt(response.tabsintId)) {
+            if (-parseInt(expectedMsgInfo!.msgId) === JSON.parse(response.msg)[0]) {
                 resp = true;
             }
         }

@@ -3,14 +3,18 @@ import { Logger } from '../../utilities/logger.service';
 import { TympanWrap } from '../../utilities/tympan-wrap.service';
 import { BleDevice } from '../../interfaces/bluetooth.interface';
 import { DevicesModel } from '../../models/devices/devices-model.service';
-import { DevicesInterface } from '../../models/devices/devices.interface';
+import { DevicesInterface, TympanResponse } from '../../models/devices/devices.interface';
 import { DeviceState } from '../../utilities/constants';
 import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
 import { NewConnectedDevice, ConnectedDevice } from '../../interfaces/connected-device.interface';
 import { DeviceUtil } from '../../utilities/device-utility';
 import { Subscription } from "rxjs";
-import { TympanResponse } from '../../models/devices/devices.interface';
+
+export interface PendingMsgInfo {
+    tabsintId: number;
+    msgId: string;
+}
 
 @Injectable({
     providedIn: 'root',
@@ -20,7 +24,7 @@ export class TympanService {
     devices: DevicesInterface;
     state: StateInterface;
     tympanSubscription: Subscription|undefined;
-    pendingMsgInfo: any|null = null;
+    pendingMsgInfo: PendingMsgInfo|null = null;
     pendingMsg: boolean = false;
     tympanResponse: string|undefined;
     currentTimeoutTimeMs: number = 0;
@@ -75,8 +79,7 @@ export class TympanService {
     }
 
     async startScan() {
-        let timeout = 5000;
-        this.devicesModel.availableDevicesSubject.next([]);
+        let timeout = 10000;
         await this.tympanWrap.startScanning(this.devicesModel.availableDevicesSubject, timeout);
     }
 

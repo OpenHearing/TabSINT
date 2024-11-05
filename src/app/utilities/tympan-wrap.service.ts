@@ -69,7 +69,7 @@ export class TympanWrap {
     }
 
     async scan(subject: BehaviorSubject<BleDevice[]>, timeout:number=5000) {
-        // subject.next([]);
+        subject.next([]);
         this.scanning = true;
         let results: BleDevice[] = []
         await BleClient.requestLEScan({services: [this.ADAFRUIT_SERVICE_UUID],}, (result:any) => {

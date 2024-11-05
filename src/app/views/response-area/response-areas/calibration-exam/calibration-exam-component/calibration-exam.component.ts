@@ -4,11 +4,9 @@ import { Subscription } from 'rxjs';
 import { CalibrationExamInterface } from './calibration-exam.interface';
 import { PageInterface } from "../../../../../models/page/page.interface";
 import { DevicesService } from '../../../../../controllers/devices.service';
-import { DevicesModel } from '../../../../../models/devices/devices-model.service';
 import { DeviceUtil } from '../../../../../utilities/device-utility';
 import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
 import { Logger } from '../../../../../utilities/logger.service';
-import { ResultsService } from '../../../../../controllers/results.service';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { ResultsInterface } from '../../../../../models/results/results.interface';
 import { ExamService } from '../../../../../controllers/exam.service';
@@ -59,7 +57,8 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     private readonly deviceUtil: DeviceUtil, 
     private readonly logger: Logger, 
     private readonly resultsModel: ResultsModel,
-    private examService: ExamService, private buttonTextService: ButtonTextService
+    private examService: ExamService, 
+    private buttonTextService: ButtonTextService
   ) {
     this.results = this.resultsModel.getResults()
     this.examService.submit = this.nextStep.bind(this);
@@ -85,9 +84,6 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
         }
       }
     });
-    // this.tympanSubscription = this.devicesModel.tympanResponseSubject.subscribe((response: TympanResponse) => {
-    //   console.log("device msg:", JSON.stringify(response));
-    // });
     this.results.currentExam.responses = [];
     this.updateButtonLabel();
   }
