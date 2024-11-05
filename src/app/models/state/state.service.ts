@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { StateInterface } from './state.interface';
 import { AppState, ExamState, ProtocolState } from "../../utilities/constants";
-import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
