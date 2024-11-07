@@ -37,7 +37,7 @@ describe('tympanWrap', () => {
             window,
             logger,
             new DevicesModel(logger),
-            new DeviceUtil(new DevicesModel(logger),diskModel)
+            new DeviceUtil(devicesModel, diskModel)
         );
     })
 
