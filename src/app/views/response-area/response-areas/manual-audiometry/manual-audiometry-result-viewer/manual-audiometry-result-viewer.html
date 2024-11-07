@@ -1,74 +1,67 @@
-<div *ngFor="let aD of audiogramData; let i=index">
+<div class="audiometry-container">
+  <audiogram [dataStruct]="audiogramData"></audiogram>
+  
+  <!-- Results Table Section -->
+  <!-- Left Ear Table -->
+  <div class="ear-table left-ear">
+    <h3 class="ear-title">Left</h3>
+    <table class="results-table">
+      <thead>
+        <tr>
+          <th>Frequency (kHz)</th>
+          <ng-container *ngFor="let freq of audiogramData.frequencies; let k=index">
+            <th *ngIf="audiogramData.channels[k]==='left'">
+              {{ freq }}
+            </th>
+          </ng-container>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Threshold (dB SPL)</td>
+          <ng-container  *ngFor="let threshold of audiogramData.thresholds; let k=index">
+            <td *ngIf="audiogramData.channels[k]==='left'">
+              {{ threshold || '' }}
+            </td>
+          </ng-container>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-  <h2 [textContent]="responses[i].questionMainText" *ngIf="responses[i].questionMainText"></h2>
-  <p class="subtext pad-top" *ngIf="responses[i].questionSubText">{{responses[i].questionSubText}}</p>
-  <p class="instructions" *ngIf="responses[i].instructionText">{{responses[i].instructionText}}</p>    
+  <!-- Right Ear Table -->
+  <div class="ear-table right-ear">
+    <h3 class="ear-title">Right</h3>
+    <table class="results-table">
+      <thead>
+        <tr>
+          <th>Frequency (kHz)</th>
+          <ng-container *ngFor="let freq of audiogramData.frequencies; let k=index">
+            <th *ngIf="audiogramData.channels[k]==='right'">
+              {{ freq }}
+            </th>
+          </ng-container>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Threshold (dB SPL)</td>
+          
+          <ng-container  *ngFor="let threshold of audiogramData.thresholds; let k=index"> 
+            <td *ngIf="audiogramData.channels[k]==='right'">
+              {{ threshold || '' }}
+            </td>
+          </ng-container>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-  <div class="audiometry-container">
-    <audiogram [dataStruct]="aD"></audiogram>
-    
-    <!-- Results Table Section -->
-    <!-- Left Ear Table -->
-    <div class="ear-table left-ear">
-      <h3 class="ear-title">Left</h3>
-      <table class="results-table">
-        <thead>
-          <tr>
-            <th>Frequency (kHz)</th>
-            <ng-container *ngFor="let freq of aD.frequencies; let k=index">
-              <th *ngIf="aD.channels[k]==='left'">
-                {{ freq }}
-              </th>
-            </ng-container>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Threshold (dB SPL)</td>
-            <ng-container  *ngFor="let threshold of aD.thresholds; let k=index">
-              <td *ngIf="aD.channels[k]==='left'">
-                {{ threshold || '' }}
-              </td>
-            </ng-container>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Right Ear Table -->
-    <div class="ear-table right-ear">
-      <h3 class="ear-title">Right</h3>
-      <table class="results-table">
-        <thead>
-          <tr>
-            <th>Frequency (kHz)</th>
-            <ng-container *ngFor="let freq of aD.frequencies; let k=index">
-              <th *ngIf="aD.channels[k]==='right'">
-                {{ freq }}
-              </th>
-            </ng-container>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Threshold (dB SPL)</td>
-            
-            <ng-container  *ngFor="let threshold of aD.thresholds; let k=index"> 
-              <td *ngIf="aD.channels[k]==='right'">
-                {{ threshold || '' }}
-              </td>
-            </ng-container>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Legend Section -->
-    <div class="legend">
-      <p><strong>Legend:</strong></p>
-      <p>DNC = Did not converge</p>
-      <p>(x+) = Hearing potentially beyond the calibrated range</p>
-      <p>(-x) = Hearing potentially better than the calibrated range</p>
-    </div>
+  <!-- Legend Section -->
+  <div class="legend">
+    <p><strong>Legend:</strong></p>
+    <p>DNC = Did not converge</p>
+    <p>(x+) = Hearing potentially beyond the calibrated range</p>
+    <p>(-x) = Hearing potentially better than the calibrated range</p>
   </div>
 </div>

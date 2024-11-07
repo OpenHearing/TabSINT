@@ -95,7 +95,9 @@
   </div>
   
   <div *ngSwitchCase="'Results'">
-    <manual-audiometry-results-viewer-view></manual-audiometry-results-viewer-view>
+    <manual-audiometry-results-viewer
+      [audiogramData] = "audiogramData">
+    </manual-audiometry-results-viewer>
   </div>
 
 </div>

@@ -16,6 +16,7 @@ import { ConnectedDevice } from "../../../../interfaces/connected-device.interfa
 import { DeviceUtil } from "../../../../utilities/device-utility";
 import { Logger } from "../../../../utilities/logger.service";
 import { ExamService } from "../../../../controllers/exam.service";
+import { AudiogramDataStructInterface } from "../../../../interfaces/audiogram.interface";
 
 @Component({
     selector: 'manual-audiometry-view',
@@ -46,6 +47,13 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     selectedFrequency: number = this.frequencies[0];
     device: ConnectedDevice|undefined;
     currentStep: string = 'Exam';
+    audiogramData: AudiogramDataStructInterface = {
+        frequencies: [1000],
+        thresholds: [null],
+        channels: [''],
+        resultTypes: [''],
+        masking: [false]
+    };
 
     constructor(
         private readonly resultsModel: ResultsModel, 
@@ -158,6 +166,21 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     }
 
     submitResults(): void {
+
+        const leftChannels = Array(this.leftThresholds.length).fill('left');
+        const rightChannels = Array(this.rightThresholds.length).fill('right');
+        const channels = leftChannels.concat(rightChannels);
+        const masking = Array(channels.length).fill(false);
+        const resultTypes = Array(channels.length).fill('Threshold');
+
+        this.audiogramData =  {
+            frequencies: this.frequencies.concat(this.frequencies),
+            thresholds: this.leftThresholds.concat(this.rightThresholds),
+            channels,
+            resultTypes,
+            masking,
+        };
+        
         this.currentStep = 'Results';
         this.examService.submit = this.examService.submitDefault.bind(this.examService);
     }
