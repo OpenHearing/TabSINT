@@ -55,9 +55,9 @@ export class DevicesModel {
             if (info.realDiskFree !== undefined) {
                 this.devicesModel.diskspace = String(Math.round(info.realDiskFree / (1024 * 1024)));
             }
-                this.logger.debug("Device info processed -- \n" + JSON.stringify((this.devicesModel)));
+            this.logger.debug("Device info processed -- \n" + JSON.stringify((this.devicesModel)));
         } catch (error) {
-                this.logger.debug("Device info not available");
+            this.logger.debug("Device info not available");
         }
     }
 
