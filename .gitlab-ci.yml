@@ -54,9 +54,13 @@ test:
     - IMAGE_TAG="$IMAGE_TAG_BASE:$SAFE_COMMIT_REF_NAME"
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker pull $IMAGE_TAG
-    - docker run --rm $IMAGE_TAG npm run test:headless
+    - docker run $IMAGE_TAG npm run test:headless
+    - echo $IMAGE_TAG
     - docker run ls .
     - docker run ls coverage/
+    - docker cp code.crearecomputing.com:5050/hearingproducts/open-hearing-group/open-hearing-tabsint:feature-manual-audiometry-results/coverage/lcov.info ec./coverage/lcov.info
+    - docker stop $IMAGE_TAG
+    - docker rm $IMAGE_TAG
   artifacts:
     paths:
       - coverage/lcov.info
