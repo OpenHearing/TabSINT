@@ -25,17 +25,23 @@ module.exports = function (config) {
       suppressAll: true // removes the duplicated traces
     },
     coverageReporter: {
-      type: 'lcov', // LCOV format for SonarQube
-      dir: require('path').join(__dirname, './coverage/tabsint'),
+      dir: require('path').join(__dirname, './coverage'),
       subdir: '.',
       reporters: [
+        // { type: 'lcov', subdir: '.' }, // for lcov.info file for SonarQube
         { type: 'html' },
         { type: 'text-summary' }
       ],
       includeAllSources: true,
     },
     reporters: ['progress', 'kjhtml', 'coverage'],
-    browsers: ['Chrome'],
+    browsers: ['ChromeHeadlessNoSandbox'],
+    customLaunchers: {
+      ChromeHeadlessNoSandbox: {
+        base: 'ChromeHeadless',
+        flags: ['--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage']
+      }
+    },
     restartOnFileChange: true
   });
 };
