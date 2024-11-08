@@ -18,22 +18,6 @@ stages:
   - beta-release
   - cleanup
 
-sonarqube-check:
-  stage: sonarqube-check
-  cache:
-    policy: pull
-    key: "${CI_COMMIT_SHORT_SHA}"
-    paths:
-      - sonar-scanner/
-  script:
-    - sonar-scanner
-  allow_failure: true
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-    - if: $CI_COMMIT_BRANCH == 'master'
-    - if: $CI_COMMIT_BRANCH == 'main'
-    - if: $CI_COMMIT_BRANCH == 'develop'
-
 build-docker-image:
   stage: build-docker-image
   image: docker:cli
@@ -71,6 +55,32 @@ test:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker pull $IMAGE_TAG
     - docker run --rm $IMAGE_TAG npm run test:headless
+  artifacts:
+    paths:
+      - coverage/lcov.info
+    untracked: false
+    when: on_success
+    access: all
+    expire_in: "1 days"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == 'master'
+    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'develop'
+
+sonarqube-check:
+  stage: sonarqube-check
+  cache:
+    policy: pull
+    key: "${CI_COMMIT_SHORT_SHA}"
+    paths:
+      - sonar-scanner/
+  dependencies:
+    - test
+  script:
+    - ls coverage/
+    - sonar-scanner
+  allow_failure: true
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_BRANCH == 'master'
