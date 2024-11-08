@@ -12,9 +12,9 @@ variables:
 
 stages:
   - build-docker-image
+  - test
   - sonarqube-check
   - sonarqube-vulnerability-report
-  - test
   - beta-release
   - cleanup
 
