@@ -28,8 +28,8 @@ module.exports = function (config) {
       dir: require('path').join(__dirname, './coverage'),
       subdir: '.',
       reporters: [
-        // { type: 'lcov', subdir: '.' }, // for lcov.info file for SonarQube
-        { type: 'html' },
+        { type: 'lcov' }, // for lcov.info file for SonarQube
+        // { type: 'html' },
         { type: 'text-summary' }
       ],
       includeAllSources: true,

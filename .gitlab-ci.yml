@@ -11,9 +11,9 @@ variables:
   IMAGE_TAG_BASE: $CI_REGISTRY_IMAGE
 
 stages:
+  - build-docker-image
   - sonarqube-check
   - sonarqube-vulnerability-report
-  - build-docker-image
   - test
   - beta-release
   - cleanup
