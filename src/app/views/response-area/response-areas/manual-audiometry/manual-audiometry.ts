@@ -17,6 +17,7 @@ import { DeviceUtil } from "../../../../utilities/device-utility";
 import { Logger } from "../../../../utilities/logger.service";
 import { ExamService } from "../../../../controllers/exam.service";
 import { AudiogramDataStructInterface } from "../../../../interfaces/audiogram.interface";
+import { isManualAudiometryResponseArea } from "../../../../guards/type.guard";
 
 @Component({
     selector: 'manual-audiometry-view',
@@ -73,41 +74,10 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
-            if (updatedPage?.responseArea?.type === "manualAudiometryResponseArea") {
-                const updatedAudiometryResponseArea = updatedPage?.responseArea as ManualAudiometryInterface;
-
-                if (updatedAudiometryResponseArea) {
-                    this.maxOutputLevel = updatedAudiometryResponseArea.maxOutputLevel ?? 100;
-                    this.minOutputLevel = updatedAudiometryResponseArea.minOutputLevel ?? 0;
-                    this.currentDbSpl = updatedAudiometryResponseArea.currentDbSpl ?? 40;
-                    this.initialDbSpl = this.currentDbSpl; 
-                    this.frequencies = updatedAudiometryResponseArea.frequencies ?? [1, 2, 4];
-                    this.adjustments = updatedAudiometryResponseArea.adjustments ?? [5, -10];
-                    this.leftThresholds = new Array(this.frequencies.length).fill(null);
-                    this.rightThresholds = new Array(this.frequencies.length).fill(null);
-                    this.selectedFrequency = this.frequencies[0];
-
-                    if (updatedAudiometryResponseArea.showResults === true) {
-                        this.examService.submit = this.submitResults.bind(this);
-                    }
-
-                    this.device = this.deviceUtil.getDeviceFromTabsintId(updatedAudiometryResponseArea.tabsintId ?? "1");
-                    if (this.device) {
-                        let examProperties = {};
-                        await this.devicesService.queueExam(this.device, "ManualAudiometry", examProperties);
-                    } else {
-                        this.logger.error("Error setting up Manual Audiometry exam");
-                    }
-                }
-            }
-        });
-
-        this.deviceSubscription = this.devicesModel.deviceResponseSubject.subscribe((msg: DeviceResponse) => {
-            console.log("device msg:",JSON.stringify(msg));
-        });
+        this.pageSubscription = this.pageModel.currentPageSubject.subscribe(this.handlePageUpdate.bind(this));
+        this.deviceSubscription = this.devicesModel.deviceResponseSubject.subscribe(this.logDeviceResponse.bind(this));
     }
-    
+
     ngOnDestroy() {
         if (this.device) {
             this.devicesService.abortExams(this.device);
@@ -183,5 +153,43 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         
         this.currentStep = 'Results';
         this.examService.submit = this.examService.submitDefault.bind(this.examService);
+    }
+        
+    private async handlePageUpdate(updatedPage: PageInterface) {
+        if (isManualAudiometryResponseArea(updatedPage)) {
+            const updatedAudiometryResponseArea = updatedPage.responseArea as ManualAudiometryInterface;
+            this.initializeAudiometrySettings(updatedAudiometryResponseArea);
+            this.setupDevice(updatedAudiometryResponseArea);
+        }
+    }
+
+    private initializeAudiometrySettings(updatedAudiometryResponseArea: ManualAudiometryInterface) {
+        this.maxOutputLevel = updatedAudiometryResponseArea.maxOutputLevel ?? 100;
+        this.minOutputLevel = updatedAudiometryResponseArea.minOutputLevel ?? 0;
+        this.currentDbSpl = updatedAudiometryResponseArea.currentDbSpl ?? 40;
+        this.initialDbSpl = this.currentDbSpl;
+        this.frequencies = updatedAudiometryResponseArea.frequencies ?? [1, 2, 4];
+        this.adjustments = updatedAudiometryResponseArea.adjustments ?? [5, -10];
+        this.leftThresholds = new Array(this.frequencies.length).fill(null);
+        this.rightThresholds = new Array(this.frequencies.length).fill(null);
+        this.selectedFrequency = this.frequencies[0];
+
+        if (updatedAudiometryResponseArea.showResults) {
+            this.examService.submit = this.submitResults.bind(this);
+        }
+    }
+
+    private async setupDevice(updatedAudiometryResponseArea: ManualAudiometryInterface) {
+        this.device = this.deviceUtil.getDeviceFromTabsintId(updatedAudiometryResponseArea.tabsintId ?? "1");
+        if (this.device) {
+            const examProperties = {};
+            await this.devicesService.queueExam(this.device, "ManualAudiometry", examProperties);
+        } else {
+            this.logger.error("Error setting up Manual Audiometry exam");
+        }
+    }
+    
+    private logDeviceResponse(msg: DeviceResponse) {
+        console.log("device msg:", JSON.stringify(msg));
     }
 }
