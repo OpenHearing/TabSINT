@@ -54,6 +54,7 @@ test:
     - IMAGE_TAG="$IMAGE_TAG_BASE:$SAFE_COMMIT_REF_NAME"
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker pull $IMAGE_TAG
+    - mkdir -p coverage
     - CONTAINER_ID=$(docker run -d $IMAGE_TAG npm run test:headless)
     - docker wait $CONTAINER_ID
     - docker cp $CONTAINER_ID:/usr/src/app/coverage/lcov.info ./coverage/lcov.info
