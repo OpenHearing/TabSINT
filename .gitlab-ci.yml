@@ -72,6 +72,8 @@ test:
     when: on_success
     access: all
     expire_in: "1 days"
+  after_script:
+    - rm -rf coverage
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_BRANCH == 'master'
