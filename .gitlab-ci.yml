@@ -56,7 +56,7 @@ test:
     - docker pull $IMAGE_TAG
     - CONTAINER_ID=$(docker run -d $IMAGE_TAG npm run test:headless)
     - docker wait $CONTAINER_ID
-    - docker cp $CONTAINER_ID:/path/to/coverage/lcov.info ./coverage/lcov.info
+    - docker cp $CONTAINER_ID:/usr/src/app/coverage/lcov.info ./coverage/lcov.info
     - docker stop $CONTAINER_ID
     - docker rm $CONTAINER_ID
     # - docker run ls .
