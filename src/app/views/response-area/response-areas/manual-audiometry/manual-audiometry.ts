@@ -174,7 +174,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         this.rightThresholds = new Array(this.frequencies.length).fill(null);
         this.selectedFrequency = this.frequencies[0];
 
-        if (updatedAudiometryResponseArea.showResults) {
+        if (updatedAudiometryResponseArea.showResults ?? true) {
             this.examService.submit = this.submitResults.bind(this);
         }
     }
