@@ -88,39 +88,21 @@ The GUI should display the results (calibration factors and maximum output level
     :widths: 10, 20, 20
     :header-rows: 1
 
-    * - Frequency (Hz)
-      - Calibration Factor (dB FS)
-      - Maximum Output Level (dB SPL)
-    * - 250 
+    * - Result
+      - Value
+      - Units
+    * - Dp Low 
+      - 
+      - dB SPL
+    * - Dp High
       -
+      - dB SPL
+    * - F1
       -
-    * - 500 
+      - dB SPL
+    * - F2
       -
-      -
-    * - 750 
-      -
-      -
-    * - 1000 
-      -
-      -
-    * - 2000 
-      -
-      -
-    * - 3000 
-      -
-      -
-    * - 4000 
-      -
-      -
-    * - 6000 
-      -
-      -
-    * - 8000 
-      -
-      -
-    * - 16000 
-      -
-      -
+      - dB SPL
 
 
 Software Testing Procedures
