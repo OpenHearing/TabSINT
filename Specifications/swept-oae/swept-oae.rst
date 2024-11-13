@@ -46,7 +46,9 @@ The GUI should look like the image below with the following features.
 
 * The following parameters should be configurable in the protocol: Start frequency of the sweep, end frequency of the sweep, frequency ratio, sweep duration, window duration, sweep type (log or linear), minimum number of sweeps, maximum number of sweeps, and the minimum noise floor threshold (i.e., the termination condition)
 * The GUI should display the parameters from the protocol in a table similar to the one shown below
-* There should be a `Submit` button to initiate the exam.
+* There should be a `Submit` button to initiate the exam. The `Submit` button becomes inactive after initating the exam.
+* After initiating the exam, a progress bar appears and the `Submit` button is replaced with an inactive `Next` button (See screen 2 image below).
+* The `Next` button becomes active after the Swept OAE exam concludes.
 
 .. list-table::
    :widths: 50, 50
@@ -73,16 +75,30 @@ The GUI should look like the image below with the following features.
    * - Noise Floor Threshold
      - [MinDpNoiseFloorThresh]
 
-.. figure:: swept-oae-GUI-Screen1.png
+.. figure:: swept-oae-GUI-Screen1a.png
    :align: center
    :width: 400px
 
-   **Figure 1.** *GUI for the swept OAE exam. Screen 1*
+   **Figure 1.** *GUI for the Swept OAE exam priot to submission. Screen 1a*
+
+.. figure:: swept-oae-GUI-Screen1b.png
+   :align: center
+   :width: 400px
+
+   **Figure 2.** *GUI for the swept OAE exam while the exam is in proress. Screen 1b*
 
 Results-View
 ^^^^^^^^^^^^^
 
-The GUI should display the results of the swept OAE exam if specified in the protocol. A table similar to the one shown below should summarize the results saved for the swept OAE exam.
+The GUI should display the results of the Swept OAE exam:
+* Results are plotted in a manner similar to the plot shown below.
+* Below the plot, a table similar to the one shown below should summarize the results saved for the swept OAE exam.
+
+.. figure:: swept-oae-GUI-Results.png
+   :align: center
+   :width: 400px
+
+   **Figure 3.** *GUI for the swept OAE exam while the exam is in proress. Results Screen*
 
 .. list-table::
     :widths: 10, 20, 20
@@ -119,21 +135,25 @@ Algorithm
      - Test Case
      - Acceptance
      - Verified
-   * - The exam presents tones with a specified starting frequency, level, and output channel.
-     - Start a calibration exam by playing a tone.
-     - Verify that the emitted tone is the correct level, frequency and output channel.
+   * - The exam presents chirps with a specified starting and ending frequency for F2, frequency ratio, output levels for ech frequency, sweep duration, window duration, and sweep type.
+     - Initiate a Swept OAE exam using the Submit button.
+     - Verify that the emitted chirp is the correct starting and ending frequency for F2, frequency ratio, output levels for ech frequency, sweep duration, window duration, and sweep type.
      - 
-   * - The target level and frequencies proceed as specified in the protocol.
-     - Complete a swept OAE exam.
-     - Verify that the tones and frequencies were presented as specified in the protocol.
+   * - The exam presents a number of chirps greater than or equal to the Minimum Number of Sweeps and less than or equal to the Maximum Number of Sweeps.
+     - Initiate a Swept OAE exam using the Submit button. Intentionally prevent the exam from meeting the threshold criterion. This could be accomplished in many ways including, but not limited to, specifying a very few number of 
+     - Verify that the exam plays at least the Minimum Number of Sweeps and no more than the Maximum Number of Sweeps, then concludes.
      - 
-   * - After all the frequencies have a calibration factor and maximum output level recorded, the calibration and maximum output levels are recorded.
-     - Complete all the frequencies and both ear cups. Then click the `Finish Calibration` button.
-     - Verify that the ear cup, tone and frequency buttons are disabled, and that clicking the `Finish Calibration` button advances to the next page in the protocol.
+   * - If the noise threshold criterion is met, the exam concludes.
+     - ???
+     - Verify that exam concludes if the noise threshold criterion is met.
      - 
-   * - The calibration factor and maxiumum output levels are displayed.
-     - Complete all the frequencies and both ear cups. Then click the `Finish Calibration` button. Proceed to the results-view page.
-     - Verify that the calibration factor and maxiumum output levels are displayed for the frequencies specified in the protocol.
+   * - The exam can be aborted.
+     - Initiate an exam normally. Once the exam is active, click `Abort`.
+     - Verify that the exam aborts successfully and proceeds to the results-view.
+     - 
+   * - The exam results are displayed.
+     - Complete an exam normally. Then click the `Finish` button. Proceed to the results-view page.
+     - Verify that the OAE, noise floor, F1 and F2 are plotted in dB SPL as a function of F2. Verify that DpLow, DpHigh, F1, and F2 are displayed in table format.
      - 
 
 Data
@@ -147,15 +167,15 @@ Data
      - Test Case
      - Acceptance
      - Verified
-   * - The exam must return all fields defined in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/headphones_narrowband_calibration.rst?ref_type=heads>`_. 
-     - Start a calibration exam and complete the exam successfully. 
-     - Verify the exam returns all result fields defined in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/headphones_narrowband_calibration.rst?ref_type=heads>`_ with appropriate values.
+   * - The exam must return all fields defined in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/swept_dpoae.rst?ref_type=heads>`_. 
+     - Start a Swept OAE exam and complete the exam successfully. 
+     - Verify the exam returns all result fields defined in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/swept_dpoae.rst?ref_type=heads>`_ with appropriate values.
      - 
-   * - The exam must display all `TestCalibrationResults` fields defined  in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/headphones_narrowband_calibration.rst?ref_type=heads>`_.
+   * - The exam must display all `TestSweptDpoaeResults` fields defined  in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/swept_dpoae.rst?ref_type=heads>`_.
      - Start a calibration exam, complete the exam. 
      - Verify that all results are accurately displayed.
      - 
-   * - The exam must export all `TestCalibrationResults` fields defined in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/headphones_narrowband_calibration.rst?ref_type=heads>`_.
+   * - The exam must export all `TestSweptDpoaeResults` fields defined in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/swept_dpoae.rst?ref_type=heads>`_.
      - Submit the exam and export results.
      - Verify that all results are accurately exported.
      - 
@@ -171,11 +191,15 @@ GUI
      - Test Case
      - Acceptance
      - Verified
-   * - The user can submit the flat plate measured output level.
-     - Under the `Calibration` title, enter the level reported by the flat plate. Click `Submit`.
-     - Verify that the frequency auto-proceed to the next one.
+   * - The user can initiate the exam specified in the protocol.
+     - Load a swept oae exam protocol. Then, click `Submit`.
+     - Verify that the GUI displays the parameters in the exam protocol and that the exam is initiated after `Submit` is pressed.
      - 
-   * - The user can submit the maximum output level.
-     - Under the `Max Output` title, enter the level reported by the flat plate. Click `Submit`.
-     - Verify that the frequency auto-proceed to the next one.
+   * - The user can abort the exam.
+     - During an active exam, press `Abort`.
+     - Verify that the exam aborted.
+     -
+   * - The user can submit results.
+     - After a successful exam, press `Submit`.
+     - Verify that the exam results were saved and/or exported to the repository, as specified in the protocol.
      - 
