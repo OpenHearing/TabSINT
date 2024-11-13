@@ -73,7 +73,7 @@ The GUI should look like the image below with the following features.
    * - Noise Floor Threshold
      - [MinDpNoiseFloorThresh]
 
-.. figure:: swept-oae-GUI-Screen1.svg
+.. figure:: swept-oae-GUI-Screen1.png
    :align: center
    :width: 400px
 
@@ -82,7 +82,7 @@ The GUI should look like the image below with the following features.
 Results-View
 ^^^^^^^^^^^^^
 
-The GUI should display the results (calibration factors and maximum output levels) of the swept OAE exam, if specified in the protocol. A table similar to the one shown below should summarize the results saved on the swept OAE exam, where frequencies are the frequencies specified in the protocol. There will be 1 table for the right ear (header background color red, as in audiometry results), and 1 table for the left ear (header background color blue, as in audiometry results).
+The GUI should display the results of the swept OAE exam if specified in the protocol. A table similar to the one shown below should summarize the results saved for the swept OAE exam.
 
 .. list-table::
     :widths: 10, 20, 20
