@@ -44,34 +44,14 @@ GUI
 
 The GUI should look like the image below with the following features.
 
-* The target levels and frequencies should be configurable in the protocol.
-* The current frequency, ear cup, and target level should be displayed. The frequencies proceed in the order specified in the protocol.
-* There should be a `Cal Factor` panel, that displays the current total adjusted requested level, in dB FS.
-* The `Cal Factor` panel has +3/-3 buttons to adjust the calibration factor.
-* The `Cal Factor` panel has a play/pause button to start/stop the tone. The play button is green with a play icon when a tone is not playing. It is red with a stop symbol when it is playing.
-* There should be a `Next` button to advance to the next screen, allowing entering the flat plate level measurement.
-* When proceeding from one frequency to the next, the `Cal Factor` should be remembered. (e.g. the initial value for “Cal Factor” at 2 kHz should be equal to the final value for “Cal Factor” at 1 kHz)
-* There should be a textbox to enter the flat plate measured level and a submit button to send the level to the Tympan. 
-* There should be a `Submit` button to submit the measured flat plate level.
-* On the max output pages, there should be a play/stop button to start/stop the tone. The play button is green with a play icon when a tone is not playing. It is red with a stop symbol when it is playing.
+* The following parameters should be configurable in the protocol: Start frequency of the sweep, end frequency of the sweep, frequency ratio, sweep duration, window duration, sweep type (log or linear), minimum number of sweeps, maximum number of sweeps, and the minimum noise floor threshold (i.e., the termination condition)
+* There should be a `Submit` button to initiate the exam.
 
-.. figure:: headphones-narrowband-calibration-GUI-Screen1.svg
+.. figure:: swept-oae-GUI-Screen1.svg
    :align: center
    :width: 400px
 
    **Figure 1.** *GUI for the swept OAE exam. Screen 1*
-
-.. figure:: headphones-narrowband-calibration-GUI-Screen2.svg
-   :align: center
-   :width: 400px
-
-   **Figure 2.** *GUI for the swept OAE exam. Screen 2*
-
-.. figure:: headphones-narrowband-calibration-GUI-Screen3.svg
-   :align: center
-   :width: 400px
-
-   **Figure 3.** *GUI for the swept OAE exam. Screen 3*
 
 Results-View
 ^^^^^^^^^^^^^
