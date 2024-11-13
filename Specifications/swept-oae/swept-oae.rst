@@ -45,7 +45,33 @@ GUI
 The GUI should look like the image below with the following features.
 
 * The following parameters should be configurable in the protocol: Start frequency of the sweep, end frequency of the sweep, frequency ratio, sweep duration, window duration, sweep type (log or linear), minimum number of sweeps, maximum number of sweeps, and the minimum noise floor threshold (i.e., the termination condition)
+* The GUI should display the parameters from the protocol in a table similar to the one shown below
 * There should be a `Submit` button to initiate the exam.
+
+.. list-table::
+   :widths: 50, 50
+   :header-rows: 1
+
+   * - Parameter
+     - Value
+   * - Start Frequency [Hz]
+     - [start_F2]
+   * - End Frequency [Hz]
+     - [end_F2]
+   * - Ratio
+     - [ratioF]
+   * - Sweep Duration [s]
+     - [SweepDuration]
+   * - Window Duration [s] 
+     - [WindowDuration]
+   * - Sweep type
+     - [SweepType]
+   * - Minimum Number of Sweeps
+     - [MinSweeps]
+   * - Maximum Number of Sweeps
+     - [MaxSweeps]
+   * - Noise Floor Threshold
+     - [MinDpNoiseFloorThresh]
 
 .. figure:: swept-oae-GUI-Screen1.svg
    :align: center
