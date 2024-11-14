@@ -27,14 +27,14 @@ Related internal documents
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-This software specification relates to the `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/swept_dpoae.rst?ref_type=heads>`_.
+This software specification relates to the `firmware specification [link tbd] <>`_.
 
 
 
 Algorithm
 --------------
 
-See `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/swept_dpoae.rst?ref_type=heads>`_.
+See `firmware specification [link tbd] <>`_.
 
 Implementation
 --------------
@@ -57,11 +57,9 @@ The GUI should look like the image below with the following features.
    * - Parameter
      - Value
    * - Start Frequency [Hz]
-     - [start_F2]
+     - [start_F]
    * - End Frequency [Hz]
-     - [end_F2]
-   * - Ratio
-     - [ratioF]
+     - [end_F]
    * - Sweep Duration [s]
      - [SweepDuration]
    * - Window Duration [s] 
@@ -75,51 +73,29 @@ The GUI should look like the image below with the following features.
    * - Noise Floor Threshold
      - [MinDpNoiseFloorThresh]
 
-.. figure:: swept-oae-GUI-Screen1a.png
+.. figure:: wai-GUI-Screen1a.png
    :align: center
    :width: 400px
 
    **Figure 1.** *GUI for the Swept OAE exam priot to submission. Screen 1a*
 
-.. figure:: swept-oae-GUI-Screen1b.png
+.. figure:: wai-GUI-Screen1b.png
    :align: center
    :width: 400px
 
-   **Figure 2.** *GUI for the swept OAE exam while the exam is in proress. Screen 1b*
+   **Figure 2.** *GUI for the swept OAE exam while the exam is in progress. Screen 1b*
 
 Results-View
 ^^^^^^^^^^^^^
 
-The GUI should display the results of the Swept OAE exam:
+The GUI should display the results of the WAI exam:
 * Results are plotted in a manner similar to the plot shown below.
-* Below the plot, a table similar to the one shown below should summarize the results saved for the swept OAE exam.
 
-.. figure:: swept-oae-GUI-Results.png
+.. figure:: wai-GUI-Results.png
    :align: center
    :width: 400px
 
-   **Figure 3.** *GUI for the swept OAE exam while the exam is in proress. Results Screen*
-
-.. list-table::
-    :widths: 10, 20, 20
-    :header-rows: 1
-
-    * - Result
-      - Value
-      - Units
-    * - Dp Low 
-      - 
-      - dB SPL
-    * - Dp High
-      -
-      - dB SPL
-    * - F1
-      -
-      - dB SPL
-    * - F2
-      -
-      - dB SPL
-
+   **Figure 3.** *GUI for the WAI Results screen. Results Screen*
 
 Software Testing Procedures
 ---------------------------
@@ -135,12 +111,12 @@ Algorithm
      - Test Case
      - Acceptance
      - Verified
-   * - The exam presents chirps with a specified starting and ending frequency for F2, frequency ratio, output levels for ech frequency, sweep duration, window duration, and sweep type.
-     - Initiate a Swept OAE exam using the Submit button.
-     - Verify that the emitted chirp is the correct starting and ending frequency for F2, frequency ratio, output levels for ech frequency, sweep duration, window duration, and sweep type.
+   * - The exam presents a chirp with a specified starting and ending frequency, output level, sweep duration, window duration, and sweep type.
+     - Initiate a WAI exam using the Submit button.
+     - Verify that the emitted chirp is the correct starting and ending frequency, output level, sweep duration, window duration, and sweep type.
      - 
    * - The exam presents a number of chirps greater than or equal to the Minimum Number of Sweeps and less than or equal to the Maximum Number of Sweeps.
-     - Initiate a Swept OAE exam using the Submit button. Intentionally prevent the exam from meeting the threshold criterion. This could be accomplished in many ways including, but not limited to, specifying a very few number of 
+     - Initiate a WAI exam using the Submit button. Intentionally prevent the exam from meeting the threshold criterion. This could be accomplished in many ways including, but not limited to, specifying a very few number of 
      - Verify that the exam plays at least the Minimum Number of Sweeps and no more than the Maximum Number of Sweeps, then concludes.
      - 
    * - If the noise threshold criterion is met, the exam concludes.
@@ -153,7 +129,7 @@ Algorithm
      - 
    * - The exam results are displayed.
      - Complete an exam normally. Then click the `Finish` button. Proceed to the results-view page.
-     - Verify that the OAE, noise floor, F1 and F2 are plotted in dB SPL as a function of F2. Verify that DpLow, DpHigh, F1, and F2 are displayed in table format.
+     - Verify that the absorbance, power reflectance, impedance magnitude, and impedance phase are plotted as a function of frequency.
      - 
 
 Data
@@ -167,15 +143,15 @@ Data
      - Test Case
      - Acceptance
      - Verified
-   * - The exam must return all fields defined in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/swept_dpoae.rst?ref_type=heads>`_. 
-     - Start a Swept OAE exam and complete the exam successfully. 
-     - Verify the exam returns all result fields defined in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/swept_dpoae.rst?ref_type=heads>`_ with appropriate values.
+   * - The exam must return all fields defined in `firmware specification [link tbd] <>`_. 
+     - Start a WAI exam and complete the exam successfully. 
+     - Verify the exam returns all result fields defined in `firmware specification [link tbd] <>`_ with appropriate values.
      - 
-   * - The exam must display all `TestSweptDpoaeResults` fields defined  in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/swept_dpoae.rst?ref_type=heads>`_.
-     - Start a calibration exam, complete the exam. 
+   * - The exam must display all `WAIResults` fields defined  in `firmware specification [link tbd] <>`_.
+     - Start a WAI exam, complete the exam. 
      - Verify that all results are accurately displayed.
      - 
-   * - The exam must export all `TestSweptDpoaeResults` fields defined in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/swept_dpoae.rst?ref_type=heads>`_.
+   * - The exam must export all `WAIResults` fields defined in `firmware specification [link tbd] <>`_.
      - Submit the exam and export results.
      - Verify that all results are accurately exported.
      - 
@@ -192,7 +168,7 @@ GUI
      - Acceptance
      - Verified
    * - The user can initiate the exam specified in the protocol.
-     - Load a swept oae exam protocol. Then, click `Submit`.
+     - Load a WAI exam protocol. Then, click `Submit`.
      - Verify that the GUI displays the parameters in the exam protocol and that the exam is initiated after `Submit` is pressed.
      - 
    * - The user can abort the exam.
