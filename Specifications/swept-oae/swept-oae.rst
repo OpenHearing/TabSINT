@@ -135,9 +135,9 @@ Algorithm
      - Test Case
      - Acceptance
      - Verified
-   * - The exam presents chirps with a specified starting and ending frequency for F2, frequency ratio, output levels for ech frequency, sweep duration, window duration, and sweep type.
+   * - The exam presents chirps with a specified starting and ending frequency for F2, frequency ratio, output levels for each frequency, sweep duration, window duration, and sweep type.
      - Initiate a Swept OAE exam using the Submit button.
-     - Verify that the emitted chirp is the correct starting and ending frequency for F2, frequency ratio, output levels for ech frequency, sweep duration, window duration, and sweep type.
+     - Verify that the emitted chirp is the correct starting and ending frequency for F2, frequency ratio, output levels for each frequency, sweep duration, window duration, and sweep type.
      - 
    * - The exam presents a number of chirps greater than or equal to the Minimum Number of Sweeps and less than or equal to the Maximum Number of Sweeps.
      - Initiate a Swept OAE exam using the Submit button. Intentionally prevent the exam from meeting the threshold criterion. This could be accomplished in many ways including, but not limited to, specifying a very few number of 
@@ -171,11 +171,11 @@ Data
      - Start a Swept OAE exam and complete the exam successfully. 
      - Verify the exam returns all result fields defined in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/swept_dpoae.rst?ref_type=heads>`_ with appropriate values.
      - 
-   * - The exam must display all `TestSweptDpoaeResults` fields defined  in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/swept_dpoae.rst?ref_type=heads>`_.
-     - Start a calibration exam, complete the exam. 
+   * - The exam must display all `SweptDpoaeResults` fields defined  in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/swept_dpoae.rst?ref_type=heads>`_.
+     - Start a Swept OAE exam, complete the exam. 
      - Verify that all results are accurately displayed.
      - 
-   * - The exam must export all `TestSweptDpoaeResults` fields defined in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/swept_dpoae.rst?ref_type=heads>`_.
+   * - The exam must export all `SweptDpoaeResults` fields defined in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/swept_dpoae.rst?ref_type=heads>`_.
      - Submit the exam and export results.
      - Verify that all results are accurately exported.
      - 
@@ -192,7 +192,7 @@ GUI
      - Acceptance
      - Verified
    * - The user can initiate the exam specified in the protocol.
-     - Load a swept oae exam protocol. Then, click `Submit`.
+     - Load a Swept OAE exam protocol. Then, click `Submit`.
      - Verify that the GUI displays the parameters in the exam protocol and that the exam is initiated after `Submit` is pressed.
      - 
    * - The user can abort the exam.
