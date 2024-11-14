@@ -1,11 +1,24 @@
 <div class="modal-header">
-    Change Admin PIN
-</div>
-<div class="modal-body">
-    <label for="pin">Please enter a new numerical PIN:</label>
-    <input id="pin" type="number" [(ngModel)]="pin" pattern="[0-9]*" autofocus="true"/><br />
-</div>
-<div class="modal-footer">
-    <button type="button" class="btn btn-primary" (click)="save(pin)">{{'Save' | translate}}</button>
-    <button type="button" class="btn btn-warning" (click)="cancel()">{{'Cancel' | translate}}</button>
-</div>
+    <span *ngIf="isValidationMode">Enter Admin PIN</span>
+    <span *ngIf="!isValidationMode">Change Admin PIN</span>
+  </div>
+  <div class="modal-body">
+    <label for="pin">
+      <span *ngIf="isValidationMode">Please enter your PIN:</span>
+      <span *ngIf="!isValidationMode">Please enter a new numerical PIN:</span>
+    </label>
+    <input id="pin" type="number" [(ngModel)]="pin" pattern="[0-9]*" autofocus="true" />
+  </div>
+  <br />
+  <div class="modal-footer">
+    <button *ngIf="isValidationMode" type="button" class="btn btn-primary" (click)="validatePin()">
+      {{ 'Submit' | translate }}
+    </button>
+    <button *ngIf="!isValidationMode" type="button" class="btn btn-primary" (click)="save(pin)">
+      {{ 'Save' | translate }}
+    </button>
+    <button type="button" class="btn btn-warning" (click)="cancel()">
+      {{ 'Cancel' | translate }}
+    </button>
+  </div>
+  

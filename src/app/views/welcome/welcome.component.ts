@@ -7,11 +7,12 @@ import { AppInterface } from '../../models/app/app.interface';
 
 import { DiskModel } from '../../models/disk/disk.service';
 import { AppModel } from '../../models/app/app.service';
-
+import { Router } from '@angular/router';
 import { DisclaimerComponent } from '../disclaimer/disclaimer.component';
 import { StateModel } from '../../models/state/state.service';
 import { AppState } from '../../utilities/constants';
 import { StateInterface } from '../../models/state/state.interface';
+import { ChangePinComponent } from '../change-pin/change-pin.component';
 
 @Component({
   selector: 'app-welcome',
@@ -28,7 +29,8 @@ export class WelcomeComponent {
     private readonly appModel: AppModel,
     private readonly dialog: MatDialog,
     private readonly diskModel: DiskModel,
-    private readonly stateModel: StateModel
+    private readonly stateModel: StateModel,
+    private readonly router: Router
   ) {
     this.disk = this.diskModel.getDisk();
     this.app = this.appModel.getApp();
@@ -60,4 +62,19 @@ export class WelcomeComponent {
   scanQrCodeandAutoConfig() {
     console.log("scanQrCodeandAutoConfig() called from welcome.component.ts");
   }
+
+  onAdminViewClick() {
+    if (!this.disk.debugMode) {
+      const dialogRef = this.dialog.open(ChangePinComponent);
+      dialogRef.componentInstance.setValidationMode(true);
+      dialogRef.componentInstance.pinValidated.subscribe((isValid: boolean) => {
+        if (isValid) {
+          this.router.navigate(['/admin']);
+        } 
+      });
+    }  else {
+      this.router.navigate(['/admin']);
+    }
+  }
+
 }
