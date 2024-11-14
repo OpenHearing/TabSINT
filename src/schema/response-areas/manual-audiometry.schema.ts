@@ -1,6 +1,7 @@
 
 import { JSONSchemaType } from "ajv"
 import { ManualAudiometryInterface } from "../../app/views/response-area/response-areas/manual-audiometry/manual-audiometry.interface";
+import { LevelUnits } from "../../app/utilities/constants";
 
 export const manualAudiometrySchema: JSONSchemaType<ManualAudiometryInterface> = {
     type: "object",
@@ -12,7 +13,8 @@ export const manualAudiometrySchema: JSONSchemaType<ManualAudiometryInterface> =
         tabsintId: { type: "string", nullable: true },
         maxOutputLevel: { type: "number", nullable: true },
         minOutputLevel: { type: "number", nullable: true },
-        currentDbSpl: { type: "number", nullable: true },
+        targetLevel: { type: "number", nullable: true },
+        levelUnits: { type: "string", nullable: true },
         frequencies: {
             type: "array",
             items: { type: "number" },
@@ -24,9 +26,10 @@ export const manualAudiometrySchema: JSONSchemaType<ManualAudiometryInterface> =
             nullable: true
         },
         retspls: {
-            type: "array",
-            items: { type: "number" },
-            nullable: true
+            type: "object",
+            additionalProperties: { "type": "number"},
+            nullable: true,
+            required: []
         },
         showResults: {type: "boolean", nullable: true, default: true}
 

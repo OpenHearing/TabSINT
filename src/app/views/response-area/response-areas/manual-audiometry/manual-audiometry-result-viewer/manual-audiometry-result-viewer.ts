@@ -1,6 +1,7 @@
 import { Component, Input } from "@angular/core";
 
-import { AudiogramDataStructInterface } from "../../../../../interfaces/audiogram.interface";
+import { AudiometryResultsInterface } from "../../../../../interfaces/audiometry-results.interface";
+import { LevelUnits } from "../../../../../utilities/constants";
 
 @Component({
     selector: 'manual-audiometry-result-viewer',
@@ -9,12 +10,13 @@ import { AudiogramDataStructInterface } from "../../../../../interfaces/audiogra
   })
 
 export class ManualAudiometryResultViewerComponent {
-    @Input() audiogramData: AudiogramDataStructInterface = {
+    @Input() audiogramData: AudiometryResultsInterface = {
         frequencies: [1000],
         thresholds: [null],
         channels: [''],
         resultTypes: [''],
-        masking: [false]
+        masking: [false],
+        levelUnits: LevelUnits.dB_SPL
     };
 
 }

@@ -1,9 +1,5 @@
 <div [ngSwitch]="currentStep">
   <div *ngSwitchCase="'Exam'" class="audiometry-container">
-    <div class="header-section">
-      <h2>Minimum Output Level = {{minOutputLevel}} dB HL and Maximum Output Level = {{maxOutputLevel}} dB HL</h2>
-      <p>Use to verify GUI section</p>
-    </div>
 
     Frequency Dropdown
     <div class="frequency-control">
@@ -19,7 +15,7 @@
       </button>
       <div *ngIf="isPresentationVisible" class="collapsible-content">
         <div class="presentation-container">
-          <p class="db-value">{{currentDbSpl}} dB SPL</p>
+          <p class="db-value">{{currentDb | number:'1.0-0' }} {{levelUnits}}</p>
 
           <div class="ear-selection">
             <label for="ear">Select Ear</label>
@@ -59,7 +55,7 @@
             </thead>
             <tbody>
               <tr>
-                <td>Threshold (dB SPL)</td>
+                <td>Threshold ({{levelUnits}})</td>
                 <td *ngFor="let threshold of leftThresholds">{{ threshold || '' }}</td>
               </tr>
             </tbody>
@@ -77,7 +73,7 @@
             </thead>
             <tbody>
               <tr>
-                <td>Threshold (dB SPL)</td>
+                <td>Threshold ({{levelUnits}})</td>
                 <td *ngFor="let threshold of rightThresholds">{{ threshold || '' }}</td>
               </tr>
             </tbody>
