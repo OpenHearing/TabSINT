@@ -1,6 +1,7 @@
 import { ConnectedDevice, NewConnectedDevice } from "../interfaces/connected-device.interface";
 import { PageDefinition, ProtocolReferenceInterface } from "../interfaces/page-definition.interface";
 import { ProtocolSchemaInterface } from "../interfaces/protocol-schema.interface";
+import { PageInterface } from "../models/page/page.interface";
 import { PageTypes } from "../types/custom-types";
 
 export function isProtocolSchemaInterface(page: PageTypes): page is ProtocolSchemaInterface {
@@ -17,4 +18,8 @@ export function isProtocolReferenceInterface(page: PageTypes): page is ProtocolR
 
 export function isTympanDevice(device: ConnectedDevice | NewConnectedDevice) {
     return device.type == "Tympan";
+}
+
+export function isManualAudiometryResponseArea(page: PageInterface): boolean {
+    return page?.responseArea?.type === "manualAudiometryResponseArea";
 }

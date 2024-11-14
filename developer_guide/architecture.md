@@ -19,12 +19,7 @@ The application is designed following a [Model-View-Controller (MVC) design patt
     * Typescript file
     * CSS file
     * test file
-  * myResponseAreaResultViewer directory
-    * HTML file
-    * Typescript file
-    * CSS file
-    * test file
-  * interface file that describes parameters required for the response area
+    * interface file that describes parameters required for the response area
 
 Separating the component's view-related features from services other kinds of processing makes the component classes lean and efficient. The specifics of how the models, views, controllers, and utilities related to each other in TabSINT are illustrated here. It is important to carefully follow the dependency injections to avoid circular injections.
 

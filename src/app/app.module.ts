@@ -83,7 +83,7 @@ import { MeasurementScreenComponent } from './views/response-area/response-areas
 import { MaxOutputScreenComponent } from './views/response-area/response-areas/calibration-exam/max-output-screen/max-output-screen.component';
 import { DevicesService } from './controllers/devices.service';
 import { CalibrationResultsViewerComponent } from './views/response-area/response-areas/calibration-exam/calibration-results-viewer/calibration-results-viewer.component';
-import { ManualAudiometryResultViewerComponent } from './views/response-area/response-areas/manual-audiometry-result-viewer/manual-audiometry-result-viewer';
+import { ManualAudiometryResultViewerComponent } from './views/response-area/response-areas/manual-audiometry/manual-audiometry-result-viewer/manual-audiometry-result-viewer';
 import { AudiogramComponent } from './views/audiogram/audiogram.component';
 
 // required for AOT compilation

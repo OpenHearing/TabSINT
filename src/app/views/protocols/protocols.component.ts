@@ -23,6 +23,7 @@ import { FileService } from '../../utilities/file.service';
 import { DialogType, ProtocolServer } from '../../utilities/constants';
 import { getProtocolMetaData } from '../../utilities/protocol-helper-functions';
 import { partialMetaDefaults } from '../../utilities/defaults';
+
 @Component({
   selector: 'protocols-view',
   templateUrl: './protocols.component.html',

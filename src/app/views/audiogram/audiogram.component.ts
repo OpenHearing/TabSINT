@@ -1,6 +1,7 @@
 import { Component, ElementRef, OnInit, Input } from '@angular/core';
 import * as d3 from 'd3';
-import { AudiogramDataNoNullInterface, AudiogramDataStructInterface } from '../../interfaces/audiogram.interface';
+import { AudiogramDatumNoNullInterface, AudiometryResultsInterface } from '../../interfaces/audiometry-results.interface';
+import { LevelUnits } from '../../utilities/constants';
 
 // See https://www.asha.org/policy/GL1990-00006/ for audiogram specifications
 @Component({
@@ -11,7 +12,7 @@ import { AudiogramDataNoNullInterface, AudiogramDataStructInterface } from '../.
 export class AudiogramComponent implements OnInit{
 
   @Input()
-  dataStruct!: AudiogramDataStructInterface;
+  dataStruct!: AudiometryResultsInterface;
 
   constructor(private readonly elementRef: ElementRef) {
   }
@@ -23,7 +24,7 @@ export class AudiogramComponent implements OnInit{
   }
 
   createAudiogram(): void {
-    const data: AudiogramDataNoNullInterface[] = this.dataStruct.frequencies
+    const data: AudiogramDatumNoNullInterface[] = this.dataStruct.frequencies
       .map((frequency, index) => {
         const threshold = this.dataStruct.thresholds[index];
         // Check that the threshold is defined and not null
@@ -39,8 +40,13 @@ export class AudiogramComponent implements OnInit{
         // Return null if the threshold is null or undefined
         return null;
       })
-      .filter((item): item is AudiogramDataNoNullInterface => item !== null); // Filter out null values
+      .filter((item): item is AudiogramDatumNoNullInterface => item !== null); // Filter out null values
 
+    const title = this.dataStruct.levelUnits === LevelUnits.dB_SPL
+      ? 'Hearing Level (dB SPL)'
+      : this.dataStruct.levelUnits === LevelUnits.dB_HL
+        ? 'Hearing Level (dB HL)'
+        : 'Incorrect Level Units, should not be here';
     const xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000];
     const xTicksMinor = [750, 1500, 3000, 6000];
     const yTicks = [-20, -10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120];
@@ -95,7 +101,7 @@ export class AudiogramComponent implements OnInit{
       .attr('y', -60)
       .attr('x', -height / 2)
       .style('text-anchor', 'middle')
-      .text('Hearing Level (dB SPL)');
+      .text(title);
 
     // Major X Axis Gridlines, Solid
     svg

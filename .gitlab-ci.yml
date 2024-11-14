@@ -11,28 +11,12 @@ variables:
   IMAGE_TAG_BASE: $CI_REGISTRY_IMAGE
 
 stages:
-  - sonarqube-check
-  - sonarqube-vulnerability-report
   - build-docker-image
   - test
+  - sonarqube-check
+  - sonarqube-vulnerability-report
   - beta-release
   - cleanup
-
-sonarqube-check:
-  stage: sonarqube-check
-  cache:
-    policy: pull
-    key: "${CI_COMMIT_SHORT_SHA}"
-    paths:
-      - sonar-scanner/
-  script:
-    - sonar-scanner
-  allow_failure: true
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-    - if: $CI_COMMIT_BRANCH == 'master'
-    - if: $CI_COMMIT_BRANCH == 'main'
-    - if: $CI_COMMIT_BRANCH == 'develop'
 
 build-docker-image:
   stage: build-docker-image
@@ -70,7 +54,40 @@ test:
     - IMAGE_TAG="$IMAGE_TAG_BASE:$SAFE_COMMIT_REF_NAME"
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker pull $IMAGE_TAG
-    - docker run --rm $IMAGE_TAG npm run test:headless
+    - mkdir -p coverage
+    - CONTAINER_ID=$(docker run -d $IMAGE_TAG npm run test:headless)
+    - docker wait $CONTAINER_ID
+    - docker cp $CONTAINER_ID:/usr/src/app/coverage/lcov.info ./coverage/lcov.info
+    - docker stop $CONTAINER_ID
+    - docker rm $CONTAINER_ID
+  artifacts:
+    paths:
+      - coverage/lcov.info
+    untracked: false
+    when: on_success
+    access: all
+    expire_in: "1 days"
+  after_script:
+    - rm -rf coverage
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == 'master'
+    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'develop'
+
+sonarqube-check:
+  stage: sonarqube-check
+  cache:
+    policy: pull
+    key: "${CI_COMMIT_SHORT_SHA}"
+    paths:
+      - sonar-scanner/
+  dependencies:
+    - test
+  script:
+    - ls coverage/
+    - sonar-scanner
+  allow_failure: true
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_BRANCH == 'master'
@@ -103,7 +120,6 @@ beta-release:
     expire_in: 2 hours
   rules:
     - when: manual
-
 cleanup:
   stage: cleanup
   script:

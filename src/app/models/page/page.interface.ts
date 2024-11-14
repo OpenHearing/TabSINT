@@ -8,7 +8,6 @@ export interface PageInterface extends PageDefinition {
     example?: number;
     other?: Array<string>;
     dict?: object;
-    hideProgressBar?: boolean;
     isSubmittable?: boolean;
     canGoBack?: boolean;
     subtitle?: string,
