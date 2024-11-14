@@ -85,7 +85,7 @@ The GUI should look like the image below with the following features.
    :align: center
    :width: 400px
 
-   **Figure 2.** *GUI for the swept OAE exam while the exam is in proress. Screen 1b*
+   **Figure 2.** *GUI for the swept OAE exam while the exam is in progress. Screen 1b*
 
 Results-View
 ^^^^^^^^^^^^^
@@ -98,7 +98,7 @@ The GUI should display the results of the Swept OAE exam:
    :align: center
    :width: 400px
 
-   **Figure 3.** *GUI for the swept OAE exam while the exam is in proress. Results Screen*
+   **Figure 3.** *GUI for the Swept OAE Results screen. Results Screen*
 
 .. list-table::
     :widths: 10, 20, 20
