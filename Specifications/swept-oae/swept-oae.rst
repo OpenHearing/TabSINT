@@ -1,7 +1,7 @@
 Swept OAE
 =================================
 
-This test is to perform a swept OAE.
+This test is to perform a Swept OAE.
 
 Revision Table
 --------------
