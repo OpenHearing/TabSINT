@@ -28,6 +28,9 @@
                 "id":"Text Box"
               },
               {
+                "id":"Multiple Input"
+              },
+              {
                 "id":"Manual Audiometry"
               },
               {
@@ -43,6 +46,12 @@
               "conditional":"result.response=='Text Box'",
               "target":{
                 "reference":"TextBox"
+              } 
+            },
+            {
+              "conditional":"result.response=='Multiple Input'",
+              "target":{
+                "reference":"MultipleInput"
               } 
             },
             {
@@ -113,6 +122,25 @@
         {
           "id": "backtomain",
           "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "MultipleInput",
+      "pages": [
+        {
+          "id": "ARDC_Survey_1",
+          "title": "ARDC Surveys",
+          "instructionText": "Enter the following information:",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "inputList": [
+              {
+                "text": "Have you ever had tubes put in your eardrum(s)?",
+                "inputType": "yes-no"
+              }
+            ]
+          }
         }
       ]
     },
