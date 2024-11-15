@@ -100,27 +100,6 @@ The GUI should display the results of the Swept OAE exam:
 
    **Figure 3.** *GUI for the Swept OAE Results screen. Results Screen*
 
-.. list-table::
-    :widths: 10, 20, 20
-    :header-rows: 1
-
-    * - Result
-      - Value
-      - Units
-    * - Dp Low 
-      - 
-      - dB SPL
-    * - Dp High
-      -
-      - dB SPL
-    * - F1
-      -
-      - dB SPL
-    * - F2
-      -
-      - dB SPL
-
-
 Software Testing Procedures
 ---------------------------
 
