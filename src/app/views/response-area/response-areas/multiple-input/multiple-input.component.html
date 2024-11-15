@@ -2,10 +2,10 @@
     <fieldset [disabled]="reviewDisabled">
       <div
         class="row"
-        *ngFor="let item of page.dm.responseArea.inputList; let itemIdx = index"
-        [style.margin-bottom.px]="page.dm.responseArea.verticalSpacing"
+        *ngFor="let item of inputList; let itemIdx = index"
+        [style.margin-bottom.px]="verticalSpacing"
       >
-        <div class="col-xs-6" [style.justify-content]="page.dm.responseArea.textAlign">
+        <div class="col-xs-6" [style.justify-content]="textAlign">
           <label [for]="'itemID' + itemIdx">{{ item.text }}</label>
         </div>
         <div class="col-xs-6">
@@ -13,24 +13,24 @@
           <input
             *ngIf="item.inputType === 'text'"
             [id]="'itemID' + itemIdx"
-            [(ngModel)]="page.result.response[itemIdx]"
+            [(ngModel)]="results.currentPage.response[itemIdx]"
+            (ngModelChange)="updateSubmittableLogic()"
             class="form-control"
           />
   
           <!-- Dropdown -->
-          <div *ngIf="item.inputType === 'dropdown'" class="dropdown">
-            <button
+          <div ngbDropdown *ngIf="item.inputType === 'dropdown'" display="dynamic">
+            <button ngbDropdownToggle
               type="button"
               class="btn btn-default btn-block dropdown-toggle"
-              [attr.id]="'itemID' + itemIdx"
+              id="option"
             >
-              {{ page.result.response[itemIdx] || 'Select' }} <span class="caret"></span>
+              {{ results.currentPage.response[itemIdx] || 'Select' }}
             </button>
-            <ul class="dropdown-menu">
-              <li *ngFor="let option of item.options">
-                <a href="#" (click)="selectResponse(itemIdx, option)">{{ option }}</a>
-              </li>
-            </ul>
+            <div ngbDropdownMenu aria-labelledby="option">
+              <button ngbDropdownItem *ngFor="let option of item.options" (click)="selectResponse(itemIdx, option)">{{ option }}
+              </button>
+            </div>
           </div>
   
           <!-- Number -->
@@ -38,7 +38,7 @@
             *ngIf="item.inputType === 'number'"
             [id]="'itemID' + itemIdx"
             type="number"
-            [(ngModel)]="page.result.response[itemIdx]"
+            [(ngModel)]="results.currentPage.response[itemIdx]"
             class="form-control"
           />
   
@@ -47,7 +47,7 @@
             *ngIf="item.inputType === 'date'"
             [id]="'itemID' + itemIdx"
             type="date"
-            [(ngModel)]="page.result.response[itemIdx]"
+            [(ngModel)]="results.currentPage.response[itemIdx]"
             [attr.max]="item.dateProperties?.maxDate === 'today' ? today : item.dateProperties?.maxDate"
             [attr.min]="item.dateProperties?.minDate === 'today' ? today : item.dateProperties?.minDate"
             class="form-control"
@@ -67,7 +67,7 @@
       </div>
     </fieldset>
   
-    <div class="row" *ngIf="page.dm.responseArea.review">
+    <div class="row" *ngIf="review">
       <div class="col-xs-12">
         <button
           *ngIf="!reviewDisabled"

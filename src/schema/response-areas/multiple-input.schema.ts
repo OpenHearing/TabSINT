@@ -33,7 +33,7 @@ export const multipleInputSchema: JSONSchemaType<MultipleInputInterface> = {
         properties: {
           inputType: {
             type: "string",
-            enum: ["text", "number", "dropdown", "date", "multi-dropdown", "yes-no"],
+            enum: ["text", "number", "dropdown", "date", "multi-dropdown"],
             nullable: true,
             default: "text",
           },

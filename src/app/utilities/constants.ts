@@ -54,6 +54,15 @@ export enum SvantekState {
     Recording
 }
 
+export enum InputListItemType {
+    "text",
+    "number",
+    "dropdown",
+    "date",
+    "multi-dropdown",
+    "yes-no"
+}
+
 export const BluetoothType = {
   "BLUETOOTH": "Bluetooth 2.0",
   "BLUETOOTH_LE": "Bluetooth 3.0",
@@ -64,6 +73,7 @@ export const LevelUnits = {
     "dB_SPL": "dB SPL",
     "dB_HL": "dB HL"
 }
+
 
 import PurdueDemo from '../../protocols/purdue-demo/protocol.json';
 import develop from '../../protocols/develop/protocol.json';

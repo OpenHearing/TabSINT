@@ -1,7 +1,12 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { PageModel } from '../../../../models/page/page.service';
 import { Subscription } from 'rxjs';
 import { PageInterface } from '../../../../models/page/page.interface';
+import { InputListItem, MultipleInputInterface } from './multiple-input.interface';
+import { ResultsModel } from '../../../../models/results/results-model.service';
+import { ResultsInterface } from '../../../../models/results/results.interface';
+import { StateModel } from '../../../../models/state/state.service';
+import { StateInterface } from '../../../../models/state/state.interface';
 
 @Component({
   selector: 'multiple-input-view',
@@ -9,70 +14,85 @@ import { PageInterface } from '../../../../models/page/page.interface';
   styleUrl: './multiple-input.component.css'
 })
 export class MultipleInputComponent  implements OnInit {
-  @Input() page: any = {};
   pageSubscription: Subscription | undefined;
+  results: ResultsInterface;
+  state: StateInterface;
   today: string = new Date().toISOString().slice(0, 10);
   reviewDisabled: boolean = false;
   multiDropdownModel: { [key: number]: any[] } = {};
   multiDropdownJson: { [key: number]: any[] } = [];
+  verticalSpacing: number = 15;
+  textAlign: string = 'center';
+  review: boolean = false;
+  inputList: InputListItem[] = [{
+    text: 'default text'
+  }];
+  // inputType : InputListItemType;
+  // text: string = 'default text';
 
   constructor (
-    private readonly pageModel: PageModel
-  ) {}
+    private readonly pageModel: PageModel,
+    private readonly resultsModel: ResultsModel,
+    private readonly stateModel: StateModel
+  ) {
+    this.results = this.resultsModel.getResults();
+    this.state = this.stateModel.getState();
+  }
 
   ngOnInit() {
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
-      if (updatedPage?.responseArea?.type == "multipleInputResponseArea") {
+      if (updatedPage?.responseArea?.type == 'multipleInputResponseArea') {
         const updatedMultipleInputResponseArea = updatedPage.responseArea as MultipleInputInterface;
         if (updatedMultipleInputResponseArea) {
+          this.verticalSpacing = updatedMultipleInputResponseArea.verticalSpacing ?? 15;
+          this.textAlign = updatedMultipleInputResponseArea.textAlign ?? 'center';
+          this.inputList = updatedMultipleInputResponseArea.inputList;
+          // this.inputType = updatedMultipleInputResponseArea.
+
+          // Initialize multi-dropdown data
+          updatedMultipleInputResponseArea.inputList.forEach((item: any, index: number) => {
+            if (item.inputType === 'multi-dropdown') {
+              this.multiDropdownJson[index] = item.options.map((option: any, i: number) => ({
+                id: i,
+                label: option,
+              }));
+              this.multiDropdownModel[index] = [];
+            }
+          });
+
+          // Initialize responses
+         this.results.currentPage.response = updatedMultipleInputResponseArea.inputList.map(
+            (item: any) => item.value
+          );
+
+          this.updateSubmittableLogic();
         }
       }
     });
-    const inputTypeForAll = this.page?.dm?.responseArea?.inputTypeForAll || 'text';
 
-    // Initialize multi-dropdown data
-    this.page.dm.responseArea.inputList.forEach((item: any, index: number) => {
-      if (!item.inputType) {
-        item.inputType = inputTypeForAll;
-      }
-      if (item.inputType === 'multi-dropdown') {
-        this.multiDropdownJson[index] = item.options.map((option: any, i: number) => ({
-          id: i,
-          label: option,
-        }));
-        this.multiDropdownModel[index] = [];
-      }
-    });
-
-    // Initialize responses
-    this.page.result.response = this.page.dm.responseArea.inputList.map(
-      (item: any) => item.value
-    );
-
-    this.updateSubmittableLogic();
   }
 
   enableReview(status: boolean): void {
     this.reviewDisabled = status;
   }
 
-  selectResponse(itemIdx: number, option: any): void {
-    this.page.result.response[itemIdx] = option;
+  selectResponse(i: number, option: any): void {
+    this.results.currentPage.response[i] = option;
     this.updateSubmittableLogic();
   }
 
-  selectMultiResponse(itemIdx: number): void {
-    const multiResp = this.multiDropdownModel[itemIdx].map((resp: any) => resp.label);
-    this.page.result.response[itemIdx] = multiResp;
+  selectMultiResponse(i: number): void {
+    const multiResp = this.multiDropdownModel[i].map((resp: any) => resp.label);
+    this.results.currentPage.response[i] = multiResp;
     this.updateSubmittableLogic();
   }
 
   updateSubmittableLogic(): void {
-    const isSubmittable = this.page.dm.responseArea.inputList.every(
+    const isSubmittable = this.inputList.every(
       (item: any, idx: number) =>
-        !item.required || this.isDefined(item, this.page.result.response[idx])
+        !item.required || this.isDefined(item, this.results.currentPage.response[idx])
     );
-    this.page.dm.isSubmittable = isSubmittable;
+    this.state.isSubmittable = isSubmittable;
   }
 
   isDefined(item: any, val: any): boolean {

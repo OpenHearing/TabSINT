@@ -137,7 +137,33 @@
             "inputList": [
               {
                 "text": "Have you ever had tubes put in your eardrum(s)?",
-                "inputType": "yes-no"
+                "inputType": "text",
+                "required": true
+              },
+              {
+                "text": "How many ear tubes?",
+                "inputType": "number"
+              },
+              {
+                "text": "Have you ever had a ruptured eardrum? ",
+                "inputType": "dropdown",
+                "options": [
+                  "yes",
+                  "no"
+                ]
+              },
+              {
+                "text": "Patient Date of Birth",
+                "inputType": "date",
+                "required": false,
+                "dateProperties": {
+                  "maxDate": "today"
+                }
+              },
+              {
+                "inputType": "multi-dropdown",
+                "options": ["a","b","c"],
+                "text": "Multi-dropdown Input"
               }
             ]
           }
