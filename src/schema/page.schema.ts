@@ -9,6 +9,7 @@ import { textBoxResultViewerSchema, textBoxSchema } from "./response-areas/textb
 import { multipleChoiceSchema } from "./response-areas/multiple-choice.schema";
 import { manualAudiometrySchema } from "./response-areas/manual-audiometry.schema";
 import { calibrationExamSchema } from "./response-areas/calibration-exam.schema";
+import { multipleInputSchema } from "./response-areas/multiple-input.schema";
 
 export const pageSchema: JSONSchemaType<PageDefinition> = {
     $id: "page_base",
@@ -80,6 +81,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
           textBoxSchema,
           textBoxResultViewerSchema,
           multipleChoiceSchema,
+          multipleInputSchema,
           manualAudiometrySchema,
           calibrationExamSchema
         ], 

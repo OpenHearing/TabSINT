@@ -1,4 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { PageModel } from '../../../../models/page/page.service';
+import { Subscription } from 'rxjs';
+import { PageInterface } from '../../../../models/page/page.interface';
 
 @Component({
   selector: 'multiple-input-view',
@@ -7,12 +10,24 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class MultipleInputComponent  implements OnInit {
   @Input() page: any = {};
+  pageSubscription: Subscription | undefined;
   today: string = new Date().toISOString().slice(0, 10);
   reviewDisabled: boolean = false;
   multiDropdownModel: { [key: number]: any[] } = {};
   multiDropdownJson: { [key: number]: any[] } = [];
 
+  constructor (
+    private readonly pageModel: PageModel
+  ) {}
+
   ngOnInit() {
+    this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
+      if (updatedPage?.responseArea?.type == "multipleInputResponseArea") {
+        const updatedMultipleInputResponseArea = updatedPage.responseArea as MultipleInputInterface;
+        if (updatedMultipleInputResponseArea) {
+        }
+      }
+    });
     const inputTypeForAll = this.page?.dm?.responseArea?.inputTypeForAll || 'text';
 
     // Initialize multi-dropdown data
