@@ -19,20 +19,18 @@
           />
   
           <!-- Dropdown -->
-          <div ngbDropdown *ngIf="item.inputType === 'dropdown'" display="dynamic">
-            <button ngbDropdownToggle
-              type="button"
-              class="btn btn-default btn-block dropdown-toggle"
-              id="option"
+          <mat-form-field appearance="fill" *ngIf="item.inputType === 'dropdown'">
+            <mat-label>Select an option</mat-label>
+            <mat-select
+              [(ngModel)]="results.currentPage.response[itemIdx]"
+              (selectionChange)="selectResponse(itemIdx, $event.value)"
             >
-              {{ results.currentPage.response[itemIdx] || 'Select' }}
-            </button>
-            <div ngbDropdownMenu aria-labelledby="option">
-              <button ngbDropdownItem *ngFor="let option of item.options" (click)="selectResponse(itemIdx, option)">{{ option }}
-              </button>
-            </div>
-          </div>
-  
+              <mat-option *ngFor="let option of item.options" [value]="option">
+                {{ option }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          
           <!-- Number -->
           <input
             *ngIf="item.inputType === 'number'"
@@ -54,15 +52,21 @@
           />
   
           <!-- Multi-dropdown -->
-          <ng-multiselect-dropdown
-            *ngIf="item.inputType === 'multi-dropdown'"
-            [id]="'itemID' + itemIdx"
-            [(ngModel)]="multiDropdownModel[itemIdx]"
-            [data]="multiDropdownJson[itemIdx]"
-            [settings]="{ singleSelection: false }"
-            (onSelect)="selectMultiResponse(itemIdx)"
-            (onDeSelect)="selectMultiResponse(itemIdx)"
-          ></ng-multiselect-dropdown>
+          <mat-form-field *ngIf="item.inputType === 'multi-dropdown'">
+            <mat-label>Select options</mat-label>
+            <mat-select 
+              [id]="'itemID' + itemIdx"
+              [(ngModel)]="multiDropdownModel[itemIdx]"
+              (selectionChange)="selectMultiResponse(itemIdx)"
+              multiple>
+              <mat-option
+                *ngFor="let option of multiDropdownJson[itemIdx]"
+                [value]="option.label"
+              >
+                {{ option.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
       </div>
     </fieldset>

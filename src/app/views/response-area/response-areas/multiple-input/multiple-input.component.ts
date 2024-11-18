@@ -27,8 +27,6 @@ export class MultipleInputComponent  implements OnInit {
   inputList: InputListItem[] = [{
     text: 'default text'
   }];
-  // inputType : InputListItemType;
-  // text: string = 'default text';
 
   constructor (
     private readonly pageModel: PageModel,
@@ -47,7 +45,6 @@ export class MultipleInputComponent  implements OnInit {
           this.verticalSpacing = updatedMultipleInputResponseArea.verticalSpacing ?? 15;
           this.textAlign = updatedMultipleInputResponseArea.textAlign ?? 'center';
           this.inputList = updatedMultipleInputResponseArea.inputList;
-          // this.inputType = updatedMultipleInputResponseArea.
 
           // Initialize multi-dropdown data
           updatedMultipleInputResponseArea.inputList.forEach((item: any, index: number) => {
@@ -82,7 +79,7 @@ export class MultipleInputComponent  implements OnInit {
   }
 
   selectMultiResponse(i: number): void {
-    const multiResp = this.multiDropdownModel[i].map((resp: any) => resp.label);
+    const multiResp = this.multiDropdownModel[i];
     this.results.currentPage.response[i] = multiResp;
     this.updateSubmittableLogic();
   }

@@ -12,6 +12,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgxJsonViewerModule } from 'ngx-json-viewer';
 import 'jeep-sqlite';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
@@ -148,6 +150,8 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     MatDialogActions,
     MatDialogModule,
     MatProgressBarModule,
+    MatFormFieldModule,
+    MatSelectModule,
     NgbModule,
     NgxJsonViewerModule,
     TranslateModule.forRoot({

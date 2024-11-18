@@ -52,7 +52,6 @@
     "jeep-sqlite": "^2.7.2",
     "jsonformatter": "^0.7.0",
     "lodash": "^4.17.21",
-    "ng-multiselect-dropdown": "^1.0.0",
     "ngx-json-viewer": "^3.2.1",
     "rxjs": "~7.8.0",
     "simple-git": "^3.27.0",
