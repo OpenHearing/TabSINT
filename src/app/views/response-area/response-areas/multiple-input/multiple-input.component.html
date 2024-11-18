@@ -5,10 +5,10 @@
         *ngFor="let item of inputList; let itemIdx = index"
         [style.margin-bottom.px]="verticalSpacing"
       >
-        <div class="col-xs-6" [style.justify-content]="textAlign">
+        <div class="col-6" >
           <label [for]="'itemID' + itemIdx">{{ item.text }}</label>
         </div>
-        <div class="col-xs-6">
+        <div class="col-6">
           <!-- Text -->
           <input
             *ngIf="item.inputType === 'text'"
@@ -72,7 +72,7 @@
     </fieldset>
   
     <div class="row" *ngIf="review">
-      <div class="col-xs-12">
+      <div class="col-12">
         <button
           *ngIf="!reviewDisabled"
           class="btn btn-secondary"
