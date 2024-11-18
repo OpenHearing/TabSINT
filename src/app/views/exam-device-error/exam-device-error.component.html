@@ -1,0 +1,16 @@
+<p>Device Error</p>
+
+<div>
+    <div>
+        Error Message(s):
+    </div>
+    <div *ngFor="let error of deviceErrors">
+        {{error}}
+    </div>
+</div>
+
+&nbsp;
+&nbsp;
+&nbsp;
+
+<button (click)="retry()">Retry</button>

@@ -88,10 +88,8 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     }
     
     async ngOnDestroy() {
-        if (this.device) {
-            let resp = await this.devicesService.abortExams(this.device);
-            console.log("resp from tympan after manual audiometry abort exams:",resp);
-        }
+        let resp = await this.devicesService.abortExams(this.device!);
+        console.log("resp from tympan after manual audiometry abort exams:",resp);
         this.pageSubscription?.unsubscribe();
     }
 
@@ -124,10 +122,8 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
             "Level": this.currentDbSpl,
             "OutputChannel": this.selectedEar==="Left" ? "HPL0" : "HPR0"
         };
-        if (this.device) {
-            let resp = await this.devicesService.examSubmission(this.device, examProperties);
-            console.log("resp from tympan after manual audiometry exam submission:",resp);
-        }
+        let resp = await this.devicesService.examSubmission(this.device!, examProperties);
+        console.log("resp from tympan after manual audiometry exam submission:",resp);
     }
 
     recordThreshold() {

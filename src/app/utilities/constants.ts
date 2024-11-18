@@ -15,7 +15,8 @@ export enum ExamState {
     NotReady,
     Finalized,
     Ready,
-    Testing
+    Testing,
+    DeviceError
 }
 
 export enum DeviceState {

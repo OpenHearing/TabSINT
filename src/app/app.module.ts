@@ -85,6 +85,7 @@ import { DevicesService } from './controllers/devices.service';
 import { CalibrationResultsViewerComponent } from './views/response-area/response-areas/calibration-exam/calibration-results-viewer/calibration-results-viewer.component';
 import { ManualAudiometryResultViewerComponent } from './views/response-area/response-areas/manual-audiometry-result-viewer/manual-audiometry-result-viewer';
 import { AudiogramComponent } from './views/audiogram/audiogram.component';
+import { ExamDeviceErrorComponent } from './views/exam-device-error/exam-device-error.component';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -129,6 +130,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     MeasurementScreenComponent,
     MaxOutputScreenComponent,
     CalibrationResultsViewerComponent,
+    ExamDeviceErrorComponent,
   ],
   imports: [
     BrowserModule,

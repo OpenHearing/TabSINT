@@ -9,6 +9,7 @@ import { isTympanDevice } from '../guards/type.guard';
 import { BleDevice } from '../interfaces/bluetooth.interface';
 import { DeviceChooseComponent } from '../views/config/config-views/device-choose/device-choose.component';
 import { MatDialog } from '@angular/material/dialog';
+import { ExamState } from '../utilities/constants';
 
 @Injectable({
     providedIn: 'root',
@@ -85,6 +86,13 @@ export class DevicesService {
         this.deviceUtil.removeDevice(device);
     }
 
+    async deviceErrorHandler(resp: Array<any> | undefined) {
+        if (resp && resp[1] === "ERROR") {
+            this.state.examState = ExamState.DeviceError;
+            this.state.deviceError = resp;
+        }
+    }
+
     /** Requests device ID.
      * @summary Requests deviceID
     */
@@ -95,8 +103,6 @@ export class DevicesService {
             let resp = await this.tympanService.requestId(device.deviceId, msgId);
             this.logger.debug("requestId response: "+JSON.stringify(resp));
             this.deviceUtil.incrementDeviceMsgId(device.deviceId);
-        } else {
-            this.logger.error("Unsupported device type: "+JSON.stringify(device.type));
         }
         return resp
     }
@@ -106,19 +112,22 @@ export class DevicesService {
      * @models devices?
     */
     async queueExam(device: ConnectedDevice, examType: string, examProperties: object) {
-        let resp;
+        // these functions dont need responses (remove if not needed)
+        let resp: Array<any> | undefined;
         if (isTympanDevice(device)) {
             let msgId = device.msgId.toString();
             resp = await this.tympanService.queueExam(device.deviceId, msgId, examType, examProperties);
-            this.deviceUtil.incrementDeviceMsgId(device.deviceId);
+            this.deviceUtil.incrementDeviceMsgId(device.deviceId);  
         } else {
             this.logger.error("Unsupported device type: "+JSON.stringify(device.type));
         }
+
+        await this.deviceErrorHandler(resp);
         return resp
     }
 
     async examSubmission(device: ConnectedDevice, examProperties: object) {
-        let resp;
+        let resp: Array<any> | undefined;
         if (isTympanDevice(device)) {
             let msgId = device.msgId.toString();
             resp = await this.tympanService.examSubmission(device.deviceId,msgId,examProperties);
@@ -126,11 +135,13 @@ export class DevicesService {
         } else {
             this.logger.error("Unsupported device type: "+JSON.stringify(device.type));
         }
+
+        await this.deviceErrorHandler(resp);
         return resp
     }
 
     async abortExams(device: ConnectedDevice) {
-        let resp;
+        let resp: Array<any> | undefined;
         if (isTympanDevice(device)) {
             let msgId = device.msgId.toString();
             resp = await this.tympanService.abortExams(device.deviceId,msgId);
@@ -138,11 +149,13 @@ export class DevicesService {
         } else {
             this.logger.error("Unsupported device type: "+JSON.stringify(device.type));
         }
+
+        await this.deviceErrorHandler(resp);
         return resp
     }
 
     async requestResults(device: ConnectedDevice) {
-        let resp;
+        let resp: Array<any> | undefined;
         if (isTympanDevice(device)) {
             let msgId = device.msgId.toString();
             resp = await this.tympanService.requestResults(device.deviceId,msgId);
@@ -150,6 +163,8 @@ export class DevicesService {
         } else {
             this.logger.error("Unsupported device type: "+JSON.stringify(device.type));
         }
+
+        await this.deviceErrorHandler(resp);
         return resp
     }
 

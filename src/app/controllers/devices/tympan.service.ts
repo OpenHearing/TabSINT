@@ -4,7 +4,7 @@ import { TympanWrap } from '../../utilities/tympan-wrap.service';
 import { BleDevice } from '../../interfaces/bluetooth.interface';
 import { DevicesModel } from '../../models/devices/devices-model.service';
 import { DevicesInterface, TympanResponse } from '../../models/devices/devices.interface';
-import { DeviceState } from '../../utilities/constants';
+import { DeviceState, ExamState } from '../../utilities/constants';
 import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
 import { NewConnectedDevice, ConnectedDevice } from '../../interfaces/connected-device.interface';
@@ -26,7 +26,7 @@ export class TympanService {
     tympanSubscription: Subscription|undefined;
     pendingMsgInfo: PendingMsgInfo|null = null;
     pendingMsg: boolean = false;
-    tympanResponse: string|undefined;
+    response: Array<any> = [];
     currentTimeoutTimeMs: number = 0;
 
     constructor(
@@ -44,7 +44,8 @@ export class TympanService {
             if (this.deviceUtil.checkTympanResponse(this.pendingMsgInfo, response)) {
                 this.pendingMsgInfo = null;
                 this.pendingMsg = false;
-                this.tympanResponse = JSON.parse(response.msg);
+                console.log("this.response",this.response)
+                this.response = JSON.parse(response.msg);
             }
         });
     }
@@ -55,7 +56,7 @@ export class TympanService {
             msgId: msgId
         };
         this.pendingMsg = true;
-        this.tympanResponse = undefined;
+        this.response = [];
         this.currentTimeoutTimeMs = 0;
     }
 
@@ -87,7 +88,7 @@ export class TympanService {
         await this.tympanWrap.stopScanning();
     }
 
-    async connect(tympan: BleDevice, newConnectedDevice: NewConnectedDevice) {
+    async connect(tympan: BleDevice, newConnectedDevice: NewConnectedDevice): Promise<ConnectedDevice|undefined> {
         await this.tympanWrap.stopScanning();
             
         this.logger.debug("attempting to connect to tympan : " + JSON.stringify(tympan));
@@ -108,7 +109,7 @@ export class TympanService {
         }      
     }
 
-    async reconnect(tympanId: string) {
+    async reconnect(tympanId: string): Promise<ConnectedDevice|undefined> {
         try {
             await this.tympanWrap.connect(tympanId, this.onDisconnect.bind(this));
             this.deviceUtil.updateDeviceState(tympanId, DeviceState.Connected);
@@ -124,76 +125,82 @@ export class TympanService {
         this.deviceUtil.updateDeviceState(tympanId, DeviceState.Disconnected);
     }
 
-    async requestId(tympanId: string, msgId: string) {
-        let resp = "Error during requestId";
+    async requestId(tympanId: string, msgId: string): Promise<Array<any>> {
+        let resp: Array<any> = [-msgId,"Error during requestId"];
         let msg = '['+msgId+',"requestId"]';
         try {
             this.startMsgTracking(1, msgId);
             await this.tympanWrap.write(tympanId, msg);
             await this.waitForResponse();
-            resp = this.tympanResponse ?? "timeout";
-        } catch {
-            this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg));
+            resp = this.response ?? [-msgId,"ERROR","timeout"];
+        } catch (e) {
+            this.state.examState = ExamState.DeviceError;
+            this.state.deviceError = resp;
+            this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));
         }
         return resp
     }
 
-    async queueExam(tympanId: string, msgId: string, examType: string, examProperties: object) {
-        let resp = "Error during queueExam";
+    async queueExam(tympanId: string, msgId: string, examType: string, examProperties: object): Promise<Array<any>> {
+        let resp: Array<any> = [-msgId,"Error during queueExam"];
         let examId: string = "1";
         let msg = '['+msgId+',"queueExam",'+examId+',"'+examType+'",'+JSON.stringify(examProperties)+']';
         try {
             this.startMsgTracking(1, msgId);
             await this.tympanWrap.write(tympanId, msg);
             await this.waitForResponse();
-            resp = this.tympanResponse ?? "timeout";
-        } catch {
-            this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg));
+            resp = this.response ?? [-msgId,"ERROR","timeout"];
+        } catch (e) {
+            this.state.examState = ExamState.DeviceError;
+            this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));
         }
         return resp
     }
 
-    async examSubmission(tympanId: string, msgId: string, examProperties: object) {
-        let resp = "Error during examSubmission";
+    async examSubmission(tympanId: string, msgId: string, examProperties: object): Promise<Array<any>> {
+        let resp: Array<any> = [-msgId,"Error during examSubmission"];
         let examId: string = "1";
         let msg = '['+msgId+',"examSubmission",'+examId+','+JSON.stringify(examProperties)+']';
         try {
             this.startMsgTracking(1, msgId);
             await this.tympanWrap.write(tympanId, msg);
             await this.waitForResponse();
-            resp = this.tympanResponse ?? "timeout";
-        } catch {
-            this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg));
+            resp = this.response ?? [-msgId,"ERROR","timeout"];
+        } catch (e) {
+            this.state.examState = ExamState.DeviceError;
+            this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));
         }
         return resp
     }
 
-    async abortExams(tympanId: string, msgId: string) {
+    async abortExams(tympanId: string, msgId: string): Promise<Array<any>> {
         // This aborts ALL running exams
-        let resp = "Error during abortExams";
+        let resp: Array<any> = [-msgId,"Error during abortExams"];
         let msg = '['+msgId+',"abortExams"]';
         try {
             this.startMsgTracking(1, msgId);
             await this.tympanWrap.write(tympanId, msg);
             await this.waitForResponse();
-            resp = this.tympanResponse ?? "timeout";
-        } catch {
-            this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg));
+            resp = this.response ?? [-msgId,"ERROR","timeout"];
+        } catch (e) {
+            this.state.examState = ExamState.DeviceError;
+            this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));
         }
         return resp
     }
 
-    async requestResults(tympanId: string, msgId: string) {
-        let resp = "Error during requestResults";
+    async requestResults(tympanId: string, msgId: string): Promise<Array<any>> {
+        let resp: Array<any> = [-msgId,"Error during requestResults"];
         let examId: string = "1";
         let msg = '['+msgId+',"requestResults",'+examId+']';
         try {
             this.startMsgTracking(1, msgId);
             await this.tympanWrap.write(tympanId, msg);
             await this.waitForResponse();
-            resp = this.tympanResponse ?? "timeout";
-        } catch {
-            this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg));
+            resp = this.response ?? [-msgId,"ERROR","timeout"];
+        } catch (e) {
+            this.state.examState = ExamState.DeviceError;
+            this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));
         }
         return resp
     }

@@ -89,12 +89,10 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   }
 
   async ngOnDestroy(): Promise<void> {
-    if (this.device) {
-      this.isPlaying = false;
-      await this.stopTone();
-      let resp = await this.devicesService.abortExams(this.device);
-      console.log("resp from tympan after calibration exam abort exams:",resp);
-    }
+    this.isPlaying = false;
+    await this.stopTone();
+    let resp = await this.devicesService.abortExams(this.device!);
+    console.log("resp from tympan after calibration exam abort exams:",resp);
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
     this.pageSubscription?.unsubscribe();
     this.tympanSubscription?.unsubscribe();
@@ -237,10 +235,8 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       "RequestedLevel": requestedLevel,
       EnableOutput: enableOutput
     };
-    if (this.device) {
-      let resp = await this.devicesService.examSubmission(this.device, examProperties);
-      console.log("resp from tympan after calibration exam exam submission:",resp);
-    }
+    let resp = await this.devicesService.examSubmission(this.device!, examProperties);
+    console.log("resp from tympan after calibration exam exam submission:",resp);
   }
 
   private async sendMaxOutputTone(): Promise<void> {
@@ -253,10 +249,8 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       "MeasuredLevel": maxOutputLevel,
       "Mode": "MaximumOutputLevel"
     };
-    if (this.device) {
-      let resp = await this.devicesService.examSubmission(this.device, examProperties);
-      console.log("resp from tympan after calibration exam exam submission:",resp);
-    }
+    let resp = await this.devicesService.examSubmission(this.device!, examProperties);
+    console.log("resp from tympan after calibration exam exam submission:",resp);
   }
 
   private async sendMeasurementLevel(): Promise<void> {
@@ -285,10 +279,8 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
 
 
   private async stopTone() {
-    if (this.device) {
-      let resp = await this.devicesService.examSubmission(this.device, { "EnableOutput": false });
-      console.log("resp from tympan after calibration exam exam submission:",resp);
-    }
+    let resp = await this.devicesService.examSubmission(this.device!, { "EnableOutput": false });
+    console.log("resp from tympan after calibration exam exam submission:",resp);
   }
 
   private saveResults(): void {
@@ -310,10 +302,8 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       "WriteCalibration": true
     };
 
-    if (this.device) {
-      let resp = await this.devicesService.examSubmission(this.device, calibrationData);
-      console.log("resp from tympan after calibration exam exam submission:",resp);
-    }
+    let resp = await this.devicesService.examSubmission(this.device!, calibrationData);
+    console.log("resp from tympan after calibration exam exam submission:",resp);
   }
 
 }
