@@ -14,7 +14,6 @@ import { DevicesModel } from '../../../../models/devices/devices-model.service';
   selector: 'device-choose-view',
   standalone: true,
   templateUrl: './device-choose.component.html',
-  styles: '../../../../../styles.scss',
   imports: [FormsModule, TranslateModule, NgFor, NgClass]
 })
 export class DeviceChooseComponent implements OnInit, OnDestroy {
