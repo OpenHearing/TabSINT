@@ -15,6 +15,7 @@ import { AppModel } from '../../models/app/app.service';
 import { AppInterface } from '../../models/app/app.interface';
 import { DisclaimerComponent } from '../disclaimer/disclaimer.component';
 import { Router } from '@angular/router';
+import { AdminService } from '../../controllers/admin.service';
 
 @Component({
   selector: 'header-view',
@@ -36,7 +37,8 @@ export class HeaderComponent {
     private readonly notifications: Notifications,
     private readonly stateModel: StateModel,
     private readonly appModel: AppModel,
-    private readonly router: Router
+    private readonly router: Router,
+    public adminService: AdminService
   ) {
     this.state = this.stateModel.getState();
     this.disk = this.diskModel.getDisk();
@@ -76,20 +78,6 @@ export class HeaderComponent {
         this.logger.debug('Reset exam canceled.');
       }
     });
-  }
-
-  onAdminViewClick() {
-    if (!this.disk.debugMode) {
-      const dialogRef = this.dialog.open(ChangePinComponent);
-      dialogRef.componentInstance.setValidationMode(true);
-      dialogRef.componentInstance.pinValidated.subscribe((isValid: boolean) => {
-        if (isValid) {
-          this.router.navigate(['/admin']);
-        } 
-      });
-    }  else {
-      this.router.navigate(['/admin']);
-    }
   }
 
 }

@@ -6,6 +6,6 @@
     <input id="maxLogLength" type="number" [(ngModel)]="maxLogLength" min="1" step="1" autofocus="true"/><br /><br/>
 </div>
 <div class="modal-footer">
-    <button type="button" class="btn btn-primary" (click)="save(maxLogLength)">{{'Save' | translate}}</button>
-    <button type="button" class="btn btn-warning" (click)="cancel()">{{'Cancel' | translate}}</button>
+    <button type="button" class="btn btn-primary btn-block" (click)="save(maxLogLength)">{{'Save' | translate}}</button>
+    <button type="button" class="btn btn-danger" (click)="cancel()">{{'Cancel' | translate}}</button>
 </div>
