@@ -12,7 +12,6 @@ import { DisclaimerComponent } from '../disclaimer/disclaimer.component';
 import { StateModel } from '../../models/state/state.service';
 import { AppState } from '../../utilities/constants';
 import { StateInterface } from '../../models/state/state.interface';
-import { ChangePinComponent } from '../change-pin/change-pin.component';
 import { AdminService } from '../../controllers/admin.service';
 
 @Component({

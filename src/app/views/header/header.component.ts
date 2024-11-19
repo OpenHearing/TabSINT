@@ -9,7 +9,6 @@ import { StateInterface } from '../../models/state/state.interface';
 import { DiskModel } from '../../models/disk/disk.service';
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { Subscription } from 'rxjs';
-import { ChangePinComponent } from '../change-pin/change-pin.component';
 import { MatDialog } from '@angular/material/dialog';
 import { AppModel } from '../../models/app/app.service';
 import { AppInterface } from '../../models/app/app.interface';
