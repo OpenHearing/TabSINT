@@ -17,7 +17,7 @@ Revision Table
    * - 1
      - 13 November 2024
      - BGraybill
-     - Initial commit for a swept OAE exam. 
+     - Initial commit for a swept OAE exam.
 
 
 References
@@ -48,6 +48,7 @@ The GUI should look like the image below with the following features.
 * The GUI should display the parameters from the protocol in a table similar to the one shown below
 * There should be a `Submit` button to initiate the exam. The `Submit` button becomes inactive after initating the exam.
 * After initiating the exam, a progress bar appears and the `Submit` button is replaced with an inactive `Next` button (See screen 2 image below).
+* While the exam progresses, live results are plotted for the individual frequencies specfied in the `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/swept_dpoae.rst?ref_type=heads>`. The DPOAE value is plotted as a blue circle and the noise value is plotted as a red 'x'.
 * The `Next` button becomes active after the Swept OAE exam concludes.
 
 .. list-table::
@@ -130,6 +131,10 @@ Algorithm
      - Initiate an exam normally. Once the exam is active, click `Abort`.
      - Verify that the exam aborts successfully and proceeds to the results-view.
      - 
+   * - Live results are plotted while the exam progresses.
+     - Initiate and complete an exam normally.
+     - Verify that DPOAE and noise values are plotted for the frequencies specified while the exam progresses.
+     - 
    * - The exam results are displayed.
      - Complete an exam normally. Then click the `Finish` button. Proceed to the results-view page.
      - Verify that the OAE, noise floor, F1 and F2 are plotted in dB SPL as a function of F2. Verify that DpLow, DpHigh, F1, and F2 are displayed in table format.
@@ -152,7 +157,7 @@ Data
      - 
    * - The exam must display all `SweptDpoaeResults` fields defined  in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/swept_dpoae.rst?ref_type=heads>`_.
      - Start a Swept OAE exam, complete the exam. 
-     - Verify that all results are accurately displayed.
+     - Verify that all results are accurately displayed both during and after the exam.
      - 
    * - The exam must export all `SweptDpoaeResults` fields defined in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/swept_dpoae.rst?ref_type=heads>`_.
      - Submit the exam and export results.
