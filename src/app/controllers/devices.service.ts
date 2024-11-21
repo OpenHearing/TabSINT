@@ -103,6 +103,8 @@ export class DevicesService {
             let resp = await this.tympanService.requestId(device.deviceId, msgId);
             this.logger.debug("requestId response: "+JSON.stringify(resp));
             this.deviceUtil.incrementDeviceMsgId(device.deviceId);
+            let tabsintId = this.deviceUtil.getTabsintIdFromDeviceId(device.deviceId);
+            this.deviceUtil.updateDeviceInfo(tabsintId!,resp[1]);
         }
         return resp
     }
