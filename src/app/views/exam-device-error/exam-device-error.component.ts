@@ -7,7 +7,7 @@ import { ExamState } from '../../utilities/constants';
 @Component({
   selector: 'exam-device-error-view',
   templateUrl: './exam-device-error.component.html',
-  styleUrl: './exam-device-error.component.css'
+  styleUrl: '../../../styles.scss'
 })
 
 export class ExamDeviceErrorComponent {
