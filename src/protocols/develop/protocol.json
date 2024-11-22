@@ -28,6 +28,9 @@
                 "id":"Text Box"
               },
               {
+                "id":"LikeRT"
+              },
+              {
                 "id":"Multiple Input"
               },
               {
@@ -46,6 +49,12 @@
               "conditional":"result.response=='Text Box'",
               "target":{
                 "reference":"TextBox"
+              } 
+            },
+            {
+              "conditional":"result.response=='LikeRT'",
+              "target":{
+                "reference":"LikeRT"
               } 
             },
             {
@@ -126,6 +135,28 @@
       ]
     },
     {
+      "protocolId": "LikeRT",
+      "pages": [
+        {
+          "id": "default",
+          "responseArea": {
+            "type": "likertResponseArea",
+            "labels": ["Not at all", "Perfectly"],
+            "questions": [
+              "You are in a group of about five people, sitting round a table. It is an otherwise quiet place. You can see everyone else in the group. Can you follow the conversation? ",
+              "You are talking with one other person. There is continuous background noise, such as a fan or running water close by. Can you follow what the person says? ",
+              "You are in a group of about five people in a busy restaurant. You CANNOT see everyone else in the group. Can you follow the conversation? ",
+              "You are talking to someone in a place where there are a lot of echoes, such as in a church or railway station. Can you follow what the other person says? "
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference":"MainMenu"
+        }
+      ]
+    },
+    {
       "protocolId": "MultipleInput",
       "pages": [
         {
@@ -134,6 +165,7 @@
           "instructionText": "Enter the following information:",
           "responseArea": {
             "type": "multipleInputResponseArea",
+            "review": true,
             "inputList": [
               {
                 "text": "Have you ever had tubes put in your eardrum(s)?",

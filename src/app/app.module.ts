@@ -88,6 +88,7 @@ import { CalibrationResultsViewerComponent } from './views/response-area/respons
 import { ManualAudiometryResultViewerComponent } from './views/response-area/response-areas/manual-audiometry/manual-audiometry-result-viewer/manual-audiometry-result-viewer';
 import { AudiogramComponent } from './views/audiogram/audiogram.component';
 import { MultipleInputComponent } from './views/response-area/response-areas/multiple-input/multiple-input.component';
+import { LikertComponent } from './views/response-area/response-areas/likert/likert/likert.component';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -115,6 +116,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     ExamFinalizedComponent,
     ResponseAreaComponent,
     TextboxComponent,
+    LikertComponent,
     TextboxResultViewerComponent,
     MultipleChoiceComponent,
     ManualAudiometryComponent,
@@ -133,6 +135,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     MaxOutputScreenComponent,
     CalibrationResultsViewerComponent,
     MultipleInputComponent,
+    LikertComponent,
   ],
   imports: [
     BrowserModule,

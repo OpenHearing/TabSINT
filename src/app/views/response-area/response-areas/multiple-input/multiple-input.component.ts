@@ -45,6 +45,7 @@ export class MultipleInputComponent  implements OnInit {
           this.verticalSpacing = updatedMultipleInputResponseArea.verticalSpacing ?? 15;
           this.textAlign = updatedMultipleInputResponseArea.textAlign ?? 'center';
           this.inputList = updatedMultipleInputResponseArea.inputList;
+          this.review = updatedMultipleInputResponseArea.review ?? false;
 
           // Initialize multi-dropdown data
           updatedMultipleInputResponseArea.inputList.forEach((item: any, index: number) => {
