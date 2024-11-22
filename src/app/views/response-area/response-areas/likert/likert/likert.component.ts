@@ -18,7 +18,7 @@ export class LikertComponent implements OnInit, OnDestroy {
   position: "above" | "below" = "above";
   labels: string[] = [''];
   useEmoticons: boolean = false;
-  emoticons: string[] = ['😠', '😟', '😐', '😊', '😍'];
+  emoticons: string[] = ['😠', '😟', '😐', '🙂', '😃'];
   @Output() responseChange = new EventEmitter<number>();
   results: ResultsInterface;
   pageSubscription: Subscription | undefined;
