@@ -48,7 +48,7 @@ The GUI should look like the image below with the following features.
 * The GUI should display the parameters from the protocol in a table similar to the one shown below
 * There should be a `Submit` button to initiate the exam. The `Submit` button becomes inactive after initating the exam.
 * After initiating the exam, a progress bar appears and the `Submit` button is replaced with an inactive `Next` button (See screen 2 image below).
-* While the exam progresses, live results are plotted for the individual frequencies specfied in the `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/swept_dpoae.rst?ref_type=heads>`. The DPOAE value is plotted as a blue circle for the left ear and a red 'x' for the right ear. Noise is plotted in the background as very light blue and red, in accordance with the left and right ears, respectively.
+* While the exam progresses, live results are plotted for the individual frequencies specfied in the `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/swept_dpoae.rst?ref_type=heads>`. The DPOAE value is plotted as a blue circle and the noise value is plotted as a red 'x'.
 * The `Next` button becomes active after the Swept OAE exam concludes.
 
 .. list-table::
