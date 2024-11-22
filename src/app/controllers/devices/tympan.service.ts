@@ -44,7 +44,6 @@ export class TympanService {
             if (this.deviceUtil.checkTympanResponse(this.pendingMsgInfo, response)) {
                 this.pendingMsgInfo = null;
                 this.pendingMsg = false;
-                console.log("this.response",this.response)
                 this.response = JSON.parse(response.msg);
             }
         });
@@ -132,7 +131,7 @@ export class TympanService {
             this.startMsgTracking(1, msgId);
             await this.tympanWrap.write(tympanId, msg);
             await this.waitForResponse();
-            resp = this.response ?? [-msgId,"ERROR","timeout"];
+            resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
         } catch (e) {
             this.state.examState = ExamState.DeviceError;
             this.state.deviceError = resp;
@@ -149,7 +148,7 @@ export class TympanService {
             this.startMsgTracking(1, msgId);
             await this.tympanWrap.write(tympanId, msg);
             await this.waitForResponse();
-            resp = this.response ?? [-msgId,"ERROR","timeout"];
+            resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
         } catch (e) {
             this.state.examState = ExamState.DeviceError;
             this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));
@@ -165,7 +164,7 @@ export class TympanService {
             this.startMsgTracking(1, msgId);
             await this.tympanWrap.write(tympanId, msg);
             await this.waitForResponse();
-            resp = this.response ?? [-msgId,"ERROR","timeout"];
+            resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
         } catch (e) {
             this.state.examState = ExamState.DeviceError;
             this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));
@@ -181,7 +180,7 @@ export class TympanService {
             this.startMsgTracking(1, msgId);
             await this.tympanWrap.write(tympanId, msg);
             await this.waitForResponse();
-            resp = this.response ?? [-msgId,"ERROR","timeout"];
+            resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
         } catch (e) {
             this.state.examState = ExamState.DeviceError;
             this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));
@@ -197,7 +196,7 @@ export class TympanService {
             this.startMsgTracking(1, msgId);
             await this.tympanWrap.write(tympanId, msg);
             await this.waitForResponse();
-            resp = this.response ?? [-msgId,"ERROR","timeout"];
+            resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
         } catch (e) {
             this.state.examState = ExamState.DeviceError;
             this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));

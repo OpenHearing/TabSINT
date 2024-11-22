@@ -89,7 +89,6 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     
     async ngOnDestroy() {
         let resp = await this.devicesService.abortExams(this.device!);
-        console.log("resp from tympan after manual audiometry abort exams:",resp);
         this.pageSubscription?.unsubscribe();
     }
 

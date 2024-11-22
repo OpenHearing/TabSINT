@@ -41,8 +41,8 @@ export class DevicesService {
                     let connection = await this.tympanService.connect(tympan, newConnectedDevice);
                     if (connection) {
                         this.deviceUtil.addNewSavedDevice(connection);
-                        await this.requestId(connection);
                         await this.abortExams(connection);
+                        await this.requestId(connection);
                     }
                 } else {
                     await this.tympanService.stopScan();
@@ -71,6 +71,7 @@ export class DevicesService {
         if (isTympanDevice(device)) {
             let connection = await this.tympanService.reconnect(device.deviceId);
             if (connection) {
+                await this.abortExams(connection);
                 await this.requestId(connection);
             }
         } else {
