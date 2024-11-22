@@ -125,7 +125,7 @@ export class TympanService {
     }
 
     async requestId(tympanId: string, msgId: string): Promise<Array<any>> {
-        let resp: Array<any> = [-msgId,"Error during requestId"];
+        let resp: Array<any> = [-msgId,"ERROR"];
         let msg = '['+msgId+',"requestId"]';
         try {
             this.startMsgTracking(1, msgId);
@@ -141,7 +141,7 @@ export class TympanService {
     }
 
     async queueExam(tympanId: string, msgId: string, examType: string, examProperties: object): Promise<Array<any>> {
-        let resp: Array<any> = [-msgId,"Error during queueExam"];
+        let resp: Array<any> = [-msgId,"ERROR"];
         let examId: string = "1";
         let msg = '['+msgId+',"queueExam",'+examId+',"'+examType+'",'+JSON.stringify(examProperties)+']';
         try {
@@ -157,7 +157,7 @@ export class TympanService {
     }
 
     async examSubmission(tympanId: string, msgId: string, examProperties: object): Promise<Array<any>> {
-        let resp: Array<any> = [-msgId,"Error during examSubmission"];
+        let resp: Array<any> = [-msgId,"ERROR"];
         let examId: string = "1";
         let msg = '['+msgId+',"examSubmission",'+examId+','+JSON.stringify(examProperties)+']';
         try {
@@ -174,7 +174,7 @@ export class TympanService {
 
     async abortExams(tympanId: string, msgId: string): Promise<Array<any>> {
         // This aborts ALL running exams
-        let resp: Array<any> = [-msgId,"Error during abortExams"];
+        let resp: Array<any> = [-msgId,"ERROR"];
         let msg = '['+msgId+',"abortExams"]';
         try {
             this.startMsgTracking(1, msgId);
@@ -189,7 +189,7 @@ export class TympanService {
     }
 
     async requestResults(tympanId: string, msgId: string): Promise<Array<any>> {
-        let resp: Array<any> = [-msgId,"Error during requestResults"];
+        let resp: Array<any> = [-msgId,"ERROR"];
         let examId: string = "1";
         let msg = '['+msgId+',"requestResults",'+examId+']';
         try {
