@@ -59,7 +59,7 @@ export class TympanService {
         this.currentTimeoutTimeMs = 0;
     }
 
-    async waitForResponse(timeoutTimeMs: number = 5000, timeoutPollingDelayMs: number = 10) {
+    async waitForResponse(timeoutTimeMs: number = 10000, timeoutPollingDelayMs: number = 10) {
         while (this.pendingMsg) {
             await this.delay(timeoutPollingDelayMs);
             this.currentTimeoutTimeMs += timeoutPollingDelayMs;
