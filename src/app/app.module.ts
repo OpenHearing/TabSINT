@@ -12,6 +12,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgxJsonViewerModule } from 'ngx-json-viewer';
 import 'jeep-sqlite';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
@@ -85,6 +87,8 @@ import { DevicesService } from './controllers/devices.service';
 import { CalibrationResultsViewerComponent } from './views/response-area/response-areas/calibration-exam/calibration-results-viewer/calibration-results-viewer.component';
 import { ManualAudiometryResultViewerComponent } from './views/response-area/response-areas/manual-audiometry/manual-audiometry-result-viewer/manual-audiometry-result-viewer';
 import { AudiogramComponent } from './views/audiogram/audiogram.component';
+import { MultipleInputComponent } from './views/response-area/response-areas/multiple-input/multiple-input.component';
+import { LikertComponent } from './views/response-area/response-areas/likert/likert/likert.component';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -112,6 +116,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     ExamFinalizedComponent,
     ResponseAreaComponent,
     TextboxComponent,
+    LikertComponent,
     TextboxResultViewerComponent,
     MultipleChoiceComponent,
     ManualAudiometryComponent,
@@ -129,6 +134,8 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     MeasurementScreenComponent,
     MaxOutputScreenComponent,
     CalibrationResultsViewerComponent,
+    MultipleInputComponent,
+    LikertComponent,
   ],
   imports: [
     BrowserModule,
@@ -146,6 +153,8 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     MatDialogActions,
     MatDialogModule,
     MatProgressBarModule,
+    MatFormFieldModule,
+    MatSelectModule,
     NgbModule,
     NgxJsonViewerModule,
     TranslateModule.forRoot({

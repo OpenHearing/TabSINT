@@ -1,0 +1,97 @@
+<div class="table-form-max-width">
+    <fieldset [disabled]="reviewDisabled">
+      <div
+        class="row"
+        *ngFor="let item of inputList; let itemIdx = index"
+        [style.margin-bottom.px]="verticalSpacing"
+      >
+        <div class="col-6" [style.justify-content]="textAlign" [style.text-align]="textAlign">
+          <label [for]="'itemID' + itemIdx">{{ item.text }}</label>
+        </div>
+        <div class="col-6">
+          <!-- Text -->
+          <input
+            *ngIf="item.inputType === 'text'"
+            [id]="'itemID' + itemIdx"
+            [(ngModel)]="results.currentPage.response[itemIdx]"
+            (ngModelChange)="updateSubmittableLogic()"
+            class="form-control"
+          />
+  
+          <!-- Dropdown -->
+          <mat-form-field appearance="fill" *ngIf="item.inputType === 'dropdown'">
+            <mat-label>Select an option</mat-label>
+            <mat-select
+              [(ngModel)]="results.currentPage.response[itemIdx]"
+              (selectionChange)="selectResponse(itemIdx, $event.value)"
+            >
+              <mat-option *ngFor="let option of item.options" [value]="option">
+                {{ option }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          
+          <!-- Number -->
+          <input
+            *ngIf="item.inputType === 'number'"
+            [id]="'itemID' + itemIdx"
+            type="number"
+            [(ngModel)]="results.currentPage.response[itemIdx]"
+            class="form-control"
+          />
+  
+          <!-- Date -->
+          <input
+            *ngIf="item.inputType === 'date'"
+            [id]="'itemID' + itemIdx"
+            type="date"
+            [(ngModel)]="results.currentPage.response[itemIdx]"
+            [attr.max]="item.dateProperties?.maxDate === 'today' ? today : item.dateProperties?.maxDate"
+            [attr.min]="item.dateProperties?.minDate === 'today' ? today : item.dateProperties?.minDate"
+            class="form-control"
+          />
+  
+          <!-- Multi-dropdown -->
+          <mat-form-field *ngIf="item.inputType === 'multi-dropdown'">
+            <mat-label>Select options</mat-label>
+            <mat-select 
+              [id]="'itemID' + itemIdx"
+              [(ngModel)]="multiDropdownModel[itemIdx]"
+              (selectionChange)="selectMultiResponse(itemIdx)"
+              multiple>
+              <mat-option
+                *ngFor="let option of multiDropdownJson[itemIdx]"
+                [value]="option.label"
+              >
+                {{ option.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+    </fieldset>
+  
+    <div class="row" *ngIf="review">
+      <div class="col-12">
+        <button
+          *ngIf="!reviewDisabled"
+          class="btn btn-secondary"
+          type="button"
+          id="review"
+          (click)="enableReview(true)"
+        >
+          Review
+        </button>
+        <button
+          *ngIf="reviewDisabled"
+          class="btn btn-secondary"
+          type="button"
+          id="edit"
+          (click)="enableReview(false)"
+        >
+          Edit
+        </button>
+      </div>
+    </div>
+  </div>
+  

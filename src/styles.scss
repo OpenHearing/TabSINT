@@ -307,9 +307,6 @@ $tabsint-training-site-theme: mat.define-light-theme((
     background-color: #f5f5f5;
     color: #333;
     font-size: 1.2rem;
-    /* fallback ui for older OS */
-    display: block;
-    line-height: 60px;
   }
   .welcome-row span:first-of-type {
     padding: 0 5px;
@@ -759,7 +756,6 @@ $tabsint-training-site-theme: mat.define-light-theme((
   
   .question .row {
     margin: 10px 0 15px;
-    display: block;
   }
   
   .question-footer {
@@ -2600,14 +2596,3 @@ $tabsint-training-site-theme: mat.define-light-theme((
     border-bottom: 0;
   }
   
-  .multiselect-parent {
-    width: 100%;
-  }
-  
-  .multiselect-parent .dropdown-toggle {
-    width: 100%;
-  }
-  
-  .multiselect-parent .dropdown-menu {
-    width: 100%;
-  }

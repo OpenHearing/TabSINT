@@ -28,6 +28,12 @@
                 "id":"Text Box"
               },
               {
+                "id":"LikeRT"
+              },
+              {
+                "id":"Multiple Input"
+              },
+              {
                 "id":"Manual Audiometry"
               },
               {
@@ -43,6 +49,18 @@
               "conditional":"result.response=='Text Box'",
               "target":{
                 "reference":"TextBox"
+              } 
+            },
+            {
+              "conditional":"result.response=='LikeRT'",
+              "target":{
+                "reference":"LikeRT"
+              } 
+            },
+            {
+              "conditional":"result.response=='Multiple Input'",
+              "target":{
+                "reference":"MultipleInput"
               } 
             },
             {
@@ -113,6 +131,76 @@
         {
           "id": "backtomain",
           "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "LikeRT",
+      "pages": [
+        {
+          "id": "default",
+          "responseArea": {
+            "type": "likertResponseArea",
+            "levels": 5,
+            "useEmoticons": true,
+            "labels": ["Not at all", "Perfectly"],
+            "questions": [
+              "You are in a group of about five people, sitting round a table. It is an otherwise quiet place. You can see everyone else in the group. Can you follow the conversation? ",
+              "You are talking with one other person. There is continuous background noise, such as a fan or running water close by. Can you follow what the person says? ",
+              "You are in a group of about five people in a busy restaurant. You CANNOT see everyone else in the group. Can you follow the conversation? ",
+              "You are talking to someone in a place where there are a lot of echoes, such as in a church or railway station. Can you follow what the other person says? "
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "MultipleInput",
+      "pages": [
+        {
+          "id": "ARDC_Survey_1",
+          "title": "ARDC Surveys",
+          "instructionText": "Enter the following information:",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "review": true,
+            "inputList": [
+              {
+                "text": "Have you ever had tubes put in your eardrum(s)?",
+                "inputType": "text",
+                "required": true
+              },
+              {
+                "text": "How many ear tubes?",
+                "inputType": "number"
+              },
+              {
+                "text": "Have you ever had a ruptured eardrum? ",
+                "inputType": "dropdown",
+                "options": [
+                  "yes",
+                  "no"
+                ]
+              },
+              {
+                "text": "Patient Date of Birth",
+                "inputType": "date",
+                "required": false,
+                "dateProperties": {
+                  "maxDate": "today"
+                }
+              },
+              {
+                "inputType": "multi-dropdown",
+                "options": ["a","b","c"],
+                "text": "Multi-dropdown Input"
+              }
+            ]
+          }
         }
       ]
     },
