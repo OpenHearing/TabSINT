@@ -54,15 +54,6 @@ export enum SvantekState {
     Recording
 }
 
-export enum InputListItemType {
-    "text",
-    "number",
-    "dropdown",
-    "date",
-    "multi-dropdown",
-    "yes-no"
-}
-
 export const BluetoothType = {
   "BLUETOOTH": "Bluetooth 2.0",
   "BLUETOOTH_LE": "Bluetooth 3.0",
