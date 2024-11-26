@@ -28,6 +28,7 @@ export class TympanService {
     pendingMsg: boolean = false;
     response: Array<any> = [];
     currentTimeoutTimeMs: number = 0;
+    defaultErrorMsg = ["ERROR", "failed to write message to tympan"];
 
     constructor(
         private readonly tympanWrap: TympanWrap, 
@@ -125,7 +126,7 @@ export class TympanService {
     }
 
     async requestId(tympanId: string, msgId: string): Promise<Array<any>> {
-        let resp: Array<any> = [-msgId,"ERROR"];
+        let resp: Array<any> = [-msgId].concat(JSON.parse(JSON.stringify(this.defaultErrorMsg)));
         let msg = '['+msgId+',"requestId"]';
         try {
             this.startMsgTracking(1, msgId);
@@ -141,7 +142,7 @@ export class TympanService {
     }
 
     async queueExam(tympanId: string, msgId: string, examType: string, examProperties: object): Promise<Array<any>> {
-        let resp: Array<any> = [-msgId,"ERROR"];
+        let resp: Array<any> = [-msgId].concat(JSON.parse(JSON.stringify(this.defaultErrorMsg)));
         let examId: string = "1";
         let msg = '['+msgId+',"queueExam",'+examId+',"'+examType+'",'+JSON.stringify(examProperties)+']';
         try {
@@ -157,7 +158,7 @@ export class TympanService {
     }
 
     async examSubmission(tympanId: string, msgId: string, examProperties: object): Promise<Array<any>> {
-        let resp: Array<any> = [-msgId,"ERROR"];
+        let resp: Array<any> = [-msgId].concat(JSON.parse(JSON.stringify(this.defaultErrorMsg)));
         let examId: string = "1";
         let msg = '['+msgId+',"examSubmission",'+examId+','+JSON.stringify(examProperties)+']';
         try {
@@ -174,7 +175,7 @@ export class TympanService {
 
     async abortExams(tympanId: string, msgId: string): Promise<Array<any>> {
         // This aborts ALL running exams
-        let resp: Array<any> = [-msgId,"ERROR"];
+        let resp: Array<any> = [-msgId].concat(JSON.parse(JSON.stringify(this.defaultErrorMsg)));
         let msg = '['+msgId+',"abortExams"]';
         try {
             this.startMsgTracking(1, msgId);
@@ -189,7 +190,7 @@ export class TympanService {
     }
 
     async requestResults(tympanId: string, msgId: string): Promise<Array<any>> {
-        let resp: Array<any> = [-msgId,"ERROR"];
+        let resp: Array<any> = [-msgId].concat(JSON.parse(JSON.stringify(this.defaultErrorMsg)));
         let examId: string = "1";
         let msg = '['+msgId+',"requestResults",'+examId+']';
         try {
