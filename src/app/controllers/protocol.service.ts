@@ -5,7 +5,6 @@ import { Subscription } from 'rxjs';
 import Ajv from 'ajv';
 const ajv = new Ajv()
 
-
 import { LoadingProtocolInterface } from '../interfaces/loading-protocol-object.interface';
 import { ProtocolValidationResultInterface } from '../interfaces/protocol-validation-result.interface';
 import { ProtocolErrorInterface } from '../interfaces/protocol-error.interface';
@@ -61,7 +60,6 @@ export class ProtocolService {
         this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
             this.disk = updatedDisk;
         })    
-        // TODO: can we grab defaults from schema instead?
         this.loading = loadingProtocolDefaults(this.disk);
     }
 
@@ -107,8 +105,8 @@ export class ProtocolService {
      * @param p protocol to delete
      */
     delete(p: ProtocolMetaInterface): void {
-        if (_.includes(["app", "developer"], p.group)) {
-            this.logger.error("Trying to delete app or developer protocol " + p.name + ", but this is not allowed");
+        if (p.server === ProtocolServer.Developer) {
+            this.logger.error("Trying to delete developer protocol " + p.name + ", but this is not allowed");
             return;
         }
 

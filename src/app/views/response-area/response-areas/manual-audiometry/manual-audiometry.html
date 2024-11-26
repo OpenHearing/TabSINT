@@ -1,94 +1,99 @@
-<div class="audiometry-container">
-  <div class="header-section">
-    <h2>Minimum Output Level = {{minOutputLevel}} dB HL and Maximum Output Level = {{maxOutputLevel}} dB HL</h2>
-    <p>Use to verify GUI section</p>
-  </div>
+<div [ngSwitch]="currentStep">
+  <div *ngSwitchCase="'Exam'" class="audiometry-container">
 
-  Frequency Dropdown
-  <div class="frequency-control">
-    <label for="frequency">Frequency</label>
-    <select id="frequency"  [(ngModel)]="selectedFrequency" (ngModelChange)="onFrequencyChange($event)">
-      <option *ngFor="let freq of frequencies" [value]="freq">{{ freq }} Hz</option>
-    </select>
-  </div>
+    Frequency Dropdown
+    <div class="frequency-control">
+      <label for="frequency">Frequency</label>
+      <select id="frequency"  [(ngModel)]="selectedFrequency" (ngModelChange)="onFrequencyChange($event)">
+        <option *ngFor="let freq of frequencies" [value]="freq">{{ freq }} Hz</option>
+      </select>
+    </div>
 
-  <div class="collapsible-section">
-    <button class="collapsible-header" (click)="toggleSection('presentation')">
-      Presentation Level <span class="arrow">▼</span>
-    </button>
-    <div *ngIf="isPresentationVisible" class="collapsible-content">
-      <div class="presentation-container">
-        <p class="db-value">{{currentDbSpl}} dB SPL</p>
+    <div class="collapsible-section">
+      <button class="collapsible-header" (click)="toggleSection('presentation')">
+        Presentation Level <span class="arrow">▼</span>
+      </button>
+      <div *ngIf="isPresentationVisible" class="collapsible-content">
+        <div class="presentation-container">
+          <p class="db-value">{{currentDb | number:'1.0-0' }} {{levelUnits}}</p>
 
-        <div class="ear-selection">
-          <label for="ear">Select Ear</label>
-          <select id="ear" [(ngModel)]="selectedEar">
-            <option value="Left">Left</option>
-            <option value="Right">Right</option>
-          </select>
+          <div class="ear-selection">
+            <label for="ear">Select Ear</label>
+            <select id="ear" [(ngModel)]="selectedEar">
+              <option value="Left">Left</option>
+              <option value="Right">Right</option>
+            </select>
+          </div>
+
+          <div class="adjustment-buttons">
+            <button class="adjust-btn" *ngFor="let adjustment of adjustments" (click)="adjustDbSpl(adjustment)">
+              {{ adjustment > 0 ? '+' + adjustment : adjustment }} dB {{ adjustment > 0 ? '↑' : '↓' }}
+            </button>
+          </div>
+
+          <div class="action-buttons">
+            <button class="btn play-tone" (click)="playTone()">Play Tone</button>
+            <button class="btn record-threshold" (click)="recordThreshold()">Record Threshold</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="collapsible-section">
+      <button class="collapsible-header" (click)="toggleSection('results')">
+        Results Table <span class="arrow">▼</span>
+      </button>
+      <div *ngIf="isResultsVisible" class="collapsible-content">
+        <div class="ear-table left-ear">
+          <h3 class="ear-title">Left</h3>
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>Frequency (Hz)</th>
+                <th *ngFor="let freq of frequencies">{{ freq }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Threshold ({{levelUnits}})</td>
+                <td *ngFor="let threshold of leftThresholds">{{ threshold || '' }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
-        <div class="adjustment-buttons">
-          <button class="adjust-btn" *ngFor="let adjustment of adjustments" (click)="adjustDbSpl(adjustment)">
-            {{ adjustment > 0 ? '+' + adjustment : adjustment }} dB {{ adjustment > 0 ? '↑' : '↓' }}
-          </button>
+        <div class="ear-table right-ear">
+          <h3 class="ear-title">Right</h3>
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>Frequency (Hz)</th>
+                <th *ngFor="let freq of frequencies">{{ freq }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Threshold ({{levelUnits}})</td>
+                <td *ngFor="let threshold of rightThresholds">{{ threshold || '' }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
-        <div class="action-buttons">
-          <button class="btn play-tone" (click)="playTone()">Play Tone</button>
-          <button class="btn record-threshold" (click)="recordThreshold()">Record Threshold</button>
+        <div class="legend">
+          <p><strong>Legend:</strong></p>
+          <p>DNC = Did not converge</p>
+          <p>(x+) = Hearing potentially beyond the calibrated range</p>
+          <p>(-x) = Hearing potentially better than the calibrated range</p>
         </div>
       </div>
     </div>
   </div>
-
-  <div class="collapsible-section">
-    <button class="collapsible-header" (click)="toggleSection('results')">
-      Results Table <span class="arrow">▼</span>
-    </button>
-    <div *ngIf="isResultsVisible" class="collapsible-content">
-      <div class="ear-table left-ear">
-        <h3 class="ear-title">Left</h3>
-        <table class="results-table">
-          <thead>
-            <tr>
-              <th>Frequency (Hz)</th>
-              <th *ngFor="let freq of frequencies">{{ freq }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Threshold (dB SPL)</td>
-              <td *ngFor="let threshold of leftThresholds">{{ threshold || '' }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="ear-table right-ear">
-        <h3 class="ear-title">Right</h3>
-        <table class="results-table">
-          <thead>
-            <tr>
-              <th>Frequency (Hz)</th>
-              <th *ngFor="let freq of frequencies">{{ freq }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Threshold (dB SPL)</td>
-              <td *ngFor="let threshold of rightThresholds">{{ threshold || '' }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="legend">
-        <p><strong>Legend:</strong></p>
-        <p>DNC = Did not converge</p>
-        <p>(x+) = Hearing potentially beyond the calibrated range</p>
-        <p>(-x) = Hearing potentially better than the calibrated range</p>
-      </div>
-    </div>
+  
+  <div *ngSwitchCase="'Results'">
+    <manual-audiometry-result-viewer
+      [audiogramData] = "audiogramData">
+    </manual-audiometry-result-viewer>
   </div>
+
 </div>

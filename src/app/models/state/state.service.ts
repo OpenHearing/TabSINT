@@ -43,13 +43,4 @@ export class StateModel {
     getState(): StateInterface {
         return this.stateModel;
     }
-
-    setAppState(_appState: AppState) {
-        this.stateModel.appState = _appState;
-    }
-
-    setProtocolState(_protocolState: ProtocolState) {
-        this.stateModel.protocolState = _protocolState;
-    }
-
 }

@@ -30,7 +30,7 @@ export class ExamComponent {
     private readonly diskModel: DiskModel,
     private readonly stateModel: StateModel,
     private readonly pageModel: PageModel,
-    private buttonTextService: ButtonTextService
+    private readonly buttonTextService: ButtonTextService
   ) {
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();
@@ -45,7 +45,7 @@ export class ExamComponent {
       this.currentPage = updatedPage;
     });
     this.examService.switchToExamView();
-    this.stateModel.setAppState(AppState.Exam);
+    this.state.appState = AppState.Exam;
     this.buttonTextSubscription = this.buttonTextService.buttonText$.subscribe((newText: string) => {
       this.buttonText = newText;
     });
@@ -54,7 +54,7 @@ export class ExamComponent {
   ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
     this.pageSubscription?.unsubscribe();
-    this.stateModel.setAppState(AppState.null);
+    this.state.appState = AppState.null;
     this.buttonTextSubscription?.unsubscribe();
   }
 

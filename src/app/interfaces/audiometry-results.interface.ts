@@ -1,12 +1,13 @@
-export interface AudiogramDataStructInterface {
+export interface AudiometryResultsInterface {
     frequencies: number[],
     thresholds: (number|null)[],
     channels: string[],
     resultTypes: string[],
-    masking: boolean[]
+    masking: boolean[],
+    levelUnits: string
   }
   
-export interface AudiogramDataNoNullInterface {
+export interface AudiogramDatumNoNullInterface {
     frequency: number,
     threshold: number,
     channel: string,
@@ -14,3 +15,6 @@ export interface AudiogramDataNoNullInterface {
     masking: boolean
   }
   
+export interface RetsplsInterface {
+  [key: string]: number
+}

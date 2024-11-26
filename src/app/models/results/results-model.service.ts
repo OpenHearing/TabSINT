@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ResultsInterface } from './results.interface';
-import { protocolDefaults } from '../../utilities/defaults';
+import { pageInterfaceDefaults, protocolDefaults } from '../../utilities/defaults';
 import { DevicesModel } from '../devices/devices-model.service';
 import { VersionModel } from '../version/version.service';
 
@@ -19,7 +19,7 @@ export class ResultsModel {
         this.resultsModel = {
             currentPage: {
                 pageId: '',
-                page: {}
+                page: pageInterfaceDefaults
             },
             currentExam: {
                 protocolName: '',

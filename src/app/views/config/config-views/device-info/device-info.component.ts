@@ -38,7 +38,7 @@ export class DeviceInfoComponent {
     this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
         this.disk = updatedDisk;
     })    
-    this.stateModel.setAppState(AppState.Admin);
+    this.state.appState = AppState.Admin;
   }
 
   ngOnDestroy() {

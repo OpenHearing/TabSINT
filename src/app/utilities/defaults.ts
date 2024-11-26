@@ -33,7 +33,7 @@ export function loadingProtocolDefaults(disk: DiskInterface): LoadingProtocolInt
     return loadingProtocol;
 };
 
-export const PageInterfaceDefaults: PageInterface = {
+export const pageInterfaceDefaults: PageInterface = {
     id: '',
     enableBackButton: false,
     title: '',
@@ -63,5 +63,5 @@ export const PageInterfaceDefaults: PageInterface = {
 
 export const protocolDefaults: ProtocolInterface = {
     ...metaDefaults,
-    pages: [PageInterfaceDefaults]
+    pages: [pageInterfaceDefaults]
 };

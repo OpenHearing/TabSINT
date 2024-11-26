@@ -27,7 +27,7 @@ export class DiskModel {
             PurdueDemo: {
                 ...partialMetaDefaults,
                 creator: "Creare",
-                name: "Purdue Demo",
+                name: "PurdueDemo",
                 path: "protocols/purdue-demo"
             },
             develop: {
