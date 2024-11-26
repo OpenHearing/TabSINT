@@ -4,12 +4,9 @@ import { Subscription } from 'rxjs';
 import { CalibrationExamInterface } from './calibration-exam.interface';
 import { PageInterface } from "../../../../../models/page/page.interface";
 import { DevicesService } from '../../../../../controllers/devices.service';
-import { DevicesModel } from '../../../../../models/devices/devices-model.service';
 import { DeviceUtil } from '../../../../../utilities/device-utility';
 import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
 import { Logger } from '../../../../../utilities/logger.service';
-import { DeviceResponse } from '../../../../../models/devices/devices.interface';
-import { ResultsService } from '../../../../../controllers/results.service';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { ResultsInterface } from '../../../../../models/results/results.interface';
 import { ExamService } from '../../../../../controllers/exam.service';
@@ -46,7 +43,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   targetLevel: number = 0;
   calFactor: number = -40;
   pageSubscription: Subscription | undefined;
-  deviceSubscription: Subscription | undefined;
+  tympanSubscription: Subscription | undefined;
   device: ConnectedDevice | undefined;
   earCup: string = 'Left';
   isPlaying: boolean = false;
@@ -57,10 +54,8 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
 
   constructor(private readonly pageModel: PageModel,
     private readonly devicesService: DevicesService,
-    private readonly devicesModel: DevicesModel,
     private readonly deviceUtil: DeviceUtil, 
     private readonly logger: Logger, 
-    private readonly resultsService: ResultsService, 
     private readonly resultsModel: ResultsModel,
     private readonly examService: ExamService, 
     private readonly buttonTextService: ButtonTextService
@@ -81,49 +76,46 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
           this.showResults = calibrationResponse.showResults ?? true;
           this.device = this.deviceUtil.getDeviceFromTabsintId(calibrationResponse.tabsintId ?? "1");
           if (this.device) {
-            await this.devicesService.queueExam(this.device, "HNCalibration", { "OutputChannel": this.earCup == "Left" ? "HPL0" : "HPR0" });
+            let resp = await this.devicesService.queueExam(this.device, "HNCalibration", { "OutputChannel": this.earCup == "Left" ? "HPL0" : "HPR0" });
+            console.log("resp from tympan after calibration exam queue exam:",resp);
           } else {
             this.logger.error("Error setting up HNCalibration exam");
           }
         }
       }
     });
-    this.deviceSubscription = this.devicesModel.deviceResponseSubject.subscribe((msg: DeviceResponse) => {
-      console.log("device msg:", JSON.stringify(msg));
-    });
     this.results.currentExam.responses = [];
-    this.updateButtonLabel()
+    this.updateButtonLabel();
   }
 
   async ngOnDestroy(): Promise<void> {
-    if (this.device) {
-      this.isPlaying = false
-      await this.stopTone()
-      await this.devicesService.abortExams(this.device);
-    }
+    this.isPlaying = false;
+    await this.stopTone();
+    let resp = await this.devicesService.abortExams(this.device!);
+    console.log("resp from tympan after calibration exam abort exams:",resp);
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
     this.pageSubscription?.unsubscribe();
-    this.deviceSubscription?.unsubscribe();
-    this.buttonTextService.updateButtonText("Submit")
+    this.tympanSubscription?.unsubscribe();
+    this.buttonTextService.updateButtonText("Submit");
   }
 
-  adjustCalFactor(amount: number): void {
+  async adjustCalFactor(amount: number): Promise<void> {
     this.calFactor += amount;
     if (this.isPlaying) {
-      this.playTone(this.calFactor);
+      await this.playTone(this.calFactor);
     }
   }
 
-  togglePlay(): void {
+  async togglePlay(): Promise<void> {
     this.isPlaying = !this.isPlaying;
     if (this.isPlaying) {
       if (this.currentStep === 'max-output') {
-        this.playTone(0)
+        await this.playTone(0)
       } else {
-        this.playTone(this.calFactor);
+        await this.playTone(this.calFactor);
       }
     } else {
-      this.stopTone();
+      await this.stopTone();
     }
   }
 
@@ -137,9 +129,9 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     }
   }
 
-  nextStep(): void {
+  async nextStep(): Promise<void> {
     if (this.currentStep === 'calibration') {
-      this.playTone(this.calFactor)
+      await this.playTone(this.calFactor)
       this.currentStep = 'measurement';
     } else if (this.currentStep === 'measurement') {
       const isValid = this.measurementScreen?.validateAndProceed();
@@ -149,14 +141,14 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       if (this.currentFrequencyIndex < this.frequencies.length - 1) {
         console.log("Updating frequency")
         this.currentFrequencyIndex++;
-        this.sendMeasurementLevel()
+        await this.sendMeasurementLevel()
         this.currentStep = 'calibration';
         console.log(this.currentFrequency)
       } else {
         this.currentStep = 'max-output';
         this.isPlaying = false;
-        this.sendMeasurementLevel()
-        this.stopTone()
+        await this.sendMeasurementLevel();
+        await this.stopTone();
         this.currentFrequencyIndex = 0;
       }
     } else if (this.currentStep === 'max-output') {
@@ -164,16 +156,16 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       if (!isValid) {
         return;
       }
-      this.sendMaxOutputTone();
+      await this.sendMaxOutputTone();
       this.handleNextEarOrFinish();
     }
-    this.updateFrequencyAndTargetLevel()
+    this.updateFrequencyAndTargetLevel();
     if (this.isPlaying) {
-      if (this.currentStep=="calibration"){
-        this.playTone(this.calFactor);
+      if (this.currentStep=="calibration") {
+        await this.playTone(this.calFactor);
       } 
-      else if (this.currentStep=="max-output"){
-        this.playTone(0)
+      else if (this.currentStep=="max-output") {
+        await this.playTone(0);
       }   
     }
     this.updateButtonLabel();
@@ -195,12 +187,14 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       this.currentFrequencyIndex = 0;
       this.currentStep = 'calibration';
       await this.writeCalibrationResults();
-      this.isPlaying = false
-      await this.stopTone()
-      await this.devicesService.abortExams(this.device!)
-      await this.devicesService.queueExam(this.device!, "HNCalibration", { "OutputChannel": this.earCup == "Left" ? "HPL0" : "HPR0" })
+      this.isPlaying = false;
+      await this.stopTone();
+      let resp = await this.devicesService.abortExams(this.device!);
+      console.log("resp from tympan after calibration exam abort exams:",resp);
+      resp = await this.devicesService.queueExam(this.device!, "HNCalibration", { "OutputChannel": this.earCup == "Left" ? "HPL0" : "HPR0" });
+      console.log("resp from tympan after calibration exam queue exam:",resp);
     } else {
-      this.currentStep = 'finished'
+      this.currentStep = 'finished';
       this.examService.submit = this.examService.submitDefault.bind(this.examService);
       await this.writeCalibrationResults();
       this.saveResults();
@@ -234,21 +228,20 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     }
   }
 
-  private playTone(requestedLevel:number) {
-    const enableOutput = this.isPlaying
+  private async playTone(requestedLevel:number) {
+    const enableOutput = this.isPlaying;
     let examProperties = {
       "F": this.currentFrequency,
       "RequestedLevel": requestedLevel,
       EnableOutput: enableOutput
     };
-    if (this.device) {
-      this.devicesService.examSubmission(this.device, examProperties);
-    }
+    let resp = await this.devicesService.examSubmission(this.device!, examProperties);
+    console.log("resp from tympan after calibration exam exam submission:",resp);
   }
 
-  private sendMaxOutputTone(): void {
+  private async sendMaxOutputTone(): Promise<void> {
     const maxOutputLevel = this.getMaxOutputLevelForFrequency(this.currentFrequency);
-    const enableOutput = this.isPlaying
+    const enableOutput = this.isPlaying;
     const examProperties = {
       "F": this.currentFrequency,
       "RequestedLevel": 0,
@@ -256,14 +249,13 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       "MeasuredLevel": maxOutputLevel,
       "Mode": "MaximumOutputLevel"
     };
-    if (this.device) {
-      this.devicesService.examSubmission(this.device, examProperties);
-    }
+    let resp = await this.devicesService.examSubmission(this.device!, examProperties);
+    console.log("resp from tympan after calibration exam exam submission:",resp);
   }
 
-  private sendMeasurementLevel(): void {
+  private async sendMeasurementLevel(): Promise<void> {
     const measuredLevel = this.getMeasuredLevelForFrequency(this.currentFrequency);
-    const enableOutput = this.isPlaying
+    const enableOutput = this.isPlaying;
     const examProperties = {
       "F": this.currentFrequency,
       "RequestedLevel": this.calFactor,
@@ -271,9 +263,8 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       "MeasuredLevel": measuredLevel,
       "Mode": "CalibrationFactor"
     };
-    if (this.device) {
-      this.devicesService.examSubmission(this.device, examProperties);
-    }
+    let resp = await this.devicesService.examSubmission(this.device!, examProperties);
+    console.log("resp from tympan after calibration exam exam submission:",resp);
   }
 
   private getMeasuredLevelForFrequency(currentFrequency: number) {
@@ -288,9 +279,8 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
 
 
   private async stopTone() {
-    if (this.device) {
-      this.devicesService.examSubmission(this.device, { "EnableOutput": false });
-    }
+    let resp = await this.devicesService.examSubmission(this.device!, { "EnableOutput": false });
+    console.log("resp from tympan after calibration exam exam submission:",resp);
   }
 
   private saveResults(): void {
@@ -312,10 +302,8 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       "WriteCalibration": true
     };
 
-    if (this.device) {
-      this.devicesService.examSubmission(this.device, calibrationData);
-    }
+    let resp = await this.devicesService.examSubmission(this.device!, calibrationData);
+    console.log("resp from tympan after calibration exam exam submission:",resp);
   }
-
 
 }

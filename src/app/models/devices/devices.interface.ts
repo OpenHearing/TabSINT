@@ -13,7 +13,7 @@ export interface DevicesInterface {
     connectedDevices: ConnectedDevices
 }
 
-export interface DeviceResponse {
+export interface TympanResponse {
     tabsintId: string,
     msg: string
 }

@@ -1962,6 +1962,10 @@ $tabsint-training-site-theme: mat.define-light-theme((
     padding-left: 15px;
     padding-right: 5px;
   }
+
+  .text-scale {
+    font-size: min(2vw, 16px);
+  }
   
   .col-2 {
     display: flex;

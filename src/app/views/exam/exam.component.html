@@ -17,6 +17,9 @@
           <div *ngSwitchCase="ExamState.NotReady">
             <exam-not-ready-view></exam-not-ready-view>
           </div>
+          <div *ngSwitchCase="ExamState.DeviceError">
+            <exam-device-error-view></exam-device-error-view>
+          </div>
           <div *ngSwitchCase="ExamState.Testing">
             <exam-testing-view></exam-testing-view>
           </div>

@@ -87,6 +87,7 @@ import { DevicesService } from './controllers/devices.service';
 import { CalibrationResultsViewerComponent } from './views/response-area/response-areas/calibration-exam/calibration-results-viewer/calibration-results-viewer.component';
 import { ManualAudiometryResultViewerComponent } from './views/response-area/response-areas/manual-audiometry/manual-audiometry-result-viewer/manual-audiometry-result-viewer';
 import { AudiogramComponent } from './views/audiogram/audiogram.component';
+import { ExamDeviceErrorComponent } from './views/exam-device-error/exam-device-error.component';
 import { MultipleInputComponent } from './views/response-area/response-areas/multiple-input/multiple-input.component';
 import { LikertComponent } from './views/response-area/response-areas/likert/likert/likert.component';
 
@@ -134,6 +135,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     MeasurementScreenComponent,
     MaxOutputScreenComponent,
     CalibrationResultsViewerComponent,
+    ExamDeviceErrorComponent,
     MultipleInputComponent,
     LikertComponent,
   ],
