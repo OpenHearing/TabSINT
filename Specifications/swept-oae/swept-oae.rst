@@ -80,7 +80,7 @@ The GUI should look like the image below with the following features.
    :align: center
    :width: 400px
 
-   **Figure 1.** *GUI for the Swept OAE exam priot to submission. Screen 1a*
+   **Figure 1.** *GUI for the Swept OAE exam prior to submission. Screen 1a*
 
 .. figure:: swept-oae-GUI-Screen1b.png
    :align: center
