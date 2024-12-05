@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, EventEmitter, Output, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, EventEmitter, Output} from '@angular/core';
 import { PageModel } from "../../../../../models/page/page.service";
 import { Subscription } from 'rxjs';
 import { CalibrationExamInterface } from './calibration-exam.interface';

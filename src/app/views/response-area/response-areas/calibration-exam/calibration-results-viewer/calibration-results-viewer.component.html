@@ -34,12 +34,6 @@
           </tr>
         </thead>
         <tbody>
-          <!-- <tr *ngFor="let freq of getKeys(results.rightEar)">
-            <td>{{ freq }}</td>
-            <td>{{ results.rightEar[freq].calFactor }}</td>
-            <td>{{ results.rightEar[freq].measurement }}</td>
-            <td>{{ results.rightEar[freq].maxOutput }}</td>
-          </tr> -->
           <tr *ngFor="let freq of getKeys(results.rightEar)" (click)="navigateToCalibration('Right', freq)">
             <td>{{ freq }}</td>
             <td>{{ results.rightEar[freq].calFactor }}</td>

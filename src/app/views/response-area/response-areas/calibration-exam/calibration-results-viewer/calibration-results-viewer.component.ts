@@ -1,7 +1,6 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { ExamResponse } from '../calibration-exam-component/calibration-exam.component';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
-import { Router, ActivatedRoute } from '@angular/router';
 
 interface CalibrationResults {
   leftEar: any;
@@ -17,7 +16,7 @@ export class CalibrationResultsViewerComponent implements OnInit {
   @Output() entryClicked = new EventEmitter<{ frequency: string; ear: string }>();
   results: CalibrationResults | undefined;
 
-  constructor(private readonly resultsModel: ResultsModel,private readonly router: Router) { }
+  constructor(private readonly resultsModel: ResultsModel) { }
 
   ngOnInit(): void {
     const calibrationResult = this.resultsModel.getResults().currentExam.responses
