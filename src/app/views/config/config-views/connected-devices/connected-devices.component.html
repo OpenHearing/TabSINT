@@ -12,20 +12,20 @@
         <div class="row pad-top" *ngIf="devices.connectedDevices.tympan.length > 0">
 
             <!-- Device ID -->
-            <div class="col-2 admin-labels">TabSINT ID: </div>
-            <div class="col-1"><em>{{devices.connectedDevices.tympan[0].tabsintId}}</em></div>
-            <div class="col-1"><em> <span (click)="expanded = !expanded"> <i class="ion-information-circled"></i> </span> </em></div>
+            <div class="col-2 admin-labels text-scale">TabSINT ID: </div>
+            <div class="col-1 text-scale"><em>{{devices.connectedDevices.tympan[0].tabsintId}}</em></div>
+            <div class="col-1 text-scale"><em> <span (click)="expanded = !expanded"> <i class="ion-information-circled"></i> </span> </em></div>
 
             <!-- Name -->
-            <div class="col-2 admin-labels">DeviceName: </div>
-            <div class="col-3"><em>{{devices.connectedDevices.tympan[0].name}}</em></div>
+            <div class="col-2 admin-labels text-scale">DeviceName: </div>
+            <div class="col-3 text-scale"><em>{{devices.connectedDevices.tympan[0].name}}</em></div>
 
             <!-- State -->
-            <div class="col-1 admin-labels">State: </div>
-            <div class="col-2" *ngIf="devices.connectedDevices.tympan[0].state === DeviceState.Connected"><em>Connected</em></div>
-            <div class="col-2" *ngIf="devices.connectedDevices.tympan[0].state === DeviceState.Disconnected"><em>Not Connected</em></div>
-            <div class="col-2" *ngIf="devices.connectedDevices.tympan[0].state === DeviceState.Reprogram"><em>Reprogramming</em></div>
-            <div class="col-2" *ngIf="devices.connectedDevices.tympan[0].state !== DeviceState.Connected && devices.connectedDevices.tympan[0].state !== DeviceState.Disconnected && devices.connectedDevices.tympan[0].state !== DeviceState.Reprogram"><em>Connecting</em></div>
+            <div class="col-1 admin-labels text-scale">State: </div>
+            <div class="col-2 text-scale" *ngIf="devices.connectedDevices.tympan[0].state === DeviceState.Connected"><em>Connected</em></div>
+            <div class="col-2 text-scale" *ngIf="devices.connectedDevices.tympan[0].state === DeviceState.Disconnected"><em>Not Connected</em></div>
+            <div class="col-2 text-scale" *ngIf="devices.connectedDevices.tympan[0].state === DeviceState.Reprogram"><em>Reprogramming</em></div>
+            <div class="col-2 text-scale" *ngIf="devices.connectedDevices.tympan[0].state !== DeviceState.Connected && devices.connectedDevices.tympan[0].state !== DeviceState.Disconnected && devices.connectedDevices.tympan[0].state !== DeviceState.Reprogram"><em>Connecting</em></div>            
         
             <!-- Connection Buttons-->
             <div class="row pad-top">

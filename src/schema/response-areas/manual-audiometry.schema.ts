@@ -1,7 +1,7 @@
 
 import { JSONSchemaType } from "ajv"
 import { ManualAudiometryInterface } from "../../app/views/response-area/response-areas/manual-audiometry/manual-audiometry.interface";
-import { ManualAudiometryResultViewerInterface } from "../../app/views/response-area/response-areas/manual-audiometry-result-viewer/manual-audiometry-result-viewer.interface";
+import { LevelUnits } from "../../app/utilities/constants";
 
 export const manualAudiometrySchema: JSONSchemaType<ManualAudiometryInterface> = {
     type: "object",
@@ -13,7 +13,8 @@ export const manualAudiometrySchema: JSONSchemaType<ManualAudiometryInterface> =
         tabsintId: { type: "string", nullable: true },
         maxOutputLevel: { type: "number", nullable: true },
         minOutputLevel: { type: "number", nullable: true },
-        currentDbSpl: { type: "number", nullable: true },
+        targetLevel: { type: "number", nullable: true },
+        levelUnits: { type: "string", nullable: true },
         frequencies: {
             type: "array",
             items: { type: "number" },
@@ -23,18 +24,15 @@ export const manualAudiometrySchema: JSONSchemaType<ManualAudiometryInterface> =
             type: "array",
             items: { type: "number" },
             nullable: true
-        }
-    },
-    required: ["type"]
-};
+        },
+        retspls: {
+            type: "object",
+            additionalProperties: { "type": "number"},
+            nullable: true,
+            required: []
+        },
+        showResults: {type: "boolean", nullable: true, default: true}
 
-export const manualAudiometryResultViewerSchema: JSONSchemaType<ManualAudiometryResultViewerInterface> = {
-    type: "object",
-    properties: {
-        enableSkip: { type: "boolean", nullable: true, default: false },
-        responseRequired: { type: "boolean", nullable: true, default: true },
-        type: { type: "string", enum: ["manualAudiometryResponseAreaResultViewer"] },
-        pageIdsToDisplay: { type: "array", items: {type: "string", default: '' }},
     },
     required: ["type"]
 };

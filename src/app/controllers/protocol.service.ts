@@ -60,7 +60,6 @@ export class ProtocolService {
         this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
             this.disk = updatedDisk;
         })    
-        // TODO: can we grab defaults from schema instead?
         this.loading = loadingProtocolDefaults(this.disk);
     }
 

@@ -12,6 +12,7 @@ export class StateModel {
         appState: AppState.Welcome,
         protocolState: ProtocolState.null,
         examState: ExamState.NotReady,
+        deviceError: [],
         isSubmittable: true,
         examIndex: 0,
         canGoBack: () => {},
