@@ -16,8 +16,8 @@
       <label for="maxOutputInput" class="input-label">Flat Plate Measured Level:</label>
       <input id="maxOutputInput" 
              type="number" 
-             [(ngModel)]="maxOutputValue"
              [ngClass]="{'input-error': showValidationError}" 
+             [(ngModel)]="userInput"
              class="max-output-input" 
              step="0.1">
       <span class="unit">dB SPL</span>

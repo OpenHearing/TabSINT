@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, EventEmitter, Output, Input } from '@angular/core';
 import { PageModel } from "../../../../../models/page/page.service";
 import { Subscription } from 'rxjs';
 import { CalibrationExamInterface } from './calibration-exam.interface';
@@ -16,6 +16,7 @@ import { ExamService } from '../../../../../controllers/exam.service';
 import { MeasurementScreenComponent } from '../measurement-screen/measurement-screen.component';
 import { MaxOutputScreenComponent } from '../max-output-screen/max-output-screen.component';
 import { ButtonTextService } from '../../../../../controllers/button-text.service';
+import { CalibrationResultsViewerComponent } from '../calibration-results-viewer/calibration-results-viewer.component';
 
 export interface EarData {
   calFactor: number;
@@ -35,9 +36,11 @@ export interface ExamResponse {
   styleUrls: ['./calibration-exam.component.css']
 })
 export class CalibrationExamComponent implements OnInit, OnDestroy {
+  @ViewChild(CalibrationResultsViewerComponent) resultsViewer!: CalibrationResultsViewerComponent;
   @ViewChild(MeasurementScreenComponent) measurementScreen!: MeasurementScreenComponent
   @ViewChild(MaxOutputScreenComponent) maxOutputScreen!: MaxOutputScreenComponent
   @Output() buttonTextChange = new EventEmitter<string>();
+  showSkipButton: boolean = false;
   frequencies: number[] = [];
   targetLevels: number[] = [];
   currentStep: string = 'calibration';
@@ -54,6 +57,9 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   rightEarData: Record<number, EarData> = {};
   results: ResultsInterface;
   showResults: boolean = true;
+  navigationHistory: { step: string; frequencyIndex: number; earCup: string }[] = [];
+  userInput: number | null = null;
+  poppedHistory: { step: string; frequencyIndex: number; earCup: string }[] = [];
 
   constructor(private readonly pageModel: PageModel,
     private readonly devicesService: DevicesService,
@@ -67,6 +73,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   ) {
     this.results = this.resultsModel.getResults()
     this.examService.submit = this.nextStep.bind(this);
+    this.examService.back = this.previousStep.bind(this);
   }
 
   ngOnInit(): void {
@@ -76,8 +83,8 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
         if (calibrationResponse) {
           this.frequencies = calibrationResponse.frequencies ?? [500, 1000, 2000];
           this.targetLevels = calibrationResponse.targetLevels ?? [60, 70, 80];
-          this.updateFrequencyAndTargetLevel();
           this.initializeEarData();
+          this.updateFrequencyAndTargetLevel();
           this.showResults = calibrationResponse.showResults ?? true;
           this.device = this.deviceUtil.getDeviceFromTabsintId(calibrationResponse.tabsintId ?? "1");
           if (this.device) {
@@ -102,6 +109,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       await this.devicesService.abortExams(this.device);
     }
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
+    this.examService.back = this.examService.back.bind(this.examService);
     this.pageSubscription?.unsubscribe();
     this.deviceSubscription?.unsubscribe();
     this.buttonTextService.updateButtonText("Submit")
@@ -130,20 +138,27 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   updateButtonLabel(): void {
     if (this.currentStep === 'calibration') {
       this.buttonTextService.updateButtonText('Next');
-    } else if (this.currentStep === 'measurement') {
+    } else if (this.currentStep === 'measurement' || this.currentStep === 'max-output') {
       this.buttonTextService.updateButtonText('Submit');
-    } else if (this.currentStep === 'finished') {
+    }
+    else if (this.currentStep === 'finished') {
       this.buttonTextService.updateButtonText('Finish Calibration');
     }
   }
 
   nextStep(): void {
+    this.navigationHistory.push({
+      step: this.currentStep,
+      frequencyIndex: this.currentFrequencyIndex,
+      earCup: this.earCup,
+    });
     if (this.currentStep === 'calibration') {
       this.playTone(this.calFactor)
       this.currentStep = 'measurement';
     } else if (this.currentStep === 'measurement') {
       const isValid = this.measurementScreen?.validateAndProceed();
       if (!isValid) {
+        this.navigationHistory.pop()
         return;
       }
       if (this.currentFrequencyIndex < this.frequencies.length - 1) {
@@ -162,21 +177,82 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     } else if (this.currentStep === 'max-output') {
       const isValid = this.maxOutputScreen?.validateAndProceed();
       if (!isValid) {
+        this.navigationHistory.pop()
         return;
       }
       this.sendMaxOutputTone();
       this.handleNextEarOrFinish();
     }
     this.updateFrequencyAndTargetLevel()
-    if (this.isPlaying) {
-      if (this.currentStep=="calibration"){
+    const currentEarData = this.earCup === 'Left' ? this.leftEarData : this.rightEarData;
+    if (this.currentStep=="calibration"){
+      this.userInput = Number(currentEarData[this.currentFrequency].measurement) || null;
+      if (this.isPlaying) {
         this.playTone(this.calFactor);
-      } 
-      else if (this.currentStep=="max-output"){
+      }
+    } 
+    else if (this.currentStep=="max-output"){
+      this.userInput = Number(currentEarData[this.currentFrequency].maxOutput) || null;
+      if (this.isPlaying) {
         this.playTone(0)
-      }   
-    }
+      }
+    }   
     this.updateButtonLabel();
+  }
+
+  handleEntryClicked(entry: { frequency: string, ear: string }): void {
+    this.showSkipButton = true;
+    const frequencyIndex = this.frequencies.indexOf(+entry.frequency);
+    if (frequencyIndex === -1) {
+      console.error(`Frequency ${entry.frequency} not found in frequencies array.`);
+      return;
+    }
+    this.currentStep = 'calibration';
+    this.currentFrequency = +entry.frequency;
+    this.earCup = entry.ear;
+    this.currentFrequencyIndex = frequencyIndex;
+    const currentEarData = this.earCup === 'Left' ? this.leftEarData : this.rightEarData;
+    this.userInput = Number(currentEarData[this.currentFrequency].measurement) || null;
+    while (this.navigationHistory.length > 0) {
+      const lastEntry = this.navigationHistory[this.navigationHistory.length - 1];
+      if (
+        lastEntry.frequencyIndex === this.currentFrequencyIndex &&
+        lastEntry.earCup === this.earCup && lastEntry.step==="calibration"
+      ) {
+        const element = this.navigationHistory.pop()!;
+        this.poppedHistory.push(element);
+        break;
+      }
+      this.poppedHistory.push(this.navigationHistory.pop()!); // Store popped entries
+    }
+    this.examService.submit = this.nextStep.bind(this);
+    this.updateButtonLabel();
+  }
+  
+
+  previousStep(): void {
+    if (this.navigationHistory.length > 0) {
+      const previousState = this.navigationHistory.pop()!;
+      if (this.currentStep==='finished'){
+        this.examService.submit = this.nextStep.bind(this);
+      }
+      this.currentStep = previousState.step;
+      this.currentFrequencyIndex = previousState.frequencyIndex;
+      this.earCup = previousState.earCup;
+      const currentEarData = this.earCup === 'Left' ? this.leftEarData : this.rightEarData;
+      this.updateFrequencyAndTargetLevel();
+      if (this.currentStep === 'calibration') {
+        this.calFactor = currentEarData[this.currentFrequency].calFactor ?? this.calFactor;
+      } else if (this.currentStep === 'measurement') {
+        this.userInput = Number(currentEarData[this.currentFrequency].measurement) || null;
+      } else if (this.currentStep === 'max-output') {
+        this.userInput = Number(currentEarData[this.currentFrequency].maxOutput) || null;
+      }
+      this.updateButtonLabel();
+      if (this.isPlaying) {
+        this.togglePlay()
+      }
+    }
   }
 
   handleMeasurementUpdate(measurement: number): void {
@@ -214,8 +290,8 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
 
   private initializeEarData(): void {
     this.frequencies.forEach(freq => {
-      this.leftEarData[freq] = { calFactor: 0, measurement: '', maxOutput: '' };
-      this.rightEarData[freq] = { calFactor: 0, measurement: '', maxOutput: '' };
+      this.leftEarData[freq] = { calFactor: this.calFactor, measurement: '', maxOutput: '' };
+      this.rightEarData[freq] = { calFactor: this.calFactor, measurement: '', maxOutput: '' };
     });
   }
 
@@ -314,6 +390,32 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
 
     if (this.device) {
       this.devicesService.examSubmission(this.device, calibrationData);
+    }
+  }
+
+  skip(): void {
+    this.showSkipButton = false;
+    console.log('Skip to results initiated.');
+    this.saveResults();
+    let restoredEntries = this.poppedHistory.filter(
+      poppedEntry =>
+        !this.navigationHistory.some(
+          navEntry =>
+            navEntry.frequencyIndex === poppedEntry.frequencyIndex &&
+            navEntry.earCup === poppedEntry.earCup &&
+            navEntry.step === poppedEntry.step
+        )
+    );
+    restoredEntries = restoredEntries.reverse()
+    this.navigationHistory.push(...restoredEntries);
+    console.log(this.navigationHistory);
+    this.poppedHistory = [];
+    console.log('Restored navigation history:', this.navigationHistory);
+    this.currentStep = 'finished';
+    this.examService.submit = this.examService.submitDefault.bind(this.examService); 
+    this.updateButtonLabel();
+    if (this.isPlaying) {
+      this.togglePlay()
     }
   }
 
