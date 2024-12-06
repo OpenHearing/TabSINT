@@ -1,0 +1,45 @@
+.input-parameters-container {
+margin: 20px;
+}
+  
+.input-parameters-table {
+width: 100%;
+border-collapse: collapse;
+margin: 20px 0;
+font-size: 18px;
+text-align: left;
+}
+
+.input-parameters-table, th, td {
+border: 1px solid #ddd;
+}
+
+th, td {
+padding: 6px 15px;
+border-bottom: 1px solid #ddd;
+}
+
+thead th {
+background-color: #f4f4f4;
+color: #333;
+font-weight: bold;
+}
+
+tbody tr:hover {
+background-color: #f1f1f1;
+}
+
+tbody tr:nth-child(even) {
+background-color: #fafafa;
+}
+
+td {
+text-align: left;
+}
+  
+@media screen and (max-width: 600px) {
+.input-parameters-table, th, td {
+    font-size: 16px;
+    padding: 8px;
+}
+}

@@ -40,6 +40,9 @@
                 "id": "Calibration Exam" 
               },
               {
+                "id": "Swept OAE Exam" 
+              },
+              {
                 "id":"End All"
               }
             ]
@@ -73,6 +76,12 @@
               "conditional": "result.response=='Calibration Exam'",
               "target": {
                 "reference": "CalibrationExam"
+              }
+            },
+            {
+              "conditional": "result.response=='Swept OAE Exam'",
+              "target": {
+                "reference": "SweptOAEExam"
               }
             },
             {
@@ -247,6 +256,23 @@
             "frequencies": [500, 1000, 2000, 4000, 8000],
             "targetLevels": [60, 70, 80,60,60],
             "showResults": true
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "SweptOAEExam",
+      "pages": [
+        {
+          "id": "swept_oae_001",
+          "title": "Swept OAE Exam",
+          "instructionText": "Press Submit to start the exam.",
+          "responseArea": {
+            "type": "sweptOAEResponseArea"
           }
         },
         {

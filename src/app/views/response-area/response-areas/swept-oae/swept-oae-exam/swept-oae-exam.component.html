@@ -1,0 +1,24 @@
+<div [ngSwitch]="currentStep">
+    <swept-oae-input-parameters
+        *ngSwitchCase="'input-parameters'"
+        [f2Start]="f2Start"
+        [f2End]="f2End"
+        [frequencyRatio]="frequencyRatio"
+        [sweepDuration]="sweepDuration"
+        [windowDuration]="windowDuration"
+        [sweepType]="sweepType"
+        [minSweeps]="minSweeps"
+        [maxSweeps]="maxSweeps"
+        [noiseFloorThreshold]="noiseFloorThreshold">        
+    </swept-oae-input-parameters>
+    
+    <swept-oae-in-progress
+        *ngSwitchCase="'in-progress'"
+        [device]="device">
+    </swept-oae-in-progress>
+
+    <swept-oae-results
+        *ngSwitchCase="'results'">
+    </swept-oae-results>    
+
+</div>

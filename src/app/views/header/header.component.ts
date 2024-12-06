@@ -6,6 +6,10 @@ import { Notifications } from '../../utilities/notifications.service';
 import { ExamService } from '../../controllers/exam.service';
 import { Logger } from '../../utilities/logger.service';
 import { StateInterface } from '../../models/state/state.interface';
+import { ProtocolModel } from '../../models/protocol/protocol-model.service';
+import { ProtocolModelInterface } from '../../models/protocol/protocol.interface';
+import { NavMenuInterface } from '../../interfaces/page-definition.interface';
+import { isProtocolReferenceInterface } from '../../guards/type.guard';
 
 @Component({
   selector: 'header-view',
@@ -14,6 +18,7 @@ import { StateInterface } from '../../models/state/state.interface';
 })
 export class HeaderComponent {
   state: StateInterface;
+  protocol: ProtocolModelInterface;
   ExamState = ExamState;
   AppState = AppState;
   
@@ -21,9 +26,11 @@ export class HeaderComponent {
     private readonly examService: ExamService,
     private readonly logger: Logger,
     private readonly notifications: Notifications,
+    private readonly protocolM: ProtocolModel,
     private readonly stateModel: StateModel
   ) {
     this.state = this.stateModel.getState();
+    this.protocol = this.protocolM.getProtocolModel();
   }
 
   resetExam() {
@@ -52,6 +59,28 @@ export class HeaderComponent {
         this.examService.submitPartial();
       } else {
         this.logger.debug('Reset exam canceled.');
+      }
+    });
+  }
+
+  navigateToNavMenuItem(navMenuItem: NavMenuInterface) {
+    const contentStr = navMenuItem.returnHereAfterward
+      ? "TabSINT will navigate to the selected sub-protocol, then return to this page and resume the current series of questions after that sub-protocol is complete."
+      : "Results from this page will be lost and the current series of questions will be aborted."
+    let msg: DialogDataInterface = {
+      title: navMenuItem.text + "?",
+      content: contentStr,
+      type: DialogType.Confirm
+    };
+    this.notifications.alert(msg).subscribe(async (result: string) => {
+      if (result === "OK") {
+        if (isProtocolReferenceInterface(navMenuItem.target)) {
+          this.examService.navigateToTarget(navMenuItem.target.reference);
+        } else {
+          this.logger.debug('navigateToNavMenuItem() not implemented for inline pages or subprotocol, only for protocol reference.')
+        }        
+      } else {
+        this.logger.debug('navigateToNavMenuItem() canceled.');
       }
     });
   }
