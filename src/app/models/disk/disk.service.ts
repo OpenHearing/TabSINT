@@ -84,6 +84,7 @@ export class DiskModel {
             }
         },
         showUploadSummary: true,
+        showDisclaimer: true,
         suppressAlerts: false,
         tabletGain: 12.34,
         tabletLocation: {},
