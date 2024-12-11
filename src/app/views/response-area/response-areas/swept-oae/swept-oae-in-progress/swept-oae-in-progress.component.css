@@ -11,3 +11,10 @@
     --mdc-linear-progress-active-indicator-height: 24px;
     border-radius: 10px;
 }
+
+#oae-amplitude-plot {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+  

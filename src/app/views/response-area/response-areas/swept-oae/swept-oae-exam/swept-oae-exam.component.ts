@@ -9,7 +9,7 @@ import { ExamService } from '../../../../../controllers/exam.service';
 import { ResultsInterface } from '../../../../../models/results/results.interface';
 import { PageInterface } from '../../../../../models/page/page.interface';
 import { Subscription } from 'rxjs/internal/Subscription';
-import { SweptOaeInterface } from './sept-oae-exam.interface';
+import { SweptOaeInterface, SweptOaeResultsInterface } from './sept-oae-exam.interface';
 import { ButtonTextService } from '../../../../../controllers/button-text.service';
 import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
 import { DevicesModel } from '../../../../../models/devices/devices-model.service';
@@ -36,6 +36,11 @@ export class SweptOaeExamComponent implements OnInit, OnDestroy {
   tympanSubscription: Subscription | undefined;
   currentStep: string = 'input-parameters';
   device: ConnectedDevice | undefined;
+  sweptOAEResults: SweptOaeResultsInterface = {
+    State: 'READY',
+    PctComplete: 0
+  };
+  test: number= 1;
 
   constructor(
     private readonly pageModel: PageModel,
@@ -45,7 +50,7 @@ export class SweptOaeExamComponent implements OnInit, OnDestroy {
     private readonly logger: Logger, 
     private readonly resultsModel: ResultsModel,
     private readonly examService: ExamService, 
-    private readonly buttonTextService: ButtonTextService 
+    private readonly buttonTextService: ButtonTextService,
   ) {
     this.results = this.resultsModel.getResults()
     this.examService.submit = this.nextStep.bind(this);
@@ -88,7 +93,6 @@ export class SweptOaeExamComponent implements OnInit, OnDestroy {
         this.buttonTextService.updateButtonText('Finish');
         break;
       case 'results':
-        this.saveResults();
         this.examService.submitDefault();
         break;
     }
@@ -110,22 +114,13 @@ export class SweptOaeExamComponent implements OnInit, OnDestroy {
         };
         await this.devicesService.queueExam(this.device, "SweptDPOAE", examProperties);
     } else {
-        this.logger.error("Error setting up Manual Audiometry exam");
+        this.logger.error("Error setting up Swept OAE exam");
     }
   }
 
-  private getPartialResults() {
-    // If exam is done, save results, enable next button
-
-    // Else, display results and request results again 
-  }
-
-  private displayPartialResults() {
-
-  }
-
-  private saveResults() {
-
+  saveResults(sweptOAEResults: SweptOaeResultsInterface) {
+    this.sweptOAEResults = sweptOAEResults;
+    this.results.currentPage.response = sweptOAEResults;
   }
 
 }

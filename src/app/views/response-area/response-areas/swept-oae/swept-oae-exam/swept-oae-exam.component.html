@@ -14,11 +14,13 @@
     
     <swept-oae-in-progress
         *ngSwitchCase="'in-progress'"
-        [device]="device">
+        [device]="device"
+        (sweptOAEResultsEvent)="saveResults($event)">
     </swept-oae-in-progress>
 
     <swept-oae-results
-        *ngSwitchCase="'results'">
+        *ngSwitchCase="'results'"
+        [sweptOAEResults]="sweptOAEResults">
     </swept-oae-results>    
 
 </div>

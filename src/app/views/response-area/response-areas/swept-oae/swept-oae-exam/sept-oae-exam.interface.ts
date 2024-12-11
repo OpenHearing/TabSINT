@@ -14,3 +14,55 @@ export interface SweptOaeInterface extends CommonResponseAreaInterface {
     noiseFloorThreshold?: number,
     showResults?: boolean
 }
+
+export interface SweptOaeResultsInterface { 
+    State: string; 
+    PctComplete: number;
+    NumSweeps?: number;
+    DpLow?: {
+      Frequency: number[];
+      Amplitude: number[];
+      Phase: number[];
+      NoiseFloor: number[];
+    },
+    DpHigh?: {
+      Frequency: number[];
+      Amplitude: number[];
+      Phase: number[];
+      NoiseFloor: number[];
+    },
+    F1?: {
+      Frequency: number[];
+      Amplitude: number[];
+      Phase: number[];
+    },
+    F2?: {
+      Frequency: number[];
+      Amplitude: number[];
+      Phase: number[];
+    },
+    Raw?: {
+      DpLow?: {
+        Frequency: number[];
+        Amplitude: number[];
+        Phase: number[];
+        NoiseFloor: number[];
+      },
+      DpHigh?: {
+        Frequency: number[];
+        Amplitude: number[];
+        Phase: number[];
+        NoiseFloor: number[];
+      },
+      F1?: {
+        Frequency: number[];
+        Amplitude: number[];
+        Phase: number[];
+      },
+      F2?: {
+        Frequency: number[];
+        Amplitude: number[];
+        Phase: number[];
+      },
+    }
+  }

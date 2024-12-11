@@ -269,8 +269,7 @@
       "pages": [
         {
           "id": "swept_oae_001",
-          "title": "Swept OAE Exam",
-          "instructionText": "Press Submit to start the exam.",
+          "title": "Swept OAE",
           "responseArea": {
             "type": "sweptOAEResponseArea"
           }

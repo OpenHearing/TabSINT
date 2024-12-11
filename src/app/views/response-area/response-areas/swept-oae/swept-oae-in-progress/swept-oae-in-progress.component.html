@@ -1,2 +1,14 @@
-<div class="progress-label">{{ pctComplete }}% Completed</div>
-<mat-progress-bar mode="determinate" [value]="pctComplete"></mat-progress-bar>
+<p class="instructions">Exam in progress please wait.</p>
+
+<div id="oae-amplitude-plot"></div>
+
+<br />
+
+<mat-progress-bar mode="determinate" [value]="inProgressResults.PctComplete"></mat-progress-bar>
+<div class="progress-label">{{ inProgressResults.PctComplete }}% Completed</div>
+
+<br />
+
+<button [disabled]="inProgressResults.State" class="btn btn-danger btn-block" (click)="abort()">
+    {{'Abort'|translate}}
+</button>
