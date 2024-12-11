@@ -4,6 +4,8 @@ import { ManualAudiometryInterface } from "../views/response-area/response-areas
 import { MultipleChoiceInterface } from "../views/response-area/response-areas/multiple-choice/multiple-choice.interface";
 import { TextBoxResultViewerInterface } from "../views/response-area/response-areas/textbox-result-viewer/textbox-result-viewer.interface";
 import { TextBoxInterface } from "../views/response-area/response-areas/textbox/textbox.interface";
+import { MultipleInputInterface } from "../views/response-area/response-areas/multiple-input/multiple-input.interface";
+import { LikertInterface } from "../views/response-area/response-areas/likert/likert/likert.interface";
 
 export interface PageDefinition {
     id: string;
@@ -98,4 +100,5 @@ export interface CommonResponseAreaInterface {
 
 export type ResponseArea =
     TextBoxInterface | TextBoxResultViewerInterface |
-    MultipleChoiceInterface | ManualAudiometryInterface | CalibrationExamInterface
+    MultipleChoiceInterface | ManualAudiometryInterface | CalibrationExamInterface |
+    MultipleInputInterface | LikertInterface

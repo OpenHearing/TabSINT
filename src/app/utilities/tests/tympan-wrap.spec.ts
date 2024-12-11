@@ -17,21 +17,27 @@ const bytes2: Uint8Array = new Uint8Array([3,143]);
 const bytes_2_unescaped: Uint8Array = new Uint8Array([15]);
 
 describe('tympanWrap', () => {
+    let appModel: AppModel;
+    let diskModel: DiskModel;
+    let sqLite: SqLite;
+    let logger: Logger;
+    let devicesModel: DevicesModel;
     let tympanWrap: TympanWrap;
-    let appModel = new AppModel;
-    let diskModel = new DiskModel(new Document);
-    let sqLite = new SqLite(appModel, diskModel);
-    let logger = new Logger(diskModel, sqLite);
 
     beforeEach( async () => {
         TestBed.configureTestingModule({})
 
+        appModel = new AppModel;
+        diskModel = new DiskModel(new Document);
+        sqLite = new SqLite(appModel, diskModel);
+        logger = new Logger(diskModel, sqLite);
+        devicesModel = new DevicesModel(logger);
         tympanWrap = new TympanWrap(
             new StateModel(),
             window,
             logger,
             new DevicesModel(logger),
-            new DeviceUtil(new DevicesModel(logger),diskModel)
+            new DeviceUtil(devicesModel, diskModel)
         );
     })
 

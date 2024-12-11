@@ -10,7 +10,6 @@ import { StateInterface } from "../../../../models/state/state.interface";
 import { Subscription } from "rxjs";
 import { ManualAudiometryInterface } from "./manual-audiometry.interface";
 import { DevicesModel } from "../../../../models/devices/devices-model.service";
-import { DeviceResponse } from "../../../../models/devices/devices.interface";
 import { DevicesService } from "../../../../controllers/devices.service";
 import { ConnectedDevice } from "../../../../interfaces/connected-device.interface";
 import { DeviceUtil } from "../../../../utilities/device-utility";
@@ -20,12 +19,13 @@ import { AudiometryResultsInterface, RetsplsInterface } from "../../../../interf
 import { isManualAudiometryResponseArea } from "../../../../guards/type.guard";
 import { DialogType, LevelUnits } from "../../../../utilities/constants";
 import { Notifications } from "../../../../utilities/notifications.service";
+import { TympanResponse } from "../../../../models/devices/devices.interface";
 
 @Component({
     selector: 'manual-audiometry-view',
     templateUrl: './manual-audiometry.html',
     styleUrl: './manual-audiometry.css'
-  })
+})
 
 export class ManualAudiometryComponent implements OnInit, OnDestroy {
     results: ResultsInterface;
@@ -82,7 +82,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.pageSubscription = this.pageModel.currentPageSubject.subscribe(this.handlePageUpdate.bind(this));
-        this.deviceSubscription = this.devicesModel.deviceResponseSubject.subscribe(this.logDeviceResponse.bind(this));
+        this.deviceSubscription = this.devicesModel.tympanResponseSubject.subscribe(this.logDeviceResponse.bind(this));
     }
 
     ngOnDestroy() {
@@ -90,7 +90,6 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
             this.devicesService.abortExams(this.device);
         }
         this.pageSubscription?.unsubscribe();
-        this.deviceSubscription?.unsubscribe();
     }
 
     onFrequencyChange(selectedFreq: number): void {
@@ -117,15 +116,14 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         this.setCurrentDb();
     }
 
-    playTone() {
+    async playTone() {
         let examProperties = {
             "F": this.selectedFrequency,
             "Level": this.currentDbSpl,
             "OutputChannel": this.selectedEar==="Left" ? "HPL0" : "HPR0"
         };
-        if (this.device) {
-            this.devicesService.examSubmission(this.device, examProperties);
-        }
+        let resp = await this.devicesService.examSubmission(this.device!, examProperties);
+        console.log("resp from tympan after manual audiometry exam submission:",resp);
     }
 
     recordThreshold() {
@@ -270,7 +268,7 @@ not recognized as a frequency requested for this exam, it will be ignored.` ,
         }
     }
     
-    private logDeviceResponse(msg: DeviceResponse) {
+    private logDeviceResponse(msg: TympanResponse) {
         console.log("device msg:", JSON.stringify(msg));
     }
 }

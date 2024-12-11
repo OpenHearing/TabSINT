@@ -38,6 +38,7 @@ export class LogConfigComponent {
   async displayLogs() {
     this.showLogs = !this.showLogs;
     this.logs = await this.sqLite.getAllLogs();
+    this.logsCount = this.sqLite.count['logs']
   }
 
   // async logExportUpload() {
@@ -57,6 +58,9 @@ export class LogConfigComponent {
       this.notifications.alert(msg).subscribe(async (result: string) => {
         if (result === "OK") {
           this.exportLogs();
+          await this.sqLite.deleteAll("logs")
+          this.displayLogs()
+          this.logsCount = this.sqLite.count['logs']
         } else {
           this.logger.debug('Export canceled.');
         }

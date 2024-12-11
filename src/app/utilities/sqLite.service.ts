@@ -92,8 +92,9 @@ export class SqLite {
     }
 
     async deleteAll(tableName: string) {
+        const query = "DELETE FROM " + tableName
         try {
-            await this.db.run("DELETE FROM results");
+            await this.db.run(query);
             this.count[tableName] = 0;
         } catch (e) {
             console.log("SQLITE Error deleting all " + tableName + " with error: " + e);

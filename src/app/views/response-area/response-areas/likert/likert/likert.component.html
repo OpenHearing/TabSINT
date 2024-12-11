@@ -1,0 +1,54 @@
+<div class="likert-container" *ngFor="let question of questions; let questionIndex = index">
+    <p class="question">{{ question }}</p>
+  
+    <div class="likert-labels"
+        *ngIf="position === 'above' && labels.length > 0"
+        [style.justify-content]="labels.length === levels ? 'space-between' : 'flex-start'"
+    >
+        <span
+            *ngFor="let label of labels; let labelIndex = index"
+            class="likert-label-above"
+            [ngClass]="{
+            'align-left': labelIndex === 0 && labels.length !== levels,
+            'align-right': labelIndex === labels.length - 1 && labels.length !== levels,
+            'center-align': labels.length === levels
+            }"
+            [style.width]="labels.length === levels ? (100 / levels) + '%' : 'auto'"
+        >
+            {{ label }}
+        </span>
+    </div>
+
+    <div class="likert-scale">
+      <div class="likert-options">
+        <button
+          *ngFor="let level of [].constructor(levels); let levelIndex = index"
+          class="likert-option"
+          [ngClass]="{ selected: results.currentPage.response[questionIndex] === levelIndex }"
+          (click)="onResponseChange(questionIndex, levelIndex)"
+        >
+          <span *ngIf="!useEmoticons">{{ levelIndex }}</span>
+          <span *ngIf="useEmoticons">{{ emoticons[levelIndex % emoticons.length] }}</span>
+        </button>
+      </div>
+    </div>
+
+  <div class="likert-labels"
+    *ngIf="position === 'below' && labels.length > 0"
+    [style.justify-content]="labels.length === levels ? 'space-between' : 'flex-start'"
+    >
+    <span
+        *ngFor="let label of labels; let labelIndex = index"
+        class="likert-label-below"
+        [ngClass]="{
+          'align-left': labelIndex === 0 && labels.length !== levels,
+          'align-right': labelIndex === labels.length - 1 && labels.length !== levels,
+          'center-align': labels.length === levels
+        }"
+        [style.width]="labels.length === levels ? (100 / levels) + '%' : 'auto'"
+    >
+        {{ label }}
+    </span>
+    </div>
+  </div>
+  

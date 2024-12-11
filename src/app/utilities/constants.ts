@@ -15,7 +15,8 @@ export enum ExamState {
     NotReady,
     Finalized,
     Ready,
-    Testing
+    Testing,
+    DeviceError
 }
 
 export enum DeviceState {
@@ -64,6 +65,7 @@ export const LevelUnits = {
     "dB_SPL": "dB SPL",
     "dB_HL": "dB HL"
 }
+
 
 import PurdueDemo from '../../protocols/purdue-demo/protocol.json';
 import develop from '../../protocols/develop/protocol.json';

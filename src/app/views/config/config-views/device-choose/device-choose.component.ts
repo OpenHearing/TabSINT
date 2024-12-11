@@ -14,7 +14,7 @@ import { DevicesModel } from '../../../../models/devices/devices-model.service';
   selector: 'device-choose-view',
   standalone: true,
   templateUrl: './device-choose.component.html',
-  imports: [FormsModule,TranslateModule,  NgFor, NgClass]
+  imports: [FormsModule, TranslateModule, NgFor, NgClass]
 })
 export class DeviceChooseComponent implements OnInit, OnDestroy {
   disk: DiskInterface;
@@ -35,8 +35,8 @@ export class DeviceChooseComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
-        this.disk = updatedDisk;
-    })    
+      this.disk = updatedDisk;
+    });
 
     this.devicesSubscription = this.devicesModel.availableDevicesSubject.subscribe( (availableDevices:BleDevice[]) => {
       this.availableDevices = availableDevices;

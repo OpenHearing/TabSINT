@@ -5,6 +5,7 @@ export interface StateInterface {
     appState: AppState;
     protocolState: ProtocolState;
     examState: ExamState;
+    deviceError: Array<any>;
     isSubmittable: boolean;
     examIndex: number;
     canGoBack: Function;

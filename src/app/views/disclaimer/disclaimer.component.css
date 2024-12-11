@@ -1,0 +1,11 @@
+.link-no-box {
+    color: #007bff;
+    text-decoration: underline;
+  }
+  
+  .link-no-box:focus,
+  .link-no-box:active,
+  .link-no-box:hover {
+    outline: none;
+    color: #0056b3;
+  }

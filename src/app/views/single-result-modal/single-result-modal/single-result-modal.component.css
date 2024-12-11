@@ -1,0 +1,179 @@
+.modal-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 5vh 0;
+  overflow-y: auto;
+  z-index: 99999;
+}
+
+.modal-content {
+  position: relative;
+  width: 1000px;
+  height: auto;
+  max-width: 95vw;
+  margin-top: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 0;
+  z-index: 100000;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background-color: #f1f1f1;
+  border-bottom: 1px solid #ddd;
+  position: sticky;
+  top: 0;
+  z-index: 100001;
+  border-radius: 8px 8px 0 0;
+}
+
+.modal-body {
+  padding: 20px;
+  position: relative;
+  z-index: 100000;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.left-buttons {
+  display: flex;
+  gap: 15px;
+  position: relative;
+  z-index: 100002;
+}
+
+.close-btn {
+  position: relative;
+  z-index: 100002;
+}
+
+.btn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s;
+}
+
+.btn-primary {
+  background-color: #0d6efd;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #0b5ed7;
+}
+
+.btn-warning {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.btn-warning:hover {
+  background-color: #ffca2c;
+}
+
+::ng-deep ngx-json-viewer {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+::ng-deep .segment {
+  overflow: visible !important;
+  width: 100% !important;
+}
+
+::ng-deep .segment-main {
+  overflow-x: auto !important;
+  white-space: nowrap !important;
+}
+
+::ng-deep .segment-main::-webkit-scrollbar {
+  display: block !important;
+  width: 8px !important;
+  height: 8px !important;
+}
+
+::ng-deep .segment-main::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2) !important;
+  border-radius: 4px !important;
+}
+
+::ng-deep .segment > .segment-main > .segment-value {
+  display: none !important;
+}
+
+::ng-deep .segment:not(:has(> .segment-children)) > .segment-main > .segment-value {
+  display: inline !important;
+}
+
+::ng-deep .segment:has(> .segment-children.segment-type-array) > .segment-main > .segment-key:after {
+  content: ": Array[" attr(data-length) "]" !important;
+  color: #666;
+}
+
+::ng-deep .segment:has(> .segment-children.segment-type-array:empty) > .segment-main > .segment-key:after {
+  content: ": Array[]" !important;
+  color: #666;
+}
+
+::ng-deep .segment:has(> .segment-children:not(.segment-type-array)) > .segment-main > .segment-key:after {
+  content: ": Object" !important;
+  color: #666;
+}
+
+::ng-deep .segment:has(> .segment-children:empty:not(.segment-type-array)) > .segment-main > .segment-key:after {
+  content: ": Object {}" !important;
+  color: #666;
+}
+
+::ng-deep ngx-json-viewer,
+::ng-deep ngx-json-viewer *,
+::ng-deep .segment,
+::ng-deep .segment-main,
+::ng-deep .segment-value,
+::ng-deep .segment-type-object,
+::ng-deep .segment-type-array,
+::ng-deep .segment-children {
+  overflow: visible !important;
+  overflow-y: visible !important;
+  overflow-x: visible !important;
+  max-height: none !important;
+  height: auto !important;
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+::ng-deep ngx-json-viewer *::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  appearance: textfield;
+}
