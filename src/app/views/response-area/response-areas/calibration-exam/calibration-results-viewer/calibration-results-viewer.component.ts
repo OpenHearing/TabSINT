@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { ExamResponse } from '../calibration-exam-component/calibration-exam.component';
+import { ExamResponse } from '../calibration-exam-component/calibration-exam.interface';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 
 interface CalibrationResults {
@@ -21,6 +21,8 @@ export class CalibrationResultsViewerComponent implements OnInit {
   ngOnInit(): void {
     const calibrationResult = this.resultsModel.getResults().currentExam.responses
       .filter((response: ExamResponse) => response.responseArea === 'calibrationExam');
+    console.log(this.resultsModel.getResults().currentExam.responses)
+    console.log(calibrationResult);
     if (calibrationResult.length > 0) {
       this.results = JSON.parse(calibrationResult[calibrationResult.length-1].response) as CalibrationResults;
     }
