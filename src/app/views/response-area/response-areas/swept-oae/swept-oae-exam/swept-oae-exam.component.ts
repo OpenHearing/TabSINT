@@ -102,7 +102,7 @@ export class SweptOaeExamComponent implements OnInit, OnDestroy {
   async nextStep(): Promise<void> {
     switch (this.currentStep) {
       case 'input-parameters':
-        this.beginExam();
+        await this.beginExam();
         this.currentStep = 'in-progress';
         this.buttonTextService.updateButtonText('Next');
         break;
