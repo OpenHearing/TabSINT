@@ -70,6 +70,7 @@ export interface DiskInterface {
       }
   },
   showUploadSummary: boolean,
+  showDisclaimer: boolean,
   suppressAlerts: boolean,
   tabletGain: number,
   tabletLocation: {

@@ -1,13 +1,83 @@
 <div class="modal-header">
-    Select Device
+    <h5>Select Device</h5>
 </div>
 
 <div class="modal-body">
     <button *ngFor="let device of availableDevices" (click)="choose(device)"
-    [ngClass]="selectedDevice?.name==device.name ? 'btn cha-selected': 'btn cha-unselected'" style="display: block;">{{device.name}}</button>
+            [ngClass]="selectedDevice?.name === device.name ? 'btn device-btn selected' : 'btn device-btn'">
+        {{ device.name }}
+    </button>
 </div>
 
 <div class="modal-footer">
-    <button type="button" class="btn btn-primary btn-block" (click)="select()" [ngClass]="!selectedDevice ? 'disabled custom-disabled': ''">{{'Select' | translate}}</button>
-    <button type="button" class="btn btn-primary btn-block" (click)="cancel()">{{'Cancel' | translate}}</button>
+    <button type="button" class="btn btn-primary action-btn" (click)="select()"
+            [ngClass]="!selectedDevice ? 'disabled custom-disabled' : ''">{{ 'Select' | translate }}</button>
+    <button type="button" class="btn btn-secondary action-btn" (click)="cancel()">{{ 'Cancel' | translate }}</button>
 </div>
+
+<style>
+    /* Modal styling */
+    .modal-header {
+        padding: 15px;
+        text-align: center;
+        font-weight: bold;
+        border-bottom: 1px solid #ddd;
+        background-color: #f1f1f1;
+    }
+
+    .modal-header h5 {
+        margin: 0;
+        font-size: 1.2em;
+    }
+
+    .modal-body {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        background-color: #fff;
+    }
+
+    .device-btn {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        background-color: #f8f9fa;
+        color: #0f0f0f;
+        font-size: 1em;
+        cursor: pointer;
+        text-align: center;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+    .device-btn:hover {
+        background-color: #e2e6ea;
+    }
+
+    .device-btn.selected {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    .modal-footer {
+        padding: 15px;
+        border-top: 1px solid #ddd;
+        display: flex;
+        justify-content: space-between;
+        background-color: #f1f1f1;
+    }
+
+    .action-btn {
+        flex: 1;
+        margin: 0 10px;
+        padding: 10px;
+        font-size: 1em;
+        border-radius: 5px;
+    }
+
+    .custom-disabled {
+        pointer-events: none;
+        opacity: 0.6;
+    }
+</style>

@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { TranslateService } from "@ngx-translate/core";
 import _ from 'lodash';
 import { Subscription } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
 
 
 import { TabsintFs } from 'tabsintfs';
@@ -19,6 +20,7 @@ import { SqLite } from './utilities/sqLite.service';
 import { Logger } from './utilities/logger.service';
 import { FileService } from './utilities/file.service';
 import { DeviceUtil } from './utilities/device-utility';
+import { DisclaimerComponent } from './views/disclaimer/disclaimer.component';
 
 @Component({
   selector: 'app-root',
@@ -41,7 +43,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private readonly protocolService: ProtocolService,
     private readonly router: Router,
     private readonly sqLite: SqLite,
-    private readonly translate: TranslateService
+    private readonly translate: TranslateService,
+    private readonly dialog: MatDialog
   ) {
     this.translate.setDefaultLang('English');
     this.translate.use('English');
@@ -73,12 +76,22 @@ export class AppComponent implements OnInit, OnDestroy {
     this.fileService.createTabsintDirectoriesIfDontExist();
 
     if (!_.isUndefined(this.disk.activeProtocolMeta) && (this.disk.activeProtocolMeta.name != '')) await this.protocolService.load(this.disk.activeProtocolMeta);
-
+    if (this.disk.showDisclaimer || this.disk.showDisclaimer == undefined){
+      this.openDisclaimer();
+      this.diskModel.updateDiskModel('showDisclaimer',false);
+    }
     this.deviceUtil.addSavedDevices();
   }
   
   ngOnDestroy() {
     this.diskSubscription?.unsubscribe();
+  }
+
+  openDisclaimer() {
+    this.dialog.open(DisclaimerComponent, {
+      width: '500px',
+      disableClose: true
+    });
   }
 
 }
