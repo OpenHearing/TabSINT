@@ -14,12 +14,27 @@
     
     <swept-oae-in-progress
         *ngSwitchCase="'in-progress'"
+        [f2Start]="f2Start"
+        [f2End]="f2End"
         [device]="device"
+        [xScale]="xScale"
+        [yScale]="yScale"
+        [width]="width"
+        [height]="height"
+        [xTicks]="xTicks"
+        [margin]="margin"
         (sweptOAEResultsEvent)="saveResults($event)">
     </swept-oae-in-progress>
 
     <swept-oae-results
         *ngSwitchCase="'results'"
+        [f2Start]="f2Start"
+        [f2End]="f2End"
+        [xScale]="xScale"
+        [width]="width"
+        [height]="height"
+        [xTicks]="xTicks"
+        [margin]="margin"
         [sweptOAEResults]="sweptOAEResults">
     </swept-oae-results>    
 

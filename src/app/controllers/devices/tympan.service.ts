@@ -28,7 +28,8 @@ export class TympanService {
     pendingMsg: boolean = false;
     response: Array<any> = [];
     currentTimeoutTimeMs: number = 0;
-    defaultErrorMsg = ["ERROR", "failed to write message to tympan"];
+    defaultErrorMsg = ["ERROR", "Failed to write message to tympan. Make sure Tympan in connected and try again."];
+    defaultTimeoutTimeMs = 5000;
 
     constructor(
         private readonly tympanWrap: TympanWrap, 
@@ -60,7 +61,7 @@ export class TympanService {
         this.currentTimeoutTimeMs = 0;
     }
 
-    async waitForResponse(timeoutTimeMs: number = 10000, timeoutPollingDelayMs: number = 10) {
+    async waitForResponse(timeoutTimeMs: number = this.defaultTimeoutTimeMs, timeoutPollingDelayMs: number = 100) {
         while (this.pendingMsg) {
             await this.delay(timeoutPollingDelayMs);
             this.currentTimeoutTimeMs += timeoutPollingDelayMs;
@@ -189,14 +190,14 @@ export class TympanService {
         return resp
     }
 
-    async requestResults(tympanId: string, msgId: string): Promise<Array<any>> {
+    async requestResults(tympanId: string, msgId: string, timeoutTimeMs: number = this.defaultTimeoutTimeMs): Promise<Array<any>> {
         let resp: Array<any> = [-msgId].concat(JSON.parse(JSON.stringify(this.defaultErrorMsg)));
         let examId: string = "1";
         let msg = '['+msgId+',"requestResults",'+examId+']';
         try {
             this.startMsgTracking(1, msgId);
             await this.tympanWrap.write(tympanId, msg);
-            await this.waitForResponse();
+            await this.waitForResponse(timeoutTimeMs);
             resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
         } catch (e) {
             this.state.examState = ExamState.DeviceError;

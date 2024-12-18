@@ -146,7 +146,7 @@ export class TympanWrap {
             } else {
                 msg = "invalid checksum";
             }
-            console.log("TIME - msg parsed and checksum verified",Date.now());
+            console.log("Swept OAE - TIME - msg parsed and checksum verified",Date.now());
             this.clearTMPBuffer(deviceId);
         }
         return msg

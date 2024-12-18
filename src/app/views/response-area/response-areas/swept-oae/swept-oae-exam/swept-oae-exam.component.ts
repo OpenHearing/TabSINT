@@ -13,6 +13,7 @@ import { SweptOaeInterface, SweptOaeResultsInterface } from './sept-oae-exam.int
 import { ButtonTextService } from '../../../../../controllers/button-text.service';
 import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
 import { DevicesModel } from '../../../../../models/devices/devices-model.service';
+import * as d3 from 'd3';
 
 @Component({
   selector: 'swept-oae-exam',
@@ -41,6 +42,21 @@ export class SweptOaeExamComponent implements OnInit, OnDestroy {
     PctComplete: 0
   };
   test: number= 1;
+  
+  // Set dimensions and margins
+  margin = { top: 20, right: 30, bottom: 60, left: 70 };
+  width = 450 - this.margin.left - this.margin.right;
+  height = 300 - this.margin.top - this.margin.bottom;
+  xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000].filter(tick => tick >= this.f2Start && tick <= this.f2End);;
+
+  // Define scales
+  xScale = d3.scaleLog()
+    .domain([this.f2Start, this.f2End])
+    .range([0, this.width]);
+
+  yScale = d3.scaleLinear()
+    .domain([-20, 70])
+    .range([this.height, 0]);  
 
   constructor(
     private readonly pageModel: PageModel,
@@ -52,7 +68,7 @@ export class SweptOaeExamComponent implements OnInit, OnDestroy {
     private readonly examService: ExamService, 
     private readonly buttonTextService: ButtonTextService,
   ) {
-    this.results = this.resultsModel.getResults()
+    this.results = this.resultsModel.getResults();
     this.examService.submit = this.nextStep.bind(this);
   }
 
@@ -74,7 +90,9 @@ export class SweptOaeExamComponent implements OnInit, OnDestroy {
     })
   }
 
-  ngOnDestroy(): void {
+  async ngOnDestroy(): Promise<void> {
+    let resp = await this.devicesService.abortExams(this.device!);
+    this.logger.debug("resp from tympan after swept OAE exam abort exams:" + resp);
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
     this.pageSubscription?.unsubscribe();
     this.tympanSubscription?.unsubscribe();
@@ -98,6 +116,11 @@ export class SweptOaeExamComponent implements OnInit, OnDestroy {
     }
   }
 
+  saveResults(sweptOAEResults: SweptOaeResultsInterface) {
+    this.sweptOAEResults = sweptOAEResults;
+    this.results.currentPage.response = sweptOAEResults;
+  }
+
   private async beginExam() {
     this.device = this.deviceUtil.getDeviceFromTabsintId(this.tabsintId);
     if (this.device) {
@@ -117,10 +140,4 @@ export class SweptOaeExamComponent implements OnInit, OnDestroy {
         this.logger.error("Error setting up Swept OAE exam");
     }
   }
-
-  saveResults(sweptOAEResults: SweptOaeResultsInterface) {
-    this.sweptOAEResults = sweptOAEResults;
-    this.results.currentPage.response = sweptOAEResults;
-  }
-
 }

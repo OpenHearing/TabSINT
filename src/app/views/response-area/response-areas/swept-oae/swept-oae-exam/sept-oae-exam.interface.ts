@@ -19,50 +19,21 @@ export interface SweptOaeResultsInterface {
     State: string; 
     PctComplete: number;
     NumSweeps?: number;
-    DpLow?: {
-      Frequency: number[];
-      Amplitude: number[];
-      Phase: number[];
-      NoiseFloor: number[];
-    },
-    DpHigh?: {
-      Frequency: number[];
-      Amplitude: number[];
-      Phase: number[];
-      NoiseFloor: number[];
-    },
-    F1?: {
-      Frequency: number[];
-      Amplitude: number[];
-      Phase: number[];
-    },
-    F2?: {
-      Frequency: number[];
-      Amplitude: number[];
-      Phase: number[];
-    },
+    DpLow?: DPOAEDataInterface,
+    DpHigh?: DPOAEDataInterface,
+    F1?: DPOAEDataInterface,
+    F2?: DPOAEDataInterface,
     Raw?: {
-      DpLow?: {
-        Frequency: number[];
-        Amplitude: number[];
-        Phase: number[];
-        NoiseFloor: number[];
-      },
-      DpHigh?: {
-        Frequency: number[];
-        Amplitude: number[];
-        Phase: number[];
-        NoiseFloor: number[];
-      },
-      F1?: {
-        Frequency: number[];
-        Amplitude: number[];
-        Phase: number[];
-      },
-      F2?: {
-        Frequency: number[];
-        Amplitude: number[];
-        Phase: number[];
-      },
+      DpLow?: DPOAEDataInterface,
+      DpHigh?: DPOAEDataInterface,
+      F1?: DPOAEDataInterface,
+      F2?: DPOAEDataInterface,
     }
   }
+  
+export interface DPOAEDataInterface {
+  Frequency: number[];
+  Amplitude: number[];
+  Phase: number[];
+  NoiseFloor?: number[];
+}
