@@ -1,5 +1,5 @@
 <div [ngSwitch]="currentStep">
-    <swept-oae-input-parameters
+    <swept-dpoae-input-parameters
         *ngSwitchCase="'input-parameters'"
         [f2Start]="f2Start"
         [f2End]="f2End"
@@ -10,9 +10,9 @@
         [minSweeps]="minSweeps"
         [maxSweeps]="maxSweeps"
         [noiseFloorThreshold]="noiseFloorThreshold">        
-    </swept-oae-input-parameters>
+    </swept-dpoae-input-parameters>
     
-    <swept-oae-in-progress
+    <swept-dpoae-in-progress
         *ngSwitchCase="'in-progress'"
         [f2Start]="f2Start"
         [f2End]="f2End"
@@ -23,10 +23,10 @@
         [height]="height"
         [xTicks]="xTicks"
         [margin]="margin"
-        (sweptOAEResultsEvent)="saveResults($event)">
-    </swept-oae-in-progress>
+        (sweptDPOAEResultsEvent)="saveResults($event)">
+    </swept-dpoae-in-progress>
 
-    <swept-oae-results
+    <swept-dpoae-results
         *ngSwitchCase="'results'"
         [f2Start]="f2Start"
         [f2End]="f2End"
@@ -35,7 +35,7 @@
         [height]="height"
         [xTicks]="xTicks"
         [margin]="margin"
-        [sweptOAEResults]="sweptOAEResults">
-    </swept-oae-results>    
+        [sweptDPOAEResults]="sweptDPOAEResults">
+    </swept-dpoae-results>    
 
 </div>

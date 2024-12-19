@@ -11,7 +11,7 @@ import { manualAudiometrySchema } from "./response-areas/manual-audiometry.schem
 import { calibrationExamSchema } from "./response-areas/calibration-exam.schema";
 import { multipleInputSchema } from "./response-areas/multiple-input.schema";
 import { likertSchema } from "./response-areas/likert.schema";
-import { sweptOaeSchema } from "./response-areas/swept-oae.schema";
+import { sweptDpoaeSchema } from "./response-areas/swept-dpoae.schema";
 
 export const pageSchema: JSONSchemaType<PageDefinition> = {
     $id: "page_base",
@@ -87,7 +87,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
           manualAudiometrySchema,
           calibrationExamSchema,
           likertSchema,
-          sweptOaeSchema
+          sweptDpoaeSchema
         ], 
         required: ["type"],
         nullable: true

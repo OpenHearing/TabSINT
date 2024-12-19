@@ -1,18 +1,18 @@
 import { AfterViewInit, Component, Input } from '@angular/core';
 import * as d3 from 'd3';
-import { SweptOaeResultsInterface } from '../swept-oae-exam/sept-oae-exam.interface';
-import { sweptOaeSchema } from '../../../../../../schema/response-areas/swept-oae.schema';
+import { SweptDpoaeResultsInterface } from '../swept-dpoae-exam/sept-dpoae-exam.interface';
+import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-dpoae.schema';
 import { createLegend, createOAEResultsChartSvg } from '../../../../../utilities/d3-plot-functions';
 
 @Component({
-  selector: 'swept-oae-results',
-  templateUrl: './swept-oae-results.component.html',
-  styleUrl: './swept-oae-results.component.css'
+  selector: 'swept-dpoae-results',
+  templateUrl: './swept-dpoae-results.component.html',
+  styleUrl: './swept-dpoae-results.component.css'
 })
-export class SweptOaeResultsComponent implements AfterViewInit {
-  @Input() sweptOAEResults!: SweptOaeResultsInterface;
-  @Input() f2Start: number = sweptOaeSchema.properties.f2Start.default;
-  @Input() f2End: number = sweptOaeSchema.properties.f2End.default;
+export class SweptDpoaeResultsComponent implements AfterViewInit {
+  @Input() sweptDPOAEResults!: SweptDpoaeResultsInterface;
+  @Input() f2Start: number = sweptDpoaeSchema.properties.f2Start.default;
+  @Input() f2End: number = sweptDpoaeSchema.properties.f2End.default;
   @Input() xScale!: d3.ScaleLogarithmic<number, number, never>;
   @Input() width!: number;
   @Input() height!: number;
@@ -27,7 +27,7 @@ export class SweptOaeResultsComponent implements AfterViewInit {
 
   private createResultsPlot() {
     // TODO: Do I need to filter data? Probably not after I get real firmware.
-    const filteredData = this.filterSweptOaeResults(this.sweptOAEResults);
+    const filteredData = this.filterSweptDpoaeResults(this.sweptDPOAEResults);
 
     const yScale = d3.scaleLinear()
       .domain([
@@ -37,7 +37,7 @@ export class SweptOaeResultsComponent implements AfterViewInit {
           [...filteredData.DpLow.Amplitude, ...filteredData.DpLow.NoiseFloor, ...filteredData.F1.Amplitude, ...filteredData.F2.Amplitude]) as number]
       ).range([this.height, 0]);
 
-    let svg = d3.select('#oae-results-plot')
+    let svg = d3.select('#dpoae-results-plot')
       .append('svg')
           .attr('width', this.width + this.margin.left + this.margin.right)
           .attr('height', this.height + this.margin.top + this.margin.bottom)
@@ -116,7 +116,7 @@ export class SweptOaeResultsComponent implements AfterViewInit {
 
     // Define the legend data
     const legendData = [
-      { label: 'OAE', color: 'blue', line: 'solid' },
+      { label: 'DPOAE', color: 'blue', line: 'solid' },
       { label: 'NF', color: 'red', line:  'dashed' },
       { label: 'F2', color: '#9400d3',line:  'solid' },
       { label: 'F1', color: '#ffc107', line:  'solid' }
@@ -126,8 +126,8 @@ export class SweptOaeResultsComponent implements AfterViewInit {
     return svg;
   }
 
-  private filterSweptOaeResults(
-    data: SweptOaeResultsInterface
+  private filterSweptDpoaeResults(
+    data: SweptDpoaeResultsInterface
   ): {
     DpLow: { Frequency: number[]; Amplitude: number[]; NoiseFloor: number[] };
     F2: { Frequency: number[]; Amplitude: number[] };

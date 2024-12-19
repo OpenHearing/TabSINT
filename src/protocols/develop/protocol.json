@@ -40,7 +40,7 @@
                 "id": "Calibration Exam" 
               },
               {
-                "id": "Swept OAE Exam" 
+                "id": "Swept DPOAE Exam" 
               },
               {
                 "id":"End All"
@@ -79,9 +79,9 @@
               }
             },
             {
-              "conditional": "result.response=='Swept OAE Exam'",
+              "conditional": "result.response=='Swept DPOAE Exam'",
               "target": {
-                "reference": "SweptOAEExam"
+                "reference": "SweptDpoaeExam"
               }
             },
             {
@@ -265,13 +265,13 @@
       ]
     },
     {
-      "protocolId": "SweptOAEExam",
+      "protocolId": "SweptDpoaeExam",
       "pages": [
         {
           "id": "swept_oae_001",
-          "title": "Swept OAE",
+          "title": "Swept DPOAE",
           "responseArea": {
-            "type": "sweptOAEResponseArea"
+            "type": "sweptDPOAEResponseArea"
           }
         },
         {

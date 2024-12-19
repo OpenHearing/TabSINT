@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { sweptOaeSchema } from '../../../../../../schema/response-areas/swept-oae.schema';
+import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-dpoae.schema';
 import { PageModel } from '../../../../../models/page/page.service';
 import { DevicesService } from '../../../../../controllers/devices.service';
 import { DeviceUtil } from '../../../../../utilities/device-utility';
@@ -9,34 +9,34 @@ import { ExamService } from '../../../../../controllers/exam.service';
 import { ResultsInterface } from '../../../../../models/results/results.interface';
 import { PageInterface } from '../../../../../models/page/page.interface';
 import { Subscription } from 'rxjs/internal/Subscription';
-import { SweptOaeInterface, SweptOaeResultsInterface } from './sept-oae-exam.interface';
+import { SweptDpoaeInterface, SweptDpoaeResultsInterface } from './sept-dpoae-exam.interface';
 import { ButtonTextService } from '../../../../../controllers/button-text.service';
 import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
 import { DevicesModel } from '../../../../../models/devices/devices-model.service';
 import * as d3 from 'd3';
 
 @Component({
-  selector: 'swept-oae-exam',
-  templateUrl: './swept-oae-exam.component.html',
-  styleUrl: './swept-oae-exam.component.css'
+  selector: 'swept-dpoae-exam',
+  templateUrl: './swept-dpoae-exam.component.html',
+  styleUrl: './swept-dpoae-exam.component.css'
 })
-export class SweptOaeExamComponent implements OnInit, OnDestroy {
-  tabsintId: string = sweptOaeSchema.properties.tabsintId.default;
-  f2Start: number = sweptOaeSchema.properties.f2Start.default;
-  f2End: number = sweptOaeSchema.properties.f2End.default;
-  frequencyRatio: number = sweptOaeSchema.properties.frequencyRatio.default;
-  sweepDuration: number = sweptOaeSchema.properties.sweepDuration.default;
-  windowDuration: number = sweptOaeSchema.properties.windowDuration.default;
-  sweepType: number = sweptOaeSchema.properties.sweepType.default;
-  minSweeps: number = sweptOaeSchema.properties.minSweeps.default;
-  maxSweeps: number = sweptOaeSchema.properties.maxSweeps.default;
-  noiseFloorThreshold: number = sweptOaeSchema.properties.noiseFloorThreshold.default;
+export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
+  tabsintId: string = sweptDpoaeSchema.properties.tabsintId.default;
+  f2Start: number = sweptDpoaeSchema.properties.f2Start.default;
+  f2End: number = sweptDpoaeSchema.properties.f2End.default;
+  frequencyRatio: number = sweptDpoaeSchema.properties.frequencyRatio.default;
+  sweepDuration: number = sweptDpoaeSchema.properties.sweepDuration.default;
+  windowDuration: number = sweptDpoaeSchema.properties.windowDuration.default;
+  sweepType: number = sweptDpoaeSchema.properties.sweepType.default;
+  minSweeps: number = sweptDpoaeSchema.properties.minSweeps.default;
+  maxSweeps: number = sweptDpoaeSchema.properties.maxSweeps.default;
+  noiseFloorThreshold: number = sweptDpoaeSchema.properties.noiseFloorThreshold.default;
   results: ResultsInterface;
-  showResults: boolean = sweptOaeSchema.properties.showResults.default;
+  showResults: boolean = sweptDpoaeSchema.properties.showResults.default;
   pageSubscription: Subscription | undefined;
   currentStep: string = 'input-parameters';
   device: ConnectedDevice | undefined;
-  sweptOAEResults: SweptOaeResultsInterface = {
+  sweptDPOAEResults: SweptDpoaeResultsInterface = {
     State: 'READY',
     PctComplete: 0
   };
@@ -73,25 +73,25 @@ export class SweptOaeExamComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
-      if (updatedPage?.responseArea?.type === 'sweptOAEResponseArea') {
-        const responseArea = updatedPage.responseArea as SweptOaeInterface;
-        this.tabsintId = responseArea.tabsintId ?? sweptOaeSchema.properties.tabsintId.default;
-        this.f2Start = responseArea.f2Start ?? sweptOaeSchema.properties.f2Start.default;
-        this.f2End = responseArea.f2End ?? sweptOaeSchema.properties.f2End.default;
-        this.frequencyRatio = responseArea.frequencyRatio ?? sweptOaeSchema.properties.frequencyRatio.default;
-        this.sweepDuration = responseArea. sweepDuration ?? sweptOaeSchema.properties.sweepDuration.default;
-        this.windowDuration = responseArea.windowDuration ?? sweptOaeSchema.properties.windowDuration.default;
-        this.sweepType = responseArea.sweepType ?? sweptOaeSchema.properties.sweepType.default;
-        this.minSweeps = responseArea.minSweeps ?? sweptOaeSchema.properties.minSweeps.default;
-        this.maxSweeps = responseArea.maxSweeps ?? sweptOaeSchema.properties.maxSweeps.default;
-        this.noiseFloorThreshold = responseArea.noiseFloorThreshold ?? sweptOaeSchema.properties.noiseFloorThreshold.default;
+      if (updatedPage?.responseArea?.type === 'sweptDPOAEResponseArea') {
+        const responseArea = updatedPage.responseArea as SweptDpoaeInterface;
+        this.tabsintId = responseArea.tabsintId ?? sweptDpoaeSchema.properties.tabsintId.default;
+        this.f2Start = responseArea.f2Start ?? sweptDpoaeSchema.properties.f2Start.default;
+        this.f2End = responseArea.f2End ?? sweptDpoaeSchema.properties.f2End.default;
+        this.frequencyRatio = responseArea.frequencyRatio ?? sweptDpoaeSchema.properties.frequencyRatio.default;
+        this.sweepDuration = responseArea. sweepDuration ?? sweptDpoaeSchema.properties.sweepDuration.default;
+        this.windowDuration = responseArea.windowDuration ?? sweptDpoaeSchema.properties.windowDuration.default;
+        this.sweepType = responseArea.sweepType ?? sweptDpoaeSchema.properties.sweepType.default;
+        this.minSweeps = responseArea.minSweeps ?? sweptDpoaeSchema.properties.minSweeps.default;
+        this.maxSweeps = responseArea.maxSweeps ?? sweptDpoaeSchema.properties.maxSweeps.default;
+        this.noiseFloorThreshold = responseArea.noiseFloorThreshold ?? sweptDpoaeSchema.properties.noiseFloorThreshold.default;
       }
     })
   }
 
   async ngOnDestroy(): Promise<void> {
     let resp = await this.devicesService.abortExams(this.device!);
-    this.logger.debug("resp from tympan after swept OAE exam abort exams:" + resp);
+    this.logger.debug("resp from tympan after swept DPOAE exam abort exams:" + resp);
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
     this.pageSubscription?.unsubscribe();
     this.buttonTextService.updateButtonText("Submit");
@@ -114,9 +114,9 @@ export class SweptOaeExamComponent implements OnInit, OnDestroy {
     }
   }
 
-  saveResults(sweptOAEResults: SweptOaeResultsInterface) {
-    this.sweptOAEResults = sweptOAEResults;
-    this.results.currentPage.response = sweptOAEResults;
+  saveResults(sweptDPOAEResults: SweptDpoaeResultsInterface) {
+    this.sweptDPOAEResults = sweptDPOAEResults;
+    this.results.currentPage.response = sweptDPOAEResults;
   }
 
   private async beginExam() {
@@ -135,7 +135,7 @@ export class SweptOaeExamComponent implements OnInit, OnDestroy {
         };
         await this.devicesService.queueExam(this.device, "SweptDPOAE", examProperties);
     } else {
-        this.logger.error("Error setting up Swept OAE exam");
+        this.logger.error("Error setting up Swept DPOAE exam");
     }
   }
 }

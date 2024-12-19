@@ -1,6 +1,6 @@
 import { CommonResponseAreaInterface } from "../../../../../interfaces/page-definition.interface";
 
-export interface SweptOaeInterface extends CommonResponseAreaInterface {
+export interface SweptDpoaeInterface extends CommonResponseAreaInterface {
     exportToCSV?: boolean;
     tabsintId?: string;
     f2Start?: number,
@@ -15,7 +15,7 @@ export interface SweptOaeInterface extends CommonResponseAreaInterface {
     showResults?: boolean
 }
 
-export interface SweptOaeResultsInterface { 
+export interface SweptDpoaeResultsInterface { 
     State: string; 
     PctComplete: number;
     NumSweeps?: number;

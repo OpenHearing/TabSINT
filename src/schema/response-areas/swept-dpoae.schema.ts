@@ -1,12 +1,12 @@
 import { JSONSchemaType } from "ajv";
-import { SweptOaeInterface } from "../../app/views/response-area/response-areas/swept-oae/swept-oae-exam/sept-oae-exam.interface";
+import { SweptDpoaeInterface } from "../../app/views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/sept-dpoae-exam.interface";
 
-export const sweptOaeSchema: JSONSchemaType<SweptOaeInterface> = {
+export const sweptDpoaeSchema: JSONSchemaType<SweptDpoaeInterface> = {
   type: "object",
   properties: {
     enableSkip: { type: "boolean", nullable: true, default: false },
     responseRequired: { type: "boolean", nullable: true, default: true },
-    type: { type: "string", enum: ["sweptOAEResponseArea"] },
+    type: { type: "string", enum: ["sweptDPOAEResponseArea"] },
     exportToCSV: { type: "boolean", nullable: true, default: false },
     tabsintId: { type: "string", nullable: true, default: "1" },
     f2Start: { type: "number", nullable: true, default: 500 },

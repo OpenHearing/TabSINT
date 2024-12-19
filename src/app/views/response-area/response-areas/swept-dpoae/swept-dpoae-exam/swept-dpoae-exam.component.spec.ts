@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SweptOaeResultsComponent } from './swept-oae-results.component';
+import { SweptDpoaeExamComponent } from './swept-dpoae-exam.component';
 
-describe('SweptOaeResultsComponent', () => {
-  let component: SweptOaeResultsComponent;
-  let fixture: ComponentFixture<SweptOaeResultsComponent>;
+describe('SweptDpoaeExamComponent', () => {
+  let component: SweptDpoaeExamComponent;
+  let fixture: ComponentFixture<SweptDpoaeExamComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SweptOaeResultsComponent]
+      declarations: [SweptDpoaeExamComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(SweptOaeResultsComponent);
+    fixture = TestBed.createComponent(SweptDpoaeExamComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

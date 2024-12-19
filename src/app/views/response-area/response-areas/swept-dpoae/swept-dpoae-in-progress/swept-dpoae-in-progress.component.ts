@@ -4,35 +4,35 @@ import { ConnectedDevice } from '../../../../../interfaces/connected-device.inte
 import { StateModel } from '../../../../../models/state/state.service';
 import { StateInterface } from '../../../../../models/state/state.interface';
 import * as d3 from 'd3';
-import { DPOAEDataInterface, SweptOaeResultsInterface } from '../swept-oae-exam/sept-oae-exam.interface';
+import { DPOAEDataInterface, SweptDpoaeResultsInterface } from '../swept-dpoae-exam/sept-dpoae-exam.interface';
 import { Logger } from '../../../../../utilities/logger.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { sweptOaeSchema } from '../../../../../../schema/response-areas/swept-oae.schema';
+import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-dpoae.schema';
 import { createLegend, createOAEResultsChartSvg } from '../../../../../utilities/d3-plot-functions';
 
 @Component({
-  selector: 'swept-oae-in-progress',
-  templateUrl: './swept-oae-in-progress.component.html',
-  styleUrl: './swept-oae-in-progress.component.css'
+  selector: 'swept-dpoae-in-progress',
+  templateUrl: './swept-dpoae-in-progress.component.html',
+  styleUrl: './swept-dpoae-in-progress.component.css'
 })
-export class SweptOaeInProgressComponent implements OnInit, OnDestroy, AfterViewInit {
+export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() device: ConnectedDevice | undefined;
-  @Input() f2Start: number = sweptOaeSchema.properties.f2Start.default;
-  @Input() f2End: number = sweptOaeSchema.properties.f2End.default;
+  @Input() f2Start: number = sweptDpoaeSchema.properties.f2Start.default;
+  @Input() f2End: number = sweptDpoaeSchema.properties.f2End.default;
   @Input() xScale!: d3.ScaleLogarithmic<number, number, never>;
   @Input() yScale!: d3.ScaleLinear<number, number, never>;
   @Input() width!: number;
   @Input() height!: number;
   @Input() xTicks!: number[];
   @Input() margin!: { top: number, right: number, bottom: number, left: number };
-  @Output() sweptOAEResultsEvent = new EventEmitter<SweptOaeResultsInterface>();
+  @Output() sweptDPOAEResultsEvent = new EventEmitter<SweptDpoaeResultsInterface>();
 
   state: StateInterface;
-  inProgressResults: SweptOaeResultsInterface = {
+  inProgressResults: SweptDpoaeResultsInterface = {
     State: 'READY',
     PctComplete: 0
   };
-  inProgressResultsSubject = new BehaviorSubject<SweptOaeResultsInterface>(this.inProgressResults);
+  inProgressResultsSubject = new BehaviorSubject<SweptDpoaeResultsInterface>(this.inProgressResults);
   inProgressResultsSubscription: Subscription | undefined;
   svg!: d3.Selection<SVGGElement, unknown, HTMLElement, any>;
   shouldAbort: boolean = false;
@@ -51,7 +51,7 @@ export class SweptOaeInProgressComponent implements OnInit, OnDestroy, AfterView
 
   async ngOnInit(): Promise<void> {
     this.requestResults();
-    this.inProgressResultsSubscription = this.inProgressResultsSubject.subscribe((updatedResults: SweptOaeResultsInterface) => {
+    this.inProgressResultsSubscription = this.inProgressResultsSubject.subscribe((updatedResults: SweptDpoaeResultsInterface) => {
       if (updatedResults.DpLow) {
         this.updatePlot(updatedResults.DpLow);
       }
@@ -76,7 +76,7 @@ export class SweptOaeInProgressComponent implements OnInit, OnDestroy, AfterView
     this.changeDetectorRef.detectChanges();
     await this.devicesService.abortExams(this.device!);
     this.state.isSubmittable = true;
-    this.sweptOAEResultsEvent.emit(this.inProgressResults);
+    this.sweptDPOAEResultsEvent.emit(this.inProgressResults);
     this.inProgressResults.State = 'ABORTED';
   }
 
@@ -94,13 +94,13 @@ export class SweptOaeInProgressComponent implements OnInit, OnDestroy, AfterView
         this.inProgressResultsSubject.next(resp![1]);
         if (this.inProgressResults.State === 'DONE') {
           this.state.isSubmittable = true;
-          this.sweptOAEResultsEvent.emit(resp![1]);
+          this.sweptDPOAEResultsEvent.emit(resp![1]);
           this.instructions = "Exam complete, press 'Next' to continue."
           this.changeDetectorRef.detectChanges();
           return;
         }
       } else {
-        this.logger.debug('Swept OAE in-progress component. Request results did not return expected results. It may be too early to receive results.');
+        this.logger.debug('Swept DPOAE in-progress component. Request results did not return expected results. It may be too early to receive results.');
       }
   
       setTimeout(pollResults, 1000);
@@ -118,7 +118,7 @@ export class SweptOaeInProgressComponent implements OnInit, OnDestroy, AfterView
   }
 
   private createProgressPlot() {
-    let svg = d3.select('#oae-in-progress-plot')
+    let svg = d3.select('#dpoae-in-progress-plot')
       .append('svg')
       .attr('width', this.width + this.margin.left + this.margin.right)
       .attr('height', this.height + this.margin.top + this.margin.bottom)
@@ -128,7 +128,7 @@ export class SweptOaeInProgressComponent implements OnInit, OnDestroy, AfterView
     svg = createOAEResultsChartSvg(svg, this.width, this.height, this.xTicks, this.xScale, this.yScale);
 
     const legendData = [
-      { label: 'OAE', color: 'blue', symbol: 'circle' },
+      { label: 'DPOAE', color: 'blue', symbol: 'circle' },
       { label: 'NF', color: 'red', symbol: 'X' }
     ];
 
@@ -141,7 +141,7 @@ export class SweptOaeInProgressComponent implements OnInit, OnDestroy, AfterView
   private updatePlot(data: DPOAEDataInterface) {
     const filteredData = this.filterData(data);
 
-    // Plot DpLow Amplitude / OAE (blue open circles)
+    // Plot DpLow Amplitude / DPOAE (blue open circles)
     this.svg.selectAll('.dot')
       .data(filteredData.Frequency)
       .enter()
