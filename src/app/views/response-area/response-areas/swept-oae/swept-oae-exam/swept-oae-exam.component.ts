@@ -34,7 +34,6 @@ export class SweptOaeExamComponent implements OnInit, OnDestroy {
   results: ResultsInterface;
   showResults: boolean = sweptOaeSchema.properties.showResults.default;
   pageSubscription: Subscription | undefined;
-  tympanSubscription: Subscription | undefined;
   currentStep: string = 'input-parameters';
   device: ConnectedDevice | undefined;
   sweptOAEResults: SweptOaeResultsInterface = {
@@ -95,7 +94,6 @@ export class SweptOaeExamComponent implements OnInit, OnDestroy {
     this.logger.debug("resp from tympan after swept OAE exam abort exams:" + resp);
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
     this.pageSubscription?.unsubscribe();
-    this.tympanSubscription?.unsubscribe();
     this.buttonTextService.updateButtonText("Submit");
   }
 

@@ -10,11 +10,8 @@ import { StateInterface } from '../../models/state/state.interface';
 import { NewConnectedDevice, ConnectedDevice } from '../../interfaces/connected-device.interface';
 import { DeviceUtil } from '../../utilities/device-utility';
 import { Subscription } from "rxjs";
-
-export interface PendingMsgInfo {
-    tabsintId: number;
-    msgId: string;
-}
+import { PendingMsgInfo } from '../../interfaces/pending-msg-info.interface';
+import { Command } from '../../types/custom-types';
 
 @Injectable({
     providedIn: 'root',
@@ -28,6 +25,7 @@ export class TympanService {
     pendingMsg: boolean = false;
     response: Array<any> = [];
     currentTimeoutTimeMs: number = 0;
+    currentCommand: Command<Array<any>> | null = null;
     defaultErrorMsg = ["ERROR", "Failed to write message to tympan. Make sure Tympan in connected and try again."];
     defaultTimeoutTimeMs = 5000;
 
@@ -43,15 +41,17 @@ export class TympanService {
 
         this.tympanSubscription = this.devicesModel.tympanResponseSubject.subscribe((response: TympanResponse) => {
             logger.debug("tympanService device msg: "+JSON.stringify(response));
-            if (this.deviceUtil.checkTympanResponse(this.pendingMsgInfo, response)) {
-                this.pendingMsgInfo = null;
+            if (this.deviceUtil.isResponseInvalidChecksum(response)) {
+                this.retryTympanCommand();
+            } else if (this.deviceUtil.doTympanResponseMsgIdsMatch(this.pendingMsgInfo, response)) {
                 this.pendingMsg = false;
                 this.response = JSON.parse(response.msg);
             }
         });
     }
 
-    startMsgTracking(tabsintId: number, msgId: string) {
+
+    startTracking(tabsintId: number, msgId: string, command: Command<Array<any>>) {
         this.pendingMsgInfo = {
             tabsintId: tabsintId,
             msgId: msgId
@@ -59,6 +59,7 @@ export class TympanService {
         this.pendingMsg = true;
         this.response = [];
         this.currentTimeoutTimeMs = 0;
+        this.currentCommand = command;
     }
 
     async waitForResponse(timeoutTimeMs: number = this.defaultTimeoutTimeMs, timeoutPollingDelayMs: number = 100) {
@@ -129,8 +130,12 @@ export class TympanService {
     async requestId(tympanId: string, msgId: string): Promise<Array<any>> {
         let resp: Array<any> = [-msgId].concat(JSON.parse(JSON.stringify(this.defaultErrorMsg)));
         let msg = '['+msgId+',"requestId"]';
+        this.currentCommand = {
+            func: this.requestId.bind(this),
+            params: [tympanId, msgId]
+        };
         try {
-            this.startMsgTracking(1, msgId);
+            this.startTracking(1, msgId, this.currentCommand);
             await this.tympanWrap.write(tympanId, msg);
             await this.waitForResponse();
             resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
@@ -146,8 +151,12 @@ export class TympanService {
         let resp: Array<any> = [-msgId].concat(JSON.parse(JSON.stringify(this.defaultErrorMsg)));
         let examId: string = "1";
         let msg = '['+msgId+',"queueExam",'+examId+',"'+examType+'",'+JSON.stringify(examProperties)+']';
+        this.currentCommand = {
+            func: this.queueExam.bind(this),
+            params: [tympanId, msgId, examType, examProperties]
+        };
         try {
-            this.startMsgTracking(1, msgId);
+            this.startTracking(1, msgId, this.currentCommand);
             await this.tympanWrap.write(tympanId, msg);
             await this.waitForResponse();
             resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
@@ -162,8 +171,12 @@ export class TympanService {
         let resp: Array<any> = [-msgId].concat(JSON.parse(JSON.stringify(this.defaultErrorMsg)));
         let examId: string = "1";
         let msg = '['+msgId+',"examSubmission",'+examId+','+JSON.stringify(examProperties)+']';
+        this.currentCommand = {
+            func: this.examSubmission.bind(this),
+            params: [tympanId, msgId, examProperties]
+        };
         try {
-            this.startMsgTracking(1, msgId);
+            this.startTracking(1, msgId, this.currentCommand);
             await this.tympanWrap.write(tympanId, msg);
             await this.waitForResponse();
             resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
@@ -178,8 +191,12 @@ export class TympanService {
         // This aborts ALL running exams
         let resp: Array<any> = [-msgId].concat(JSON.parse(JSON.stringify(this.defaultErrorMsg)));
         let msg = '['+msgId+',"abortExams"]';
+        this.currentCommand = {
+            func: this.abortExams.bind(this),
+            params: [tympanId, msgId]
+        };
         try {
-            this.startMsgTracking(1, msgId);
+            this.startTracking(1, msgId, this.currentCommand);
             await this.tympanWrap.write(tympanId, msg);
             await this.waitForResponse();
             resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
@@ -194,8 +211,12 @@ export class TympanService {
         let resp: Array<any> = [-msgId].concat(JSON.parse(JSON.stringify(this.defaultErrorMsg)));
         let examId: string = "1";
         let msg = '['+msgId+',"requestResults",'+examId+']';
+        this.currentCommand = {
+            func: this.requestResults.bind(this),
+            params: [tympanId, msgId, timeoutTimeMs]
+        };
         try {
-            this.startMsgTracking(1, msgId);
+            this.startTracking(1, msgId, this.currentCommand);
             await this.tympanWrap.write(tympanId, msg);
             await this.waitForResponse(timeoutTimeMs);
             resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
@@ -206,6 +227,10 @@ export class TympanService {
         return resp
     }
 
+    private async retryTympanCommand() {
+        this.logger.debug("retrying command " + String(this.currentCommand?.func));
+        await this.currentCommand?.func(...this.currentCommand.params);
+    }
 }
 
 

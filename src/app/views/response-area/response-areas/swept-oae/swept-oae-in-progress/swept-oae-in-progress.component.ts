@@ -100,7 +100,7 @@ export class SweptOaeInProgressComponent implements OnInit, OnDestroy, AfterView
           return;
         }
       } else {
-        this.logger.debug('Swept OAE in-progress component. Request results did not return expected results.');
+        this.logger.debug('Swept OAE in-progress component. Request results did not return expected results. It may be too early to receive results.');
       }
   
       setTimeout(pollResults, 1000);

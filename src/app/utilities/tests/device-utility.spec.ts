@@ -7,8 +7,8 @@ import { Logger } from '../logger.service';
 import { DevicesModel } from '../../models/devices/devices-model.service';
 import { DeviceState } from '../constants';
 import { ConnectedDevice, NewConnectedDevice } from '../../interfaces/connected-device.interface';
-import { PendingMsgInfo } from '../../controllers/devices/tympan.service';
 import { TympanResponse } from '../../models/devices/devices.interface';
+import { PendingMsgInfo } from '../../interfaces/pending-msg-info.interface';
 
 const connectedDevices1 = {
     "tympan": [
@@ -398,8 +398,8 @@ describe('deviceUtil', () => {
             "tabsintId": "1",
             "msg": "[-2,\"OK\"]"
         };
-        let resp1 = deviceUtil.checkTympanResponse(expectedMsgInfo1, tympanResponse);
-        let resp2 = deviceUtil.checkTympanResponse(expectedMsgInfo2, tympanResponse);
+        let resp1 = deviceUtil.doTympanResponseMsgIdsMatch(expectedMsgInfo1, tympanResponse);
+        let resp2 = deviceUtil.doTympanResponseMsgIdsMatch(expectedMsgInfo2, tympanResponse);
         expect(resp1).toEqual(false);
         expect(resp2).toEqual(true);
     })

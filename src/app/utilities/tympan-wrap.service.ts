@@ -91,7 +91,7 @@ export class TympanWrap {
 
     async write(deviceId: string, msg: string) {
         let msg_to_write = this.msgToDataView(msg);
-        console.log("TIME - about to write bytes to tympan",Date.now());
+        this.logger.debug("TIME - about to write bytes to tympan" + String(Date.now()));
         this.logger.debug("Writing "+JSON.stringify(msg)+" to tympan with ID: "+deviceId);
         await BleClient.write(deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID, msg_to_write);
     }
@@ -114,6 +114,7 @@ export class TympanWrap {
         this.TMP_BUFFER[deviceId] = this.appendDataView(this.TMP_BUFFER[deviceId],dv);
         let tabsintId: string|undefined = this.deviceUtil.getTabsintIdFromDeviceId(deviceId);
         let msg = this.checkForCompleteMsg(deviceId);
+        
         if (tabsintId && msg) {
             this.devicesModel.tympanResponseSubject.next({"tabsintId":tabsintId,"msg":msg});
         }
@@ -146,7 +147,7 @@ export class TympanWrap {
             } else {
                 msg = "invalid checksum";
             }
-            console.log("Swept OAE - TIME - msg parsed and checksum verified",Date.now());
+            this.logger.debug("TIME - msg parsed and checksum verified" + String(Date.now()));
             this.clearTMPBuffer(deviceId);
         }
         return msg
