@@ -1,7 +1,7 @@
 {
   "tabsint": "0.0.0",
-  "date": "2024-12-20T14:07:08.873Z",
-  "rev": "v4.6.0-120-g83bbc29",
+  "date": "2024-12-20T17:02:44.796Z",
+  "rev": "v4.6.0-120-ga069fad",
   "version_code": "289",
   "deps": {
     "user_agent": "angular/^17.1.1",

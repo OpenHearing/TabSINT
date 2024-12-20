@@ -1,12 +1,13 @@
 import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import * as d3 from 'd3';
+import { BehaviorSubject, Subscription } from 'rxjs';
+
 import { DevicesService } from '../../../../../controllers/devices.service';
 import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
 import { StateModel } from '../../../../../models/state/state.service';
 import { StateInterface } from '../../../../../models/state/state.interface';
-import * as d3 from 'd3';
 import { DPOAEDataInterface, SweptDpoaeResultsInterface } from '../swept-dpoae-exam/sept-dpoae-exam.interface';
 import { Logger } from '../../../../../utilities/logger.service';
-import { BehaviorSubject, Subscription } from 'rxjs';
 import { createLegend, createOAEResultsChartSvg } from '../../../../../utilities/d3-plot-functions';
 import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-dpoae.schema';
 
@@ -63,21 +64,17 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
   ngAfterViewInit(): void {
     this.svg = this.createProgressPlot();
   }
+
   ngOnDestroy(): void {
     this.state.isSubmittable = true;
   }
 
   async abort() {
-    this.shouldAbort = true;
-    while (this.isRequestingResults) {
-      await new Promise((resolve) => setTimeout(resolve, 10));
-    }  
-    this.instructions = "Exam aborted, press 'Next' to continue.";
-    this.changeDetectorRef.detectChanges();
+    this.waitForRequestResultsDone();
+    this.updateInstructions();
     await this.devicesService.abortExams(this.device!);
-    this.state.isSubmittable = true;
+    this.updateStateOnAbort();
     this.sweptDPOAEResultsEvent.emit(this.inProgressResults);
-    this.inProgressResults.State = 'ABORTED';
   }
 
   private async requestResults() {
@@ -139,6 +136,7 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
   }
 
   private updatePlot(data: DPOAEDataInterface) {
+    // TODO: May not need to filter data after we get real firmware
     const filteredData = this.filterData(data);
 
     // Plot DpLow Amplitude / DPOAE (blue open circles)
@@ -180,6 +178,24 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
       Phase: validIndices.map(index => data.Phase[index]),
       NoiseFloor: validIndices.map(index => data.NoiseFloor![index]),
     };
+  }
+
+  
+  private async waitForRequestResultsDone() {
+    this.shouldAbort = true;
+    while (this.isRequestingResults) {
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    }  
+  }
+
+  private updateInstructions() {
+    this.instructions = "Exam aborted, press 'Next' to continue.";
+    this.changeDetectorRef.detectChanges();
+  }
+
+  private updateStateOnAbort() {
+    this.state.isSubmittable = true;
+    this.inProgressResults.State = 'ABORTED';
   }
 
 }

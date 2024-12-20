@@ -1,4 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import * as d3 from 'd3';
+import { Subscription } from 'rxjs/internal/Subscription';
+
 import { PageModel } from '../../../../../models/page/page.service';
 import { DevicesService } from '../../../../../controllers/devices.service';
 import { DeviceUtil } from '../../../../../utilities/device-utility';
@@ -7,11 +10,9 @@ import { ResultsModel } from '../../../../../models/results/results-model.servic
 import { ExamService } from '../../../../../controllers/exam.service';
 import { ResultsInterface } from '../../../../../models/results/results.interface';
 import { PageInterface } from '../../../../../models/page/page.interface';
-import { Subscription } from 'rxjs/internal/Subscription';
 import { SweptDpoaeInterface, SweptDpoaeResultsInterface } from './sept-dpoae-exam.interface';
 import { ButtonTextService } from '../../../../../controllers/button-text.service';
 import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
-import * as d3 from 'd3';
 import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-dpoae.schema';
 
 @Component({
@@ -39,7 +40,6 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
     State: 'READY',
     PctComplete: 0
   };
-  test: number= 1;
   
   // Set dimensions and margins
   margin = { top: 20, right: 30, bottom: 60, left: 70 };
