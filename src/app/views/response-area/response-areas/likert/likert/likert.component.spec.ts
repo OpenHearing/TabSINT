@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 import { LikertComponent } from './likert.component';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
