@@ -7,8 +7,8 @@ import * as d3 from 'd3';
 import { DPOAEDataInterface, SweptDpoaeResultsInterface } from '../swept-dpoae-exam/sept-dpoae-exam.interface';
 import { Logger } from '../../../../../utilities/logger.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-dpoae.schema';
 import { createLegend, createOAEResultsChartSvg } from '../../../../../utilities/d3-plot-functions';
+import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-dpoae.schema';
 
 @Component({
   selector: 'swept-dpoae-in-progress',

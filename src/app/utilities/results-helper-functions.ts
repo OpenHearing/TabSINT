@@ -6,7 +6,7 @@
  * @param  suffix - optional suffix to append
  * @return string: filename
  */
-export function constructFilename(resultFilename?: string, testDateTime?: string, suffix?: string) {
+export function constructFilename(deviceShortUuid: string, resultFilename?: string, testDateTime?: string, suffix?: string) {
     let filename, dateTime;
 
     dateTime = getDateString(testDateTime);
@@ -14,7 +14,7 @@ export function constructFilename(resultFilename?: string, testDateTime?: string
     if (resultFilename) {
         filename = resultFilename + "." + dateTime;
     } else {
-        filename = "devices.shortUUID" + "." + dateTime;
+        filename = deviceShortUuid + "." + dateTime;
     }
 
     if (suffix) {

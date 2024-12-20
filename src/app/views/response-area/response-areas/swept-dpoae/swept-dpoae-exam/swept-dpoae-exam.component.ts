@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-dpoae.schema';
 import { PageModel } from '../../../../../models/page/page.service';
 import { DevicesService } from '../../../../../controllers/devices.service';
 import { DeviceUtil } from '../../../../../utilities/device-utility';
@@ -12,8 +11,8 @@ import { Subscription } from 'rxjs/internal/Subscription';
 import { SweptDpoaeInterface, SweptDpoaeResultsInterface } from './sept-dpoae-exam.interface';
 import { ButtonTextService } from '../../../../../controllers/button-text.service';
 import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
-import { DevicesModel } from '../../../../../models/devices/devices-model.service';
 import * as d3 from 'd3';
+import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-dpoae.schema';
 
 @Component({
   selector: 'swept-dpoae-exam',
@@ -59,7 +58,6 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly pageModel: PageModel,
-    private readonly devicesModel: DevicesModel,
     private readonly devicesService: DevicesService,
     private readonly deviceUtil: DeviceUtil, 
     private readonly logger: Logger, 

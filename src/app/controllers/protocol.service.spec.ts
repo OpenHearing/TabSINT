@@ -8,7 +8,7 @@ import { Logger } from '../utilities/logger.service';
 import { AppModel } from '../models/app/app.service';
 import { ProtocolServer } from '../utilities/constants';
 import { StateModel } from '../models/state/state.service';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
 import { Tasks } from '../utilities/tasks.service';
 import { Notifications } from '../utilities/notifications.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -22,7 +22,6 @@ describe('ProtocolService', () => {
     let sqLite = new SqLite(appModel, diskModel);
     let logger = new Logger(diskModel, sqLite);
     let stateModel = new StateModel;
-    let translate: TranslateService;
     let tasks = new Tasks;
 
     const spy = jasmine.createSpyObj('MatDialog', ['open']);
@@ -65,13 +64,32 @@ describe('ProtocolService', () => {
             path: "protocols/develop"
         }
 
+          
     beforeEach(async () => {
         TestBed.configureTestingModule({
+            imports: [
+              TranslateModule.forRoot({
+                  loader: {
+                    provide: TranslateLoader,
+                    useClass: TranslateFakeLoader
+                  }
+                }),
+            ],
             providers: [
               Notifications,
               { provide: MatDialog, useValue: spy },
+              TranslateService, 
+              TranslateStore
             ]
         })
+
+        let mockTranslateService = {
+            get: jasmine.createSpy('get').and.callFake((key: string) => ({
+                subscribe: (callback: (value: string) => void) => callback(key),
+            })),
+            instant: jasmine.createSpy('instant').and.callFake((key: string) => key),
+            use: jasmine.createSpy('use').and.callFake((lang: string) => { }),
+        } as unknown as TranslateService;
 
         protocolService = new ProtocolService(
             appModel,
@@ -81,7 +99,7 @@ describe('ProtocolService', () => {
             new Notifications(spy),
             new ProtocolModel,
             stateModel,
-            translate,
+            mockTranslateService,
             tasks
         );
     })

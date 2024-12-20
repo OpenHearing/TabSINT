@@ -228,7 +228,8 @@ export class TympanService {
     }
 
     private async retryTympanCommand() {
-        this.logger.debug("retrying command " + String(this.currentCommand?.func));
+        this.logger.error('INVALID CHECKSUM in Tympan Service');
+        this.logger.error("RETRYING COMMAND " + String(this.currentCommand?.func));
         await this.currentCommand?.func(...this.currentCommand.params);
     }
 }
