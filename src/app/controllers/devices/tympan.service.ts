@@ -26,7 +26,7 @@ export class TympanService {
     response: Array<any> = [];
     currentTimeoutTimeMs: number = 0;
     currentCommand: Command<Array<any>> | null = null;
-    defaultErrorMsg = ["ERROR", "Failed to write message to tympan. Make sure Tympan in connected and try again."];
+    defaultErrorMsg = ["ERROR", "Failed to write message to tympan. Make sure Tympan is connected and try again."];
     defaultTimeoutTimeMs = 5000;
 
     constructor(
