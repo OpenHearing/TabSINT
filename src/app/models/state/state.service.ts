@@ -19,8 +19,8 @@ export class StateModel {
         isPaneOpen: {
             general: true,
             advanced: false,
-            devices: false,
-            tympans: false,
+            devices: true,
+            tympans: true,
             dosimeter: false,
             softwareHardware: false,
             appLog: false,

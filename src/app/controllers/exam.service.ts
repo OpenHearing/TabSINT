@@ -121,6 +121,15 @@ export class ExamService {
         this.submit();
     }
 
+    navigateToTarget(subProtocolID: string) {
+        // TODO: returnHereAfterward NOT IMPLEMENTED
+        this.currentPage.followOns = [{
+            conditional: "true",
+            target: {reference: subProtocolID}
+        }];
+        this.submitDefault();
+    }
+
     /** Advance to next page in the exam
      * @summary Increments the exam page index. Advances to next page in protocolStack. If there is no next page it will
      * search for a followOn. The protocolStack will be updated.
@@ -273,7 +282,7 @@ export class ExamService {
     /** Resets the protocol stack and exam index.
      * @summary Resets the protocol stack to an empty array and the exam index to 0.
     */
-    resetProtocolStack() {
+    private resetProtocolStack() {
         this.pageModel.stack = [];
         this.state.examIndex = 0;
     }

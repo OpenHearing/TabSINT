@@ -1,0 +1,20 @@
+.progress-label {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.mat-mdc-progress-bar {
+    --mdc-linear-progress-active-indicator-color: #337ab7;
+    --mdc-linear-progress-track-color: rgba(0, 0, 0, .1);
+    --mdc-linear-progress-track-height: 24px;
+    --mdc-linear-progress-active-indicator-height: 24px;
+    border-radius: 10px;
+}
+
+#dpoae-in-progress-plot {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+  

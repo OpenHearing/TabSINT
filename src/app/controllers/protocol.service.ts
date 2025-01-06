@@ -277,15 +277,17 @@ export class ProtocolService {
     private notifyProtocolDidntLoadProperly() {
         this.logger.error("Protocol did not load properly");
         if (this.disk.audhere) {
-          this.notifications.alert(
-            this.translate.instant("The protocol specified is not available, please see the administrator.")
-          ).subscribe();
+          this.notifications.alert({
+            title: "Alert",
+            content:  this.translate.instant("The protocol specified is not available, please see the administrator."),
+            type: DialogType.Alert
+            }).subscribe();
         } else {
-          this.notifications.alert(
-            this.translate.instant(
-              "Protocol did not load properly. Please validate your protocol before trying to load again."
-            )
-          ).subscribe();
+          this.notifications.alert({
+            title: "Alert",
+            content:  this.translate.instant("Protocol did not load properly. Please validate your protocol before trying to load again."),
+            type: DialogType.Alert
+            }).subscribe();
         }
     }
 }

@@ -318,7 +318,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         const masking = Array(channels.length).fill(false);
         const resultTypes = Array(channels.length).fill('Threshold');
 
-        return this.audiogramData =  {
+        this.audiogramData =  {
             frequencies: this.frequencies.concat(this.frequencies),
             thresholds: this.leftThresholds.concat(this.rightThresholds),
             channels,
