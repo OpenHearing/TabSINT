@@ -40,6 +40,9 @@
                 "id": "Calibration Exam" 
               },
               {
+                "id": "Swept DPOAE Exam" 
+              },
+              {
                 "id":"End All"
               }
             ]
@@ -73,6 +76,12 @@
               "conditional": "result.response=='Calibration Exam'",
               "target": {
                 "reference": "CalibrationExam"
+              }
+            },
+            {
+              "conditional": "result.response=='Swept DPOAE Exam'",
+              "target": {
+                "reference": "SweptDpoaeExam"
               }
             },
             {
@@ -247,6 +256,22 @@
             "frequencies": [500, 1000, 2000, 4000, 8000],
             "targetLevels": [60, 70, 80,60,60],
             "showResults": true
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "SweptDpoaeExam",
+      "pages": [
+        {
+          "id": "swept_oae_001",
+          "title": "Swept DPOAE",
+          "responseArea": {
+            "type": "sweptDPOAEResponseArea"
           }
         },
         {

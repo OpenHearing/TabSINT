@@ -1,0 +1,41 @@
+<div [ngSwitch]="currentStep">
+    <swept-dpoae-input-parameters
+        *ngSwitchCase="'input-parameters'"
+        [f2Start]="f2Start"
+        [f2End]="f2End"
+        [frequencyRatio]="frequencyRatio"
+        [sweepDuration]="sweepDuration"
+        [windowDuration]="windowDuration"
+        [sweepType]="sweepType"
+        [minSweeps]="minSweeps"
+        [maxSweeps]="maxSweeps"
+        [noiseFloorThreshold]="noiseFloorThreshold">        
+    </swept-dpoae-input-parameters>
+    
+    <swept-dpoae-in-progress
+        *ngSwitchCase="'in-progress'"
+        [f2Start]="f2Start"
+        [f2End]="f2End"
+        [device]="device"
+        [xScale]="xScale"
+        [yScale]="yScale"
+        [width]="width"
+        [height]="height"
+        [xTicks]="xTicks"
+        [margin]="margin"
+        (sweptDPOAEResultsEvent)="saveResults($event)">
+    </swept-dpoae-in-progress>
+
+    <swept-dpoae-results
+        *ngSwitchCase="'results'"
+        [f2Start]="f2Start"
+        [f2End]="f2End"
+        [xScale]="xScale"
+        [width]="width"
+        [height]="height"
+        [xTicks]="xTicks"
+        [margin]="margin"
+        [sweptDPOAEResults]="sweptDPOAEResults">
+    </swept-dpoae-results>    
+
+</div>

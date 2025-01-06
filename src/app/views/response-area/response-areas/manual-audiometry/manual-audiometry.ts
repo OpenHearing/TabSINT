@@ -136,11 +136,12 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         this.selectedFrequency = this.frequencies[this.currentFrequencyIndex];
         this.currentDb = this.initialDb;
         this.setCurrentDbSpl();
-        this.results.currentPage.response = this.organizeAudiometryResults();
+        this.organizeAudiometryResults();
+        this.results.currentPage.response = this.audiogramData;
     }
 
     submitResults(): void {
-        this.audiogramData = this.organizeAudiometryResults();
+        this.organizeAudiometryResults();
         this.currentStep = 'Results';
         this.examService.submit = this.examService.submitDefault.bind(this.examService);
     }
@@ -152,7 +153,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         const masking = Array(channels.length).fill(false);
         const resultTypes = Array(channels.length).fill('Threshold');
 
-        return this.audiogramData =  {
+        this.audiogramData =  {
             frequencies: this.frequencies.concat(this.frequencies),
             thresholds: this.leftThresholds.concat(this.rightThresholds),
             channels,

@@ -90,6 +90,10 @@ import { AudiogramComponent } from './views/audiogram/audiogram.component';
 import { ExamDeviceErrorComponent } from './views/exam-device-error/exam-device-error.component';
 import { MultipleInputComponent } from './views/response-area/response-areas/multiple-input/multiple-input.component';
 import { LikertComponent } from './views/response-area/response-areas/likert/likert/likert.component';
+import { SweptDpoaeExamComponent } from './views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/swept-dpoae-exam.component';
+import { SweptDpoaeInputParametersComponent } from './views/response-area/response-areas/swept-dpoae/swept-dpoae-input-parameters/swept-dpoae-input-parameters.component';
+import { SweptDpoaeInProgressComponent } from './views/response-area/response-areas/swept-dpoae/swept-dpoae-in-progress/swept-dpoae-in-progress.component';
+import { SweptDpoaeResultsComponent } from './views/response-area/response-areas/swept-dpoae/swept-dpoae-results/swept-dpoae-results.component';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -138,6 +142,10 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     ExamDeviceErrorComponent,
     MultipleInputComponent,
     LikertComponent,
+    SweptDpoaeExamComponent,
+    SweptDpoaeInputParametersComponent,
+    SweptDpoaeInProgressComponent,
+    SweptDpoaeResultsComponent,
   ],
   imports: [
     BrowserModule,

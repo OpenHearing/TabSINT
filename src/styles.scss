@@ -69,7 +69,6 @@ $tabsint-training-site-theme: mat.define-light-theme((
     src: local('Open-Sans Light'), local('OpenSans-Light'), url("./fonts/open-sans/OpenSans-Light.ttf") format("truetype");
   }
   
-  
   /*------------
   * General Styling
   * ------------*/
@@ -1740,11 +1739,11 @@ $tabsint-training-site-theme: mat.define-light-theme((
     transform: translateY(0%);
   }
   .has-header {
-    margin-top: 52px;
+    margin-top: 25px;
   }
   @media (min-width: 501px) {
     .has-header {
-      margin-top: 65px;
+      margin-top: 30px;
     }
   }
   

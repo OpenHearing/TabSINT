@@ -6,7 +6,7 @@ import { ConnectedDevice, NewConnectedDevice } from '../interfaces/connected-dev
 import { DevicesModel } from '../models/devices/devices-model.service';
 import { DiskModel } from '../models/disk/disk.service';
 import { DeviceState } from './constants';
-import { PendingMsgInfo } from '../controllers/devices/tympan.service';
+import { PendingMsgInfo } from '../interfaces/pending-msg-info.interface';
 
 @Injectable({
     providedIn: 'root',
@@ -76,14 +76,24 @@ export class DeviceUtil {
         }
     }
 
-    checkTympanResponse(expectedMsgInfo: PendingMsgInfo|null, response: TympanResponse): boolean {
+    isResponseInvalidChecksum(response: TympanResponse): boolean {
+        if (response.msg === 'invalid checksum') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    doTympanResponseMsgIdsMatch(expectedMsgInfo: PendingMsgInfo|null, response: TympanResponse): boolean {
         let resp = false;
+        console.log("expectedMsgInfo: ", expectedMsgInfo);
+        console.log("response: ", response);
         if (expectedMsgInfo!.tabsintId === parseInt(response.tabsintId)) {
             if (-parseInt(expectedMsgInfo!.msgId) === JSON.parse(response.msg)[0]) {
                 resp = true;
             }
-        }
-        return resp
+        }        
+        return resp;
     }
 
     removeDevice(device: ConnectedDevice): boolean {

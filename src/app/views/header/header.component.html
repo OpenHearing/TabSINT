@@ -45,8 +45,13 @@
                   <div class="dropdown-divider"></div>
                   <button (click)="resetExam()" ngbDropdownItem><i class="ion-close"></i> {{'Reset Exam and Discard Results'|translate}}</button>
                   <button (click)="submitPartialExam()" ngbDropdownItem><i class="ion-refresh"></i> {{'Reset Exam and Submit Partial Results'|translate}}</button>
+                  <div  *ngIf="protocol.activeProtocol?.navMenu ?? false">
+                    <div class="dropdown-divider"></div>
+                    <div *ngFor="let navMenuItem of protocol.activeProtocol!.navMenu; let i = index">
+                      <button (click)="navigateToNavMenuItem(navMenuItem)" ngbDropdownItem><i class="ion-menu">{{navMenuItem.text}}</i></button>
+                    </div>
+                  </div>
                 </div>
-    
               </div>
             </div>
           </div>

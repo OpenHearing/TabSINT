@@ -160,11 +160,11 @@ export class DevicesService {
         return resp
     }
 
-    async requestResults(device: ConnectedDevice) {
+    async requestResults(device: ConnectedDevice, timeoutTimeMs: number = 5000) {
         let resp: Array<any> | undefined;
         if (isTympanDevice(device)) {
             let msgId = device.msgId.toString();
-            resp = await this.tympanService.requestResults(device.deviceId,msgId);
+            resp = await this.tympanService.requestResults(device.deviceId,msgId, timeoutTimeMs);
             this.logger.debug("requestResults response: "+JSON.stringify(resp));
             this.deviceUtil.incrementDeviceMsgId(device.deviceId);
         } else {
