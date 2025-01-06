@@ -15,6 +15,7 @@
     *ngSwitchCase="'measurement'"
     [currentFrequency]="currentFrequency"
     [targetLevel]="targetLevel"
+    [userInput]="userInput"
     [isPlaying]="isPlaying"
     (nextStep)="nextStep()"
     (togglePlay)="togglePlay()"
@@ -25,6 +26,7 @@
     *ngSwitchCase="'max-output'"
     [currentFrequency]="currentFrequency"
     [targetLevel]="targetLevel"
+    [userInput]="userInput"
     [earCup]="earCup"
     [isPlaying]="isPlaying"
     (nextStep)="nextStep()"
@@ -34,7 +36,12 @@
 
   <div *ngSwitchCase="'finished'">
     <h3 *ngIf="!showResults" style="color: #0369ad;">Calibration Exam Finished!!</h3>
-    <app-calibration-results-viewer *ngIf="showResults"></app-calibration-results-viewer>
+    <app-calibration-results-viewer *ngIf="showResults" (entryClicked)="handleEntryClicked($event)"></app-calibration-results-viewer>
   </div>
+
+  <div class="skip-button-container">
+    <button class="skip-to-results" (click)="skip()" *ngIf="showSkipButton">Skip to Results</button>
+  </div>
+
 
 </div>

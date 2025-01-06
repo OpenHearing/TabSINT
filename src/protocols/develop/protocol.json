@@ -251,10 +251,11 @@
           "id": "calibration_001",
           "title": "Calibration Exam",
           "instructionText": "Test calibration response area",
+          "enableBackButton" :true,
           "responseArea": {
             "type": "calibrationResponseArea",
-            "frequencies": [500, 1000, 2000, 4000, 8000],
-            "targetLevels": [60, 70, 80,60,60],
+            "frequencies": [500, 1000],
+            "targetLevels": [60, 70],
             "showResults": true
           }
         },
