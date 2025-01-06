@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, Input } from '@angular/core';
+import { Component, ElementRef, OnInit, Input,OnChanges, SimpleChanges  } from '@angular/core';
 import * as d3 from 'd3';
 import { AudiogramDatumNoNullInterface, AudiometryResultsInterface } from '../../interfaces/audiometry-results.interface';
 import { LevelUnits } from '../../utilities/constants';
@@ -14,14 +14,56 @@ export class AudiogramComponent implements OnInit{
   @Input()
   dataStruct!: AudiometryResultsInterface;
 
+  @Input() selectedEar: string | null = null;
+
+  @Input() earChannel: 'left' | 'right' = 'left';
+
+  @Input() isManualExam: boolean = false;
+
   constructor(private readonly elementRef: ElementRef) {
   }
 
   ngOnInit(): void {
     if (this.dataStruct) {
       this.createAudiogram();
+      this.updateGraphBorders();
     }
   }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['selectedEar']) {
+      console.log('Selected ear:', this.selectedEar);
+      this.updateGraphBorders();
+    }
+  }
+
+  selectEar(ear: string): void {
+    this.selectedEar = ear;
+    this.updateGraphBorders(); // Call the border update function
+  }
+
+  updateGraphBorders(): void {
+    console.log("Updating graph borders, selected ear is:", this.selectedEar);
+  
+    const svg = d3.select(this.elementRef.nativeElement).select('svg');
+  
+    const graphBorder = svg.select('rect.graph-border');
+  
+    if (this.selectedEar === 'Left') {
+      graphBorder
+        .style('stroke', 'blue')
+        .style('stroke-width', '3px');
+    } else if (this.selectedEar === 'Right') {
+      graphBorder
+        .style('stroke', 'red')
+        .style('stroke-width', '3px');
+    } else {
+      graphBorder
+        .style('stroke', 'black')
+        .style('stroke-width', '1px');
+    }
+  }
+  
 
   createAudiogram(): void {
     const data: AudiogramDatumNoNullInterface[] = this.dataStruct.frequencies
@@ -51,28 +93,60 @@ export class AudiogramComponent implements OnInit{
     const xTicksMinor = [750, 1500, 3000, 6000];
     const yTicks = [-20, -10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120];
     const aspectRatio = (yTicks.length - 1) / 2 / (xTicks.length - 1); // maintain 20dB/octave ratio
-  
-    const margin = { top: 55, right: 60, bottom: 60, left: 80 };
-    const width = 540 - margin.left - margin.right;
+    const margin = this.isManualExam
+    ? { top: 50, right: 60, bottom: 60, left: 80 }
+    : { top: 55, right: 60, bottom: 60, left: 80 };
+    const width = this.isManualExam
+      ? 420 - margin.left - margin.right
+      : 540 - margin.left - margin.right;
     const height = width * aspectRatio - 20;
-  
+    const graphBorderColor = this.dataStruct.channels[0] === 'left' ? 'blue' : 'red';
     const xScale = d3.scaleLog().base(2).range([0, width]).domain([93.75, 24000]);
     const yScale = d3.scaleLinear().range([0, height]).domain([d3.min(yTicks)!, d3.max(yTicks)!]);
   
+    // const xAxis = d3.axisTop(xScale).tickFormat(d3.format(",.0f")).tickValues(xTicks).tickSize(15);
     const xAxis = d3.axisTop(xScale).tickFormat(d3.format(",.0f")).tickValues(xTicks).tickSize(15);
     const xAxisMinor = d3.axisTop(xScale).tickFormat(d3.format(",.0f")).tickValues(xTicksMinor).tickSize(3);
     const yAxis = d3.axisLeft(yScale).tickValues(yTicks).tickSize(10);
+    // const yAxis = d3.axisLeft(yScale).tickValues(yTicks).tickSize(10);
 
     const colorMap = (d: any) => d.channel.includes('left') ? 'blue' : '#FF6347';
     const strokeWidthMap = () => 2;
-    const symbolMap = (d: any) => {
-      if (d.channel === 'left') {
-        return "M -4,-4 L 4,4 M -4,4 L 4,-4"; // "X" shape as custom path
-      } else {
-        return d3.symbol().type(d3.symbolCircle).size(50)(); // Circle for the right ear
-      }
-    };
+    // const symbolMap = (d: any) => {
+    //   if (d.channel === 'left') {
+    //     return "M -4,-4 L 4,4 M -4,4 L 4,-4"; // "X" shape as custom path
+    //   } else {
+    //     return d3.symbol().type(d3.symbolCircle).size(50)(); // Circle for the right ear
+    //   }
+    // };
       
+    const symbolMap = (d: any): string => {
+      if (d.resultType?.includes('NoResponse')) {
+        if (d.channel === 'left') {
+          return `
+      M -5,-5 L 5,5 
+      M -5,5 L 5,-5
+      M 0,0 L 6,6 M 6,6 L 4,6 M 6,6 L 6,4
+    `;
+        } else if (d.channel === 'right') {
+          return `
+      M 0,-4 A 4,4 0 1,0 0,4 A 4,4 0 1,0 0,-4
+      M 0,0 L -6,6 M -6,6 L -4,6 M -6,6 L -6,4
+    `;
+        }
+      } else {
+        // Default symbols for Threshold points
+        if (d.channel === 'left') {
+          return "M -4,-4 L 4,4 M -4,4 L 4,-4"; // X Shape
+        } else {
+          return d3.symbol().type(d3.symbolCircle).size(50)() || ""; // Circle Shape
+        }
+      }
+    
+      return ""; // Return an empty string as a fallback
+    };
+    
+    
     // Chart Area
     const svg = d3.select(this.elementRef.nativeElement)
       .append('svg')
@@ -82,23 +156,25 @@ export class AudiogramComponent implements OnInit{
       .attr('transform', `translate(${margin.left},${margin.top})`);
   
     // X-axis
-    svg.append('g').attr('class', 'x axis').attr('font-size', 16).call(xAxis);
+    // svg.append('g').attr('class', 'x axis').attr('font-size', 16).call(xAxis);
+    svg.append('g').attr('class', 'x axis').attr('font-size', 14).call(xAxis);
     svg.append('g').attr('class', 'x axis minor').call(xAxisMinor);
     svg.append('text')
       .attr('class', 'label')
-      .attr('font-size', 20)
+      .attr('font-size', 18)
       .attr('x', width / 2)
-      .attr('y', -40)
+      .attr('y', -35)
       .style('text-anchor', 'middle')
       .text('Frequency (Hz)');
   
     // Y-axis
-    svg.append('g').attr('class', 'y axis').attr('font-size', 16).call(yAxis);
+    // svg.append('g').attr('class', 'y axis').attr('font-size', 16).call(yAxis);
+    svg.append('g').attr('class', 'y axis').attr('font-size', 14).call(yAxis);
     svg.append('text')
-      .attr('font-size', 20)
+      .attr('font-size', 18)
       .attr('class', 'label')
       .attr('transform', 'rotate(-90)')
-      .attr('y', -60)
+      .attr('y', -margin.left + 30)
       .attr('x', -height / 2)
       .style('text-anchor', 'middle')
       .text(title);
@@ -125,14 +201,25 @@ export class AudiogramComponent implements OnInit{
       .call(yAxis.ticks(10).tickSize(-width).tickFormat(() => ""));
 
     // Border around chart
-    svg.append('rect')
-      .attr('x', 0)
-      .attr('y', 0)
-      .attr('height', height)
-      .attr('width', width)
-      .style('stroke', 'black')
-      .style('fill', 'none')
-      .style('stroke-width', 2);
+  //   svg.append('rect')
+  // .attr('x', 0)
+  // .attr('y', 0)
+  // .attr('height', height)
+  // .attr('width', width)
+  // .attr('class', 'graph-border')  // Add this class here
+  // .style('stroke', 'black')       // Default border color
+  // .style('fill', 'none')
+  // .style('stroke-width', 1);
+
+  svg.append('rect')
+  .attr('x', 0)
+  .attr('y', 0)
+  .attr('height', height)
+  .attr('width', width)
+  .attr('class', 'graph-border')
+  .style('stroke', graphBorderColor)  // Use the color you defined earlier
+  .style('fill', 'none')
+  .style('stroke-width', '1px'); 
   
     // Data Points
     const nodes = svg.selectAll('.node')
@@ -160,36 +247,56 @@ export class AudiogramComponent implements OnInit{
     // r is the buffer radius around symbols in pixels
     let r = 12;
 
+    // for (let k = 0; k < data.length - 1; k++) {
+    //   let theta = Math.atan(
+    //     (yScale(data[k + 1].threshold) - yScale(data[k].threshold)) /
+    //       (xScale(data[k + 1].frequency) - xScale(data[k].frequency))
+    //   );
+      
+    //   if (data[k].channel === "left" && data[k + 1].channel === "left") {
+    //     if (data[k].resultType === "Threshold" && data[k + 1].resultType === "Threshold") {
+    //       dline
+    //         .enter()
+    //         .append("line")
+    //         .attr("x1", xScale(data[k].frequency) + r * Math.cos(theta))
+    //         .attr("y1", yScale(data[k].threshold) + r * Math.sin(theta))
+    //         .attr("x2", xScale(data[k + 1].frequency) - r * Math.cos(theta))
+    //         .attr("y2", yScale(data[k + 1].threshold) - r * Math.sin(theta))
+    //         .attr("stroke", colorMap(data[k]))
+    //         .attr("stroke-width", strokeWidthMap);
+    //     }
+    //   } else if (data[k].channel === "right" && data[k + 1].channel === "right") {
+    //     if (data[k].resultType === "Threshold" && data[k + 1].resultType === "Threshold") {
+    //       dline
+    //         .enter()
+    //         .append("line")
+    //         .attr("x1", xScale(data[k].frequency) + r * Math.cos(theta))
+    //         .attr("y1", yScale(data[k].threshold) + r * Math.sin(theta))
+    //         .attr("x2", xScale(data[k + 1].frequency) - r * Math.cos(theta))
+    //         .attr("y2", yScale(data[k + 1].threshold) - r * Math.sin(theta))
+    //         .attr("stroke", colorMap(data[k]))
+    //         .attr("stroke-width", strokeWidthMap);
+    //     }
+    //   }
+    // }
     for (let k = 0; k < data.length - 1; k++) {
+      // Calculate the angle (theta) for buffer adjustment
       let theta = Math.atan(
         (yScale(data[k + 1].threshold) - yScale(data[k].threshold)) /
-          (xScale(data[k + 1].frequency) - xScale(data[k].frequency))
+        (xScale(data[k + 1].frequency) - xScale(data[k].frequency))
       );
-      
-      if (data[k].channel === "left" && data[k + 1].channel === "left") {
-        if (data[k].resultType === "Threshold" && data[k + 1].resultType === "Threshold") {
-          dline
-            .enter()
-            .append("line")
-            .attr("x1", xScale(data[k].frequency) + r * Math.cos(theta))
-            .attr("y1", yScale(data[k].threshold) + r * Math.sin(theta))
-            .attr("x2", xScale(data[k + 1].frequency) - r * Math.cos(theta))
-            .attr("y2", yScale(data[k + 1].threshold) - r * Math.sin(theta))
-            .attr("stroke", colorMap(data[k]))
-            .attr("stroke-width", strokeWidthMap);
-        }
-      } else if (data[k].channel === "right" && data[k + 1].channel === "right") {
-        if (data[k].resultType === "Threshold" && data[k + 1].resultType === "Threshold") {
-          dline
-            .enter()
-            .append("line")
-            .attr("x1", xScale(data[k].frequency) + r * Math.cos(theta))
-            .attr("y1", yScale(data[k].threshold) + r * Math.sin(theta))
-            .attr("x2", xScale(data[k + 1].frequency) - r * Math.cos(theta))
-            .attr("y2", yScale(data[k + 1].threshold) - r * Math.sin(theta))
-            .attr("stroke", colorMap(data[k]))
-            .attr("stroke-width", strokeWidthMap);
-        }
+    
+      // Ensure lines are drawn only between points belonging to the same ear channel
+      if (data[k].channel === data[k + 1].channel) {
+        dline
+          .enter()
+          .append("line")
+          .attr("x1", xScale(data[k].frequency) + r * Math.cos(theta)) // Starting X position with buffer
+          .attr("y1", yScale(data[k].threshold) + r * Math.sin(theta)) // Starting Y position with buffer
+          .attr("x2", xScale(data[k + 1].frequency) - r * Math.cos(theta)) // Ending X position with buffer
+          .attr("y2", yScale(data[k + 1].threshold) - r * Math.sin(theta)) // Ending Y position with buffer
+          .attr("stroke", colorMap(data[k])) // Stroke color based on channel
+          .attr("stroke-width", strokeWidthMap); // Stroke width
       }
     }
   }

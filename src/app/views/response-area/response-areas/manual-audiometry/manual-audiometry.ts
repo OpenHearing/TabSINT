@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit, HostListener } from "@angular/core";
 import { PageModel } from "../../../../models/page/page.service";
 import { StateModel } from "../../../../models/state/state.service";
 import { ProtocolModel } from "../../../../models/protocol/protocol-model.service";
@@ -20,6 +20,7 @@ import { isManualAudiometryResponseArea } from "../../../../guards/type.guard";
 import { DialogType, LevelUnits } from "../../../../utilities/constants";
 import { Notifications } from "../../../../utilities/notifications.service";
 import { TympanResponse } from "../../../../models/devices/devices.interface";
+import { ScreenOrientation } from "@capacitor/screen-orientation";
 
 @Component({
     selector: 'manual-audiometry-view',
@@ -28,6 +29,25 @@ import { TympanResponse } from "../../../../models/devices/devices.interface";
 })
 
 export class ManualAudiometryComponent implements OnInit, OnDestroy {
+    audiogramDataLeft: AudiometryResultsInterface = {
+        frequencies: [500, 1000, 2000, 4000, 8000], // Define all the frequencies you need
+        thresholds: [null, null, null, null, null], // Threshold values for each frequency (null initially)
+        channels: ['left', 'left', 'left', 'left', 'left'], // All "left" for the left ear
+        resultTypes: ['Threshold', 'Threshold', 'Threshold', 'Threshold', 'Threshold'], // Type of results
+        masking: [false, false, false, false, false], // Masking values (set as false by default)
+        levelUnits: LevelUnits.dB_SPL // Specify the units (e.g., dB SPL or dB HL)
+      };
+    
+      // Audiogram Data for Right Ear
+    audiogramDataRight: AudiometryResultsInterface = {
+        frequencies: [500, 1000, 2000, 4000, 8000], // Same frequencies for right ear
+        thresholds: [null, null, null, null, null], // Threshold values for the right ear
+        channels: ['right', 'right', 'right', 'right', 'right'], // All "right" for the right ear
+        resultTypes: ['Threshold', 'Threshold', 'Threshold', 'Threshold', 'Threshold'], // Result type
+        masking: [false, false, false, false, false], // Masking values
+        levelUnits: LevelUnits.dB_SPL // Specify the units
+      };
+    selectedEar: string = 'Left'; 
     results: ResultsInterface;
     protocol: ProtocolModelInterface;
     state: StateInterface;
@@ -36,10 +56,9 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     currentDbSpl: number = 40; // level in SPL to send commands to firmware, this is the ground truth
     currentDb: number = 40; // level in levelUnits for display
     frequencies: number[] = [1, 2, 4];
-    adjustments: number[] = [5, -10];
+    adjustments: number[] = [5, -5];
     maxOutputLevel: number = 100;
     minOutputLevel: number = -20;
-    selectedEar: string = 'Left';
     leftThresholds: (number|null)[] = [null, null, null];
     rightThresholds: (number|null)[] = [null, null, null];
     leftCurrentColumn: number = 0;
@@ -61,7 +80,11 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     };
     retspls?: RetsplsInterface;
     levelUnits: string= LevelUnits.dB_SPL;
-
+    frequencyStep: number = 250; // Step size for frequency adjustment
+    currentFrequency: number = 1000; // Default frequency value
+    maskingLevel: number = -20;
+    isPlaying: boolean = false;
+    refreshGraph = true; 
     constructor(
         private readonly resultsModel: ResultsModel, 
         private readonly pageModel: PageModel, 
@@ -80,16 +103,28 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         
     }
 
-    ngOnInit() {
+    async ngOnInit() {
         this.pageSubscription = this.pageModel.currentPageSubject.subscribe(this.handlePageUpdate.bind(this));
         this.deviceSubscription = this.devicesModel.tympanResponseSubject.subscribe(this.logDeviceResponse.bind(this));
+        try {
+            await ScreenOrientation.lock({ orientation: "landscape" });
+            console.log("Screen locked to landscape.");
+          } catch (error) {
+            console.error("Failed to lock screen orientation:", error);
+        }
     }
 
-    ngOnDestroy() {
+    async ngOnDestroy() {
         if (this.device) {
             this.devicesService.abortExams(this.device);
         }
         this.pageSubscription?.unsubscribe();
+        try {
+            await ScreenOrientation.unlock();
+            console.log("Screen orientation unlocked.");
+          } catch (error) {
+            console.error("Failed to unlock screen orientation:", error);
+          }
     }
 
     onFrequencyChange(selectedFreq: number): void {
@@ -116,6 +151,114 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         this.setCurrentDb();
     }
 
+    async adjustTone(amount: number): Promise<void> {
+        // Adjust the currentDbSpl within min and max range
+        this.currentDbSpl += amount;
+        if (this.currentDbSpl < this.minOutputLevel) {
+            this.currentDbSpl = this.minOutputLevel;
+        } else if (this.currentDbSpl > this.maxOutputLevel) {
+            this.currentDbSpl = this.maxOutputLevel;
+        }
+        this.setCurrentDb();
+        await this.submitAudiometryExam();
+
+    }
+    
+    recordThreshold(): void {
+    const currentThreshold = this.currentDbSpl;
+    const currentFrequency = this.selectedFrequency;
+    this.clearPoint();
+    if (this.selectedEar === 'Left') {
+        const index = this.audiogramDataLeft.frequencies.indexOf(currentFrequency);
+        if (index !== -1) {
+        this.audiogramDataLeft.thresholds[index] = currentThreshold;
+        }
+    } else if (this.selectedEar === 'Right') {
+        const index = this.audiogramDataRight.frequencies.indexOf(currentFrequency);
+        if (index !== -1) {
+        this.audiogramDataRight.thresholds[index] = currentThreshold;
+        }
+    }
+    this.refreshGraph = false;
+    setTimeout(() => (this.refreshGraph = true), 0);
+    }
+
+    clearPoint(): void {
+        const currentFrequency = this.selectedFrequency;
+      
+        if (this.selectedEar === 'Left') {
+          const index = this.audiogramDataLeft.frequencies.indexOf(currentFrequency);
+          if (index !== -1) {
+            this.audiogramDataLeft.thresholds[index] = null;
+            this.audiogramDataLeft.resultTypes[index] = 'Threshold'; 
+          }
+        } else if (this.selectedEar === 'Right') {
+          const index = this.audiogramDataRight.frequencies.indexOf(currentFrequency);
+          if (index !== -1) {
+            this.audiogramDataRight.thresholds[index] = null;
+            this.audiogramDataRight.resultTypes[index] = 'Threshold'; 
+          }
+        }
+        this.refreshGraph = false;
+        setTimeout(() => (this.refreshGraph = true), 0);
+      }
+
+    noResponse(): void {
+        const currentFrequency = this.selectedFrequency;
+        const currentThreshold = this.currentDbSpl;
+        if (this.selectedEar === 'Left') {
+          const index = this.audiogramDataLeft.frequencies.indexOf(currentFrequency);
+          if (index !== -1) {
+            // Mark this threshold as "No Response" for Left ear
+            this.audiogramDataLeft.thresholds[index] = currentThreshold; // 120 dB as convention
+            this.audiogramDataLeft.resultTypes[index] = 'NoResponseLeft';
+          }
+        } else if (this.selectedEar === 'Right') {
+          const index = this.audiogramDataRight.frequencies.indexOf(currentFrequency);
+          if (index !== -1) {
+            // Mark this threshold as "No Response" for Right ear
+            this.audiogramDataRight.thresholds[index] = currentThreshold;
+            this.audiogramDataRight.resultTypes[index] = 'NoResponseRight';
+          }
+        }
+      
+        // Refresh the graph
+        this.refreshGraph = false;
+        setTimeout(() => (this.refreshGraph = true), 0);
+    }
+    
+    async selectEar(ear: string): Promise<void> {
+        this.selectedEar = ear;
+        this.refreshGraph = false;
+        setTimeout(() => (this.refreshGraph = true), 0); // Update the selected ear
+        await this.submitAudiometryExam()
+    }
+    
+    async adjustFrequency(direction: number): Promise<void> {
+        const currentIndex = this.frequencies.indexOf(this.selectedFrequency);
+    
+        if (direction > 0) {
+            this.selectedFrequency = this.frequencies[(currentIndex + 1) % this.frequencies.length];
+        } else {
+            this.selectedFrequency = this.frequencies[
+                (currentIndex - 1 + this.frequencies.length) % this.frequencies.length
+            ];
+        }
+
+        await this.submitAudiometryExam()
+    }
+    
+    
+    adjustMasking(amount: number): void {
+        // Adjust masking value (assume maskingLevel variable exists)
+        if (!this.maskingLevel) this.maskingLevel = 0; // Initialize if undefined
+        this.maskingLevel += amount;
+    
+        // Limit masking level within a specific range (example: -50 to 50)
+        if (this.maskingLevel > 50) this.maskingLevel = 50;
+        if (this.maskingLevel < -50) this.maskingLevel = -50;
+    }
+
     async playTone() {
         let examProperties = {
             "F": this.selectedFrequency,
@@ -126,21 +269,44 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         console.log("resp from tympan after manual audiometry exam submission:",resp);
     }
 
-    recordThreshold() {
-        if (this.selectedEar === 'Left') {
-            this.leftThresholds[this.currentFrequencyIndex] = this.currentDb;
-        } else if (this.selectedEar === 'Right') {
-            this.rightThresholds[this.currentFrequencyIndex] = this.currentDb;
-        }
-        this.currentFrequencyIndex = (this.currentFrequencyIndex + 1) % this.frequencies.length;
-        this.selectedFrequency = this.frequencies[this.currentFrequencyIndex];
-        this.currentDb = this.initialDb;
-        this.setCurrentDbSpl();
-        this.results.currentPage.response = this.organizeAudiometryResults();
+    async togglePlayPause() {
+        this.isPlaying = !this.isPlaying;
+        await this.submitAudiometryExam()
     }
 
+    async submitAudiometryExam() {
+        if (this.isPlaying) {
+            await this.playTone()
+        }
+    }
+
+    // recordThreshold() {
+    //     if (this.selectedEar === 'Left') {
+    //         this.leftThresholds[this.currentFrequencyIndex] = this.currentDb;
+    //     } else if (this.selectedEar === 'Right') {
+    //         this.rightThresholds[this.currentFrequencyIndex] = this.currentDb;
+    //     }
+    //     this.currentFrequencyIndex = (this.currentFrequencyIndex + 1) % this.frequencies.length;
+    //     this.selectedFrequency = this.frequencies[this.currentFrequencyIndex];
+    //     this.currentDb = this.initialDb;
+    //     this.setCurrentDbSpl();
+    //     this.results.currentPage.response = this.organizeAudiometryResults();
+    // }
+
     submitResults(): void {
-        this.audiogramData = this.organizeAudiometryResults();
+        // this.audiogramData = this.organizeAudiometryResults();
+        // this.currentStep = 'Results';
+        // this.examService.submit = this.examService.submitDefault.bind(this.examService);
+        const combinedResults: AudiometryResultsInterface = {
+            frequencies: [...this.audiogramDataLeft.frequencies, ...this.audiogramDataRight.frequencies],
+            thresholds: [...this.audiogramDataLeft.thresholds, ...this.audiogramDataRight.thresholds],
+            channels: [...this.audiogramDataLeft.channels, ...this.audiogramDataRight.channels],
+            resultTypes: [...this.audiogramDataLeft.resultTypes, ...this.audiogramDataRight.resultTypes],
+            masking: [...this.audiogramDataLeft.masking, ...this.audiogramDataRight.masking],
+            levelUnits: LevelUnits.dB_SPL
+        };
+    
+        this.audiogramData = combinedResults; // Combine and store in audiogramData
         this.currentStep = 'Results';
         this.examService.submit = this.examService.submitDefault.bind(this.examService);
     }
@@ -177,7 +343,9 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         this.levelUnits = updatedAudiometryResponseArea.levelUnits ?? LevelUnits.dB_SPL;
         this.initialDb = this.currentDb;
         this.frequencies = updatedAudiometryResponseArea.frequencies ?? [1, 2, 4];
-        this.adjustments = updatedAudiometryResponseArea.adjustments ?? [5, -10];
+        this.adjustments = updatedAudiometryResponseArea.adjustments?.length === 2
+        ? updatedAudiometryResponseArea.adjustments
+        : [5, -5];
         this.leftThresholds = new Array(this.frequencies.length).fill(null);
         this.rightThresholds = new Array(this.frequencies.length).fill(null);
         this.selectedFrequency = this.frequencies[0];
