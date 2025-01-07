@@ -38,6 +38,8 @@ build-docker-image:
     - if: $CI_COMMIT_BRANCH == 'master'
     - if: $CI_COMMIT_BRANCH == 'main'
     - if: $CI_COMMIT_BRANCH == 'develop'
+    - if: $CI_COMMIT_BRANCH =~ /^release\/v\d+\.\d+\.\d+$/
+    - if: $CI_COMMIT_TAG 
 
 test:
   stage: test
@@ -72,6 +74,8 @@ test:
     - if: $CI_COMMIT_BRANCH == 'master'
     - if: $CI_COMMIT_BRANCH == 'main'
     - if: $CI_COMMIT_BRANCH == 'develop'
+    - if: $CI_COMMIT_BRANCH =~ /^release\/v\d+\.\d+\.\d+$/
+    - if: $CI_COMMIT_TAG 
 
 sonarqube-check:
   stage: sonarqube-check
@@ -91,6 +95,8 @@ sonarqube-check:
     - if: $CI_COMMIT_BRANCH == 'master'
     - if: $CI_COMMIT_BRANCH == 'main'
     - if: $CI_COMMIT_BRANCH == 'develop'
+    - if: $CI_COMMIT_BRANCH =~ /^release\/v\d+\.\d+\.\d+$/
+    - if: $CI_COMMIT_TAG 
 
 beta-release:
   stage: beta-release
