@@ -1,1 +1,19 @@
-/* CSS file intentionally left blank for future styles */
+
+.skip-button-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.skip-to-results {
+  background-color: #0369ad;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.skip-to-results:hover {
+  background-color: #024d82;
+}

@@ -108,8 +108,6 @@
             </button>
             <button id="back-btn" type="button"
                 class="btn btn-block btn-lg btn-default btn-centered"
-                [ngClass]="state.canGoBack() ? '' : 'disabled custom-disabled'"
-                [disabled]= "!state.canGoBack()"
                 *ngIf="!!currentPage?.enableBackButton"
                 (click)="back()">
               <span class="ion-arrow-left"></span> {{'Back'|translate}}

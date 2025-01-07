@@ -1,5 +1,5 @@
 
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-max-output-screen',
@@ -14,19 +14,28 @@ export class MaxOutputScreenComponent {
   @Output() nextStep = new EventEmitter<void>();
   @Output() togglePlay = new EventEmitter<void>();
   @Output() maxOutputUpdated = new EventEmitter<number>();
+  @Input() userInput: number | null = null;
   
   maxOutputValue: number | null = null;
   showValidationError: boolean = false;
 
 
   validationMessage: string = '';
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['userInput'] && changes['userInput'].currentValue !== undefined) {
+      // Reset validation state when userInput changes
+      this.showValidationError = false;
+      this.validationMessage = '';
+    }
+  }
   
   validateAndProceed(): boolean {
-    if (this.maxOutputValue !== null) {
+    if (this.userInput !== null) {
       this.showValidationError = false;
       this.validationMessage = ''; 
-      this.maxOutputUpdated.emit(this.maxOutputValue);
-      this.maxOutputValue = null
+      this.maxOutputUpdated.emit(this.userInput);
+      this.userInput = null
       return true;
     } else {
       this.showValidationError = true;

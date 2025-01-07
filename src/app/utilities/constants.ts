@@ -70,7 +70,7 @@ export const LevelUnits = {
 import PurdueDemo from '../../protocols/purdue-demo/protocol.json';
 import develop from '../../protocols/develop/protocol.json';
 export const DeveloperProtocols: any = {
-    "Purdue Demo": PurdueDemo,
+    "PurdueDemo": PurdueDemo,
     "develop" : develop
 }
 

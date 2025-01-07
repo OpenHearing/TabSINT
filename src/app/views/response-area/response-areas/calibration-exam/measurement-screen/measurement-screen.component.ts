@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output} from '@angular/core';
 
 @Component({
   selector: 'app-measurement-screen',
@@ -13,10 +13,11 @@ export class MeasurementScreenComponent {
   @Output() togglePlay = new EventEmitter<void>();
   @Output() measurementUpdated = new EventEmitter<number>();
   
-  userInput: number | null = null;
+  @Input() userInput: number | null = null;
   showValidationError: boolean = false;
   validationMessage: string = '';
 
+  
   validateAndProceed(): boolean {
     if (this.userInput !== null) {
       this.showValidationError = false;
