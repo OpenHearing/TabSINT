@@ -14,8 +14,8 @@ stages:
   - build-docker-image
   - test
   - sonarqube-check
-  - sonarqube-vulnerability-report
   - beta-release
+  - release
   - cleanup
 
 build-docker-image:
@@ -107,7 +107,7 @@ beta-release:
     - IMAGE_TAG="$IMAGE_TAG_BASE:$SAFE_COMMIT_REF_NAME"
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker pull $IMAGE_TAG
-    - CONTAINER_ID=$(docker run -d $IMAGE_TAG npm run run.build:ci)
+    - CONTAINER_ID=$(docker run -d $IMAGE_TAG npm run run.build.beta:ci)
     - docker wait $CONTAINER_ID
     - docker cp $CONTAINER_ID:/usr/src/app/android/app/build/outputs/apk/debug/app-debug.apk ./android/app/
     - docker stop $CONTAINER_ID
@@ -115,9 +115,37 @@ beta-release:
   artifacts:
     paths:
       - android/app/app-debug.apk
-    expire_in: 2 hours
+    expire_in: 2 days
   rules:
     - when: manual
+    
+release:
+  stage: release
+  image: docker:cli
+  services:
+    - docker:dind
+  tags:
+    - docker
+    - privileged
+  dependencies:
+    - build-docker-image
+  script:
+    - SAFE_COMMIT_REF_NAME=$(echo "$CI_COMMIT_REF_NAME" | tr '/' '-')
+    - IMAGE_TAG="$IMAGE_TAG_BASE:$SAFE_COMMIT_REF_NAME"
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull $IMAGE_TAG
+    - CONTAINER_ID=$(docker run -d $IMAGE_TAG npm run run.build.production:ci)
+    - docker wait $CONTAINER_ID
+    - docker cp $CONTAINER_ID:/usr/src/app/android/app/build/outputs/apk/debug/app.apk ./android/app/
+    - docker stop $CONTAINER_ID
+    - docker rm $CONTAINER_ID
+  artifacts:
+    paths:
+      - android/app/app.apk
+    expire_in: 2 days
+  rules:
+    - when: manual
+
 cleanup:
   stage: cleanup
   script:
