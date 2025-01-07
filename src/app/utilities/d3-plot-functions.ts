@@ -133,7 +133,7 @@ export function createLegend(
 
       // Add label
       group.append('text')
-          .attr('x', 35)
+          .attr('x', 30)
           .attr('y', 5)
           .style('font-size', '12px')
           .style('fill', 'black')
@@ -144,7 +144,7 @@ export function createLegend(
       const size = 5;
       if (legendItem.symbol === 'circle') {
           group.append('circle')
-              .attr('cx', 15)
+              .attr('cx', 10)
               .attr('cy', 0)
               .attr('r', size)
               .style('fill', 'none')
@@ -152,14 +152,14 @@ export function createLegend(
               .style('stroke-width', 2);
       } else if (legendItem.symbol === 'X') {
           group.append('line')
-              .attr('x1', -size + 15).attr('y1', -size)
-              .attr('x2', size + 15).attr('y2', size)
+              .attr('x1', -size + 10).attr('y1', -size)
+              .attr('x2', size + 10).attr('y2', size)
               .style('stroke', legendItem.color)
               .style('stroke-width', 2);
 
           group.append('line')
-              .attr('x1', -size + 15).attr('y1', size)
-              .attr('x2', size + 15).attr('y2', -size)
+              .attr('x1', -size + 10).attr('y1', size)
+              .attr('x2', size + 10).attr('y2', -size)
               .style('stroke', legendItem.color)
               .style('stroke-width', 2);
       }
@@ -167,8 +167,8 @@ export function createLegend(
 
   function addLine(group: d3.Selection<SVGGElement, LegendItemInterface, null, undefined>, legendItem: LegendItemInterface) {
       group.append('line')
-          .attr('x1', 0).attr('y1', 0)
-          .attr('x2', 30).attr('y2', 0)
+          .attr('x1', -5).attr('y1', 0)
+          .attr('x2', 25).attr('y2', 0)
           .attr('stroke', legendItem.color)
           .attr('stroke-width', 2)
           .attr('stroke-dasharray', legendItem.line === 'dashed' ? '5,5' : '0');
