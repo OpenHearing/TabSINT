@@ -1,11 +1,11 @@
 {
   "name": "tabsint",
-  "version": "0.0.0",
+  "version": "5.0.0",
   "scripts": {
     "ng": "ng",
     "clean": "rm -rf dist && rm -rf .angular/cache",
     "start": "ng serve",
-    "prepare": "ts-node ./src/app/utilities/write-version.ts",
+    "prepare": "ts-node ./bin/write-version.ts",
     "build": "npm run prepare && ng build",
     "build:plugin": "cd tabsintfs && rm -rf node_modules && npm i && npm run build && cd .. && npm i ./tabsintfs",
     "watch": "ng build --watch --configuration development",
