@@ -11,8 +11,8 @@ import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-
 })
 export class SweptDpoaeResultsComponent implements AfterViewInit {
   @Input() sweptDPOAEResults!: SweptDpoaeResultsInterface;
-  @Input() f2Start: number = sweptDpoaeSchema.properties.f2Start.default;
-  @Input() f2End: number = sweptDpoaeSchema.properties.f2End.default;
+  @Input() f2Start!: number;
+  @Input() f2End!: number;
   @Input() xScale!: d3.ScaleLogarithmic<number, number, never>;
   @Input() width!: number;
   @Input() height!: number;
@@ -122,7 +122,7 @@ export class SweptDpoaeResultsComponent implements AfterViewInit {
       { label: 'F1', color: '#ffc107', line:  'solid' }
     ];
 
-    createLegend(svg, legendData, this.width, 80);
+    createLegend(svg, legendData, this.width, 85);
     return svg;
   }
 
@@ -151,13 +151,13 @@ export class SweptDpoaeResultsComponent implements AfterViewInit {
     };
   
     // Helper function to filter and populate
-    function filterAndPush(
+    const filterAndPush = (
       source: { Frequency: number[]; Amplitude: number[]; NoiseFloor?: number[] },
       target: { Frequency: number[]; Amplitude: number[]; NoiseFloor?: number[] }
-    ) {
+    ) => {
       for (let i = 0; i < source.Frequency.length; i++) {
         const freq = source.Frequency[i];
-        if (freq >= 500 && freq <= 16000) {
+        if (freq >= this.f2Start && freq <= this.f2End) {
           target.Frequency.push(freq);
           target.Amplitude.push(source.Amplitude[i]);
           if (source.NoiseFloor && target.NoiseFloor) {

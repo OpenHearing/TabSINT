@@ -129,7 +129,7 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
       { label: 'NF', color: 'red', symbol: 'X' }
     ];
 
-    createLegend(svg, legendData, this.width, 80);
+    createLegend(svg, legendData, this.width, 85);
 
     return svg;
     
@@ -169,7 +169,7 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
 
   private filterData(data: DPOAEDataInterface) {
     const validIndices = data.Frequency
-      .map((freq, index) => (freq >= 500 && freq <= 16000 ? index : -1))
+      .map((freq, index) => (freq >= this.f2Start && freq <= this.f2End ? index : -1))
       .filter(index => index !== -1);
   
     return {
