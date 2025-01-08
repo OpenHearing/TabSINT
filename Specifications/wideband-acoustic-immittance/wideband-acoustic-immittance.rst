@@ -57,21 +57,21 @@ The GUI should look like the image below with the following features.
    * - Parameter
      - Value
    * - Start Frequency [Hz]
-     - [start_F]
+     - [fStart]
    * - End Frequency [Hz]
-     - [end_F]
+     - [fEnd]
    * - Sweep Duration [s]
-     - [SweepDuration]
-   * - Window Duration [s] 
-     - [WindowDuration]
+     - [sweepDuration]
    * - Sweep type
-     - [SweepType]
-   * - Minimum Number of Sweeps
-     - [MinSweeps]
-   * - Maximum Number of Sweeps
-     - [MaxSweeps]
-   * - Noise Floor Threshold
-     - [MinDpNoiseFloorThresh]
+     - [sweepType]
+   * - Level
+     - [L]
+   * - Number of Sweeps
+     - [numSweeps]
+   * - Window Duration [s] 
+     - [windowDuration]
+   * - Number of Frequencies
+     - [numFrequencies]
 
 .. figure:: wai-GUI-Screen1a.png
    :align: center
