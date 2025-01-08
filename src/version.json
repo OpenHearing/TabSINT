@@ -1,11 +1,11 @@
 {
   "tabsint": "5.0.0",
-  "date": "2025-01-08T13:57:13.332Z",
-  "rev": "v5.0.0-6-22b31a9",
-  "version_code": "6",
+  "date": "2025-01-08T16:16:20.372Z",
+  "rev": "v5.0.0-7-7d1bf1d",
+  "version_code": "7",
   "deps": {
     "user_agent": "angular/^17.1.1",
-    "node": "node/v20.16.0",
+    "node": "node/v22.4.0",
     "capacitor": "capacitor/^6.1.0"
   },
   "plugins": []
