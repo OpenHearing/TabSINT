@@ -22,7 +22,7 @@ async function incrementRev() {
   const baseVersion = 'v'+packageJson.version;
   let revNumber;
   const previousRevNumber = versionJson.rev.match(/v\d+\.\d+\.\d+-(\d+)-/)[1];
-  if (packageJson.version !== androidmanifeststring.match(/^<\?xml.*?version="([\d.]+)"/)[1]) {
+  if (packageJson.version !== versionJson.tabsint) {
     revNumber = '1';
   } else if (previousRevNumber) {
     revNumber = (parseInt(previousRevNumber, 10) + 1).toString();
@@ -62,20 +62,4 @@ async function generateVersionJson() {
   }
 }
 
-function updateXmlVersion(xml: string, newVersion: string): string {
-  const xmlDeclarationRegex = /^<\?xml.*?\?>/;
-  const newDeclaration = `<?xml version="${newVersion}" encoding="utf-8"?>`;
-  const updatedXml = xml.replace(xmlDeclarationRegex, newDeclaration);
-  return updatedXml;
-}
-
-async function updateAndroidManifest() {    
-  if (androidmanifeststring) {
-    const updatedXml = updateXmlVersion(androidmanifeststring, packageJson.version);
-    fs.writeFileSync('android/app/src/main/AndroidManifest.xml', updatedXml, 'utf-8');
-    console.log('Updated android/app/src/main/AndroidManifest.xml to version ' + packageJson.version);
-  }
-} 
-
 generateVersionJson();
-updateAndroidManifest();
