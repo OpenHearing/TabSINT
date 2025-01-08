@@ -1,6 +1,6 @@
 import { CommonResponseAreaInterface } from "../../../../../interfaces/page-definition.interface";
 
-export interface SweptDpoaeInterface extends CommonResponseAreaInterface {
+export interface WAIInterface extends CommonResponseAreaInterface {
     exportToCSV?: boolean;
     tabsintId?: string;
     f2Start?: number,
@@ -15,23 +15,23 @@ export interface SweptDpoaeInterface extends CommonResponseAreaInterface {
     showResults?: boolean
 }
 
-export interface SweptDpoaeResultsInterface { 
+export interface WAIResultsInterface { 
     State: string; 
     PctComplete: number;
     NumSweeps?: number;
-    DpLow?: DPOAEDataInterface,
-    DpHigh?: DPOAEDataInterface,
-    F1?: DPOAEDataInterface,
-    F2?: DPOAEDataInterface,
+    DpLow?: WAIDataInterface,
+    DpHigh?: WAIDataInterface,
+    F1?: WAIDataInterface,
+    F2?: WAIDataInterface,
     Raw?: {
-      DpLow?: DPOAEDataInterface,
-      DpHigh?: DPOAEDataInterface,
-      F1?: DPOAEDataInterface,
-      F2?: DPOAEDataInterface,
+      DpLow?: WAIDataInterface,
+      DpHigh?: WAIDataInterface,
+      F1?: WAIDataInterface,
+      F2?: WAIDataInterface,
     }
   }
   
-export interface DPOAEDataInterface {
+export interface WAIDataInterface {
   Frequency: number[];
   Amplitude: number[];
   Phase: number[];

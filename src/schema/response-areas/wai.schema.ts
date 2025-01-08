@@ -1,7 +1,7 @@
 import { JSONSchemaType } from "ajv";
-import { SweptDpoaeInterface } from "../../app/views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/swept-dpoae-exam.interface";
+import { WAIInterface } from "../../app/views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.interface";
 
-export const sweptDpoaeSchema: JSONSchemaType<SweptDpoaeInterface> = {
+export const waiSchema: JSONSchemaType<WAIInterface> = {
   type: "object",
   properties: {
     enableSkip: { type: "boolean", nullable: true, default: false },

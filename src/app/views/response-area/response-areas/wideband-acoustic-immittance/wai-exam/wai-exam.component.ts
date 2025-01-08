@@ -10,33 +10,33 @@ import { ResultsModel } from '../../../../../models/results/results-model.servic
 import { ExamService } from '../../../../../controllers/exam.service';
 import { ResultsInterface } from '../../../../../models/results/results.interface';
 import { PageInterface } from '../../../../../models/page/page.interface';
-import { SweptDpoaeInterface, SweptDpoaeResultsInterface } from './swept-dpoae-exam.interface';
+import { WAIInterface, WAIResultsInterface } from './wai-exam.interface';
 import { ButtonTextService } from '../../../../../controllers/button-text.service';
 import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
-import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-dpoae.schema';
+import { waiSchema } from '../../../../../../schema/response-areas/wai.schema';
 
 @Component({
-  selector: 'swept-dpoae-exam',
-  templateUrl: './swept-dpoae-exam.component.html',
-  styleUrl: './swept-dpoae-exam.component.css'
+  selector: 'wai-exam',
+  templateUrl: './wai-exam.component.html',
+  styleUrl: './wai-exam.component.css'
 })
-export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
-  tabsintId: string = sweptDpoaeSchema.properties.tabsintId.default;
-  f2Start: number = sweptDpoaeSchema.properties.f2Start.default;
-  f2End: number = sweptDpoaeSchema.properties.f2End.default;
-  frequencyRatio: number = sweptDpoaeSchema.properties.frequencyRatio.default;
-  sweepDuration: number = sweptDpoaeSchema.properties.sweepDuration.default;
-  windowDuration: number = sweptDpoaeSchema.properties.windowDuration.default;
-  sweepType: number = sweptDpoaeSchema.properties.sweepType.default;
-  minSweeps: number = sweptDpoaeSchema.properties.minSweeps.default;
-  maxSweeps: number = sweptDpoaeSchema.properties.maxSweeps.default;
-  noiseFloorThreshold: number = sweptDpoaeSchema.properties.noiseFloorThreshold.default;
+export class WAIExamComponent implements OnInit, OnDestroy {
+  tabsintId: string = waiSchema.properties.tabsintId.default;
+  f2Start: number = waiSchema.properties.f2Start.default;
+  f2End: number = waiSchema.properties.f2End.default;
+  frequencyRatio: number = waiSchema.properties.frequencyRatio.default;
+  sweepDuration: number = waiSchema.properties.sweepDuration.default;
+  windowDuration: number = waiSchema.properties.windowDuration.default;
+  sweepType: number = waiSchema.properties.sweepType.default;
+  minSweeps: number = waiSchema.properties.minSweeps.default;
+  maxSweeps: number = waiSchema.properties.maxSweeps.default;
+  noiseFloorThreshold: number = waiSchema.properties.noiseFloorThreshold.default;
   results: ResultsInterface;
-  showResults: boolean = sweptDpoaeSchema.properties.showResults.default;
+  showResults: boolean = waiSchema.properties.showResults.default;
   pageSubscription: Subscription | undefined;
   currentStep: string = 'input-parameters';
   device: ConnectedDevice | undefined;
-  sweptDPOAEResults: SweptDpoaeResultsInterface = {
+  waiResults: WAIResultsInterface = {
     State: 'READY',
     PctComplete: 0
   };
@@ -71,25 +71,25 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
-      if (updatedPage?.responseArea?.type === 'sweptDPOAEResponseArea') {
-        const responseArea = updatedPage.responseArea as SweptDpoaeInterface;
-        this.tabsintId = responseArea.tabsintId ?? sweptDpoaeSchema.properties.tabsintId.default;
-        this.f2Start = responseArea.f2Start ?? sweptDpoaeSchema.properties.f2Start.default;
-        this.f2End = responseArea.f2End ?? sweptDpoaeSchema.properties.f2End.default;
-        this.frequencyRatio = responseArea.frequencyRatio ?? sweptDpoaeSchema.properties.frequencyRatio.default;
-        this.sweepDuration = responseArea. sweepDuration ?? sweptDpoaeSchema.properties.sweepDuration.default;
-        this.windowDuration = responseArea.windowDuration ?? sweptDpoaeSchema.properties.windowDuration.default;
-        this.sweepType = responseArea.sweepType ?? sweptDpoaeSchema.properties.sweepType.default;
-        this.minSweeps = responseArea.minSweeps ?? sweptDpoaeSchema.properties.minSweeps.default;
-        this.maxSweeps = responseArea.maxSweeps ?? sweptDpoaeSchema.properties.maxSweeps.default;
-        this.noiseFloorThreshold = responseArea.noiseFloorThreshold ?? sweptDpoaeSchema.properties.noiseFloorThreshold.default;
+      if (updatedPage?.responseArea?.type === 'WAIResponseArea') {
+        const responseArea = updatedPage.responseArea as WAIInterface;
+        this.tabsintId = responseArea.tabsintId ?? waiSchema.properties.tabsintId.default;
+        this.f2Start = responseArea.f2Start ?? waiSchema.properties.f2Start.default;
+        this.f2End = responseArea.f2End ?? waiSchema.properties.f2End.default;
+        this.frequencyRatio = responseArea.frequencyRatio ?? waiSchema.properties.frequencyRatio.default;
+        this.sweepDuration = responseArea. sweepDuration ?? waiSchema.properties.sweepDuration.default;
+        this.windowDuration = responseArea.windowDuration ?? waiSchema.properties.windowDuration.default;
+        this.sweepType = responseArea.sweepType ?? waiSchema.properties.sweepType.default;
+        this.minSweeps = responseArea.minSweeps ?? waiSchema.properties.minSweeps.default;
+        this.maxSweeps = responseArea.maxSweeps ?? waiSchema.properties.maxSweeps.default;
+        this.noiseFloorThreshold = responseArea.noiseFloorThreshold ?? waiSchema.properties.noiseFloorThreshold.default;
       }
     })
   }
 
   async ngOnDestroy(): Promise<void> {
     let resp = await this.devicesService.abortExams(this.device!);
-    this.logger.debug("resp from tympan after swept DPOAE exam abort exams:" + resp);
+    this.logger.debug("resp from tympan after WAI exam abort exams:" + resp);
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
     this.pageSubscription?.unsubscribe();
     this.buttonTextService.updateButtonText("Submit");
@@ -112,9 +112,9 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
     }
   }
 
-  saveResults(sweptDPOAEResults: SweptDpoaeResultsInterface) {
-    this.sweptDPOAEResults = sweptDPOAEResults;
-    this.results.currentPage.response = sweptDPOAEResults;
+  saveResults(waiResults: WAIResultsInterface) {
+    this.waiResults = waiResults;
+    this.results.currentPage.response = waiResults;
   }
 
   private async beginExam() {
@@ -131,9 +131,9 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
           NoiseFloorThreshold: this.noiseFloorThreshold,
           WindowDuration: this.windowDuration
         };
-        await this.devicesService.queueExam(this.device, "SweptDPOAE", examProperties);
+        await this.devicesService.queueExam(this.device, "WAI", examProperties);
     } else {
-        this.logger.error("Error setting up Swept DPOAE exam");
+        this.logger.error("Error setting up WAI exam");
     }
   }
 }

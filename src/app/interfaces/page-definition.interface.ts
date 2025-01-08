@@ -6,7 +6,7 @@ import { TextBoxResultViewerInterface } from "../views/response-area/response-ar
 import { TextBoxInterface } from "../views/response-area/response-areas/textbox/textbox.interface";
 import { MultipleInputInterface } from "../views/response-area/response-areas/multiple-input/multiple-input.interface";
 import { LikertInterface } from "../views/response-area/response-areas/likert/likert/likert.interface";
-import { SweptDpoaeInterface } from "../views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/sept-dpoae-exam.interface";
+import { SweptDpoaeInterface } from "../views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/swept-dpoae-exam.interface";
 
 export interface PageDefinition {
     id: string;

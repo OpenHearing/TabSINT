@@ -6,34 +6,34 @@ import { DevicesService } from '../../../../../controllers/devices.service';
 import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
 import { StateModel } from '../../../../../models/state/state.service';
 import { StateInterface } from '../../../../../models/state/state.interface';
-import { DPOAEDataInterface, SweptDpoaeResultsInterface } from '../swept-dpoae-exam/swept-dpoae-exam.interface';
+import { WAIDataInterface, WAIResultsInterface } from '../wai-exam/wai-exam.interface';
 import { Logger } from '../../../../../utilities/logger.service';
 import { createLegend, createOAEResultsChartSvg } from '../../../../../utilities/d3-plot-functions';
-import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-dpoae.schema';
+import { waiSchema } from '../../../../../../schema/response-areas/wai.schema';
 
 @Component({
-  selector: 'swept-dpoae-in-progress',
-  templateUrl: './swept-dpoae-in-progress.component.html',
-  styleUrl: './swept-dpoae-in-progress.component.css'
+  selector: 'wai-in-progress',
+  templateUrl: './wai-in-progress.component.html',
+  styleUrl: './wai-in-progress.component.css'
 })
-export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterViewInit {
+export class WAIInProgressComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() device: ConnectedDevice | undefined;
-  @Input() f2Start: number = sweptDpoaeSchema.properties.f2Start.default;
-  @Input() f2End: number = sweptDpoaeSchema.properties.f2End.default;
+  @Input() f2Start: number = waiSchema.properties.f2Start.default;
+  @Input() f2End: number = waiSchema.properties.f2End.default;
   @Input() xScale!: d3.ScaleLogarithmic<number, number, never>;
   @Input() yScale!: d3.ScaleLinear<number, number, never>;
   @Input() width!: number;
   @Input() height!: number;
   @Input() xTicks!: number[];
   @Input() margin!: { top: number, right: number, bottom: number, left: number };
-  @Output() sweptDPOAEResultsEvent = new EventEmitter<SweptDpoaeResultsInterface>();
+  @Output() WAIResultsEvent = new EventEmitter<WAIResultsInterface>();
 
   state: StateInterface;
-  inProgressResults: SweptDpoaeResultsInterface = {
+  inProgressResults: WAIResultsInterface = {
     State: 'READY',
     PctComplete: 0
   };
-  inProgressResultsSubject = new BehaviorSubject<SweptDpoaeResultsInterface>(this.inProgressResults);
+  inProgressResultsSubject = new BehaviorSubject<WAIResultsInterface>(this.inProgressResults);
   inProgressResultsSubscription: Subscription | undefined;
   svg!: d3.Selection<SVGGElement, unknown, HTMLElement, any>;
   shouldAbort: boolean = false;
@@ -52,7 +52,7 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
 
   async ngOnInit(): Promise<void> {
     this.requestResults();
-    this.inProgressResultsSubscription = this.inProgressResultsSubject.subscribe((updatedResults: SweptDpoaeResultsInterface) => {
+    this.inProgressResultsSubscription = this.inProgressResultsSubject.subscribe((updatedResults: WAIResultsInterface) => {
       if (updatedResults.DpLow) {
         this.updatePlot(updatedResults.DpLow);
       }
@@ -74,7 +74,7 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
     this.updateInstructions();
     await this.devicesService.abortExams(this.device!);
     this.updateStateOnAbort();
-    this.sweptDPOAEResultsEvent.emit(this.inProgressResults);
+    this.WAIResultsEvent.emit(this.inProgressResults);
   }
 
   private async requestResults() {
@@ -91,13 +91,13 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
         this.inProgressResultsSubject.next(resp![1]);
         if (this.inProgressResults.State === 'DONE') {
           this.state.isSubmittable = true;
-          this.sweptDPOAEResultsEvent.emit(resp![1]);
+          this.WAIResultsEvent.emit(resp![1]);
           this.instructions = "Exam complete, press 'Next' to continue."
           this.changeDetectorRef.detectChanges();
           return;
         }
       } else {
-        this.logger.debug('Swept DPOAE in-progress component. Request results did not return expected results. It may be too early to receive results.');
+        this.logger.debug('WAI in-progress component. Request results did not return expected results. It may be too early to receive results.');
       }
   
       setTimeout(pollResults, 1000);
@@ -135,7 +135,7 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
     
   }
 
-  private updatePlot(data: DPOAEDataInterface) {
+  private updatePlot(data: WAIDataInterface) {
     // TODO: May not need to filter data after we get real firmware
     const filteredData = this.filterData(data);
 
@@ -167,7 +167,7 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
 
   }
 
-  private filterData(data: DPOAEDataInterface) {
+  private filterData(data: WAIDataInterface) {
     const validIndices = data.Frequency
       .map((freq, index) => (freq >= this.f2Start && freq <= this.f2End ? index : -1))
       .filter(index => index !== -1);

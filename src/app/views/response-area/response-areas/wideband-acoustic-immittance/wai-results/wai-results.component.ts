@@ -1,15 +1,15 @@
 import { AfterViewInit, Component, Input } from '@angular/core';
 import * as d3 from 'd3';
-import { SweptDpoaeResultsInterface } from '../swept-dpoae-exam/swept-dpoae-exam.interface';
+import { WAIResultsInterface } from '../wai-exam/wai-exam.interface';
 import { createLegend, createOAEResultsChartSvg } from '../../../../../utilities/d3-plot-functions';
 
 @Component({
-  selector: 'swept-dpoae-results',
-  templateUrl: './swept-dpoae-results.component.html',
-  styleUrl: './swept-dpoae-results.component.css'
+  selector: 'wai-results',
+  templateUrl: './wai-results.component.html',
+  styleUrl: './wai-results.component.css'
 })
-export class SweptDpoaeResultsComponent implements AfterViewInit {
-  @Input() sweptDPOAEResults!: SweptDpoaeResultsInterface;
+export class WAIResultsComponent implements AfterViewInit {
+  @Input() waiResults!: WAIResultsInterface;
   @Input() f2Start!: number;
   @Input() f2End!: number;
   @Input() xScale!: d3.ScaleLogarithmic<number, number, never>;
@@ -26,7 +26,7 @@ export class SweptDpoaeResultsComponent implements AfterViewInit {
 
   private createResultsPlot() {
     // TODO: Do I need to filter data? Probably not after I get real firmware.
-    const filteredData = this.filterSweptDpoaeResults(this.sweptDPOAEResults);
+    const filteredData = this.filterSweptDpoaeResults(this.waiResults);
 
     const yScale = d3.scaleLinear()
       .domain([
@@ -126,7 +126,7 @@ export class SweptDpoaeResultsComponent implements AfterViewInit {
   }
 
   private filterSweptDpoaeResults(
-    data: SweptDpoaeResultsInterface
+    data: WAIResultsInterface
   ): {
     DpLow: { Frequency: number[]; Amplitude: number[]; NoiseFloor: number[] };
     F2: { Frequency: number[]; Amplitude: number[] };
