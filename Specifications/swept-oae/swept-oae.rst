@@ -58,23 +58,23 @@ The GUI should look like the image below with the following features.
    * - Parameter
      - Value
    * - Start Frequency [Hz]
-     - [start_F2]
+     - [f2Start]
    * - End Frequency [Hz]
-     - [end_F2]
+     - [f2End]
    * - Ratio
-     - [ratioF]
+     - [frequencyRatio]
    * - Sweep Duration [s]
-     - [SweepDuration]
+     - [sweepDuration]
    * - Window Duration [s] 
-     - [WindowDuration]
+     - [windowDuration]
    * - Sweep type
-     - [SweepType]
+     - [sweepType]
    * - Minimum Number of Sweeps
-     - [MinSweeps]
+     - [minSweeps]
    * - Maximum Number of Sweeps
-     - [MaxSweeps]
+     - [maxSweeps]
    * - Noise Floor Threshold
-     - [MinDpNoiseFloorThresh]
+     - [noiseFloorThreshold]
 
 .. figure:: swept-oae-GUI-Screen1a.png
    :align: center
