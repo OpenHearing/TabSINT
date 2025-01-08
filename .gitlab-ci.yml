@@ -132,6 +132,12 @@ beta-release:
     expire_in: 2 days
   rules:
     - if: $CI_COMMIT_BRANCH =~ /^release\/v\d+\.\d+\.\d+$/
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == 'master'
+    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'develop'
+    # - if: $CI_COMMIT_BRANCH =~ /^release\/v\d+\.\d+\.\d+$/
+    - if: $CI_COMMIT_TAG
     
 release:
   stage: release
