@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, HostListener } from "@angular/core";
+import { Component, OnDestroy, OnInit} from "@angular/core";
 import { PageModel } from "../../../../models/page/page.service";
 import { StateModel } from "../../../../models/state/state.service";
 import { ProtocolModel } from "../../../../models/protocol/protocol-model.service";

@@ -183,6 +183,7 @@
   flex-direction: column;
   align-items: center;
   font-size: 14px;
+  margin-top: 12px;
 }
 
 .tone-value, .frequency-value, .masking-value {
@@ -221,11 +222,6 @@
   cursor: not-allowed;
 }
  
-
-.tone-display, .frequency-display, .masking-display {
-  margin-top: 12px;
-}
-
 .response-panel-vertical {
   display: flex;
   flex-direction: column;
