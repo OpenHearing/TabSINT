@@ -72,6 +72,10 @@ The GUI should look like the image below with the following features.
      - [windowDuration]
    * - Number of Frequencies
      - [numFrequencies]
+   * - Filename
+     - [filename]
+   * - Output Raw Measurements
+     - [outputRawMeasurements]
 
 .. figure:: wai-GUI-Screen1a.png
    :align: center
