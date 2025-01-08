@@ -115,6 +115,7 @@ beta-release:
     - docker pull $IMAGE_TAG
     - mkdir -p android
     - CONTAINER_ID=$(docker run -d $IMAGE_TAG npm run run.build.beta:ci)
+    - docker wait $CONTAINER_ID
     - docker exec $CONTAINER_ID ls -la /usr/src/app
     - docker exec $CONTAINER_ID ls -la /usr/src/app/android
     - docker exec $CONTAINER_ID ls -la /usr/src/app/android/app
@@ -122,7 +123,6 @@ beta-release:
     - docker exec $CONTAINER_ID ls -la /usr/src/app/android/app/outputs
     - docker exec $CONTAINER_ID ls -la /usr/src/app/android/app/outputs/apk
     - docker exec $CONTAINER_ID ls -la /usr/src/app/android/app/outputs/apk/debug
-    - docker wait $CONTAINER_ID
     - docker cp $CONTAINER_ID:/usr/src/app/android/app/build/outputs/apk/debug/app-debug.apk ./android/app/
     - docker stop $CONTAINER_ID
     - docker rm $CONTAINER_ID
