@@ -61,7 +61,7 @@
           </button>
         </div>
       </div>
-      <div *ngIf="state.examState===ExamState.Testing">
+      <div *ngIf="state.examState===ExamState.Testing && (currentPage?.responseArea?.type!=='manualAudiometryResponseArea')">
         <div class="row response-buttons" *ngIf="(disk.debugMode && disk.adminSkipMode) || currentPage?.responseArea?.enableSkip">
           <div class="col-4">
             <button id="help-btn" type="button"

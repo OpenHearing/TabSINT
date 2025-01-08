@@ -37,15 +37,14 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         masking: [false, false, false, false, false], // Masking values (set as false by default)
         levelUnits: LevelUnits.dB_SPL // Specify the units (e.g., dB SPL or dB HL)
       };
-    
-      // Audiogram Data for Right Ear
+
     audiogramDataRight: AudiometryResultsInterface = {
-        frequencies: [500, 1000, 2000, 4000, 8000], // Same frequencies for right ear
-        thresholds: [null, null, null, null, null], // Threshold values for the right ear
-        channels: ['right', 'right', 'right', 'right', 'right'], // All "right" for the right ear
-        resultTypes: ['Threshold', 'Threshold', 'Threshold', 'Threshold', 'Threshold'], // Result type
-        masking: [false, false, false, false, false], // Masking values
-        levelUnits: LevelUnits.dB_SPL // Specify the units
+        frequencies: [500, 1000, 2000, 4000, 8000], 
+        thresholds: [null, null, null, null, null],
+        channels: ['right', 'right', 'right', 'right', 'right'], 
+        resultTypes: ['Threshold', 'Threshold', 'Threshold', 'Threshold', 'Threshold'],
+        masking: [false, false, false, false, false], 
+        levelUnits: LevelUnits.dB_SPL 
       };
     selectedEar: string = 'Left'; 
     results: ResultsInterface;
@@ -53,8 +52,8 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     state: StateInterface;
     isPresentationVisible: boolean = false;
     isResultsVisible: boolean = false;
-    currentDbSpl: number = 40; // level in SPL to send commands to firmware, this is the ground truth
-    currentDb: number = 40; // level in levelUnits for display
+    currentDbSpl: number = 40;
+    currentDb: number = 40;
     frequencies: number[] = [1, 2, 4];
     adjustments: number[] = [5, -5];
     maxOutputLevel: number = 100;
@@ -80,8 +79,8 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     };
     retspls?: RetsplsInterface;
     levelUnits: string= LevelUnits.dB_SPL;
-    frequencyStep: number = 250; // Step size for frequency adjustment
-    currentFrequency: number = 1000; // Default frequency value
+    frequencyStep: number = 250;
+    currentFrequency: number = 1000;
     maskingLevel: number = -20;
     isPlaying: boolean = false;
     refreshGraph = true; 
@@ -141,18 +140,9 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         }
     }
 
-    adjustDbSpl(amount: number) {
-        this.currentDbSpl += amount;
-        if (this.currentDbSpl < this.minOutputLevel) {
-            this.currentDbSpl = this.minOutputLevel;
-        } else if (this.currentDbSpl > this.maxOutputLevel) {
-            this.currentDbSpl = this.maxOutputLevel;
-        }
-        this.setCurrentDb();
-    }
+
 
     async adjustTone(amount: number): Promise<void> {
-        // Adjust the currentDbSpl within min and max range
         this.currentDbSpl += amount;
         if (this.currentDbSpl < this.minOutputLevel) {
             this.currentDbSpl = this.minOutputLevel;
@@ -163,6 +153,10 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         await this.submitAudiometryExam();
 
     }
+
+    get isNoResponseEnabled(): boolean {
+        return this.currentDbSpl >= this.maxOutputLevel || this.currentDbSpl <= this.minOutputLevel;
+      }
     
     recordThreshold(): void {
     const currentThreshold = this.currentDbSpl;
@@ -250,11 +244,8 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     
     
     adjustMasking(amount: number): void {
-        // Adjust masking value (assume maskingLevel variable exists)
-        if (!this.maskingLevel) this.maskingLevel = 0; // Initialize if undefined
+        if (!this.maskingLevel) this.maskingLevel = 0;
         this.maskingLevel += amount;
-    
-        // Limit masking level within a specific range (example: -50 to 50)
         if (this.maskingLevel > 50) this.maskingLevel = 50;
         if (this.maskingLevel < -50) this.maskingLevel = -50;
     }
@@ -306,7 +297,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
             levelUnits: LevelUnits.dB_SPL
         };
     
-        this.audiogramData = combinedResults; // Combine and store in audiogramData
+        this.audiogramData = combinedResults;
         this.currentStep = 'Results';
         this.examService.submit = this.examService.submitDefault.bind(this.examService);
     }
@@ -350,6 +341,8 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         this.rightThresholds = new Array(this.frequencies.length).fill(null);
         this.selectedFrequency = this.frequencies[0];
         this.retspls = updatedAudiometryResponseArea.retspls;
+        this.audiogramDataLeft.levelUnits = this.levelUnits;
+        this.audiogramDataRight.levelUnits = this.levelUnits;
 
         if (this.retspls && this.levelUnits === LevelUnits.dB_HL) {
             this.checkResplKeysAreInFrequencies();

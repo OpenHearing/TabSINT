@@ -17,6 +17,7 @@ export class ExamTestingComponent implements OnInit, OnDestroy {
   questionMainText?: string;
   questionSubText?: string;
   instructionText?: string;
+  examType?: string;
 
   constructor(
     private readonly examService: ExamService,
@@ -31,6 +32,7 @@ export class ExamTestingComponent implements OnInit, OnDestroy {
       this.questionMainText = updatedPage?.questionMainText;
       this.questionSubText = updatedPage?.questionSubText;
       this.instructionText = updatedPage?.instructionText;
+      this.examType = updatedPage?.responseArea?.type;
     });
   }
 

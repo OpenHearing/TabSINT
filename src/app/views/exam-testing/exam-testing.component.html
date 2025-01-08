@@ -1,9 +1,9 @@
 <div>
     <!-- Title block -->
-    <h1 [innerHtml]="title" *ngIf="title"></h1>
+    <h1 [innerHtml]="title"  *ngIf="title && examType !== 'manualAudiometryResponseArea'"></h1>
     <h2 [textContent]="questionMainText" *ngIf="questionMainText" [ngClass]="examTestingTitleClass"></h2>
-    <p class="subtext pad-top" *ngIf="questionSubText"><span [textContent]="questionSubText" id="subtext-testing"></span></p>
-    <p class="instructions" *ngIf="instructionText"><span [textContent]="instructionText" id="instructions-testing"></span></p>
+    <p class="subtext pad-top" *ngIf="questionSubText && examType !== 'manualAudiometryResponseArea'"><span [textContent]="questionSubText" id="subtext-testing"></span></p>
+    <p class="instructions" *ngIf="instructionText && examType !== 'manualAudiometryResponseArea'"><span [textContent]="instructionText" id="instructions-testing"></span></p>
 
     <response-area></response-area>
 </div>

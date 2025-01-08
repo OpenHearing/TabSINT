@@ -5,17 +5,18 @@
       <div class="audiogram-right" [ngClass]="{'red-border': selectedEar === 'Right'}">
         <audiogram *ngIf="refreshGraph" [dataStruct]="audiogramDataRight" [selectedEar]="selectedEar === 'Right' ? 'Right' : null" [isManualExam]="true"></audiogram>
       </div>
+      <div class="response-panel-vertical">
+        <button class="response-btn" [disabled]="!isNoResponseEnabled" (click)="noResponse()">No Response</button>
+        <button class="response-btn delete-threshold" (click)="clearPoint()">Delete Threshold</button>
+        <button class="response-btn record-threshold" (click)="recordThreshold()">Record Threshold</button>
+        <button class="response-btn submit-results" (click)="submitResults()">Submit Results</button>
+      </div>
       <div class="audiogram-left" [ngClass]="{'blue-border': selectedEar === 'Left'}" >
         <audiogram *ngIf="refreshGraph" [dataStruct]="audiogramDataLeft" [selectedEar]="selectedEar === 'Left' ? 'Left' : null" [isManualExam]="true"></audiogram>
       </div>
     </div>
 
     <div class="response-panel">
-      <div class="response-buttons">
-        <button class="response-btn" (click)="noResponse()">No Response</button>
-        <button class="response-btn"  (click)="clearPoint()">Delete Threshold</button>
-        <button class="response-btn record-threshold" (click)="recordThreshold()">Record Threshold</button>
-      </div>
       <div class="ear-buttons">
         <button
         class="ear-btn"
@@ -47,7 +48,7 @@
         </div>
         <div class="tone-display">
           <div class="tone-value">{{ currentDbSpl }}</div>
-          <div class="tone-label">dB HL</div>
+          <div class="tone-label">{{levelUnits}}</div>
         </div>
         <div class="play-button-container">
           <button class="play-btn" (click)="togglePlayPause()">

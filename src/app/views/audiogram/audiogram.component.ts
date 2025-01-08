@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, Input,OnChanges, SimpleChanges  } from '@angular/core';
+import { Component, ElementRef, OnInit, Input,SimpleChanges  } from '@angular/core';
 import * as d3 from 'd3';
 import { AudiogramDatumNoNullInterface, AudiometryResultsInterface } from '../../interfaces/audiometry-results.interface';
 import { LevelUnits } from '../../utilities/constants';
@@ -20,6 +20,7 @@ export class AudiogramComponent implements OnInit{
 
   @Input() isManualExam: boolean = false;
 
+  @Input() levelUnits: string = "dB HL";
   constructor(private readonly elementRef: ElementRef) {
   }
 
@@ -37,10 +38,10 @@ export class AudiogramComponent implements OnInit{
     }
   }
 
-  selectEar(ear: string): void {
-    this.selectedEar = ear;
-    this.updateGraphBorders(); // Call the border update function
-  }
+  // selectEar(ear: string): void {
+  //   this.selectedEar = ear;
+  //   this.updateGraphBorders();
+  // }
 
   updateGraphBorders(): void {
     console.log("Updating graph borders, selected ear is:", this.selectedEar);
@@ -97,50 +98,45 @@ export class AudiogramComponent implements OnInit{
     ? { top: 50, right: 60, bottom: 60, left: 80 }
     : { top: 55, right: 60, bottom: 60, left: 80 };
     const width = this.isManualExam
-      ? 420 - margin.left - margin.right
+      ? 350 - margin.left - margin.right
       : 540 - margin.left - margin.right;
     const height = width * aspectRatio - 20;
     const graphBorderColor = this.dataStruct.channels[0] === 'left' ? 'blue' : 'red';
     const xScale = d3.scaleLog().base(2).range([0, width]).domain([93.75, 24000]);
     const yScale = d3.scaleLinear().range([0, height]).domain([d3.min(yTicks)!, d3.max(yTicks)!]);
   
-    // const xAxis = d3.axisTop(xScale).tickFormat(d3.format(",.0f")).tickValues(xTicks).tickSize(15);
     const xAxis = d3.axisTop(xScale).tickFormat(d3.format(",.0f")).tickValues(xTicks).tickSize(15);
     const xAxisMinor = d3.axisTop(xScale).tickFormat(d3.format(",.0f")).tickValues(xTicksMinor).tickSize(3);
     const yAxis = d3.axisLeft(yScale).tickValues(yTicks).tickSize(10);
-    // const yAxis = d3.axisLeft(yScale).tickValues(yTicks).tickSize(10);
 
     const colorMap = (d: any) => d.channel.includes('left') ? 'blue' : '#FF6347';
     const strokeWidthMap = () => 2;
-    // const symbolMap = (d: any) => {
-    //   if (d.channel === 'left') {
-    //     return "M -4,-4 L 4,4 M -4,4 L 4,-4"; // "X" shape as custom path
-    //   } else {
-    //     return d3.symbol().type(d3.symbolCircle).size(50)(); // Circle for the right ear
-    //   }
-    // };
-      
+    // M -10,12 L -8,7
     const symbolMap = (d: any): string => {
       if (d.resultType?.includes('NoResponse')) {
         if (d.channel === 'left') {
+          // X with a proper southeast arrowhead
           return `
-      M -5,-5 L 5,5 
-      M -5,5 L 5,-5
-      M 0,0 L 6,6 M 6,6 L 4,6 M 6,6 L 6,4
-    `;
+           M -4,-4 L 4,9
+           M -4,4 L 4, -4
+           M 4,9 L 6,4
+           M 4,9 L -2,8
+          `;
         } else if (d.channel === 'right') {
+          // Circle with a proper southwest arrowhead
           return `
-      M 0,-4 A 4,4 0 1,0 0,4 A 4,4 0 1,0 0,-4
-      M 0,0 L -6,6 M -6,6 L -4,6 M -6,6 L -6,4
-    `;
+            M 0,-5 A 5,5 0 1,0 0,5 A 5,5 0 1,0 0,-5
+            M 0,5 L -10,12
+            M -10,12 L -8,7
+            M -10,12 L -2,11
+          `;
         }
       } else {
         // Default symbols for Threshold points
         if (d.channel === 'left') {
           return "M -4,-4 L 4,4 M -4,4 L 4,-4"; // X Shape
-        } else {
-          return d3.symbol().type(d3.symbolCircle).size(50)() || ""; // Circle Shape
         }
+          return d3.symbol().type(d3.symbolCircle).size(50)() ?? "";
       }
     
       return ""; // Return an empty string as a fallback
@@ -156,7 +152,6 @@ export class AudiogramComponent implements OnInit{
       .attr('transform', `translate(${margin.left},${margin.top})`);
   
     // X-axis
-    // svg.append('g').attr('class', 'x axis').attr('font-size', 16).call(xAxis);
     svg.append('g').attr('class', 'x axis').attr('font-size', 14).call(xAxis);
     svg.append('g').attr('class', 'x axis minor').call(xAxisMinor);
     svg.append('text')
@@ -168,7 +163,6 @@ export class AudiogramComponent implements OnInit{
       .text('Frequency (Hz)');
   
     // Y-axis
-    // svg.append('g').attr('class', 'y axis').attr('font-size', 16).call(yAxis);
     svg.append('g').attr('class', 'y axis').attr('font-size', 14).call(yAxis);
     svg.append('text')
       .attr('font-size', 18)
