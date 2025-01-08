@@ -13,13 +13,17 @@ import { likertSchema } from '../../../../../../schema/response-areas/likert.sch
   styleUrl: './likert.component.css'
 })
 export class LikertComponent implements OnInit, OnDestroy {
+  @Output() responseChange = new EventEmitter<number>();
+
   questions: string[] = [''];
   levels: number = 10;
   position: "above" | "below" = "above";
   labels: string[] = [''];
   useEmoticons: boolean = false;
   emoticons: string[] = ['😠', '😟', '😐', '🙂', '😃'];
-  @Output() responseChange = new EventEmitter<number>();
+  useSlider: boolean = true;
+  naBox: boolean = false;
+  sliderValue: number[] = [];
   results: ResultsInterface;
   pageSubscription: Subscription | undefined;
 
@@ -40,6 +44,8 @@ export class LikertComponent implements OnInit, OnDestroy {
           this.position = updatedLikertResponseArea.position ?? likertSchema.properties.position.default;
           this.labels = updatedLikertResponseArea.labels ?? [''];
           this.useEmoticons = updatedLikertResponseArea.useEmoticons ?? likertSchema.properties.useEmoticons.default;
+          this.useSlider = updatedLikertResponseArea.useSlider ?? likertSchema.properties.useSlider.default;
+          this.naBox = updatedLikertResponseArea.naBox ?? likertSchema.properties.naBox.default;
           this.results.currentPage.response = Array.from({ length: this.questions.length }, () => "NA");
         }
       }
@@ -53,5 +59,18 @@ export class LikertComponent implements OnInit, OnDestroy {
   onResponseChange(questionIndex: number, levelIndex: number): void {
     this.results.currentPage.response[questionIndex] = levelIndex;
     this.responseChange.emit(this.results.currentPage.response); 
+  }
+
+  onSliderChange(questionIndex: number, event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.sliderValue[questionIndex] = parseFloat(target.value);
+    this.onResponseChange(questionIndex, this.sliderValue[questionIndex]);
+  }
+
+  onNotApplicableChange(questionIndex: number, event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const isChecked = target.checked;
+    this.results.currentPage.response[questionIndex] = isChecked ? "NA" : this.sliderValue[questionIndex];
+    this.responseChange.emit(this.results.currentPage.response);
   }
 }

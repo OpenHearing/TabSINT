@@ -75,3 +75,34 @@
 .center-align {
   text-align: center;
 }
+
+.likert-slider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0;
+}
+
+.likert-slider input[type="range"] {
+  width: 80%;
+  margin: 0 10px;
+}
+
+.slider-value {
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+.likert-footer {
+  text-align: right;
+  margin-top: 10px;
+}
+
+.likert-footer label {
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.likert-footer input[type="checkbox"] {
+  margin-right: 5px;
+}
