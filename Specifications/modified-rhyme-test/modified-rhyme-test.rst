@@ -44,7 +44,7 @@ GUI
 
 The GUI should look like the image below with the following features.
 
-* The following parameters should be configurable in the protocol: filename of the Excel file that specifies wavefiles and exam parameters.
+* The following parameters should be configurable in the protocol: filename of the CSV/Excel file that specifies wavefiles and exam parameters. The format for this **fixed** and must be matched (see Figure 1 below). Cell entries for "My Notes" are optional. All other entries are required.
 * There should be a `Submit` button to initiate the exam. The `Submit` button becomes inactive after initating the exam.
 * After initiating the exam, a progress bar appears, an `Abort` appears and the and the `Submit` button is replaced with an inactive `Next` button (see screen 2 image below).
 * The `Next` button becomes active after each word presentation. Pressing the `Next` button takes the user to the next word set.
@@ -59,30 +59,36 @@ The GUI should look like the image below with the following features.
      - Value
    * - Exam Definition File
      - [exam_definition.xlsx]
+  
+.. figure:: mrt-Exam-Definition-Example.png
+   :align: center
+   :width: 400px
+
+   **Figure 1.** *Exam definition format with example entries.*
 
 .. figure:: mrt-GUI-Screen1.png
    :align: center
    :width: 400px
 
-   **Figure 1.** *GUI for the MRT exam prior to submission. Screen 1*
+   **Figure 2.** *GUI for the MRT exam prior to submission. Screen 1*
 
 .. figure:: mrt-GUI-Screen2.png
    :align: center
    :width: 400px
 
-   **Figure 2.** *GUI for the MRT exam while the exam is in progress. Screen 2*
+   **Figure 3.** *GUI for the MRT exam while the exam is in progress. Screen 2*
 
 .. figure:: mrt-GUI-Screen3a.png
    :align: center
    :width: 400px
 
-   **Figure 3.** *GUI for the MRT exam after a correct response. Screen 3a*
+   **Figure 4.** *GUI for the MRT exam after a correct response. Screen 3a*
 
 .. figure:: mrt-GUI-Screen3b.png
    :align: center
    :width: 400px
 
-   **Figure 4.** *GUI for the MRT exam after an incorrect response. Screen 3b*
+   **Figure 5.** *GUI for the MRT exam after an incorrect response. Screen 3b*
 
 Results-View
 ^^^^^^^^^^^^^
@@ -94,7 +100,7 @@ The GUI should display the results of the MRT exam:
    :align: center
    :width: 400px
 
-   **Figure 5.** *GUI for the MRT Results screen. Results Screen*
+   **Figure 6.** *GUI for the MRT Results screen. Results Screen*
 
 Software Testing Procedures
 ---------------------------
