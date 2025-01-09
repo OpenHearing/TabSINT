@@ -1,6 +1,17 @@
 <p class="instructions">{{instructions}}</p>
 
-<div id="wai-in-progress-plot"></div>
+<wai-input-parameters
+    [fStart]="fStart"
+    [fEnd]="fEnd"
+    [sweepDuration]="sweepDuration"
+    [sweepType]="sweepType"
+    [level]="level"
+    [numSweeps]="numSweeps"
+    [windowDuration]="windowDuration"
+    [numFrequencies]="numFrequencies"
+    [filename]="filename"
+    [outputRawMeasurements]="outputRawMeasurements">
+</wai-input-parameters>
 
 <br />
 

@@ -1,31 +1,30 @@
-import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import * as d3 from 'd3';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
 import { DevicesService } from '../../../../../controllers/devices.service';
 import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
 import { StateModel } from '../../../../../models/state/state.service';
 import { StateInterface } from '../../../../../models/state/state.interface';
-import { WAIDataInterface, WAIResultsInterface } from '../wai-exam/wai-exam.interface';
+import { WAIResultsInterface } from '../wai-exam/wai-exam.interface';
 import { Logger } from '../../../../../utilities/logger.service';
-import { createLegend, createOAEResultsChartSvg } from '../../../../../utilities/d3-plot-functions';
-import { waiSchema } from '../../../../../../schema/response-areas/wai.schema';
 
 @Component({
   selector: 'wai-in-progress',
   templateUrl: './wai-in-progress.component.html',
   styleUrl: './wai-in-progress.component.css'
 })
-export class WAIInProgressComponent implements OnInit, OnDestroy, AfterViewInit {
+export class WAIInProgressComponent implements OnInit, OnDestroy {
   @Input() device: ConnectedDevice | undefined;
-  @Input() f2Start: number = waiSchema.properties.f2Start.default;
-  @Input() f2End: number = waiSchema.properties.f2End.default;
-  @Input() xScale!: d3.ScaleLogarithmic<number, number, never>;
-  @Input() yScale!: d3.ScaleLinear<number, number, never>;
-  @Input() width!: number;
-  @Input() height!: number;
-  @Input() xTicks!: number[];
-  @Input() margin!: { top: number, right: number, bottom: number, left: number };
+  @Input() fStart!: number;
+  @Input() fEnd!: number;
+  @Input() sweepDuration!: number;
+  @Input() sweepType!: 'log' | 'linear';
+  @Input() level!: number;
+  @Input() numSweeps!: number;
+  @Input() windowDuration!: number;
+  @Input() numFrequencies!: number;
+  @Input() filename!: string;
+  @Input() outputRawMeasurements!: boolean;
   @Output() WAIResultsEvent = new EventEmitter<WAIResultsInterface>();
 
   state: StateInterface;
@@ -35,7 +34,6 @@ export class WAIInProgressComponent implements OnInit, OnDestroy, AfterViewInit 
   };
   inProgressResultsSubject = new BehaviorSubject<WAIResultsInterface>(this.inProgressResults);
   inProgressResultsSubscription: Subscription | undefined;
-  svg!: d3.Selection<SVGGElement, unknown, HTMLElement, any>;
   shouldAbort: boolean = false;
   isRequestingResults: boolean = false;
   instructions: string = "Exam in progress please wait.";
@@ -53,16 +51,9 @@ export class WAIInProgressComponent implements OnInit, OnDestroy, AfterViewInit 
   async ngOnInit(): Promise<void> {
     this.requestResults();
     this.inProgressResultsSubscription = this.inProgressResultsSubject.subscribe((updatedResults: WAIResultsInterface) => {
-      if (updatedResults.DpLow) {
-        this.updatePlot(updatedResults.DpLow);
-      }
       this.inProgressResults = updatedResults;
       this.inProgressResults.PctComplete = Math.round(this.inProgressResults.PctComplete);
     });
-  }
-
-  ngAfterViewInit(): void {
-    this.svg = this.createProgressPlot();
   }
 
   ngOnDestroy(): void {
@@ -113,73 +104,6 @@ export class WAIInProgressComponent implements OnInit, OnDestroy, AfterViewInit 
            resp[2] !== 'timeout' &&
            resp[1] !== 'OK';
   }
-
-  private createProgressPlot() {
-    let svg = d3.select('#dpoae-in-progress-plot')
-      .append('svg')
-      .attr('width', this.width + this.margin.left + this.margin.right)
-      .attr('height', this.height + this.margin.top + this.margin.bottom)
-      .append('g')
-      .attr('transform', `translate(${this.margin.left},${this.margin.top})`);;
-    
-    svg = createOAEResultsChartSvg(svg, this.width, this.height, this.xTicks, this.xScale, this.yScale);
-
-    const legendData = [
-      { label: 'DPOAE', color: 'blue', symbol: 'circle' },
-      { label: 'NF', color: 'red', symbol: 'X' }
-    ];
-
-    createLegend(svg, legendData, this.width, 85);
-
-    return svg;
-    
-  }
-
-  private updatePlot(data: WAIDataInterface) {
-    // TODO: May not need to filter data after we get real firmware
-    const filteredData = this.filterData(data);
-
-    // Plot DpLow Amplitude / DPOAE (blue open circles)
-    this.svg.selectAll('.dot')
-      .data(filteredData.Frequency)
-      .enter()
-      .append('circle')
-      .attr('cx', (d, i) => this.xScale(filteredData.Frequency[i]))
-      .attr('cy', (d, i) => this.yScale(filteredData.Amplitude[i]))
-      .attr('r', 4)
-      .style('fill', 'none')
-      .style('stroke', 'blue')
-      .style('stroke-width', 2);
-
-    // Plot DpLow NoiseFloor (red X)
-    this.svg.selectAll('.cross')
-      .data(filteredData.Frequency)
-      .enter()
-      .append('text')
-      .attr('x', (d, i) => this.xScale(filteredData.Frequency[i]))
-      .attr('y', (d, i) => this.yScale(filteredData.NoiseFloor[i]))
-      .attr('text-anchor', 'middle')
-      .attr('alignment-baseline', 'middle')
-      .style('fill', 'red')
-      .style('font-size', '10px')
-      .style('font-weight', 'bold')
-      .text('X');
-
-  }
-
-  private filterData(data: WAIDataInterface) {
-    const validIndices = data.Frequency
-      .map((freq, index) => (freq >= this.f2Start && freq <= this.f2End ? index : -1))
-      .filter(index => index !== -1);
-  
-    return {
-      Frequency: validIndices.map(index => data.Frequency[index]),
-      Amplitude: validIndices.map(index => data.Amplitude[index]),
-      Phase: validIndices.map(index => data.Phase[index]),
-      NoiseFloor: validIndices.map(index => data.NoiseFloor![index]),
-    };
-  }
-
   
   private async waitForRequestResultsDone() {
     this.shouldAbort = true;

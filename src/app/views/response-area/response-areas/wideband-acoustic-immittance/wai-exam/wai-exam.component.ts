@@ -22,15 +22,16 @@ import { waiSchema } from '../../../../../../schema/response-areas/wai.schema';
 })
 export class WAIExamComponent implements OnInit, OnDestroy {
   tabsintId: string = waiSchema.properties.tabsintId.default;
-  f2Start: number = waiSchema.properties.f2Start.default;
-  f2End: number = waiSchema.properties.f2End.default;
-  frequencyRatio: number = waiSchema.properties.frequencyRatio.default;
+  fStart: number = waiSchema.properties.fStart.default;
+  fEnd: number = waiSchema.properties.fEnd.default;
   sweepDuration: number = waiSchema.properties.sweepDuration.default;
-  windowDuration: number = waiSchema.properties.windowDuration.default;
   sweepType: number = waiSchema.properties.sweepType.default;
-  minSweeps: number = waiSchema.properties.minSweeps.default;
-  maxSweeps: number = waiSchema.properties.maxSweeps.default;
-  noiseFloorThreshold: number = waiSchema.properties.noiseFloorThreshold.default;
+  level: number = waiSchema.properties.level.default;
+  numSweeps: number = waiSchema.properties.numSweeps.default;
+  windowDuration: number = waiSchema.properties.windowDuration.default;
+  numFrequencies: number = waiSchema.properties.numFrequencies.default;
+  filename: number = waiSchema.properties.filename.default;
+  outputRawMeasurements: number = waiSchema.properties.outputRawMeasurements.default;
   results: ResultsInterface;
   showResults: boolean = waiSchema.properties.showResults.default;
   pageSubscription: Subscription | undefined;
@@ -45,11 +46,11 @@ export class WAIExamComponent implements OnInit, OnDestroy {
   margin = { top: 20, right: 30, bottom: 60, left: 70 };
   width = 450 - this.margin.left - this.margin.right;
   height = 300 - this.margin.top - this.margin.bottom;
-  xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000].filter(tick => tick >= this.f2Start && tick <= this.f2End);;
+  xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000].filter(tick => tick >= this.fStart && tick <= this.fEnd);
 
   // Define scales
   xScale = d3.scaleLog()
-    .domain([this.f2Start, this.f2End])
+    .domain([this.fStart, this.fEnd])
     .range([0, this.width]);
 
   yScale = d3.scaleLinear()
@@ -74,15 +75,16 @@ export class WAIExamComponent implements OnInit, OnDestroy {
       if (updatedPage?.responseArea?.type === 'WAIResponseArea') {
         const responseArea = updatedPage.responseArea as WAIInterface;
         this.tabsintId = responseArea.tabsintId ?? waiSchema.properties.tabsintId.default;
-        this.f2Start = responseArea.f2Start ?? waiSchema.properties.f2Start.default;
-        this.f2End = responseArea.f2End ?? waiSchema.properties.f2End.default;
-        this.frequencyRatio = responseArea.frequencyRatio ?? waiSchema.properties.frequencyRatio.default;
+        this.fStart = responseArea.fStart ?? waiSchema.properties.fStart.default;
+        this.fEnd = responseArea.fEnd ?? waiSchema.properties.fEnd.default;
         this.sweepDuration = responseArea. sweepDuration ?? waiSchema.properties.sweepDuration.default;
-        this.windowDuration = responseArea.windowDuration ?? waiSchema.properties.windowDuration.default;
         this.sweepType = responseArea.sweepType ?? waiSchema.properties.sweepType.default;
-        this.minSweeps = responseArea.minSweeps ?? waiSchema.properties.minSweeps.default;
-        this.maxSweeps = responseArea.maxSweeps ?? waiSchema.properties.maxSweeps.default;
-        this.noiseFloorThreshold = responseArea.noiseFloorThreshold ?? waiSchema.properties.noiseFloorThreshold.default;
+        this.level = responseArea.level ?? waiSchema.properties.level.default;
+        this.numSweeps = responseArea.numSweeps ?? waiSchema.properties.numSweeps.default;
+        this.windowDuration = responseArea.windowDuration ?? waiSchema.properties.windowDuration.default;
+        this.numFrequencies = responseArea.numFrequencies ?? waiSchema.properties.numFrequencies.default;
+        this.filename = responseArea.filename ?? waiSchema.properties.filename.default;
+        this.outputRawMeasurements = responseArea.outputRawMeasurements ?? waiSchema.properties.outputRawMeasurements.default;
       }
     })
   }
@@ -120,20 +122,21 @@ export class WAIExamComponent implements OnInit, OnDestroy {
   private async beginExam() {
     this.device = this.deviceUtil.getDeviceFromTabsintId(this.tabsintId);
     if (this.device) {
-        const examProperties = {
-          F2Start: this.f2Start,
-          F2End:  this.f2End,
-          Ratio: this.frequencyRatio,
-          SweepDuration: this.sweepDuration,
-          SweepType: this.sweepType,
-          MinSweeeps: this.minSweeps,
-          MaxSweeps: this.maxSweeps,
-          NoiseFloorThreshold: this.noiseFloorThreshold,
-          WindowDuration: this.windowDuration
-        };
-        await this.devicesService.queueExam(this.device, "WAI", examProperties);
+      const examProperties = {
+        FStart: this.fStart,
+        FEnd:  this.fEnd,
+        SweepDuration: this.sweepDuration,
+        SweepType: this.sweepType,
+        Level: this.level,
+        NumSweeps: this.numSweeps,
+        WindowDuration: this.windowDuration,
+        NumFrequencies: this.numFrequencies,
+        Filename: this.filename,
+        OutputRawMeasurements: this.outputRawMeasurements
+      };
+      await this.devicesService.queueExam(this.device, "WAI", examProperties);
     } else {
-        this.logger.error("Error setting up WAI exam");
+      this.logger.error("Error setting up WAI exam");
     }
   }
 }

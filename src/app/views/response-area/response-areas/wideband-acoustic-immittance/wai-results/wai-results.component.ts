@@ -10,8 +10,8 @@ import { createLegend, createOAEResultsChartSvg } from '../../../../../utilities
 })
 export class WAIResultsComponent implements AfterViewInit {
   @Input() waiResults!: WAIResultsInterface;
-  @Input() f2Start!: number;
-  @Input() f2End!: number;
+  @Input() fStart!: number;
+  @Input() fEnd!: number;
   @Input() xScale!: d3.ScaleLogarithmic<number, number, never>;
   @Input() width!: number;
   @Input() height!: number;

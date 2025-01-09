@@ -1,35 +1,37 @@
 <div [ngSwitch]="currentStep">
     <wai-input-parameters
         *ngSwitchCase="'input-parameters'"
-        [f2Start]="f2Start"
-        [f2End]="f2End"
-        [frequencyRatio]="frequencyRatio"
+        [fStart]="fStart"
+        [fEnd]="fEnd"
         [sweepDuration]="sweepDuration"
-        [windowDuration]="windowDuration"
         [sweepType]="sweepType"
-        [minSweeps]="minSweeps"
-        [maxSweeps]="maxSweeps"
-        [noiseFloorThreshold]="noiseFloorThreshold">        
+        [level]="level"
+        [numSweeps]="numSweeps"
+        [windowDuration]="windowDuration"
+        [numFrequencies]="numFrequencies"
+        [filename]="filename"
+        [outputRawMeasurements]="outputRawMeasurements">
     </wai-input-parameters>
     
     <wai-in-progress
         *ngSwitchCase="'in-progress'"
-        [f2Start]="f2Start"
-        [f2End]="f2End"
-        [device]="device"
-        [xScale]="xScale"
-        [yScale]="yScale"
-        [width]="width"
-        [height]="height"
-        [xTicks]="xTicks"
-        [margin]="margin"
+        [fStart]="fStart"
+        [fEnd]="fEnd"
+        [sweepDuration]="sweepDuration"
+        [sweepType]="sweepType"
+        [level]="level"
+        [numSweeps]="numSweeps"
+        [windowDuration]="windowDuration"
+        [numFrequencies]="numFrequencies"
+        [filename]="filename"
+        [outputRawMeasurements]="outputRawMeasurements"
         (waiResultsEvent)="saveResults($event)">
     </wai-in-progress>
 
     <wai-results
         *ngSwitchCase="'results'"
-        [f2Start]="f2Start"
-        [f2End]="f2End"
+        [fStart]="fStart"
+        [fEnd]="fEnd"
         [xScale]="xScale"
         [width]="width"
         [height]="height"

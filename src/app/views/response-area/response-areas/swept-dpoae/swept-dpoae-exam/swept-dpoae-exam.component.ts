@@ -31,6 +31,7 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
   minSweeps: number = sweptDpoaeSchema.properties.minSweeps.default;
   maxSweeps: number = sweptDpoaeSchema.properties.maxSweeps.default;
   noiseFloorThreshold: number = sweptDpoaeSchema.properties.noiseFloorThreshold.default;
+  outputRawMeasurements: boolean = sweptDpoaeSchema.properties.outputRawMeasurements.default;
   results: ResultsInterface;
   showResults: boolean = sweptDpoaeSchema.properties.showResults.default;
   pageSubscription: Subscription | undefined;
@@ -45,7 +46,7 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
   margin = { top: 20, right: 30, bottom: 60, left: 70 };
   width = 450 - this.margin.left - this.margin.right;
   height = 300 - this.margin.top - this.margin.bottom;
-  xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000].filter(tick => tick >= this.f2Start && tick <= this.f2End);;
+  xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000].filter(tick => tick >= this.f2Start && tick <= this.f2End);
 
   // Define scales
   xScale = d3.scaleLog()
@@ -83,6 +84,7 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
         this.minSweeps = responseArea.minSweeps ?? sweptDpoaeSchema.properties.minSweeps.default;
         this.maxSweeps = responseArea.maxSweeps ?? sweptDpoaeSchema.properties.maxSweeps.default;
         this.noiseFloorThreshold = responseArea.noiseFloorThreshold ?? sweptDpoaeSchema.properties.noiseFloorThreshold.default;
+        this.outputRawMeasurements = responseArea.outputRawMeasurements ?? sweptDpoaeSchema.properties.outputRawMeasurements.default;
       }
     })
   }
@@ -129,7 +131,8 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
           MinSweeeps: this.minSweeps,
           MaxSweeps: this.maxSweeps,
           NoiseFloorThreshold: this.noiseFloorThreshold,
-          WindowDuration: this.windowDuration
+          WindowDuration: this.windowDuration,
+          OutputRawMeasurements: this.outputRawMeasurements
         };
         await this.devicesService.queueExam(this.device, "SweptDPOAE", examProperties);
     } else {

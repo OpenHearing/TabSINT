@@ -12,6 +12,7 @@ export interface SweptDpoaeInterface extends CommonResponseAreaInterface {
   minSweeps?: number,
   maxSweeps?: number,
   noiseFloorThreshold?: number,
+  outputRawMeasurements?: boolean,
   showResults?: boolean
 }
 
