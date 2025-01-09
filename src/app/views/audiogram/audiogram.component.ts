@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, Input,SimpleChanges  } from '@angular/core';
 import * as d3 from 'd3';
 import { AudiogramDatumNoNullInterface, AudiometryResultsInterface } from '../../interfaces/audiometry-results.interface';
-import { LevelUnits } from '../../utilities/constants';
+import { LevelUnits, ResultType } from '../../utilities/constants';
 
 // See https://www.asha.org/policy/GL1990-00006/ for audiogram specifications
 @Component({
@@ -111,7 +111,7 @@ export class AudiogramComponent implements OnInit{
     const strokeWidthMap = () => 2;
     // M -10,12 L -8,7
     const symbolMap = (d: any): string => {
-      if (d.resultType?.includes('NoResponse')) {
+      if (d.resultType === ResultType.Beyond || d.resultType=== ResultType.Better) {
         if (d.channel === 'left') {
           // X with a proper southeast arrowhead
           return `

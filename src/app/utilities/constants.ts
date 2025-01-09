@@ -102,3 +102,9 @@ export const ResultType_Better = "Hearing Potentially Better the Calibrated Rang
 export const ResultType_Beyond = "Hearing Potentially Beyond the Calibrated Range";
 export const ResultType_MaximumMaskingLevel = "Maximum Masking Level Reached. Could Not Determine Threshold";
 export const ResultType_MaskinDilemma = "Could Not Mask Due To Masking Dilemma";
+
+export enum ResultType {
+    Threshold = "Threshold",
+    Better = "Hearing Potentially Better the Calibrated Range",
+    Beyond = "Hearing Potentially Beyond the Calibrated Range"
+}
