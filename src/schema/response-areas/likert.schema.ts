@@ -50,7 +50,7 @@ export const likertSchema: JSONSchemaType<LikertInterface> = {
       type: "boolean",
       description: "If true, use a slider to 1 decimal acuracy to record the answer.",
       nullable: true,
-      default: true
+      default: false
     },
     naBox: {
       type: "boolean",
