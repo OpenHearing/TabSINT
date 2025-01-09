@@ -107,9 +107,8 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         this.deviceSubscription = this.devicesModel.tympanResponseSubject.subscribe(this.logDeviceResponse.bind(this));
         try {
             await ScreenOrientation.lock({ orientation: "landscape" });
-            console.log("Screen locked to landscape.");
           } catch (error) {
-            console.error("Failed to lock screen orientation:", error);
+            this.logger.error("Failed to lock screen orientation:" + error);
         }
     }
 
@@ -120,9 +119,8 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         this.pageSubscription?.unsubscribe();
         try {
             await ScreenOrientation.unlock();
-            console.log("Screen orientation unlocked.");
           } catch (error) {
-            console.error("Failed to unlock screen orientation:", error);
+            this.logger.error("Failed to unlock screen orientation:" + error);
           }
     }
 
@@ -257,7 +255,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
             "OutputChannel": this.selectedEar==="Left" ? "HPL0" : "HPR0"
         };
         let resp = await this.devicesService.examSubmission(this.device!, examProperties);
-        console.log("resp from tympan after manual audiometry exam submission:",resp);
+        this.logger.debug("resp from tympan after manual audiometry exam submission:" + resp);
     }
 
     async togglePlayPause() {
@@ -294,12 +292,13 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
             channels: [...this.audiogramDataLeft.channels, ...this.audiogramDataRight.channels],
             resultTypes: [...this.audiogramDataLeft.resultTypes, ...this.audiogramDataRight.resultTypes],
             masking: [...this.audiogramDataLeft.masking, ...this.audiogramDataRight.masking],
-            levelUnits: LevelUnits.dB_SPL
+            levelUnits: this.levelUnits
         };
     
         this.audiogramData = combinedResults;
         this.currentStep = 'Results';
         this.examService.submit = this.examService.submitDefault.bind(this.examService);
+        this.results.currentPage.response = combinedResults;
     }
         
     private organizeAudiometryResults() {
@@ -430,6 +429,6 @@ not recognized as a frequency requested for this exam, it will be ignored.` ,
     }
     
     private logDeviceResponse(msg: TympanResponse) {
-        console.log("device msg:", JSON.stringify(msg));
+        this.logger.debug("device msg:" + JSON.stringify(msg));
     }
 }

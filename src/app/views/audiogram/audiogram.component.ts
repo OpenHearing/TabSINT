@@ -33,7 +33,6 @@ export class AudiogramComponent implements OnInit{
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['selectedEar']) {
-      console.log('Selected ear:', this.selectedEar);
       this.updateGraphBorders();
     }
   }
@@ -44,7 +43,6 @@ export class AudiogramComponent implements OnInit{
   // }
 
   updateGraphBorders(): void {
-    console.log("Updating graph borders, selected ear is:", this.selectedEar);
   
     const svg = d3.select(this.elementRef.nativeElement).select('svg');
   

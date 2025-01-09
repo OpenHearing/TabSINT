@@ -47,7 +47,14 @@
     </button>
         </div>
         <div class="tone-display">
-          <div class="tone-value">{{ currentDbSpl }}</div>
+          <div class="tone-value">
+            <ng-container *ngIf="currentDbSpl <= minOutputLevel || currentDbSpl >= maxOutputLevel">
+              ({{ currentDbSpl }})
+            </ng-container>
+            <ng-container *ngIf="currentDbSpl > minOutputLevel && currentDbSpl < maxOutputLevel">
+              {{ currentDbSpl }}
+            </ng-container>
+          </div>
           <div class="tone-label">{{levelUnits}}</div>
         </div>
         <div class="play-button-container">
