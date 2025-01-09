@@ -23,23 +23,28 @@
     <div class="ruler">
       <div
         class="tick"
-        *ngFor="let value of [].constructor((levels-1) * 10+1); let index = index"
+        *ngFor="let value of [].constructor(levels * 10 + 1); let index = index"
         [ngClass]="{
           'major-tick': index % 10 === 0,
           'minor-tick': index % 10 !== 0
         }"
-        [style.left]="(index / 10) * 100 / (levels - 1) + '%'"
+        [style.left]="(index / 10) * 100 / levels + '%'"
       >
+      <button
+        *ngIf="index % 10 === 0"
+        class="tick-button"
+        (click)="setSliderValue(questionIndex, index/10)"
+        [style.left]="(index / levels) * 100 + '%'"
+      >
+        {{ index / 10 }}
+      </button>
       </div>
     </div>
-    <input type="range" min="0" max="{{ levels - 1 }}" step="0.1"
+    <input type="range" min="0" max="{{ levels }}" step="0.1"
           class="custom-slider"
          [value]="sliderValue[questionIndex]"
          (input)="onSliderChange(questionIndex, $event)" />
          
-    <div class="likert-options" *ngFor="let level of [].constructor(levels); let levelIndex = index">
-        <span>{{ levelIndex }}</span>
-    </div>
   </div>
 
   <div *ngIf!="useSlider" class="likert-scale">

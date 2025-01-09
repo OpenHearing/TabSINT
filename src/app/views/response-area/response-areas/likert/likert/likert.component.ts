@@ -73,4 +73,9 @@ export class LikertComponent implements OnInit, OnDestroy {
     this.results.currentPage.response[questionIndex] = isChecked ? "NA" : this.sliderValue[questionIndex];
     this.responseChange.emit(this.results.currentPage.response);
   }
+  setSliderValue(questionIndex: number, value: number): void {
+    this.sliderValue[questionIndex] = value;
+    this.onResponseChange(questionIndex, value);
+  }
+  
 }
