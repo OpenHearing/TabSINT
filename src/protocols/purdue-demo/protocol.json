@@ -1,7 +1,7 @@
 {
-  "title": "TabSINT Demonstration",
-  "subtitle": "Textbox, Manual Audiometry, and Calibration Response Areas.",
-  "instructionText": "Choose the exam to demonstrate, then view results.",
+  "title": "Purdue Protocol Shakedown Testing",
+  "subtitle": "ARDC Survey, Manual Audiometry, Calibration, Swept DPOAE.",
+  "instructionText": "Choose the exam to perform, then view results.",
   "hideProgressBar": true,
   "navMenu":[
     {
@@ -25,13 +25,16 @@
             "type":"multipleChoiceResponseArea",
             "choices":[
               {
-                "id":"Questionnaire"
+                "id":"Subject Information Sheet"
+              },
+              {
+                "id": "ARDC Survey"
               },
               {
                 "id":"Manual Audiometry"
               },
               {
-                "id": "Calibration Exam" 
+                "id": "Calibration" 
               },
               {
                 "id": "Swept DPOAE" 
@@ -43,9 +46,15 @@
           }, 
           "followOns":[
             {
-              "conditional":"result.response=='Questionnaire'",
+              "conditional":"result.response=='Subject Information Sheet'",
               "target":{
-                "reference":"Questionnaire"
+                "reference":"Subject_Information_Sheet"
+              } 
+            },
+            {
+              "conditional":"result.response=='ARDC Survey'",
+              "target":{
+                "reference":"ARDC_Survey"
               } 
             },
             {
@@ -79,17 +88,171 @@
   ],
   "subProtocols":[
     {
-      "protocolId": "Questionnaire",
+      "protocolId": "Subject_Information_Sheet",
       "pages":[
         {
-          "id": "textbox_001",
-          "title": "Subject ID",
-          "instructionText": "Enter the subject ID",
+          "id": "ARCD_1",
+          "title": "ARDC 1",
+          "instructionText": "To be completed by researcher:",
           "responseArea": {
-            "type": "textboxResponseArea",
-            "responseRequired": false
+            "type": "multipleInputResponseArea",
+            "inputList": [
+              {
+                "text": "Subject ID",
+                "inputType": "text",
+                "required": true
+              },
+              {
+                "text": "Researcher",
+                "inputType": "text"
+              },
+              {
+                "text": "Today's Date",
+                "inputType": "date",
+                "dateProperties": {
+                  "default": "today"
+                }
+              },
+              {
+                "text": "Name of Study",
+                "inputType": "text"
+              }
+            ]
           }
         },
+        {
+          "id": "ARDC_2",
+          "title": "ARDC 2",
+          "instructionText": "To be completed by participant:",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "inputList": [
+              {
+                "text": "Birhtdate",
+                "inputType": "date",
+                "dateProperties": {
+                  "maxDate": "today"
+                }
+              },
+              {
+                "text": "Age",
+                "inputType": "number"
+              },
+              {
+                "text": "Gender",
+                "inputType": "dropdown",
+                "options": [
+                  "Male",
+                  "Female",
+                  "Non-binary",
+                  "Not reported"
+                ]
+              },
+              {
+                "text": "Are you a native speaker of American English?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "Are you a native speaker of American English?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "Do you speak other languages other than English?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "Are you on an F1 or J1 Visa?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "Do you have a hearing loss?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes, I have a diagnosed hearing loss",
+                  "Maybe, I or others suspect I have a hearing loss, but I have not been tested",
+                  "No, I do not have trouble hearing"
+                ]
+              },
+              {
+                "text": "Are you consider yourself regularly exposed to noise (e.g., play in a band, have a job with noisy tools/machines)?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "Do you have frequent ringing in your hears (tinnitus)?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "Where did you learn about our study?",
+                "inputType": "text"
+              }
+            ]
+          }
+        },
+        {
+          "id": "ARDC_3",
+          "title": "Ethnicity Data",
+          "instructionText": "Please fill in the following so that we can report to federal funding agencies (e.g., National Institutes of Health) the percentage of our subjects in each of their categories. NOTE: The information requested below is optional. You are not obligated to provide this information.",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "inputList": [
+              {
+                "text": "Part A: Check the category that describes you best:",
+                "inputType": "dropdown",
+                "options": [
+                  "Hispanic or Latino",
+                  "Not Hispanic or Latino",
+                  "Not Reported"
+                ]
+              },
+              {
+                "text": "Part B: Please check all the categories that apply:",
+                "inputType": "multi-dropdown",
+                "options": [
+                  "American Indian/Alaskan native ",
+                  "Asian",
+                  "Native Hawaiian or Other Pacific Islander",
+                  "Black or African American",
+                  "White",
+                  "Other",
+                  "Not reported"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "ARDC_Survey",
+      "pages": [
         {
           "id": "likert",
           "responseArea": {
@@ -106,12 +269,11 @@
           }
         },
         {
-          "id": "ARDC_Survey_1",
-          "title": "ARDC Surveys",
-          "instructionText": "Enter the following information:",
+          "id": "ARDC_",
+          "title": "ARDC 2",
+          "instructionText": "To be completed by participant:",
           "responseArea": {
             "type": "multipleInputResponseArea",
-            "review": true,
             "inputList": [
               {
                 "text": "Have you ever had tubes put in your eardrum(s)?",
