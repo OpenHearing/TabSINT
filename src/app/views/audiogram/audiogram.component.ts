@@ -37,10 +37,6 @@ export class AudiogramComponent implements OnInit{
     }
   }
 
-  // selectEar(ear: string): void {
-  //   this.selectedEar = ear;
-  //   this.updateGraphBorders();
-  // }
 
   updateGraphBorders(): void {
   
@@ -192,17 +188,6 @@ export class AudiogramComponent implements OnInit{
       .attr("class", "grid")
       .call(yAxis.ticks(10).tickSize(-width).tickFormat(() => ""));
 
-    // Border around chart
-  //   svg.append('rect')
-  // .attr('x', 0)
-  // .attr('y', 0)
-  // .attr('height', height)
-  // .attr('width', width)
-  // .attr('class', 'graph-border')  // Add this class here
-  // .style('stroke', 'black')       // Default border color
-  // .style('fill', 'none')
-  // .style('stroke-width', 1);
-
   svg.append('rect')
   .attr('x', 0)
   .attr('y', 0)
@@ -238,39 +223,6 @@ export class AudiogramComponent implements OnInit{
 
     // r is the buffer radius around symbols in pixels
     let r = 12;
-
-    // for (let k = 0; k < data.length - 1; k++) {
-    //   let theta = Math.atan(
-    //     (yScale(data[k + 1].threshold) - yScale(data[k].threshold)) /
-    //       (xScale(data[k + 1].frequency) - xScale(data[k].frequency))
-    //   );
-      
-    //   if (data[k].channel === "left" && data[k + 1].channel === "left") {
-    //     if (data[k].resultType === "Threshold" && data[k + 1].resultType === "Threshold") {
-    //       dline
-    //         .enter()
-    //         .append("line")
-    //         .attr("x1", xScale(data[k].frequency) + r * Math.cos(theta))
-    //         .attr("y1", yScale(data[k].threshold) + r * Math.sin(theta))
-    //         .attr("x2", xScale(data[k + 1].frequency) - r * Math.cos(theta))
-    //         .attr("y2", yScale(data[k + 1].threshold) - r * Math.sin(theta))
-    //         .attr("stroke", colorMap(data[k]))
-    //         .attr("stroke-width", strokeWidthMap);
-    //     }
-    //   } else if (data[k].channel === "right" && data[k + 1].channel === "right") {
-    //     if (data[k].resultType === "Threshold" && data[k + 1].resultType === "Threshold") {
-    //       dline
-    //         .enter()
-    //         .append("line")
-    //         .attr("x1", xScale(data[k].frequency) + r * Math.cos(theta))
-    //         .attr("y1", yScale(data[k].threshold) + r * Math.sin(theta))
-    //         .attr("x2", xScale(data[k + 1].frequency) - r * Math.cos(theta))
-    //         .attr("y2", yScale(data[k + 1].threshold) - r * Math.sin(theta))
-    //         .attr("stroke", colorMap(data[k]))
-    //         .attr("stroke-width", strokeWidthMap);
-    //     }
-    //   }
-    // }
     for (let k = 0; k < data.length - 1; k++) {
       // Calculate the angle (theta) for buffer adjustment
       let theta = Math.atan(
