@@ -27,7 +27,7 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
   frequencyRatio: number = sweptDpoaeSchema.properties.frequencyRatio.default;
   sweepDuration: number = sweptDpoaeSchema.properties.sweepDuration.default;
   windowDuration: number = sweptDpoaeSchema.properties.windowDuration.default;
-  sweepType: number = sweptDpoaeSchema.properties.sweepType.default;
+  sweepType: string = sweptDpoaeSchema.properties.sweepType.default;
   minSweeps: number = sweptDpoaeSchema.properties.minSweeps.default;
   maxSweeps: number = sweptDpoaeSchema.properties.maxSweeps.default;
   noiseFloorThreshold: number = sweptDpoaeSchema.properties.noiseFloorThreshold.default;

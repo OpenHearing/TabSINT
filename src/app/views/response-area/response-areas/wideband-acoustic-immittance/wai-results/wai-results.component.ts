@@ -10,8 +10,6 @@ import { createLegend, createOAEResultsChartSvg } from '../../../../../utilities
 })
 export class WAIResultsComponent implements AfterViewInit {
   @Input() waiResults!: WAIResultsInterface;
-  @Input() fStart!: number;
-  @Input() fEnd!: number;
   @Input() xScale!: d3.ScaleLogarithmic<number, number, never>;
   @Input() width!: number;
   @Input() height!: number;
@@ -25,8 +23,23 @@ export class WAIResultsComponent implements AfterViewInit {
   }
 
   private createResultsPlot() {
-    // TODO: Do I need to filter data? Probably not after I get real firmware.
-    const filteredData = this.filterSweptDpoaeResults(this.waiResults);
+    const filteredData = {
+      DpLow: {
+        Amplitude: [1],
+        NoiseFloor: [1],
+        Frequency: [1]
+      },
+      F1: {
+        Amplitude: [1],
+        NoiseFloor: [1],
+        Frequency: [1]
+      },
+      F2: {
+        Amplitude: [1],
+        NoiseFloor: [1],
+        Frequency: [1]
+      }
+    };
 
     const yScale = d3.scaleLinear()
       .domain([
@@ -36,7 +49,7 @@ export class WAIResultsComponent implements AfterViewInit {
           [...filteredData.DpLow.Amplitude, ...filteredData.DpLow.NoiseFloor, ...filteredData.F1.Amplitude, ...filteredData.F2.Amplitude]) as number]
       ).range([this.height, 0]);
 
-    let svg = d3.select('#dpoae-results-plot')
+    let svg = d3.select('#wai-results-plot')
       .append('svg')
           .attr('width', this.width + this.margin.left + this.margin.right)
           .attr('height', this.height + this.margin.top + this.margin.bottom)
@@ -125,59 +138,4 @@ export class WAIResultsComponent implements AfterViewInit {
     return svg;
   }
 
-  private filterSweptDpoaeResults(
-    data: WAIResultsInterface
-  ): {
-    DpLow: { Frequency: number[]; Amplitude: number[]; NoiseFloor: number[] };
-    F2: { Frequency: number[]; Amplitude: number[] };
-    F1: { Frequency: number[]; Amplitude: number[] };
-  } {
-    // Initialize filtered data
-    const filteredData = {
-      DpLow: {
-        Frequency: [],
-        Amplitude: [],
-        NoiseFloor: [],
-      },
-      F2: {
-        Frequency: [],
-        Amplitude: [],
-      },
-      F1: {
-        Frequency: [],
-        Amplitude: [],
-      },
-    };
-  
-    // Helper function to filter and populate
-    const filterAndPush = (
-      source: { Frequency: number[]; Amplitude: number[]; NoiseFloor?: number[] },
-      target: { Frequency: number[]; Amplitude: number[]; NoiseFloor?: number[] }
-    ) => {
-      for (let i = 0; i < source.Frequency.length; i++) {
-        const freq = source.Frequency[i];
-        if (freq >= this.f2Start && freq <= this.f2End) {
-          target.Frequency.push(freq);
-          target.Amplitude.push(source.Amplitude[i]);
-          if (source.NoiseFloor && target.NoiseFloor) {
-            target.NoiseFloor.push(source.NoiseFloor[i]);
-          }
-        }
-      }
-    }
-  
-    if (data.DpLow) {
-      filterAndPush(data.DpLow, filteredData.DpLow);
-    }
-  
-    if (data.F2) {
-      filterAndPush(data.F2, filteredData.F2);
-    }
-  
-    if (data.F1) {
-      filterAndPush(data.F1, filteredData.F1);
-    }
-  
-    return filteredData;
-  }
 }

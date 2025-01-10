@@ -15,6 +15,7 @@
     
     <wai-in-progress
         *ngSwitchCase="'in-progress'"
+        [device]="device"
         [fStart]="fStart"
         [fEnd]="fEnd"
         [sweepDuration]="sweepDuration"
@@ -25,13 +26,11 @@
         [numFrequencies]="numFrequencies"
         [filename]="filename"
         [outputRawMeasurements]="outputRawMeasurements"
-        (waiResultsEvent)="saveResults($event)">
+        (WAIResultsEvent)="saveResults($event)">
     </wai-in-progress>
 
     <wai-results
         *ngSwitchCase="'results'"
-        [fStart]="fStart"
-        [fEnd]="fEnd"
         [xScale]="xScale"
         [width]="width"
         [height]="height"

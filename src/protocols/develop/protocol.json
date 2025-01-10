@@ -43,6 +43,9 @@
                 "id": "Swept DPOAE Exam" 
               },
               {
+                "id": "WAI Exam" 
+              },
+              {
                 "id":"End All"
               }
             ]
@@ -82,6 +85,12 @@
               "conditional": "result.response=='Swept DPOAE Exam'",
               "target": {
                 "reference": "SweptDpoaeExam"
+              }
+            },
+            {
+              "conditional": "result.response=='WAI Exam'",
+              "target": {
+                "reference": "WAIExam"
               }
             },
             {
@@ -273,6 +282,22 @@
           "title": "Swept DPOAE",
           "responseArea": {
             "type": "sweptDPOAEResponseArea"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "WAIExam",
+      "pages": [
+        {
+          "id": "wai_001",
+          "title": "Wideband Acoustic Immittance (WAI)",
+          "responseArea": {
+            "type": "WAIResponseArea"
           }
         },
         {

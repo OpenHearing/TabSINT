@@ -9,7 +9,7 @@ export class WAIInputParametersComponent {
   @Input() fStart!: number;
   @Input() fEnd!: number;
   @Input() sweepDuration!: number;
-  @Input() sweepType!: 'log' | 'linear';
+  @Input() sweepType!: string;
   @Input() level!: number;
   @Input() numSweeps!: number;
   @Input() windowDuration!: number;

@@ -25,13 +25,13 @@ export class WAIExamComponent implements OnInit, OnDestroy {
   fStart: number = waiSchema.properties.fStart.default;
   fEnd: number = waiSchema.properties.fEnd.default;
   sweepDuration: number = waiSchema.properties.sweepDuration.default;
-  sweepType: number = waiSchema.properties.sweepType.default;
+  sweepType: string = waiSchema.properties.sweepType.default;
   level: number = waiSchema.properties.level.default;
   numSweeps: number = waiSchema.properties.numSweeps.default;
   windowDuration: number = waiSchema.properties.windowDuration.default;
   numFrequencies: number = waiSchema.properties.numFrequencies.default;
-  filename: number = waiSchema.properties.filename.default;
-  outputRawMeasurements: number = waiSchema.properties.outputRawMeasurements.default;
+  filename: string = waiSchema.properties.filename.default;
+  outputRawMeasurements: boolean = waiSchema.properties.outputRawMeasurements.default;
   results: ResultsInterface;
   showResults: boolean = waiSchema.properties.showResults.default;
   pageSubscription: Subscription | undefined;

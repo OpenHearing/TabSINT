@@ -11,7 +11,7 @@ export class SweptDpoaeInputParametersComponent {
   @Input() frequencyRatio!: number;
   @Input() sweepDuration!: number;
   @Input() windowDuration!: number;
-  @Input() sweepType!: 'log' | 'linear';
+  @Input() sweepType!: string;
   @Input() minSweeps!: number;
   @Input() maxSweeps!: number;
   @Input() noiseFloorThreshold!: number;

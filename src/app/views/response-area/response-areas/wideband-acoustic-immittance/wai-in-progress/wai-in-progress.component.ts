@@ -18,7 +18,7 @@ export class WAIInProgressComponent implements OnInit, OnDestroy {
   @Input() fStart!: number;
   @Input() fEnd!: number;
   @Input() sweepDuration!: number;
-  @Input() sweepType!: 'log' | 'linear';
+  @Input() sweepType!: string;
   @Input() level!: number;
   @Input() numSweeps!: number;
   @Input() windowDuration!: number;
@@ -73,7 +73,7 @@ export class WAIInProgressComponent implements OnInit, OnDestroy {
       if (this.shouldAbort) return;
   
       this.isRequestingResults = true;  
-      let resp = await this.devicesService.requestResults(this.device!, 300000);  
+      let resp = await this.devicesService.requestResults(this.device!, 300000);
       this.isRequestingResults = false;
   
       if (this.shouldAbort) return;

@@ -6,7 +6,7 @@ export const waiSchema: JSONSchemaType<WAIInterface> = {
   properties: {
     enableSkip: { type: "boolean", nullable: true, default: false },
     responseRequired: { type: "boolean", nullable: true, default: true },
-    type: { type: "string", enum: ["waiResponseArea"] },
+    type: { type: "string", enum: ["WAIResponseArea"] },
     exportToCSV: { type: "boolean", nullable: true, default: false },
     tabsintId: { type: "string", nullable: true, default: "1" },
     fStart: { type: "number", nullable: true, default: 1000 },
