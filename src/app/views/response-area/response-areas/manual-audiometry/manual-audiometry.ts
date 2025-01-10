@@ -21,6 +21,7 @@ import { DialogType, LevelUnits, ResultType } from "../../../../utilities/consta
 import { Notifications } from "../../../../utilities/notifications.service";
 import { TympanResponse } from "../../../../models/devices/devices.interface";
 import { ScreenOrientation } from "@capacitor/screen-orientation";
+import { manualAudiometrySchema } from "../../../../../schema/response-areas/manual-audiometry.schema";
 
 @Component({
     selector: 'manual-audiometry-view',
@@ -312,15 +313,15 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     }
 
     private initializeAudiometrySettings(updatedAudiometryResponseArea: ManualAudiometryInterface) {
-        this.maxOutputLevel = updatedAudiometryResponseArea.maxOutputLevel ?? 100;
-        this.minOutputLevel = updatedAudiometryResponseArea.minOutputLevel ?? 0;
-        this.currentDb = updatedAudiometryResponseArea.targetLevel ?? 40;
-        this.levelUnits = updatedAudiometryResponseArea.levelUnits ?? LevelUnits.dB_SPL;
+        this.maxOutputLevel = updatedAudiometryResponseArea.maxOutputLevel ?? manualAudiometrySchema.properties.maxOutputLevel.default;
+        this.minOutputLevel = updatedAudiometryResponseArea.minOutputLevel ?? manualAudiometrySchema.properties.minOutputLevel.default;
+        this.currentDb = updatedAudiometryResponseArea.targetLevel ?? manualAudiometrySchema.properties.targetLevel.default;
+        this.levelUnits = updatedAudiometryResponseArea.levelUnits ?? manualAudiometrySchema.properties.levelUnits.default;
         this.initialDb = this.currentDb;
-        this.frequencies = updatedAudiometryResponseArea.frequencies ?? [1, 2, 4];
+        this.frequencies = updatedAudiometryResponseArea.frequencies ?? manualAudiometrySchema.properties.frequencies.default;
         this.adjustments = updatedAudiometryResponseArea.adjustments?.length === 2
-        ? updatedAudiometryResponseArea.adjustments
-        : [5, -5];
+            ? updatedAudiometryResponseArea.adjustments
+            : manualAudiometrySchema.properties.adjustments.default;
         this.leftThresholds = new Array(this.frequencies.length).fill(null);
         this.rightThresholds = new Array(this.frequencies.length).fill(null);
         this.selectedFrequency = this.frequencies[0];
@@ -337,7 +338,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
             this.currentDbSpl = this.currentDb + this.getRetsplAtCurrentFrequency(this.selectedFrequency);
         }
 
-        if (updatedAudiometryResponseArea.showResults ?? true) {
+        if (updatedAudiometryResponseArea.showResults ?? manualAudiometrySchema.properties.showResults.default) {
             this.examService.submit = this.submitResults.bind(this);
         }
     }
