@@ -297,7 +297,9 @@
           "id": "wai_001",
           "title": "Wideband Acoustic Immittance (WAI)",
           "responseArea": {
-            "type": "WAIResponseArea"
+            "type": "WAIResponseArea",
+            "fStart": 500,
+            "fEnd": 4000
           }
         },
         {

@@ -41,21 +41,14 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
     State: 'READY',
     PctComplete: 0
   };
-  
-  // Set dimensions and margins
+
+  // Set default dimensions and margins
   margin = { top: 20, right: 30, bottom: 60, left: 70 };
   width = 450 - this.margin.left - this.margin.right;
   height = 300 - this.margin.top - this.margin.bottom;
-  xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000].filter(tick => tick >= this.f2Start && tick <= this.f2End);
-
-  // Define scales
+  xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000]
   xScale = d3.scaleLog()
-    .domain([this.f2Start, this.f2End])
-    .range([0, this.width]);
-
   yScale = d3.scaleLinear()
-    .domain([-20, 70])
-    .range([this.height, 0]);  
 
   constructor(
     private readonly pageModel: PageModel,
@@ -85,6 +78,16 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
         this.maxSweeps = responseArea.maxSweeps ?? sweptDpoaeSchema.properties.maxSweeps.default;
         this.noiseFloorThreshold = responseArea.noiseFloorThreshold ?? sweptDpoaeSchema.properties.noiseFloorThreshold.default;
         this.outputRawMeasurements = responseArea.outputRawMeasurements ?? sweptDpoaeSchema.properties.outputRawMeasurements.default;
+
+        // Update xTicks and scales
+        this.xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000].filter(tick => tick >= this.f2Start && tick <= this.f2End);
+        this.xScale = d3.scaleLog()
+          .domain([this.f2Start, this.f2End])
+          .range([0, this.width]);
+
+        this.yScale = d3.scaleLinear()
+          .domain([-20, 70])
+          .range([this.height, 0]);
       }
     })
   }
