@@ -19,13 +19,13 @@ export const manualAudiometrySchema: JSONSchemaType<ManualAudiometryInterface> =
             type: "array",
             items: { type: "number" },
             nullable: true,
-            defaults: [500, 1000, 2000, 4000, 8000]
+            default: [500, 1000, 2000, 4000, 8000]
         },
         adjustments: {
             type: "array",
             items: { type: "number" },
             nullable: true,
-            defaults: [10, -5]
+            default: [10, -5]
         },
         retspls: {
             type: "object",

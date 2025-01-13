@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit} from "@angular/core";
+import { ChangeDetectorRef, Component, OnDestroy, OnInit} from "@angular/core";
 import { Subscription } from "rxjs";
 import { ScreenOrientation } from "@capacitor/screen-orientation";
 
@@ -57,29 +57,12 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     // Controller Variables
     currentStep: string = 'Exam';
     selectedEar: "Left" | "Right" = "Left";
+    currentDb: number = manualAudiometrySchema.properties.targetLevel.default;
     currentDbSpl: number = manualAudiometrySchema.properties.targetLevel.default;
     maskingLevel: number = -20;
     isPlaying: boolean = false;
     refreshGraph: boolean = true; 
     selectedFrequency: number = this.frequencies[0];
-
-    // UI Configurations
-    responseActions = [
-        { label: 'No Response', class: '', disabled: !this.isNoResponseEnabled, method: () => this.noResponse() },
-        { label: 'Delete Threshold', class: 'delete-threshold', method: () => this.clearPoint() },
-        { label: 'Record Threshold', class: 'record-threshold', method: () => this.recordThreshold() },
-        { label: 'Submit Results', class: 'submit-results', method: () => this.submitResults() },
-    ];
-    ears: ('Right' | 'Left')[] = ['Right', 'Left'];
-    earColors: { Right: string; Left: string } = {
-        Right: 'red',
-        Left: '#007bff'
-    };    
-    controlBoxes = [
-        { type: 'tone', label: 'Tone', class: 'tone-box' },
-        { type: 'frequency', label: 'Frequency', class: 'frequency-box' },
-        { type: 'masking', label: 'Masking', class: 'masking-box disabled' }
-    ];      
 
     // Subscriptions
     pageSubscription: Subscription|undefined;
@@ -87,6 +70,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     device: ConnectedDevice|undefined;
 
     constructor(
+        private readonly cdr: ChangeDetectorRef,
         private readonly resultsModel: ResultsModel, 
         private readonly pageModel: PageModel, 
         private readonly protocolModel: ProtocolModel, 
@@ -158,9 +142,10 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         await this.submitAudiometryExam()
     }
 
-    async togglePlayPause() {
-        this.isPlaying = !this.isPlaying;
+    async playTone() {
+        this.isPlaying = true;
         await this.submitAudiometryExam()
+        this.isPlaying = false;
     }
     
     noResponse(): void {
@@ -173,7 +158,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         this.updateThreshold(this.selectedEar, this.selectedFrequency, this.currentDbSpl);
     }
 
-    clearPoint(): void {
+    deleteThreshold(): void {
         this.updateThreshold(this.selectedEar, this.selectedFrequency, null);
     }
 
@@ -187,6 +172,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
           levelUnits: this.levelUnits,
         };
         this.currentStep = 'Results';
+        this.cdr.detectChanges();
         this.examService.submit = this.examService.submitDefault.bind(this.examService);
         this.results.currentPage.response = this.audiogramData;
     }
@@ -222,10 +208,10 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     }
 
     private updateCurrentDb() {
-      this.currentDbSpl =
-        this.retspls && this.levelUnits === LevelUnits.dB_HL
-          ? this.currentDbSpl - this.getRetsplAtFrequency(this.selectedFrequency)
-          : this.currentDbSpl;
+        this.currentDb = 
+            this.retspls && this.levelUnits === LevelUnits.dB_HL
+                ? this.currentDbSpl - this.getRetsplAtFrequency(this.selectedFrequency)
+                : this.currentDbSpl;
     }
 
     private getRetsplAtFrequency(frequency: number): number {
@@ -266,8 +252,8 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
             "F": this.selectedFrequency,
             "Level": this.currentDbSpl,
             "OutputChannel": this.selectedEar==="Left" ? "HPL0" : "HPR0",
-            "PlayStimulus": this.isPlaying,
-            "MaskerLevel": this.maskingLevel
+            // "PlayStimulus": this.isPlaying,
+            // "MaskerLevel": this.maskingLevel
         };
         let resp = await this.devicesService.examSubmission(this.device!, examProperties);
         this.logger.debug("resp from tympan after manual audiometry exam submission:" + resp);

@@ -164,17 +164,17 @@
             "tabsintId": "1",
             "maxOutputLevel": 110,
             "minOutputLevel": -10,
-            "targetLevel": 50,
+            "targetLevel": 51,
             "levelUnits": "dB HL",
             "frequencies": [500, 1000, 2000, 4000, 8000],
-            "adjustments": [15, -15],
             "retspls": {
               "500": 11.0,
               "1000": 5.5,
               "2000": 4.5,
               "4000": 9.5,
               "8000": 17.5
-            }
+            },
+            "showResults": false
           }
         },
         {
