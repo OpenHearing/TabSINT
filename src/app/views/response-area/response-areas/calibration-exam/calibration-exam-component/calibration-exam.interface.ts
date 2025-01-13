@@ -14,3 +14,15 @@ export interface CalibrationResultViewerInterface extends CommonResponseAreaInte
     displayRightEar: boolean;
     displayLeftEar: boolean;
 }
+
+export interface EarData {
+    calFactor: number;
+    measurement: string | number;
+    maxOutput: string | number;
+}
+  
+export interface ExamResponse {
+    pageId: string;
+    response: string;
+    responseArea: string;
+}

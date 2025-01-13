@@ -47,4 +47,14 @@
       padding: 8px;
     }
   }
+
+  .results-table tr {
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .results-table tr:hover, .results-table tr:focus {
+    background-color: #e6f2ff;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  }
   

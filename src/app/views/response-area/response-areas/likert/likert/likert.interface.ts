@@ -7,5 +7,7 @@ export interface LikertInterface extends CommonResponseAreaInterface {
     labels?: string[];
     position?: "above" | "below";
     questions?: string[];
+    useSlider?: boolean;
+    naBox?: boolean;
   }
   
