@@ -46,9 +46,9 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
   margin = { top: 20, right: 30, bottom: 60, left: 70 };
   width = 450 - this.margin.left - this.margin.right;
   height = 300 - this.margin.top - this.margin.bottom;
-  xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000]
-  xScale = d3.scaleLog()
-  yScale = d3.scaleLinear()
+  xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000];
+  xScale = d3.scaleLog();
+  yScale = d3.scaleLinear();
 
   constructor(
     private readonly pageModel: PageModel,

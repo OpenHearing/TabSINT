@@ -43,12 +43,10 @@ export class WAIExamComponent implements OnInit, OnDestroy {
   };
 
   // Set default dimensions and margins
-  margin = { top: 20, right: 30, bottom: 60, left: 70 };
-  width = 450 - this.margin.left - this.margin.right;
-  height = 300 - this.margin.top - this.margin.bottom;
-  xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000]
-  xScale = d3.scaleLog()
-  yScale = d3.scaleLinear()
+  margin = { top: 20, right: 30, bottom: 60, left: 70, spacerW: 70, spacerH: 70 };
+  width = 650 - this.margin.left - this.margin.right - this.margin.spacerW;
+  height = 700 - this.margin.top - this.margin.bottom - this.margin.spacerH;
+  xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000];
 
   constructor(
     private readonly pageModel: PageModel,
@@ -81,13 +79,6 @@ export class WAIExamComponent implements OnInit, OnDestroy {
 
         // Update xTicks and scales
         this.xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000].filter(tick => tick >= this.fStart && tick <= this.fEnd);
-        this.xScale = d3.scaleLog()
-          .domain([this.fStart, this.fEnd])
-          .range([0, this.width]);
-
-        this.yScale = d3.scaleLinear()
-          .domain([-20, 70])
-          .range([this.height, 0]);
       }
     })
   }

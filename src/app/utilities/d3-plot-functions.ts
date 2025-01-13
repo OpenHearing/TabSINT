@@ -88,7 +88,9 @@ export function createOAEResultsChartSvg(
 }
 
 export function createWAIResultsChartSvg(
-  svg: d3.Selection<SVGGElement, unknown, HTMLElement, any>,
+  svg: any,
+  chartX: number,
+  chartY: number,
   chartWidth: number,
   chartHeight: number,
   xTicks: number[],
@@ -97,7 +99,7 @@ export function createWAIResultsChartSvg(
 ) {
     // Define axes
     const xAxisMinor = d3.axisBottom(xScale).ticks(10).tickFormat(() => '');
-    const xAxis = d3.axisBottom(xScale).tickValues(xTicks) .tickFormat(d => {
+    const xAxis = d3.axisBottom(xScale).tickValues(xTicks).tickFormat(d => {
       const value = +d
       if (value >= 1000) {
         return `${value / 1000}k`; // Convert to 'k' format for thousands
@@ -108,42 +110,59 @@ export function createWAIResultsChartSvg(
 
     // Append axes
     svg.append('g')
-      .attr('transform', `translate(0,${chartHeight})`)
+      .attr('transform', `translate(${chartX},${chartY+chartHeight})`)
       .attr('class', 'axis-label')
       .call(xAxis)
       .append('text')
       .attr('class', 'label')
       .attr('font-size', 20)
       .attr('x', chartWidth / 2)
-      .attr('y', 50)
+      .attr('y', 40)
       .style('text-anchor', 'middle')
       .attr('fill', 'black')
       .text('Frequency (Hz)');
 
-    svg.append('g')
-    .attr('class', 'axis-label')
+    if (chartY>chartHeight && chartX<chartWidth) {
+      svg.append('g')
+      .attr('transform', `translate(${chartX},${chartY})`)
+      .attr('class', 'axis-label')
+      .call(yAxis.tickFormat(d3.format(".1e")))
+      .append('text')
+      .attr('class', 'label')
+      .attr('font-size', 20)
+      .attr('x', -chartHeight / 2)
+      .attr('y', -40)
+      .attr('transform', 'rotate(-90)')
+      .attr('fill', 'black')
+      .style('text-anchor', 'middle')
+      .text('Absorbance');
+    } else {
+      svg.append('g')
+      .attr('transform', `translate(${chartX},${chartY})`)
+      .attr('class', 'axis-label')
       .call(yAxis)
       .append('text')
       .attr('class', 'label')
       .attr('font-size', 20)
       .attr('x', -chartHeight / 2)
-      .attr('y', -50)
+      .attr('y', -40)
       .attr('transform', 'rotate(-90)')
       .attr('fill', 'black')
       .style('text-anchor', 'middle')
       .text('Absorbance');
+    }
 
     // Major X Axis Gridlines
-    svg
-      .append("g")
+    svg.append("g")
+      .attr('transform', `translate(${chartX},${chartY})`)
       .attr("class", "grid")
       .style("stroke-dasharray", "1,3")
       .style("stroke-opacity", "0.5")
       .call(xAxisMinor.tickSize(chartHeight).tickFormat(() => ""));
 
     // Major Y Axis gridlines
-    svg
-      .append("g")
+    svg.append("g")
+      .attr('transform', `translate(${chartX},${chartY})`)
       .attr("class", "grid")
       .style("stroke-dasharray", "1,3")
       .style("stroke-opacity", "0.5")
@@ -155,8 +174,8 @@ export function createWAIResultsChartSvg(
 
     // Border around chart
     svg.append('rect')
-      .attr('x', 0)
-      .attr('y', 0)
+      .attr('x', chartX)
+      .attr('y', chartY)
       .attr('height', chartHeight)
       .attr('width', chartWidth)
       .style('stroke', 'black')
