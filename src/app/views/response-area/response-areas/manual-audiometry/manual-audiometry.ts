@@ -70,6 +70,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     device: ConnectedDevice|undefined;
 
     constructor(
+        readonly examService: ExamService, 
         private readonly cdr: ChangeDetectorRef,
         private readonly resultsModel: ResultsModel, 
         private readonly pageModel: PageModel, 
@@ -78,7 +79,6 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         private readonly devicesService: DevicesService,
         private readonly devicesModel: DevicesModel,
         private readonly deviceUtil: DeviceUtil,
-        private readonly examService: ExamService, 
         private readonly logger: Logger,
         private readonly notifications: Notifications,
     ) {
@@ -145,6 +145,10 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     async playTone() {
         this.isPlaying = true;
         await this.submitAudiometryExam()
+        setTimeout(() => {
+            // Wait so we don't accidentally play tone twice in a row
+          }, 1000);
+          
         this.isPlaying = false;
     }
     
@@ -252,7 +256,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
             "F": this.selectedFrequency,
             "Level": this.currentDbSpl,
             "OutputChannel": this.selectedEar==="Left" ? "HPL0" : "HPR0",
-            // "PlayStimulus": this.isPlaying,
+            // "PlayStimulus": this.isPlaying, --> only needed with masking
             // "MaskerLevel": this.maskingLevel
         };
         let resp = await this.devicesService.examSubmission(this.device!, examProperties);

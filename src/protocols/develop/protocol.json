@@ -259,7 +259,6 @@
             "targetLevel": 51,
             "levelUnits": "dB HL",
             "frequencies": [500, 1000, 2000, 4000, 8000],
-            "adjustments": [15, -15],
             "retspls": {
               "500": 11.0,
               "1000": 5.5,

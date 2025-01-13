@@ -9,7 +9,6 @@
   top: -30px;
 }
 
-
 @media (orientation: portrait) {
   .manual-audiometry-container {
     transform: rotate(90deg);
