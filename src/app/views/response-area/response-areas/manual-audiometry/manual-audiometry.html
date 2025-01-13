@@ -1,104 +1,119 @@
 <div [ngSwitch]="currentStep">
-<div *ngSwitchCase="'Exam'" class="audiometry-container">
-  <div class="main-white-box">
-    <div class="graphs-container">
-      <div class="audiogram-right" [ngClass]="{'red-border': selectedEar === 'Right'}">
-        <audiogram *ngIf="refreshGraph" [dataStruct]="audiogramDataRight" [selectedEar]="selectedEar === 'Right' ? 'Right' : null" [isManualExam]="true"></audiogram>
-      </div>
-      <div class="response-panel-vertical">
-        <button class="response-btn" [disabled]="!isNoResponseEnabled" (click)="noResponse()">No Response</button>
-        <button class="response-btn delete-threshold" (click)="clearPoint()">Delete Threshold</button>
-        <button class="response-btn record-threshold" (click)="recordThreshold()">Record Threshold</button>
-        <button class="response-btn submit-results" (click)="submitResults()">Submit Results</button>
-      </div>
-      <div class="audiogram-left" [ngClass]="{'blue-border': selectedEar === 'Left'}" >
-        <audiogram *ngIf="refreshGraph" [dataStruct]="audiogramDataLeft" [selectedEar]="selectedEar === 'Left' ? 'Left' : null" [isManualExam]="true"></audiogram>
-      </div>
-    </div>
 
-    <div class="response-panel">
-      <div class="ear-buttons">
-        <button
-        class="ear-btn"
-        [ngStyle]="{'background-color': selectedEar === 'Right' ? 'red' : 'transparent', 'color': selectedEar === 'Right' ? 'white' : 'black'}"
-        (click)="selectEar('Right')"
-        >
-          Right
-        </button>
-        <button
-        class="ear-btn"
-        [ngStyle]="{'background-color': selectedEar === 'Left' ? '#007bff' : 'transparent', 'color': selectedEar === 'Left' ? 'white' : 'black'}"
-        (click)="selectEar('Left')">
-          Left
-        </button>
-      </div>
-    </div>
+  <!-- Exam Step -->
+  <div *ngSwitchCase="'Exam'" class="audiometry-container">
+    <div class="main-white-box">
 
-    <div class="control-boxes-container">
-      <div class="control-box tone-box">
-        <div class="box-label">Tone</div>
-        <div class="adjustment-buttons">
-          <button
-      class="adjust-btn"
-      *ngFor="let adjustment of adjustments"
-      (click)="adjustTone(adjustment)"
-    >
-      {{ adjustment > 0 ? '+' + adjustment : adjustment }}
-    </button>
+      <!-- Graphs and Response Panel -->
+      <div class="graphs-container">
+        <!-- Right Audiogram -->
+        <div class="audiogram-right" [ngClass]="{ 'red-border': selectedEar === 'Right' }">
+          <audiogram
+            *ngIf="refreshGraph"
+            [dataStruct]="getEarData('Right')"
+            [selectedEar]="selectedEar === 'Right' ? 'Right' : null"
+            [isManualExam]="true">
+          </audiogram>
         </div>
-        <div class="tone-display">
-          <div class="tone-value">
-            <ng-container *ngIf="currentDbSpl <= minOutputLevel || currentDbSpl >= maxOutputLevel">
-              ({{ currentDbSpl }})
-            </ng-container>
-            <ng-container *ngIf="currentDbSpl > minOutputLevel && currentDbSpl < maxOutputLevel">
-              {{ currentDbSpl }}
+
+        <!-- Response Buttons -->
+        <div class="response-panel-vertical">
+          <ng-container *ngFor="let action of responseActions">
+            <button
+              class="response-btn"
+              [ngClass]="action.class"
+              [disabled]="action.disabled"
+              (click)="action.method()">
+              {{ action.label }}
+            </button>
+          </ng-container>
+        </div>
+
+        <!-- Left Audiogram -->
+        <div class="audiogram-left" [ngClass]="{ 'blue-border': selectedEar === 'Left' }">
+          <audiogram
+            *ngIf="refreshGraph"
+            [dataStruct]="getEarData('Left')"
+            [selectedEar]="selectedEar === 'Left' ? 'Left' : null"
+            [isManualExam]="true">
+          </audiogram>
+        </div>
+      </div>
+
+      <!-- Ear Selection Panel -->
+      <div class="response-panel ear-buttons">
+        <ng-container *ngFor="let ear of ears">
+          <button
+            class="ear-btn"
+            [ngStyle]="{
+              'background-color': selectedEar === ear ? earColors[ear] : 'transparent',
+              'color': selectedEar === ear ? 'white' : 'black'
+            }"
+            (click)="selectEar(ear)">
+            {{ ear }}
+          </button>
+        </ng-container>
+      </div>
+
+      <!-- Control Boxes -->
+      <div class="control-boxes-container">
+        <ng-container *ngFor="let box of controlBoxes">
+          <div class="control-box" [ngClass]="box.class">
+            <div class="box-label">{{ box.label }}</div>
+
+            <!-- Content for Tone/Frequency/Masking -->
+            <ng-container [ngSwitch]="box.type">
+              <ng-container *ngSwitchCase="'tone'">
+                <div class="adjustment-buttons">
+                  <button
+                    *ngFor="let adjustment of adjustments"
+                    class="adjust-btn"
+                    (click)="adjustTone(adjustment)">
+                    {{ adjustment > 0 ? '+' + adjustment : adjustment }}
+                  </button>
+                </div>
+                <div class="tone-display">
+                  <div class="tone-value">
+                    {{ currentDbSpl }}
+                    <span *ngIf="currentDbSpl <= minOutputLevel || currentDbSpl >= maxOutputLevel">({{ currentDbSpl }})</span>
+                  </div>
+                  <div class="tone-label">{{ levelUnits }}</div>
+                </div>
+                <button class="play-btn" (click)="togglePlayPause()">
+                  {{ isPlaying ? '⏸' : '▶' }}
+                </button>
+              </ng-container>
+
+              <ng-container *ngSwitchCase="'frequency'">
+                <button class="adjust-btn frequency-btn" (click)="adjustFrequency(-1)">◀</button>
+                <div class="frequency-display">
+                  <div class="frequency-value">{{ selectedFrequency }}</div>
+                  <div class="frequency-label">Hz</div>
+                </div>
+                <button class="adjust-btn frequency-btn" (click)="adjustFrequency(1)">▶</button>
+              </ng-container>
+
+              <ng-container *ngSwitchCase="'masking'">
+                <div class="masking-display">
+                  <div class="masking-value">{{ maskingLevel }}</div>
+                  <div class="masking-label">dB EM</div>
+                </div>
+                <div class="adjustment-buttons">
+                  <button class="adjust-btn" disabled>+5</button>
+                  <button class="adjust-btn" disabled>-5</button>
+                </div>
+              </ng-container>
             </ng-container>
           </div>
-          <div class="tone-label">{{levelUnits}}</div>
-        </div>
-        <div class="play-button-container">
-          <button class="play-btn" (click)="togglePlayPause()">
-            <span *ngIf="!isPlaying">▶</span>
-            <span *ngIf="isPlaying">⏸</span>
-          </button>
-        </div>
+        </ng-container>
       </div>
 
-      <div class="control-box frequency-box">
-        <div class="box-label">Frequency</div>
-        <button class="adjust-btn frequency-btn" (click)="adjustFrequency(-1)">◀</button>
-        <div class="frequency-display">
-          <div class="frequency-value">{{ selectedFrequency }}</div>
-          <div class="frequency-label">HZ</div>
-        </div>
-        <button class="adjust-btn frequency-btn" (click)="adjustFrequency(1)">▶</button>
-      </div>
-
-      <div class="control-box masking-box disabled">
-        <div class="box-label">Masking</div>
-        <div class="play-button-container">
-          <button class="play-btn" disabled>
-            <span>▶</span>
-          </button>
-        </div>
-        <div class="masking-display">
-          <div class="masking-value">{{ maskingLevel }}</div>
-          <div class="masking-label">dB EM</div>
-        </div>
-        <div class="adjustment-buttons">
-          <button class="adjust-btn" disabled>+5</button>
-          <button class="adjust-btn" disabled>-5</button>
-        </div>
-      </div>
     </div>
   </div>
-</div>
 
-<div *ngSwitchCase="'Results'">
-  <manual-audiometry-result-viewer
-    [audiogramData] = "audiogramData">
-  </manual-audiometry-result-viewer>
-</div>
+  <!-- Results Step -->
+  <div *ngSwitchCase="'Results'">
+    <manual-audiometry-result-viewer [audiogramData]="audiogramData"></manual-audiometry-result-viewer>
+  </div>
 
 </div>
