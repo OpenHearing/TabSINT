@@ -42,17 +42,18 @@ export class MultipleInputComponent  implements OnInit {
   }
 
   ngOnInit() {
-    let updatedMultipleInputResponseArea;
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type == 'multipleInputResponseArea') {
-        updatedMultipleInputResponseArea = updatedPage.responseArea as MultipleInputInterface;
+        let updatedMultipleInputResponseArea = updatedPage.responseArea as MultipleInputInterface;
         if (updatedMultipleInputResponseArea) {
           this.initializeConfigurationVariables(updatedMultipleInputResponseArea);
           this.updateSubmittableLogic();
+          setTimeout(() => {
+            this.initializeReponses(updatedMultipleInputResponseArea);
+          });
         }
       }
     });
-    if (updatedMultipleInputResponseArea) this.initializeReponses(updatedMultipleInputResponseArea);
   }
 
   ngOnDestroy() {

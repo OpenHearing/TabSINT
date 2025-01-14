@@ -80,6 +80,11 @@ export const multipleInputSchema: JSONSchemaType<MultipleInputInterface> = {
             },
             required: [],
           },
+          notes: {
+            type: "string",
+            nullable: true,
+            description: "Text to add below the input item as additional instructions"
+          }
         },
         required: ["text"],
       },

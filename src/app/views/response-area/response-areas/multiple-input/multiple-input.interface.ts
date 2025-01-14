@@ -17,5 +17,6 @@ export interface InputListItem {
     maxDate?: string; // ISO formatted string YYYY-MM-DD or 'today'
     minDate?: string; // ISO formatted string YYYY-MM-DD or 'today'
   };
+  notes?: string
 }
   

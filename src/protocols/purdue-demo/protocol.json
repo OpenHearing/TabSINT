@@ -91,8 +91,8 @@
       "protocolId": "Subject_Information_Sheet",
       "pages":[
         {
-          "id": "ARCD_1",
-          "title": "ARDC 1",
+          "id": "Subject_Information_Sheet_1",
+          "title": "Subject Information Sheet 1",
           "instructionText": "To be completed by researcher:",
           "responseArea": {
             "type": "multipleInputResponseArea",
@@ -121,8 +121,8 @@
           }
         },
         {
-          "id": "ARDC_2",
-          "title": "ARDC 2",
+          "id": "Subject_Information_Sheet_2",
+          "title": "Subject Information Sheet 2",
           "instructionText": "To be completed by participant:",
           "responseArea": {
             "type": "multipleInputResponseArea",
@@ -178,7 +178,8 @@
                 "options": [
                   "Yes",
                   "No"
-                ]
+                ],
+                "notes": "**If yes, in order to be paid you will need to provide a copy of: I-94/ I/94W card, Visa, Passport, Tax Summary Report (from Glacier System), Form I- 20 (F1 visa only), For DS2019 (J1 Visa only)"
               },
               {
                 "text": "Do you have a hearing loss?",
@@ -190,7 +191,7 @@
                 ]
               },
               {
-                "text": "Are you consider yourself regularly exposed to noise (e.g., play in a band, have a job with noisy tools/machines)?",
+                "text": "Do you consider yourself regularly exposed to noise (e.g., play in a band, have a job with noisy tools/machines)?",
                 "inputType": "dropdown",
                 "options": [
                   "Yes",
@@ -213,7 +214,7 @@
           }
         },
         {
-          "id": "ARDC_3",
+          "id": "Subject_Information_Sheet_3",
           "title": "Ethnicity Data",
           "instructionText": "Please fill in the following so that we can report to federal funding agencies (e.g., National Institutes of Health) the percentage of our subjects in each of their categories. NOTE: The information requested below is optional. You are not obligated to provide this information.",
           "responseArea": {
