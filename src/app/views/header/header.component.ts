@@ -17,7 +17,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { AppModel } from '../../models/app/app.service';
 import { AppInterface } from '../../models/app/app.interface';
 import { DisclaimerComponent } from '../disclaimer/disclaimer.component';
-import { Router } from '@angular/router';
 import { AdminService } from '../../controllers/admin.service';
 
 @Component({
@@ -43,7 +42,6 @@ export class HeaderComponent {
     private readonly logger: Logger,
     private readonly notifications: Notifications,
     private readonly protocolM: ProtocolModel,
-    private readonly router: Router,
     private readonly stateModel: StateModel,
   ) {
     this.state = this.stateModel.getState();

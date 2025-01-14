@@ -6,7 +6,7 @@
         [style.margin-bottom.px]="verticalSpacing"
       >
         <div class="col-6" [style.justify-content]="textAlign" [style.text-align]="textAlign">
-          <label [for]="'itemID' + itemIdx">{{ item.text }}</label>
+          <label [for]="'itemID' + itemIdx">{{ item.text }} </label>
           <span *ngIf="item.required" style="color: red;"> *</span>
         </div>
         <div class="col-6">

@@ -72,7 +72,8 @@ export class ExamService {
      * @summary Adds pages to protocolStack and changes examState to Testing.
      * @models protocol, state
     */
-    async begin() {        
+    async begin() {     
+        this.resetProtocolStack();   
         this.addPagesToStack(this.protocol.activeProtocol?.pages!, 0);
         this.resultsService.initializeExamResults();
         this.startPage();
@@ -85,10 +86,8 @@ export class ExamService {
     */
     submitDefault() {
         this.resultsService.pushResults(this.results.currentPage);
-        
         this.advancePage();
 
-        this.state.isSubmittable = this.checkIfPageIsSubmittable();
         this.submit = this.submitDefault;        
 
         this.logger.debug("this.results.currentExam: "+JSON.stringify(this.results.currentExam));
@@ -151,7 +150,7 @@ export class ExamService {
                 this.endExam();
             }
             
-        }   
+        }  
     }
 
     /** Grabs all pages necessary from advanced logic (skips, repeats, followOns, preprocess)
