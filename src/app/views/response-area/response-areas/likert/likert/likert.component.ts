@@ -13,14 +13,18 @@ import { likertSchema } from '../../../../../../schema/response-areas/likert.sch
   styleUrl: './likert.component.css'
 })
 export class LikertComponent implements OnInit, OnDestroy {
+  @Output() responseChange = new EventEmitter<number>();
+
+  // Configuration Variables
   questions: string[] = [''];
   levels: number = 10;
   position: "above" | "below" = "above";
   labels: string[] = [''];
   useEmoticons: boolean = false;
   emoticons: string[] = ['😠', '😟', '😐', '🙂', '😃'];
-  @Output() responseChange = new EventEmitter<number>();
+
   results: ResultsInterface;
+
   pageSubscription: Subscription | undefined;
 
   constructor (

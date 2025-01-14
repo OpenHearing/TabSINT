@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 import { isPageDefinition, isProtocolReferenceInterface, isProtocolSchemaInterface } from '../guards/type.guard';
 import { PageTypes } from '../types/custom-types';
 
-import { FollowOnInterface } from '../interfaces/page-definition.interface';
+import { FollowOnInterface} from '../interfaces/page-definition.interface';
 import { ResultsInterface } from '../models/results/results.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
@@ -19,7 +19,8 @@ import { PageModel } from '../models/page/page.service';
 import { DialogType, ExamState } from '../utilities/constants';
 import { Notifications } from '../utilities/notifications.service';
 import { Logger } from '../utilities/logger.service';
-import { calculateElapsedTime } from '../utilities/exam-helper-functions';
+import { calculateElapsedTime, checkForSpecialReference, getDefaultResponseRequired } from '../utilities/exam-helper-functions';
+
 @Injectable({
     providedIn: 'root',
 })
@@ -170,7 +171,7 @@ export class ExamService {
         if (this.currentPage.followOns) { 
             let nextID = this.findFollowOn();
             if (nextID != undefined) {
-                if (this.checkForSpecialReference(nextID)) {
+                if (checkForSpecialReference(nextID)) {
                     this.handleSpecialReferences(nextID);
                     return undefined
                 } else {
@@ -193,17 +194,6 @@ export class ExamService {
     */
     private setFlags() {
         // This function will check if flags need to be set and then set them accordingly.
-    }
-
-    /** Checks for special references
-     * @summary Returns true/false depending a id contains a special reference
-    */
-    private checkForSpecialReference(id: string | undefined) {
-        let hasSpecialReference = false;
-        if (id?.includes("@")) {
-            hasSpecialReference = true;
-        }
-        return hasSpecialReference
     }
 
     /** Handles special references
@@ -290,16 +280,20 @@ export class ExamService {
      * @summary Checks if a page is submittable and returns a boolean
      * @returns boolean if page is submittable
     */
-    private checkIfPageIsSubmittable() {
-            return !this.currentPage.responseArea!.responseRequired;
-
-            //TODO: set response required to false if response area is multipleChoiceResponseArea
-            // if (this.currentPage.responseArea.type == "multipleChoiceResponseArea") {
-            //     return false
-            // } else {
-            //     return true
-            // }
+    private checkIfPageIsSubmittable(): boolean {
+        if (this.currentPage.responseArea) {
+            let responseRequired = this.currentPage.responseArea.responseRequired;
+    
+            if (responseRequired === undefined) {
+                const responseType = this.currentPage.responseArea.type;
+                responseRequired = getDefaultResponseRequired(responseType);
+            }
+    
+            return !responseRequired;
+        }
+        return false;
     }
+
     /**
      * End Exam
      * @summary Save current exam results, set exam state, and scroll page back to top.
