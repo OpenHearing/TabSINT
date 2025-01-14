@@ -18,9 +18,9 @@
       "title":"Main Menu",
       "pages":[
         {
-          "id":"choose",
-          "title":"Response Area Testing",
-          "questionMainText":"Please select a response area to demonstrate:",
+          "id":"main_menu",
+          "title":"Purdue Protocol",
+          "questionMainText":"Please select a protocol to perform:",
           "responseArea":{
             "type":"multipleChoiceResponseArea",
             "choices":[
@@ -91,8 +91,7 @@
       "protocolId": "Subject_Information_Sheet",
       "pages":[
         {
-          "id": "Subject_Information_Sheet_1",
-          "title": "Subject Information Sheet 1",
+          "id": "Subject_Information_Sheet_1/3",
           "instructionText": "To be completed by researcher:",
           "responseArea": {
             "type": "multipleInputResponseArea",
@@ -122,8 +121,7 @@
           }
         },
         {
-          "id": "Subject_Information_Sheet_2",
-          "title": "Subject Information Sheet 2",
+          "id": "Subject_Information_Sheet_2/3",
           "instructionText": "To be completed by participant:",
           "responseArea": {
             "type": "multipleInputResponseArea",
@@ -216,8 +214,7 @@
           }
         },
         {
-          "id": "Subject_Information_Sheet_3",
-          "title": "Ethnicity Data",
+          "id": "Subject_Information_Sheet_3/3",
           "instructionText": "Please fill in the following so that we can report to federal funding agencies (e.g., National Institutes of Health) the percentage of our subjects in each of their categories. NOTE: The information requested below is optional. You are not obligated to provide this information.",
           "responseArea": {
             "type": "multipleInputResponseArea",
@@ -258,9 +255,8 @@
       "protocolId": "ARDC_Main_Survey",
       "pages": [
         {
-          "id": "ARDC_1",
-          "title": "Audiology Research Diagnostics Core: Main Survey",
-          "instructionText": "...",
+          "id": "ARDC_1/12",
+          "instructionText": "This is a survey about hearing for individuals participating in study at the Audiology Research Diagnostics Core (ARDC) at Purdue University. Please answer the following questions to the best of your knowledge. This information is requested purely for research purposes and is not intended to help provide any clinical information.",
           "responseArea": {
             "type": "multipleInputResponseArea",
             "responseRequired": false,
@@ -317,7 +313,7 @@
           }
         },
         {
-          "id": "ARDC_2",
+          "id": "ARDC_2/12",
           "responseArea": {
             "type": "multipleInputResponseArea",
             "responseRequired": false,
@@ -362,7 +358,7 @@
           }
         },
         {
-          "id": "ARDC_3",
+          "id": "ARDC_3/12",
           "responseArea": {
             "type": "multipleInputResponseArea",
             "responseRequired": false,
@@ -408,7 +404,7 @@
           }
         },
         {
-          "id": "ARDC_4",
+          "id": "ARDC_4/12",
           "responseArea": {
             "type": "multipleInputResponseArea",
             "responseRequired": false,
@@ -471,7 +467,7 @@
           }
         },
         {
-          "id": "ARDC_5",
+          "id": "ARDC_5/12",
           "responseArea": {
             "type": "multipleInputResponseArea",
             "responseRequired": false,
@@ -505,7 +501,7 @@
           }
         },
         {
-          "id": "ARDC_5",
+          "id": "ARDC_6/12",
           "responseArea": {
             "type": "multipleInputResponseArea",
             "responseRequired": false,
@@ -565,7 +561,7 @@
             ]
           }
         },{
-          "id": "ARDC_6",
+          "id": "ARDC_7/12",
           "responseArea": {
             "type": "multipleInputResponseArea",
             "responseRequired": false,
@@ -594,7 +590,7 @@
               },
               {
                 "text": "If yes, (a) list the sounds and (b) rate how irritating each sound is on a 0 (not at all) to 100 (extremely) scale:",
-                "inputType": "text"
+                "inputType": "number"
               },
               {
                 "text": "Are you bothered by bright lights?",
@@ -614,7 +610,7 @@
               },
               {
                 "text": "If yes, rate how much on a 0 (not at all) to 100 (extremely bothersome) scale:",
-                "inputType": "text"
+                "inputType": "number"
               },
               {
                 "text": "Are you bothered by strong smells?",
@@ -626,7 +622,7 @@
               },
               {
                 "text": "If yes, rate how much on a 0 (not at all) to 100 (extremely bothersome) scale:",
-                "inputType": "text"
+                "inputType": "number"
               },
               {
                 "text": "Are you bothered by certain tastes?",
@@ -638,7 +634,7 @@
               },
               {
                 "text": "If yes, rate how much on a 0 (not at all) to 100 (extremely bothersome) scale:",
-                "inputType": "text"
+                "inputType": "number"
               },
               {
                 "text": "Are you bothered by certain types of touch?",
@@ -650,13 +646,13 @@
               },
               {
                 "text": "If yes, rate how much on a 0 (not at all) to 100 (extremely bothersome) scale:",
-                "inputType": "text"
+                "inputType": "number"
               }
             ]
           }
         },
         {
-          "id": "ARDC_7",
+          "id": "ARDC_8/12",
           "responseArea": {
             "type": "multipleInputResponseArea",
             "responseRequired": false,
@@ -734,7 +730,7 @@
           }
         },
         {
-          "id": "ARDC_8",
+          "id": "ARDC_9/12",
           "responseArea": {
             "type": "multipleInputResponseArea",
             "responseRequired": false,
@@ -759,7 +755,7 @@
           }
         },
         {
-          "id": "ARDC_9",
+          "id": "ARDC_10/12",
           "responseArea": {
             "type": "multipleInputResponseArea",
             "responseRequired": false,
@@ -812,7 +808,7 @@
           }
         },
         {
-          "id": "ARDC_10",
+          "id": "ARDC_11/12",
           "responseArea": {
             "type": "multipleInputResponseArea",
             "responseRequired": false,
@@ -842,11 +838,13 @@
           }
         },        
         {
-          "id": "ARDC_11",
-          "instructionText": "The following questions ask about your ability and experiences hearing and listening in different situations. For each question, select a number from 0 through 10 on the scale below the question. Selecting 10 means you would be perfectly able to do or experience what is described in the question. Selecting 0 means you would be unable to do or experience what is described.",
+          "id": "ARDC_12/12",
+          "instructionText": "The following questions ask about your ability and experiences hearing and listening in different situations. For each question, select a number from 0 through 10 on the scale below the question. Selecting 10 means you would be perfectly able to do or experience what is described in the question. Selecting 0 means you would be unable to do or experience what is described.  We expect that all the questions are relevant to your everyday experience, but if a question describes a situation that does not apply to you, put a cross in the 'not applicable' box. ",
           "responseArea": {
             "type": "likertResponseArea",
             "responseRequired": false,
+            "useSlider": true,
+            "naBox": true,
             "labels": ["Not at all", "Perfectly"],
             "questions": [
               "You are in a group of about five people, sitting round a table. It is an otherwise quiet place. You can see everyone else in the group. Can you follow the conversation? ",

@@ -7,9 +7,9 @@
   
         <!-- Exam Header -->
         <div *ngIf="state.appState === AppState.Exam">
-          <!-- <h1 *ngIf="page.dm.title && dm.state.mode !== 'READY'" class="surveytitle truncate">
-            {{page.dm.title}}
-          </h1> -->
+          <h1 *ngIf="currentPage.id && state.examState !== ExamState.Ready" class="surveytitle truncate">
+            {{currentPage.id}}
+          </h1>
         </div>
   
         <!-- Admin Header -->

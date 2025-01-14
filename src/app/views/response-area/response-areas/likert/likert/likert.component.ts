@@ -92,7 +92,7 @@ export class LikertComponent implements OnInit, OnDestroy {
     this.useEmoticons = responseArea.useEmoticons ?? likertSchema.properties.useEmoticons.default;
     this.useSlider = responseArea.useSlider ?? likertSchema.properties.useSlider.default;
     this.naBox = responseArea.naBox ?? likertSchema.properties.naBox.default;
-    this.results.currentPage.response = Array.from({ length: this.questions.length }, () => "NA");
+    this.results.currentPage.response = Array.from({ length: this.questions.length }, () => null);
   }
 
 }
