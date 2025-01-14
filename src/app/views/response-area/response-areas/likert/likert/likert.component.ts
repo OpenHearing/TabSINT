@@ -15,17 +15,23 @@ import { likertSchema } from '../../../../../../schema/response-areas/likert.sch
 export class LikertComponent implements OnInit, OnDestroy {
   @Output() responseChange = new EventEmitter<number>();
 
-  // Configuration Variables
-  questions: string[] = [''];
+  // Controller variables
+  questions: string[] = [];
+  sliderValue: (number | null)[] = [];
+  isNotApplicable: boolean[] = [];
+  emoticons: string[] = ['😠', '😟', '😐', '🙂', '😃'];
+
+  // Configuration variables
   levels: number = 10;
   position: "above" | "below" = "above";
-  labels: string[] = [''];
+  labels: string[] = [];
   useEmoticons: boolean = false;
-  emoticons: string[] = ['😠', '😟', '😐', '🙂', '😃'];
+  useSlider: boolean = true;
+  naBox: boolean = false;
 
   results: ResultsInterface;
 
-  pageSubscription: Subscription | undefined;
+  private pageSubscription?: Subscription;
 
   constructor (
     private readonly resultsModel: ResultsModel,
@@ -37,15 +43,7 @@ export class LikertComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type == "likertResponseArea") {
-        const updatedLikertResponseArea = updatedPage.responseArea as LikertInterface;
-        if (updatedLikertResponseArea) {
-          this.questions = updatedLikertResponseArea.questions ?? [''];
-          this.levels = updatedLikertResponseArea.levels ?? likertSchema.properties.levels.default;
-          this.position = updatedLikertResponseArea.position ?? likertSchema.properties.position.default;
-          this.labels = updatedLikertResponseArea.labels ?? [''];
-          this.useEmoticons = updatedLikertResponseArea.useEmoticons ?? likertSchema.properties.useEmoticons.default;
-          this.results.currentPage.response = Array.from({ length: this.questions.length }, () => "NA");
-        }
+        this.initializeResponseArea(updatedPage.responseArea as LikertInterface);
       }
     });
   }
@@ -54,8 +52,47 @@ export class LikertComponent implements OnInit, OnDestroy {
     this.pageSubscription?.unsubscribe();
   }
 
-  onResponseChange(questionIndex: number, levelIndex: number): void {
+  onResponseChange(questionIndex: number, levelIndex: number | null): void {
     this.results.currentPage.response[questionIndex] = levelIndex;
-    this.responseChange.emit(this.results.currentPage.response); 
+    this.responseChange.emit(this.results.currentPage.response);
   }
+
+  onSliderChange(questionIndex: number, event: Event): void {
+    const value = parseFloat((event.target as HTMLInputElement).value);
+    this.sliderValue[questionIndex] = value;
+    this.onResponseChange(questionIndex, value);
+  }
+
+  onNotApplicableChange(questionIndex: number, event: Event): void {
+    const isChecked = (event.target as HTMLInputElement).checked;
+    this.isNotApplicable[questionIndex] = isChecked;
+
+    if (isChecked) {
+      this.sliderValue[questionIndex] = null;
+      this.results.currentPage.response[questionIndex] = "NA";
+    } else {
+      this.results.currentPage.response[questionIndex] = this.sliderValue[questionIndex];
+    }
+
+    this.responseChange.emit(this.results.currentPage.response);
+  }
+
+  setSliderValue(questionIndex: number, value: number): void {
+    this.sliderValue[questionIndex] = value;
+    this.onResponseChange(questionIndex, value);
+  }
+
+  private initializeResponseArea(responseArea: LikertInterface): void {
+    this.questions = responseArea.questions ?? [''];
+    this.sliderValue = this.questions.map(() => null);
+    this.isNotApplicable = this.questions.map(() => false);
+    this.levels = responseArea.levels ?? likertSchema.properties.levels.default;
+    this.position = responseArea.position ?? likertSchema.properties.position.default;
+    this.labels = responseArea.labels ?? [''];
+    this.useEmoticons = responseArea.useEmoticons ?? likertSchema.properties.useEmoticons.default;
+    this.useSlider = responseArea.useSlider ?? likertSchema.properties.useSlider.default;
+    this.naBox = responseArea.naBox ?? likertSchema.properties.naBox.default;
+    this.results.currentPage.response = Array.from({ length: this.questions.length }, () => "NA");
+  }
+
 }
