@@ -28,7 +28,7 @@
                 "id":"Subject Information Sheet"
               },
               {
-                "id": "ARDC Survey"
+                "id": "ARDC Main Survey"
               },
               {
                 "id":"Manual Audiometry"
@@ -52,9 +52,9 @@
               } 
             },
             {
-              "conditional":"result.response=='ARDC Survey'",
+              "conditional":"result.response=='ARDC Main Survey'",
               "target":{
-                "reference":"ARDC_Survey"
+                "reference":"ARDC_Main_Survey"
               } 
             },
             {
@@ -96,6 +96,7 @@
           "instructionText": "To be completed by researcher:",
           "responseArea": {
             "type": "multipleInputResponseArea",
+            "responseRequired": false,
             "inputList": [
               {
                 "text": "Subject ID",
@@ -126,6 +127,7 @@
           "instructionText": "To be completed by participant:",
           "responseArea": {
             "type": "multipleInputResponseArea",
+            "responseRequired": false,
             "inputList": [
               {
                 "text": "Birhtdate",
@@ -219,6 +221,7 @@
           "instructionText": "Please fill in the following so that we can report to federal funding agencies (e.g., National Institutes of Health) the percentage of our subjects in each of their categories. NOTE: The information requested below is optional. You are not obligated to provide this information.",
           "responseArea": {
             "type": "multipleInputResponseArea",
+            "responseRequired": false,
             "inputList": [
               {
                 "text": "Part A: Check the category that describes you best:",
@@ -252,41 +255,26 @@
       ]
     },
     {
-      "protocolId": "ARDC_Survey",
+      "protocolId": "ARDC_Main_Survey",
       "pages": [
         {
-          "id": "likert",
-          "responseArea": {
-            "type": "likertResponseArea",
-            "levels": 5,
-            "useEmoticons": true,
-            "labels": ["Not at all", "Perfectly"],
-            "questions": [
-              "You are in a group of about five people, sitting round a table. It is an otherwise quiet place. You can see everyone else in the group. Can you follow the conversation? ",
-              "You are talking with one other person. There is continuous background noise, such as a fan or running water close by. Can you follow what the person says? ",
-              "You are in a group of about five people in a busy restaurant. You CANNOT see everyone else in the group. Can you follow the conversation? ",
-              "You are talking to someone in a place where there are a lot of echoes, such as in a church or railway station. Can you follow what the other person says? "
-            ]
-          }
-        },
-        {
-          "id": "ARDC_",
-          "title": "ARDC 2",
-          "instructionText": "To be completed by participant:",
+          "id": "ARDC_1",
+          "title": "Audiology Research Diagnostics Core: Main Survey",
+          "instructionText": "...",
           "responseArea": {
             "type": "multipleInputResponseArea",
+            "responseRequired": false,
             "inputList": [
               {
                 "text": "Have you ever had tubes put in your eardrum(s)?",
-                "inputType": "text",
-                "required": true
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
               },
               {
-                "text": "How many ear tubes?",
-                "inputType": "number"
-              },
-              {
-                "text": "Have you ever had a ruptured eardrum? ",
+                "text": "Have you ever had a ruptured eardrum?",
                 "inputType": "dropdown",
                 "options": [
                   "yes",
@@ -294,18 +282,581 @@
                 ]
               },
               {
-                "text": "Patient Date of Birth",
-                "inputType": "date",
-                "required": false,
-                "dateProperties": {
-                  "maxDate": "today"
-                }
+                "text": "Have you ever had a job where you were routinely exposed to very loud sounds, such as military experience with artillery, construction or factory work?",
+                "inputType": "dropdown",
+                "options": [
+                  "yes",
+                  "no"
+                ]
               },
               {
-                "inputType": "multi-dropdown",
-                "options": ["a","b","c"],
-                "text": "Multi-dropdown Input"
+                "text": "Have you ever had any hobbies that involved loud sounds, such as hunting, riding motorcycles, carpentry, frequently attending concerts?",
+                "inputType": "dropdown",
+                "options": [
+                  "yes",
+                  "no"
+                ]
+              },
+              {
+                "text": "Have you ever experienced temporary noises (ringing, buzzing, hiss, swishing, etc...) in your ears after exposure to loud sounds?",
+                "inputType": "dropdown",
+                "options": [
+                  "yes",
+                  "no"
+                ]
+              },
+              {
+                "text": "Have you ever temporarily lost your hearing?",
+                "inputType": "dropdown",
+                "options": [
+                  "yes",
+                  "no"
+                ]
               }
+            ]
+          }
+        },
+        {
+          "id": "ARDC_2",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "Do sounds ever seem distorted to you?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "If yes, please explain.",
+                "inputType": "text"
+              },
+              {
+                "text": "When you are having a conversation in a noisy place, such as a restaurant or bar, can you understand what is being said as well as everyone else can?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "If no, please explain.",
+                "inputType": "text"
+              },
+              {
+                "text": "Have you had sinus problems or sinus surgery?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "If yes, please explain.",
+                "inputType": "text"
+              }
+            ]
+          }
+        },
+        {
+          "id": "ARDC_3",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "Have you had a major blow to the head or any other head trauma?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ],
+                "notes": "If yes, please answer the following. If you've had more than one instance of head trauma, please answer for each time it occurred."
+              },
+              {
+                "text": "How old were you?",
+                "inputType": "text"
+              },
+              {
+                "text": "What happened?",
+                "inputType": "text"
+              },
+              {
+                "text": "Were you diagnosed with a concussion?",
+                "inputType": "text"
+              },
+              {
+                "text": "Select any of the following which accompanied the head trauma: ",
+                "inputType": "multi-dropdown",
+                "options": [
+                  "Loss of consciousness (even briefly)",
+                  "Bleeding from the ears",
+                  "Tinnitus",
+                  "Memory or concentration problems",
+                  "Headaches or weakness persisting days afterward",
+                  "Dizziness or balance problems persisting days afterward"
+                ]
+              },
+              {
+                "text": "If you lost consciousness, how long?",
+                "inputType": "text"
+              }
+            ]
+          }
+        },
+        {
+          "id": "ARDC_4",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "Have you ever had a whiplash injury, as might happen in a car collision?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "If yes, please explain.",
+                "inputType": "text"
+              },
+              {
+                "text": "Do places on or near your ear hurt when you press on them? ",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "If yes, on which side?",
+                "inputType": "dropdown",
+                "options": [
+                  "Right",
+                  "Left",
+                  "Both"
+                ]
+              },
+              {
+                "text": "Have you ever experienced a sharp pain in the ear or an aching ear that was not from an ear infection? ",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "If yes, on which side?",
+                "inputType": "dropdown",
+                "options": [
+                  "Right",
+                  "Left",
+                  "Both"
+                ]
+              },
+              {
+                "text": "If yes, when and for how long?",
+                "inputType": "text"
+              },
+              {
+                "text": "Did any event seem to trigger these symptoms?",
+                "inputType": "text"
+              }
+            ]
+          }
+        },
+        {
+          "id": "ARDC_5",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "Have you ever experienced a sensation of 'ear fullness' or 'blockage' and or muffled hearing that lasted for more than a few minutes and was not due to a pressure change (such as during a plane flight, for instance)?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "If yes, on which side?",
+                "inputType": "dropdown",
+                "options": [
+                  "Right",
+                  "Left",
+                  "Both"
+                ]
+              },
+              {
+                "text": "If yes, when and for how long?",
+                "inputType": "text"
+              },
+              {
+                "text": "Did any event seem to trigger these symptoms?",
+                "inputType": "text"
+              }
+            ]
+          }
+        },
+        {
+          "id": "ARDC_5",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "Have you been told you grind your teeth when you sleep?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "Have you ever been diagnosed with any of the following? Select all that apply:",
+                "inputType": "multi-dropdown",
+                "options": [
+                  "Generalized Anxiety Disorder (GAD)",
+                  "Panic Disorder",
+                  "Obsessive-Compulsive Disorder (OCD)",
+                  "Posttraumatic Stress Disorder (PTSD)",
+                  "Bipolar Disorder",
+                  "Major Depressive Disorder",
+                  "Schizophrenia",
+                  "Schizoaffective Disorder",
+                  "Brief Psychotic Disorder",
+                  "Dissociative Amnesia, or Fugue",
+                  "Dissociative Identity Disorder",
+                  "Depersonalization Disorder",
+                  "Intermittent Explosive Disorder",
+                  "Kleptomania",
+                  "Anorexia",
+                  "Bulimia",
+                  "Body Dysmorphic Disorder",
+                  "Conversion Disorder",
+                  "Hypochondriasis Disorder",
+                  "Pain Disorder",
+                  "Somatization Disorder",
+                  "Adjustment Disorder",
+                  "Substance abuse and/or dependence",
+                  "Alzheimer's",
+                  "Parkinson's",
+                  "Huntington's",
+                  "Meniere's",
+                  "Fibromyalgia",
+                  "Irritable Bowel Syndrome",
+                  "Multiple Sclerosis",
+                  "Migraine",
+                  "Autism spectrum",
+                  "Attention Deficit or Attention Deficit Hyperactivity Disorders (ADD/ADHD)",
+                  "Other neurological or psychiatric disorder"
+                ]
+              },
+              {
+                "text": "If you selected 'Other neurological or psychiatric disorder', please list:",
+                "inputType": "text"
+              }
+            ]
+          }
+        },{
+          "id": "ARDC_6",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "How often do you experience balance problems? Please select \"Never\", \"Sometimes\", \"Often\", or \"Always\".",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Sometimes",
+                  "Often",
+                  "Always"
+                ]
+              },
+              {
+                "text": "If \"Often\" or \"Always\", please explain:",
+                "inputType": "text"
+              },
+              {
+                "text": "Do certain sounds irritate you more than they would other people?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "If yes, (a) list the sounds and (b) rate how irritating each sound is on a 0 (not at all) to 100 (extremely) scale:",
+                "inputType": "text"
+              },
+              {
+                "text": "Are you bothered by bright lights?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "Are you bothered by certain colors?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "If yes, rate how much on a 0 (not at all) to 100 (extremely bothersome) scale:",
+                "inputType": "text"
+              },
+              {
+                "text": "Are you bothered by strong smells?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "If yes, rate how much on a 0 (not at all) to 100 (extremely bothersome) scale:",
+                "inputType": "text"
+              },
+              {
+                "text": "Are you bothered by certain tastes?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "If yes, rate how much on a 0 (not at all) to 100 (extremely bothersome) scale:",
+                "inputType": "text"
+              },
+              {
+                "text": "Are you bothered by certain types of touch?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "If yes, rate how much on a 0 (not at all) to 100 (extremely bothersome) scale:",
+                "inputType": "text"
+              }
+            ]
+          }
+        },
+        {
+          "id": "ARDC_7",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "How many years of education have you completed (beyond kindergarten)?",
+                "inputType": "dropdown",
+                "options": [
+                  "less than 6 years",
+                  "6-8 years",
+                  "9-12 years",
+                  "13-14 years",
+                  "15-16 years",
+                  "more than 16 years"
+                ]
+              },
+              {
+                "text": "What is the nature of your current job? Select all that apply:",
+                "inputType": "multi-dropdown",
+                "options": [
+                  "Accounting/Finance/Banking",
+                  "Athletics",
+                  "Artist/Author",
+                  "Software Developer/Computer Programmer",
+                  "IT/Web Developer",
+                  "Sound Engineer",
+                  "Engineer (other than sound)",
+                  "Law Enforcement/Firefighting",
+                  "Construction",
+                  "Pilot/Truck Driver",
+                  "Human Resources/Management",
+                  "Lawyer",
+                  "Current or Former Military",
+                  "Musician",
+                  "Medicine/Pharmacy/Oral Health",
+                  "Psychologist/Social Worker",
+                  "Public Relations/Advertising",
+                  "TV/Radio/Journalist",
+                  "Researcher. Please specify area, e.g., humanities, physics, etc.:",
+                  "Teacher/Lecturer",
+                  "Service Industry/Retail",
+                  "Student",
+                  "Homemaker",
+                  "Between jobs",
+                  "Retired",
+                  "Other. Please specify:"
+                ]
+              },
+              {
+                "text": "Is your hearing particularly important for your job or for activities you do often? Or for any other research studies you may have participated in recently? (Some examples: birding, sound engineer, other research studies on hearing, playing a musical instrument.)",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "If yes, please describe the activities and the role hearing plays (for example, \"I have to listen for faint sounds.\"):",
+                "inputType": "text"
+              },
+              {
+                "text": "Approximately how often do you listen for very faint sounds, listen for slight differences between sounds, or concentrate on the pitch or other features of sounds?",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Almost never",
+                  "Occasionally",
+                  "More than occasionally, but less than 1 hour per day",
+                  "Between 1 and 4 hours per day",
+                  "Between 4 and 8 hours per day",
+                  "More than 8 hours per day"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "ARDC_8",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "Are you currently under any medication? If so, please specify:",
+                "inputType": "text"
+              },
+              {
+                "text": "Have you ever had any of the following ear problems:",
+                "inputType": "multi-dropdown",
+                "options": [
+                  "Ear surgery(ies)",
+                  "Excessive ear wax"
+                ]
+              },
+              {
+                "text": "If you or a family member have experienced ANY hearing or ear problems not covered in the survey so far, please describe and briefly explain:",
+                "inputType": "text"
+              }
+            ]
+          }
+        },
+        {
+          "id": "ARDC_9",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "Medical history - Please select any of the following conditions that have ever applied to you:",
+                "inputType": "multi-dropdown",
+                "options": [
+                  "Malaria",
+                  "Chickenpox/scarlet fever",
+                  "Measles/mumps",
+                  "Meningitis",
+                  "Diabetes",
+                  "Kidney disease",
+                  "Cancer",
+                  "Heart problems",
+                  "Pacemaker",
+                  "High blood pressure",
+                  "Epilepsy/seizures",
+                  "Dizziness",
+                  "Migraines",
+                  "TMJ problems",
+                  "Head injury",
+                  "Allergies",
+                  "Depression",
+                  "Throat pain",
+                  "Difficulty swallowing",
+                  "Hoarse voice/vocal strain",
+                  "Tobacco use",
+                  "Take medications regularly"
+                ]
+              },
+              {
+                "text": "Medications - Please check the corresponding box if you have ever taken these medications:",
+                "inputType": "multi-dropdown",
+                "options": [
+                  "IV antibiotic therapy",
+                  "Prescription pain medication",
+                  "Chemotherapy medication",
+                  "Radiation therapy",
+                  "Blood thinners",
+                  "Loop diuretics",
+                  "Aspirin (high dosage)",
+                  "Quinine",
+                  "Herbal supplements",
+                  "Erectile dysfunction medication"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "ARDC_10",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "Amplification - Have any of these ever applied to you?",
+                "inputType": "multi-dropdown",
+                "options": [
+                  "Previous hearing aid(s) use",
+                  "Currently own a hearing aid(s)",
+                  "Satisfied with hearing aid(s)",
+                  "Assistive hearing device use",
+                  "Personal sound amplifier use",
+                  "Cochlear implant",
+                  "Interested in hearing aid(s)"
+                ]
+              },
+              {
+                "text": "If you have any previous use of or experience with amplification as listed above, please describe and briefly explain:",
+                "inputType": "text"
+              },
+              {
+                "text": "If you have any other previous use of or experience with amplification that were not listed, please describe and briefly explain:",
+                "inputType": "text"
+              }
+            ]
+          }
+        },        
+        {
+          "id": "ARDC_11",
+          "instructionText": "The following questions ask about your ability and experiences hearing and listening in different situations. For each question, select a number from 0 through 10 on the scale below the question. Selecting 10 means you would be perfectly able to do or experience what is described in the question. Selecting 0 means you would be unable to do or experience what is described.",
+          "responseArea": {
+            "type": "likertResponseArea",
+            "responseRequired": false,
+            "labels": ["Not at all", "Perfectly"],
+            "questions": [
+              "You are in a group of about five people, sitting round a table. It is an otherwise quiet place. You can see everyone else in the group. Can you follow the conversation? ",
+              "You are talking with one other person. There is continuous background noise, such as a fan or running water close by. Can you follow what the person says? ",
+              "You are in a group of about five people in a busy restaurant. You CANNOT see everyone else in the group. Can you follow the conversation? ",
+              "You are talking to someone in a place where there are a lot of echoes, such as in a church or railway station. Can you follow what the other person says? ",
+              "You are having a conversation with one person in a room where there are many other people talking. Can you follow what the person you are talking to is saying?",
+              "You are sitting around a table or at a meeting with several people. You can't see everyone. Can you tell where any person is as soon as they start speaking?",
+              "You are sitting in between two people. One of them starts to speak. Can you tell right away whether it is the person on your left or your right, without having to look?",
+              "You are in an unfamiliar house. It is quiet. You hear a door slam. Can you tell right away where that sound came from?"
             ]
           }
         },
