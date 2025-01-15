@@ -31,6 +31,12 @@
                 "id": "ARDC Main Survey"
               },
               {
+                "id": "ARDC Loudness and Annoyance Survey"
+              },
+              {
+                "id": "ARDC Noise Exposure History Survey"
+              },
+              {
                 "id":"Manual Audiometry"
               },
               {
@@ -55,6 +61,18 @@
               "conditional":"result.response=='ARDC Main Survey'",
               "target":{
                 "reference":"ARDC_Main_Survey"
+              } 
+            },
+            {
+              "conditional":"result.response=='ARDC Loudness and Annoyance Survey'",
+              "target":{
+                "reference":"ARDC_Loudness_and_Annoyance_Survey"
+              } 
+            },
+            {
+              "conditional":"result.response=='ARDC Noise Exposure History Survey'",
+              "target":{
+                "reference":"ARDC_Noise_History_Survey"
               } 
             },
             {
@@ -855,6 +873,1310 @@
               "You are sitting around a table or at a meeting with several people. You can't see everyone. Can you tell where any person is as soon as they start speaking?",
               "You are sitting in between two people. One of them starts to speak. Can you tell right away whether it is the person on your left or your right, without having to look?",
               "You are in an unfamiliar house. It is quiet. You hear a door slam. Can you tell right away where that sound came from?"
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "ARDC_Loudness_and_Annoyance_Survey",
+      "pages": [
+        {
+          "id": "Loudness_0/15",
+          "instructionText": "This is a simple survey about perception of sound loudness and annoyance for participants scheduled for a study at the Audiology Research Diagnostics Core (ARDC) at Purdue University. Please answer the following questions to the best of your knowledge. This information is requested purely for research purposes  and is not intended to help provide any clinical information."
+        },
+        {
+          "id": "Loudness_1/15",
+          "instructionText": "Some everyday sounds are loud and some are soft. Some everyday sounds are annoying and some are not. Please rate the loudness and the annoyance of the following sounds. Do not consider the annoyance when rating the loudness and do not consider the loudness when rating the annoyance. For example, a sound may be very loud, but not annoy you. Likewise, a sound may be very soft, yet be very annoying. Rate the sounds using a scale from 0 (not loud/annoying) to 100 (unbearably loud/annoying)."
+        },
+        {
+          "id": "Loudness_2/15",
+          "instructionText": "Barking dog next to you",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "Loudness (0-100)",
+                "inputType": "number"
+              },
+              {
+                "text": "Annoyance (0-100)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "Loudness_3/15",
+          "instructionText": "Dishes clanking together in the same room",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "Loudness (0-100)",
+                "inputType": "number"
+              },
+              {
+                "text": "Annoyance (0-100)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },{
+          "id": "Loudness_4/15",
+          "instructionText": "Music on the radio in a car when the volume is adjusted for normal-hearing listeners",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "Loudness (0-100)",
+                "inputType": "number"
+              },
+              {
+                "text": "Annoyance (0-100)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "Loudness_5/15",
+          "instructionText": "Music on the radio in a quiet room when the volume is adjusted for normal-hearing listeners",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "Loudness (0-100)",
+                "inputType": "number"
+              },
+              {
+                "text": "Annoyance (0-100)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "Loudness_6/15",
+          "instructionText": "Telephone ringing in the same room",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "Loudness (0-100)",
+                "inputType": "number"
+              },
+              {
+                "text": "Annoyance (0-100)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "Loudness_7/15",
+          "instructionText": "Television in the same room when the volume is adjusted for normal-hearing listeners",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "Loudness (0-100)",
+                "inputType": "number"
+              },
+              {
+                "text": "Annoyance (0-100)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "Loudness_8/15",
+          "instructionText": "Lawn mower running next to you",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "Loudness (0-100)",
+                "inputType": "number"
+              },
+              {
+                "text": "Annoyance (0-100)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "Loudness_9/15",
+          "instructionText": "Car door closing next to you",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "Loudness (0-100)",
+                "inputType": "number"
+              },
+              {
+                "text": "Annoyance (0-100)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "Loudness_10/15",
+          "instructionText": "Someone talking to you in a noisy restaurant",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "Loudness (0-100)",
+                "inputType": "number"
+              },
+              {
+                "text": "Annoyance (0-100)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "Loudness_11/15",
+          "instructionText": "Baby crying in the same room",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "Loudness (0-100)",
+                "inputType": "number"
+              },
+              {
+                "text": "Annoyance (0-100)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "Loudness_12/15",
+          "instructionText": "Someone chewing food or gum",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "Loudness (0-100)",
+                "inputType": "number"
+              },
+              {
+                "text": "Annoyance (0-100)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "Loudness_13/15",
+          "instructionText": "Someone sniffling or clearing their throat",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "Loudness (0-100)",
+                "inputType": "number"
+              },
+              {
+                "text": "Annoyance (0-100)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "Loudness_14/15",
+          "instructionText": "The following questions relate to hearing loss, tinnitus, and hyperacusis. Hyperacusis is when sounds that are moderately loud for other people are too loud for you. Please rate your agreement/disagreement with the following statements, using a scale from 0 (completely disagree) to 100 (completely agree)."
+        },
+        {
+          "id": "Loudness_15/15",
+          "instructionText": "Because sounds are too loud...",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "You avoid shopping (0-100)",
+                "inputType": "number"
+              },
+              {
+                "text": "You do not go out with your friends (0-100)",
+                "inputType": "number"
+              },{
+                "text": "You have given up some hobbies (0-100)",
+                "inputType": "number"
+              },
+              {
+                "text": "You do not go to restaurants (0-100)",
+                "inputType": "number"
+              },
+              {
+                "text": "You avoid being in crowds (0-100)",
+                "inputType": "number"
+              },
+              {
+                "text": "You feel depressed (0-100)",
+                "inputType": "number"
+              },
+              {
+                "text": "You feel anxious (0-100)",
+                "inputType": "number"
+              },
+              {
+                "text": "You are not able to concentrate (0-100)",
+                "inputType": "number"
+              },
+              {
+                "text": "Your quality of life is poor (0-100)",
+                "inputType": "number"
+              },
+              {
+                "text": "You are not able to perform tasks or jobs as well (0-100)",
+                "inputType": "number"
+              }              
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference":"MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "ARDC_Noise_History_Survey",
+      "pages": [
+        {
+          "id": "noise_exposure_0/19",
+          "instructionText": "Please answer the following questions about yourself, your hearing, and any noise you may have been around during the past year. Write an answer in the fields provided or select the best answer to each question. Be sure to complete all questions."
+        },
+        {
+          "id": "noise_exposure_1/19",
+          "instructionText": "Part A: Please answer these general questions about your hearing and any loud sounds during the past year (12 months).",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "How often were you around or did you shoot firearms such as rifles, pistols, shotguns, etc.? ",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Every few months",
+                  "Weekly",
+                  "Daily"
+                ]
+              },
+              {
+                "text": "How often were you exposed to loud sounds while working on a paid job? By loud sounds, we mean sounds so loud that you had to speak in a raised voice or shout to be heard at arm's length.",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Every few months",
+                  "Monthly",
+                  "Weekly",
+                  "Daily"
+                ]
+              },
+              {
+                "text": "How often were you exposed to any other types of loud sounds, such as power tools, lawn equipment, or loud personal/concert music? By loud sounds, we mean sounds so loud that you had to speak in a raised voice or shout to be heard at arm's length.",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Every few months",
+                  "Monthly",
+                  "Weekly",
+                  "Daily"
+                ]
+              },
+              {
+                "text": "How often were you exposed to loud sound that made your ears 'ring' or 'buzz'?",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Every few months",
+                  "Monthly",
+                  "Weekly",
+                  "Daily"
+                ]
+              },
+              {
+                "text": "How often were you exposed to loud sound that made your hearing seem muffled for a while?",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Every few months",
+                  "Monthly",
+                  "Weekly",
+                  "Daily"
+                ]
+              },
+              {
+                "text": "How often were you exposed to loud sound that made your ears hurt, feel 'full', or bother you in any other way?",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Every few months",
+                  "Monthly",
+                  "Weekly",
+                  "Daily"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "noise_exposure_2/19",
+          "instructionText": "Part B: Please answer these detailed questions about any loud sounds during the past year (12 months).",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "Outside of a paid job, how often did you use power tools, chainsaws, or other shop tools?",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Every few months",
+                  "Monthly",
+                  "Weekly",
+                  "Daily"
+                ]
+              },
+              {
+                "text": "If you used power tools, on average, how many hours did each time/session last?",
+                "inputType": "dropdown",
+                "options": [
+                  "8 hours or more",
+                  "4 hours up to 8 hours",
+                  "1 hour up to 4 hours",
+                  "Less than 1 hour"
+                ]
+              },
+              {
+                "text": "If you used power tools, how often did you wear earplugs or earmuffs during this activity?",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Sometimes",
+                  "Always"
+                ]
+              },
+              {
+                "text": "What kind of earplugs?",
+                "inputType": "text"
+              },
+              {
+                "text": "Outside of a paid job, how often did you drive heavy equipment or use loud machinery (such as tractors, trucks, or farming or lawn equipment like mowers/leaf blowers)?",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Every few months",
+                  "Monthly",
+                  "Weekly",
+                  "Daily"
+                ]
+              },
+              {
+                "text": "If you drove/used loud machinery, on average, how many hours did each time/session last?",
+                "inputType": "dropdown",
+                "options": [
+                  "8 hours or more",
+                  "4 hours up to 8 hours",
+                  "1 hour up to 4 hours",
+                  "Less than 1 hour"
+                ]
+              },
+              {
+                "text": "If you drove/used machinery, how often did you wear earplugs or earmuffs during this activity?",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Sometimes",
+                  "Always"
+                ]
+              },
+              {
+                "text": "Please indicate what kind of earplugs you wore in the field provided:",
+                "inputType": "text"
+              },
+              {
+                "text": "How often did you attend car/truck races, commercial/high school sporting events, music concerts/dances or any other events with amplified public announcement (PA)/music systems?",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Every few months",
+                  "Monthly",
+                  "Weekly",
+                  "Daily"
+                ]
+              },
+              {
+                "text": "If you attended these events, on average, how many hours did each time/session last?",
+                "inputType": "dropdown",
+                "options": [
+                  "8 hours or more",
+                  "4 hours up to 8 hours",
+                  "1 hour up to 4 hours",
+                  "Less than 1 hour"
+                ]
+              },
+              {
+                "text": "If you attended these events, how often did you wear earplugs or earmuffs during this activity?",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Sometimes",
+                  "Always"
+                ]
+              },
+              {
+                "text": "Please indicate what kind of earplugs you wore in the field provided:",
+                "inputType": "text"
+              }
+            ]
+          }
+        },
+        {
+          "id": "noise_exposure_3/19",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "How often did you ride or operate motorized vehicles such as motorcycles, jet skis, speed boats, snowmobiles, or four-wheelers?",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Every few months",
+                  "Monthly",
+                  "Most of the time",
+                  "Always"
+                ]
+              },
+              {
+                "text": "If you rode motorized vehicles, on average, how many hours did each time/session last?",
+                "inputType": "dropdown",
+                "options": [
+                  "8 hours or more",
+                  "4 hours up to 8 hours",
+                  "1 hour up to 4 hours",
+                  "Less than 1 hour"
+                ]
+              },
+              {
+                "text": "If you rode motorized vehicles, how often did you wear earplugs or earmuffs during this activity?",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Sometimes",
+                  "Always"
+                ]
+              },
+              {
+                "text": "Please indicate what kind of earplugs you wore in the field provided:",
+                "inputType": "text"
+              },
+              {
+                "text": "If you rode motorized vehicles, describe the vehicle:",
+                "inputType": "text"
+              },
+              {
+                "text": "How often did you ride in or pilot small aircraft/private airplanes?",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Every few months",
+                  "Monthly",
+                  "Weekly",
+                  "Daily"
+                ]
+              },
+              {
+                "text": "If you flew aircrafts, on average, how many hours did each time/session last?",
+                "inputType": "dropdown",
+                "options": [
+                  "8 hours or more",
+                  "4 hours up to 8 hours",
+                  "1 hour up to 4 hours",
+                  "Less than 1 hour"
+                ]
+              },
+              {
+                "text": "If you flew aircrafts, how often did you wear earplugs or earmuffs during this activity?",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Sometimes",
+                  "Always"
+                ]
+              },
+              {
+                "text": "Please indicate what kind of earplugs you wore in the field provided:",
+                "inputType": "text"
+              },
+              {
+                "text": "How often were you around or did you shoot firearms such as rifles, pistols, shotguns, etc.?",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Every few months",
+                  "Monthly",
+                  "Weekly",
+                  "Daily"
+                ]
+              },
+              {
+                "text": "If you were around/shot firearms, on average, how many shots did you fire each time/session?",
+                "inputType": "text",
+                "notes": "Shotgun/rifle shots per session and pistol shots per session should be specified."
+              },
+              {
+                "text": "If you were around/shot firearms, how often did you wear earplugs or earmuffs while shooting?",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Sometimes",
+                  "Always"
+                ]
+              },
+              {
+                "text": "Please indicate what kind of earplugs you wore in the field provided:",
+                "inputType": "text"
+              },
+              {
+                "text": "How often were you around firecrackers or other fireworks?",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Every few months",
+                  "Monthly",
+                  "Weekly",
+                  "Daily"
+                ]
+              },
+              {
+                "text": "If you were around fireworks, on average, how many fireworks did you shoot each time/session?",
+                "inputType": "text"
+              },
+              {
+                "text": "If you were around fireworks, how often did you wear earplugs or earmuffs during this activity?",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Sometimes",
+                  "Always"
+                ]
+              },
+              {
+                "text": "Please indicate what kind of earplugs you wore in the field provided:",
+                "inputType": "text"
+              }
+            ]
+          }
+        },
+        {
+          "id": "noise_exposure_4/19",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "How often did you play a musical instrument?",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Every few months",
+                  "Monthly",
+                  "Weekly",
+                  "Daily"
+                ]
+              },
+              {
+                "text": "If you played, please tell us what musical instrument:",
+                "inputType": "text"
+              },
+              {
+                "text": "If you played a musical instrument, how often did you wear earplugs or earmuffs while playing?",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Sometimes",
+                  "Always"
+                ]
+              },
+              {
+                "text": "Please indicate what kind of earplugs you wore in the field provided:",
+                "inputType": "text"
+              },
+              {
+                "text": "How often did you listen to music, radio programs, etc. using personal headsets or earphones?",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Every few months",
+                  "Monthly",
+                  "Weekly",
+                  "Daily"
+                ]
+              },
+              {
+                "text": "If you listened through earphones, on average, how many hours did each time/session last?",
+                "inputType": "dropdown",
+                "options": [
+                  "8 hours or more",
+                  "4 hours up to 8 hours",
+                  "1 hour up to 4 hours",
+                  "Less than 1 hour"
+                ]
+              },
+              {
+                "text": "If you listened through earphones, what was the typical volume setting (control knob rotation) when listening?",
+                "inputType": "dropdown",
+                "options": [
+                  "Full/maximum volume",
+                  "3/4 maximum volume",
+                  "1/2 maximum volume",
+                  "1/4 maximum volume"
+                ]
+              },
+              {
+                "text": "Other than music concerts and headset use, how often did you listen to music, radio programs, etc. from audio speakers in a car or at home?",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Every few months",
+                  "Monthly",
+                  "Weekly",
+                  "Daily"
+                ]
+              },
+              {
+                "text": "If you listened via speakers, on average, how many hours did each time/session last?",
+                "inputType": "dropdown",
+                "options": [
+                  "8 hours or more",
+                  "4 hours up to 8 hours",
+                  "1 hour up to 4 hours",
+                  "Less than 1 hour"
+                ]
+              },
+              {
+                "text": "If you listened via speakers, what was the typical volume setting (control knob rotation)?",
+                "inputType": "dropdown",
+                "options": [
+                  "Full/maximum volume",
+                  "3/4 maximum volume",
+                  "1/2 maximum volume",
+                  "1/4 maximum volume"
+                ]
+              },
+              {
+                "text": "How often did you go to a dance club or nightclub?",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Every few months",
+                  "Monthly",
+                  "Weekly",
+                  "Daily"
+                ]
+              },
+              {
+                "text": "On average, how many hours did each time/session last?",
+                "inputType": "dropdown",
+                "options": [
+                  "8 hours or more",
+                  "4 hours up to 8 hours",
+                  "1 hour up to 4 hours",
+                  "Less than 1 hour"
+                ]
+              },
+              {
+                "text": "How often did you wear earplugs or earmuffs during this activity?",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Sometimes",
+                  "Always"
+                ]
+              },
+              {
+                "text": "Please indicate what kind of earplugs you wore in the field provided:",
+                "inputType": "text"
+              }
+            ] 
+          }
+        },
+        {
+          "id": "noise_exposure_5/19",
+          "instructionText": "For the questions below, note different time-frames: ",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "Now think back to this past summer. Over the summer months, did you work a noisy paid job, such as in construction, farming, a factory, lawn service, carwash, or other indoor or outdoor job working around loud equipment or machinery? By noisy job, we mean sounds so loud that you had to speak in a raised voice or shout to be heard at arm's length.",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "If yes, please describe the noisy job:",
+                "inputType": "text"
+              },
+              {
+                "text": "If you worked a noisy job, please estimate the number of hours you worked in a typical week. Hours worked per typical week this summer:",
+                "inputType": "number"
+              },
+              {
+                "text": "How often did you wear earplugs or earmuffs when around loud noises at this summer job?",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Sometimes",
+                  "Always"
+                ]
+              },
+              {
+                "text": "What kind of earplugs did you use?",
+                "inputType": "text"
+              },
+              {
+                "text": "Other than during the summer, over the past year, did you work one or more noisy paid jobs, such as in construction, farming, a factory, lawn service, carwash, or other indoor or outdoor job working around loud equipment or machinery? By noisy job, we mean sounds so loud that you had to speak in a raised voice or shout to be heard at arm's length.",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ],
+                "notes": "(if no, you're done with this page of the survey)"
+              },
+              {
+                "text": "If yes, please describe the noisy job:",
+                "inputType": "text"
+              },
+              {
+                "text": "If you worked a noisy job, please estimate the number of hours you worked in a typical week. Hours worked per typical week this summer:",
+                "inputType": "number"
+              },
+              {
+                "text": "How often did you wear earplugs or earmuffs when around loud noises at this job?",
+                "inputType": "dropdown",
+                "options": [
+                  "Never",
+                  "Sometimes",
+                  "Always"
+                ]
+              },
+              {
+                "text": "Please indicate what kind of earplugs you wore in the field provided:",
+                "inputType": "text"
+              }            
+            ]
+          }
+        },
+        {
+          "id": "noise_exposure_6/19",
+          "instructionText": "Thinking about your general lifestyle (both current and years past), please answer the following questions. For each activity, enter an X in the one field that best describes how often you typically go out to that kind of place/event. In the last column enter an estimate (in hours) of how long one such visit typically lasted. ",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "How often you typically go out to a dance club or night club?",
+                "inputType": "dropdown",
+                "options": [
+                  "more than once a week",
+                  "About once a week",
+                  "About once in two weeks",
+                  "About once a month",
+                  "About once every 2-3 months",
+                  "About once or twice a year",
+                  "Never"
+                ]
+              },
+              {
+                "text": "Did you wear hearing protection while participating in this activity?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "How long did such visits last? (hours)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "noise_exposure_7/19",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "How often you typically go out to a pop/rock concert at a large venue (e.g., stadium entertainment center)?",
+                "inputType": "dropdown",
+                "options": [
+                  "more than once a week",
+                  "About once a week",
+                  "About once in two weeks",
+                  "About once a month",
+                  "About once every 2-3 months",
+                  "About once or twice a year",
+                  "Never"
+                ]
+              },
+              {
+                "text": "Did you wear hearing protection while participating in this activity?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "How long did such visits last? (hours)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "noise_exposure_8/19",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "How often you typically go out to a live gig or music performance at a smaller venue?",
+                "inputType": "dropdown",
+                "options": [
+                  "more than once a week",
+                  "About once a week",
+                  "About once in two weeks",
+                  "About once a month",
+                  "About once every 2-3 months",
+                  "About once or twice a year",
+                  "Never"
+                ]
+              },
+              {
+                "text": "Did you wear hearing protection while participating in this activity?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "How long did such visits last? (hours)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "noise_exposure_9/19",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "How often you typically go out to an outdoor music festival (e.g., Big Day Out, Future Music)?",
+                "inputType": "dropdown",
+                "options": [
+                  "more than once a week",
+                  "About once a week",
+                  "About once in two weeks",
+                  "About once a month",
+                  "About once every 2-3 months",
+                  "About once or twice a year",
+                  "Never"
+                ]
+              },
+              {
+                "text": "Did you wear hearing protection while participating in this activity?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "How long did such visits last? (hours)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "noise_exposure_10/19",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "How often you typically go out to a pub, bar or club with background noise (e.g., loud conversation, music)?",
+                "inputType": "dropdown",
+                "options": [
+                  "more than once a week",
+                  "About once a week",
+                  "About once in two weeks",
+                  "About once a month",
+                  "About once every 2-3 months",
+                  "About once or twice a year",
+                  "Never"
+                ]
+              },
+              {
+                "text": "Did you wear hearing protection while participating in this activity?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "How long did such visits last? (hours)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "noise_exposure_11/19",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "How often you typically go out to a party or dance with amplified music (e.g., DJ, home stereo)?",
+                "inputType": "dropdown",
+                "options": [
+                  "more than once a week",
+                  "About once a week",
+                  "About once in two weeks",
+                  "About once a month",
+                  "About once every 2-3 months",
+                  "About once or twice a year",
+                  "Never"
+                ]
+              },
+              {
+                "text": "Did you wear hearing protection while participating in this activity?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "How long did such visits last? (hours)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "noise_exposure_12/19",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "How often you typically go to a fitness class with amplified music (e.g., aerobics, spin classes, Zumba)?",
+                "inputType": "dropdown",
+                "options": [
+                  "more than once a week",
+                  "About once a week",
+                  "About once in two weeks",
+                  "About once a month",
+                  "About once every 2-3 months",
+                  "About once or twice a year",
+                  "Never"
+                ]
+              },
+              {
+                "text": "Did you wear hearing protection while participating in this activity?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "How long did such visits last? (hours)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "noise_exposure_13/19",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "How often you typically go to a live professional sports event (e.g., NRL or AFL game at a stadium)?",
+                "inputType": "dropdown",
+                "options": [
+                  "more than once a week",
+                  "About once a week",
+                  "About once in two weeks",
+                  "About once a month",
+                  "About once every 2-3 months",
+                  "About once or twice a year",
+                  "Never"
+                ]
+              },
+              {
+                "text": "Did you wear hearing protection while participating in this activity?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "How long did such visits last? (hours)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "noise_exposure_14/19",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "How often you typically go to a live motor sports event (e.g., moto gp, F1 Grand Prix, V8 Supercars?",
+                "inputType": "dropdown",
+                "options": [
+                  "more than once a week",
+                  "About once a week",
+                  "About once in two weeks",
+                  "About once a month",
+                  "About once every 2-3 months",
+                  "About once or twice a year",
+                  "Never"
+                ]
+              },
+              {
+                "text": "Did you wear hearing protection while participating in this activity?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "How long did such visits last? (hours)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "noise_exposure_15/19",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "How often you typically ride a motorcycle, motor scooter or noisy recreational vehicle (e.g., quad bike, race car, motor boat)?",
+                "inputType": "dropdown",
+                "options": [
+                  "more than once a week",
+                  "About once a week",
+                  "About once in two weeks",
+                  "About once a month",
+                  "About once every 2-3 months",
+                  "About once or twice a year",
+                  "Never"
+                ]
+              },
+              {
+                "text": "Did you wear hearing protection while participating in this activity?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "How long did such visits last? (hours)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "noise_exposure_16/19",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "How often you typically shoot (e.g., pistol club, cadet training, target shooting) - whether you use a gun yourself or are close to someone else using a gun?",
+                "inputType": "dropdown",
+                "options": [
+                  "more than once a week",
+                  "About once a week",
+                  "About once in two weeks",
+                  "About once a month",
+                  "About once every 2-3 months",
+                  "About once or twice a year",
+                  "Never"
+                ]
+              },
+              {
+                "text": "Did you wear hearing protection while participating in this activity?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "How long did such visits last? (hours)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "noise_exposure_17/19",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "instructionText": "For each activity, enter an X in the one field that best describes how often you perform, rehearse, or play.",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "How often you typically perform or rehearse in a band than played amplified music (e.g., rock band)?",
+                "inputType": "dropdown",
+                "options": [
+                  "more than once a week",
+                  "About once a week",
+                  "About once in two weeks",
+                  "About once a month",
+                  "About once every 2-3 months",
+                  "About once or twice a year",
+                  "Never"
+                ]
+              },
+              {
+                "text": "Did you wear hearing protection while participating in this activity?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "How long did such visits last? (hours)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "noise_exposure_18/19",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "How often you typically perform or rehearse in an orchestra or concert band?",
+                "inputType": "dropdown",
+                "options": [
+                  "more than once a week",
+                  "About once a week",
+                  "About once in two weeks",
+                  "About once a month",
+                  "About once every 2-3 months",
+                  "About once or twice a year",
+                  "Never"
+                ]
+              },
+              {
+                "text": "Did you wear hearing protection while participating in this activity?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "How long did such visits last? (hours)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "noise_exposure_19/19",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "instructionText": "For each activity, enter an X in the one field that best describes how often you perform, rehearse, or play.",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "How often you typically play/practice/learn a musical instrument?",
+                "inputType": "dropdown",
+                "options": [
+                  "more than once a week",
+                  "About once a week",
+                  "About once in two weeks",
+                  "About once a month",
+                  "About once every 2-3 months",
+                  "About once or twice a year",
+                  "Never"
+                ]
+              },
+              {
+                "text": "Did you wear hearing protection while participating in this activity?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "How long did such visits last? (hours)",
+                "inputType": "number"
+              }
             ]
           }
         },

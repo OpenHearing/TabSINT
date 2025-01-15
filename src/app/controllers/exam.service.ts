@@ -291,7 +291,7 @@ export class ExamService {
     
             return !responseRequired;
         }
-        return false;
+        return true;
     }
 
     /**
