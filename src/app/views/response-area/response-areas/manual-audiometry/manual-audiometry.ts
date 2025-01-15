@@ -138,6 +138,8 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         this.setCurrentDbSpl();
         this.organizeAudiometryResults();
         this.results.currentPage.response = this.audiogramData;
+        this.state.doesResponseExist = true;
+        this.stateModel.setPageSubmittable();
     }
 
     submitResults(): void {

@@ -1,3 +1,9 @@
 <div>
-    <textarea [(ngModel)]="results.currentPage.response" rows="{{rows}}" autofocus="true" maxlength="5000"></textarea>
+    <textarea 
+        [(ngModel)]="results.currentPage.response"
+        (ngModelChange)="onResponseChange()"
+        rows="{{rows}}" 
+        autofocus="true" 
+        maxlength="5000">
+    </textarea>
 </div>

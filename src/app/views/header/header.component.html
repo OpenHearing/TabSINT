@@ -41,7 +41,7 @@
                 <button routerLink="/exam" ngbDropdownItem>Exam View</button>
                 <button (click)="adminService.onAdminViewClick()" ngbDropdownItem>Admin View</button>
                 <a href="https://tabsint.org/"><button ngbDropdownItem>Documentation</button></a> 
-                <div *ngIf="state.examState === ExamState.Testing && state.appState === AppState.Exam">
+                <div *ngIf="(state.examState === ExamState.Testing || state.examState === ExamState.DeviceError) && state.appState === AppState.Exam">
                   <div class="dropdown-divider"></div>
                   <button (click)="resetExam()" ngbDropdownItem><i class="ion-close"></i> {{'Reset Exam and Discard Results'|translate}}</button>
                   <button (click)="submitPartialExam()" ngbDropdownItem><i class="ion-refresh"></i> {{'Reset Exam and Submit Partial Results'|translate}}</button>

@@ -130,6 +130,22 @@ export class ExamService {
         this.submitDefault();
     }
 
+    /** Checks if a page response is required.
+     * @summary Checks if a page response is required and returns a boolean
+     * @returns boolean if page response is required
+    */
+    isPageResponseRequired(): boolean {
+        if (this.currentPage.responseArea) {
+            let responseRequired = this.currentPage.responseArea.responseRequired;    
+            if (responseRequired === undefined) {
+                const responseType = this.currentPage.responseArea.type;
+                responseRequired = getDefaultResponseRequired(responseType);
+            }    
+            return responseRequired;
+        }
+        return false;
+    }
+
     /** Advance to next page in the exam
      * @summary Increments the exam page index. Advances to next page in protocolStack. If there is no next page it will
      * search for a followOn. The protocolStack will be updated.
@@ -217,7 +233,9 @@ export class ExamService {
     private startPage() {
         this.pageModel.currentPageSubject.next(this.pageModel.stack[this.state.examIndex]);
         this.resultsService.initializePageResults(this.currentPage);
-        this.state.isSubmittable = this.checkIfPageIsSubmittable();
+        this.state.doesResponseExist = false;
+        this.state.isResponseRequired = this.isPageResponseRequired();
+        this.stateModel.setPageSubmittable();
     }
 
     /** Parse page objects and add them to the pageModel.stack.
@@ -274,24 +292,6 @@ export class ExamService {
     private resetProtocolStack() {
         this.pageModel.stack = [];
         this.state.examIndex = 0;
-    }
-
-    /** Checks if a page is submittable.
-     * @summary Checks if a page is submittable and returns a boolean
-     * @returns boolean if page is submittable
-    */
-    private checkIfPageIsSubmittable(): boolean {
-        if (this.currentPage.responseArea) {
-            let responseRequired = this.currentPage.responseArea.responseRequired;
-    
-            if (responseRequired === undefined) {
-                const responseType = this.currentPage.responseArea.type;
-                responseRequired = getDefaultResponseRequired(responseType);
-            }
-    
-            return !responseRequired;
-        }
-        return true;
     }
 
     /**

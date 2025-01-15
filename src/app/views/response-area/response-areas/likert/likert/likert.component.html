@@ -6,7 +6,7 @@
   <div
     class="likert-labels"
     *ngIf="position === 'above' && labels.length > 0"
-    [style.justify-content]="'space-between'"><!-- "labels.length === levels ? 'space-between' : 'flex-start'"> -->
+    [style.justify-content]="labels.length === levels ? 'space-between' : 'flex-start'">
     <span
       *ngFor="let label of labels; let labelIndex = index"
       class="likert-label-above"

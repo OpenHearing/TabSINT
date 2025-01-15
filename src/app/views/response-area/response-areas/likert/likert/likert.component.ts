@@ -6,6 +6,9 @@ import { ResultsInterface } from '../../../../../models/results/results.interfac
 import { LikertInterface } from './likert.interface';
 import { PageInterface } from '../../../../../models/page/page.interface';
 import { likertSchema } from '../../../../../../schema/response-areas/likert.schema';
+import { ExamService } from '../../../../../controllers/exam.service';
+import { StateModel } from '../../../../../models/state/state.service';
+import { StateInterface } from '../../../../../models/state/state.interface';
 
 @Component({
   selector: 'likert-view',
@@ -30,20 +33,26 @@ export class LikertComponent implements OnInit, OnDestroy {
   naBox: boolean = false;
 
   results: ResultsInterface;
+  state: StateInterface;
 
   private pageSubscription?: Subscription;
 
   constructor (
+    private readonly examService: ExamService, 
     private readonly resultsModel: ResultsModel,
-    private readonly pageModel: PageModel
+    private readonly pageModel: PageModel,
+    private readonly stateModel: StateModel
   ) {
     this.results = this.resultsModel.getResults();
+    this.state = this.stateModel.getState();
   }
 
   ngOnInit() {
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type == "likertResponseArea") {
-        this.initializeResponseArea(updatedPage.responseArea as LikertInterface);
+        setTimeout(() => {
+          this.initializeResponseArea(updatedPage.responseArea as LikertInterface);
+        });
       }
     });
   }
@@ -52,8 +61,10 @@ export class LikertComponent implements OnInit, OnDestroy {
     this.pageSubscription?.unsubscribe();
   }
 
-  onResponseChange(questionIndex: number, levelIndex: number | null): void {
+  onResponseChange(questionIndex: number, levelIndex: number | string | null): void {
     this.results.currentPage.response[questionIndex] = levelIndex;
+    this.state.doesResponseExist = this.results.currentPage.response !== Array.from({ length: this.questions.length }, () => null);
+    this.stateModel.setPageSubmittable();
     this.responseChange.emit(this.results.currentPage.response);
   }
 
@@ -66,15 +77,15 @@ export class LikertComponent implements OnInit, OnDestroy {
   onNotApplicableChange(questionIndex: number, event: Event): void {
     const isChecked = (event.target as HTMLInputElement).checked;
     this.isNotApplicable[questionIndex] = isChecked;
+    let res;
 
     if (isChecked) {
-      this.sliderValue[questionIndex] = null;
-      this.results.currentPage.response[questionIndex] = "NA";
+      res = null;
+      res = "NA";
     } else {
-      this.results.currentPage.response[questionIndex] = this.sliderValue[questionIndex];
+      res = this.sliderValue[questionIndex];
     }
-
-    this.responseChange.emit(this.results.currentPage.response);
+    this.onResponseChange(questionIndex, res);
   }
 
   setSliderValue(questionIndex: number, value: number): void {
