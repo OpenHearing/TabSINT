@@ -67,17 +67,17 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'sweptDPOAEResponseArea') {
         const responseArea = updatedPage.responseArea as SweptDpoaeInterface;
-        this.tabsintId = responseArea.tabsintId ?? sweptDpoaeSchema.properties.tabsintId.default;
-        this.f2Start = responseArea.f2Start ?? sweptDpoaeSchema.properties.f2Start.default;
-        this.f2End = responseArea.f2End ?? sweptDpoaeSchema.properties.f2End.default;
-        this.frequencyRatio = responseArea.frequencyRatio ?? sweptDpoaeSchema.properties.frequencyRatio.default;
-        this.sweepDuration = responseArea. sweepDuration ?? sweptDpoaeSchema.properties.sweepDuration.default;
-        this.windowDuration = responseArea.windowDuration ?? sweptDpoaeSchema.properties.windowDuration.default;
-        this.sweepType = responseArea.sweepType ?? sweptDpoaeSchema.properties.sweepType.default;
-        this.minSweeps = responseArea.minSweeps ?? sweptDpoaeSchema.properties.minSweeps.default;
-        this.maxSweeps = responseArea.maxSweeps ?? sweptDpoaeSchema.properties.maxSweeps.default;
-        this.noiseFloorThreshold = responseArea.noiseFloorThreshold ?? sweptDpoaeSchema.properties.noiseFloorThreshold.default;
-        this.outputRawMeasurements = responseArea.outputRawMeasurements ?? sweptDpoaeSchema.properties.outputRawMeasurements.default;
+        this.tabsintId = responseArea.tabsintId ?? this.tabsintId;
+        this.f2Start = responseArea.f2Start ?? this.f2Start;
+        this.f2End = responseArea.f2End ?? this.f2End;
+        this.frequencyRatio = responseArea.frequencyRatio ?? this.frequencyRatio;
+        this.sweepDuration = responseArea.sweepDuration ?? this.sweepDuration;
+        this.windowDuration = responseArea.windowDuration ?? this.windowDuration;
+        this.sweepType = responseArea.sweepType ?? this.sweepType;
+        this.minSweeps = responseArea.minSweeps ?? this.minSweeps;
+        this.maxSweeps = responseArea.maxSweeps ?? this.maxSweeps;
+        this.noiseFloorThreshold = responseArea.noiseFloorThreshold ?? this.noiseFloorThreshold;
+        this.outputRawMeasurements = responseArea.outputRawMeasurements ?? this.outputRawMeasurements;
 
         // Update xTicks and scales
         this.xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000].filter(tick => tick >= this.f2Start && tick <= this.f2End);
