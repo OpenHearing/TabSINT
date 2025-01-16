@@ -65,17 +65,17 @@ export class WAIExamComponent implements OnInit, OnDestroy {
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'WAIResponseArea') {
         const responseArea = updatedPage.responseArea as WAIInterface;
-        this.tabsintId = responseArea.tabsintId ?? waiSchema.properties.tabsintId.default;
-        this.fStart = responseArea.fStart ?? waiSchema.properties.fStart.default;
-        this.fEnd = responseArea.fEnd ?? waiSchema.properties.fEnd.default;
-        this.sweepDuration = responseArea. sweepDuration ?? waiSchema.properties.sweepDuration.default;
-        this.sweepType = responseArea.sweepType ?? waiSchema.properties.sweepType.default;
-        this.level = responseArea.level ?? waiSchema.properties.level.default;
-        this.numSweeps = responseArea.numSweeps ?? waiSchema.properties.numSweeps.default;
-        this.windowDuration = responseArea.windowDuration ?? waiSchema.properties.windowDuration.default;
-        this.numFrequencies = responseArea.numFrequencies ?? waiSchema.properties.numFrequencies.default;
-        this.filename = responseArea.filename ?? waiSchema.properties.filename.default;
-        this.outputRawMeasurements = responseArea.outputRawMeasurements ?? waiSchema.properties.outputRawMeasurements.default;
+        this.tabsintId = responseArea.tabsintId ?? this.tabsintId;
+        this.fStart = responseArea.fStart ?? this.fStart;
+        this.fEnd = responseArea.fEnd ?? this.fEnd;
+        this.sweepDuration = responseArea.sweepDuration ?? this.sweepDuration;
+        this.sweepType = responseArea.sweepType ?? this.sweepType;
+        this.level = responseArea.level ?? this.level;
+        this.numSweeps = responseArea.numSweeps ?? this.numSweeps;
+        this.windowDuration = responseArea.windowDuration ?? this.windowDuration;
+        this.numFrequencies = responseArea.numFrequencies ?? this.numFrequencies;
+        this.filename = responseArea.filename ?? this.filename;
+        this.outputRawMeasurements = responseArea.outputRawMeasurements ?? this.outputRawMeasurements;
 
         // Update xTicks and scales
         this.xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000].filter(tick => tick >= this.fStart && tick <= this.fEnd);
