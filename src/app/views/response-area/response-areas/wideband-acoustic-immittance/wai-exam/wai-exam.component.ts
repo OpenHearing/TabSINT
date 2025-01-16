@@ -1,7 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import * as d3 from 'd3';
 import { Subscription } from 'rxjs/internal/Subscription';
-
 import { PageModel } from '../../../../../models/page/page.service';
 import { DevicesService } from '../../../../../controllers/devices.service';
 import { DeviceUtil } from '../../../../../utilities/device-utility';
@@ -43,7 +41,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
   };
 
   // Set default dimensions and margins
-  margin = { top: 20, right: 30, bottom: 60, left: 70, spacerW: 70, spacerH: 70 };
+  margin = { top: 20, right: 30, bottom: 60, left: 70, spacerW: 80, spacerH: 70 };
   width = 650 - this.margin.left - this.margin.right - this.margin.spacerW;
   height = 700 - this.margin.top - this.margin.bottom - this.margin.spacerH;
   xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000];

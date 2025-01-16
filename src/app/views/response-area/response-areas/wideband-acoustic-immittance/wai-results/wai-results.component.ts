@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, Input } from '@angular/core';
 import * as d3 from 'd3';
 import { WAIResultsInterface } from '../wai-exam/wai-exam.interface';
-import { createLegend, createWAIResultsChartSvg } from '../../../../../utilities/d3-plot-functions';
+import { createWAIResultsChartSvg } from '../../../../../utilities/d3-plot-functions';
 
 @Component({
   selector: 'wai-results',
@@ -44,6 +44,7 @@ export class WAIResultsComponent implements AfterViewInit {
         h: plotHeight,
         xRange: xRange,
         yRange: [0, 1], 
+        yAxisFormat: ".1f",
         data: this.waiResults.Absorbance! 
       },
       { id: "Power Reflectance?", 
@@ -53,6 +54,7 @@ export class WAIResultsComponent implements AfterViewInit {
         h: plotHeight,
         xRange: xRange,
         yRange: [0, 1], 
+        yAxisFormat: ".1f",
         data: this.waiResults.Absorbance! 
       },
       { id: "Impedance Magnitude", 
@@ -62,6 +64,7 @@ export class WAIResultsComponent implements AfterViewInit {
         h: plotHeight,
         xRange: xRange,
         yRange: [10**6, 10**9], 
+        yAxisFormat: ".0e",
         data: this.waiResults.ImpedanceAmp! 
       },
       { id: "Impedance Phase", 
@@ -71,6 +74,7 @@ export class WAIResultsComponent implements AfterViewInit {
         h: plotHeight,
         xRange: xRange,
         yRange: [-180, 180], 
+        yAxisFormat: ".0f",
         data: this.waiResults.ImpedancePhase! 
       },
     ];
@@ -79,7 +83,7 @@ export class WAIResultsComponent implements AfterViewInit {
     let yScale: any;
     let lineData: any;
     let line: any;
-    graphs.forEach(({ id, x, y, w, h, xRange, yRange, data }) => {
+    graphs.forEach(({ id, x, y, w, h, xRange, yRange, yAxisFormat, data }) => {
       xScale = d3.scaleLog()
         .domain(xRange)
         .range([0, plotWidth]);
@@ -90,8 +94,8 @@ export class WAIResultsComponent implements AfterViewInit {
       svg.append("g")
         .attr("id", id)
         .attr("transform", `translate(${this.margin.left + x}, ${this.margin.top + y})`);
-      
-      svg = createWAIResultsChartSvg(svg, x, y, w, h, this.xTicks, xScale, yScale);
+      let yAxisName = id;
+      svg = createWAIResultsChartSvg(svg, x, y, w, h, this.xTicks, xScale, yScale, yAxisFormat, yAxisName);
 
       lineData = this.waiResults.Frequency!.map((frequency, i) => ({
         frequency,

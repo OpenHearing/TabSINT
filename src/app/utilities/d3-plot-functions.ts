@@ -95,7 +95,9 @@ export function createWAIResultsChartSvg(
   chartHeight: number,
   xTicks: number[],
   xScale: d3.ScaleLogarithmic<number, number, never>,
-  yScale: d3.ScaleLinear<number, number, never>
+  yScale: d3.ScaleLinear<number, number, never>,
+  yAxisFormat: string,
+  yAxisName: string
 ) {
     // Define axes
     const xAxisMinor = d3.axisBottom(xScale).ticks(10).tickFormat(() => '');
@@ -117,40 +119,24 @@ export function createWAIResultsChartSvg(
       .attr('class', 'label')
       .attr('font-size', 20)
       .attr('x', chartWidth / 2)
-      .attr('y', 40)
+      .attr('y', 50)
       .style('text-anchor', 'middle')
       .attr('fill', 'black')
       .text('Frequency (Hz)');
 
-    if (chartY>chartHeight && chartX<chartWidth) {
-      svg.append('g')
+    svg.append('g')
       .attr('transform', `translate(${chartX},${chartY})`)
       .attr('class', 'axis-label')
-      .call(yAxis.tickFormat(d3.format(".1e")))
+      .call(yAxis.tickFormat(d3.format(yAxisFormat)))
       .append('text')
       .attr('class', 'label')
       .attr('font-size', 20)
       .attr('x', -chartHeight / 2)
-      .attr('y', -40)
+      .attr('y', -50)
       .attr('transform', 'rotate(-90)')
       .attr('fill', 'black')
       .style('text-anchor', 'middle')
-      .text('Absorbance');
-    } else {
-      svg.append('g')
-      .attr('transform', `translate(${chartX},${chartY})`)
-      .attr('class', 'axis-label')
-      .call(yAxis)
-      .append('text')
-      .attr('class', 'label')
-      .attr('font-size', 20)
-      .attr('x', -chartHeight / 2)
-      .attr('y', -40)
-      .attr('transform', 'rotate(-90)')
-      .attr('fill', 'black')
-      .style('text-anchor', 'middle')
-      .text('Absorbance');
-    }
+      .text(yAxisName);
 
     // Major X Axis Gridlines
     svg.append("g")
