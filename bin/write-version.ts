@@ -1,9 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 const simpleGit = require('simple-git');
-const versionJsonPath = path.join(__dirname, '../../version.json');
-const packageJsonPath = path.join(__dirname, '../../../package.json');
+const versionJsonPath = path.join(__dirname, '../src/version.json');
+const versionJson = JSON.parse(fs.readFileSync(versionJsonPath, 'utf-8'));
+const packageJsonPath = path.join(__dirname, '../package.json');
 const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+const androidmanifeststring = fs.readFileSync('android/app/src/main/AndroidManifest.xml', "utf-8"); 
 const git = simpleGit();
 
 async function getCurrentCommitHash() {
@@ -16,16 +18,19 @@ async function getCurrentCommitHash() {
   }
 }
 
-async function incrementRev(rev:string) {
-  const regex = /(v\d+\.\d+\.\d+)-(\d+)-g([a-f0-9]+)/;
-  const match = regex.exec(rev);
-  if (match) {
-    const baseVersion = match[1];
-    const qualifier = parseInt(match[2], 10) + 1;
-    const commitHash = await getCurrentCommitHash();
-    return `${baseVersion}-${qualifier}-g${commitHash}`;
-  }
-  return rev;
+async function incrementRev() {
+  const baseVersion = 'v'+packageJson.version;
+  let revNumber;
+  const previousRevNumber = versionJson.rev.match(/v\d+\.\d+\.\d+-(\d+)-/)[1];
+  if (packageJson.version !== versionJson.tabsint) {
+    revNumber = '1';
+  } else if (previousRevNumber) {
+    revNumber = (parseInt(previousRevNumber, 10) + 1).toString();
+  } else {
+    revNumber = '1';
+  }  
+  const commitHash = await getCurrentCommitHash();
+  return `${baseVersion}-${revNumber}-${commitHash}`;
 }
 
 function getNodeVersion() {
@@ -33,12 +38,12 @@ function getNodeVersion() {
 }
 
 async function generateVersionJson() {
-  const updatedRev = await incrementRev('v4.6.0-119-gfee19e2f');
+  const updatedRev = await incrementRev();
   const newVersionJson = {
     tabsint: packageJson.version,
     date: new Date().toISOString(),
     rev: updatedRev,
-    version_code: "289",
+    version_code: (parseInt(versionJson.version_code, 10) + 1).toString(),
     deps: {
       user_agent: 'angular/' + packageJson.devDependencies['@angular/cli'],
       node: 'node/' + getNodeVersion(),

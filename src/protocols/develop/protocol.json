@@ -160,6 +160,37 @@
           "responseArea": {
             "type": "likertResponseArea",
             "levels": 5,
+            "useSlider": true,
+            "naBox": true,
+            "labels": ["Not at all", "Perfectly"],
+            "questions": [
+              "You are in a group of about five people, sitting round a table. It is an otherwise quiet place. You can see everyone else in the group. Can you follow the conversation? ",
+              "You are talking with one other person. There is continuous background noise, such as a fan or running water close by. Can you follow what the person says? ",
+              "You are in a group of about five people in a busy restaurant. You CANNOT see everyone else in the group. Can you follow the conversation? ",
+              "You are talking to someone in a place where there are a lot of echoes, such as in a church or railway station. Can you follow what the other person says? "
+            ]
+          }
+        },
+        {
+          "id": "default",
+          "responseArea": {
+            "type": "likertResponseArea",
+            "levels": 5,
+            "naBox": true,
+            "labels": ["Not at all", "Perfectly"],
+            "questions": [
+              "You are in a group of about five people, sitting round a table. It is an otherwise quiet place. You can see everyone else in the group. Can you follow the conversation? ",
+              "You are talking with one other person. There is continuous background noise, such as a fan or running water close by. Can you follow what the person says? ",
+              "You are in a group of about five people in a busy restaurant. You CANNOT see everyone else in the group. Can you follow the conversation? ",
+              "You are talking to someone in a place where there are a lot of echoes, such as in a church or railway station. Can you follow what the other person says? "
+            ]
+          }
+        },
+        {
+          "id": "default",
+          "responseArea": {
+            "type": "likertResponseArea",
+            "levels": 5,
             "useEmoticons": true,
             "labels": ["Not at all", "Perfectly"],
             "questions": [
