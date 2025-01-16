@@ -91,9 +91,14 @@ export class AudiogramComponent implements OnInit{
     const margin = this.isManualExam
     ? { top: 50, right: 60, bottom: 60, left: 80 }
     : { top: 55, right: 60, bottom: 60, left: 80 };
-    const width = this.isManualExam
-      ? 350 - margin.left - margin.right
-      : 540 - margin.left - margin.right;
+    const landscapeWidth = Math.max(window.innerWidth, window.innerHeight);
+    let baseWidth;
+    if (landscapeWidth>1200){
+      baseWidth = this.isManualExam ? landscapeWidth * 0.35 : 540;
+    } else {
+      baseWidth = this.isManualExam ?  landscapeWidth * 0.38 : 540;
+    }
+    const width = baseWidth - margin.left - margin.right;
     const height = width * aspectRatio - 20;
     const graphBorderColor = this.dataStruct.channels[0] === 'left' ? 'blue' : 'red';
     const xScale = d3.scaleLog().base(2).range([0, width]).domain([93.75, 24000]);
