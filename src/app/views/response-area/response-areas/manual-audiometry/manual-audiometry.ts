@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit} from "@angular/core";
+import {ChangeDetectorRef, Component, OnDestroy, OnInit} from "@angular/core";
 import { Subscription } from "rxjs";
 import { ScreenOrientation } from "@capacitor/screen-orientation";
 
@@ -144,13 +144,18 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
 
     async playTone() {
         this.isPlaying = true;
-        await this.submitAudiometryExam()
+        await this.submitAudiometryExam();
+    
         setTimeout(() => {
-            // Wait so we don't accidentally play tone twice in a row
-          }, 1000);
-          
-        this.isPlaying = false;
+            this.isPlaying = false;
+            this.refreshGraph = false;
+    
+            setTimeout(() => {
+                this.refreshGraph = true;
+            }, 0);
+        }, 1000);
     }
+    
     
     noResponse(): void {
         const resultType =
