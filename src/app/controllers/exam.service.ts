@@ -118,7 +118,7 @@ export class ExamService {
             conditional: "true",
             target: { reference: "@PARTIAL"}
         }];
-        this.submit();
+        this.submitDefault();
     }
 
     navigateToTarget(subProtocolID: string) {

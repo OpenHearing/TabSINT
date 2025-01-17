@@ -26,7 +26,7 @@ export interface ProtocolSchemaInterface {
     subProtocols?: ProtocolSchemaInterface[];
 }
 
-export interface CalibrationInterface extends CommonResponseAreaInterface {
+export interface CalibrationInterface {
     wavfiles: string[];
     referenceFile?: string;
     referenceLevel?: number;
