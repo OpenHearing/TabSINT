@@ -284,7 +284,6 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         this.updateCurrentDb();
 
         if (this.retspls && this.levelUnits === LevelUnits.dB_HL) {
-            this.checkResplKeysAreInFrequencies();
             this.verifyEachFrequencyHasRetspl();
         }
 
@@ -318,20 +317,5 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
                 .subscribe();
             this.retspls = undefined;
         }
-    }
-
-    private checkResplKeysAreInFrequencies() {
-        Object.keys(this.retspls!).forEach(key => {
-            if (!this.frequencies.includes(Number(key))) {
-                this.logger.error(`Unknown frequency in retspls. ${key}: ${this.retspls![key]}`);
-                this.notifications
-                    .alert({
-                        title: "Alert",
-                        content: `The retspl ${this.retspls![key]} at frequency ${key} is not recognized as a frequency requested for this exam and will be ignored.`,
-                        type: DialogType.Alert,
-                    })
-                    .subscribe();
-            }
-        });
     }
 }
