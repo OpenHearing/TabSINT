@@ -1,3 +1,6 @@
+import { JSONSchemaType } from "ajv";
+import { pageSchema } from "../../schema/page.schema";
+
 export function checkIfCanGoBack() {
     // unimplemented
     return true;
@@ -19,4 +22,23 @@ export function calculateElapsedTime(startTimeString: string) {
     const secondsFormatted = seconds < 10 ? "0" + seconds : seconds;
     
     return hoursFormatted + ":" + minutesFormatted + ":" + secondsFormatted;
+}
+
+export function getDefaultResponseRequired(responseType: string): boolean {
+    const responseAreaSchema = pageSchema.properties.responseArea.oneOf.find((responseAreaType: JSONSchemaType<any>) => {
+        return responseAreaType.properties.type.enum.includes(responseType);
+    });
+    return responseAreaSchema.properties.responseRequired.default ?? true;
+}
+
+
+/** Checks for special references
+ * @summary Returns true/false depending a id contains a special reference
+*/
+export function checkForSpecialReference(id: string | undefined) {
+    let hasSpecialReference = false;
+    if (id?.includes("@")) {
+        hasSpecialReference = true;
+    }
+    return hasSpecialReference
 }

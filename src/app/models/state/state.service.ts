@@ -13,6 +13,8 @@ export class StateModel {
         protocolState: ProtocolState.null,
         examState: ExamState.NotReady,
         deviceError: [],
+        doesResponseExist: false,
+        isResponseRequired: false,
         isSubmittable: true,
         examIndex: 0,
         canGoBack: () => {},
@@ -43,4 +45,12 @@ export class StateModel {
     getState(): StateInterface {
         return this.stateModel;
     }
+    
+    /** Set page isSubmittable state.
+     * @summary Checks if a page is submittable and sets isSubmittable state variable
+    */
+    setPageSubmittable(): void {
+        this.stateModel.isSubmittable = !this.stateModel.isResponseRequired || (this.stateModel.isResponseRequired && this.stateModel.doesResponseExist);
+    }
+
 }

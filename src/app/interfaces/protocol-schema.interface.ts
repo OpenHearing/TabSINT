@@ -1,5 +1,5 @@
 import { PageTypes } from "../types/custom-types";
-import { NavMenuInterface } from "./page-definition.interface";
+import { CommonResponseAreaInterface, NavMenuInterface } from "./page-definition.interface";
 
 export interface ProtocolSchemaInterface {
     description?: string;
@@ -26,7 +26,7 @@ export interface ProtocolSchemaInterface {
     subProtocols?: ProtocolSchemaInterface[];
 }
 
-export interface CalibrationInterface {
+export interface CalibrationInterface extends CommonResponseAreaInterface {
     wavfiles: string[];
     referenceFile?: string;
     referenceLevel?: number;

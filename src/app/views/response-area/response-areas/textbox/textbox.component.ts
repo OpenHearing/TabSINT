@@ -9,6 +9,9 @@ import { ResultsModel } from '../../../../models/results/results-model.service';
 import { PageModel } from '../../../../models/page/page.service';
 
 import { textBoxSchema } from '../../../../../schema/response-areas/textbox.schema';
+import { StateInterface } from '../../../../models/state/state.interface';
+import { StateModel } from '../../../../models/state/state.service';
+import { ExamService } from '../../../../controllers/exam.service';
 
 @Component({
   selector: 'textbox-view',
@@ -17,14 +20,18 @@ import { textBoxSchema } from '../../../../../schema/response-areas/textbox.sche
 })
 export class TextboxComponent implements OnInit, OnDestroy {
   results: ResultsInterface;
+  state: StateInterface;
   rows: number;
   pageSubscription: Subscription | undefined;
 
   constructor (
+    private readonly examService: ExamService, 
     private readonly resultsModel: ResultsModel,
-    private readonly pageModel: PageModel
+    private readonly pageModel: PageModel,
+    private readonly stateModel: StateModel
   ) {
     this.results = this.resultsModel.getResults();
+    this.state = this.stateModel.getState();
     this.rows = textBoxSchema.properties.rows.default;
   }
 
@@ -41,6 +48,11 @@ export class TextboxComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.pageSubscription?.unsubscribe();
+  }
+
+  onResponseChange() {    
+    this.state.doesResponseExist = this.results.currentPage.response !== '';
+    this.stateModel.setPageSubmittable();
   }
 
 }

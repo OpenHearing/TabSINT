@@ -67,10 +67,10 @@ export const LevelUnits = {
 }
 
 
-import PurdueDemo from '../../protocols/purdue-demo/protocol.json';
+import PurdueShakedown from '../../protocols/purdue-shakedown/protocol.json';
 import develop from '../../protocols/develop/protocol.json';
 export const DeveloperProtocols: any = {
-    "PurdueDemo": PurdueDemo,
+    "PurdueShakedown": PurdueShakedown,
     "develop" : develop
 }
 
