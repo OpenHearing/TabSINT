@@ -14,7 +14,6 @@ export class ManualAudiometryResultViewerComponent {
     @Input() audiogramData!: AudiometryResultsInterface;
 
     constructor(private readonly examService: ExamService, ){
-      console.log('Audiogram Data Received:', this.audiogramData); // Debug log
     }
 
     submitResults() {
