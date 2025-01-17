@@ -1,0 +1,12 @@
+<div [ngSwitch]="currentStep">
+    <div *ngSwitchCase="'Ready'"></div>
+
+    <div *ngSwitchCase="'Exam'">
+    </div>
+
+    <mrt-results
+        *ngSwitchCase="'Results'"
+        [mrtResults]="mrtResults">
+    </mrt-results>    
+
+</div>

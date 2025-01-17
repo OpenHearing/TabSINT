@@ -1,0 +1,22 @@
+<div >    
+    <table class="results-table">
+        <thead>
+          <tr>
+            <th>SNR Level</th>
+            <th>Trials Presented</th>
+            <th>Trials Correct</th>
+            <th>% Correct</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <ng-container  *ngFor="let res of mrtResults; let i=index">
+              <td>{{ res.snr }}</td>
+              <td>{{ res.nbTrials }}</td>
+              <td>{{ res.nbTrialsCorrect }}</td>
+              <td>{{ res.pctCorrect }}</td>
+            </ng-container>
+          </tr>
+        </tbody>
+      </table>
+</div>

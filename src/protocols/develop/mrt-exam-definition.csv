@@ -1,0 +1,17 @@
+﻿"{HEADER - DO NOT DELETE THIS LINE, OR ROWS IN ALL CAPS - USE TWO COLUMNS ONLY  }",,,,,,,,,,,
+EXAM NAME,Purdue M1 MRT,,,,,,,,,,
+EXAM DESCRIPTION,Purdue MRT with male english speaker masked by babble,,,,,,,,,,
+MEDIA FOLDER,/MyMRTAudio/,,,,,,,,,,
+CAL TONE FILENAME,MyCalTone.wav,,,,,,,,,,
+CAL TONE LEVEL DBSPL,88,,,,,,,,,,
+CAL TONE USE META RMS,TRUE,,,,,,,,,,
+created,12/2/2024,,,,,,,,,,
+source,NIST ver-0.1.1,,,,,,,,,,
+presentation phrase,"""Please select the word ___""",,,,,,,,,,
+"{TRIALS - DO NOT DELETE THIS LINE, OR COLUMNS IN ALL CAPS}",,,,,,,,,,,
+TRIAL,FILENAME,LEVEL DBSPL,USE META RMS,RESPONSE CHOICES,CORRECT RESPONSE INDEX,box id,gender,speaker id,masking type,snr_dB,My Notes
+1,F1_b01_w1.wav,88,TRUE,"bar, tar, car, far, gar, par",1,1,F,1,Babble,-2,blah blah
+2,F1_b01_w2.wav,88,TRUE,"bar, tar, car, far, gar, par",2,1,F,1,Babble,1,blah blah
+3,F1_b02_w1.wav,88,TRUE,"slip, trip, lip, nip, blib, ship",1,2,F,2,Babble,-5,blah blah
+4,F1_b02_w2.wav,88,TRUE,"slip, trip, lip, nip, blib, ship",2,2,F,2,Babble,-8,blah blah
+5,M1_b01_w1.wav,88,TRUE,"bar, tar, car, far, gar, par",1,1,M,1,Babble,-11,blah blah

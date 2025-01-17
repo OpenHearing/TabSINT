@@ -81,8 +81,8 @@ export class ProtocolService {
         try {
             await this.loadFiles();
             this.setCalibration();
-            let validationError = await this.validateIfCalledFor();
             this.initializeProtocol();
+            let validationError = await this.validateIfCalledFor();
                 // .then(loadCustomJs)
                 // .then(validateCustomJsIfCalledFor)
             this.handleLoadErrors(validationError);

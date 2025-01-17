@@ -43,6 +43,9 @@
                 "id": "Swept DPOAE Exam" 
               },
               {
+                "id": "MRT Exam" 
+              },
+              {
                 "id":"End All"
               }
             ]
@@ -82,6 +85,12 @@
               "conditional": "result.response=='Swept DPOAE Exam'",
               "target": {
                 "reference": "SweptDpoaeExam"
+              }
+            },
+            {
+              "conditional": "result.response=='MRT Exam'",
+              "target": {
+                "reference": "MRTExam"
               }
             },
             {
@@ -310,6 +319,23 @@
           "title": "Swept DPOAE",
           "responseArea": {
             "type": "sweptDPOAEResponseArea"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "MRTExam",
+      "pages": [
+        {
+          "id": "MRT",
+          "title": "Modified Rhyme Test",
+          "responseArea": {
+            "type": "mrtResponseArea",
+            "examDefinitionFilename": "mrt-exam-definition.csv"
           }
         },
         {
