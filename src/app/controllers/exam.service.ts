@@ -127,6 +127,7 @@ export class ExamService {
             conditional: "true",
             target: {reference: subProtocolID}
         }];
+        this.state.examState = ExamState.Testing;
         this.submitDefault();
     }
 
