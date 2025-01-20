@@ -108,6 +108,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
 
   saveResults(waiResults: WAIResultsInterface) {
     this.waiResults = waiResults;
+    this.waiResults.PowerReflectance = this.waiResults.Absorbance!.map(num => 1 - num);
     this.results.currentPage.response = waiResults;
   }
 

@@ -24,4 +24,5 @@ export interface WAIResultsInterface {
   ImpedanceAmp?: Array<number>;
   ImpedancePhase?: Array<number>;
   Absorbance?: Array<number>;
+  PowerReflectance?: Array<number>;
 }

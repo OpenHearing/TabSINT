@@ -47,7 +47,7 @@ export class WAIResultsComponent implements AfterViewInit {
         yAxisFormat: ".1f",
         data: this.waiResults.Absorbance! 
       },
-      { id: "Power Reflectance?", 
+      { id: "Power Reflectance", 
         x: plotWidth + this.margin.spacerW + this.margin.left, 
         y: this.margin.top, 
         w: plotWidth,
@@ -55,9 +55,9 @@ export class WAIResultsComponent implements AfterViewInit {
         xRange: xRange,
         yRange: [0, 1], 
         yAxisFormat: ".1f",
-        data: this.waiResults.Absorbance! 
+        data: this.waiResults.PowerReflectance! 
       },
-      { id: "Impedance Magnitude", 
+      { id: "Impedance Magnitude (kg/(s⋅m^2))", 
         x: this.margin.left, 
         y: plotHeight + this.margin.spacerH + this.margin.top, 
         w: plotWidth,
@@ -67,7 +67,7 @@ export class WAIResultsComponent implements AfterViewInit {
         yAxisFormat: ".0e",
         data: this.waiResults.ImpedanceAmp! 
       },
-      { id: "Impedance Phase", 
+      { id: "Impedance Phase (°)", 
         x: plotWidth + this.margin.spacerW + this.margin.left, 
         y: plotHeight + this.margin.spacerH + this.margin.top, 
         w: plotWidth,
@@ -79,10 +79,16 @@ export class WAIResultsComponent implements AfterViewInit {
       },
     ];
 
-    let xScale: any;
-    let yScale: any;
-    let lineData: any;
-    let line: any;
+    let xScale: d3.ScaleLogarithmic<number, number, never>;
+    let yScale: d3.ScaleLinear<number, number, never>;
+    let lineData: {
+      frequency: number;
+      value: number;
+    }[];
+    let line: d3.Line<{
+      frequency: number;
+      value: number;
+    }>;
     graphs.forEach(({ id, x, y, w, h, xRange, yRange, yAxisFormat, data }) => {
       xScale = d3.scaleLog()
         .domain(xRange)
