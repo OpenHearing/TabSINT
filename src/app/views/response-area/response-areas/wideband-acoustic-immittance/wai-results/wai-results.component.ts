@@ -16,7 +16,7 @@ export class WAIResultsComponent implements AfterViewInit {
   @Input() xTicks!: number[];
   @Input() margin!: { top: number, right: number, bottom: number, left: number, spacerW: number, spacerH: number };
   
-  svg: any | undefined;
+  svg: any;
 
   ngAfterViewInit(): void {
     this.svg = this.createResultsPlot();
