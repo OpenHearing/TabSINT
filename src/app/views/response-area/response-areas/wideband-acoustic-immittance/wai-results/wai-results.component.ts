@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, Input } from '@angular/core';
 import * as d3 from 'd3';
-import { WAIResultsInterface } from '../wai-exam/wai-exam.interface';
+import { WAIResultsInterface, WAIResultsPlotInterface } from '../wai-exam/wai-exam.interface';
 import { createWAIResultsChartSvg } from '../../../../../utilities/d3-plot-functions';
 import { WAINormativeAbsorbanceData } from '../../../../../utilities/constants';
 
@@ -99,7 +99,19 @@ export class WAIResultsComponent implements AfterViewInit {
         .attr("id", id)
         .attr("transform", `translate(${this.margin.left + x}, ${this.margin.top + y})`);
       let yAxisName = id;
-      svg = createWAIResultsChartSvg(svg, x, y, w, h, this.xTicks, xScale, yScale, yAxisFormat, yAxisName);
+      let plotData: WAIResultsPlotInterface = {
+        "svg": svg, 
+        "chartX": x, 
+        "chartY": y, 
+        "chartWidth": w, 
+        "chartHeight": h, 
+        "xTicks": this.xTicks, 
+        "xScale": xScale, 
+        "yScale": yScale, 
+        "yAxisFormat": yAxisFormat, 
+        "yAxisName": yAxisName
+      }
+      svg = createWAIResultsChartSvg(plotData);
 
       // Add the shaded region for Absorbance normative data
       if (id=="Absorbance") {

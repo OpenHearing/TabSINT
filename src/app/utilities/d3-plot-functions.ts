@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import { WAIResultsPlotInterface } from '../views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.interface';
 interface LegendItemInterface {
     label: string;
     color: string;
@@ -86,88 +87,77 @@ export function createOAEResultsChartSvg(
     return svg;
 }
 
-export function createWAIResultsChartSvg(
-  svg: any,
-  chartX: number,
-  chartY: number,
-  chartWidth: number,
-  chartHeight: number,
-  xTicks: number[],
-  xScale: d3.ScaleLogarithmic<number, number, never>,
-  yScale: d3.ScaleLinear<number, number, never>,
-  yAxisFormat: string,
-  yAxisName: string
-) {
-    // Define axes
-    const xAxisMinor = d3.axisBottom(xScale).ticks(10).tickFormat(() => '');
-    const xAxis = d3.axisBottom(xScale).tickValues(xTicks).tickFormat(d => {
-      const value = +d
-      if (value >= 1000) {
-        return `${value / 1000}k`; // Convert to 'k' format for thousands
-      }
-      return `${value}`; // Display as is for values below 1000
-    });
-    const yAxis = d3.axisLeft(yScale);
+export function createWAIResultsChartSvg(plotData: WAIResultsPlotInterface) {
+  // Define axes
+  const xAxisMinor = d3.axisBottom(plotData.xScale).ticks(10).tickFormat(() => '');
+  const xAxis = d3.axisBottom(plotData.xScale).tickValues(plotData.xTicks).tickFormat(d => {
+    const value = +d
+    if (value >= 1000) {
+      return `${value / 1000}k`; // Convert to 'k' format for thousands
+    }
+    return `${value}`; // Display as is for values below 1000
+  });
+  const yAxis = d3.axisLeft(plotData.yScale);
 
-    // Append axes
-    svg.append('g')
-      .attr('transform', `translate(${chartX},${chartY+chartHeight})`)
-      .attr('class', 'axis-label')
-      .call(xAxis)
-      .append('text')
-      .attr('class', 'label')
-      .attr('font-size', 20)
-      .attr('x', chartWidth / 2)
-      .attr('y', 50)
-      .style('text-anchor', 'middle')
-      .attr('fill', 'black')
-      .text('Frequency (Hz)');
+  // Append axes
+  plotData.svg.append('g')
+    .attr('transform', `translate(${plotData.chartX},${plotData.chartY+plotData.chartHeight})`)
+    .attr('class', 'axis-label')
+    .call(xAxis)
+    .append('text')
+    .attr('class', 'label')
+    .attr('font-size', 20)
+    .attr('x', plotData.chartWidth / 2)
+    .attr('y', 50)
+    .style('text-anchor', 'middle')
+    .attr('fill', 'black')
+    .text('Frequency (Hz)');
 
-    svg.append('g')
-      .attr('transform', `translate(${chartX},${chartY})`)
-      .attr('class', 'axis-label')
-      .call(yAxis.tickFormat(d3.format(yAxisFormat)))
-      .append('text')
-      .attr('class', 'label')
-      .attr('font-size', 20)
-      .attr('x', -chartHeight / 2)
-      .attr('y', -50)
-      .attr('transform', 'rotate(-90)')
-      .attr('fill', 'black')
-      .style('text-anchor', 'middle')
-      .text(yAxisName);
+    plotData.svg.append('g')
+    .attr('transform', `translate(${plotData.chartX},${plotData.chartY})`)
+    .attr('class', 'axis-label')
+    .call(yAxis.tickFormat(d3.format(plotData.yAxisFormat)))
+    .append('text')
+    .attr('class', 'label')
+    .attr('font-size', 20)
+    .attr('x', -plotData.chartHeight / 2)
+    .attr('y', -50)
+    .attr('transform', 'rotate(-90)')
+    .attr('fill', 'black')
+    .style('text-anchor', 'middle')
+    .text(plotData.yAxisName);
 
-    // Major X Axis Gridlines
-    svg.append("g")
-      .attr('transform', `translate(${chartX},${chartY})`)
-      .attr("class", "grid")
-      .style("stroke-dasharray", "1,3")
-      .style("stroke-opacity", "0.5")
-      .call(xAxisMinor.tickSize(chartHeight).tickFormat(() => ""));
+  // Major X Axis Gridlines
+  plotData.svg.append("g")
+    .attr('transform', `translate(${plotData.chartX},${plotData.chartY})`)
+    .attr("class", "grid")
+    .style("stroke-dasharray", "1,3")
+    .style("stroke-opacity", "0.5")
+    .call(xAxisMinor.tickSize(plotData.chartHeight).tickFormat(() => ""));
 
-    // Major Y Axis gridlines
-    svg.append("g")
-      .attr('transform', `translate(${chartX},${chartY})`)
-      .attr("class", "grid")
-      .style("stroke-dasharray", "1,3")
-      .style("stroke-opacity", "0.5")
-      .call(yAxis.ticks(10).tickSize(-chartWidth).tickFormat(() => ""));
+  // Major Y Axis gridlines
+  plotData.svg.append("g")
+    .attr('transform', `translate(${plotData.chartX},${plotData.chartY})`)
+    .attr("class", "grid")
+    .style("stroke-dasharray", "1,3")
+    .style("stroke-opacity", "0.5")
+    .call(yAxis.ticks(10).tickSize(-plotData.chartWidth).tickFormat(() => ""));
 
-    svg.selectAll('.axis-label .tick text')
-      .attr('font-size', 16) // Set font size for tick labels
-      .style('fill', 'black'); // Optionally, ensure the color is correct
+    plotData.svg.selectAll('.axis-label .tick text')
+    .attr('font-size', 16) // Set font size for tick labels
+    .style('fill', 'black'); // Optionally, ensure the color is correct
 
-    // Border around chart
-    svg.append('rect')
-      .attr('x', chartX)
-      .attr('y', chartY)
-      .attr('height', chartHeight)
-      .attr('width', chartWidth)
-      .style('stroke', 'black')
-      .style('fill', 'none')
-      .style('stroke-width', 2);
+  // Border around chart
+  plotData.svg.append('rect')
+    .attr('x', plotData.chartX)
+    .attr('y', plotData.chartY)
+    .attr('height', plotData.chartHeight)
+    .attr('width', plotData.chartWidth)
+    .style('stroke', 'black')
+    .style('fill', 'none')
+    .style('stroke-width', 2);
 
-    return svg;
+  return plotData.svg;
 }
 
 export function createLegend(

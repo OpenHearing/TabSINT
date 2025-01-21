@@ -26,3 +26,16 @@ export interface WAIResultsInterface {
   Absorbance?: Array<number>;
   PowerReflectance?: Array<number>;
 }
+
+export interface WAIResultsPlotInterface { 
+  svg: any;
+  chartX: number;
+  chartY: number;
+  chartWidth: number;
+  chartHeight: number;
+  xTicks: number[];
+  xScale: d3.ScaleLogarithmic<number, number, never>;
+  yScale: d3.ScaleLinear<number, number, never>;
+  yAxisFormat: string;
+  yAxisName: string;
+}
