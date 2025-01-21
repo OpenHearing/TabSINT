@@ -27,14 +27,14 @@ Related internal documents
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-This software specification relates to the `link TBD`_.
+This software specification relates to the `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/feature/play-sd-wav-file/Specifications/modified_rhyme_test.rst?ref_type=heads>`_.
 
 
 
 Algorithm
 --------------
 
-See `link TBD`_.
+See `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/feature/play-sd-wav-file/Specifications/modified_rhyme_test.rst?ref_type=heads>`_.
 
 Implementation
 --------------
@@ -156,15 +156,11 @@ Data
      - Test Case
      - Acceptance
      - Verified
-   * - The exam must return all fields defined in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/swept_dpoae.rst?ref_type=heads>`_. 
-     - Start a Swept OAE exam and complete the exam successfully. 
-     - Verify the exam returns all result fields defined in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/swept_dpoae.rst?ref_type=heads>`_ with appropriate values.
+   * - The exam must return all fields defined in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/feature/play-sd-wav-file/Specifications/modified_rhyme_test.rst?ref_type=heads>`_. 
+     - Start an MRT exam and complete the exam successfully. 
+     - Verify the exam returns all result fields defined in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/feature/play-sd-wav-file/Specifications/modified_rhyme_test.rst?ref_type=heads>`_ with appropriate values.
      - 
-   * - The exam must display all `SweptDpoaeResults` fields defined  in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/swept_dpoae.rst?ref_type=heads>`_.
-     - Start a Swept OAE exam, complete the exam. 
-     - Verify that all results are accurately displayed both during and after the exam.
-     - 
-   * - The exam must export all `SweptDpoaeResults` fields defined in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/swept_dpoae.rst?ref_type=heads>`_.
+   * - The exam must export all `MRTResults` fields defined in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/feature/play-sd-wav-file/Specifications/modified_rhyme_test.rst?ref_type=heads>`_.
      - Submit the exam and export results.
      - Verify that all results are accurately exported.
      - 
