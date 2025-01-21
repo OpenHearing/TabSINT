@@ -124,10 +124,6 @@ Algorithm
      - Initiate an exam. Proceed normally.
      - Verify that each trial results in 6 word choices appearing to the user in button format.
      - 
-   * - The GUI displays a progress bar at the bottom of all pages other than the initiation and results pages.
-     - Initiate an exam. Proceed normally.
-     - Verify that the progress bar appears and indicates progress through the exam.
-     - 
    * - The exam responds to correct word choice selection with a green border around the correct word and text stating "Correct".
      - Initiate an exam. Proceed normally.
      - Verify that correct word choice selections result in the word button being bordered in green and the appearance of text stating "Correct."
