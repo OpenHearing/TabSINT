@@ -5,7 +5,7 @@ export const sweptDpoaeSchema: JSONSchemaType<SweptDpoaeInterface> = {
   type: "object",
   properties: {
     enableSkip: { type: "boolean", nullable: true, default: false },
-    responseRequired: { type: "boolean", nullable: true, default: true },
+    responseRequired: { type: "boolean", nullable: true, default: false },
     type: { type: "string", enum: ["sweptDPOAEResponseArea"] },
     exportToCSV: { type: "boolean", nullable: true, default: false },
     tabsintId: { type: "string", nullable: true, default: "1" },

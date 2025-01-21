@@ -18,7 +18,7 @@ export const textBoxResultViewerSchema: JSONSchemaType<TextBoxResultViewerInterf
     type: "object",
     properties: {
         enableSkip: { type: "boolean", nullable: true, default: false },
-        responseRequired: { type: "boolean", nullable: true, default: true },
+        responseRequired: { type: "boolean", nullable: true, default: false },
         type: { type: "string", enum: ["textboxResponseAreaResultViewer"] },
         pageIdsToDisplay: { type: "array", items: {type: "string", default: '' }},
     },

@@ -9,6 +9,7 @@
   color: rgb(0, 102, 204);
   margin-bottom: 10px;
   font-size: 1.2rem;
+  font-style: normal;
 }
 
 /* Labels */
@@ -18,6 +19,7 @@
   width: 100%;
   font-weight: bold;
   font-size: 1.2rem;
+  flex-grow: 1
 }
 
 .likert-label-above {
@@ -26,6 +28,19 @@
 
 .likert-label-below {
   padding: 0 10px 50px 10px;
+}
+
+.align-left {
+  text-align: left;
+  flex-grow: 1;
+}
+.align-right {
+  text-align: right;
+  flex-grow: 1;
+}
+
+.center-align {
+  text-align: center;
 }
 
 /* Slider */
@@ -114,8 +129,8 @@
 
 /* Button Mode */
 .likert-scale {
-  display: flex;
   justify-content: space-between;
+  width: 100%;
 }
 
 .likert-options {
@@ -135,12 +150,15 @@
 
 .likert-option:hover {
   transform: scale(1.2);
-  font-weight: bold;
   background-color: #f0f0f0;
   border-radius: 5px;
-  border: 2px solid black;
 }
-
+.likert-option.selected {
+  font-weight: bold;
+  font-size: 1.4rem;
+  border: 2px solid black; /* Add black border when selected */
+  border-radius: 5px; /* Optional: Make the border rounded */
+}
 /* Not Applicable Checkbox */
 .likert-footer {
   text-align: right;

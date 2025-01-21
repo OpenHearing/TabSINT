@@ -17,7 +17,7 @@ export const calibrationResultViewerSchema: JSONSchemaType<CalibrationResultView
   type: "object",
   properties: {
     enableSkip: { type: "boolean", nullable: true, default: false },
-    responseRequired: { type: "boolean", nullable: true, default: true },
+    responseRequired: { type: "boolean", nullable: true, default: false },
     type: { type: "string", enum: ["calibrationResponseAreaResultViewer"] },
     displayRightEar: { type: "boolean", default: false },
     displayLeftEar: { type: "boolean", default: false }

@@ -24,11 +24,11 @@ export class DiskModel {
         audhere: '',
         autoUpload: true,
         availableProtocolsMeta: {
-            PurdueDemo: {
+            PurdueShakedown: {
                 ...partialMetaDefaults,
                 creator: "Creare",
-                name: "PurdueDemo",
-                path: "protocols/purdue-demo"
+                name: "PurdueShakedown",
+                path: "protocols/purdue-shakedown"
             },
             develop: {
                 ...partialMetaDefaults,
