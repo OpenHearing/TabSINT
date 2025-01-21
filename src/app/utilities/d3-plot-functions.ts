@@ -1,5 +1,4 @@
 import * as d3 from 'd3';
-
 interface LegendItemInterface {
     label: string;
     color: string;

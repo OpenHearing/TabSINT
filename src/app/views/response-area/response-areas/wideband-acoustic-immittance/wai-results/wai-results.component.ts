@@ -2,6 +2,7 @@ import { AfterViewInit, Component, Input } from '@angular/core';
 import * as d3 from 'd3';
 import { WAIResultsInterface } from '../wai-exam/wai-exam.interface';
 import { createWAIResultsChartSvg } from '../../../../../utilities/d3-plot-functions';
+import { WAINormativeAbsorbanceData } from '../../../../../utilities/constants';
 
 @Component({
   selector: 'wai-results',
@@ -15,16 +16,13 @@ export class WAIResultsComponent implements AfterViewInit {
   @Input() xTicks!: number[];
   @Input() margin!: { top: number, right: number, bottom: number, left: number, spacerW: number, spacerH: number };
   
-  // svg: d3.Selection<SVGGElement, unknown, HTMLElement, any> | undefined;
   svg: any | undefined;
 
   ngAfterViewInit(): void {
-    console.log("waiResults",this.waiResults);
     this.svg = this.createResultsPlot();
   }
 
   private createResultsPlot() {
-    // could i use xticks to get the min/max? should we remove xticks from main template? keep all plotting here?
     let xRange = [Math.min(...this.waiResults.Frequency!), Math.max(...this.waiResults.Frequency!)];
     let svg = d3.select('#wai-results-plot')
       .append('svg')
@@ -102,6 +100,28 @@ export class WAIResultsComponent implements AfterViewInit {
         .attr("transform", `translate(${this.margin.left + x}, ${this.margin.top + y})`);
       let yAxisName = id;
       svg = createWAIResultsChartSvg(svg, x, y, w, h, this.xTicks, xScale, yScale, yAxisFormat, yAxisName);
+
+      // Add the shaded region for Absorbance normative data
+      if (id=="Absorbance") {
+        // filter WAINormativeAbsorbanceData to fit on plot
+        let WAINormativeAbsorbanceDataFiltered: any = [];
+        WAINormativeAbsorbanceData.forEach( (d) => {
+          if (d.f>this.xTicks[0] && d.f<this.xTicks[this.xTicks.length-1]) {
+            WAINormativeAbsorbanceDataFiltered.push(d);
+          }
+        });
+
+        let areaGen = d3.area()
+          .x( (d) => xScale( (d as any).f ) )
+          .y0( (d) => yScale( (d as any).yMin ) )
+          .y1( (d) => yScale( (d as any).yMax ) );
+
+        svg.append('path')
+          .attr('transform', `translate(${x},${y})`)
+          .attr('d', areaGen(WAINormativeAbsorbanceDataFiltered))
+          .attr('fill', 'gray');
+
+      }
 
       lineData = this.waiResults.Frequency!.map((frequency, i) => ({
         frequency,
