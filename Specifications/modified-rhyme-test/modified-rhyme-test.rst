@@ -116,29 +116,37 @@ Algorithm
      - Test Case
      - Acceptance
      - Verified
-   * - The exam presents chirps with a specified starting and ending frequency for F2, frequency ratio, output levels for each frequency, sweep duration, window duration, and sweep type.
-     - Initiate a Swept OAE exam using the Submit button.
-     - Verify that the emitted chirp is the correct starting and ending frequency for F2, frequency ratio, output levels for each frequency, sweep duration, window duration, and sweep type.
+   * - The exam presents audio (premixed target and masker) for each trial.
+     - Initiate an exam. Proceed normally.
+     - Verify that each trial results in 6 word choices appearing to the user in button format.
+     -
+   * - The exam presents 6 word choices in button form for each trial.
+     - Initiate an exam. Proceed normally.
+     - Verify that each trial results in 6 word choices appearing to the user in button format.
      - 
-   * - The exam presents a number of chirps greater than or equal to the Minimum Number of Sweeps and less than or equal to the Maximum Number of Sweeps.
-     - Initiate a Swept OAE exam using the Submit button. Intentionally prevent the exam from meeting the threshold criterion. This could be accomplished in many ways including, but not limited to, specifying a very few number of 
-     - Verify that the exam plays at least the Minimum Number of Sweeps and no more than the Maximum Number of Sweeps, then concludes.
+   * - The GUI displays a progress bar at the bottom of all pages other than the initiation and results pages.
+     - Initiate an exam. Proceed normally.
+     - Verify that the progress bar appears and indicates progress through the exam.
      - 
-   * - If the noise threshold criterion is met, the exam concludes.
-     - ???
-     - Verify that exam concludes if the noise threshold criterion is met.
+   * - The exam responds to correct word choice selection with a green border around the correct word and text stating "Correct".
+     - Initiate an exam. Proceed normally.
+     - Verify that correct word choice selections result in the word button being bordered in green and the appearance of text stating "Correct."
+     - 
+   * - The exam responds to incorrect word choice selection with a red bordered around the selected incorrect word, a green border around the correct word, and text stating "The correct word was [correct word]".
+     - Initiate an exam. Proceed normally.
+     - Verify that correct word choice selections result in the word button being bordered in green and the appearance of text stating "Correct."
+     - 
+   * - The exam concludes after all trials.
+     - Initate an exam and respond to all trials (correct responses not required).
+     - Verify that exam concludes after all trials.
      - 
    * - The exam can be aborted.
      - Initiate an exam normally. Once the exam is active, click `Abort`.
      - Verify that the exam aborts successfully and proceeds to the results-view.
      - 
-   * - Live results are plotted while the exam progresses.
-     - Initiate and complete an exam normally.
-     - Verify that DPOAE and noise values are plotted for the frequencies specified while the exam progresses.
-     - 
    * - The exam results are displayed.
-     - Complete an exam normally. Then click the `Finish` button. Proceed to the results-view page.
-     - Verify that the OAE, noise floor, F1 and F2 are plotted in dB SPL as a function of F2. Verify that DpLow, DpHigh, F1, and F2 are displayed in table format.
+     - Complete an exam normally, keeping track of correct and incorrect scores to assess correct output in the results table. Then click the `Finish` button. Proceed to the results-view page.
+     - Verify that the results table is shown. Column headers should include "SNR Level", "Trials Presented", "Trials Correct" (number), and "% Correct". Verify that the rows include the correct scores from the exam.
      - 
 
 Data
