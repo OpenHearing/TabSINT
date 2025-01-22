@@ -1,7 +1,7 @@
 {
-  "title": "Development Protocol",
-  "subtitle": "Developer testing of open-tabsint responseArea's.",
-  "instructionText": "instructionText goes here",
+  "title": "TabSINT Demonstration",
+  "subtitle": "Textbox, Manual Audiometry, and Calibration Response Areas.",
+  "instructionText": "Choose the exam to demonstrate, then view results.",
   "hideProgressBar": true,
   "navMenu":[
     {
@@ -20,18 +20,12 @@
         {
           "id":"choose",
           "title":"Response Area Testing",
-          "questionMainText":"Please select a response area to test:",
+          "questionMainText":"Please select a response area to demonstrate:",
           "responseArea":{
             "type":"multipleChoiceResponseArea",
             "choices":[
               {
-                "id":"Text Box"
-              },
-              {
-                "id":"LikeRT"
-              },
-              {
-                "id":"Multiple Input"
+                "id":"Questionnaire"
               },
               {
                 "id":"Manual Audiometry"
@@ -40,10 +34,7 @@
                 "id": "Calibration Exam" 
               },
               {
-                "id": "Swept DPOAE Exam" 
-              },
-              {
-                "id": "WAI Exam" 
+                "id": "Swept DPOAE" 
               },
               {
                 "id":"End All"
@@ -52,21 +43,9 @@
           }, 
           "followOns":[
             {
-              "conditional":"result.response=='Text Box'",
+              "conditional":"result.response=='Questionnaire'",
               "target":{
-                "reference":"TextBox"
-              } 
-            },
-            {
-              "conditional":"result.response=='LikeRT'",
-              "target":{
-                "reference":"LikeRT"
-              } 
-            },
-            {
-              "conditional":"result.response=='Multiple Input'",
-              "target":{
-                "reference":"MultipleInput"
+                "reference":"Questionnaire"
               } 
             },
             {
@@ -82,15 +61,9 @@
               }
             },
             {
-              "conditional": "result.response=='Swept DPOAE Exam'",
+              "conditional": "result.response=='Swept DPOAE'",
               "target": {
-                "reference": "SweptDpoaeExam"
-              }
-            },
-            {
-              "conditional": "result.response=='WAI Exam'",
-              "target": {
-                "reference": "WAIExam"
+                "reference": "SweptDpoae"
               }
             },
             {
@@ -106,122 +79,42 @@
   ],
   "subProtocols":[
     {
-      "protocolId": "TextBox",
+      "protocolId": "Questionnaire",
       "pages":[
         {
           "id": "textbox_001",
-          "title": "Text Box",
-          "instructionText": "Page should always be submittable",
+          "title": "Subject ID",
+          "instructionText": "Enter the subject ID",
           "responseArea": {
             "type": "textboxResponseArea",
-            "rows": 5,
             "responseRequired": false
           }
         },
         {
-          "id": "textbox_002",
-          "title": "Text Box",
-          "instructionText": "Page should only be submittable when there is a response",
-          "responseArea": {
-            "type": "textboxResponseArea",
-            "exportToCSV": true,
-            "rows": 3,
-            "responseRequired": true
-          }
-        },
-        {
-          "id": "textbox_003",
-          "title": "Text Box",
-          "instructionText": "Page should only be submittable when there is a response",
-          "responseArea": {
-            "type": "textboxResponseArea",
-            "exportToCSV": true
-          }
-        },
-        {
-          "id": "textbox_001_result_viewer",
-          "title": "Text Box Result Viewer",
-          "instructionText": "Page should always be submittable",
-          "responseArea": {
-            "type": "textboxResponseAreaResultViewer",
-            "pageIdsToDisplay": ["textbox_001", "textbox_002","textbox_003"]
-          }
-        },
-        {
-          "id": "backtomain",
-          "reference":"MainMenu"
-        }
-      ]
-    },
-    {
-      "protocolId": "LikeRT",
-      "pages": [
-        {
-          "id": "default",
-          "instructionText":"Page should only be submittable when there is a response",
+          "id": "likert",
           "responseArea": {
             "type": "likertResponseArea",
             "levels": 5,
             "useEmoticons": true,
             "labels": ["Not at all", "Perfectly"],
             "questions": [
-              "Question 1",
-              "Question 2",
-              "Question 3",
-              "Question 4"
+              "You are in a group of about five people, sitting round a table. It is an otherwise quiet place. You can see everyone else in the group. Can you follow the conversation? ",
+              "You are talking with one other person. There is continuous background noise, such as a fan or running water close by. Can you follow what the person says? ",
+              "You are in a group of about five people in a busy restaurant. You CANNOT see everyone else in the group. Can you follow the conversation? ",
+              "You are talking to someone in a place where there are a lot of echoes, such as in a church or railway station. Can you follow what the other person says? "
             ]
           }
         },
-        {
-          "id": "default",
-          "instructionText":"Page should only be submittable when there is a response",
-          "responseArea": {
-            "type": "likertResponseArea",
-            "levels": 5,
-            "useSlider": true,
-            "naBox": true,
-            "labels": ["Not at all", "Perfectly"],
-            "questions": [
-              "Question 1",
-              "Question 2"
-            ]
-          }
-        },
-        {
-          "id": "default",
-          "instructionText":"Page should always be submittable",
-          "responseArea": {
-            "type": "likertResponseArea",
-            "responseRequired": false,
-            "levels": 5,
-            "naBox": true,
-            "labels": ["Not at all", "Perfectly"],
-            "questions": [
-              "Question 1",
-              "Question 2",
-              "Question 3"
-            ]
-          }
-        },
-        {
-          "id": "backtomain",
-          "reference":"MainMenu"
-        }
-      ]
-    },
-    {
-      "protocolId": "MultipleInput",
-      "pages": [
         {
           "id": "ARDC_Survey_1",
           "title": "ARDC Surveys",
-          "instructionText": "Page should only be submittable when there is a response for what you ate for breakfast.",
+          "instructionText": "Enter the following information:",
           "responseArea": {
             "type": "multipleInputResponseArea",
             "review": true,
             "inputList": [
               {
-                "text": "What did you eat for breakfast today?",
+                "text": "Have you ever had tubes put in your eardrum(s)?",
                 "inputType": "text",
                 "required": true
               },
@@ -288,7 +181,7 @@
           "reference":"MainMenu"
         }
       ]
-    },
+    }, 
     {
       "protocolId": "CalibrationExam",
       "pages": [
@@ -296,11 +189,10 @@
           "id": "calibration_001",
           "title": "Calibration Exam",
           "instructionText": "Test calibration response area",
-          "enableBackButton" :true,
           "responseArea": {
             "type": "calibrationResponseArea",
-            "frequencies": [500, 1000],
-            "targetLevels": [60, 70],
+            "frequencies": [500, 1000, 2000, 4000, 8000],
+            "targetLevels": [60, 70, 80, 60, 60],
             "showResults": true
           }
         },
@@ -311,31 +203,13 @@
       ]
     },
     {
-      "protocolId": "SweptDpoaeExam",
+      "protocolId": "SweptDpoae",
       "pages": [
         {
           "id": "swept_oae_001",
           "title": "Swept DPOAE",
           "responseArea": {
             "type": "sweptDPOAEResponseArea"
-          }
-        },
-        {
-          "id": "backtomain",
-          "reference": "MainMenu"
-        }
-      ]
-    },
-    {
-      "protocolId": "WAIExam",
-      "pages": [
-        {
-          "id": "wai_001",
-          "title": "Wideband Acoustic Immittance (WAI)",
-          "responseArea": {
-            "type": "WAIResponseArea",
-            "fStart": 500,
-            "fEnd": 4000
           }
         },
         {

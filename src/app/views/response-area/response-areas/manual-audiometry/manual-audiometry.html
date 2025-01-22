@@ -1,99 +1,126 @@
 <div [ngSwitch]="currentStep">
+
+  <!-- Exam Step -->
   <div *ngSwitchCase="'Exam'" class="audiometry-container">
+    <div class="main-white-box">
+      <div class="graphs-container">
 
-    Frequency Dropdown
-    <div class="frequency-control">
-      <label for="frequency">Frequency</label>
-      <select id="frequency"  [(ngModel)]="selectedFrequency" (ngModelChange)="onFrequencyChange($event)">
-        <option *ngFor="let freq of frequencies" [value]="freq">{{ freq }} Hz</option>
-      </select>
-    </div>
+        <!-- Right Audiogram -->
+        <div class="audiogram-right" [ngClass]="{'red-border': selectedEar === 'Right'}">
+          <audiogram 
+            *ngIf="refreshGraph" 
+            [dataStruct]="getEarData('Right')" 
+            [selectedEar]="selectedEar === 'Right' ? 'Right' : null" 
+            [isManualExam]="true"></audiogram>
+        </div>
 
-    <div class="collapsible-section">
-      <button class="collapsible-header" (click)="toggleSection('presentation')">
-        Presentation Level <span class="arrow">▼</span>
-      </button>
-      <div *ngIf="isPresentationVisible" class="collapsible-content">
-        <div class="presentation-container">
-          <p class="db-value">{{currentDb | number:'1.0-0' }} {{levelUnits}}</p>
+        <!-- Response Buttons -->    
+        <div class="response-panel-vertical">
+          <button class="response-btn" [disabled]="!isNoResponseEnabled" (click)="noResponse()">No Response</button>
+          <button class="response-btn delete-threshold" (click)="deleteThreshold()">Delete Threshold</button>
+          <button class="response-btn record-threshold" (click)="recordThreshold()">Record Threshold</button>
+          <button class="response-btn submit-results" (click)="examService.submit()">Submit Results</button>
+        </div>
 
-          <div class="ear-selection">
-            <label for="ear">Select Ear</label>
-            <select id="ear" [(ngModel)]="selectedEar">
-              <option value="Left">Left</option>
-              <option value="Right">Right</option>
-            </select>
-          </div>
-
-          <div class="adjustment-buttons">
-            <button class="adjust-btn" *ngFor="let adjustment of adjustments" (click)="adjustDbSpl(adjustment)">
-              {{ adjustment > 0 ? '+' + adjustment : adjustment }} dB {{ adjustment > 0 ? '↑' : '↓' }}
-            </button>
-          </div>
-
-          <div class="action-buttons">
-            <button class="btn play-tone" (click)="playTone()">Play Tone</button>
-            <button class="btn record-threshold" (click)="recordThreshold()">Record Threshold</button>
-          </div>
+        <!-- Left Audiogram -->
+        <div class="audiogram-left" [ngClass]="{'blue-border': selectedEar === 'Left'}" >
+          <audiogram 
+            *ngIf="refreshGraph" 
+            [dataStruct]="getEarData('Left')" 
+            [selectedEar]="selectedEar === 'Left' ? 'Left' : null" 
+            [isManualExam]="true"></audiogram>
         </div>
       </div>
-    </div>
+  
+      <div class="response-panel">
 
-    <div class="collapsible-section">
-      <button class="collapsible-header" (click)="toggleSection('results')">
-        Results Table <span class="arrow">▼</span>
-      </button>
-      <div *ngIf="isResultsVisible" class="collapsible-content">
-        <div class="ear-table left-ear">
-          <h3 class="ear-title">Left</h3>
-          <table class="results-table">
-            <thead>
-              <tr>
-                <th>Frequency (Hz)</th>
-                <th *ngFor="let freq of frequencies">{{ freq }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Threshold ({{levelUnits}})</td>
-                <td *ngFor="let threshold of leftThresholds">{{ threshold || '' }}</td>
-              </tr>
-            </tbody>
-          </table>
+        <!-- Ear Selection Panel -->
+        <div class="ear-buttons">
+          <button
+            class="ear-btn"
+            [ngStyle]="{'background-color': selectedEar === 'Right' ? '#dc3545' : 'transparent', 'color': selectedEar === 'Right' ? 'white' : 'black'}"
+            (click)="selectEar('Right')" >
+            Right
+          </button>
+          <button
+            class="ear-btn"
+            [ngStyle]="{'background-color': selectedEar === 'Left' ? '#007bff' : 'transparent', 'color': selectedEar === 'Left' ? 'white' : 'black'}"
+            (click)="selectEar('Left')">
+            Left
+          </button>
         </div>
+      </div>
+  
+      <!-- Control Boxes -->
+      <div class="control-boxes-container">
 
-        <div class="ear-table right-ear">
-          <h3 class="ear-title">Right</h3>
-          <table class="results-table">
-            <thead>
-              <tr>
-                <th>Frequency (Hz)</th>
-                <th *ngFor="let freq of frequencies">{{ freq }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Threshold ({{levelUnits}})</td>
-                <td *ngFor="let threshold of rightThresholds">{{ threshold || '' }}</td>
-              </tr>
-            </tbody>
-          </table>
+        <!-- Tone -->
+        <div class="control-box tone-box">
+          <div class="box-label">Tone</div>
+          <div class="adjustment-buttons">
+            <button
+              class="adjust-btn"
+              *ngFor="let adjustment of adjustments"
+              (click)="adjustTone(adjustment)">
+              {{ adjustment > 0 ? '+' + adjustment : adjustment }}
+            </button>
+          </div>
+          <div class="tone-display">
+            <div class="tone-value">
+              <ng-container *ngIf="currentDbSpl <= minOutputLevel || currentDbSpl >= maxOutputLevel">
+                ({{ currentDb }})
+              </ng-container>
+              <ng-container *ngIf="currentDbSpl > minOutputLevel && currentDbSpl < maxOutputLevel">
+                {{ currentDb }}
+              </ng-container>
+            </div>
+            <div class="tone-label">{{levelUnits}}</div>
+          </div>
+          <div class="play-button-container">
+            <button class="play-btn" [disabled]="isPlaying" (click)="playTone()">
+              <span>▶</span>
+            </button>
+          </div>
         </div>
-
-        <div class="legend">
-          <p><strong>Legend:</strong></p>
-          <p>DNC = Did not converge</p>
-          <p>(x+) = Hearing potentially beyond the calibrated range</p>
-          <p>(-x) = Hearing potentially better than the calibrated range</p>
+  
+        <!-- Frequency -->
+        <div class="control-box frequency-box">
+          <div class="box-label">Frequency</div>
+          <button class="adjust-btn frequency-btn" (click)="adjustFrequency(-1)">◀</button>
+          <div class="frequency-display">
+            <div class="frequency-value">{{ selectedFrequency }}</div>
+            <div class="frequency-label">HZ</div>
+          </div>
+          <button class="adjust-btn frequency-btn" (click)="adjustFrequency(1)">▶</button>
+        </div>
+  
+        <!-- Masking -->
+        <div class="control-box masking-box disabled">
+          <div class="box-label">Masking</div>
+          <div class="play-button-container">
+            <button class="play-btn" disabled>
+              <span>▶</span>
+            </button>
+          </div>
+          <div class="masking-display">
+            <div class="masking-value">{{ maskingLevel }}</div>
+            <div class="masking-label">dB EM</div>
+          </div>
+          <div class="adjustment-buttons">
+            <button class="adjust-btn" disabled>+5</button>
+            <button class="adjust-btn" disabled>-5</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
-  
+
+  <!-- Results Step -->
   <div *ngSwitchCase="'Results'">
     <manual-audiometry-result-viewer
       [audiogramData] = "audiogramData">
     </manual-audiometry-result-viewer>
   </div>
-
+  
 </div>
+  
