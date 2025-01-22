@@ -148,6 +148,154 @@
 .record-threshold:hover {
   background-color: #218838;
 }
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+}
+
+/* Header section styles */
+.header-section {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.header-section h2 {
+  font-size: 18px;
+  color: #333;
+}
+
+.header-section p {
+  color: #555;
+}
+
+/* Frequency Control styles */
+.frequency-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.frequency-control label {
+  margin-right: 10px;
+  font-size: 16px;
+}
+
+.frequency-control select {
+  padding: 5px;
+  font-size: 16px;
+}
+
+/* Collapsible section styles */
+.collapsible-section {
+  margin-bottom: 20px;
+}
+
+.collapsible-header {
+  color: black;
+  padding: 10px;
+  font-size: 18px;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.collapsible-header .arrow {
+  font-size: 18px;
+}
+
+.collapsible-content {
+  padding: 20px;
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.presentation-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* DB SPL value display */
+.db-value {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Dropdown for selecting Left or Right ear */
+.ear-selection select {
+  width: 100%;
+  padding: 10px;
+  font-size: 18px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+/* Adjustment buttons for +5 dB and -10 dB */
+.adjustment-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.adjust-btn {
+  background-color: #f5f5f5;
+  padding: 15px;
+  font-size: 18px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  width: 100%;
+  cursor: pointer;
+}
+
+.adjust-btn:hover {
+  background-color: #e0e0e0;
+}
+
+/* Play Tone and Record Threshold buttons */
+.action-buttons {
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+}
+
+.btn {
+  padding: 15px;
+  font-size: 18px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 48%;
+}
+
+.play-tone {
+  background-color: #007bff;
+  color: white;
+}
+
+.play-tone:hover {
+  background-color: #0056b3;
+}
+
+.record-threshold {
+  background-color: #28a745;
+  color: white;
+}
+
+.record-threshold:hover {
+  background-color: #218838;
+}
 
 /* General container for each ear's table */
 .ear-table {

@@ -80,7 +80,8 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
 
   choose(id: string) {
     this.results.currentPage.response = id;
-    this.state.isSubmittable = true;
+    this.state.doesResponseExist = true;
+    this.stateModel.setPageSubmittable();
     if (this.state.isSubmittable && this.results.currentPage.response !== "Other") {
       this.examService.submit = this.examService.submitDefault;
       this.examService.submit();

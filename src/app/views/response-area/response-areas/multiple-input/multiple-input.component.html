@@ -6,7 +6,8 @@
         [style.margin-bottom.px]="verticalSpacing"
       >
         <div class="col-6" [style.justify-content]="textAlign" [style.text-align]="textAlign">
-          <label [for]="'itemID' + itemIdx">{{ item.text }}</label>
+          <label [for]="'itemID' + itemIdx">{{ item.text }} </label>
+          <span *ngIf="item.required" style="color: red;"> *</span>
         </div>
         <div class="col-6">
           <!-- Text -->
@@ -14,7 +15,7 @@
             *ngIf="item.inputType === 'text'"
             [id]="'itemID' + itemIdx"
             [(ngModel)]="results.currentPage.response[itemIdx]"
-            (ngModelChange)="updateSubmittableLogic()"
+            (ngModelChange)="selectResponse(itemIdx, $event)"
             class="form-control"
           />
   
@@ -37,6 +38,7 @@
             [id]="'itemID' + itemIdx"
             type="number"
             [(ngModel)]="results.currentPage.response[itemIdx]"
+            (ngModelChange)="selectResponse(itemIdx, $event)"
             class="form-control"
           />
   
@@ -48,6 +50,7 @@
             [(ngModel)]="results.currentPage.response[itemIdx]"
             [attr.max]="item.dateProperties?.maxDate === 'today' ? today : item.dateProperties?.maxDate"
             [attr.min]="item.dateProperties?.minDate === 'today' ? today : item.dateProperties?.minDate"
+            (ngModelChange)="selectResponse(itemIdx, $event)"
             class="form-control"
           />
   
@@ -68,6 +71,7 @@
             </mat-select>
           </mat-form-field>
         </div>
+        <div class="notes" *ngIf="item.notes !== null"><i>{{ item.notes }}</i></div>
       </div>
     </fieldset>
   

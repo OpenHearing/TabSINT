@@ -43,6 +43,9 @@
                 "id": "Swept DPOAE Exam" 
               },
               {
+                "id": "WAI Exam" 
+              },
+              {
                 "id":"End All"
               }
             ]
@@ -85,6 +88,12 @@
               }
             },
             {
+              "conditional": "result.response=='WAI Exam'",
+              "target": {
+                "reference": "WAIExam"
+              }
+            },
+            {
               "conditional":"result.response=='End All'",
               "target":{
                 "reference":"@END_ALL"
@@ -102,7 +111,7 @@
         {
           "id": "textbox_001",
           "title": "Text Box",
-          "instructionText": "Test Case 001",
+          "instructionText": "Page should always be submittable",
           "responseArea": {
             "type": "textboxResponseArea",
             "rows": 5,
@@ -112,17 +121,18 @@
         {
           "id": "textbox_002",
           "title": "Text Box",
-          "instructionText": "Test Cases 002",
+          "instructionText": "Page should only be submittable when there is a response",
           "responseArea": {
             "type": "textboxResponseArea",
             "exportToCSV": true,
-            "rows": 3
+            "rows": 3,
+            "responseRequired": true
           }
         },
         {
           "id": "textbox_003",
           "title": "Text Box",
-          "instructionText": "Test Cases 003",
+          "instructionText": "Page should only be submittable when there is a response",
           "responseArea": {
             "type": "textboxResponseArea",
             "exportToCSV": true
@@ -131,7 +141,7 @@
         {
           "id": "textbox_001_result_viewer",
           "title": "Text Box Result Viewer",
-          "instructionText": "Test Case 001 Result Viewer",
+          "instructionText": "Page should always be submittable",
           "responseArea": {
             "type": "textboxResponseAreaResultViewer",
             "pageIdsToDisplay": ["textbox_001", "textbox_002","textbox_003"]
@@ -148,6 +158,23 @@
       "pages": [
         {
           "id": "default",
+          "instructionText":"Page should only be submittable when there is a response",
+          "responseArea": {
+            "type": "likertResponseArea",
+            "levels": 5,
+            "useEmoticons": true,
+            "labels": ["Not at all", "Perfectly"],
+            "questions": [
+              "Question 1",
+              "Question 2",
+              "Question 3",
+              "Question 4"
+            ]
+          }
+        },
+        {
+          "id": "default",
+          "instructionText":"Page should only be submittable when there is a response",
           "responseArea": {
             "type": "likertResponseArea",
             "levels": 5,
@@ -155,40 +182,24 @@
             "naBox": true,
             "labels": ["Not at all", "Perfectly"],
             "questions": [
-              "You are in a group of about five people, sitting round a table. It is an otherwise quiet place. You can see everyone else in the group. Can you follow the conversation? ",
-              "You are talking with one other person. There is continuous background noise, such as a fan or running water close by. Can you follow what the person says? ",
-              "You are in a group of about five people in a busy restaurant. You CANNOT see everyone else in the group. Can you follow the conversation? ",
-              "You are talking to someone in a place where there are a lot of echoes, such as in a church or railway station. Can you follow what the other person says? "
+              "Question 1",
+              "Question 2"
             ]
           }
         },
         {
           "id": "default",
+          "instructionText":"Page should always be submittable",
           "responseArea": {
             "type": "likertResponseArea",
+            "responseRequired": false,
             "levels": 5,
             "naBox": true,
             "labels": ["Not at all", "Perfectly"],
             "questions": [
-              "You are in a group of about five people, sitting round a table. It is an otherwise quiet place. You can see everyone else in the group. Can you follow the conversation? ",
-              "You are talking with one other person. There is continuous background noise, such as a fan or running water close by. Can you follow what the person says? ",
-              "You are in a group of about five people in a busy restaurant. You CANNOT see everyone else in the group. Can you follow the conversation? ",
-              "You are talking to someone in a place where there are a lot of echoes, such as in a church or railway station. Can you follow what the other person says? "
-            ]
-          }
-        },
-        {
-          "id": "default",
-          "responseArea": {
-            "type": "likertResponseArea",
-            "levels": 5,
-            "useEmoticons": true,
-            "labels": ["Not at all", "Perfectly"],
-            "questions": [
-              "You are in a group of about five people, sitting round a table. It is an otherwise quiet place. You can see everyone else in the group. Can you follow the conversation? ",
-              "You are talking with one other person. There is continuous background noise, such as a fan or running water close by. Can you follow what the person says? ",
-              "You are in a group of about five people in a busy restaurant. You CANNOT see everyone else in the group. Can you follow the conversation? ",
-              "You are talking to someone in a place where there are a lot of echoes, such as in a church or railway station. Can you follow what the other person says? "
+              "Question 1",
+              "Question 2",
+              "Question 3"
             ]
           }
         },
@@ -204,13 +215,13 @@
         {
           "id": "ARDC_Survey_1",
           "title": "ARDC Surveys",
-          "instructionText": "Enter the following information:",
+          "instructionText": "Page should only be submittable when there is a response for what you ate for breakfast.",
           "responseArea": {
             "type": "multipleInputResponseArea",
             "review": true,
             "inputList": [
               {
-                "text": "Have you ever had tubes put in your eardrum(s)?",
+                "text": "What did you eat for breakfast today?",
                 "inputType": "text",
                 "required": true
               },
@@ -241,6 +252,10 @@
               }
             ]
           }
+        },
+        {
+          "id": "backtomain",
+          "reference":"MainMenu"
         }
       ]
     },
@@ -303,6 +318,24 @@
           "title": "Swept DPOAE",
           "responseArea": {
             "type": "sweptDPOAEResponseArea"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "WAIExam",
+      "pages": [
+        {
+          "id": "wai_001",
+          "title": "Wideband Acoustic Immittance (WAI)",
+          "responseArea": {
+            "type": "WAIResponseArea",
+            "fStart": 500,
+            "fEnd": 4000
           }
         },
         {

@@ -51,9 +51,10 @@ export class TympanService {
     }
 
 
-    startTracking(tabsintId: number, msgId: string, command: Command<Array<any>>) {
+    startTracking(deviceId: string, msgId: string, command: Command<Array<any>>) {
+        let tabsintId: string | undefined = this.deviceUtil.getTabsintIdFromDeviceId(deviceId);
         this.pendingMsgInfo = {
-            tabsintId: tabsintId,
+            tabsintId: Number(tabsintId!),
             msgId: msgId
         };
         this.pendingMsg = true;
@@ -135,7 +136,7 @@ export class TympanService {
             params: [tympanId, msgId]
         };
         try {
-            this.startTracking(1, msgId, this.currentCommand);
+            this.startTracking(tympanId, msgId, this.currentCommand);
             await this.tympanWrap.write(tympanId, msg);
             await this.waitForResponse();
             resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
@@ -156,7 +157,7 @@ export class TympanService {
             params: [tympanId, msgId, examType, examProperties]
         };
         try {
-            this.startTracking(1, msgId, this.currentCommand);
+            this.startTracking(tympanId, msgId, this.currentCommand);
             await this.tympanWrap.write(tympanId, msg);
             await this.waitForResponse();
             resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
@@ -176,7 +177,7 @@ export class TympanService {
             params: [tympanId, msgId, examProperties]
         };
         try {
-            this.startTracking(1, msgId, this.currentCommand);
+            this.startTracking(tympanId, msgId, this.currentCommand);
             await this.tympanWrap.write(tympanId, msg);
             await this.waitForResponse();
             resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
@@ -196,7 +197,7 @@ export class TympanService {
             params: [tympanId, msgId]
         };
         try {
-            this.startTracking(1, msgId, this.currentCommand);
+            this.startTracking(tympanId, msgId, this.currentCommand);
             await this.tympanWrap.write(tympanId, msg);
             await this.waitForResponse();
             resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
@@ -216,7 +217,7 @@ export class TympanService {
             params: [tympanId, msgId, timeoutTimeMs]
         };
         try {
-            this.startTracking(1, msgId, this.currentCommand);
+            this.startTracking(tympanId, msgId, this.currentCommand);
             await this.tympanWrap.write(tympanId, msg);
             await this.waitForResponse(timeoutTimeMs);
             resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;

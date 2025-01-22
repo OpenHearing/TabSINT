@@ -6,6 +6,8 @@ export interface StateInterface {
     protocolState: ProtocolState;
     examState: ExamState;
     deviceError: Array<any>;
+    doesResponseExist: boolean;
+    isResponseRequired: boolean;
     isSubmittable: boolean;
     examIndex: number;
     canGoBack: Function;

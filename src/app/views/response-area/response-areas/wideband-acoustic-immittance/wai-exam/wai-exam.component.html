@@ -1,0 +1,41 @@
+<div [ngSwitch]="currentStep">
+    <wai-input-parameters
+        *ngSwitchCase="'input-parameters'"
+        [fStart]="fStart"
+        [fEnd]="fEnd"
+        [sweepDuration]="sweepDuration"
+        [sweepType]="sweepType"
+        [level]="level"
+        [numSweeps]="numSweeps"
+        [windowDuration]="windowDuration"
+        [numFrequencies]="numFrequencies"
+        [filename]="filename"
+        [outputRawMeasurements]="outputRawMeasurements">
+    </wai-input-parameters>
+    
+    <wai-in-progress
+        *ngSwitchCase="'in-progress'"
+        [device]="device"
+        [fStart]="fStart"
+        [fEnd]="fEnd"
+        [sweepDuration]="sweepDuration"
+        [sweepType]="sweepType"
+        [level]="level"
+        [numSweeps]="numSweeps"
+        [windowDuration]="windowDuration"
+        [numFrequencies]="numFrequencies"
+        [filename]="filename"
+        [outputRawMeasurements]="outputRawMeasurements"
+        (WAIResultsEvent)="saveResults($event)">
+    </wai-in-progress>
+
+    <wai-results
+        *ngSwitchCase="'results'"
+        [width]="width"
+        [height]="height"
+        [xTicks]="xTicks"
+        [margin]="margin"
+        [waiResults]="waiResults">
+    </wai-results>    
+
+</div>
