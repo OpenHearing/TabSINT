@@ -295,7 +295,6 @@
         {
           "id": "calibration_001",
           "title": "Calibration Exam",
-          "instructionText": "Test calibration response area",
           "enableBackButton" :true,
           "responseArea": {
             "type": "calibrationResponseArea",
