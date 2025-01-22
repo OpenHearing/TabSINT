@@ -1,25 +1,30 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import {ChangeDetectorRef, Component, OnDestroy, OnInit} from "@angular/core";
+import { Subscription } from "rxjs";
+import { ScreenOrientation } from "@capacitor/screen-orientation";
+
+import { StateInterface } from "../../../../models/state/state.interface";
+import { ManualAudiometryInterface } from "./manual-audiometry.interface";
+import { PageInterface } from "../../../../models/page/page.interface";
+import { ResultsInterface } from "../../../../models/results/results.interface";
+import { ProtocolModelInterface } from "../../../../models/protocol/protocol.interface";
+import { ConnectedDevice } from "../../../../interfaces/connected-device.interface";
+import { AudiometryResultsInterface, RetsplsInterface } from "../../../../interfaces/audiometry-results.interface"
+import { TympanResponse } from "../../../../models/devices/devices.interface";
+
+import { isManualAudiometryResponseArea } from "../../../../guards/type.guard";
+import { DevicesService } from "../../../../controllers/devices.service";
+import { ExamService } from "../../../../controllers/exam.service";
 import { PageModel } from "../../../../models/page/page.service";
 import { StateModel } from "../../../../models/state/state.service";
 import { ProtocolModel } from "../../../../models/protocol/protocol-model.service";
 import { ResultsModel } from "../../../../models/results/results-model.service";
-import { PageInterface } from "../../../../models/page/page.interface";
-import { ResultsInterface } from "../../../../models/results/results.interface";
-import { ProtocolModelInterface } from "../../../../models/protocol/protocol.interface";
-import { StateInterface } from "../../../../models/state/state.interface";
-import { Subscription } from "rxjs";
-import { ManualAudiometryInterface } from "./manual-audiometry.interface";
 import { DevicesModel } from "../../../../models/devices/devices-model.service";
-import { DevicesService } from "../../../../controllers/devices.service";
-import { ConnectedDevice } from "../../../../interfaces/connected-device.interface";
+
 import { DeviceUtil } from "../../../../utilities/device-utility";
-import { Logger } from "../../../../utilities/logger.service";
-import { ExamService } from "../../../../controllers/exam.service";
-import { AudiometryResultsInterface, RetsplsInterface } from "../../../../interfaces/audiometry-results.interface";
-import { isManualAudiometryResponseArea } from "../../../../guards/type.guard";
-import { DialogType, LevelUnits } from "../../../../utilities/constants";
+import { Logger } from "../../../../utilities/logger.service";;
+import { DialogType, LevelUnits, ResultType } from "../../../../utilities/constants";
 import { Notifications } from "../../../../utilities/notifications.service";
-import { TympanResponse } from "../../../../models/devices/devices.interface";
+import { manualAudiometrySchema } from "../../../../../schema/response-areas/manual-audiometry.schema";
 
 @Component({
     selector: 'manual-audiometry-view',
@@ -28,41 +33,45 @@ import { TympanResponse } from "../../../../models/devices/devices.interface";
 })
 
 export class ManualAudiometryComponent implements OnInit, OnDestroy {
+    // Configuration Variables
+    retspls?: RetsplsInterface;
+    levelUnits: string = manualAudiometrySchema.properties.levelUnits.default;
+    frequencies: number[] = manualAudiometrySchema.properties.frequencies.default;
+    adjustments: number[] = manualAudiometrySchema.properties.adjustments.default;
+    maxOutputLevel: number = manualAudiometrySchema.properties.maxOutputLevel.default;
+    minOutputLevel: number = manualAudiometrySchema.properties.minOutputLevel.default;
+
+    // Core Data
     results: ResultsInterface;
     protocol: ProtocolModelInterface;
     state: StateInterface;
-    isPresentationVisible: boolean = false;
-    isResultsVisible: boolean = false;
-    currentDbSpl: number = 40; // level in SPL to send commands to firmware, this is the ground truth
-    currentDb: number = 40; // level in levelUnits for display
-    frequencies: number[] = [1, 2, 4];
-    adjustments: number[] = [5, -10];
-    maxOutputLevel: number = 100;
-    minOutputLevel: number = -20;
-    selectedEar: string = 'Left';
-    leftThresholds: (number|null)[] = [null, null, null];
-    rightThresholds: (number|null)[] = [null, null, null];
-    leftCurrentColumn: number = 0;
-    rightCurrentColumn: number = 0;
+    audiogramData: AudiometryResultsInterface = {
+        frequencies: [],
+        thresholds: [],
+        channels: [],
+        resultTypes: [],
+        masking: [],
+        levelUnits: this.levelUnits
+    };
+
+    // Controller Variables
+    currentStep: string = 'Exam';
+    selectedEar: "Left" | "Right" = "Left";
+    currentDb: number = manualAudiometrySchema.properties.targetLevel.default;
+    currentDbSpl: number = manualAudiometrySchema.properties.targetLevel.default;
+    maskingLevel: number = -20;
+    isPlaying: boolean = false;
+    refreshGraph: boolean = true; 
+    selectedFrequency: number = this.frequencies[0];
+
+    // Subscriptions
     pageSubscription: Subscription|undefined;
     deviceSubscription: Subscription|undefined;
-    initialDb: number = 40;
-    currentFrequencyIndex: number = 0;
-    selectedFrequency: number = this.frequencies[0];
     device: ConnectedDevice|undefined;
-    currentStep: string = 'Exam';
-    audiogramData: AudiometryResultsInterface = {
-        frequencies: [1000],
-        thresholds: [null],
-        channels: [''],
-        resultTypes: [''],
-        masking: [false],
-        levelUnits: LevelUnits.dB_SPL
-    };
-    retspls?: RetsplsInterface;
-    levelUnits: string= LevelUnits.dB_SPL;
 
     constructor(
+        readonly examService: ExamService, 
+        private readonly cdr: ChangeDetectorRef,
         private readonly resultsModel: ResultsModel, 
         private readonly pageModel: PageModel, 
         private readonly protocolModel: ProtocolModel, 
@@ -70,7 +79,6 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         private readonly devicesService: DevicesService,
         private readonly devicesModel: DevicesModel,
         private readonly deviceUtil: DeviceUtil,
-        private readonly examService: ExamService, 
         private readonly logger: Logger,
         private readonly notifications: Notifications,
     ) {
@@ -80,187 +88,215 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         
     }
 
-    ngOnInit() {
+    async ngOnInit() {
         this.pageSubscription = this.pageModel.currentPageSubject.subscribe(this.handlePageUpdate.bind(this));
         this.deviceSubscription = this.devicesModel.tympanResponseSubject.subscribe(this.logDeviceResponse.bind(this));
+        try {
+            await ScreenOrientation.lock({ orientation: "landscape" });
+          } catch (error) {
+            this.logger.error("Failed to lock screen orientation:" + error);
+        }
     }
 
-    ngOnDestroy() {
+    async ngOnDestroy() {
         if (this.device) {
             this.devicesService.abortExams(this.device);
         }
         this.pageSubscription?.unsubscribe();
+        this.deviceSubscription?.unsubscribe();
+        try {
+            await ScreenOrientation.unlock();
+          } catch (error) {
+            this.logger.error("Failed to unlock screen orientation:" + error);
+          }
     }
 
-    onFrequencyChange(selectedFreq: number): void {
-        selectedFreq = Number(selectedFreq);
-        this.currentFrequencyIndex = this.frequencies.indexOf(selectedFreq);
-        this.selectedFrequency = this.frequencies[this.currentFrequencyIndex];
+    // ======= Audiometry Controls =======    
+    async selectEar(ear: "Left" | "Right"): Promise<void> {
+        this.selectedEar = ear;
+        this.refreshGraph = false;
+        setTimeout(() => (this.refreshGraph = true), 0);
+    }
+    
+    async adjustTone(amount: number): Promise<void> {
+        this.currentDbSpl = Math.max( this.minOutputLevel, Math.min(this.currentDbSpl + amount, this.maxOutputLevel));
+        this.updateCurrentDb();
     }
 
-    toggleSection(section: string): void {
-        if (section === 'presentation') {
-            this.isPresentationVisible = !this.isPresentationVisible;
-        } else if (section === 'results') {
-            this.isResultsVisible = !this.isResultsVisible;
+    async adjustFrequency(direction: number): Promise<void> {
+        const currentIndex = this.frequencies.indexOf(this.selectedFrequency);    
+        if (direction > 0) {
+            this.selectedFrequency = this.frequencies[(currentIndex + 1) % this.frequencies.length];
+        } else {
+            this.selectedFrequency = this.frequencies[
+                (currentIndex - 1 + this.frequencies.length) % this.frequencies.length
+            ];
         }
     }
-
-    adjustDbSpl(amount: number) {
-        this.currentDbSpl += amount;
-        if (this.currentDbSpl < this.minOutputLevel) {
-            this.currentDbSpl = this.minOutputLevel;
-        } else if (this.currentDbSpl > this.maxOutputLevel) {
-            this.currentDbSpl = this.maxOutputLevel;
-        }
-        this.setCurrentDb();
+    
+    async adjustMasking(amount: number): Promise<void> {
+        if (!this.maskingLevel) this.maskingLevel = 0;
+        this.maskingLevel += amount;
+        if (this.maskingLevel > 50) this.maskingLevel = 50;
+        if (this.maskingLevel < -50) this.maskingLevel = -50;
+        await this.submitAudiometryExam()
     }
 
     async playTone() {
-        let examProperties = {
-            "F": this.selectedFrequency,
-            "Level": this.currentDbSpl,
-            "OutputChannel": this.selectedEar==="Left" ? "HPL0" : "HPR0"
-        };
-        let resp = await this.devicesService.examSubmission(this.device!, examProperties);
-        console.log("resp from tympan after manual audiometry exam submission:",resp);
+        this.isPlaying = true;
+        await this.submitAudiometryExam();
+    
+        setTimeout(() => {
+            this.isPlaying = false;
+            this.refreshGraph = false;
+    
+            setTimeout(() => {
+                this.refreshGraph = true;
+            }, 0);
+        }, 1000);
+    }
+    
+    
+    noResponse(): void {
+        const resultType =
+          this.currentDbSpl >= this.maxOutputLevel ? ResultType.Beyond : ResultType.Better;
+        this.updateThreshold(this.selectedEar, this.selectedFrequency, this.currentDbSpl, resultType);
     }
 
-    recordThreshold() {
-        if (this.selectedEar === 'Left') {
-            this.leftThresholds[this.currentFrequencyIndex] = this.currentDb;
-        } else if (this.selectedEar === 'Right') {
-            this.rightThresholds[this.currentFrequencyIndex] = this.currentDb;
-        }
-        this.currentFrequencyIndex = (this.currentFrequencyIndex + 1) % this.frequencies.length;
-        this.selectedFrequency = this.frequencies[this.currentFrequencyIndex];
-        this.currentDb = this.initialDb;
-        this.setCurrentDbSpl();
-        this.organizeAudiometryResults();
-        this.results.currentPage.response = this.audiogramData;
-        this.state.doesResponseExist = true;
-        this.stateModel.setPageSubmittable();
+    recordThreshold(): void {
+        this.updateThreshold(this.selectedEar, this.selectedFrequency, this.currentDbSpl);
+    }
+
+    deleteThreshold(): void {
+        this.updateThreshold(this.selectedEar, this.selectedFrequency, null);
     }
 
     submitResults(): void {
-        this.organizeAudiometryResults();
-        this.currentStep = 'Results';
-        this.examService.submit = this.examService.submitDefault.bind(this.examService);
-    }
-        
-    private organizeAudiometryResults() {
-        const leftChannels = Array(this.leftThresholds.length).fill('left');
-        const rightChannels = Array(this.rightThresholds.length).fill('right');
-        const channels = leftChannels.concat(rightChannels);
-        const masking = Array(channels.length).fill(false);
-        const resultTypes = Array(channels.length).fill('Threshold');
-
-        this.audiogramData =  {
-            frequencies: this.frequencies.concat(this.frequencies),
-            thresholds: this.leftThresholds.concat(this.rightThresholds),
-            channels,
-            resultTypes,
-            masking,
-            levelUnits: this.levelUnits
+        this.audiogramData = {
+          frequencies: [...this.audiogramData.frequencies],
+          thresholds: [...this.audiogramData.thresholds],
+          channels: [...this.audiogramData.channels],
+          resultTypes: [...this.audiogramData.resultTypes],
+          masking: [...this.audiogramData.masking],
+          levelUnits: this.levelUnits,
         };
+        this.currentStep = 'Results';
+        this.cdr.detectChanges();
+        this.examService.submit = this.examService.submitDefault.bind(this.examService);
+        this.results.currentPage.response = this.audiogramData;
+    }
+
+    // ========== UI getters ====================
+    get isNoResponseEnabled(): boolean {
+        return this.currentDbSpl >= this.maxOutputLevel || this.currentDbSpl <= this.minOutputLevel;
+      }
+    
+    getEarData(ear: "Left" | "Right"): AudiometryResultsInterface {
+        const channel = ear === "Left" ? "left" : "right";
+        return {
+          frequencies: this.audiogramData.frequencies.filter(
+            (_, i) => this.audiogramData.channels[i] === channel
+          ),
+          thresholds: this.audiogramData.thresholds.filter(
+            (_, i) => this.audiogramData.channels[i] === channel
+          ),
+          channels: this.audiogramData.channels.filter(c => c === channel),
+          resultTypes: this.audiogramData.resultTypes.filter(
+            (_, i) => this.audiogramData.channels[i] === channel
+          ),
+          masking: this.audiogramData.masking.filter(
+            (_, i) => this.audiogramData.channels[i] === channel
+          ),
+          levelUnits: this.audiogramData.levelUnits,
+        };
+      }
+      
+    // ======= Private Utility Functions =======    
+    private logDeviceResponse(msg: TympanResponse) {
+        this.logger.debug("device msg:" + JSON.stringify(msg));
+    }
+
+    private updateCurrentDb() {
+        this.currentDb = 
+            this.retspls && this.levelUnits === LevelUnits.dB_HL
+                ? this.currentDbSpl - this.getRetsplAtFrequency(this.selectedFrequency)
+                : this.currentDbSpl;
+    }
+
+    private getRetsplAtFrequency(frequency: number): number {
+        const frequencyStr = frequency.toString();
+        return this.retspls![frequencyStr];
+    }
+    
+    private updateThreshold(
+        ear: "Left" | "Right",
+        frequency: number,
+        threshold: number | null,
+        resultType: ResultType = ResultType.Threshold
+    ) {
+        const channel = ear === "Left" ? "left" : "right";
+      
+        const index = this.audiogramData.frequencies.findIndex(
+          (f, i) => f === frequency && this.audiogramData.channels[i] === channel
+        );
+      
+        if (index >= 0) {
+          this.audiogramData.thresholds[index] = threshold;
+          this.audiogramData.resultTypes[index] = resultType;
+        } else {
+          // Add new entry if not already in the data
+          this.audiogramData.frequencies.push(frequency);
+          this.audiogramData.channels.push(channel);
+          this.audiogramData.thresholds.push(threshold);
+          this.audiogramData.resultTypes.push(resultType);
+          this.audiogramData.masking.push(false); // Default masking
+        }
+
+        this.refreshGraph = false;
+        setTimeout(() => (this.refreshGraph = true), 0);
+    }
+
+    private async submitAudiometryExam() {
+        let examProperties = {
+            "F": this.selectedFrequency,
+            "Level": this.currentDbSpl,
+            "OutputChannel": this.selectedEar==="Left" ? "HPL0" : "HPR0",
+            // "PlayStimulus": this.isPlaying, --> only needed with masking
+            // "MaskerLevel": this.maskingLevel
+        };
+        let resp = await this.devicesService.examSubmission(this.device!, examProperties);
+        this.logger.debug("resp from tympan after manual audiometry exam submission:" + resp);
     }
 
     private async handlePageUpdate(updatedPage: PageInterface) {
         if (isManualAudiometryResponseArea(updatedPage)) {
             const updatedAudiometryResponseArea = updatedPage.responseArea as ManualAudiometryInterface;
-            this.initializeAudiometrySettings(updatedAudiometryResponseArea);
+            this.setupAudiometry(updatedAudiometryResponseArea);
             this.setupDevice(updatedAudiometryResponseArea);
         }
     }
-
-    private initializeAudiometrySettings(updatedAudiometryResponseArea: ManualAudiometryInterface) {
-        this.maxOutputLevel = updatedAudiometryResponseArea.maxOutputLevel ?? 100;
-        this.minOutputLevel = updatedAudiometryResponseArea.minOutputLevel ?? 0;
-        this.currentDb = updatedAudiometryResponseArea.targetLevel ?? 40;
-        this.levelUnits = updatedAudiometryResponseArea.levelUnits ?? LevelUnits.dB_SPL;
-        this.initialDb = this.currentDb;
-        this.frequencies = updatedAudiometryResponseArea.frequencies ?? [1, 2, 4];
-        this.adjustments = updatedAudiometryResponseArea.adjustments ?? [5, -10];
-        this.leftThresholds = new Array(this.frequencies.length).fill(null);
-        this.rightThresholds = new Array(this.frequencies.length).fill(null);
+         
+    private setupAudiometry(updatedAudiometryResponseArea: ManualAudiometryInterface) {
+        this.maxOutputLevel = updatedAudiometryResponseArea.maxOutputLevel ?? this.maxOutputLevel;
+        this.minOutputLevel = updatedAudiometryResponseArea.minOutputLevel ?? this.minOutputLevel;
+        this.levelUnits = updatedAudiometryResponseArea.levelUnits ?? this.levelUnits;
+        this.frequencies = updatedAudiometryResponseArea.frequencies ?? this.frequencies;
+        this.adjustments = updatedAudiometryResponseArea.adjustments?.length === 2
+            ? updatedAudiometryResponseArea.adjustments
+            : this.adjustments;
         this.selectedFrequency = this.frequencies[0];
         this.retspls = updatedAudiometryResponseArea.retspls;
+        this.updateCurrentDb();
 
         if (this.retspls && this.levelUnits === LevelUnits.dB_HL) {
-            this.checkResplKeysAreInFrequencies();
             this.verifyEachFrequencyHasRetspl();
         }
 
-        if (this.levelUnits === LevelUnits.dB_HL) {
-            this.currentDbSpl = this.currentDb + this.getRetsplAtCurrentFrequency(this.selectedFrequency);
-        }
-
-        if (updatedAudiometryResponseArea.showResults ?? true) {
+        if (updatedAudiometryResponseArea.showResults ?? manualAudiometrySchema.properties.showResults.default) {
             this.examService.submit = this.submitResults.bind(this);
         }
     }
 
-    private verifyEachFrequencyHasRetspl(){
-        const missingFrequencies: string[] = [];
-        
-        for (const frequency of this.frequencies) {
-            const frequencyStr = frequency.toString();
-            if (!(frequencyStr in this.retspls!)) {
-            missingFrequencies.push(frequencyStr);
-            }
-        }
-        
-        if (missingFrequencies.length > 0) {
-            this.logger.error(`Missing frequencies in retspls: ${missingFrequencies.join(', ')}`);
-            this.notifications.alert({
-                title: "Alert",
-                content: 
-`The RETSPLs provided in the protocol does not specify all the frequencies specified 
-in the protocol. The exam may proceed unexpectedly at the frequency(ies) missing RETSPLs.`,
-                type: DialogType.Alert
-            }
-            ).subscribe();
-            this.retspls = undefined;
-        }           
-    }
-
-    private checkResplKeysAreInFrequencies() {
-        const keys = Object.keys(this.retspls!);
-        keys.forEach(key => {
-            if (!this.frequencies.includes(Number(key))) {
-                this.logger.error(`Unknown frequency in retspls. ${key} : ${this.retspls![key]}`);
-                this.notifications.alert({
-                    title: "Alert",
-                    content: 
-`The retspl ${this.retspls![key]} at frequency ${key} was provided in the protocol but is 
-not recognized as a frequency requested for this exam, it will be ignored.` ,
-                    type: DialogType.Alert
-                }
-                ).subscribe();
-
-            }
-        })        
-    }
-
-    private getRetsplAtCurrentFrequency(frequency: number): number {
-        const frequencyStr = frequency.toString();
-        return this.retspls![frequencyStr];
-      }
-      
-    private setCurrentDb() {
-    if (this.retspls && this.levelUnits === LevelUnits.dB_HL) {
-        this.currentDb = this.currentDbSpl - this.getRetsplAtCurrentFrequency(this.selectedFrequency);
-    } else {
-        this.currentDb = this.currentDbSpl;
-    }}
-
-    private setCurrentDbSpl() {
-        if (this.retspls && this.levelUnits === LevelUnits.dB_HL) {
-            this.currentDbSpl = this.currentDb + this.getRetsplAtCurrentFrequency(this.selectedFrequency);
-        } else {
-            this.currentDbSpl = this.currentDb;
-        }}
-    
     private async setupDevice(updatedAudiometryResponseArea: ManualAudiometryInterface) {
         this.device = this.deviceUtil.getDeviceFromTabsintId(updatedAudiometryResponseArea.tabsintId ?? "1");
         if (this.device) {
@@ -270,8 +306,21 @@ not recognized as a frequency requested for this exam, it will be ignored.` ,
             this.logger.error("Error setting up Manual Audiometry exam");
         }
     }
-    
-    private logDeviceResponse(msg: TympanResponse) {
-        console.log("device msg:", JSON.stringify(msg));
+ 
+    private verifyEachFrequencyHasRetspl(){
+        const missingFrequencies = this.frequencies
+            .map(String)
+            .filter(frequency => !(frequency in this.retspls!));
+        if (missingFrequencies.length) {
+            this.logger.error(`Missing frequencies in retspls: ${missingFrequencies.join(', ')}`);
+            this.notifications
+                .alert({
+                    title: "Alert",
+                    content: `The RETSPLs provided in the protocol do not specify all the frequencies. Missing frequencies: ${missingFrequencies.join(', ')}. The exam may proceed unexpectedly.`,
+                    type: DialogType.Alert,
+                })
+                .subscribe();
+            this.retspls = undefined;
+        }
     }
 }

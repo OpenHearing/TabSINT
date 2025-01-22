@@ -10,6 +10,7 @@
         android:theme="@style/AppTheme">
 
         <activity
+            android:screenOrientation="fullSensor"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
             android:name=".MainActivity"
             android:label="@string/title_activity_main"

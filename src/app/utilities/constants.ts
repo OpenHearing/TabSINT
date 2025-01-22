@@ -95,6 +95,20 @@ export const createResultsTableSql =  "CREATE TABLE IF NOT EXISTS results (msgID
 export const createLogsTableSql =  "CREATE TABLE IF NOT EXISTS logs (msgID INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT)";
 export const deleteSql = "DELETE FROM logs WHERE logs.msgID IN (SELECT msgID FROM logs ORDER BY date LIMIT ?);";
 
+export const ResultType_Threshold = "Threshold";
+export const ResultType_Outside = "Hearing Potentially Outside Measurable Range";
+export const ResultType_DNC = "Failed to Converge"; // DNC: Did Not Converge
+export const ResultType_Better = "Hearing Potentially Better the Calibrated Range";
+export const ResultType_Beyond = "Hearing Potentially Beyond the Calibrated Range";
+export const ResultType_MaximumMaskingLevel = "Maximum Masking Level Reached. Could Not Determine Threshold";
+export const ResultType_MaskinDilemma = "Could Not Mask Due To Masking Dilemma";
+
+export enum ResultType {
+    Threshold = "Threshold",
+    Better = "Hearing Potentially Better the Calibrated Range",
+    Beyond = "Hearing Potentially Beyond the Calibrated Range"
+}
+
 export const WAINormativeAbsorbanceData: Array<{"f":number,"yMin":number,"yMax":number}> = [
     {
         "f": 210.9375,
