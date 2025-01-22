@@ -108,7 +108,10 @@ export class WAIExamComponent implements OnInit, OnDestroy {
 
   saveResults(waiResults: WAIResultsInterface) {
     this.waiResults = waiResults;
+    // generate absorbance from power reflectance data (Absorbance = 1 - Reflectance)
     this.waiResults.PowerReflectance = this.waiResults.Absorbance!.map(num => 1 - num);
+    // Convert ImpedancePhase from radians to degrees (multiply by 180/pi)
+    this.waiResults.ImpedancePhase = this.waiResults.ImpedancePhase!.map(num => num*180/Math.PI);
     this.results.currentPage.response = waiResults;
   }
 
