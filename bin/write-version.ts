@@ -39,8 +39,9 @@ function getNodeVersion() {
 
 async function generateVersionJson() {
   const updatedRev = await incrementRev();
+  const suffix = process.argv.slice(2) ? "-"+process.argv.slice(2) : "";
   const newVersionJson = {
-    tabsint: packageJson.version,
+    tabsint: packageJson.version+suffix,
     date: new Date().toISOString(),
     rev: updatedRev,
     version_code: (parseInt(versionJson.version_code, 10) + 1).toString(),

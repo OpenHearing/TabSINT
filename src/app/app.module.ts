@@ -98,6 +98,7 @@ import { WAIExamComponent } from './views/response-area/response-areas/wideband-
 import { WAIInProgressComponent } from './views/response-area/response-areas/wideband-acoustic-immittance/wai-in-progress/wai-in-progress.component';
 import { WAIInputParametersComponent } from './views/response-area/response-areas/wideband-acoustic-immittance/wai-input-parameters/wai-input-parameters.component';
 import { WAIResultsComponent } from './views/response-area/response-areas/wideband-acoustic-immittance/wai-results/wai-results.component';
+import { BuildDetailsComponent } from './views/build-details/build-details.component';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -154,6 +155,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     WAIInputParametersComponent,
     WAIInProgressComponent,
     WAIResultsComponent,
+    BuildDetailsComponent,
   ],
   imports: [
     BrowserModule,
