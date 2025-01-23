@@ -1,5 +1,5 @@
 <div class="audiometry-container">
-  <audiogram [dataStruct]="audiogramData"></audiogram>
+  <audiogram [dataStruct]="audiogramData" [isManualExam]="false"></audiogram>
   
   <!-- Results Table Section -->
   <!-- Left Ear Table -->
@@ -64,4 +64,9 @@
     <p>(x+) = Hearing potentially beyond the calibrated range</p>
     <p>(-x) = Hearing potentially better than the calibrated range</p>
   </div>
+
+  <div class="submit-container">
+    <button class="submit-btn" (click)="submitResults()">Submit</button>
+  </div>
+
 </div>

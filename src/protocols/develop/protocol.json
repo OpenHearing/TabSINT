@@ -37,43 +37,46 @@
                 "id":"Manual Audiometry"
               },
               {
-                "id": "Calibration Exam" 
+                "id": "Calibration Exam"
               },
               {
-                "id": "Swept DPOAE Exam" 
+                "id": "Swept DPOAE Exam"
               },
               {
-                "id": "MRT Exam" 
+                "id": "WAI Exam"
+              },
+              {
+                "id": "MRT Exam"
               },
               {
                 "id":"End All"
               }
             ]
-          }, 
+          },
           "followOns":[
             {
               "conditional":"result.response=='Text Box'",
               "target":{
                 "reference":"TextBox"
-              } 
+              }
             },
             {
               "conditional":"result.response=='LikeRT'",
               "target":{
                 "reference":"LikeRT"
-              } 
+              }
             },
             {
               "conditional":"result.response=='Multiple Input'",
               "target":{
                 "reference":"MultipleInput"
-              } 
+              }
             },
             {
               "conditional":"result.response=='Manual Audiometry'",
               "target":{
                 "reference":"ManualAudiometry"
-              } 
+              }
             },
             {
               "conditional": "result.response=='Calibration Exam'",
@@ -88,6 +91,12 @@
               }
             },
             {
+              "conditional": "result.response=='WAI Exam'",
+              "target": {
+                "reference": "WAIExam"
+              }
+            },
+            {
               "conditional": "result.response=='MRT Exam'",
               "target": {
                 "reference": "MRTExam"
@@ -97,7 +106,7 @@
               "conditional":"result.response=='End All'",
               "target":{
                 "reference":"@END_ALL"
-              } 
+              }
             }
           ]
         }
@@ -296,7 +305,6 @@
         {
           "id": "calibration_001",
           "title": "Calibration Exam",
-          "instructionText": "Test calibration response area",
           "enableBackButton" :true,
           "responseArea": {
             "type": "calibrationResponseArea",
@@ -319,6 +327,24 @@
           "title": "Swept DPOAE",
           "responseArea": {
             "type": "sweptDPOAEResponseArea"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "WAIExam",
+      "pages": [
+        {
+          "id": "wai_001",
+          "title": "Wideband Acoustic Immittance (WAI)",
+          "responseArea": {
+            "type": "WAIResponseArea",
+            "fStart": 500,
+            "fEnd": 4000
           }
         },
         {

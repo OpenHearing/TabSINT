@@ -1,0 +1,36 @@
+<p class="instructions">{{instructions}}</p>
+
+<wai-input-parameters
+    [fStart]="fStart"
+    [fEnd]="fEnd"
+    [sweepDuration]="sweepDuration"
+    [sweepType]="sweepType"
+    [level]="level"
+    [numSweeps]="numSweeps"
+    [windowDuration]="windowDuration"
+    [numFrequencies]="numFrequencies"
+    [filename]="filename"
+    [outputRawMeasurements]="outputRawMeasurements">
+</wai-input-parameters>
+
+<br />
+
+<mat-progress-bar mode="determinate" [value]="inProgressResults.PctComplete"></mat-progress-bar>
+<div class="progress-label">{{ inProgressResults.PctComplete }}% Completed
+    <div *ngIf="inProgressResults.State==='BUSY' && inProgressResults.PctComplete===100">
+        <br />
+        <div>DATA TRANSFER...</div>
+        <div>The exam is complete. PLEASE WAIT while the data is transferring from the Tympan to TabSINT.</div> 
+        <div>This may take up to 5 minutes if <i>OutputRawMeasurements</i> is true or about 30-40 seconds if it is false.</div>
+    </div>
+    <div *ngIf="inProgressResults.State==='DONE' && inProgressResults.PctComplete===100">
+        <br />
+        DATA TRANSFER COMPLETE. Press next to view results.
+    </div>
+</div>
+
+<br />
+
+<button [disabled]="inProgressResults.State==='DONE' || inProgressResults.State==='BUSY' || inProgressResults.State==='ABORTED'" class="btn btn-danger btn-block" (click)="abort()">
+    {{'Abort'}}
+</button>

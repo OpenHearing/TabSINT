@@ -1,7 +1,8 @@
 import { Component, Input } from "@angular/core";
 
 import { AudiometryResultsInterface } from "../../../../../interfaces/audiometry-results.interface";
-import { LevelUnits } from "../../../../../utilities/constants";
+import { ExamService } from "../../../../../controllers/exam.service";
+
 
 @Component({
     selector: 'manual-audiometry-result-viewer',
@@ -10,13 +11,13 @@ import { LevelUnits } from "../../../../../utilities/constants";
   })
 
 export class ManualAudiometryResultViewerComponent {
-    @Input() audiogramData: AudiometryResultsInterface = {
-        frequencies: [1000],
-        thresholds: [null],
-        channels: [''],
-        resultTypes: [''],
-        masking: [false],
-        levelUnits: LevelUnits.dB_SPL
-    };
+    @Input() audiogramData!: AudiometryResultsInterface;
+
+    constructor(private readonly examService: ExamService, ){
+    }
+
+    submitResults() {
+        this.examService.submitDefault();
+      }
 
 }
