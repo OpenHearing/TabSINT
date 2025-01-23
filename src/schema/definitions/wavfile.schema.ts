@@ -13,11 +13,7 @@ export const wavfileSchema: JSONSchemaType<WavfileInterface> = {
             nullable: true,
             default: "arbitrary",
         },
-        targetSPL: { 
-            anyOf: [{ type: "number" }, { type: "string" }], 
-            nullable: true, 
-            default: 65 
-        },
+        targetSPL: { type: ["number", "string"], nullable: true, default: 65 },
         weighting: { type: "string", enum: ["A", "C", "Z"], nullable: true, default: "Z" },
         startTime: { type: "number", nullable: true, default: 0 },
         endTime: { type: "number", nullable: true },

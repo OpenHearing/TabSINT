@@ -82,7 +82,7 @@ export async function loadMrtExamCsv(csvFilePath: string): Promise<any> {
     // });
   
     return {
-      temp, //trialList,
+      trialList: temp, //trialList,
       numWavChannels: 2, //parseInt(examData['NUMBER OF CHANNELS'], 10) ?? 1,
       outputChannel: 'HPL0', //examData['OUTPUT CHANNELS'].split(',').map((channel: string) => channel.trim()) ?? 'HPL0',
     };

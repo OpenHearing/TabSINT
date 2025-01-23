@@ -11,7 +11,7 @@ export const mrtTrialSchema: JSONSchemaType<MrtTrialInterface> = {
     answer: { type: "number" },
     SNR: { type: "number"}
   },
-  required: ["filename", "leveldBSpl", "useMeta", "choices", "answer"]
+  required: ["filename", "leveldBSpl", "useMeta", "choices", "answer", "SNR"]
 }
 
 export const mrtSchema: JSONSchemaType<MrtExamInterface> = {
@@ -25,10 +25,8 @@ export const mrtSchema: JSONSchemaType<MrtExamInterface> = {
     examDefinitionFilename: { type: "string"},
     numWavChannels: { type: "number", nullable: true },
     outputChannel: { 
-      oneOf: [
-        { type: "string" },
-        { type: "array", items: { type: "string" } }
-      ],
+      type: "array",
+      items: { type: "string" },
       nullable: true
     },
     trialList: {
