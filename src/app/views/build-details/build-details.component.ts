@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { VersionModel } from '../../models/version/version.service';
 import { VersionInterface } from '../../models/version/version.interface';
 import { Logger } from '../../utilities/logger.service';
-import { DevicesModel } from '../../models/devices/devices-model.service';
-import { DevicesInterface } from '../../models/devices/devices.interface';
 
 @Component({
   selector: 'build-details',
@@ -12,15 +10,11 @@ import { DevicesInterface } from '../../models/devices/devices.interface';
 })
 export class BuildDetailsComponent implements OnInit {
   version: VersionInterface | undefined;
-  devices: DevicesInterface | undefined;
 
   constructor(
     private readonly versionModel: VersionModel, 
-    private readonly logger: Logger,
-    private readonly devicesModel: DevicesModel
-  ) {
-    this.devices = this.devicesModel.getDevices();
-  }
+    private readonly logger: Logger
+  ) {  }
 
   ngOnInit(): void {
     this.initializeVersion();
