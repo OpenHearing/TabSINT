@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { MrtResultsInterface } from '../mrt-exam/mrt-exam.interface';
 
 @Component({
@@ -6,6 +6,6 @@ import { MrtResultsInterface } from '../mrt-exam/mrt-exam.interface';
   templateUrl: './mrt-results.component.html',
   styleUrl: './mrt-results.component.css'
 })
-export class MrtResultsComponent implements AfterViewInit {
-  @Input() mrtResults!: MrtResultsInterface;
+export class MrtResultsComponent {
+  @Input() mrtResults!: MrtResultsInterface[];
 }

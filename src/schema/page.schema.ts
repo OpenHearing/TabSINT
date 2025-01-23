@@ -12,6 +12,7 @@ import { calibrationExamSchema } from "./response-areas/calibration-exam.schema"
 import { multipleInputSchema } from "./response-areas/multiple-input.schema";
 import { likertSchema } from "./response-areas/likert.schema";
 import { sweptDpoaeSchema } from "./response-areas/swept-dpoae.schema";
+import { mrtSchema } from "./response-areas/mrt.schema";
 
 export const pageSchema: JSONSchemaType<PageDefinition> = {
     $id: "page_base",
@@ -87,7 +88,8 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
           manualAudiometrySchema,
           calibrationExamSchema,
           likertSchema,
-          sweptDpoaeSchema
+          sweptDpoaeSchema,
+          mrtSchema
         ], 
         required: ["type"],
         nullable: true

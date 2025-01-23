@@ -333,6 +333,7 @@
         {
           "id": "MRT",
           "title": "Modified Rhyme Test",
+          "instructionText": "Select the word prompted by the voice",
           "responseArea": {
             "type": "mrtResponseArea",
             "examDefinitionFilename": "mrt-exam-definition.csv"

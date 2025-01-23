@@ -7,6 +7,7 @@ import { TextBoxInterface } from "../views/response-area/response-areas/textbox/
 import { MultipleInputInterface } from "../views/response-area/response-areas/multiple-input/multiple-input.interface";
 import { LikertInterface } from "../views/response-area/response-areas/likert/likert/likert.interface";
 import { SweptDpoaeInterface } from "../views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/sept-dpoae-exam.interface";
+import { MrtExamInterface } from "../views/response-area/response-areas/mrt/mrt-exam/mrt-exam.interface";
 
 export interface PageDefinition {
     id: string;
@@ -102,4 +103,5 @@ export interface CommonResponseAreaInterface {
 export type ResponseArea =
     TextBoxInterface | TextBoxResultViewerInterface |
     MultipleChoiceInterface | ManualAudiometryInterface | CalibrationExamInterface |
-    MultipleInputInterface | LikertInterface | SweptDpoaeInterface
+    MultipleInputInterface | LikertInterface | SweptDpoaeInterface |
+    MrtExamInterface

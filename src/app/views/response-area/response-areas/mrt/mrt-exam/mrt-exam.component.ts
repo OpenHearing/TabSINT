@@ -13,7 +13,9 @@ import { PageInterface } from '../../../../../models/page/page.interface';
 import { ButtonTextService } from '../../../../../controllers/button-text.service';
 import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
 import { mrtSchema } from '../../../../../../schema/response-areas/mrt.schema';
-import { MrtExamInterface, MrtPresentationInterface } from './mrt-exam.interface';
+import { MrtExamInterface, MrtResultsInterface, MrtTrialInterface, MrtTrialResultInterface } from './mrt-exam.interface';
+import { StateInterface } from '../../../../../models/state/state.interface';
+import { StateModel } from '../../../../../models/state/state.service';
 
 @Component({
   selector: 'mrt-exam',
@@ -21,27 +23,41 @@ import { MrtExamInterface, MrtPresentationInterface } from './mrt-exam.interface
   styleUrl: './mrt-exam.component.css'
 })
 export class MrtExamComponent implements OnInit, OnDestroy {
+  // Core Data
   results: ResultsInterface;
+  state: StateInterface;
+  mrtResults: MrtResultsInterface[] = [];
+  trialListResults: MrtTrialResultInterface[] = [];;
 
+  // Configuration Variables
   tabsintId: string = mrtSchema.properties.tabsintId.default;
   showResults: boolean = mrtSchema.properties.showResults.default;
   currentStep: string = 'Ready';
   numWavChannels!: number;
   outputChannel!: string | string[];
-  presentationList!: MrtPresentationInterface[];
+  trialList!: MrtTrialInterface[];
 
+  // Controller variables
+  currentTrial!: MrtTrialInterface;
+  feedbackMessage: string = '';
+  isCorrect: boolean | null = null;
+
+  // Subscriptions
+  selectedResponseIndex: number | null = null;
   pageSubscription: Subscription | undefined;
   device: ConnectedDevice | undefined;
   
   constructor(
-    private readonly pageModel: PageModel,
+    private readonly buttonTextService: ButtonTextService,
     private readonly devicesService: DevicesService,
     private readonly deviceUtil: DeviceUtil, 
-    private readonly logger: Logger, 
-    private readonly resultsModel: ResultsModel,
     private readonly examService: ExamService, 
-    private readonly buttonTextService: ButtonTextService,
+    private readonly logger: Logger, 
+    private readonly pageModel: PageModel,
+    private readonly resultsModel: ResultsModel,
+    private readonly stateModel: StateModel,
   ) {
+    this.state = this.stateModel.getState();
     this.results = this.resultsModel.getResults();
     this.examService.submit = this.nextStep.bind(this);
   }
@@ -70,52 +86,163 @@ export class MrtExamComponent implements OnInit, OnDestroy {
       case 'Ready':
         await this.beginExam();
         this.currentStep = 'Exam';
+        this.state.isSubmittable = false;
         this.buttonTextService.updateButtonText('Next');
         break;
       case 'Exam':
-        this.currentStep = 'results';
-        this.buttonTextService.updateButtonText('Finish');
-        break;
+        if (this.results.currentPage.response.length === 0) {
+          await this.playTrial(this.currentTrial);
+          break;
+        } else {
+          this.saveResponse();
+          if (this.trialList.length > 0) {
+            this.currentTrial = this.trialList.shift()!;
+            await this.waitForReadyState();
+            await this.playTrial(this.currentTrial);
+          } else {
+            this.currentStep = 'Results';
+            this.mrtResults = this.gradeExam();
+            this.buttonTextService.updateButtonText('Finish');
+          }
+          break;
+        }
       case 'results':
         this.examService.submitDefault();
         break;
     }
   }
 
-  saveResults() {
-    this.results.currentPage.response = 'TBD';
+  choose(index: number): void {
+    this.selectedResponseIndex = index;
+    if (index === this.currentTrial.answer) {
+      this.isCorrect = true;
+      this.feedbackMessage = 'Correct!';
+    } else {
+      this.isCorrect = false;
+      const correctWord = this.currentTrial.choices[this.currentTrial.answer];
+      this.feedbackMessage = `The correct word was '${correctWord}'`;
+    }
+    this.state.isSubmittable = true;
   }
 
-  private async beginExam() {
-    for (const mrtPresentation of this.presentationList) {
-      let examProperties = {
-        SoundFileName: mrtPresentation.filename,
-        LeveldBSpl: mrtPresentation.leveldBSpl,
-        UseMetaRMS: mrtPresentation.useMeta
-      };
-      let resp = await this.devicesService.examSubmission(this.device!, examProperties);
+  getButtonClass(index: number): string {
+    if (this.selectedResponseIndex === null) {
+      return '';
     }
+    if (index === this.currentTrial.answer) {
+      return 'correct';
+    }
+    if (index === this.selectedResponseIndex) {
+      return 'incorrect';
+    }
+    return '';
   }
 
   private initializeResponseArea(responseArea: MrtExamInterface) {
     this.tabsintId = responseArea.tabsintId ?? this.tabsintId;
     this.showResults = responseArea.showResults ?? this.showResults;
-    this.numWavChannels = responseArea.numWavChannels;
-    this.outputChannel = responseArea.outputChannel;
-    this.presentationList = responseArea.presentationList;
+    this.numWavChannels = responseArea.numWavChannels!;
+    this.outputChannel = responseArea.outputChannel!;
+    this.trialList = responseArea.trialList!;
+    this.currentTrial = this.trialList[0];
+    // TODO: randomize list if flag from protocol is true
+    this.results.currentPage.response = [];
   }
     
   private async setupDevice(updatedResponseArea: MrtExamInterface) {
       this.device = this.deviceUtil.getDeviceFromTabsintId(updatedResponseArea.tabsintId ?? "1");
-      if (this.device) {
-        const examProperties = {
-          NumWavChannels: this.numWavChannels,
-          OutputChannel: this.outputChannel
-        };
-          await this.devicesService.queueExam(this.device, "MrtExam", examProperties);
-      } else {
-          this.logger.error("Error setting up MRT exam");
-      }
   }
     
+  private async beginExam() {
+    if (this.device) {
+      const examProperties = {
+        NumWavChannels: this.numWavChannels,
+        OutputChannel: this.outputChannel
+      };
+      // await this.devicesService.queueExam(this.device, "MrtExam", examProperties);
+      console.log("DUMMY MRT: QUEUE EXAM");
+    } else {
+      this.logger.error("Error setting up MRT exam");
+    }
+  }
+
+  private async playTrial(mrtTrial: MrtTrialInterface) {
+    let examProperties = {
+      SoundFileName: mrtTrial.filename,
+      LeveldBSpl: mrtTrial.leveldBSpl,
+      UseMetaRMS: mrtTrial.useMeta
+    };
+    // let resp = await this.devicesService.examSubmission(this.device!, examProperties);
+      console.log("DUMMY MRT: ExamSubmission");
+  }
+
+  private async waitForReadyState(): Promise<void> {
+    let count = 0;
+    let resp = [];
+    return new Promise<void>((resolve, reject) => {
+        const pollResults = async () => {
+            try {
+                // let resp = await this.devicesService.requestResults(this.device!);
+                console.log("DUMMY MRT: REQUEST RESULTS");
+                if (count === 0) { resp = [1, {State: "PLAYING"}]}  else { resp = [1, {State: "READY"}] }
+                if (typeof resp![1] === 'object' && 'State' in resp![1]) {
+                  if (resp![1].State === "PLAYING") {
+                      setTimeout(pollResults, 500);
+                  } else if (resp![1].State === "READY") {
+                      resolve();
+                  } else {
+                      this.logger.debug(
+                          "In mrt-exam.component.ts waitForReadyState, unknown result state: " + resp![1]
+                      );
+                      reject(new Error("Unknown result state: " + resp![1].State));
+                  }
+                }
+            } catch (error) {
+                this.logger.error("Error in waitForReadyState: " + error);
+                reject(error);
+            }
+        };
+        pollResults();
+    });
+  }
+
+  private saveResponse() {
+    this.trialListResults.push({
+      ...this.currentTrial,
+      userResponseIndex: this.selectedResponseIndex!,
+      isCorrect: this.isCorrect!
+    });
+    this.results.currentPage.response = this.trialListResults;
+  }
+
+  private gradeExam() {
+    // Group the trial list results by their SNR values
+    return Object.values(
+      this.trialListResults.reduce((acc, trial) => {
+        const snr = trial.SNR; // Get the SNR value for the trial
+        if (!acc[snr]) {
+          // Initialize the group if it doesn't exist
+          acc[snr] = {
+            snr: snr,
+            nbTrials: 0,
+            nbTrialsCorrect: 0,
+            pctCorrect: 0,
+            trialList: [],
+          };
+        }
+
+        // Update the group's statistics
+        acc[snr].trialList.push(trial);
+        acc[snr].nbTrials++;
+        if (trial.isCorrect) {
+          acc[snr].nbTrialsCorrect++;
+        }
+        acc[snr].pctCorrect =
+          (acc[snr].nbTrialsCorrect / acc[snr].nbTrials) * 100;
+
+        return acc;
+      }, {} as Record<number, MrtResultsInterface>)
+    );
+  }
+
 }

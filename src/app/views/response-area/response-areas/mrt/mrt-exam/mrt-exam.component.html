@@ -2,11 +2,28 @@
     <div *ngSwitchCase="'Ready'"></div>
 
     <div *ngSwitchCase="'Exam'">
+        <div class="response-buttons">
+            <div class="button-row" *ngFor="let row of currentTrial.choices | slice: 0:3; let i = index">
+              <button
+                *ngFor="let choice of currentTrial.choices.slice(i * 3, i * 3 + 3); let idx = index"
+                class="response-button"
+                [class.correct]="getButtonClass(i * 3 + idx) === 'correct'"
+                [class.incorrect]="getButtonClass(i * 3 + idx) === 'incorrect'"
+                (click)="choose(i * 3 + idx)"
+                [disabled]="selectedResponseIndex !== null"
+              >
+                {{ choice }}
+              </button>
+            </div>
+          </div>
+          
+          <div class="feedback">
+            <p *ngIf="feedbackMessage">{{ feedbackMessage }}</p>
+          </div>
+          
     </div>
 
-    <mrt-results
-        *ngSwitchCase="'Results'"
-        [mrtResults]="mrtResults">
-    </mrt-results>    
-
+    <div *ngSwitchCase="'Results'">
+        <mrt-results [mrtResults]="mrtResults"></mrt-results>    
+    </div>
 </div>

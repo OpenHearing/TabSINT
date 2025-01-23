@@ -1,16 +1,17 @@
 import { JSONSchemaType } from "ajv";
-import { MrtExamInterface, MrtPresentationInterface } from "../../app/views/response-area/response-areas/mrt/mrt-exam/mrt-exam.interface";
+import { MrtExamInterface, MrtTrialInterface } from "../../app/views/response-area/response-areas/mrt/mrt-exam/mrt-exam.interface";
 
-export const mrtPresentationSchema: JSONSchemaType<MrtPresentationInterface> = {
+export const mrtTrialSchema: JSONSchemaType<MrtTrialInterface> = {
   type: "object",
   properties: {
     filename: { type: "string" },
     leveldBSpl: { type: "number" },
     useMeta: { type: "boolean" },
-    responseChoices: { type: "array", items: { type: "string"} },
-    correctResponseIndex: { type: "number" }
+    choices: { type: "array", items: { type: "string"} },
+    answer: { type: "number" },
+    SNR: { type: "number"}
   },
-  required: ["filename", "leveldBSpl", "useMeta", "responseChoices", "correctResponseIndex"]
+  required: ["filename", "leveldBSpl", "useMeta", "choices", "answer"]
 }
 
 export const mrtSchema: JSONSchemaType<MrtExamInterface> = {
@@ -22,19 +23,21 @@ export const mrtSchema: JSONSchemaType<MrtExamInterface> = {
     exportToCSV: { type: "boolean", nullable: true, default: false },
     tabsintId: { type: "string", nullable: true, default: "1" },
     examDefinitionFilename: { type: "string"},
-    numWavChannels: { type: "number" },
+    numWavChannels: { type: "number", nullable: true },
     outputChannel: { 
       oneOf: [
         { type: "string" },
         { type: "array", items: { type: "string" } }
-      ]
+      ],
+      nullable: true
     },
-    presentationList: {
+    trialList: {
       type: "array",
-      items: mrtPresentationSchema
+      items: mrtTrialSchema,
+      nullable: true
     },
     showResults: { type: "boolean", nullable: true, default: true }
   },
-  required: ["type", "examDefinitionFilename", "presentationList"],
+  required: ["type", "examDefinitionFilename"],
   additionalProperties: false
 };
