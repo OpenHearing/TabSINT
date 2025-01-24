@@ -42,6 +42,8 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   feedbackMessage: string = '';
   isCorrect: boolean | null = null;
   instructions: string = 'Press Submit to start the exam.'
+  pctComplete: number = 0;
+  nbTrials: number = 0;
 
   // Subscriptions
   selectedResponseIndex: number | null = null;
@@ -95,13 +97,16 @@ export class MrtExamComponent implements OnInit, OnDestroy {
         this.state.isSubmittable = false;
         this.buttonTextService.updateButtonText('Next');
         break;
-      case 'Exam':
+      case 'Exam': {
         this.saveResponse();
-        if (this.results.currentPage.response.length === 0) {
+        const nbTrialsCompleted = this.results.currentPage.response.length;
+        if (nbTrialsCompleted === 0) {
+          this.pctComplete = 1 / this.nbTrials * 100 ;
           await this.playTrial(this.currentTrial);
           break;
         } else {
           if (this.trialList.length > 0) {
+            this.pctComplete = nbTrialsCompleted / this.nbTrials * 100 ;
             this.currentTrial = this.trialList.shift()!;
             this.isCorrect = null;
             this.feedbackMessage = '';
@@ -116,6 +121,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
           }
           break;
         }
+      }
       case 'Results':
         this.examService.submitDefault();
         break;
@@ -153,6 +159,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     this.showResults = responseArea.showResults ?? this.showResults;
     this.numWavChannels = responseArea.numWavChannels!;
     this.outputChannel = responseArea.outputChannel!;
+    this.nbTrials = responseArea.trialList!.length;
     this.trialList = responseArea.trialList!.slice();
     this.currentTrial = this.trialList.shift()!;
     // TODO: randomize list if flag from protocol is true

@@ -44,3 +44,11 @@
   font-weight: bold;
   color: #333;
 }
+
+.mat-mdc-progress-bar {
+  --mdc-linear-progress-active-indicator-color: #337ab7;
+  --mdc-linear-progress-track-color: rgba(0, 0, 0, .1);
+  --mdc-linear-progress-track-height: 24px;
+  --mdc-linear-progress-active-indicator-height: 24px;
+  border-radius: 10px;
+}
