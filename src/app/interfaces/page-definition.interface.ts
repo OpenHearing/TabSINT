@@ -8,7 +8,6 @@ import { MultipleInputInterface } from "../views/response-area/response-areas/mu
 import { LikertInterface } from "../views/response-area/response-areas/likert/likert/likert.interface";
 import { SweptDpoaeInterface } from "../views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/swept-dpoae-exam.interface";
 import { WAIInterface } from "../views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.interface";
-import { SweptDpoaeInterface } from "../views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/sept-dpoae-exam.interface";
 import { MrtExamInterface } from "../views/response-area/response-areas/mrt/mrt-exam/mrt-exam.interface";
 
 export interface PageDefinition {
@@ -105,5 +104,5 @@ export interface CommonResponseAreaInterface {
 export type ResponseArea =
     TextBoxInterface | TextBoxResultViewerInterface |
     MultipleChoiceInterface | ManualAudiometryInterface | CalibrationExamInterface |
-    MultipleInputInterface | LikertInterface | SweptDpoaeInterface | WAIInterface
+    MultipleInputInterface | LikertInterface | SweptDpoaeInterface | WAIInterface |
     MrtExamInterface

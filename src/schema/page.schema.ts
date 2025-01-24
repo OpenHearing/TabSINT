@@ -90,8 +90,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
           calibrationExamSchema,
           likertSchema,
           sweptDpoaeSchema,
-          waiSchema
-          sweptDpoaeSchema,
+          waiSchema,
           mrtSchema
         ],
         required: ["type"],

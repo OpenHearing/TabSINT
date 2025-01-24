@@ -1,12 +1,14 @@
 <div [ngSwitch]="currentStep">
+    <p class="instructions">{{instructions}}</p>
+    
     <div *ngSwitchCase="'Ready'"></div>
 
     <div *ngSwitchCase="'Exam'">
         <div class="response-buttons">
-            <div class="button-row" *ngFor="let row of currentTrial.choices | slice: 0:3; let i = index">
+            <div class="button-row" *ngFor="let row of currentTrial.choices | slice: 0:3; let i = index; trackBy: trackByIndex">
               <button
                 *ngFor="let choice of currentTrial.choices.slice(i * 3, i * 3 + 3); let idx = index"
-                class="response-button"
+                class="response-button col-4"
                 [class.correct]="getButtonClass(i * 3 + idx) === 'correct'"
                 [class.incorrect]="getButtonClass(i * 3 + idx) === 'incorrect'"
                 (click)="choose(i * 3 + idx)"

@@ -41,6 +41,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   currentTrial!: MrtTrialInterface;
   feedbackMessage: string = '';
   isCorrect: boolean | null = null;
+  instructions: string = 'Press Submit to start the exam.'
 
   // Subscriptions
   selectedResponseIndex: number | null = null;
@@ -81,32 +82,41 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     this.buttonTextService.updateButtonText("Submit");
   }
 
+  trackByIndex(index: number, item: any): number {
+    return index;
+  }
+  
   async nextStep(): Promise<void> {
     switch (this.currentStep) {
       case 'Ready':
         await this.beginExam();
+        this.instructions = 'Select the word prompted by the voice';
         this.currentStep = 'Exam';
         this.state.isSubmittable = false;
         this.buttonTextService.updateButtonText('Next');
         break;
       case 'Exam':
+        this.saveResponse();
         if (this.results.currentPage.response.length === 0) {
           await this.playTrial(this.currentTrial);
           break;
         } else {
-          this.saveResponse();
           if (this.trialList.length > 0) {
             this.currentTrial = this.trialList.shift()!;
+            this.isCorrect = null;
+            this.feedbackMessage = '';
+            this.selectedResponseIndex = null;
             await this.waitForReadyState();
             await this.playTrial(this.currentTrial);
           } else {
             this.currentStep = 'Results';
+            this.instructions = 'Results';
             this.mrtResults = this.gradeExam();
             this.buttonTextService.updateButtonText('Finish');
           }
           break;
         }
-      case 'results':
+      case 'Results':
         this.examService.submitDefault();
         break;
     }
@@ -143,8 +153,8 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     this.showResults = responseArea.showResults ?? this.showResults;
     this.numWavChannels = responseArea.numWavChannels!;
     this.outputChannel = responseArea.outputChannel!;
-    this.trialList = responseArea.trialList!;
-    this.currentTrial = this.trialList[0];
+    this.trialList = responseArea.trialList!.slice();
+    this.currentTrial = this.trialList.shift()!;
     // TODO: randomize list if flag from protocol is true
     this.results.currentPage.response = [];
   }
@@ -185,6 +195,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
                 // let resp = await this.devicesService.requestResults(this.device!);
                 console.log("DUMMY MRT: REQUEST RESULTS");
                 if (count === 0) { resp = [1, {State: "PLAYING"}]}  else { resp = [1, {State: "READY"}] }
+                count += 1;
                 if (typeof resp![1] === 'object' && 'State' in resp![1]) {
                   if (resp![1].State === "PLAYING") {
                       setTimeout(pollResults, 500);

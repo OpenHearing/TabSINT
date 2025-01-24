@@ -18,7 +18,7 @@ export async function loadMrtExamCsv(csvFilePath: string): Promise<any> {
         "filename": "F1_b01_w2.wav",
         "leveldBSpl": 88,
         "useMeta": true,
-        "choices": ["bar", "tar", "car", "far", "gar", "par"],
+        "choices": ["bar2", "tar2", "car2", "far2", "gar2", "par2"],
         "answer": 2,
         "SNR": 1
       },
@@ -34,15 +34,15 @@ export async function loadMrtExamCsv(csvFilePath: string): Promise<any> {
         "filename": "F1_b02_w2.wav",
         "leveldBSpl": 88,
         "useMeta": true,
-        "choices": ["slip", "trip", "lip", "nip", "blib", "ship"],
+        "choices": ["slip2", "trip2", "lip2", "nip2", "blib2", "ship2"],
         "answer": 2,
-        "SNR": -8
+        "SNR": -5
       },
       {
         "filename": "M1_b01_w1.wav",
         "leveldBSpl": 88,
         "useMeta": true,
-        "choices": ["bar", "tar", "car", "far", "gar", "par"],
+        "choices": ["bar3", "tar3", "car3", "far3", "gar3", "par3"],
         "answer": 1,
         "SNR": -11
       }
