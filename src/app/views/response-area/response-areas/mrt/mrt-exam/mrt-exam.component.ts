@@ -16,6 +16,7 @@ import { mrtSchema } from '../../../../../../schema/response-areas/mrt.schema';
 import { MrtExamInterface, MrtResultsInterface, MrtTrialInterface, MrtTrialResultInterface } from './mrt-exam.interface';
 import { StateInterface } from '../../../../../models/state/state.interface';
 import { StateModel } from '../../../../../models/state/state.service';
+import { shuffleArray } from '../../../../../utilities/shuffle-array';
 
 @Component({
   selector: 'mrt-exam',
@@ -36,6 +37,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   numWavChannels!: number;
   outputChannel!: string | string[];
   trialList!: MrtTrialInterface[];
+  randomizeTrials!: boolean;
 
   // Controller variables
   currentTrial!: MrtTrialInterface;
@@ -164,8 +166,10 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     this.showResults = responseArea.showResults ?? this.showResults;
     this.numWavChannels = responseArea.numWavChannels!;
     this.outputChannel = responseArea.outputChannel!;
+    this.randomizeTrials = responseArea.randomizeTrials ?? mrtSchema.properties.randomizeTrials.default; 
     this.nbTrials = responseArea.trialList!.length;
     this.trialList = responseArea.trialList!.slice();
+    if (this.randomizeTrials) shuffleArray(this.trialList);
     this.currentTrial = this.trialList.shift()!;
     // TODO: randomize list if flag from protocol is true
     this.results.currentPage.response = [];

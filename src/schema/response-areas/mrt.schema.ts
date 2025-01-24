@@ -29,6 +29,7 @@ export const mrtSchema: JSONSchemaType<MrtExamInterface> = {
       items: { type: "string" },
       nullable: true
     },
+    randomizeTrials: { type: "boolean", nullable: true, default: false },
     trialList: {
       type: "array",
       items: mrtTrialSchema,
