@@ -51,4 +51,6 @@
   --mdc-linear-progress-track-height: 24px;
   --mdc-linear-progress-active-indicator-height: 24px;
   border-radius: 10px;
+  margin-top: 40vh;
+  margin-bottom: 3vh; 
 }

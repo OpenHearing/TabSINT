@@ -84,10 +84,6 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     this.buttonTextService.updateButtonText("Submit");
   }
 
-  trackByIndex(index: number, item: any): number {
-    return index;
-  }
-  
   async nextStep(): Promise<void> {
     switch (this.currentStep) {
       case 'Ready':
@@ -114,10 +110,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
             await this.waitForReadyState();
             await this.playTrial(this.currentTrial);
           } else {
-            this.currentStep = 'Results';
-            this.instructions = 'Results';
-            this.mrtResults = this.gradeExam();
-            this.buttonTextService.updateButtonText('Finish');
+            this.finishExam();
           }
           break;
         }
@@ -140,6 +133,14 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     }
     this.state.isSubmittable = true;
   }
+  
+  finishExam() {    
+    this.currentStep = 'Results';
+    this.instructions = 'Results';
+    this.mrtResults = this.gradeExam();
+    this.buttonTextService.updateButtonText('Finish');
+    // await this.devicesService.abortExam
+  }
 
   getButtonClass(index: number): string {
     if (this.selectedResponseIndex === null) {
@@ -154,6 +155,10 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     return '';
   }
 
+  trackByIndex(index: number, item: any): number {
+    return index;
+  }
+  
   private initializeResponseArea(responseArea: MrtExamInterface) {
     this.tabsintId = responseArea.tabsintId ?? this.tabsintId;
     this.showResults = responseArea.showResults ?? this.showResults;
