@@ -1,13 +1,13 @@
 .response-buttons {
   display: flex;
   flex-direction: column;
-  gap: 4vh;
+  gap: 3vh;
 }
 
 .button-row {
   display: flex;
   justify-content: center;
-  gap: 6vh;
+  gap: 3vh;
 }
 
 .response-button {
@@ -45,12 +45,18 @@
   color: #333;
 }
 
+.fixed-footer {
+  position: fixed;
+  bottom: 15vh;
+  left: 3vh;
+  width: 90%;
+}
+
 .mat-mdc-progress-bar {
   --mdc-linear-progress-active-indicator-color: #337ab7;
   --mdc-linear-progress-track-color: rgba(0, 0, 0, .1);
   --mdc-linear-progress-track-height: 24px;
   --mdc-linear-progress-active-indicator-height: 24px;
   border-radius: 10px;
-  margin-top: 40vh;
   margin-bottom: 3vh; 
 }

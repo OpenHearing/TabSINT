@@ -35,13 +35,13 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   showResults: boolean = mrtSchema.properties.showResults.default;
   currentStep: string = 'Ready';
   numWavChannels!: number;
-  outputChannel!: string | string[];
+  outputChannel!: string[];
   trialList!: MrtTrialInterface[];
   randomizeTrials!: boolean;
 
   // Controller variables
   currentTrial!: MrtTrialInterface;
-  feedbackMessage: string = '';
+  feedbackMessage: string = ' ';
   isCorrect: boolean | null = null;
   instructions: string = 'Press Submit to start the exam.'
   pctComplete: number = 0;
@@ -107,7 +107,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
             this.pctComplete = nbTrialsCompleted / this.nbTrials * 100 ;
             this.currentTrial = this.trialList.shift()!;
             this.isCorrect = null;
-            this.feedbackMessage = '';
+            this.feedbackMessage = ' ';
             this.selectedResponseIndex = null;
             await this.waitForReadyState();
             await this.playTrial(this.currentTrial);
@@ -164,8 +164,8 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   private initializeResponseArea(responseArea: MrtExamInterface) {
     this.tabsintId = responseArea.tabsintId ?? this.tabsintId;
     this.showResults = responseArea.showResults ?? this.showResults;
-    this.numWavChannels = responseArea.numWavChannels!;
-    this.outputChannel = responseArea.outputChannel!;
+    this.numWavChannels = responseArea.numWavChannels ?? mrtSchema.properties.numWavChannels.default;
+    this.outputChannel = responseArea.outputChannel ?? mrtSchema.properties.outputChannel.default;
     this.randomizeTrials = responseArea.randomizeTrials ?? mrtSchema.properties.randomizeTrials.default; 
     this.nbTrials = responseArea.trialList!.length;
     this.trialList = responseArea.trialList!.slice();

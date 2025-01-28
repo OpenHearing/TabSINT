@@ -22,6 +22,5 @@ export const calibrationExamSchema: JSONSchemaType<CalibrationExamInterface> = {
             nullable: true
         },
     },
-    required: ["type"],
-    additionalProperties: false
+    required: ["type"]
 };

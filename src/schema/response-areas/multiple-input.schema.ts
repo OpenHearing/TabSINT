@@ -90,5 +90,5 @@ export const multipleInputSchema: JSONSchemaType<MultipleInputInterface> = {
       },
     },
   },
-  required: ["inputList"],
+  required: ["type", "inputList"],
 };

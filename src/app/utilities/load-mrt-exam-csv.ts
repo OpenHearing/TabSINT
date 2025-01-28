@@ -1,91 +1,80 @@
-import * as fs from 'fs';
+import { mrtSchema } from '../../schema/response-areas/mrt.schema';
 import { MrtTrialInterface } from '../views/response-area/response-areas/mrt/mrt-exam/mrt-exam.interface';
+import * as Papa from 'papaparse';
 
-export async function loadMrtExamCsv(csvFilePath: string): Promise<any> {
-    const examData: any = {};
-    const trialList: MrtTrialInterface[] = [];
+function parseCSVAsync(csvString: string) {
+  return new Promise((resolve, reject) => {
+    Papa.parse(csvString, {
+      header: false,
+      dynamicTyping: true,
+      complete: (results) => {
+        resolve(results.data);
+      },
+      error: (error: Error) => {
+        reject(error);
+      },
+    });
+  });
+}
 
-    const temp = [
-      {
-        "filename": "F1_b01_w1.wav",
-        "leveldBSpl": 88,
-        "useMeta": true,
-        "choices": ["bar", "tar", "car", "far", "gar", "par"],
-        "answer": 1,
-        "SNR": -2
-      },
-      {
-        "filename": "F1_b01_w2.wav",
-        "leveldBSpl": 88,
-        "useMeta": true,
-        "choices": ["bar2", "tar2", "car2", "far2", "gar2", "par2"],
-        "answer": 2,
-        "SNR": 1
-      },
-      {
-        "filename": "F1_b02_w1.wav",
-        "leveldBSpl": 88,
-        "useMeta": true,
-        "choices": ["slip", "trip", "lip", "nip", "blib", "ship"],
-        "answer": 1,
-        "SNR": -5
-      },
-      {
-        "filename": "F1_b02_w2.wav",
-        "leveldBSpl": 88,
-        "useMeta": true,
-        "choices": ["slip2", "trip2", "lip2", "nip2", "blib2", "ship2"],
-        "answer": 2,
-        "SNR": -5
-      },
-      {
-        "filename": "M1_b01_w1.wav",
-        "leveldBSpl": 88,
-        "useMeta": true,
-        "choices": ["bar3", "tar3", "car3", "far3", "gar3", "par3"],
-        "answer": 1,
-        "SNR": -11
-      }
-    ];
-    
-  
-    // const lines = fs.readFileSync(csvFilePath, 'utf-8').split('\n').map(line => line.trim());
-    // const trialsIndex = lines.findIndex(line => line.startsWith('{TRIALS')) + 1;
-  
-    // lines.slice(1, trialsIndex - 1).forEach(line => {
-    //   const [key, value] = line.split('\t');
-    //   if (key && value) {
-    //     examData[key.trim()] = value.trim();
-    //   }
-    // });
-
-    // // Extract the header row and validate column names
-    // const header = lines[trialsIndex].split('\t').map(column => column.trim().toUpperCase());
-    // const expectedHeaders = ["FILENAME", "LEVEL DBSPL", "USE META", "CHOICES", "ANSWER", "SNR"];
-    
-    // if (!expectedHeaders.every((expected, i) => header[i] === expected)) {
-    //   throw new Error(`Invalid header row. Expected: ${expectedHeaders.join(', ')}, but got: ${header.join(', ')}`);
-    // }
-    
-    // lines.slice(trialsIndex).forEach((line, idx) => {  
-    //   const columns = line.split('\t');
-    //   if (columns.length >= 6) {
-    //     trialList.push({
-    //       filename: columns[1].trim(),
-    //       leveldBSpl: parseInt(columns[2].trim(), 10),
-    //       useMeta: columns[3].trim().toLowerCase() === 'true',
-    //       choices: columns[4].trim().split(',').map(choice => choice.trim()),
-    //       answer: parseInt(columns[5].trim(), 10),
-    //       SNR: parseInt(columns[6].trim(), 10),
-    //     });
-    //   }
-    // });
-  
-    return {
-      trialList: temp, //trialList,
-      numWavChannels: 2, //parseInt(examData['NUMBER OF CHANNELS'], 10) ?? 1,
-      outputChannel: ['HPL0'], //examData['OUTPUT CHANNELS'].split(',').map((channel: string) => channel.trim()) ?? 'HPL0',
-      randomizeTrials: true
-    };
+function validateHeaderPositions(actualHeaders: string[], expectedPositions: { [key: string]: number }) {
+  for (const [expectedHeader, expectedIndex] of Object.entries(expectedPositions)) {
+    if (actualHeaders[expectedIndex] !== expectedHeader) {
+      throw new Error(`Header validation failed: Expected "${expectedHeader}" at index ${expectedIndex}, but found "${actualHeaders[expectedIndex]}"`);
+    }
   }
-  
+}
+
+function getValueByKey(lines: any[][], key: string): any {
+  const line = lines.find((subArray) => subArray[0] === key);
+  return line ? line[1] : undefined;
+}
+
+export async function parseMrtExamCsv(csvFileContent: string): Promise<any> {
+  const trialList: MrtTrialInterface[] = [];
+
+    // const resp = await TabsintFs.readFile({rootUri:filePath,filePath:csvFileName}); //fs.readFileSync(csvFilePath, 'utf-8').split('\n').map(line => line.trim());
+    // const lines = csvFileContent.split('\n').map(line => line.trim()); //JSON.parse(csvFileContent);
+
+  const lines: any[][] = await parseCSVAsync(csvFileContent) as any[][];
+
+  const numWavChannels = getValueByKey(lines, 'NUMBER OF CHANNELS') ?? mrtSchema.properties.numWavChannels.default;
+  const outputChannel = getValueByKey(lines, 'OUTPUT CHANNELS') 
+    ? [getValueByKey(lines, 'OUTPUT CHANNELS')]
+    : mrtSchema.properties.outputChannel.default;
+  const randomizeTrials = getValueByKey(lines, 'RANDOMIZE TRIALS') ?? mrtSchema.properties.randomizeTrials.default;  
+
+  const trialsIndex = lines.findIndex((line) => line[0].startsWith('{TRIALS')) + 1;
+ 
+  const header = lines[trialsIndex]; // Extract the header row
+  const expectedHeaderPositions: { [key: string]: number } = {
+    'FILENAME': 1,
+    'LEVEL DBSPL': 2,
+    'USE META RMS': 3,
+    'CHOICES': 4,
+    'ANSWER': 5,
+    'SNR': 6
+  };  
+  validateHeaderPositions(header, expectedHeaderPositions);
+
+  lines.slice(trialsIndex+1).forEach((line: any[], idx: number) => {  
+    if (line.length >= 6) {
+      trialList.push({
+        filename: line[1].trim(),
+        leveldBSpl: line[2],
+        useMeta: line[3],
+        choices: line[4].trim().split(',').map((choice: string) => choice.trim()),
+        answer: line[5],
+        SNR: line[6]
+      });
+    }
+  });
+    
+  return {
+    trialList,
+    numWavChannels,
+    outputChannel,
+    randomizeTrials
+  };
+
+}

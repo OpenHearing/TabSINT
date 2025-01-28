@@ -1,4 +1,5 @@
 import _ from "lodash";
+import { TabsintFs } from 'tabsintfs';
 import { ProtocolSchemaInterface } from "../interfaces/protocol-schema.interface";
 import { ProtocolInterface } from "../models/protocol/protocol.interface";
 import { FollowOnInterface, PageDefinition } from "../interfaces/page-definition.interface";
@@ -7,8 +8,8 @@ import { ProtocolDictionary } from "../interfaces/protocol-dictionary";
 import { FollowOnsDictionary } from "../interfaces/follow-ons-dictionary";
 import { isPageDefinition, isProtocolReferenceInterface, isProtocolSchemaInterface } from "../guards/type.guard";
 import { PageTypes } from "../types/custom-types";
-import { loadMrtExamCsv } from "./load-mrt-exam-csv";
-import { MrtExamInterface } from "../views/response-area/response-areas/mrt/mrt-exam/mrt-exam.interface";
+import { parseMrtExamCsv } from "./load-mrt-exam-csv";
+import { ProtocolServer } from "./constants";
 
 /**
  * Adds variables to the active protocol and generates a stack of pages.
@@ -68,7 +69,7 @@ export function processProtocol(loading: LoadingProtocolInterface):
     });  
   }
 
-  function processPage(
+  async function processPage(
       page: PageDefinition
     ) {
 
@@ -93,8 +94,24 @@ export function processProtocol(loading: LoadingProtocolInterface):
     if (page.responseArea) {
       // TODO: deal with specific response area processing here
       if (page.responseArea.type === "mrtResponseArea") {
-        let mrtResponseArea = page.responseArea as MrtExamInterface;
-        loadMrtExamCsv(mrtResponseArea.examDefinitionFilename)
+        let csvText;
+        if (loading.meta.server == ProtocolServer.Developer) {
+          try {
+            const resp = await fetch('../../protocols/develop/mrt-exam-definition.csv'); //TODO: develop should be a variable
+            if (!resp.ok) {
+              throw new Error(`Failed to fetch the file: ${resp.statusText}`);
+            }
+            csvText = await resp.text();
+          } catch (error) {
+            console.error('Error fetching or parsing CSV file:', error);
+            throw error;
+          }
+        } else {
+            const resp = await TabsintFs.readFile({rootUri: loading.meta.contentURI, filePath: "mrt-exam-definition.csv"});
+            csvText = resp?.content;
+        }
+        
+        parseMrtExamCsv(csvText)
           .then(mrtExamDefinition => {
             page.responseArea = { ...page.responseArea, ...mrtExamDefinition };
           })

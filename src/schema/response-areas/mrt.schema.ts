@@ -22,12 +22,13 @@ export const mrtSchema: JSONSchemaType<MrtExamInterface> = {
     type: { type: "string", enum: ["mrtResponseArea"] },
     exportToCSV: { type: "boolean", nullable: true, default: false },
     tabsintId: { type: "string", nullable: true, default: "1" },
-    examDefinitionFilename: { type: "string"},
-    numWavChannels: { type: "number", nullable: true },
+    examDefinitionFilename: { type: "string" },
+    numWavChannels: { type: "number", nullable: true, default: 1 },
     outputChannel: { 
       type: "array",
       items: { type: "string" },
-      nullable: true
+      nullable: true,
+      default: ['HPL0']
     },
     randomizeTrials: { type: "boolean", nullable: true, default: false },
     trialList: {
@@ -37,6 +38,5 @@ export const mrtSchema: JSONSchemaType<MrtExamInterface> = {
     },
     showResults: { type: "boolean", nullable: true, default: true }
   },
-  required: ["type", "examDefinitionFilename"],
-  additionalProperties: false
+  required: ["type"]
 };

@@ -59,5 +59,5 @@ export const likertSchema: JSONSchemaType<LikertInterface> = {
       default: false
     },
   },
-  required: [],
+  required: ["type"],
 };

@@ -18,16 +18,18 @@
           </button>
         </div>
       </div>
-      
+    
       <div class="feedback">
-        <p *ngIf="feedbackMessage">{{ feedbackMessage }}</p>
+        <p>{{ feedbackMessage }}</p>
       </div>
 
-      <mat-progress-bar class="progress-bar" mode="determinate" [value]="pctComplete"></mat-progress-bar>
-          
-      <button class="btn btn-danger btn-block" (click)="finishExam()">
-          {{'Abort'}}
-      </button>
+      <div class="fixed-footer">
+        <mat-progress-bar class="progress-bar" mode="determinate" [value]="pctComplete"></mat-progress-bar>
+            
+        <button class="btn btn-danger btn-block" (click)="finishExam()">
+            {{'Abort'}}
+        </button>
+      </div>
     </div>
 
     <div *ngSwitchCase="'Results'">
