@@ -36,12 +36,6 @@ export class WelcomeComponent {
     this.disk = this.diskModel.getDisk();
     this.app = this.appModel.getApp();
     this.state = this.stateModel.getState();
-
-    if (this.disk.init && !this.app.browser) {
-      this.dialog.open(DisclaimerComponent).afterClosed().subscribe(() => {
-        this.diskModel.updateDiskModel("init", false);
-      });
-    }
   }
 
   ngOnInit() {

@@ -13,8 +13,8 @@ source,NIST ver-0.1.1,,,,,,,,,,
 presentation phrase,"""Please select the word ___""",,,,,,,,,,
 "{TRIALS - DO NOT DELETE THIS LINE, OR COLUMNS IN ALL CAPS}",,,,,,,,,,,
 TRIALNUM,FILENAME,LEVEL DBSPL,USE META RMS,CHOICES,ANSWER,SNR,box id,gender,speaker id,masking type,My Notes
-1,F1_b01_w1.wav,88,TRUE,"bar, tar, car, far, gar, par",1,-2,1,F,1,Babble,blah blah
-2,F1_b01_w2.wav,88,TRUE,"bar, tar, car, far, gar, par",2,1,1,F,1,Babble,blah blah
-3,F1_b02_w1.wav,88,TRUE,"slip, trip, lip, nip, blib, ship",1,-5,2,F,2,Babble,blah blah
-4,F1_b02_w2.wav,88,TRUE,"slip, trip, lip, nip, blib, ship",2,-8,2,F,2,Babble,blah blah
-5,M1_b01_w1.wav,88,TRUE,"bar, tar, car, far, gar, par",1,-11,1,M,1,Babble,blah blah
+1,AUDIO001.WAV,88,TRUE,"bar, tar, car, far, gar, par",1,-2,1,F,1,Babble,blah blah
+2,AUDIO001.WAV,88,TRUE,"bar, tar, car, far, gar, par",2,1,1,F,1,Babble,blah blah
+3,AUDIO001.WAV,88,TRUE,"slip, trip, lip, nip, blib, ship",1,-5,2,F,2,Babble,blah blah
+4,AUDIO001.WAV,88,TRUE,"slip, trip, lip, nip, blib, ship",2,-8,2,F,2,Babble,blah blah
+5,AUDIO001.WAV,88,TRUE,"bar, tar, car, far, gar, par",1,-11,1,M,1,Babble,blah blah

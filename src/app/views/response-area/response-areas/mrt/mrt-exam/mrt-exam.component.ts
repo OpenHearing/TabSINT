@@ -89,7 +89,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   async nextStep(): Promise<void> {
     switch (this.currentStep) {
       case 'Ready':
-        await this.beginExam();
+        await this.playTrial(this.currentTrial);
         this.instructions = 'Select the word prompted by the voice';
         this.currentStep = 'Exam';
         this.state.isSubmittable = false;
@@ -98,24 +98,18 @@ export class MrtExamComponent implements OnInit, OnDestroy {
       case 'Exam': {
         this.saveResponse();
         const nbTrialsCompleted = this.results.currentPage.response.length;
-        if (nbTrialsCompleted === 0) {
-          this.pctComplete = 1 / this.nbTrials * 100 ;
+        if (this.trialList.length > 0) {
+          this.pctComplete = nbTrialsCompleted / this.nbTrials * 100 ;
+          this.currentTrial = this.trialList.shift()!;
+          this.isCorrect = null;
+          this.feedbackMessage = ' ';
+          this.selectedResponseIndex = null;
+          await this.waitForReadyState();
           await this.playTrial(this.currentTrial);
-          break;
         } else {
-          if (this.trialList.length > 0) {
-            this.pctComplete = nbTrialsCompleted / this.nbTrials * 100 ;
-            this.currentTrial = this.trialList.shift()!;
-            this.isCorrect = null;
-            this.feedbackMessage = ' ';
-            this.selectedResponseIndex = null;
-            await this.waitForReadyState();
-            await this.playTrial(this.currentTrial);
-          } else {
-            this.finishExam();
-          }
-          break;
+          this.finishExam();
         }
+        break;
       }
       case 'Results':
         this.examService.submitDefault();
@@ -136,12 +130,12 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     this.state.isSubmittable = true;
   }
   
-  finishExam() {    
+  async finishExam() {    
     this.currentStep = 'Results';
     this.instructions = 'Results';
     this.mrtResults = this.gradeExam();
     this.buttonTextService.updateButtonText('Finish');
-    // await this.devicesService.abortExam
+    await this.devicesService.abortExams(this.device!);
   }
 
   getButtonClass(index: number): string {
@@ -171,12 +165,12 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     this.trialList = responseArea.trialList!.slice();
     if (this.randomizeTrials) shuffleArray(this.trialList);
     this.currentTrial = this.trialList.shift()!;
-    // TODO: randomize list if flag from protocol is true
     this.results.currentPage.response = [];
   }
     
   private async setupDevice(updatedResponseArea: MrtExamInterface) {
       this.device = this.deviceUtil.getDeviceFromTabsintId(updatedResponseArea.tabsintId ?? "1");
+      await this.beginExam();
   }
     
   private async beginExam() {
@@ -185,8 +179,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
         NumWavChannels: this.numWavChannels,
         OutputChannel: this.outputChannel
       };
-      // await this.devicesService.queueExam(this.device, "MrtExam", examProperties);
-      console.log("DUMMY MRT: QUEUE EXAM");
+      await this.devicesService.queueExam(this.device, "MrtExam", examProperties);
     } else {
       this.logger.error("Error setting up MRT exam");
     }
@@ -198,20 +191,14 @@ export class MrtExamComponent implements OnInit, OnDestroy {
       LeveldBSpl: mrtTrial.leveldBSpl,
       UseMetaRMS: mrtTrial.useMeta
     };
-    // let resp = await this.devicesService.examSubmission(this.device!, examProperties);
-      console.log("DUMMY MRT: ExamSubmission");
+    await this.devicesService.examSubmission(this.device!, examProperties);
   }
 
   private async waitForReadyState(): Promise<void> {
-    let count = 0;
-    let resp = [];
     return new Promise<void>((resolve, reject) => {
         const pollResults = async () => {
             try {
-                // let resp = await this.devicesService.requestResults(this.device!);
-                console.log("DUMMY MRT: REQUEST RESULTS");
-                if (count === 0) { resp = [1, {State: "PLAYING"}]}  else { resp = [1, {State: "READY"}] }
-                count += 1;
+                let resp = await this.devicesService.requestResults(this.device!);
                 if (typeof resp![1] === 'object' && 'State' in resp![1]) {
                   if (resp![1].State === "PLAYING") {
                       setTimeout(pollResults, 500);

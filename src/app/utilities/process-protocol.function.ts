@@ -106,18 +106,22 @@ export function processProtocol(loading: LoadingProtocolInterface):
             console.error('Error fetching or parsing CSV file:', error);
             throw error;
           }
-        } else {
-            const resp = await TabsintFs.readFile({rootUri: loading.meta.contentURI, filePath: "mrt-exam-definition.csv"});
+        } else if (loading.meta.server === ProtocolServer.LocalServer) {
+            const resp = await TabsintFs.readFile({rootUri: loading.meta.contentURI, filePath: "mrt-exam-definition.csv"}); // TODO: filePath should be a variable
             csvText = resp?.content;
         }
         
-        parseMrtExamCsv(csvText)
-          .then(mrtExamDefinition => {
-            page.responseArea = { ...page.responseArea, ...mrtExamDefinition };
-          })
-          .catch( error => {
-            console.log('Error loading MRT exam: ', error);
-          });
+        if (csvText) {
+          parseMrtExamCsv(csvText)
+            .then(mrtExamDefinition => {
+              page.responseArea = { ...page.responseArea, ...mrtExamDefinition };
+            })
+            .catch( error => {
+              console.log('Error loading MRT exam: ', error);
+            });
+        } else {
+          console.error('Error processing MRT page');
+        }
       }
     }
 
