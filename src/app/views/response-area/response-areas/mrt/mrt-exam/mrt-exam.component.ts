@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import * as d3 from 'd3';
 import { Subscription } from 'rxjs/internal/Subscription';
 
 import { PageModel } from '../../../../../models/page/page.service';
@@ -72,7 +71,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
       if (updatedPage?.responseArea?.type === 'mrtResponseArea') {
         setTimeout(() => {
           this.initializeResponseArea(updatedPage.responseArea as MrtExamInterface);
-          this.setupDevice(updatedPage.responseArea as MrtExamInterface);
+          // this.setupDevice(updatedPage.responseArea as MrtExamInterface);
         });
       }
     })
@@ -89,7 +88,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   async nextStep(): Promise<void> {
     switch (this.currentStep) {
       case 'Ready':
-        await this.playTrial(this.currentTrial);
+        // await this.playTrial(this.currentTrial);
         this.instructions = 'Select the word prompted by the voice';
         this.currentStep = 'Exam';
         this.state.isSubmittable = false;
@@ -104,8 +103,8 @@ export class MrtExamComponent implements OnInit, OnDestroy {
           this.isCorrect = null;
           this.feedbackMessage = ' ';
           this.selectedResponseIndex = null;
-          await this.waitForReadyState();
-          await this.playTrial(this.currentTrial);
+          // await this.waitForReadyState();
+          // await this.playTrial(this.currentTrial);
         } else {
           this.finishExam();
         }
@@ -233,7 +232,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     // Group the trial list results by their SNR values
     return Object.values(
       this.trialListResults.reduce((acc, trial) => {
-        const snr = trial.SNR; // Get the SNR value for the trial
+        const snr = trial.SNR;
         if (!acc[snr]) {
           // Initialize the group if it doesn't exist
           acc[snr] = {

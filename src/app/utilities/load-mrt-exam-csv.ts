@@ -1,6 +1,9 @@
-import { mrtSchema } from '../../schema/response-areas/mrt.schema';
-import { MrtTrialInterface } from '../views/response-area/response-areas/mrt/mrt-exam/mrt-exam.interface';
 import * as Papa from 'papaparse';
+import { TabsintFs } from 'tabsintfs';
+import { mrtSchema } from '../../schema/response-areas/mrt.schema';
+import { ProtocolMetaInterface } from '../models/protocol/protocol.interface';
+import { MrtExamInterface, MrtTrialInterface } from '../views/response-area/response-areas/mrt/mrt-exam/mrt-exam.interface';
+import { ProtocolServer } from './constants';
 
 function parseCSVAsync(csvString: string) {
   return new Promise((resolve, reject) => {
@@ -17,7 +20,7 @@ function parseCSVAsync(csvString: string) {
   });
 }
 
-function validateHeaderPositions(actualHeaders: string[], expectedPositions: { [key: string]: number }) {
+function validateHeaders(actualHeaders: string[], expectedPositions: { [key: string]: number }) {
   for (const [expectedHeader, expectedIndex] of Object.entries(expectedPositions)) {
     if (actualHeaders[expectedIndex] !== expectedHeader) {
       throw new Error(`Header validation failed: Expected "${expectedHeader}" at index ${expectedIndex}, but found "${actualHeaders[expectedIndex]}"`);
@@ -30,12 +33,8 @@ function getValueByKey(lines: any[][], key: string): any {
   return line ? line[1] : undefined;
 }
 
-export async function parseMrtExamCsv(csvFileContent: string): Promise<any> {
+async function parseCsvString(csvFileContent: string): Promise<any> {
   const trialList: MrtTrialInterface[] = [];
-
-    // const resp = await TabsintFs.readFile({rootUri:filePath,filePath:csvFileName}); //fs.readFileSync(csvFilePath, 'utf-8').split('\n').map(line => line.trim());
-    // const lines = csvFileContent.split('\n').map(line => line.trim()); //JSON.parse(csvFileContent);
-
   const lines: any[][] = await parseCSVAsync(csvFileContent) as any[][];
 
   const numWavChannels = getValueByKey(lines, 'NUMBER OF CHANNELS') ?? mrtSchema.properties.numWavChannels.default;
@@ -44,9 +43,8 @@ export async function parseMrtExamCsv(csvFileContent: string): Promise<any> {
     : mrtSchema.properties.outputChannel.default;
   const randomizeTrials = getValueByKey(lines, 'RANDOMIZE TRIALS') ?? mrtSchema.properties.randomizeTrials.default;  
 
-  const trialsIndex = lines.findIndex((line) => line[0].startsWith('{TRIALS')) + 1;
- 
-  const header = lines[trialsIndex]; // Extract the header row
+  const trialsIndex = lines.findIndex((line) => line[0].startsWith('{TRIALS')) + 1; 
+  const header = lines[trialsIndex];
   const expectedHeaderPositions: { [key: string]: number } = {
     'FILENAME': 1,
     'LEVEL DBSPL': 2,
@@ -55,7 +53,7 @@ export async function parseMrtExamCsv(csvFileContent: string): Promise<any> {
     'ANSWER': 5,
     'SNR': 6
   };  
-  validateHeaderPositions(header, expectedHeaderPositions);
+  validateHeaders(header, expectedHeaderPositions);
 
   lines.slice(trialsIndex+1).forEach((line: any[], idx: number) => {  
     if (line.length >= 6) {
@@ -76,5 +74,36 @@ export async function parseMrtExamCsv(csvFileContent: string): Promise<any> {
     outputChannel,
     randomizeTrials
   };
+}
 
+export async function loadMrtExamCsv(responseArea: MrtExamInterface, meta: ProtocolMetaInterface): Promise<MrtExamInterface> {
+  let csvString;
+  const csvFilePath = '../../protocols/' + meta.name + '/' + responseArea.examDefinitionFilename;
+  if (meta.server == ProtocolServer.Developer) {
+    try {
+      const resp = await fetch(csvFilePath);
+      if (!resp.ok) {
+        throw new Error(`Failed to fetch the file: ${resp.statusText}`);
+      }
+      csvString = await resp.text();
+    } catch (error) {
+      console.error('Error fetching or parsing CSV file:', error);
+      throw error;
+    }
+  } else if (meta.server === ProtocolServer.LocalServer) {
+      const resp = await TabsintFs.readFile({rootUri: meta.contentURI, filePath: responseArea.examDefinitionFilename});
+      csvString = resp?.content;
+  }
+  
+  if (csvString) {
+    try {
+      const mrtExamDefinition = await parseCsvString(csvString);
+      return { ...responseArea, ...mrtExamDefinition };
+    } catch (error) {
+      console.log('Error parsing MRT CSV string: ', error);
+      throw error;
+    }
+  } else {
+    throw new Error('Error processing MRT page: No CSV content found.');
+  }
 }
