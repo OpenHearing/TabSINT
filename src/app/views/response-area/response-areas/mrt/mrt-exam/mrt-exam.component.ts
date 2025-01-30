@@ -71,7 +71,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
       if (updatedPage?.responseArea?.type === 'mrtResponseArea') {
         setTimeout(() => {
           this.initializeResponseArea(updatedPage.responseArea as MrtExamInterface);
-          // this.setupDevice(updatedPage.responseArea as MrtExamInterface);
+          this.setupDevice(updatedPage.responseArea as MrtExamInterface);
         });
       }
     })
@@ -88,7 +88,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   async nextStep(): Promise<void> {
     switch (this.currentStep) {
       case 'Ready':
-        // await this.playTrial(this.currentTrial);
+        await this.playTrial(this.currentTrial);
         this.instructions = 'Select the word prompted by the voice';
         this.currentStep = 'Exam';
         this.state.isSubmittable = false;
@@ -103,8 +103,8 @@ export class MrtExamComponent implements OnInit, OnDestroy {
           this.isCorrect = null;
           this.feedbackMessage = ' ';
           this.selectedResponseIndex = null;
-          // await this.waitForReadyState();
-          // await this.playTrial(this.currentTrial);
+          await this.waitForReadyState();
+          await this.playTrial(this.currentTrial);
         } else {
           this.finishExam();
         }
@@ -130,10 +130,14 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   }
   
   async finishExam() {    
-    this.currentStep = 'Results';
-    this.instructions = 'Results';
-    this.mrtResults = this.gradeExam();
-    this.buttonTextService.updateButtonText('Finish');
+    if (this.showResults) {
+      this.currentStep = 'Results';
+      this.instructions = 'Results';
+      this.mrtResults = this.gradeExam();
+      this.buttonTextService.updateButtonText('Finish');
+    } else {
+      this.examService.submitDefault();
+    }
     await this.devicesService.abortExams(this.device!);
   }
 

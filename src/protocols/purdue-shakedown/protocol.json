@@ -46,6 +46,12 @@
                 "id": "Swept DPOAE" 
               },
               {
+                "id": "WAI"
+              },
+              {
+                "id": "MRT"
+              },
+              {
                 "id":"End All"
               }
             ]
@@ -91,6 +97,18 @@
               "conditional": "result.response=='Swept DPOAE'",
               "target": {
                 "reference": "SweptDpoae"
+              }
+            },
+            {
+              "conditional": "result.response=='WAI'",
+              "target": {
+                "reference": "WAIExam"
+              }
+            },
+            {
+              "conditional": "result.response=='MRT'",
+              "target": {
+                "reference": "MRTExam"
               }
             },
             {
@@ -2241,10 +2259,45 @@
       "protocolId": "SweptDpoae",
       "pages": [
         {
-          "id": "swept_oae_001",
+          "id": "swept_dpoae",
           "title": "Swept DPOAE",
           "responseArea": {
             "type": "sweptDPOAEResponseArea"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "WAIExam",
+      "pages": [
+        {
+          "id": "wai",
+          "title": "Wideband Acoustic Immittance (WAI)",
+          "responseArea": {
+            "type": "WAIResponseArea",
+            "fStart": 500,
+            "fEnd": 4000
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "MRTExam",
+      "pages": [
+        {
+          "id": "MRT",
+          "title": "Modified Rhyme Test",
+          "responseArea": {
+            "type": "mrtResponseArea",
+            "examDefinitionFilename": "mrt-exam-definition.csv"
           }
         },
         {
