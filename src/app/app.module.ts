@@ -99,6 +99,8 @@ import { WAIInProgressComponent } from './views/response-area/response-areas/wid
 import { WAIInputParametersComponent } from './views/response-area/response-areas/wideband-acoustic-immittance/wai-input-parameters/wai-input-parameters.component';
 import { WAIResultsComponent } from './views/response-area/response-areas/wideband-acoustic-immittance/wai-results/wai-results.component';
 import { BuildDetailsComponent } from './views/build-details/build-details.component';
+import { MrtExamComponent } from './views/response-area/response-areas/mrt/mrt-exam/mrt-exam.component';
+import { MrtResultsComponent } from './views/response-area/response-areas/mrt/mrt-results/mrt-results.component';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -156,6 +158,8 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     WAIInProgressComponent,
     WAIResultsComponent,
     BuildDetailsComponent,
+    MrtExamComponent,
+    MrtResultsComponent
   ],
   imports: [
     BrowserModule,

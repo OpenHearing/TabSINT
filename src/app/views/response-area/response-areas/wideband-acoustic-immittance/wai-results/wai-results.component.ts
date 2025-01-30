@@ -55,7 +55,7 @@ export class WAIResultsComponent implements AfterViewInit {
         yAxisFormat: ".1f",
         data: this.waiResults.PowerReflectance! 
       },
-      { id: "Impedance Magnitude (kg/(s⋅m^2))", 
+      { id: "Impedance Magnitude (kg * s / m^3)", 
         x: this.margin.left, 
         y: plotHeight + this.margin.spacerH + this.margin.top, 
         w: plotWidth,
@@ -65,13 +65,13 @@ export class WAIResultsComponent implements AfterViewInit {
         yAxisFormat: ".0e",
         data: this.waiResults.ImpedanceAmp! 
       },
-      { id: "Impedance Phase (°)", 
+      { id: "Impedance Phase (radians)", 
         x: plotWidth + this.margin.spacerW + this.margin.left, 
         y: plotHeight + this.margin.spacerH + this.margin.top, 
         w: plotWidth,
         h: plotHeight,
         xRange: xRange,
-        yRange: [-180, 180], 
+        yRange: [-3.14, 3.14], 
         yAxisFormat: ".0f",
         data: this.waiResults.ImpedancePhase! 
       },

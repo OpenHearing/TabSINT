@@ -53,11 +53,6 @@ export class HeaderComponent {
     this.protocol = this.protocolM.getProtocolModel();
     this.disk = this.diskModel.getDisk();
     this.app = this.appModel.getApp();
-    if (this.disk.init && !this.app.browser) {
-      this.dialog.open(DisclaimerComponent).afterClosed().subscribe(() => {
-        this.diskModel.updateDiskModel("init", false);
-      });
-    }
     this.currentPage = this.pageModel.getPage();
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
         this.currentPage = updatedPage;

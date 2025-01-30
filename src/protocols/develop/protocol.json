@@ -37,43 +37,46 @@
                 "id":"Manual Audiometry"
               },
               {
-                "id": "Calibration Exam" 
+                "id": "Calibration Exam"
               },
               {
-                "id": "Swept DPOAE Exam" 
+                "id": "Swept DPOAE Exam"
               },
               {
-                "id": "WAI Exam" 
+                "id": "WAI Exam"
+              },
+              {
+                "id": "MRT Exam"
               },
               {
                 "id":"End All"
               }
             ]
-          }, 
+          },
           "followOns":[
             {
               "conditional":"result.response=='Text Box'",
               "target":{
                 "reference":"TextBox"
-              } 
+              }
             },
             {
               "conditional":"result.response=='LikeRT'",
               "target":{
                 "reference":"LikeRT"
-              } 
+              }
             },
             {
               "conditional":"result.response=='Multiple Input'",
               "target":{
                 "reference":"MultipleInput"
-              } 
+              }
             },
             {
               "conditional":"result.response=='Manual Audiometry'",
               "target":{
                 "reference":"ManualAudiometry"
-              } 
+              }
             },
             {
               "conditional": "result.response=='Calibration Exam'",
@@ -94,10 +97,16 @@
               }
             },
             {
+              "conditional": "result.response=='MRT Exam'",
+              "target": {
+                "reference": "MRTExam"
+              }
+            },
+            {
               "conditional":"result.response=='End All'",
               "target":{
                 "reference":"@END_ALL"
-              } 
+              }
             }
           ]
         }
@@ -271,9 +280,10 @@
             "tabsintId": "1",
             "maxOutputLevel": 110,
             "minOutputLevel": -10,
-            "targetLevel": 51,
+            "targetLevel": 50,
             "levelUnits": "dB HL",
             "frequencies": [500, 1000, 2000, 4000, 8000],
+            "adjustments": [15, -18, 5, 3],
             "retspls": {
               "500": 11.0,
               "1000": 5.5,
@@ -335,6 +345,23 @@
             "type": "WAIResponseArea",
             "fStart": 500,
             "fEnd": 4000
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "MRTExam",
+      "pages": [
+        {
+          "id": "MRT",
+          "title": "Modified Rhyme Test",
+          "responseArea": {
+            "type": "mrtResponseArea",
+            "examDefinitionFilename": "mrt-exam-definition.csv"
           }
         },
         {
