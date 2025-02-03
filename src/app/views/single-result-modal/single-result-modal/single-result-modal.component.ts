@@ -4,10 +4,13 @@ import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 
 import { DiskInterface } from '../../../models/disk/disk.interface';
 import { ExamResults } from '../../../models/results/results.interface';
-
 import { DiskModel } from '../../../models/disk/disk.service';
 import { ResultsService } from '../../../controllers/results.service';
 import { SqLite } from '../../../utilities/sqLite.service';
+import { Notifications } from '../../../utilities/notifications.service';
+import { Logger } from '../../../utilities/logger.service';
+import { DialogType} from '../../../utilities/constants';
+import { ResultsUploadService } from '../../../controllers/results-upload.service';
 
 @Component({
   selector: 'app-single-result-modal',
@@ -24,6 +27,9 @@ export class SingleResultModalComponent {
     public diskModel: DiskModel,
     public resultsService: ResultsService,
     public sqLite: SqLite,
+    private readonly resultsUploadService: ResultsUploadService,
+    private readonly notifications: Notifications,
+    private readonly logger: Logger,
     @Inject(MAT_DIALOG_DATA) public index: number,
   ) { 
     this.disk = diskModel.getDisk();
@@ -40,9 +46,33 @@ export class SingleResultModalComponent {
     this.diskSubscription?.unsubscribe();
   }
 
-  upload() {
-    console.log("SingleResultModalComponent.upload() called. Not implemented.");
-    this.close();
+  async upload() {
+    const result = await this.resultsUploadService.uploadResult(this.singleExamResult!);
+
+    if (result.success) {
+      this.logger.debug(result.message);
+      this.delete();
+      this.notifications.alert({
+        title: "Success",
+        content: result.message || "Result uploaded to GitLab.",
+        type: DialogType.Confirm
+      });
+    } else {
+        if (result.message.includes("Unauthorized")) {
+          this.notifications.alert({
+              title: "Unauthorized",
+              content: "Check your GitLab credentials.",
+              type: DialogType.Alert
+          });
+      } else {
+          this.notifications.alert({
+              title: "Upload Error",
+              content: result.message || "Something went wrong uploading the result.",
+              type: DialogType.Alert
+          });
+      }
+      this.logger.error(result.message);
+    }
   }
 
   /**

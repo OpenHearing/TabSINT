@@ -2,6 +2,9 @@
   <div class="modal-content">
     <div class="modal-header">
       <div class="left-buttons">
+        <button type="button" class="btn btn-sm btn-success action-btn upload-btn" (click)="upload()">
+          <i class="ion-upload"></i> Upload
+        </button>
         <button type="button" *ngIf="!disk.preventExports" class="btn btn-sm btn-primary action-btn" (click)="export()">
           <span class="glyphicon glyphicon-floppy-disk"></span> Export
         </button>

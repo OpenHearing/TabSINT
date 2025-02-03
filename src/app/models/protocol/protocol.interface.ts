@@ -14,6 +14,10 @@ export interface ProtocolMetaInterface {
   server: ProtocolServer;
   admin: boolean;
   contentURI?: string | null;
+  gitlabHost?: string | null,
+  gitlabRepository?: string | null,
+  gitlabToken?: string | null,
+  gitlabGroup?: string | null,
 }
 export interface ProtocolModelInterface {
   activeProtocol?: ProtocolInterface, 

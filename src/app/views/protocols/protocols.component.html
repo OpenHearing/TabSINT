@@ -120,9 +120,102 @@
       </div>
 
       <div class="row pad-top">
-        <!-- <div class="col-5">
-          <button class="btn btn-primary btn-block"  [ngClass]="gitlabButtonClass()">Gitlab</button>
-        </div> -->
+        <div class="col-3">
+          <button class="btn btn-primary w-100" [ngClass]="{'active': selectedSource === 'gitlab'}" (click)="setSource('gitlab')">Gitlab</button>
+        </div>
+        <div class="col-3">
+          <button class="btn btn-primary w-100" [ngClass]="{'active': selectedSource === 'device'}" (click)="setSource('device')">Device Storage</button>
+        </div>
+      </div>
+      
+      <div *ngIf="selectedSource === 'gitlab'" class="gitlab-config">
+        <div class="row pad-top">
+          <div class="col-3"><label for="repository">Repository:</label></div>
+          <div class="col-6">
+            <input id="repository" type="text" class="form-control" placeholder="Name" [(ngModel)]="gitlabConfig.repository" />
+          </div>
+          <div class="col-1">
+            <i [matMenuTriggerFor]="repositoryHelpMenu" class="ion-help-circled"></i>
+          </div>
+          <mat-menu #repositoryHelpMenu="matMenu">
+            <button mat-menu-item>
+              <div [innerHTML]="gitlabAddPopover"></div>
+            </button>
+          </mat-menu>
+        </div>
+        <div class="row pad-top">
+          <div class="col-3"><label for="version">Version:</label></div>
+          <div class="col-6">
+            <input id="version" type="text" class="form-control" placeholder="Latest" [(ngModel)]="gitlabConfig.version" />
+          </div>
+          <div class="col-1">
+            <i [matMenuTriggerFor]="versionHelpMenu" class="ion-help-circled"></i>
+          </div>
+          <mat-menu #versionHelpMenu="matMenu">
+            <button mat-menu-item>
+              <div [innerHTML]="gitlabAddVersionPopover"></div>
+            </button>
+          </mat-menu>
+        </div>
+        <div class="row pad-top">
+          <div class="col-3"><label for="host">Host:</label></div>
+          <div class="col-6">
+            <input id="host" type="text" class="form-control" placeholder="https://gitlab.com/" [(ngModel)]="gitlabConfig.host" />
+          </div>
+          <div class="col-1">
+            <i [matMenuTriggerFor]="hostHelpMenu" class="ion-help-circled"></i>
+          </div>
+          <mat-menu #hostHelpMenu="matMenu">
+            <button mat-menu-item>
+              <div [innerHTML]="gitlabHostPopover"></div>
+            </button>
+          </mat-menu>
+        </div>
+        <div class="row pad-top">
+          <div class="col-3"><label for="token">Token:</label></div>
+          <div class="col-6">
+            <input id="token" type="password" class="form-control" placeholder="Token" [(ngModel)]="gitlabConfig.token" />
+          </div>
+          <div class="col-1">
+            <i [matMenuTriggerFor]="tokenHelpMenu" class="ion-help-circled"></i>
+          </div>
+          <mat-menu #tokenHelpMenu="matMenu">
+            <button mat-menu-item>
+              <div [innerHTML]="gitlabTokenPopover"></div>
+            </button>
+          </mat-menu>
+        </div>
+        <div class="row pad-top">
+          <div class="col-3"><label for="group">Group:</label></div>
+          <div class="col-6">
+            <input id="group" type="text" class="form-control" placeholder="Group" [(ngModel)]="gitlabConfig.group" />
+          </div>
+          <div class="col-1">
+            <i [matMenuTriggerFor]="groupHelpMenu" class="ion-help-circled"></i>
+          </div>
+          <mat-menu #groupHelpMenu="matMenu">
+            <button mat-menu-item>
+              <div [innerHTML]="gitlabNamespacePopover"></div>
+            </button>
+          </mat-menu>
+        </div>
+        <div class="row pad-top">
+          <div class="col-5">
+            <button class="btn btn-default btn-block" (click)="fetchGitlabProtocol()"> <i class="ion-plus-round"></i> Add</button>
+          </div>
+        </div>
+      </div>
+      
+      <div *ngIf="selectedSource === 'device'">
+        <div class="row pad-top">
+          <div class="col-3"><label for="directory">Directory:</label></div>
+          <div class="col-4">
+            <button class="btn btn-default btn-block" (click)="addProtocols()"> <i class="ion-plus-round"></i> Add</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- <div class="row pad-top">
         <div class="col-5">
           <button class="btn btn-primary btn-block"  [ngClass]="localServerButtonClass()" translate>Device Storage</button>
         </div>
@@ -133,7 +226,6 @@
       <div class="row pad-top">
         <div class="col-3"><label for="directory">Directory:</label></div>
         <div class="col-4">
-          <!-- <button class="btn btn-default btn-block" (click)="add()"> <i class="ion-plus-round"></i> 'Add'</button> -->
           <button class="btn btn-default btn-block" (click)="addProtocols()"> <i class="ion-plus-round"></i> Add</button>
         </div>
         <div class="col-3"></div>
@@ -145,7 +237,7 @@
             <div [innerHTML]="localAddPopover"></div>
           </button>
         </mat-menu>
-      </div>
+      </div> -->
 
 <!--    <div *ngIf="disk.server === 'gitlab'">
 
