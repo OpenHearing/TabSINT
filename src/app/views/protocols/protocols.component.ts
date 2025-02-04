@@ -34,7 +34,7 @@ export class ProtocolsComponent {
   selectedSource = 'device';
   gitlabConfig = {
     repository: '',
-    version: '',
+    tag: '',
     host: 'https://gitlab.com/',
     token: '',
     group: ''
@@ -168,28 +168,28 @@ export class ProtocolsComponent {
         if (!matchedProject) throw new Error("Project not found. Check the repository name and group.");
 
         const projectId = matchedProject.id;
-
+        const ref = await this.getGitlabRef(projectId, headers);
         // Step 2: Fetch Repository Files
         const repoFiles = await this.fetchGitlabData(
-            `${this.gitlabConfig.host}/api/v4/projects/${projectId}/repository/tree`,
-            headers,
-            "repository files",
-            "Failed to fetch repository files: "
-        );
+          `${this.gitlabConfig.host}/api/v4/projects/${projectId}/repository/tree?ref=${ref}`,
+          headers,
+          "repository files",
+          "Failed to fetch repository files: "
+      );
 
         const protocolFile = repoFiles.find((file: { name: string }) => file.name === "protocol.json");
         if (!protocolFile) throw new Error("protocol.json not found in repository.");
 
         // Step 3: Fetch protocol.json File
         const protocolContent: ProtocolSchemaInterface = await this.fetchGitlabData(
-            `${this.gitlabConfig.host}/api/v4/projects/${projectId}/repository/files/${encodeURIComponent(protocolFile.path)}/raw?ref=main`,
-            headers,
-            "protocol.json",
-            "Failed to fetch protocol.json: "
-        );
+          `${this.gitlabConfig.host}/api/v4/projects/${projectId}/repository/files/${encodeURIComponent(protocolFile.path)}/raw?ref=${ref}`,
+          headers,
+          "protocol.json",
+          "Failed to fetch protocol.json: "
+      );
 
         // Step 4: Save Protocol to Disk
-        const protocol = await this.saveProtocolToDisk(protocolContent);
+        const protocol = await this.saveProtocolToDisk(protocolContent,ref);
         this.updateDiskModel(protocol);
 
         this.notifications.alert({
@@ -425,12 +425,13 @@ export class ProtocolsComponent {
     return response.json();
   }
 
-  private async saveProtocolToDisk(protocolContent: ProtocolSchemaInterface) {
+  private async saveProtocolToDisk(protocolContent: ProtocolSchemaInterface,ref:string) {
     let dir = `.tabsint-protocols/${this.gitlabConfig.repository}`;
     let fileServiceResult;
 
     try {
         fileServiceResult = await this.fileService.writeFile(dir, "");
+        await this.fileService.deleteDirectory(`${dir}/protocol.json`)
         await this.fileService.writeFile(`${dir}/protocol.json`, JSON.stringify(protocolContent));
     } catch (e) {
         throw new Error("Failed to save protocol file locally.");
@@ -442,13 +443,32 @@ export class ProtocolsComponent {
         server: ProtocolServer.Gitlab,
         contentURI: fileServiceResult?.uri,
         admin: false,
-        gitlabRepository: this.gitlabConfig.repository,
-        gitlabHost: this.gitlabConfig.host,
-        gitlabGroup: this.gitlabConfig.group,
-        gitlabToken: this.gitlabConfig.token,
+        gitlabConfig: {
+          repository: this.gitlabConfig.repository,
+          host: this.gitlabConfig.host,
+          group: this.gitlabConfig.group,
+          token: this.gitlabConfig.token,
+          tag: ref
+        },  
         ...protocolContent
-    };
+      };
   }
+
+  private async getGitlabRef(projectId: number, headers: Headers): Promise<string> {
+    if (this.gitlabConfig.tag) {
+        return this.gitlabConfig.tag;
+    }
+    const commits = await this.fetchGitlabData(
+        `${this.gitlabConfig.host}/api/v4/projects/${projectId}/repository/commits?per_page=1`,
+        headers,
+        "latest commit",
+        "Failed to fetch latest commit: "
+    );
+
+    if (!commits.length) throw new Error("No commits found in repository.");
+    return commits[0].id;
+  }
+
 
   private updateDiskModel(protocol: ProtocolInterface) {
     const protocolMetaData: ProtocolMetaInterface = getProtocolMetaData(protocol);

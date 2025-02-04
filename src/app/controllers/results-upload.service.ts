@@ -83,17 +83,17 @@ export class ResultsUploadService {
         throw new Error("Invalid exam result.");
       }
 
-      const protocol = singleExamResult.protocol;
-        if (!protocol.gitlabHost || !protocol.gitlabToken || !protocol.gitlabGroup) {
+        const protocol = singleExamResult.protocol;
+        if (!protocol.gitlabConfig?.host || !protocol.gitlabConfig?.token || !protocol.gitlabConfig?.group) {
           throw new Error("Missing required GitLab configuration. Please specify a gitlab host, token, group and repository");
         }
-        const gitlabHost = protocol.gitlabHost;
-        const gitlabToken = protocol.gitlabToken;
-        const gitlabGroup = protocol.gitlabGroup;
+        const gitlabHost = protocol.gitlabConfig?.host;
+        const gitlabToken = protocol.gitlabConfig?.token;
+        const gitlabGroup = protocol.gitlabConfig?.group;
         this.logger.debug(`{gitlabHost} ${gitlabToken} ${gitlabGroup}`)
 
         const resultsRepoId = await this.ensureResultsRepo(gitlabHost, gitlabToken, gitlabGroup);
-        const folderName = protocol.gitlabRepository;
+        const folderName = protocol.gitlabConfig?.repository;
         const info = await Device.getId();
         const fileUuid = info.identifier
         const timeStamp = new Date().toISOString().replace(/[:.]/g, '-');
