@@ -237,6 +237,7 @@ export class ExamService {
         this.state.doesResponseExist = false;
         this.state.isResponseRequired = this.isPageResponseRequired();
         this.stateModel.setPageSubmittable();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     /** Parse page objects and add them to the pageModel.stack.
