@@ -46,6 +46,12 @@
                 "id": "Swept DPOAE" 
               },
               {
+                "id": "WAI"
+              },
+              {
+                "id": "MRT"
+              },
+              {
                 "id":"End All"
               }
             ]
@@ -91,6 +97,18 @@
               "conditional": "result.response=='Swept DPOAE'",
               "target": {
                 "reference": "SweptDpoae"
+              }
+            },
+            {
+              "conditional": "result.response=='WAI'",
+              "target": {
+                "reference": "WAIExam"
+              }
+            },
+            {
+              "conditional": "result.response=='MRT'",
+              "target": {
+                "reference": "MRTExam"
               }
             },
             {
@@ -877,6 +895,10 @@
           }
         },
         {
+          "id": "ARDC_done",
+          "instructionText": "We thank you for your time spent taking this survey. Your response has been recorded."
+        },
+        {
           "id": "backtomain",
           "reference":"MainMenu"
         }
@@ -1162,6 +1184,10 @@
           }
         },
         {
+          "id": "Loudness_done",
+          "instructionText": "We thank you for your time spent taking this survey. Your response has been recorded."
+        },
+        {
           "id": "backtomain",
           "reference":"MainMenu"
         }
@@ -1171,11 +1197,11 @@
       "protocolId": "ARDC_Noise_History_Survey",
       "pages": [
         {
-          "id": "noise_exposure_0/19",
+          "id": "noise_exposure_0/26",
           "instructionText": "Please answer the following questions about yourself, your hearing, and any noise you may have been around during the past year. Write an answer in the fields provided or select the best answer to each question. Be sure to complete all questions."
         },
         {
-          "id": "noise_exposure_1/19",
+          "id": "noise_exposure_1/26",
           "instructionText": "Part A: Please answer these general questions about your hearing and any loud sounds during the past year (12 months).",
           "responseArea": {
             "type": "multipleInputResponseArea",
@@ -1250,7 +1276,7 @@
           }
         },
         {
-          "id": "noise_exposure_2/19",
+          "id": "noise_exposure_2/26",
           "instructionText": "Part B: Please answer these detailed questions about any loud sounds during the past year (12 months).",
           "responseArea": {
             "type": "multipleInputResponseArea",
@@ -1362,7 +1388,7 @@
           }
         },
         {
-          "id": "noise_exposure_3/19",
+          "id": "noise_exposure_3/26",
           "responseArea": {
             "type": "multipleInputResponseArea",
             "responseRequired": false,
@@ -1500,7 +1526,7 @@
           }
         },
         {
-          "id": "noise_exposure_4/19",
+          "id": "noise_exposure_4/26",
           "responseArea": {
             "type": "multipleInputResponseArea",
             "responseRequired": false,
@@ -1633,7 +1659,7 @@
           }
         },
         {
-          "id": "noise_exposure_5/19",
+          "id": "noise_exposure_5/26",
           "instructionText": "For the questions below, note different time-frames: ",
           "responseArea": {
             "type": "multipleInputResponseArea",
@@ -1702,8 +1728,8 @@
           }
         },
         {
-          "id": "noise_exposure_6/19",
-          "instructionText": "Thinking about your general lifestyle (both current and years past), please answer the following questions. For each activity, enter an X in the one field that best describes how often you typically go out to that kind of place/event. In the last column enter an estimate (in hours) of how long one such visit typically lasted. ",
+          "id": "noise_exposure_6/26",
+          "instructionText": "Thinking about your general lifestyle (both current and years past), please answer the following questions. For each activity, select the one field that best describes how often you typically go out to that kind of place/event. In the last column enter an estimate (in hours) of how long one such visit typically lasted. ",
           "responseArea": {
             "type": "multipleInputResponseArea",
             "responseRequired": false,
@@ -1737,7 +1763,7 @@
           }
         },
         {
-          "id": "noise_exposure_7/19",
+          "id": "noise_exposure_7/26",
           "responseArea": {
             "type": "multipleInputResponseArea",
             "responseRequired": false,
@@ -1771,7 +1797,7 @@
           }
         },
         {
-          "id": "noise_exposure_8/19",
+          "id": "noise_exposure_8/26",
           "responseArea": {
             "type": "multipleInputResponseArea",
             "responseRequired": false,
@@ -1805,7 +1831,7 @@
           }
         },
         {
-          "id": "noise_exposure_9/19",
+          "id": "noise_exposure_9/26",
           "responseArea": {
             "type": "multipleInputResponseArea",
             "responseRequired": false,
@@ -1839,7 +1865,7 @@
           }
         },
         {
-          "id": "noise_exposure_10/19",
+          "id": "noise_exposure_10/26",
           "responseArea": {
             "type": "multipleInputResponseArea",
             "responseRequired": false,
@@ -1873,7 +1899,7 @@
           }
         },
         {
-          "id": "noise_exposure_11/19",
+          "id": "noise_exposure_11/26",
           "responseArea": {
             "type": "multipleInputResponseArea",
             "responseRequired": false,
@@ -1907,7 +1933,7 @@
           }
         },
         {
-          "id": "noise_exposure_12/19",
+          "id": "noise_exposure_12/26",
           "responseArea": {
             "type": "multipleInputResponseArea",
             "responseRequired": false,
@@ -1941,7 +1967,7 @@
           }
         },
         {
-          "id": "noise_exposure_13/19",
+          "id": "noise_exposure_13/26",
           "responseArea": {
             "type": "multipleInputResponseArea",
             "responseRequired": false,
@@ -1975,7 +2001,7 @@
           }
         },
         {
-          "id": "noise_exposure_14/19",
+          "id": "noise_exposure_14/26",
           "responseArea": {
             "type": "multipleInputResponseArea",
             "responseRequired": false,
@@ -2009,7 +2035,7 @@
           }
         },
         {
-          "id": "noise_exposure_15/19",
+          "id": "noise_exposure_15/26",
           "responseArea": {
             "type": "multipleInputResponseArea",
             "responseRequired": false,
@@ -2043,7 +2069,7 @@
           }
         },
         {
-          "id": "noise_exposure_16/19",
+          "id": "noise_exposure_16/26",
           "responseArea": {
             "type": "multipleInputResponseArea",
             "responseRequired": false,
@@ -2077,10 +2103,10 @@
           }
         },
         {
-          "id": "noise_exposure_17/19",
+          "id": "noise_exposure_17/26",
           "responseArea": {
             "type": "multipleInputResponseArea",
-            "instructionText": "For each activity, enter an X in the one field that best describes how often you perform, rehearse, or play.",
+            "instructionText": "For each activity, select the one field that best describes how often you perform, rehearse, or play.",
             "responseRequired": false,
             "inputList": [
               {
@@ -2112,7 +2138,7 @@
           }
         },
         {
-          "id": "noise_exposure_18/19",
+          "id": "noise_exposure_18/26",
           "responseArea": {
             "type": "multipleInputResponseArea",
             "responseRequired": false,
@@ -2146,10 +2172,10 @@
           }
         },
         {
-          "id": "noise_exposure_19/19",
+          "id": "noise_exposure_19/26",
           "responseArea": {
             "type": "multipleInputResponseArea",
-            "instructionText": "For each activity, enter an X in the one field that best describes how often you perform, rehearse, or play.",
+            "instructionText": "For each activity, select the one field that best describes how often you perform, rehearse, or play.",
             "responseRequired": false,
             "inputList": [
               {
@@ -2179,6 +2205,237 @@
               }
             ]
           }
+        },
+        {
+          "id": "noise_exposure_20/26",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "instructionText": "For each activity, select the one field that best describes how often you typically do this activity.",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "Listen to a personal audio device (e.g., MP3 player, mobile phone through headphones or earbuds) at a volume loud enough that you have to raise your voice to be heard.",
+                "inputType": "dropdown",
+                "options": [
+                  "more than once a week",
+                  "About once a week",
+                  "About once in two weeks",
+                  "About once a month",
+                  "About once every 2-3 months",
+                  "About once or twice a year",
+                  "Never"
+                ]
+              },
+              {
+                "text": "Did you wear hearing protection while participating in this activity?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "How long did such visits last? (hours)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "noise_exposure_21/26",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "instructionText": "For each activity, select the one field that best describes how often you perform, rehearse, or play.",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "Listen to a stereo in a car or at home at a volume loud enough that you have to raise your voice to be heard.",
+                "inputType": "dropdown",
+                "options": [
+                  "more than once a week",
+                  "About once a week",
+                  "About once in two weeks",
+                  "About once a month",
+                  "About once every 2-3 months",
+                  "About once or twice a year",
+                  "Never"
+                ]
+              },
+              {
+                "text": "Did you wear hearing protection while participating in this activity?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "How long did such visits last? (hours)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "noise_exposure_22/26",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "instructionText": "For each activity, select the one field that best describes how often you perform, rehearse, or play.",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "Play electronic games at a volume loud enough that you have to raise your voice to be heard.",
+                "inputType": "dropdown",
+                "options": [
+                  "more than once a week",
+                  "About once a week",
+                  "About once in two weeks",
+                  "About once a month",
+                  "About once every 2-3 months",
+                  "About once or twice a year",
+                  "Never"
+                ]
+              },
+              {
+                "text": "Did you wear hearing protection while participating in this activity?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "How long did such visits last? (hours)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "noise_exposure_23/26",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "instructionText": "For each activity, select the one field that best describes how often you perform, rehearse, or play.",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "Use garden power tools (e.g., mower, leaf blower) or stand close to someone else using garden power tools.",
+                "inputType": "dropdown",
+                "options": [
+                  "more than once a week",
+                  "About once a week",
+                  "About once in two weeks",
+                  "About once a month",
+                  "About once every 2-3 months",
+                  "About once or twice a year",
+                  "Never"
+                ]
+              },
+              {
+                "text": "Did you wear hearing protection while participating in this activity?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "How long did such visits last? (hours)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "noise_exposure_24/26",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "instructionText": "For each activity, select the one field that best describes how often you perform, rehearse, or play.",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "Use DIY power tools including woodworking/metalworking tools, or stand close to someone else using DIY power tools.",
+                "inputType": "dropdown",
+                "options": [
+                  "more than once a week",
+                  "About once a week",
+                  "About once in two weeks",
+                  "About once a month",
+                  "About once every 2-3 months",
+                  "About once or twice a year",
+                  "Never"
+                ]
+              },
+              {
+                "text": "Did you wear hearing protection while participating in this activity?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "How long did such visits last? (hours)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "noise_exposure_25/26",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "instructionText": "For each activity, select the one field that best describes how often you perform, rehearse, or play.",
+            "responseRequired": false,
+            "inputList": [
+              {
+                "text": "Use a chainsaw, or stand close to someone else using a chainsaw.",
+                "inputType": "dropdown",
+                "options": [
+                  "more than once a week",
+                  "About once a week",
+                  "About once in two weeks",
+                  "About once a month",
+                  "About once every 2-3 months",
+                  "About once or twice a year",
+                  "Never"
+                ]
+              },
+              {
+                "text": "Did you wear hearing protection while participating in this activity?",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "How long did such visits last? (hours)",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "noise_exposure_26/26",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": false,
+            "inputList": [
+            {
+              "text": "Are you regularly exposed to loud noise at work in your current job/s? By loud noise, we mean noise loud enough that you have to raise your voice to be heard by someone at arm's length. This may include power tools or machinery, or loud music or crowds of people.",
+              "inputType": "dropdown",
+              "options": [
+                "Yes",
+                "No"
+              ]
+            }
+            ]
+          }
+        },
+        {
+          "id": "noise_exposure_done",
+          "instructionText": "We thank you for your time spent taking this survey. Your response has been recorded."
         },
         {
           "id": "backtomain",
@@ -2241,10 +2498,45 @@
       "protocolId": "SweptDpoae",
       "pages": [
         {
-          "id": "swept_oae_001",
+          "id": "swept_dpoae",
           "title": "Swept DPOAE",
           "responseArea": {
             "type": "sweptDPOAEResponseArea"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "WAIExam",
+      "pages": [
+        {
+          "id": "wai",
+          "title": "Wideband Acoustic Immittance (WAI)",
+          "responseArea": {
+            "type": "WAIResponseArea",
+            "fStart": 500,
+            "fEnd": 4000
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "MRTExam",
+      "pages": [
+        {
+          "id": "MRT",
+          "title": "Modified Rhyme Test",
+          "responseArea": {
+            "type": "mrtResponseArea",
+            "examDefinitionFilename": "mrt-exam-definition.csv"
           }
         },
         {

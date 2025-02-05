@@ -1,5 +1,5 @@
 import Ajv, {JSONSchemaType} from "ajv"
-const ajv = new Ajv({useDefaults: true, strict: false})
+const ajv = new Ajv()
 import { ProtocolSchemaInterface } from "../app/interfaces/protocol-schema.interface"
 import { calibrationSchema } from "./definitions/calibration.schema";
 import { navMenuSchema } from "./definitions/navMenu.schema";

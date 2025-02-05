@@ -21,6 +21,5 @@ export const waiSchema: JSONSchemaType<WAIInterface> = {
     outputRawMeasurements: { type: "boolean", nullable: true, default: false },
     showResults: { type: "boolean", nullable: true, default: true }
   },
-  required: ["type"],
-  additionalProperties: false
+  required: ["type"]
 };

@@ -55,7 +55,6 @@ export class DiskModel {
             useTagsOnly: true
         },
         headset: "None",
-        init: true,
         interApp: {
             appName: '',
             dataIn: '',

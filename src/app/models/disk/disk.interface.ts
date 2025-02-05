@@ -33,7 +33,6 @@ export interface DiskInterface {
       useTagsOnly: boolean
   },
   headset: string,
-  init: boolean,
   interApp: {
       appName: string,
       dataIn: string,

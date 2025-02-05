@@ -7,6 +7,8 @@ import { ProtocolDictionary } from "../interfaces/protocol-dictionary";
 import { FollowOnsDictionary } from "../interfaces/follow-ons-dictionary";
 import { isPageDefinition, isProtocolReferenceInterface, isProtocolSchemaInterface } from "../guards/type.guard";
 import { PageTypes } from "../types/custom-types";
+import { loadMrtExamCsv } from "./load-mrt-exam-csv";
+import { MrtExamInterface } from "../views/response-area/response-areas/mrt/mrt-exam/mrt-exam.interface";
 
 /**
  * Adds variables to the active protocol and generates a stack of pages.
@@ -66,7 +68,7 @@ export function processProtocol(loading: LoadingProtocolInterface):
     });  
   }
 
-  function processPage(
+  async function processPage(
       page: PageDefinition
     ) {
 
@@ -90,6 +92,10 @@ export function processProtocol(loading: LoadingProtocolInterface):
 
     if (page.responseArea) {
       // TODO: deal with specific response area processing here
+      if (page.responseArea.type === "mrtResponseArea") {
+        const responseArea = page.responseArea as MrtExamInterface;
+        page.responseArea = await loadMrtExamCsv(responseArea, loading.meta);
+      }
     }
 
     if (_.has(page, "followOns")) {
