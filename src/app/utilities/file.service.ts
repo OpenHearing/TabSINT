@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subscription } from 'rxjs';
-
+import { Filesystem, Directory} from '@capacitor/filesystem';
 import { TabsintFs } from 'tabsintfs';
 
 import { AppInterface } from '../models/app/app.interface';
@@ -191,5 +191,34 @@ export class FileService {
         }
         return result;
     }
+
+    async writeBinaryFile(path: string, data: Blob, rootDir: string | null = this.rootUri) {
+        let result = null;
+        try {
+            const base64Data = await this.blobToBase64(data);
+            result = await Filesystem.writeFile({
+                path: path,
+                data: base64Data,
+                directory: Directory.Documents,
+            });
+            this.logger.debug(`✅ Binary file written successfully: ${path}`);
+        } catch (error) {
+            this.logger.error(`❌ Failed to write binary file: ${error}`);
+        }
+        return result;
+    }
+
+    async blobToBase64(blob: Blob): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+            reader.onloadend = () => {
+                const base64String = (reader.result as string).split(',')[1];
+                resolve(base64String);
+            };
+            reader.onerror = reject;
+        });
+    }
+    
 
 }
