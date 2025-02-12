@@ -4,6 +4,16 @@ import { ProtocolErrorInterface } from "../../interfaces/protocol-error.interfac
 import { ProtocolSchemaInterface } from "../../interfaces/protocol-schema.interface";
 import { ProtocolServer } from "../../utilities/constants";
 
+
+
+export interface GitlabConfigInterface {
+  host?: string | null;
+  repository?: string | null;
+  token?: string | null;
+  group?: string | null;
+  tag?: string | null;
+}
+
 export interface ProtocolMetaInterface {
   group?: string;
   name: string;
@@ -14,7 +24,9 @@ export interface ProtocolMetaInterface {
   server: ProtocolServer;
   admin: boolean;
   contentURI?: string | null;
+  gitlabConfig?: GitlabConfigInterface;
 }
+
 export interface ProtocolModelInterface {
   activeProtocol?: ProtocolInterface, 
   activeProtocolDictionary?: ProtocolDictionary,

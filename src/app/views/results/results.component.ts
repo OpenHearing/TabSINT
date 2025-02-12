@@ -15,6 +15,9 @@ import { SqLite } from '../../utilities/sqLite.service';
 import { Logger } from '../../utilities/logger.service';
 
 import { SingleResultModalComponent } from '../single-result-modal/single-result-modal/single-result-modal.component';
+import { DialogType } from '../../utilities/constants';
+import { Notifications } from '../../utilities/notifications.service';
+import { ResultsUploadService } from '../../controllers/results-upload.service';
 
 @Component({
   selector: 'results-view',
@@ -34,6 +37,8 @@ export class ResultsComponent {
     public resultsModel: ResultsModel,
     public resultsService: ResultsService,
     public sqLite: SqLite,
+    private readonly resultsUploadService: ResultsUploadService,
+    private readonly notifications: Notifications,
     public stateModel: StateModel,
     private readonly logger: Logger
   ){
@@ -100,5 +105,57 @@ export class ResultsComponent {
       await this.sqLite.deleteAll('results');      
       this.results = await this.sqLite.getAllResults();
   }
+
+  async bulkUpload() {
+    const uploadResults: { success: { result: ExamResults, message: string }[], failed: { result: ExamResults, message: string }[] } = { success: [], failed: [] };
+
+    if (!this.results || this.results.length === 0) {
+        this.notifications.alert({
+            title: "Upload",
+            content: "No results available for upload.",
+            type: DialogType.Alert
+        });
+        return;
+    }
+
+    for (const result of this.results) {
+        const uploadResult = await this.resultsUploadService.uploadResult(result);
+        if (uploadResult.success) {
+            uploadResults.success.push({ result, message: uploadResult.message });
+        } else {
+            uploadResults.failed.push({ result, message: uploadResult.message });
+        }
+    }
+
+    if (uploadResults.success.length > 0) {
+        const successIndexes = uploadResults.success.map(s =>
+            this.results!.indexOf(s.result)
+        ).filter(index => index !== -1);
+
+        successIndexes.sort((a, b) => b - a);
+
+        for (const index of successIndexes) {
+            await this.sqLite.deleteSingleResult(index);
+        }
+
+        this.results = await this.sqLite.getAllResults();
+    }
+
+    const successMessage = uploadResults.success.map(s => 
+        `✔️ ${s.result.protocolName || "Unknown Protocol"}: ${s.message}`
+    ).join("<br>");
+
+    const failureMessage = uploadResults.failed.map(f => 
+        `❌ ${f.result.protocolName || "Unknown Protocol"}: ${f.message}`
+    ).join("<br>");
+
+    this.notifications.alert({
+        title: "Upload Summary",
+        content: `Successfully uploaded: ${uploadResults.success.length} results.<br>${successMessage}<br>
+                  Failed to upload: ${uploadResults.failed.length} results.<br>${failureMessage}`,
+        type: DialogType.Confirm
+    });
+  }
+
 
 }
