@@ -67,14 +67,15 @@ export const LevelUnits = {
 }
 
 
-import PurdueShakedown from '../../protocols/purdue-shakedown/protocol.json';
-import develop from '../../protocols/develop/protocol.json';
-export const DeveloperProtocols: any = {
+import PurdueShakedown from '../../assets/protocols/purdue-shakedown/protocol.json';
+import develop from '../../assets/protocols/develop/protocol.json';
+import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
+export const DeveloperProtocols: { [key: string]: ProtocolSchemaInterface } = {
     "PurdueShakedown": PurdueShakedown,
     "develop" : develop
 }
 
-import WahtsDeviceTestCalibration from '../../protocols/wahts-device-test/calibration.json';
+import WahtsDeviceTestCalibration from '../../assets/protocols/wahts-device-test/calibration.json';
 export const DeveloperProtocolsCalibration: any = {
     "wahts-device-test": WahtsDeviceTestCalibration
 }

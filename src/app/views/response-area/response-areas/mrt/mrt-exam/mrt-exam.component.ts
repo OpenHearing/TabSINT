@@ -33,7 +33,6 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   tabsintId: string = mrtSchema.properties.tabsintId.default;
   showResults: boolean = mrtSchema.properties.showResults.default;
   currentStep: string = 'Ready';
-  numWavChannels!: number;
   outputChannel!: string[];
   trialList!: MrtTrialInterface[];
   randomizeTrials!: boolean;
@@ -95,6 +94,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
         this.buttonTextService.updateButtonText('Next');
         break;
       case 'Exam': {
+        this.state.isSubmittable = false;
         this.saveResponse();
         const nbTrialsCompleted = this.results.currentPage.response.length;
         if (this.trialList.length > 0) {
@@ -118,7 +118,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
 
   choose(index: number): void {
     this.selectedResponseIndex = index;
-    if (index === this.currentTrial.answer) {
+    if (index === this.currentTrial.answer-1) {
       this.isCorrect = true;
       this.feedbackMessage = 'Correct!';
     } else {
@@ -138,14 +138,15 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     } else {
       this.examService.submitDefault();
     }
-    await this.devicesService.abortExams(this.device!);
+    let resp = await this.devicesService.abortExams(this.device!);
+    this.logger.debug("resp from tympan after MRT exam abort exams:" + resp);
   }
 
   getButtonClass(index: number): string {
     if (this.selectedResponseIndex === null) {
       return '';
     }
-    if (index === this.currentTrial.answer) {
+    if (index === this.currentTrial.answer-1) {
       return 'correct';
     }
     if (index === this.selectedResponseIndex) {
@@ -161,7 +162,6 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   private initializeResponseArea(responseArea: MrtExamInterface) {
     this.tabsintId = responseArea.tabsintId ?? this.tabsintId;
     this.showResults = responseArea.showResults ?? this.showResults;
-    this.numWavChannels = responseArea.numWavChannels ?? mrtSchema.properties.numWavChannels.default;
     this.outputChannel = responseArea.outputChannel ?? mrtSchema.properties.outputChannel.default;
     this.randomizeTrials = responseArea.randomizeTrials ?? mrtSchema.properties.randomizeTrials.default; 
     this.nbTrials = responseArea.trialList!.length;
@@ -179,7 +179,6 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   private async beginExam() {
     if (this.device) {
       const examProperties = {
-        NumWavChannels: this.numWavChannels,
         OutputChannel: this.outputChannel
       };
       await this.devicesService.queueExam(this.device, "MrtExam", examProperties);
@@ -202,8 +201,10 @@ export class MrtExamComponent implements OnInit, OnDestroy {
         const pollResults = async () => {
             try {
                 let resp = await this.devicesService.requestResults(this.device!);
+                console.log('REQUESTING RESULTS');
                 if (typeof resp![1] === 'object' && 'State' in resp![1]) {
                   if (resp![1].State === "PLAYING") {
+                    console.log("CALL PollResults after timeout");
                       setTimeout(pollResults, 500);
                   } else if (resp![1].State === "READY") {
                       resolve();
@@ -219,6 +220,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
                 reject(error);
             }
         };
+        console.log("CALL PollResults first time");
         pollResults();
     });
   }
@@ -255,7 +257,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
           acc[snr].nbTrialsCorrect++;
         }
         acc[snr].pctCorrect =
-          (acc[snr].nbTrialsCorrect / acc[snr].nbTrials) * 100;
+          parseFloat(((acc[snr].nbTrialsCorrect / acc[snr].nbTrials) * 100).toFixed(1));
 
         return acc;
       }, {} as Record<number, MrtResultsInterface>)

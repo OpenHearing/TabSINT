@@ -4,8 +4,7 @@ export interface MrtExamInterface extends CommonResponseAreaInterface {
     exportToCSV?: boolean;
     tabsintId?: string;
     examDefinitionFilename: string;
-    numWavChannels?: number;
-    outputChannel?: string[];
+    outputChannel?: string[] | string;
     randomizeTrials?: boolean;
     trialList?: MrtTrialInterface[];
     showResults?: boolean

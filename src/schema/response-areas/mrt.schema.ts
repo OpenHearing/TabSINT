@@ -23,10 +23,10 @@ export const mrtSchema: JSONSchemaType<MrtExamInterface> = {
     exportToCSV: { type: "boolean", nullable: true, default: false },
     tabsintId: { type: "string", nullable: true, default: "1" },
     examDefinitionFilename: { type: "string" },
-    numWavChannels: { type: "number", nullable: true, default: 1 },
     outputChannel: { 
       type: "array",
       items: { type: "string" },
+      minItems: 1,
       nullable: true,
       default: ['HPL0']
     },
