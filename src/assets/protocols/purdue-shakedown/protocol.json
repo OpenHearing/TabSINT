@@ -1,7 +1,7 @@
 {
   "title": "Purdue Protocol Shakedown Testing",
-  "subtitle": "ARDC Survey, Manual Audiometry, Calibration, Swept DPOAE.",
-  "instructionText": "Choose the exam to perform, then view results.",
+  "subtitle": "ARDC Survey, Manual Audiometry, Calibration, Swept DPOAE, WAI, MRT.",
+  "instructionText": "Choose the exams to perform, then view results.",
   "hideProgressBar": true,
   "navMenu":[
     {

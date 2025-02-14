@@ -27,19 +27,28 @@ function validateHeaders(actualHeaders: string[], expectedPositions: { [key: str
     }
   }
 }
+function processOutputChannelValue(value: string): string | string[] {
+  if (value.includes(',')) {
+      return value.split(',').map(item => item.trim());
+  }
+  return value;
+}
 
 function getValueByKey(lines: any[][], key: string): any {
   const line = lines.find((subArray) => subArray[0] === key);
-  return line ? line[1] : undefined;
+  if (!line) return undefined;
+  const values = line.slice(1).filter(value => value !== null);
+  if (values.length === 1) return values[0];
+  if (values.length > 0) return values;
+  return undefined;
 }
 
 async function parseCsvString(csvFileContent: string): Promise<any> {
   const trialList: MrtTrialInterface[] = [];
   const lines: any[][] = await parseCSVAsync(csvFileContent) as any[][];
 
-  const numWavChannels = getValueByKey(lines, 'NUMBER OF CHANNELS') ?? mrtSchema.properties.numWavChannels.default;
   const outputChannel = getValueByKey(lines, 'OUTPUT CHANNELS') 
-    ? [getValueByKey(lines, 'OUTPUT CHANNELS')]
+    ? processOutputChannelValue(getValueByKey(lines, 'OUTPUT CHANNELS'))
     : mrtSchema.properties.outputChannel.default;
   const randomizeTrials = getValueByKey(lines, 'RANDOMIZE TRIALS') ?? mrtSchema.properties.randomizeTrials.default;  
 
@@ -70,7 +79,6 @@ async function parseCsvString(csvFileContent: string): Promise<any> {
     
   return {
     trialList,
-    numWavChannels,
     outputChannel,
     randomizeTrials
   };
@@ -78,9 +86,9 @@ async function parseCsvString(csvFileContent: string): Promise<any> {
 
 export async function loadMrtExamCsv(responseArea: MrtExamInterface, meta: ProtocolMetaInterface): Promise<MrtExamInterface> {
   let csvString;
-  const csvFilePath = '../../protocols/' + meta.name + '/' + responseArea.examDefinitionFilename;
   if (meta.server == ProtocolServer.Developer) {
     try {
+      const csvFilePath = 'assets/' + meta.path + '/' + responseArea.examDefinitionFilename;
       const resp = await fetch(csvFilePath);
       if (!resp.ok) {
         throw new Error(`Failed to fetch the file: ${resp.statusText}`);
