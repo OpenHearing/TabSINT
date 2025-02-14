@@ -8,7 +8,7 @@ Prerequesite:
 
 Welcome Screen
 
-- [ ] Click Documentation and confirm it brings you to tabsint.org
+- [x] Click Documentation and confirm it brings you to tabsint.org
 - [ ] Click Exam View and confirm it brings you to exam view
 - [ ] Click Admin view and confirms it brings you to admin view
 - [ ] Confirm PIN is required to navigate to admin view when admin view is not checked, but not required when it is checked.
