@@ -1,10 +1,8 @@
-5.0.0 beta apk: [app-debug.apk](/uploads/7ca06fdcfbd554531f9223a347cc0d02/app-debug.apk)
-- This apk includes everything listed below, but excludes a few things we will need for the final 5.0.0 release (WAI exam, new manual audiometry GUI, MRT).
+5.0.0 beta apk: [2025-2-13_app-debug.apk](/uploads/76beae8d2eb7b20b6bb5a3164de096d8/2025-2-13_app-debug.apk)
 
 Prerequesite:
 
 - Tympan has the firmware: https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/tree/feature/tympan-dummy-short-swept-dpoae/Sandbox/TabSINTTympanComms/TympanDummy/bin/tympan_revF_develop?ref_type=heads
-- Tympan has an SD Card
 - Uninstall previous tabsint
 - When first installing the app, select the `Documents` folder when prompted.
 
@@ -77,7 +75,7 @@ Likert/Multiple-Input/Textbox
 
 Manual Audiometry
 
-- [ ] Load the `develop` built-in protocol.
+- [ ] Load the `PurdueShakedown` built-in protocol.
 - [ ] Start a manual audiometry exam after connecting to a Tympan using an HDA 200.
 - [ ] Ensure that the left and right ear buttons work correctly:
   - [ ] Click on the left ear button and confirm that the corresponding graph border is outlined in blue.
@@ -107,12 +105,13 @@ Manual Audiometry
   - [ ] If a results page is included in the protocol, it appears after submission.
   - [ ] The results page contains one big plot summarizing all thresholds and plots for both the ears.
   - [ ] Tables for left and right ears accurately reflect the values recorded during the exam.
+- [ ] Complete the Software Testing Procedures section here: https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-tabsint/-/blob/spec-writing/Specifications/manual-audiometry/manual%20audiometry.rst?ref_type=heads
 
 
 
 Calibration Exam
 
-- [ ] Load the `develop` protocol and open the calibration exam. Ensure the calibration exam runs smoothly.
+- [ ] Load the `PurdueShakedown` protocol and open the calibration exam. Ensure the calibration exam runs smoothly.
 - [ ] Verify that tones are played correctly.
 - [ ] Adjust the cal factor and confirm the tone output reflects these changes.
 - [ ] Confirm the calibration, measurement, and max output screens appear in the correct sequence.
@@ -125,9 +124,10 @@ Calibration Exam
 - [ ] Click an entry in the results table and verify it takes you to the corresponding part of the exam.
 - [ ] Confirm you can toggle through the entire sequence of the exam from that point or use the "Skip to Results" button to return to the results table.
 - [ ] Validate that the "Skip to Results" button redirects back to the results table seamlessly.
+- [ ] Complete the Software Testing Procedures section here: https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-tabsint/-/blob/spec-writing/Specifications/headphones_narrowband_calibration/headphones-narrowband-calibration.rst?ref_type=heads
 
-Swept DPOAE exam.
-- [ ] Load the `develop` protocol and open the swept DPOAE exam.
+Swept DPOAE exam. (save this testing for later--real firmware not yet available)
+- [ ] Load the `PurdueShakedown` protocol and open the swept DPOAE exam.
 - [ ] Confirm that the exam parameters match those listed as defaults here: https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/swept_dpoae.rst?ref_type=heads.
 - [ ] Run the exam. 
 - [ ] Confirm the progress bar makes sense. 
@@ -135,12 +135,23 @@ Swept DPOAE exam.
 - [ ] Confirm the results display.
 - [ ] Finish the exam and submit the protocol. Confirm you can view the results in the Admin View Results viewer.
 - [ ] Confirm you can abort the exam.
+- [ ] Complete the Software Testing Procedures section here: https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-tabsint/-/blob/spec-writing/Specifications/swept-oae/swept-oae.rst?ref_type=heads.
+
+WAI exam. (save this testing for later--real firmware not yet available)
+- [ ] Load the `PurdueShakedown` protocol and open the WAI exam.
+- [ ] Confirm that the exam parameters match those listed as defaults here: https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-tabsint/-/blob/spec-writing/Specifications/wideband-acoustic-immittance/wideband-acoustic-immittance.rst?ref_type=heads.
+- [ ] Run the exam. 
+- [ ] Confirm the progress bar makes sense. 
+- [ ] Confirm the data transfers sucessfully, then press Next.
+- [ ] Confirm the results display.
+- [ ] Finish the exam and submit the protocol. Confirm you can view the results in the Admin View Results viewer.
+- [ ] Confirm you can abort the exam.
+- [ ] Complete the Software Testing Procedures section here: https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-tabsint/-/blob/spec-writing/Specifications/wideband-acoustic-immittance/wideband-acoustic-immittance.rst?ref_type=heads.
 
 Purdue Surveys
 - [ ] Load the built-in `PurdueShakedown`
 - [ ] Run through the surveys listed below and confirm they match the associated links. Check for typos, check the the various input types are displayed correctly without funky/bad styling.
   - [ ] Subject Information Sheet: https://crearellc.sharepoint.com/:w:/r/sites/OpenHearingProposal/_layouts/15/Doc.aspx?sourcedoc=%7B85A0449C-7AD6-4C11-99EC-A5F76F749AC4%7D&file=ARDC_Initial_Quesitons.docx&action=default&mobileredirect=true
-  - The following are all on https://crearellc.sharepoint.com/:w:/r/sites/OpenHearingProposal/_layouts/15/Doc.aspx?sourcedoc=%7BF7FE365D-C285-405A-BBA4-1A740FB80EC8%7D&file=ARDC%20Surveys.docx&action=default&mobileredirect=true
   - [ ] ARDC Main Survey: https://purdue.ca1.qualtrics.com/jfe/form/SV_8weRWyCqMZrzP5c 
   - [ ] ARDC Loudness and Annoyance Survey: https://purdue.ca1.qualtrics.com/jfe/form/SV_eJvR9hmx23lHAQB
   - [ ] ARDC Noise Exposure History Survey: https://purdue.ca1.qualtrics.com/jfe/form/SV_9Mk7qqq6LzPu7FX
@@ -153,3 +164,27 @@ Page Submittable logic:
     - https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-tabsint/-/blob/spec-writing/Specifications/headphones_narrowband_calibration/headphones-narrowband-calibration.rst?ref_type=heads
     -  https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-tabsint/-/blob/spec-writing/Specifications/swept-oae/swept-oae.rst?ref_type=heads
     - https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-tabsint/-/blob/spec-writing/Specifications/wideband-acoustic-immittance/wideband-acoustic-immittance.rst?ref_type=heads
+    - 
+MRT exam. (save this testing for later--real firmware not yet available)
+- Tympan has an SD Card
+- The audio files here: "\\Olympus\Projects\1010564-OPEN-HEARING\Technical Work\Testing\Media\2025_0121_MRT_audio_NIST_HARI\96kHz" are on the SD Card in the folder /PurdueMRT/.
+- [ ] Load the `PurdueShakedown` protocol and open the MRT exam.
+- [ ] Review the exam definition here: .
+- [ ] Run the exam. 
+- [ ] Confirm the progress bar makes sense. 
+- [ ] Confirm the exam grades the responses correctly, and the correct responses are shown according to spec: https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-tabsint/-/blob/spec-writing/Specifications/modified-rhyme-test/modified-rhyme-test.rst?ref_type=heads
+- [ ] Confirm the final results display and are accurate.
+- [ ] Finish the exam and submit the protocol. Confirm you can view the results in the Admin View Results viewer.
+- [ ] Confirm you can abort the exam.
+- [ ] Complete the Software Testing Procedures section here: https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-tabsint/-/blob/spec-writing/Specifications/modified-rhyme-test/modified-rhyme-test.rst?ref_type=heads.
+
+Gitlab Protocol Load/Upload
+- [ ] Go to Admin View > Protocols. Under the Protocols tab in the admin view, click on the GitLab button in the source collapsible modal.
+- [ ] Ensure the Repository, Tag, Host, Token, and Group input fields are displayed.
+- [ ] Fill in these fields with the appropriate information and attempt to import a protocol from any GitLab repo/server. If you need an example, use this repo: [GitLab Sandbox Protocol](https://code.crearecomputing.com/hearingproducts/tabsint/tabsint-protocols/tabsint-sandbox-protocol). This repo should import the development protocol along with its associated CSV.
+- [ ] Verify that a popup confirming a successful import appears. Load the protocol if it isn't already loaded and start the exam. Confirm that the exam runs successfully.
+- [ ] Complete the exam, click on the specific result, and select Upload. Ensure the result is uploaded to a parallel results repo (a new repo called results should be created if one doesn’t already exist).
+- [ ] Finish a few more exams to generate multiple results, then click the outer upload button. Verify that all results associated with the GitLab-imported protocol are uploaded to the parallel results repo.
+- [ ] Complete an exam using a local protocol, attempt to upload the result, and confirm that an upload error is triggered.
+- [ ] Provide invalid inputs for the GitLab fields (e.g., incorrect credentials, group, or server) and confirm that appropriate error messages are displayed.
+- [ ] Specify a particular commit in the Version field and ensure that the protocol is successfully imported from that commit without any errors.
