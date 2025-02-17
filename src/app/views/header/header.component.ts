@@ -16,7 +16,6 @@ import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { AppModel } from '../../models/app/app.service';
 import { AppInterface } from '../../models/app/app.interface';
-import { DisclaimerComponent } from '../disclaimer/disclaimer.component';
 import { AdminService } from '../../controllers/admin.service';
 import { PageInterface } from '../../models/page/page.interface';
 import { PageModel } from '../../models/page/page.service';
