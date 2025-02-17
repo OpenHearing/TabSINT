@@ -8,7 +8,6 @@ import { AppInterface } from '../../models/app/app.interface';
 import { DiskModel } from '../../models/disk/disk.service';
 import { AppModel } from '../../models/app/app.service';
 import { Router } from '@angular/router';
-import { DisclaimerComponent } from '../disclaimer/disclaimer.component';
 import { StateModel } from '../../models/state/state.service';
 import { AppState } from '../../utilities/constants';
 import { StateInterface } from '../../models/state/state.interface';

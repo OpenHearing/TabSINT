@@ -147,7 +147,6 @@ export class FileService {
      * @summary This method creates directories used by the application if they do not already exist.
      */
     public async createTabsintDirectoriesIfDontExist() {
-        //TODO: check if directories exist before we add them
         listOfTabsintDirectories.forEach((dir: string) => {
             this.createDirectory(dir);
         })
