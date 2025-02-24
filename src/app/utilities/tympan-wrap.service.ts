@@ -164,7 +164,7 @@ export class TympanWrap {
     private checkForCompleteMsg(deviceId: string): string|undefined {
         let dv = this.TMP_BUFFER[deviceId];
         let msg: string|undefined;
-        if (dv.getUint8(0)==5 && dv.getUint8(dv.buffer.byteLength-1)==2) {
+        if (dv.byteLength>0 && dv.getUint8(0)==5 && dv.getUint8(dv.buffer.byteLength-1)==2) {
             let tmp = new Uint8Array(dv.buffer.slice(0));
             let unescapedArray = this.handleUnescaping(tmp.slice(1,tmp.byteLength-1));
             let crc = unescapedArray.slice(unescapedArray.byteLength-1);
