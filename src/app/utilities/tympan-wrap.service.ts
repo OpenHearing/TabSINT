@@ -90,12 +90,14 @@ export class TympanWrap {
     }
 
     async write(deviceId: string, msg: string) {
+        this.clearTMPBuffer(deviceId);
         let msg_to_write = this.msgToDataView(msg);
         this.logger.debug("TIME - about to write bytes to tympan" + String(Date.now()));
         this.logger.debug("Writing "+JSON.stringify(msg)+" to tympan with ID: "+deviceId);
         await BleClient.write(deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID, msg_to_write);
     }
 
+      
     async connect(deviceId: string, onDisconnect: Function) {
         await BleClient.connect(deviceId, (deviceId: string) => onDisconnect(deviceId));
         this.clearTMPBuffer(deviceId);
@@ -110,8 +112,15 @@ export class TympanWrap {
         this.logger.debug('disconnected from device:'+JSON.stringify(deviceId));
     }
 
-    handleIncomingBytes(deviceId: string, dv: DataView) {
-        this.TMP_BUFFER[deviceId] = this.appendDataView(this.TMP_BUFFER[deviceId],dv);
+    handleIncomingBytes(deviceId: string, dv: DataView) {     
+        let byteArray = new Uint8Array(dv.buffer.slice(dv.byteOffset, dv.byteOffset + dv.byteLength));
+
+        if (!this.isUnhandledByteMessage(byteArray)) {
+            this.TMP_BUFFER[deviceId] = this.appendDataView(this.TMP_BUFFER[deviceId],dv);
+        } else {
+            this.logger.debug(`Unhandled byte sequence detected and ignored: ${this.formatHexArray(byteArray)}`);        
+        }
+
         let tabsintId: string|undefined = this.deviceUtil.getTabsintIdFromDeviceId(deviceId);
         let msg = this.checkForCompleteMsg(deviceId);
         
@@ -124,6 +133,11 @@ export class TympanWrap {
         Byte parsing and DataView handling functions
     */
 
+    private formatHexArray(byteArray: Uint8Array): string {
+        const hexArray: string[] = Array.from(byteArray, (byte) => `0x${byte.toString(16).padStart(2, '0').toUpperCase()}`);
+        return `[${hexArray.join(', ')}]`;
+    }
+    
     private msgToDataView(str: string): DataView {
         let start_byte = new Uint8Array([5]);
         let end_byte = new Uint8Array([2]);
@@ -131,6 +145,20 @@ export class TympanWrap {
         let crc = this.genCRC8Checksum(buf);
         let msgToSend = new Uint8Array([...start_byte, ...this.handleEscaping(buf), ...this.handleEscaping(crc), ...end_byte])
         return new DataView(msgToSend.buffer)
+    }
+
+    private isUnhandledByteMessage(byteArray: Uint8Array): boolean {
+        const unhandledSequences = [
+            [0x55, 0x6E, 0x68, 0x61, 0x6E, 0x64, 0x6C, 0x65, 0x64, 0x20, 0x62, 0x79, 0x74, 0x65, 0x20, 0x72, 0x65, 0x63], // "Unhandled byte rec"
+            [0x65, 0x69, 0x76, 0x65, 0x64, 0x3A, 0x20, 0x27, 0x5C, 0x78, 0x61, 0x27], // "eived: '\xa'"
+            [0x0A] // Single newline byte
+        ];
+    
+        return unhandledSequences.some(seq => this.arrayEquals(byteArray, seq));
+    }
+    
+    private arrayEquals(a: Uint8Array, b: number[]): boolean {
+        return a.length === b.length && a.every((val, index) => val === b[index]);
     }
 
     private checkForCompleteMsg(deviceId: string): string|undefined {
