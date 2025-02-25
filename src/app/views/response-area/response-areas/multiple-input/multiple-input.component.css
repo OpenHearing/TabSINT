@@ -2,3 +2,12 @@
     font-style: italic;
     text-align: left
 }
+
+.wide-dropdown {
+  width: 350px;
+}
+
+.custom-dropdown-panel {
+  min-width: 300px !important;
+  max-width: 500px !important;
+}

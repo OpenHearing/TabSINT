@@ -193,7 +193,7 @@
                 ]
               },
               {
-                "text": "Are you a native speaker of American English?",
+                "text": "Do you speak other languages other than English?",
                 "inputType": "dropdown",
                 "options": [
                   "Yes",
@@ -201,12 +201,8 @@
                 ]
               },
               {
-                "text": "Do you speak other languages other than English?",
-                "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "text": "If yes, what languages?",
+                "inputType": "text"
               },
               {
                 "text": "Are you on an F1 or J1 Visa?",
@@ -314,12 +310,36 @@
                 ]
               },
               {
+                "text": "If yes, at what age?",
+                "inputType": "number"
+              },
+              {
+                "text": "If yes, which ear was affected?",
+                "inputType": "dropdown",
+                "options": [
+                  "yes",
+                  "no"
+                ]
+              },
+              {
                 "text": "Have you ever had a job where you were routinely exposed to very loud sounds, such as military experience with artillery, construction or factory work?",
                 "inputType": "dropdown",
                 "options": [
                   "yes",
                   "no"
                 ]
+              },
+              {
+                "text": "If yes, at what age(s) and for how long?",
+                "inputType": "text"
+              },
+              {
+                "text": "If yes, about what percentage of the time did you use ear protection?",
+                "inputType": "number"
+              },
+              {
+                "text": "If yes, please describe the job(s)",
+                "inputType": "text"
               },
               {
                 "text": "Have you ever had any hobbies that involved loud sounds, such as hunting, riding motorcycles, carpentry, frequently attending concerts?",
@@ -330,6 +350,18 @@
                 ]
               },
               {
+                "text": "If yes, at what age(s) and for how long?",
+                "inputType": "text"
+              },
+              {
+                "text": "If yes, about what percentage of the time did you use ear protection?",
+                "inputType": "number"
+              },
+              {
+                "text": "If yes, please describe the hobby(ies)",
+                "inputType": "text"
+              },
+              {
                 "text": "Have you ever experienced temporary noises (ringing, buzzing, hiss, swishing, etc...) in your ears after exposure to loud sounds?",
                 "inputType": "dropdown",
                 "options": [
@@ -338,12 +370,24 @@
                 ]
               },
               {
+                "text": "If yes, how often do you experience these noises (occasionally, constantly)?",
+                "inputType": "text"
+              },
+              {
                 "text": "Have you ever temporarily lost your hearing?",
                 "inputType": "dropdown",
                 "options": [
                   "yes",
                   "no"
                 ]
+              },
+              {
+                "text": "If yes, at what age(s) and for how long?",
+                "inputType": "text"
+              },
+              {
+                "text": "If yes, what was the cause?",
+                "inputType": "text"
               }
             ]
           }
@@ -626,7 +670,7 @@
               },
               {
                 "text": "If yes, (a) list the sounds and (b) rate how irritating each sound is on a 0 (not at all) to 100 (extremely) scale:",
-                "inputType": "number"
+                "inputType": "text"
               },
               {
                 "text": "Are you bothered by bright lights?",
@@ -736,6 +780,10 @@
                   "Retired",
                   "Other. Please specify:"
                 ]
+              },
+              {
+                "text": "If researcher or other, please specify:",
+                "inputType": "number"
               },
               {
                 "text": "Is your hearing particularly important for your job or for activities you do often? Or for any other research studies you may have participated in recently? (Some examples: birding, sound engineer, other research studies on hearing, playing a musical instrument.)",

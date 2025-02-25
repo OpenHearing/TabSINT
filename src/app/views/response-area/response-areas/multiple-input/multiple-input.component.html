@@ -20,11 +20,13 @@
           />
   
           <!-- Dropdown -->
-          <mat-form-field appearance="fill" *ngIf="item.inputType === 'dropdown'">
+          <mat-form-field appearance="fill" *ngIf="item.inputType === 'dropdown'"
+          [ngClass]="{'wide-dropdown': isWideDropdown(item.options!)}">
             <mat-label>Select an option</mat-label>
             <mat-select
               [(ngModel)]="results.currentPage.response[itemIdx]"
               (selectionChange)="selectResponse(itemIdx, $event.value)"
+              [panelClass]="isWideDropdown(item.options!) ? 'custom-dropdown-panel' : ''"
             >
               <mat-option *ngFor="let option of item.options" [value]="option">
                 {{ option }}
@@ -55,13 +57,15 @@
           />
   
           <!-- Multi-dropdown -->
-          <mat-form-field *ngIf="item.inputType === 'multi-dropdown'">
+          <mat-form-field *ngIf="item.inputType === 'multi-dropdown'"
+          [ngClass]="{'wide-dropdown': isWideMultiDropdown(multiDropdownJson[itemIdx])}">
             <mat-label>Select options</mat-label>
             <mat-select 
               [id]="'itemID' + itemIdx"
               [(ngModel)]="multiDropdownModel[itemIdx]"
               (selectionChange)="selectMultiResponse(itemIdx)"
-              multiple>
+              multiple
+              [panelClass]="isWideMultiDropdown(multiDropdownJson[itemIdx]) ? 'custom-dropdown-panel' : ''">
               <mat-option
                 *ngFor="let option of multiDropdownJson[itemIdx]"
                 [value]="option.label"
@@ -70,6 +74,7 @@
               </mat-option>
             </mat-select>
           </mat-form-field>
+
         </div>
         <div class="notes" *ngIf="item.notes !== null"><i>{{ item.notes }}</i></div>
       </div>

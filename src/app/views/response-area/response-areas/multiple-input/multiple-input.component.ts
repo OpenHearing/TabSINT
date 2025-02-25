@@ -90,6 +90,14 @@ export class MultipleInputComponent  implements OnInit {
     return val !== undefined;
   }
 
+  isWideDropdown(options: any[]): boolean {
+    return options.some(option => option.length > 20);
+  }  
+
+  isWideMultiDropdown(options: any[]): boolean {
+    return options.some(option => option.label.length > 20);
+  }  
+
   private initializeConfigurationVariables(updatedMultipleInputResponseArea: MultipleInputInterface) {    
     this.verticalSpacing = updatedMultipleInputResponseArea.verticalSpacing ?? multipleInputSchema.properties.verticalSpacing.default;
     this.textAlign = updatedMultipleInputResponseArea.textAlign ?? multipleInputSchema.properties.textAlign.default;
