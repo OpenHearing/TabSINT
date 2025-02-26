@@ -1261,6 +1261,7 @@
                 "options": [
                   "Never",
                   "Every few months",
+                  "Monthly",
                   "Weekly",
                   "Daily"
                 ]
@@ -1527,7 +1528,12 @@
               {
                 "text": "If you were around/shot firearms, on average, how many shots did you fire each time/session?",
                 "inputType": "text",
-                "notes": "Shotgun/rifle shots per session and pistol shots per session should be specified."
+                "notes": "Shotgun/rifle shots per session:"
+              },
+              {
+                "text": "If you were around/shot firearms, on average, how many shots did you fire each time/session?",
+                "inputType": "text",
+                "notes": "Pstiol shots per session:"
               },
               {
                 "text": "If you were around/shot firearms, how often did you wear earplugs or earmuffs while shooting?",
@@ -1756,7 +1762,7 @@
                 "inputType": "text"
               },
               {
-                "text": "If you worked a noisy job, please estimate the number of hours you worked in a typical week. Hours worked per typical week this summer:",
+                "text": "If you worked a noisy job, please estimate the number of hours you worked in a typical week.",
                 "inputType": "number"
               },
               {
@@ -2470,14 +2476,18 @@
             "type": "multipleInputResponseArea",
             "responseRequired": false,
             "inputList": [
-            {
-              "text": "Are you regularly exposed to loud noise at work in your current job/s? By loud noise, we mean noise loud enough that you have to raise your voice to be heard by someone at arm's length. This may include power tools or machinery, or loud music or crowds of people.",
-              "inputType": "dropdown",
-              "options": [
-                "Yes",
-                "No"
-              ]
-            }
+              {
+                "text": "Are you regularly exposed to loud noise at work in your current job/s? By loud noise, we mean noise loud enough that you have to raise your voice to be heard by someone at arm's length. This may include power tools or machinery, or loud music or crowds of people.",
+                "inputType": "dropdown",
+                "options": [
+                  "Yes",
+                  "No"
+                ]
+              },
+              {
+                "text": "If yes, please describe what the sources of noise are, and how long you are exposed to them per day:",
+                "inputType": "text"
+              }
             ]
           }
         },
