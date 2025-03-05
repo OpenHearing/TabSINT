@@ -18,7 +18,7 @@ export const multipleInputSchema: JSONSchemaType<MultipleInputInterface> = {
       type: "string",
       nullable: true,
       enum: ["left", "right", "center"],
-      default: "center",
+      default: "left",
       description: "Horizontal alignment of text labels",
     },
     review: {

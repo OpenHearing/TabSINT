@@ -114,11 +114,8 @@ export class ExamService {
     }
 
     submitPartial() {
-        this.currentPage.followOns = [{
-            conditional: "true",
-            target: { reference: "@PARTIAL"}
-        }];
         this.submitDefault();
+        this.endExam();
     }
 
     navigateToTarget(subProtocolID: string) {

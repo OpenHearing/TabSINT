@@ -41,13 +41,13 @@
 </main>
 
 <!-- Footer (incl. buttons) -->
-<nav class="navbar-fixed-bottom exam-footer">
+<nav  [class.hidden]="isKeyboardVisible" class="navbar-fixed-bottom exam-footer">
     <div class="container-fluid">
       <div class="row response-buttons" *ngIf="state.examState===ExamState.Ready">
         <div class="col-6">
           <button id="help-btn" type="button"
                   class="btn btn-block btn-lg btn-default btn-centered"
-                  [ngClass]="currentPage?.helpText ? '' : 'disabled custom-disabled'"
+                  [ngClass]="currentPage.helpText ? '' : 'disabled custom-disabled'"
                   (click)="help()">
             <span class="ion-help-circled"></span> {{'Help'|translate}}
           </button>

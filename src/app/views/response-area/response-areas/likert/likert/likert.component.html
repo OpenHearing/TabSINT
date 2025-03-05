@@ -74,6 +74,7 @@
     <label>
       <input
         type="checkbox"
+        [(ngModel)]="isNotApplicable[questionIndex]"
         (change)="onNotApplicableChange(questionIndex, $event)"/>
       Not Applicable
     </label>
