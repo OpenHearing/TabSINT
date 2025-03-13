@@ -297,8 +297,9 @@
                 "text": "Have you ever had tubes put in your eardrum(s)?",
                 "inputType": "dropdown",
                 "options": [
-                  "Yes",
-                  "No"
+                  "Right",
+                  "Left",
+                  "Both"
                 ]
               },
               {
@@ -1533,7 +1534,7 @@
               {
                 "text": "If you were around/shot firearms, on average, how many shots did you fire each time/session?",
                 "inputType": "text",
-                "notes": "Pstiol shots per session:"
+                "notes": "Pistol shots per session:"
               },
               {
                 "text": "If you were around/shot firearms, how often did you wear earplugs or earmuffs while shooting?",
