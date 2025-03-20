@@ -9,7 +9,7 @@ variables:
   DOCKER_TLS_CERTDIR: ""
   DOCKER_DRIVER: overlay2
   IMAGE_TAG_BASE: $CI_REGISTRY_IMAGE
-  DOCKER_AUTH_CONFIG: '{"auths": {"$CI_REGISTRY": {"auth": "'$(echo -n "gitlab-ci-token:$CI_PROJECT_REGISTRY_TOKEN" | base64)'"}}}'
+  DOCKER_AUTH_CONFIG: '{"auths": {"$CI_REGISTRY": {"auth": "$(echo -n "gitlab-ci-token:$CI_PROJECT_REGISTRY_TOKEN" | base64)"}}}'
 
 stages:
   - build-docker-image
