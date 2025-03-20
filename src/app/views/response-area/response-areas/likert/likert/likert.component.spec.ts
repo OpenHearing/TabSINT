@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { BehaviorSubject } from 'rxjs';
 
 import { LikertComponent } from './likert.component';
@@ -70,12 +70,13 @@ describe('LikertComponent', () => {
 
   it('should emit response change when onResponseChange is called', () => {
     spyOn(component.responseChange, 'emit');
+    mockResultsModel.resultsModel.currentPage.response = [0];
     component.onResponseChange(0, 2);
     expect(mockResultsModel.resultsModel.currentPage.response[0]).toEqual(2);
     expect(component.responseChange.emit).toHaveBeenCalledWith(mockResultsModel.resultsModel.currentPage.response);
   });
 
-  it('should subscribe to pageModel currentPageSubject and update questions', () => {
+  it('should subscribe to pageModel currentPageSubject and update questions', fakeAsync(() => {
     const updatedPage = {
       responseArea: {
         type: 'likertResponseArea',
@@ -89,11 +90,12 @@ describe('LikertComponent', () => {
     };
 
     mockPageModel.currentPageSubject.next(updatedPage);
+    tick();
     fixture.detectChanges();
 
     expect(component.questions).toEqual(['Updated Question 1', 'Updated Question 2']);
     expect(component.levels).toEqual(7);
     expect(component.labels).toEqual(['Never', 'Always']);
     expect(component.useEmoticons).toBeTrue();
-  });
+  }));
 });
