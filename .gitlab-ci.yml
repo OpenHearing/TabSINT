@@ -28,7 +28,7 @@ build-docker-image:
     - shell
     - privileged
   script:
-    - docker login -u $CI_REGISTRY_USER --password-stdin $CI_PROJECT_REGISTRY_TOKEN $CI_REGISTRY
+    - echo "$CI_PROJECT_REGISTRY_TOKEN" | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
     - SAFE_COMMIT_REF_NAME=$(echo "$CI_COMMIT_REF_NAME" | tr '/' '-')
     - IMAGE_TAG="$IMAGE_TAG_BASE:$SAFE_COMMIT_REF_NAME"
     - docker build -t $IMAGE_TAG .
