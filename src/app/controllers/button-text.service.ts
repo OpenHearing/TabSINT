@@ -5,7 +5,7 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class ButtonTextService {
-  private buttonTextSubject = new BehaviorSubject<string>('Submit');
+  private readonly buttonTextSubject = new BehaviorSubject<string>('Submit');
   buttonText$ = this.buttonTextSubject.asObservable();
 
   updateButtonText(newText: string): void {

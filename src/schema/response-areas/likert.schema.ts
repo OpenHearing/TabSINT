@@ -46,6 +46,18 @@ export const likertSchema: JSONSchemaType<LikertInterface> = {
       },
       nullable: true
     },
+    useSlider: {
+      type: "boolean",
+      description: "If true, use a slider to 1 decimal acuracy to record the answer.",
+      nullable: true,
+      default: false
+    },
+    naBox: {
+      type: "boolean",
+      description: "If true, use a 'Not Applicable' textbox.",
+      nullable: true,
+      default: false
+    },
   },
-  required: [],
+  required: ["type"],
 };

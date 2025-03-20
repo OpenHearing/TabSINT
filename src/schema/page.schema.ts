@@ -12,6 +12,8 @@ import { calibrationExamSchema } from "./response-areas/calibration-exam.schema"
 import { multipleInputSchema } from "./response-areas/multiple-input.schema";
 import { likertSchema } from "./response-areas/likert.schema";
 import { sweptDpoaeSchema } from "./response-areas/swept-dpoae.schema";
+import { waiSchema } from "./response-areas/wai.schema";
+import { mrtSchema } from "./response-areas/mrt.schema";
 
 export const pageSchema: JSONSchemaType<PageDefinition> = {
     $id: "page_base",
@@ -37,14 +39,14 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
       helpText: { type: "string", nullable: true },
       resultMainText: { type: "string", nullable: true },
       resultSubText: { type: "string", nullable: true },
-      repeatPage: { 
+      repeatPage: {
         type: "object",
         properties: {
             nRepeats: { type: "number", default: 2 },
             repeatIf: { type: "string", nullable: true },
         },
         required: ["nRepeats"],
-        nullable: true 
+        nullable: true
       },
       preProcessFunction: { type: "string", nullable: true },
       wavfileStartDelayTime: { type: "number", nullable: true, minimum: 0, default: 1000 },
@@ -57,25 +59,25 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
         nullable: true,
       },
       chaStream: { type: "boolean", nullable: true, default: false },
-      image: { 
+      image: {
         type: "object",
         properties: {
           path: { type: "string" },
           width: { type: "string", nullable: true, default: "100%" },
         },
-        required: ["path"], 
-        nullable: true 
+        required: ["path"],
+        nullable: true
       },
-      video: { 
+      video: {
         type: "object",
         properties: {
           path: { type: "string" },
           width: { type: "string", nullable: true, default: "100%" },
           autoplay: { type: "boolean", nullable: true, default: false },
           noSkip: { type: "boolean", nullable: true, default: false },
-        }, 
-        nullable: true, 
-        required: ["path"] 
+        },
+        nullable: true,
+        required: ["path"]
       },
       responseArea: {
         type: "object",
@@ -87,16 +89,17 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
           manualAudiometrySchema,
           calibrationExamSchema,
           likertSchema,
-          sweptDpoaeSchema
-        ], 
+          sweptDpoaeSchema,
+          waiSchema,
+          mrtSchema
+        ],
         required: ["type"],
         nullable: true
       },
       submitText: { type: "string", nullable: true, default: "Submit" },
-      followOns: { type: "array", items: followOnSchema, nullable: true }, 
+      followOns: { type: "array", items: followOnSchema, nullable: true },
       setFlags: { type: "array", items: setFlagSchema, nullable: true }
     },
     required: ["id"],
     additionalProperties: true,
   };
-  

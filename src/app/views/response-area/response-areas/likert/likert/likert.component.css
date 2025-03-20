@@ -1,3 +1,4 @@
+/* General Styling */
 .likert-container {
   text-align: center;
   margin: 20px 0;
@@ -11,8 +12,123 @@
   font-style: normal;
 }
 
-.likert-scale {
+/* Labels */
+.likert-labels {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-weight: bold;
+  font-size: 1.2rem;
+  flex-grow: 1
+}
+
+.likert-label-above {
+  padding: 0 10px;
+}
+
+.likert-label-below {
+  padding: 0 10px 50px 10px;
+}
+
+.align-left {
+  text-align: left;
+  flex-grow: 1;
+}
+.align-right {
+  text-align: right;
+  flex-grow: 1;
+}
+
+.center-align {
+  text-align: center;
+}
+
+/* Slider */
+.likert-slider-container {
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
+  width: 90%;
+  max-width: 600px;
+  margin: 0 auto;
+  height: 40px;
+}
+
+.custom-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: calc(100% + 10px);
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    transparent 0px,
+    transparent 5px,
+    #000 5px,
+    #000 calc(100% - 5px),
+    transparent calc(100% - 5px),
+    transparent 100%
+  );
+  outline: none;
+}
+
+.custom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 10px;
+  height: 25px;
+  background: #000;
+  clip-path: polygon(0% 0%, 100% 0%, 100% 70%, 50% 100%, 0% 70%);
+  transform: translateY(-50%);
+}
+
+.hidden-cursor::-webkit-slider-thumb {
+  visibility: hidden;
+}
+
+/* Ticks */
+.ruler {
+  display: flex;
+  position: relative;
+  height: 20px;
+  justify-content: space-between;
+  margin-top: -10px;
+  width: 100%;
+}
+
+.tick {
+  position: absolute;
+  bottom: 0;
+  width: 1px;
+  background: #000;
+}
+
+.major-tick {
+  height: 20px;
+}
+
+.minor-tick {
+  height: 10px;
+  background: #888;
+}
+
+/* Buttons for Major Ticks */
+.tick-button {
+  position: absolute;
+  top: 25px;
+  transform: translateX(-50%);
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+.tick-button:hover {
+  font-weight: bold;
+  font-size: 1.4rem;
+}
+
+/* Button Mode */
+.likert-scale {
   justify-content: space-between;
   width: 100%;
 }
@@ -26,9 +142,9 @@
   cursor: pointer;
   border: none;
   background: none;
-  font-size: 1.3rem; /* Adjust for emoticons or numbers */
+  font-size: 1.3rem;
   padding: 10px;
-  flex-grow: 1; /* Make each option stretch evenly */
+  flex-grow: 1;
   transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
@@ -37,41 +153,23 @@
   background-color: #f0f0f0;
   border-radius: 5px;
 }
-
 .likert-option.selected {
   font-weight: bold;
   font-size: 1.4rem;
   border: 2px solid black; /* Add black border when selected */
   border-radius: 5px; /* Optional: Make the border rounded */
 }
-  
-.likert-labels {
-  display: flex;
-  justify-content: space-between; /* Evenly space labels */
-  width: 100%; /* Full width for labels */
-  font-weight: bold;
-  font-size: 1.2rem;
-  flex-grow: 1
-}
-
-.likert-label-below {
-  padding: 0 10px 50px 10px;
-}
-
-.likert-label-above {
-  padding: 0 10px 0 10px;
-}
-
-.align-left {
-  text-align: left;
-  flex-grow: 1;
-}
-
-.align-right {
+/* Not Applicable Checkbox */
+.likert-footer {
   text-align: right;
-  flex-grow: 1;
+  margin-top: 10px;
 }
 
-.center-align {
-  text-align: center;
+.likert-footer label {
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.likert-footer input[type="checkbox"] {
+  margin-right: 5px;
 }

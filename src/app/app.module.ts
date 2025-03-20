@@ -94,6 +94,13 @@ import { SweptDpoaeExamComponent } from './views/response-area/response-areas/sw
 import { SweptDpoaeInputParametersComponent } from './views/response-area/response-areas/swept-dpoae/swept-dpoae-input-parameters/swept-dpoae-input-parameters.component';
 import { SweptDpoaeInProgressComponent } from './views/response-area/response-areas/swept-dpoae/swept-dpoae-in-progress/swept-dpoae-in-progress.component';
 import { SweptDpoaeResultsComponent } from './views/response-area/response-areas/swept-dpoae/swept-dpoae-results/swept-dpoae-results.component';
+import { WAIExamComponent } from './views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.component';
+import { WAIInProgressComponent } from './views/response-area/response-areas/wideband-acoustic-immittance/wai-in-progress/wai-in-progress.component';
+import { WAIInputParametersComponent } from './views/response-area/response-areas/wideband-acoustic-immittance/wai-input-parameters/wai-input-parameters.component';
+import { WAIResultsComponent } from './views/response-area/response-areas/wideband-acoustic-immittance/wai-results/wai-results.component';
+import { BuildDetailsComponent } from './views/build-details/build-details.component';
+import { MrtExamComponent } from './views/response-area/response-areas/mrt/mrt-exam/mrt-exam.component';
+import { MrtResultsComponent } from './views/response-area/response-areas/mrt/mrt-results/mrt-results.component';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -146,6 +153,13 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     SweptDpoaeInputParametersComponent,
     SweptDpoaeInProgressComponent,
     SweptDpoaeResultsComponent,
+    WAIExamComponent,
+    WAIInputParametersComponent,
+    WAIInProgressComponent,
+    WAIResultsComponent,
+    BuildDetailsComponent,
+    MrtExamComponent,
+    MrtResultsComponent
   ],
   imports: [
     BrowserModule,

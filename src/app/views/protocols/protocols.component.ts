@@ -1,15 +1,12 @@
 import { Component } from '@angular/core';
-import _ from 'lodash';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
-
-
+import _ from 'lodash';
 import { DialogDataInterface } from '../../interfaces/dialog-data.interface';
 import { ProtocolSchemaInterface } from '../../interfaces/protocol-schema.interface';
 import { StateInterface } from '../../models/state/state.interface';
 import { ProtocolInterface, ProtocolMetaInterface, ProtocolModelInterface } from '../../models/protocol/protocol.interface';
 import { DiskInterface } from '../../models/disk/disk.interface';
-
 import { DiskModel } from '../../models/disk/disk.service';
 import { ProtocolModel } from '../../models/protocol/protocol-model.service';
 import { StateModel } from '../../models/state/state.service';
@@ -19,7 +16,6 @@ import { Logger } from '../../utilities/logger.service';
 import { Notifications } from '../../utilities/notifications.service';
 import { Tasks } from '../../utilities/tasks.service';
 import { FileService } from '../../utilities/file.service';
-
 import { DialogType, ProtocolServer } from '../../utilities/constants';
 import { getProtocolMetaData } from '../../utilities/protocol-helper-functions';
 import { partialMetaDefaults } from '../../utilities/defaults';
@@ -35,6 +31,14 @@ export class ProtocolsComponent {
   diskSubscription: Subscription | undefined;
   protocolModel: ProtocolModelInterface;
   state: StateInterface;
+  selectedSource = 'device';
+  gitlabConfig = {
+    repository: '',
+    tag: '',
+    host: 'https://gitlab.com/',
+    token: '',
+    group: ''
+  };
 
   constructor (
     private readonly diskModel: DiskModel,
@@ -62,6 +66,10 @@ export class ProtocolsComponent {
 
   ngOnDestroy() {
     this.diskSubscription?.unsubscribe();
+  }
+
+  setSource(source: string) {
+    this.selectedSource = source;
   }
 
   getAvailableProtocols(): { key: string; value: ProtocolMetaInterface }[] {
@@ -139,6 +147,43 @@ export class ProtocolsComponent {
       this.logger.error(""+ error);
     }
   }
+
+  async fetchGitlabProtocol() {
+    try {
+      if (!this.gitlabConfig.host || !this.gitlabConfig.token || !this.gitlabConfig.group || !this.gitlabConfig.repository) {
+        throw new Error("Missing required GitLab configuration. Please specify a GitLab host, token, group, and repository.");
+      }
+      const headers = new Headers({ 'PRIVATE-TOKEN': this.gitlabConfig.token });
+      const projectId = await this.getGitlabProjectId(this.gitlabConfig.host,this.gitlabConfig.repository,this.gitlabConfig.group,headers)
+      const ref = await this.getGitlabRef(projectId, headers);
+      const localDir = `.tabsint-protocols/${this.gitlabConfig.repository}`;
+      const [protocolContent, folderUri] = await this.downloadAndSaveFiles(projectId, ref, this.gitlabConfig.host,headers, localDir);
+      
+
+    const protocol = {
+      ...partialMetaDefaults,
+      name: this.gitlabConfig.repository,
+      server: ProtocolServer.Gitlab,
+      contentURI: folderUri,
+      admin: false,
+      gitlabConfig: { ...this.gitlabConfig, tag: ref },
+      ...protocolContent
+    };
+
+    this.updateDiskModel(protocol);
+
+    this.notifications.alert({
+        title: "Success",
+        content: `Protocol '${protocol.name}' imported successfully from GitLab.`,
+        type: DialogType.Confirm
+    });
+
+    } catch (error: any) {
+        this.handleGitlabError(error);
+    }
+  }
+
+  
 
   isProtocolActive(): boolean {
     return this.isActive(this.selected);
@@ -228,92 +273,98 @@ export class ProtocolsComponent {
       // );
   };
 
-  update(): void { //this is for Gitlab server, do this later
-      if (!this.selected) {
-          return;
-      }
+  async update(): Promise<void> {
+    if (!this.selected || this.selected.server !== ProtocolServer.Gitlab) {
+        this.notifications.alert({
+            title: "Error",
+            content: "Selected protocol was not imported from GitLab.",
+            type: DialogType.Alert
+        });
+        return;
+    }
 
-      // check to see if task is already running (shouldn't even be able to get to this state)
-      // if (tasks.isOngoing("updating")) {
-      //   this.logger.warn("Task still in progress...");
-      //     notifications.alert("Task still in progress..."));
-      //     return;
-      // }
+    try {
+        this.tasks.register("updating", `Checking for updates for ${this.selected.name}...`);
 
-      // if (protocol.isActive(selected)) {
-      //     notifications.alert(
-      //         "Update protocol ") +
-      //         this.selected.name +
-      //         "? " +
-      //         "The current test will be reset"),
-      //         function(buttonIndex) {
-      //             if (buttonIndex === 1) {
-      //                 tasks.register("updating", "Updating Protocol");
-      //                 updateProtocol()
-      //                     .then(function() {
-      //                         return protocol.load(this.selected, this.disk.validateProtocols, false);
-      //                     })
-      //                     .then(examLogic.reset)
-      //                     .finally(function() {
-      //                         tasks.deregister("updating");
-      //                     });
-      //             }
-      //         }
-      //     );
-      // } else {
-      //     notifications.alert("Update protocol ") + this.selected.name + "?", function(
-      //         buttonIndex
-      //     ) {
-      //         if (buttonIndex === 1) {
-      //             tasks.register("updating", "Updating Protocol");
-      //             updateProtocol().finally(function() {
-      //                 tasks.deregister("updating");
-      //             });
-      //         }
-      //     });
-      // }
+        const selectedGitlabConfig = this.selected.gitlabConfig;
+        if (!selectedGitlabConfig) {
+            throw new Error("GitLab configuration is missing for the selected protocol.");
+        }
+        this.logger.debug("Printing selected protocols gitlab configuration")
+        this.logger.debug(JSON.stringify(selectedGitlabConfig));
+        if(!selectedGitlabConfig.host || !selectedGitlabConfig.token || !selectedGitlabConfig.group || !selectedGitlabConfig.repository) {
+          throw new Error("Missing required GitLab configuration. Please specify a GitLab host, token, group, and repository.");
+        }
+        const headers = new Headers({ 'PRIVATE-TOKEN': selectedGitlabConfig.token });
+        const projectId = await this.getGitlabProjectId(selectedGitlabConfig.host,selectedGitlabConfig.repository,selectedGitlabConfig.group,headers);
+        this.logger.debug(`Project id is -- ${projectId}`);
+        const latestCommitHash = await this.getLatestCommitHash(selectedGitlabConfig.host,projectId, headers);
+        this.logger.debug(`Latest commit hash: ${latestCommitHash}`);
 
-      // const updateProtocol = (): Promise<any> => {
-      //     if (this.selected!.server === ProtocolServer.Gitlab) {
-      //         return gitlab
-      //             .pull(this.selected!.repo)
-      //             .then((repo) => {
-      //                 // update protocols on disk
-      //                 const pidx = _.findIndex(this.disk.loadedProtocols, {
-      //                     path: paths.data(paths.gitlab(repo))
-      //                 });
-      //                 if (pidx !== -1) {
-      //                     this.disk.loadedProtocols[pidx] = gitlab.defineProtocol(repo);
-      //                     return autoConfig.checkMedia(this.selected);
-      //                 } else {
-      //                   this.logger.error("Protocol path was not found in disk.protocols");
-      //                     return $q.reject();
-      //                 }
-      //             })
-      //             .catch((e: Error) => {
-      //                 if (e && e.message) {
-      //                     notifications.alert(e.message);
-      //                 } else {
-      //                     this.logger.error(
-      //                         `Unknown failure while pulling gitlab protocol ${
-      //                           this.selected.repo.host
-      //                         } ${this.selected.repo.group} ${this.selected.repo.name} ${
-      //                           this.selected.repo.token
-      //                         } with error: ${angular.toJson(e)}`
-      //                     );
-      //                     notifications.alert(
-      //
-      //                             "TabSINT encountered an issue while updating the repository. Please verify the repository location and version and upload the application logs if the issue persists."
-      //                         )
-      //                     );
-      //                 }
-      //             });
-      //     } else {
-      //         // handle other server types if needed
-      //         return Promise.resolve();
-      //     }
-      // }
-  };
+        if (selectedGitlabConfig.tag === latestCommitHash) {
+            this.notifications.alert({
+                title: "Up-to-date",
+                content: "Your protocol is already up-to-date.",
+                type: DialogType.Confirm
+            });
+            this.tasks.deregister("updating");
+            return;
+        }
+
+        this.logger.debug(`Protocol is outdated. Checking if protocol.json has changed...`);
+
+        const fileUrl = `${selectedGitlabConfig.host}/api/v4/projects/${projectId}/repository/files/protocol.json/raw?ref=${latestCommitHash}`;
+
+        const latestProtocolJson = await this.fetchGitlabData(fileUrl,headers,"Failed to fetch protocol.json:",)
+        const localDir = `.tabsint-protocols/${selectedGitlabConfig.repository}`;
+        const localProtocolFile = await this.fileService.readFile(`${localDir}/protocol.json`);
+
+        if (localProtocolFile) {
+            const localProtocolJson = JSON.parse(localProtocolFile.content);
+
+            if (_.isEqual(localProtocolJson, latestProtocolJson)) {
+                this.notifications.alert({
+                    title: "No Changes Detected",
+                    content: "The protocol.json file has not changed in the latest commit.",
+                    type: DialogType.Confirm
+                });
+                this.tasks.deregister("updating");
+                return;
+            }
+        } else {
+          throw new Error("Could not read local protocol.json file.");
+        }
+        
+        this.logger.debug(`protocol.json has changed. Updating protocol...`);
+
+        const [protocolContent,localDirUri] = await this.downloadAndSaveFiles(projectId,latestCommitHash,selectedGitlabConfig.host,headers,localDir);
+        const updatedProtocol: ProtocolInterface = {
+            ...partialMetaDefaults,
+            name: selectedGitlabConfig.repository,
+            server: ProtocolServer.Gitlab,
+            contentURI: localDirUri,
+            admin: false,
+            gitlabConfig: { ...selectedGitlabConfig, tag: latestCommitHash },
+            ...protocolContent
+        };
+
+        this.updateDiskModel(updatedProtocol);
+
+        this.notifications.alert({
+            title: "Success",
+            content: `Protocol '${this.selected?.name}' has been updated successfully.`,
+            type: DialogType.Confirm
+        });
+
+    } catch (error: any) {
+        this.handleGitlabError(error);
+    } finally {
+        this.tasks.deregister("updating");
+    }
+}
+
+
+
 
   gitlabButtonClass(): string {
     return this.disk.server === ProtocolServer.Gitlab
@@ -342,6 +393,125 @@ export class ProtocolsComponent {
             && this.protocolModel.activeProtocol.path == p.path)
         || false;
   };
+
+  private async fetchGitlabData(url: string, headers: Headers, errorMessagePrefix: string) {
+    const response = await fetch(url, { headers });
+
+    if (!response.ok) {
+        if (response.status === 401) throw new Error("Unauthorized: Check your GitLab credentials.");
+        throw new Error(`${errorMessagePrefix} ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+
+  private async downloadAndSaveFiles(projectId: number, ref: string, host:string, headers: Headers, localDir: string): Promise<[ProtocolSchemaInterface, string]> {
+    const repoFiles = await this.fetchGitlabData(
+        `${host}/api/v4/projects/${projectId}/repository/tree?ref=${ref}&recursive=true`,
+        headers,
+        "Failed to fetch repository files: "
+    );
+
+    if (!repoFiles.length) {
+        throw new Error("No files found in the repository.");
+    }
+
+    await this.fileService.deleteDirectory(localDir);
+    const fileServiceResult = await this.fileService.createDirectory(localDir);
+
+    let protocolContent: ProtocolSchemaInterface | null = null;
+
+    for (const file of repoFiles) {
+        const filePath = encodeURIComponent(file.path);
+        const fileUrl = `${host}/api/v4/projects/${projectId}/repository/files/${filePath}/raw?ref=${ref}`;
+        const response = await fetch(fileUrl, { headers });
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch ${file.name}: ${response.statusText}`);
+        }
+
+        if (file.name === "protocol.json") {
+            protocolContent = await response.json();
+            await this.fileService.writeFile(`${localDir}/protocol.json`, JSON.stringify(protocolContent));
+        } else {
+            const blob = await response.blob();
+            await this.fileService.writeBinaryFile(`${localDir}/${file.name}`, blob);
+        }
+    }
+
+    if (!protocolContent) {
+        throw new Error("protocol.json not found in repository.");
+    }
+
+    return [protocolContent,fileServiceResult?.uri!];
+}
+
+
+  private async getLatestCommitHash(host:string,projectId: number, headers: Headers): Promise<string> {
+    const commits = await this.fetchGitlabData(
+        `${host}/api/v4/projects/${projectId}/repository/commits?per_page=1`,
+        headers,
+        "Failed to fetch latest commit: "
+    );
+
+    if (!commits.length) throw new Error("No commits found in repository.");
+    return commits[0].id;
+  }
+
+  private async getGitlabRef(projectId: number, headers: Headers): Promise<string> {
+    if (this.gitlabConfig.tag) {
+        return this.gitlabConfig.tag;
+    }
+    return this.getLatestCommitHash(this.gitlabConfig.host,projectId, headers)
+  }
+
+
+  private updateDiskModel(protocol: ProtocolInterface) {
+    const protocolMetaData: ProtocolMetaInterface = getProtocolMetaData(protocol);
+    let availableMetaProtocols = this.disk.availableProtocolsMeta;
+    availableMetaProtocols[protocolMetaData.name] = protocolMetaData;
+
+    this.diskModel.updateDiskModel('availableProtocolsMeta', availableMetaProtocols);
+    this.protocolModel = this.protocolM.getProtocolModel();
+    this.select(protocolMetaData);
+    this.loadProtocol();
+  }
+
+  private handleGitlabError(error: any) {
+    let errorMessage = error.message || "An error occurred while fetching the GitLab protocol.";
+
+    if (errorMessage.includes("Unauthorized")) {
+        this.notifications.alert({
+            title: "Unauthorized",
+            content: "Check your GitLab credentials.",
+            type: DialogType.Alert
+        });
+    } else {
+        this.notifications.alert({
+            title: "Error",
+            content: errorMessage,
+            type: DialogType.Alert
+        });
+    }
+  }
+
+  private async getGitlabProjectId(host:string, repository: string, group:string, headers: Headers): Promise<number> {
+    const projects = await this.fetchGitlabData(
+        `${host}/api/v4/projects?search=${repository}`,
+        headers,
+        "Failed to fetch project list: "
+    );
+
+    const matchedProject = projects.find((p: { name: string; namespace: { full_path: string } }) =>
+        p.name === repository && p.namespace.full_path === group
+    );
+
+    if (!matchedProject) {
+        throw new Error("Project not found. Check the repository name and group.");
+    }
+
+    return matchedProject.id;
+  }
 
   toggleValidateProtocols() {
     this.diskModel.updateDiskModel('validateProtocols', !this.disk.validateProtocols);
@@ -376,7 +546,7 @@ export class ProtocolsComponent {
   );
 
   gitlabAddPopover = this.translate.instant(
-    "Type in the name of the protocol repository located on the host and group defined in the <b>Advanced Gitlab Settings</b>"
+    "Type in the name of the protocol repository located on the host and group"
   );
 
   gitlabAddVersionPopover = this.translate.instant(

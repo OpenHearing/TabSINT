@@ -10,7 +10,7 @@ import { ResultsModel } from '../../../../../models/results/results-model.servic
 import { ExamService } from '../../../../../controllers/exam.service';
 import { ResultsInterface } from '../../../../../models/results/results.interface';
 import { PageInterface } from '../../../../../models/page/page.interface';
-import { SweptDpoaeInterface, SweptDpoaeResultsInterface } from './sept-dpoae-exam.interface';
+import { SweptDpoaeInterface, SweptDpoaeResultsInterface } from './swept-dpoae-exam.interface';
 import { ButtonTextService } from '../../../../../controllers/button-text.service';
 import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
 import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-dpoae.schema';
@@ -27,10 +27,11 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
   frequencyRatio: number = sweptDpoaeSchema.properties.frequencyRatio.default;
   sweepDuration: number = sweptDpoaeSchema.properties.sweepDuration.default;
   windowDuration: number = sweptDpoaeSchema.properties.windowDuration.default;
-  sweepType: number = sweptDpoaeSchema.properties.sweepType.default;
+  sweepType: string = sweptDpoaeSchema.properties.sweepType.default;
   minSweeps: number = sweptDpoaeSchema.properties.minSweeps.default;
   maxSweeps: number = sweptDpoaeSchema.properties.maxSweeps.default;
   noiseFloorThreshold: number = sweptDpoaeSchema.properties.noiseFloorThreshold.default;
+  outputRawMeasurements: boolean = sweptDpoaeSchema.properties.outputRawMeasurements.default;
   results: ResultsInterface;
   showResults: boolean = sweptDpoaeSchema.properties.showResults.default;
   pageSubscription: Subscription | undefined;
@@ -40,21 +41,14 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
     State: 'READY',
     PctComplete: 0
   };
-  
-  // Set dimensions and margins
+
+  // Set default dimensions and margins
   margin = { top: 20, right: 30, bottom: 60, left: 70 };
   width = 450 - this.margin.left - this.margin.right;
   height = 300 - this.margin.top - this.margin.bottom;
-  xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000].filter(tick => tick >= this.f2Start && tick <= this.f2End);;
-
-  // Define scales
-  xScale = d3.scaleLog()
-    .domain([this.f2Start, this.f2End])
-    .range([0, this.width]);
-
-  yScale = d3.scaleLinear()
-    .domain([-20, 70])
-    .range([this.height, 0]);  
+  xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000];
+  xScale = d3.scaleLog();
+  yScale = d3.scaleLinear();
 
   constructor(
     private readonly pageModel: PageModel,
@@ -73,16 +67,27 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'sweptDPOAEResponseArea') {
         const responseArea = updatedPage.responseArea as SweptDpoaeInterface;
-        this.tabsintId = responseArea.tabsintId ?? sweptDpoaeSchema.properties.tabsintId.default;
-        this.f2Start = responseArea.f2Start ?? sweptDpoaeSchema.properties.f2Start.default;
-        this.f2End = responseArea.f2End ?? sweptDpoaeSchema.properties.f2End.default;
-        this.frequencyRatio = responseArea.frequencyRatio ?? sweptDpoaeSchema.properties.frequencyRatio.default;
-        this.sweepDuration = responseArea. sweepDuration ?? sweptDpoaeSchema.properties.sweepDuration.default;
-        this.windowDuration = responseArea.windowDuration ?? sweptDpoaeSchema.properties.windowDuration.default;
-        this.sweepType = responseArea.sweepType ?? sweptDpoaeSchema.properties.sweepType.default;
-        this.minSweeps = responseArea.minSweeps ?? sweptDpoaeSchema.properties.minSweeps.default;
-        this.maxSweeps = responseArea.maxSweeps ?? sweptDpoaeSchema.properties.maxSweeps.default;
-        this.noiseFloorThreshold = responseArea.noiseFloorThreshold ?? sweptDpoaeSchema.properties.noiseFloorThreshold.default;
+        this.tabsintId = responseArea.tabsintId ?? this.tabsintId;
+        this.f2Start = responseArea.f2Start ?? this.f2Start;
+        this.f2End = responseArea.f2End ?? this.f2End;
+        this.frequencyRatio = responseArea.frequencyRatio ?? this.frequencyRatio;
+        this.sweepDuration = responseArea.sweepDuration ?? this.sweepDuration;
+        this.windowDuration = responseArea.windowDuration ?? this.windowDuration;
+        this.sweepType = responseArea.sweepType ?? this.sweepType;
+        this.minSweeps = responseArea.minSweeps ?? this.minSweeps;
+        this.maxSweeps = responseArea.maxSweeps ?? this.maxSweeps;
+        this.noiseFloorThreshold = responseArea.noiseFloorThreshold ?? this.noiseFloorThreshold;
+        this.outputRawMeasurements = responseArea.outputRawMeasurements ?? this.outputRawMeasurements;
+
+        // Update xTicks and scales
+        this.xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000].filter(tick => tick >= this.f2Start && tick <= this.f2End);
+        this.xScale = d3.scaleLog()
+          .domain([this.f2Start, this.f2End])
+          .range([0, this.width]);
+
+        this.yScale = d3.scaleLinear()
+          .domain([-20, 70])
+          .range([this.height, 0]);
       }
     })
   }
@@ -129,7 +134,8 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
           MinSweeeps: this.minSweeps,
           MaxSweeps: this.maxSweeps,
           NoiseFloorThreshold: this.noiseFloorThreshold,
-          WindowDuration: this.windowDuration
+          WindowDuration: this.windowDuration,
+          OutputRawMeasurements: this.outputRawMeasurements
         };
         await this.devicesService.queueExam(this.device, "SweptDPOAE", examProperties);
     } else {

@@ -1,0 +1,62 @@
+.response-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 3vh;
+}
+
+.button-row {
+  display: flex;
+  justify-content: center;
+  gap: 3vh;
+}
+
+.response-button {
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  white-space: normal;
+  position: relative;
+  border-color: transparent;
+  display: block;
+}
+
+.response-button.correct {
+  border-color: green;
+  background-color: #e6ffe6;
+}
+
+.response-button.incorrect {
+  border-color: red;
+  background-color: #ffe6e6;
+}
+
+.response-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.feedback {
+  margin-top: 15px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.fixed-footer {
+  position: fixed;
+  bottom: 15vh;
+  left: 3vh;
+  width: 90%;
+}
+
+.mat-mdc-progress-bar {
+  --mdc-linear-progress-active-indicator-color: #337ab7;
+  --mdc-linear-progress-track-color: rgba(0, 0, 0, .1);
+  --mdc-linear-progress-track-height: 24px;
+  --mdc-linear-progress-active-indicator-height: 24px;
+  border-radius: 10px;
+  margin-bottom: 3vh; 
+}

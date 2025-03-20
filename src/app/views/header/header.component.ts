@@ -16,9 +16,9 @@ import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { AppModel } from '../../models/app/app.service';
 import { AppInterface } from '../../models/app/app.interface';
-import { DisclaimerComponent } from '../disclaimer/disclaimer.component';
-import { Router } from '@angular/router';
 import { AdminService } from '../../controllers/admin.service';
+import { PageInterface } from '../../models/page/page.interface';
+import { PageModel } from '../../models/page/page.service';
 
 @Component({
   selector: 'header-view',
@@ -31,8 +31,10 @@ export class HeaderComponent {
   ExamState = ExamState;
   AppState = AppState;
   disk: DiskInterface;
-  diskSubscription: Subscription | undefined;
+  currentPage: PageInterface;
   app: AppInterface;
+  pageSubscription: Subscription | undefined;
+  diskSubscription: Subscription | undefined;
 
   constructor(
     public adminService: AdminService,
@@ -42,19 +44,18 @@ export class HeaderComponent {
     private readonly examService: ExamService,
     private readonly logger: Logger,
     private readonly notifications: Notifications,
+    private readonly pageModel: PageModel,
     private readonly protocolM: ProtocolModel,
-    private readonly router: Router,
     private readonly stateModel: StateModel,
   ) {
     this.state = this.stateModel.getState();
     this.protocol = this.protocolM.getProtocolModel();
     this.disk = this.diskModel.getDisk();
     this.app = this.appModel.getApp();
-    if (this.disk.init && !this.app.browser) {
-      this.dialog.open(DisclaimerComponent).afterClosed().subscribe(() => {
-        this.diskModel.updateDiskModel("init", false);
-      });
-    }
+    this.currentPage = this.pageModel.getPage();
+    this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
+        this.currentPage = updatedPage;
+    });
   }
 
   resetExam() {

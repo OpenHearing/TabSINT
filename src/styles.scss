@@ -693,6 +693,10 @@ $tabsint-training-site-theme: mat.define-light-theme((
     margin: auto;
   }
   
+  .exam-footer.hidden {
+    transform: translateY(100%);
+  }
+  
   @media (max-width: 500px) {
     .exam-footer {
       padding: 0px 10px 0px 10px;
@@ -1207,7 +1211,7 @@ $tabsint-training-site-theme: mat.define-light-theme((
   
   .table-form-max-width {
     margin: 0 auto;
-    max-width: 600px;
+    max-width: 700px;
   }
   .table-form-max-width th {
     width: 40%;

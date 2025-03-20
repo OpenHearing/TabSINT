@@ -20,6 +20,7 @@ export function getProtocolMetaData(protocol: ProtocolMetaInterface): ProtocolMe
         creator: protocol.creator,
         server: protocol.server,
         admin: protocol.admin,
-        contentURI: protocol.contentURI
+        contentURI: protocol.contentURI,
+        gitlabConfig: protocol.gitlabConfig
     }
 }

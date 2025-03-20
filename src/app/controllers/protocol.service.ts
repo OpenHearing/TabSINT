@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import Ajv from 'ajv';
-const ajv = new Ajv()
+const ajv = new Ajv({useDefaults: true, strict: false})
 
 import { LoadingProtocolInterface } from '../interfaces/loading-protocol-object.interface';
 import { ProtocolValidationResultInterface } from '../interfaces/protocol-validation-result.interface';
@@ -81,8 +81,8 @@ export class ProtocolService {
         try {
             await this.loadFiles();
             this.setCalibration();
-            let validationError = await this.validateIfCalledFor();
             this.initializeProtocol();
+            let validationError = await this.validateIfCalledFor();
                 // .then(loadCustomJs)
                 // .then(validateCustomJsIfCalledFor)
             this.handleLoadErrors(validationError);

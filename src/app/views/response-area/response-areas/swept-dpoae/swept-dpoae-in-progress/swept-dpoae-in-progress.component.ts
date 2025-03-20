@@ -6,7 +6,7 @@ import { DevicesService } from '../../../../../controllers/devices.service';
 import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
 import { StateModel } from '../../../../../models/state/state.service';
 import { StateInterface } from '../../../../../models/state/state.interface';
-import { DPOAEDataInterface, SweptDpoaeResultsInterface } from '../swept-dpoae-exam/sept-dpoae-exam.interface';
+import { DPOAEDataInterface, SweptDpoaeResultsInterface } from '../swept-dpoae-exam/swept-dpoae-exam.interface';
 import { Logger } from '../../../../../utilities/logger.service';
 import { createLegend, createOAEResultsChartSvg } from '../../../../../utilities/d3-plot-functions';
 import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-dpoae.schema';

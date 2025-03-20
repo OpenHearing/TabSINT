@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Keyboard } from '@capacitor/keyboard';
+import { PluginListenerHandle } from '@capacitor/core';
 import { Subscription } from 'rxjs';
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { StateInterface } from '../../models/state/state.interface';
@@ -16,16 +18,26 @@ import { ButtonTextService } from '../../controllers/button-text.service';
   styleUrl: './exam.component.css'
 })
 
-export class ExamComponent {
+export class ExamComponent implements OnInit, OnDestroy  {
+  // Controller varialbles
+  buttonText: string = 'Submit';
+  isKeyboardVisible = false;
+
+  // Models
   disk: DiskInterface;
-  diskSubscription: Subscription | undefined;
   currentPage: PageInterface;
-  pageSubscription: Subscription | undefined;
   state: StateInterface;
   ExamState = ExamState;
-  buttonText: string = 'Submit';
+
+  // Subscriptions
+  diskSubscription: Subscription | undefined;
+  pageSubscription: Subscription | undefined;
   buttonTextSubscription: Subscription | undefined;
+  private keyboardShowListener?: PluginListenerHandle;
+  private keyboardHideListener?: PluginListenerHandle;
+
   constructor (
+    private readonly cdr: ChangeDetectorRef,
     private readonly examService: ExamService,
     private readonly diskModel: DiskModel,
     private readonly stateModel: StateModel,
@@ -38,6 +50,7 @@ export class ExamComponent {
   }
 
   ngOnInit(): void {
+    this.initializeKeyboardListeners();
     this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
     });
@@ -52,6 +65,7 @@ export class ExamComponent {
   }
 
   ngOnDestroy(): void {
+    this.removeKeyboardListeners();
     this.diskSubscription?.unsubscribe();
     this.pageSubscription?.unsubscribe();
     this.state.appState = AppState.null;
@@ -80,5 +94,26 @@ export class ExamComponent {
 
   help() {
     this.examService.help();
+  }
+
+  private async initializeKeyboardListeners() {
+    this.keyboardShowListener = await Keyboard.addListener('keyboardWillShow', () => {
+      this.isKeyboardVisible = true;
+      this.cdr.detectChanges(); 
+    });
+
+    this.keyboardHideListener = await Keyboard.addListener('keyboardWillHide', () => {
+      this.isKeyboardVisible = false;
+      this.cdr.detectChanges(); 
+    });
+  }
+
+  private async removeKeyboardListeners() {
+    if (this.keyboardShowListener) {
+      await this.keyboardShowListener.remove();
+    }
+    if (this.keyboardHideListener) {
+      await this.keyboardHideListener.remove();
+    }
   }
 }

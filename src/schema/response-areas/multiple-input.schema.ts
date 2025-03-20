@@ -12,12 +12,13 @@ export const multipleInputSchema: JSONSchemaType<MultipleInputInterface> = {
       type: "integer",
       nullable: true,
       description: "Vertical spacing between inputs, given in [px]",
+      default: 15
     },
     textAlign: {
       type: "string",
       nullable: true,
       enum: ["left", "right", "center"],
-      default: "center",
+      default: "left",
       description: "Horizontal alignment of text labels",
     },
     review: {
@@ -53,7 +54,6 @@ export const multipleInputSchema: JSONSchemaType<MultipleInputInterface> = {
           exportToCSV: {
             type: "boolean",
             nullable: true,
-            default: false,
             description: "Whether result should be exported to CSV upon submitting exam results.",
           },
           dateProperties: {
@@ -71,13 +71,24 @@ export const multipleInputSchema: JSONSchemaType<MultipleInputInterface> = {
                 nullable: true,
                 description: "Minimum date allowed in ISO formatted string YYYY-MM-DD or 'today'",
               },
+              default: {
+                type: "string",
+                enum: ["none", "today"],
+                default: "none",
+                description: "Initialize date with 'default' date"
+              }
             },
             required: [],
           },
+          notes: {
+            type: "string",
+            nullable: true,
+            description: "Text to add below the input item as additional instructions"
+          }
         },
         required: ["text"],
       },
     },
   },
-  required: ["inputList"],
+  required: ["type", "inputList"],
 };

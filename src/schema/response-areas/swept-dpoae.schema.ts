@@ -1,11 +1,11 @@
 import { JSONSchemaType } from "ajv";
-import { SweptDpoaeInterface } from "../../app/views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/sept-dpoae-exam.interface";
+import { SweptDpoaeInterface } from "../../app/views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/swept-dpoae-exam.interface";
 
 export const sweptDpoaeSchema: JSONSchemaType<SweptDpoaeInterface> = {
   type: "object",
   properties: {
     enableSkip: { type: "boolean", nullable: true, default: false },
-    responseRequired: { type: "boolean", nullable: true, default: true },
+    responseRequired: { type: "boolean", nullable: true, default: false },
     type: { type: "string", enum: ["sweptDPOAEResponseArea"] },
     exportToCSV: { type: "boolean", nullable: true, default: false },
     tabsintId: { type: "string", nullable: true, default: "1" },
@@ -18,8 +18,8 @@ export const sweptDpoaeSchema: JSONSchemaType<SweptDpoaeInterface> = {
     minSweeps: { type: "number", nullable: true, default: 16 },
     maxSweeps: { type: "number", nullable: true, default: 32 },
     noiseFloorThreshold: { type: "number", nullable: true, default: -10 },
+    outputRawMeasurements: { type: "boolean", nullable: true, default: false },
     showResults: { type: "boolean", nullable: true, default: true }
   },
-  required: ["type"],
-  additionalProperties: false
+  required: ["type"]
 };

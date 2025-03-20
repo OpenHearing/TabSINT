@@ -55,19 +55,19 @@ The GUI should look like the image below with the following features.
 * There should be a `Submit` button to submit the measured flat plate level.
 * On the max output pages, there should be a play/stop button to start/stop the tone. The play button is green with a play icon when a tone is not playing. It is red with a stop symbol when it is playing.
 
-.. figure:: headphones-narrowband-calibration-GUI-Screen1.svg
+.. figure:: headphones-narrowband-calibration-GUI-Screen1.png
    :align: center
    :width: 400px
 
    **Figure 1.** *GUI for the headphones narrowband calibration exam. Screen 1*
 
-.. figure:: headphones-narrowband-calibration-GUI-Screen2.svg
+.. figure:: headphones-narrowband-calibration-GUI-Screen2.png
    :align: center
    :width: 400px
 
    **Figure 2.** *GUI for the headphones narrowband calibration exam. Screen 2*
 
-.. figure:: headphones-narrowband-calibration-GUI-Screen3.svg
+.. figure:: headphones-narrowband-calibration-GUI-Screen3.png
    :align: center
    :width: 400px
 

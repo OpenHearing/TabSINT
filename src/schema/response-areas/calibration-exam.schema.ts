@@ -7,7 +7,7 @@ export const calibrationExamSchema: JSONSchemaType<CalibrationExamInterface> = {
     properties: {
         enableSkip: { type: "boolean", nullable: true, default: false },
         showResults: { type: "boolean", nullable: true, default: false },
-        responseRequired: { type: "boolean", nullable: true, default: true },
+        responseRequired: { type: "boolean", nullable: true, default: false },
         type: { type: "string", enum: ["calibrationResponseArea"] },
         tabsintId: { type: "string", nullable: true },
         exportToCSV: { type: "boolean", nullable: true, default: false },
@@ -22,6 +22,5 @@ export const calibrationExamSchema: JSONSchemaType<CalibrationExamInterface> = {
             nullable: true
         },
     },
-    required: ["type"],
-    additionalProperties: false
+    required: ["type"]
 };
