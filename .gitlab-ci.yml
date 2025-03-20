@@ -9,6 +9,7 @@ variables:
   DOCKER_TLS_CERTDIR: ""
   DOCKER_DRIVER: overlay2
   IMAGE_TAG_BASE: $CI_REGISTRY_IMAGE
+  DOCKER_AUTH_CONFIG: '{"auths": {"$CI_REGISTRY": {"auth": "'$(echo -n "gitlab-ci-token:$CI_PROJECT_REGISTRY_TOKEN" | base64)'"}}}'
 
 stages:
   - build-docker-image
@@ -28,7 +29,9 @@ build-docker-image:
     - shell
     - privileged
   script:
-    - echo -e "$CI_PROJECT_REGISTRY_TOKEN\n" | docker login -u "gitlab-ci-token" --password-stdin $CI_REGISTRY
+    - docker pull $CI_REGISTRY/hearingproducts/open-hearing-group/open-hearing-tabsint:latest || true
+    - docker build -t $CI_REGISTRY/hearingproducts/open-hearing-group/open-hearing-tabsint:latest .
+    - docker push $CI_REGISTRY/hearingproducts/open-hearing-group/open-hearing-tabsint:latest
     - SAFE_COMMIT_REF_NAME=$(echo "$CI_COMMIT_REF_NAME" | tr '/' '-')
     - IMAGE_TAG="$IMAGE_TAG_BASE:$SAFE_COMMIT_REF_NAME"
     - docker build -t $IMAGE_TAG .
