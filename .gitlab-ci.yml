@@ -28,7 +28,7 @@ build-docker-image:
     - shell
     - privileged
   script:
-    - echo "$CI_PROJECT_REGISTRY_TOKEN" | docker login -u "gitlab-ci-token" --password-stdin $CI_REGISTRY
+    - echo -e "$CI_PROJECT_REGISTRY_TOKEN\n" | docker login -u "gitlab-ci-token" --password-stdin $CI_REGISTRY
     - SAFE_COMMIT_REF_NAME=$(echo "$CI_COMMIT_REF_NAME" | tr '/' '-')
     - IMAGE_TAG="$IMAGE_TAG_BASE:$SAFE_COMMIT_REF_NAME"
     - docker build -t $IMAGE_TAG .

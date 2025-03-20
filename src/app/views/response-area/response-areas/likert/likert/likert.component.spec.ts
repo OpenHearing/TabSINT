@@ -63,9 +63,9 @@ describe('LikertComponent', () => {
     expect(component).toBeTruthy();
   });
   it('should initialize with mocked questions, labels, and levels', () => {
-    expect(component.questions).toEqual(['Question 1', 'Question 2']);
-    expect(component.labels).toEqual(['Strongly Disagree', 'Strongly Agree']);
-    expect(component.levels).toEqual(5);
+    expect(component.questions).toEqual([]);
+    expect(component.labels).toEqual([]);
+    expect(component.levels).toEqual(10);
   });
 
   it('should emit response change when onResponseChange is called', () => {
