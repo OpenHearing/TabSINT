@@ -29,9 +29,10 @@ build-docker-image:
     - shell
     - privileged
   script:
-    - docker pull $CI_REGISTRY/hearingproducts/open-hearing-group/open-hearing-tabsint:latest || true
-    - docker build -t $CI_REGISTRY/hearingproducts/open-hearing-group/open-hearing-tabsint:latest .
-    - docker push $CI_REGISTRY/hearingproducts/open-hearing-group/open-hearing-tabsint:latest
+    - echo "Registry URL: $CI_REGISTRY"
+    - docker pull $CI_REGISTRY_IMAGE:latest || true
+    - docker build -t $CI_REGISTRY_IMAGE:latest .
+    - docker push $CI_REGISTRY_IMAGE:latest
     - SAFE_COMMIT_REF_NAME=$(echo "$CI_COMMIT_REF_NAME" | tr '/' '-')
     - IMAGE_TAG="$IMAGE_TAG_BASE:$SAFE_COMMIT_REF_NAME"
     - docker build -t $IMAGE_TAG .
