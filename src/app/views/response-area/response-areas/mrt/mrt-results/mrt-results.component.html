@@ -9,7 +9,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let res of mrtResults; let i=index">
+          <tr *ngFor="let res of sortMrtResults(); let i=index">
             <td>{{ res.snr }}</td>
             <td>{{ res.nbTrials }}</td>
             <td>{{ res.nbTrialsCorrect }}</td>

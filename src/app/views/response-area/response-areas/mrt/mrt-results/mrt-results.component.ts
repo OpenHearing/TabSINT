@@ -18,4 +18,12 @@ export class MrtResultsComponent {
     this.state = this.stateModel.getState();
     this.state.isSubmittable = true;
   }
+
+  sortMrtResults() {
+    let snrLevels: number[] = []
+    for (let i: number = 0; i < this.mrtResults.length; i++) {
+      snrLevels.push(this.mrtResults[i].snr)
+    }
+    return snrLevels
+  }
 }
