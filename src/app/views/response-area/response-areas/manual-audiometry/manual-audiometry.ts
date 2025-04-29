@@ -1,6 +1,7 @@
-import {ChangeDetectorRef, Component, OnDestroy, OnInit} from "@angular/core";
+import {ApplicationRef, ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit} from "@angular/core";
 import { Subscription } from "rxjs";
 import { ScreenOrientation } from "@capacitor/screen-orientation";
+import { timer } from 'rxjs';
 
 import { StateInterface } from "../../../../models/state/state.interface";
 import { ManualAudiometryInterface } from "./manual-audiometry.interface";
@@ -73,6 +74,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     constructor(
         readonly examService: ExamService, 
         private readonly cdr: ChangeDetectorRef,
+        private readonly applicationRef: ApplicationRef,
         private readonly resultsModel: ResultsModel, 
         private readonly pageModel: PageModel, 
         private readonly protocolModel: ProtocolModel, 
@@ -142,21 +144,26 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         if (this.maskingLevel < -50) this.maskingLevel = -50;
         await this.submitAudiometryExam()
     }
-
     async playTone() {
         this.isPlaying = true;
+        const playButton = document.querySelector('.play-btn') as HTMLElement;
+        if (playButton) {
+            playButton.classList.add('button-pressed');
+        }
+        
         await this.submitAudiometryExam();
-    
+        
         setTimeout(() => {
             this.isPlaying = false;
+            if (playButton) {
+                playButton.classList.remove('button-pressed');
+            }
             this.refreshGraph = false;
-    
             setTimeout(() => {
                 this.refreshGraph = true;
             }, 0);
         }, 1000);
     }
-    
     
     noResponse(): void {
         const resultType =
