@@ -1,7 +1,6 @@
-import {ApplicationRef, ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit} from "@angular/core";
+import { ChangeDetectorRef, Component, OnDestroy, OnInit} from "@angular/core";
 import { Subscription } from "rxjs";
 import { ScreenOrientation } from "@capacitor/screen-orientation";
-import { timer } from 'rxjs';
 
 import { StateInterface } from "../../../../models/state/state.interface";
 import { ManualAudiometryInterface } from "./manual-audiometry.interface";
@@ -74,7 +73,6 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     constructor(
         readonly examService: ExamService, 
         private readonly cdr: ChangeDetectorRef,
-        private readonly applicationRef: ApplicationRef,
         private readonly resultsModel: ResultsModel, 
         private readonly pageModel: PageModel, 
         private readonly protocolModel: ProtocolModel, 
@@ -117,8 +115,6 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     // ======= Audiometry Controls =======    
     async selectEar(ear: "Left" | "Right"): Promise<void> {
         this.selectedEar = ear;
-        this.refreshGraph = false;
-        setTimeout(() => (this.refreshGraph = true), 0);
     }
     
     async adjustTone(amount: number): Promise<void> {
@@ -158,21 +154,17 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
             if (playButton) {
                 playButton.classList.remove('button-pressed');
             }
-            this.refreshGraph = false;
-            setTimeout(() => {
-                this.refreshGraph = true;
-            }, 0);
         }, 1000);
     }
-    
+
     noResponse(): void {
-        const resultType =
-          this.currentDbSpl >= this.maxOutputLevel ? ResultType.Beyond : ResultType.Better;
-        this.updateThreshold(this.selectedEar, this.selectedFrequency, this.currentDbSpl, resultType);
+        this.updateThreshold(this.selectedEar, this.selectedFrequency, this.currentDbSpl, ResultType.Beyond);
     }
 
     recordThreshold(): void {
-        this.updateThreshold(this.selectedEar, this.selectedFrequency, this.currentDbSpl);
+        const resultType =
+          this.currentDbSpl <= (this.minOutputLevel+this.adjustmentStepSize) ? ResultType.Better : ResultType.Threshold;
+        this.updateThreshold(this.selectedEar, this.selectedFrequency, this.currentDb, resultType);
     }
 
     deleteThreshold(): void {
@@ -196,7 +188,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
 
     // ========== UI getters ====================
     get isNoResponseEnabled(): boolean {
-        return this.currentDbSpl >= this.maxOutputLevel || this.currentDbSpl <= this.minOutputLevel;
+        return this.currentDbSpl >= (this.maxOutputLevel-this.adjustmentStepSize);
       }
     
     getEarData(ear: "Left" | "Right"): AudiometryResultsInterface {
@@ -273,7 +265,9 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         }
 
         this.refreshGraph = false;
-        setTimeout(() => (this.refreshGraph = true), 0);
+        setTimeout(() => {
+            this.refreshGraph = true;
+        }, 0);
     }
 
     private async submitAudiometryExam() {
