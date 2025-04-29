@@ -37,7 +37,8 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     retspls?: RetsplsInterface;
     levelUnits: string = manualAudiometrySchema.properties.levelUnits.default;
     frequencies: number[] = manualAudiometrySchema.properties.frequencies.default;
-    adjustments: number[] = manualAudiometrySchema.properties.adjustments.default;
+    adjustments: number[] = [5,-5];
+    adjustmentStepSize: 2|3|4|5 = manualAudiometrySchema.properties.adjustmentStepSize.default;
     maxOutputLevel: number = manualAudiometrySchema.properties.maxOutputLevel.default;
     minOutputLevel: number = manualAudiometrySchema.properties.minOutputLevel.default;
 
@@ -57,12 +58,12 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     // Controller Variables
     currentStep: string = 'Exam';
     selectedEar: "Left" | "Right" = "Left";
-    currentDb: number = manualAudiometrySchema.properties.targetLevel.default;
-    currentDbSpl: number = manualAudiometrySchema.properties.targetLevel.default;
+    currentDb: number = manualAudiometrySchema.properties.targetLevelInLevelUnits.default;
+    currentDbSpl: number = manualAudiometrySchema.properties.targetLevelInLevelUnits.default;
     maskingLevel: number = -20;
     isPlaying: boolean = false;
     refreshGraph: boolean = true; 
-    selectedFrequency: number = this.frequencies[0];
+    selectedFrequency: number = this.frequencies[1];
 
     // Subscriptions
     pageSubscription: Subscription|undefined;
@@ -217,10 +218,22 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     }
 
     private updateCurrentDb() {
-        this.currentDb = 
+        const tempDb = 
             this.retspls && this.levelUnits === LevelUnits.dB_HL
                 ? this.currentDbSpl - this.getRetsplAtFrequency(this.selectedFrequency)
                 : this.currentDbSpl;
+
+        const steps = tempDb / this.adjustmentStepSize;
+        // Round closest to 0
+        // For positive numbers: floor (round down)
+        // For negative numbers: ceiling (round up)
+        const roundedSteps = tempDb >= 0 
+            ? Math.floor(steps) 
+            : Math.ceil(steps);
+        const snappedDb = roundedSteps * this.adjustmentStepSize;
+        const adjustment = snappedDb - tempDb;
+        this.currentDb = snappedDb;
+        this.currentDbSpl += adjustment;
     }
 
     private getRetsplAtFrequency(frequency: number): number {
@@ -281,11 +294,17 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         this.minOutputLevel = updatedAudiometryResponseArea.minOutputLevel ?? this.minOutputLevel;
         this.levelUnits = updatedAudiometryResponseArea.levelUnits ?? this.levelUnits;
         this.frequencies = updatedAudiometryResponseArea.frequencies ?? this.frequencies;
-        this.adjustments = updatedAudiometryResponseArea.adjustments?.length === 2
-            ? updatedAudiometryResponseArea.adjustments
-            : this.adjustments;
-        this.selectedFrequency = this.frequencies[0];
+        this.adjustmentStepSize = updatedAudiometryResponseArea.adjustmentStepSize ?? this.adjustmentStepSize;
+        this.adjustments = [
+            (updatedAudiometryResponseArea.adjustmentStepSize??this.adjustmentStepSize) * 
+                (updatedAudiometryResponseArea.incrementRatioMultiplier??manualAudiometrySchema.properties.incrementRatioMultiplier.default),
+            -(updatedAudiometryResponseArea.adjustmentStepSize??this.adjustmentStepSize)
+        ];
+        this.selectedFrequency = this.frequencies[1];
         this.retspls = updatedAudiometryResponseArea.retspls;
+        this.currentDbSpl = this.levelUnits === LevelUnits.dB_SPL
+            ? updatedAudiometryResponseArea.targetLevelInLevelUnits ?? manualAudiometrySchema.properties.targetLevelInLevelUnits.default
+            :  (updatedAudiometryResponseArea.targetLevelInLevelUnits ?? manualAudiometrySchema.properties.targetLevelInLevelUnits.default) + this.getRetsplAtFrequency(this.selectedFrequency);
         this.updateCurrentDb();
 
         if (this.retspls && this.levelUnits === LevelUnits.dB_HL) {

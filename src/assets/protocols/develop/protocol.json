@@ -278,17 +278,16 @@
           "responseArea": {
             "type": "manualAudiometryResponseArea",
             "tabsintId": "1",
-            "maxOutputLevel": 110,
-            "minOutputLevel": -10,
-            "targetLevel": 50,
-            "levelUnits": "dB HL",
-            "frequencies": [500, 1000, 2000, 4000, 8000],
-            "adjustments": [15, -18, 5, 3],
+            "frequencies": [500, 1000, 2000, 3000, 4000, 6000, 8000],
+            "adjustmentStepSize": 2,
+            "incrementRatioMultiplier": 2,
             "retspls": {
               "500": 11.0,
               "1000": 5.5,
               "2000": 4.5,
+              "3000": 2.5,
               "4000": 9.5,
+              "6000": 17.0,
               "8000": 17.5
             }
           }
