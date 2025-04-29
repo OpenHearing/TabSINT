@@ -20,10 +20,6 @@ export class MrtResultsComponent {
   }
 
   sortMrtResults() {
-    let snrLevels: number[] = []
-    for (let i: number = 0; i < this.mrtResults.length; i++) {
-      snrLevels.push(this.mrtResults[i].snr)
-    }
-    return snrLevels.sort((a, b) => a - b);
+    return this.mrtResults.sort((a, b) => b.snr - a.snr);
   }
 }
