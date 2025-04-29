@@ -256,12 +256,29 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
           this.audiogramData.thresholds[index] = threshold;
           this.audiogramData.resultTypes[index] = resultType;
         } else {
-          // Add new entry if not already in the data
-          this.audiogramData.frequencies.push(frequency);
-          this.audiogramData.channels.push(channel);
-          this.audiogramData.thresholds.push(threshold);
-          this.audiogramData.resultTypes.push(resultType);
-          this.audiogramData.masking.push(false); // Default masking
+            // Find the insertion point to maintain ascending frequency order
+            // First, get all indices for the current channel
+            const channelIndices = this.audiogramData.channels
+              .map((c, i) => c === channel ? i : -1)
+              .filter(i => i !== -1);
+            
+            // Find the appropriate insertion index
+            let insertionIndex = this.audiogramData.frequencies.length; // Default to end
+            
+            for (const idx of channelIndices) {
+              if (this.audiogramData.frequencies[idx] > frequency) {
+                // Found a frequency that's higher than the current one
+                insertionIndex = idx;
+                break;
+              }
+            }
+            
+            // Insert the new data at the found position
+            this.audiogramData.frequencies.splice(insertionIndex, 0, frequency);
+            this.audiogramData.channels.splice(insertionIndex, 0, channel);
+            this.audiogramData.thresholds.splice(insertionIndex, 0, threshold);
+            this.audiogramData.resultTypes.splice(insertionIndex, 0, resultType);
+            this.audiogramData.masking.splice(insertionIndex, 0, false); // Default masking
         }
 
         this.refreshGraph = false;
