@@ -163,6 +163,14 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         this.updateThreshold(this.selectedEar, this.selectedFrequency, this.currentDbSpl, resultType);
     }
 
+    noResponseColor() {
+        if (this.currentDbSpl >= this.maxOutputLevel) {
+            return 'blue-grey'
+        } else {
+            return 'grey'
+        }
+    }
+
     recordThreshold(): void {
         this.updateThreshold(this.selectedEar, this.selectedFrequency, this.currentDbSpl);
     }

@@ -19,7 +19,7 @@
           <button class="response-btn" 
             [disabled]="!isNoResponseEnabled" 
             [ngStyle]="{
-            'background-color': !isNoResponseEnabled ? 'grey' : 'blue-grey',
+            'background-color': noResponseColor(),
             'color': 'white'}"
             (click)="noResponse()">
             No Response</button>
