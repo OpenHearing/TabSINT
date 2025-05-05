@@ -163,14 +163,6 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         this.updateThreshold(this.selectedEar, this.selectedFrequency, this.currentDbSpl, resultType);
     }
 
-    noResponseColor() {
-        if (this.currentDbSpl >= this.maxOutputLevel) {
-            return 'blue-grey'
-        } else {
-            return 'grey'
-        }
-    }
-
     recordThreshold(): void {
         this.updateThreshold(this.selectedEar, this.selectedFrequency, this.currentDbSpl);
     }
@@ -196,6 +188,8 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
 
     // ========== UI getters ====================
     get isNoResponseEnabled(): boolean {
+        let output = this.currentDbSpl >= this.maxOutputLevel || this.currentDbSpl <= this.minOutputLevel
+        console.log("isNoResponseEnabled: " + output)
         return this.currentDbSpl >= this.maxOutputLevel || this.currentDbSpl <= this.minOutputLevel;
       }
     
