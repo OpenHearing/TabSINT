@@ -18,7 +18,10 @@
         <div class="response-panel-vertical">
           <button class="response-btn" 
             [disabled]="!isNoResponseEnabled" 
-            [ngStyle]="{'background-color': isNoResponseEnabled || !isNoResponseEnabled ? 'grey' : 'blue-grey'}"
+            [ngStyle]="{
+              'background-color': isNoResponseEnabled ? 'grey' : (!isNoResponseEnabled ? 'blue-grey' : ''),
+              'color': 'white'
+            }"
             (click)="noResponse()">
             No Response</button>
           <button class="response-btn delete-threshold" (click)="deleteThreshold()">Delete Threshold</button>
