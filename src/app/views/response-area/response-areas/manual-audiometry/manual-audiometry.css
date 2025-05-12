@@ -64,6 +64,21 @@
   color: white;
 }
 
+.no-response {
+  background-color: #ccc;
+  color: white;
+}
+
+.no-response:disabled {
+  background-color: #888;
+  color: white;
+}
+
+.no-response:enabled {
+  background-color: #ccc;
+  color: white;
+}
+
 .response-btn:disabled {
   background-color: #e0e0e0;
   color: #888;

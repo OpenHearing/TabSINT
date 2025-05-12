@@ -190,8 +190,8 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     get isNoResponseEnabled(): boolean {
         let output = this.currentDbSpl >= this.maxOutputLevel || this.currentDbSpl <= this.minOutputLevel
         console.log("isNoResponseEnabled: " + output)
-        return this.currentDbSpl >= this.maxOutputLevel || this.currentDbSpl <= this.minOutputLevel;
-      }
+        return output;
+    }
     
     getEarData(ear: "Left" | "Right"): AudiometryResultsInterface {
         const channel = ear === "Left" ? "left" : "right";
