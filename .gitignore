@@ -5,7 +5,9 @@
 /tmp
 /out-tsc
 /bazel-out
-/android
+android/build/*
+android/.gradle
+!/build/.npmkeep
 version.json
 
 # Node

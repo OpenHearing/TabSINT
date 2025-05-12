@@ -21,7 +21,17 @@
           <td>Threshold ({{audiogramData.levelUnits}})</td>
           <ng-container  *ngFor="let threshold of audiogramData.thresholds; let k=index">
             <td *ngIf="audiogramData.channels[k]==='left'">
-              {{ threshold || '' }}
+              <ng-container [ngSwitch]="audiogramData.resultTypes[k]">
+                <ng-container *ngSwitchCase="ResultType.Better">
+                  ({{threshold}})
+                </ng-container>
+                <ng-container *ngSwitchCase="ResultType.Beyond">
+                  ({{threshold}}+)
+                </ng-container>
+                <ng-container *ngSwitchDefault>
+                  {{ threshold }}
+                </ng-container>
+              </ng-container>
             </td>
           </ng-container>
         </tr>

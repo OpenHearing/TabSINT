@@ -150,10 +150,13 @@
   font-size: 18px;
   font-weight: bold;
   color: #007bff;
+  transition: all 0.1s ease-in-out;
 }
 
-.play-btn:hover {
-  background-color: #f0f0f0;
+.button-pressed {
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5); 
+  transform: scale(0.95); 
+  transition: all 0.1s ease-in-out;
 }
 
 .tone-display, .frequency-display, .masking-display {

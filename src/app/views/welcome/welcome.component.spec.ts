@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { WelcomeComponent } from './welcome.component';
 import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
+import { BuildDetailsComponent } from '../build-details/build-details.component';
 
 describe('WelcomeComponent', () => {
   let component: WelcomeComponent;
@@ -10,7 +11,7 @@ describe('WelcomeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [WelcomeComponent],
+      declarations: [WelcomeComponent, BuildDetailsComponent],
       imports: [MatIconModule,
         TranslateModule.forRoot({
                   loader: {

@@ -123,7 +123,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
       this.feedbackMessage = 'Correct!';
     } else {
       this.isCorrect = false;
-      const correctWord = this.currentTrial.choices[this.currentTrial.answer];
+      const correctWord = this.currentTrial.choices[this.currentTrial.answer-1];
       this.feedbackMessage = `The correct word was '${correctWord}'`;
     }
     this.state.isSubmittable = true;
