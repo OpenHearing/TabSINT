@@ -64,6 +64,11 @@
   color: white;
 }
 
+.response-btn.no-response {
+  background-color: #e0e0e0;
+  color: white;
+}
+
 .response-btn:disabled {
   background-color: #e0e0e0;
   color: #888;
@@ -221,6 +226,15 @@
 
 .response-panel-vertical .response-btn:hover {
   background-color: #e0e0e0;
+}
+
+.response-panel-vertical .response-btn.no-response {
+  background-color: #888;
+  color: white;
+}
+.response-panel-vertical .response-btn.no-response:disabled {
+  background-color: #e0e0e0;
+  color: white;
 }
 
 .response-panel-vertical .response-btn.record-threshold {
