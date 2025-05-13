@@ -5,7 +5,7 @@ import _ from 'lodash';
 import { DialogDataInterface } from '../../interfaces/dialog-data.interface';
 import { ProtocolSchemaInterface } from '../../interfaces/protocol-schema.interface';
 import { StateInterface } from '../../models/state/state.interface';
-import { ProtocolInterface, ProtocolMetaInterface, ProtocolModelInterface } from '../../models/protocol/protocol.interface';
+import { GitlabConfigInterface, ProtocolInterface, ProtocolMetaInterface, ProtocolModelInterface } from '../../models/protocol/protocol.interface';
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { DiskModel } from '../../models/disk/disk.service';
 import { ProtocolModel } from '../../models/protocol/protocol-model.service';
@@ -32,13 +32,7 @@ export class ProtocolsComponent {
   protocolModel: ProtocolModelInterface;
   state: StateInterface;
   selectedSource = 'device';
-  gitlabConfig = {
-    repository: '',
-    tag: '',
-    host: 'https://gitlab.com/',
-    token: '',
-    group: ''
-  };
+  gitlabConfig: GitlabConfigInterface;
 
   constructor (
     private readonly diskModel: DiskModel,
@@ -55,6 +49,7 @@ export class ProtocolsComponent {
     this.disk = this.diskModel.getDisk();
     this.protocolModel = this.protocolM.getProtocolModel();
     this.state = this.stateModel.getState();
+    this.gitlabConfig = this.protocolM.getGitlabConfigModel();
   }
 
   ngOnInit(): void {

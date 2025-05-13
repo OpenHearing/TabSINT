@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { ProtocolModelInterface } from './protocol.interface';
+import { GitlabConfigInterface, ProtocolModelInterface } from './protocol.interface';
 
 @Injectable({
     providedIn: 'root',
@@ -12,7 +12,19 @@ export class ProtocolModel {
         activeProtocol: undefined
     }
 
+    gitlabConfigModel: GitlabConfigInterface = {
+        repository: '',
+        tag: '',
+        host: 'https://gitlab.com/',
+        token: '',
+        group: ''
+      }
+
     getProtocolModel(): ProtocolModelInterface {
         return this.protocolModel;
+    }
+
+    getGitlabConfigModel(): GitlabConfigInterface {
+        return this.gitlabConfigModel;
     }
 }

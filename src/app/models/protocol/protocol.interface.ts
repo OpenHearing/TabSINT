@@ -7,11 +7,11 @@ import { ProtocolServer } from "../../utilities/constants";
 
 
 export interface GitlabConfigInterface {
-  host?: string | null;
-  repository?: string | null;
-  token?: string | null;
-  group?: string | null;
-  tag?: string | null;
+  host: string;
+  repository: string;
+  token: string;
+  group: string;
+  tag: string;
 }
 
 export interface ProtocolMetaInterface {
