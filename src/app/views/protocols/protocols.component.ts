@@ -151,7 +151,19 @@ export class ProtocolsComponent {
   async fetchGitlabProtocol() {
     try {
       if (!this.gitlabConfig.host || !this.gitlabConfig.token || !this.gitlabConfig.group || !this.gitlabConfig.repository) {
+        this.notifications.alert({
+          title: "Alert",
+          content: "Missing required GitLab configuration. Please specify a GitLab host, token, group, and repository.",
+          type: DialogType.Alert
+        }).subscribe();
         throw new Error("Missing required GitLab configuration. Please specify a GitLab host, token, group, and repository.");
+      } else if (this.gitlabConfig.group.endsWith('/')) {
+        this.notifications.alert({
+          title: "Alert",
+          content: "GitLab configuration typo. Please make sure the group does not have a '/' at the end.",
+          type: DialogType.Alert
+        }).subscribe();
+        throw new Error("GitLab configuration typo. Please make sure the group does not have a '/' at the end.");
       }
       const headers = new Headers({ 'PRIVATE-TOKEN': this.gitlabConfig.token });
       const projectId = await this.getGitlabProjectId(this.gitlabConfig.host,this.gitlabConfig.repository,this.gitlabConfig.group,headers)
