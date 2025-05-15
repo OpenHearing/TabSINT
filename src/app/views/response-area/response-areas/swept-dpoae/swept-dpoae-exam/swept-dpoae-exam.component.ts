@@ -131,7 +131,7 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
           Ratio: this.frequencyRatio,
           SweepDuration: this.sweepDuration,
           SweepType: this.sweepType,
-          MinSweeeps: this.minSweeps,
+          MinSweeps: this.minSweeps,
           MaxSweeps: this.maxSweeps,
           NoiseFloorThreshold: this.noiseFloorThreshold,
           WindowDuration: this.windowDuration,
