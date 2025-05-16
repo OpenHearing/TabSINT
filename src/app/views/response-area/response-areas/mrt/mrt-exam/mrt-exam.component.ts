@@ -40,6 +40,8 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   // Controller variables
   currentTrial!: MrtTrialInterface;
   feedbackMessage: string = ' ';
+  isPausedText: string = 'Pause';
+  isPaused: boolean = false;
   isCorrect: boolean | null = null;
   instructions: string = 'Press Submit to start the exam.'
   pctComplete: number = 0;
@@ -140,6 +142,15 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     }
     let resp = await this.devicesService.abortExams(this.device!);
     this.logger.debug("resp from tympan after MRT exam abort exams:" + resp);
+  }
+
+  async pauseExam() {
+    this.isPaused = !this.isPaused
+    if (this.isPaused) {
+      this.isPausedText = 'Resume'
+    } else {
+      this.isPausedText = 'Pause'
+    }
   }
 
   getButtonClass(index: number): string {
