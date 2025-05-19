@@ -36,7 +36,8 @@ export const mrtSchema: JSONSchemaType<MrtExamInterface> = {
       items: mrtTrialSchema,
       nullable: true
     },
-    showResults: { type: "boolean", nullable: true, default: true }
+    showResults: { type: "boolean", nullable: true, default: true },
+    enableAutoSubmit: { type: "boolean", nullable: true, default: true }
   },
   required: ["type"]
 };

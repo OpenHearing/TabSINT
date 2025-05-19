@@ -8,6 +8,7 @@ export interface MrtExamInterface extends CommonResponseAreaInterface {
     randomizeTrials?: boolean;
     trialList?: MrtTrialInterface[];
     showResults?: boolean
+    enableAutoSubmit?: boolean
 }
 
 export interface MrtTrialInterface {

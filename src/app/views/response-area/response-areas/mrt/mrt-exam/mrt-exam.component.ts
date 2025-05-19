@@ -32,6 +32,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   // Configuration Variables
   tabsintId: string = mrtSchema.properties.tabsintId.default;
   showResults: boolean = mrtSchema.properties.showResults.default;
+  enableAutoSubmit: boolean = mrtSchema.properties.enableAutoSubmit.default;
   currentStep: string = 'Ready';
   outputChannel!: string[];
   trialList!: MrtTrialInterface[];
@@ -46,7 +47,6 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   instructions: string = 'Press Submit to start the exam.'
   pctComplete: number = 0;
   nbTrials: number = 0;
-  isAutoSubmit: boolean = true;
   waitingMs: number = 2000;
 
   // Subscriptions
@@ -136,7 +136,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     }
     this.state.isSubmittable = true;
 
-    if (this.isAutoSubmit) {
+    if (this.enableAutoSubmit) {
       await this.delay(this.waitingMs);
       this.nextStep()
     }
@@ -157,7 +157,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
 
   async pauseExam() {
     this.isPaused = !this.isPaused
-    this.isAutoSubmit = !this.isAutoSubmit
+    this.enableAutoSubmit = !this.enableAutoSubmit
     if (this.isPaused) {
       this.isPausedText = 'Resume'
     } else {
