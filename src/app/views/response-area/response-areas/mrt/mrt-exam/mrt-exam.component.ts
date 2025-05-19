@@ -157,6 +157,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
 
   async pauseExam() {
     this.isPaused = !this.isPaused
+    this.isAutoSubmit = !this.isAutoSubmit
     if (this.isPaused) {
       this.isPausedText = 'Resume'
     } else {
