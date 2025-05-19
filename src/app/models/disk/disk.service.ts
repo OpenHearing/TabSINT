@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 
-import { DiskInterface } from './disk.interface';
+import { DiskInterface, GitlabConfigInterface } from './disk.interface';
 import { ExamResults } from '../results/results.interface';
 import { ProtocolServer, ResultsMode } from '../../utilities/constants';
 import { metaDefaults, partialMetaDefaults } from '../../utilities/defaults';
@@ -13,6 +13,14 @@ import { metaDefaults, partialMetaDefaults } from '../../utilities/defaults';
 })
 
 export class DiskModel {
+
+    gitlabConfigModel: GitlabConfigInterface = {
+        repository: '',
+        tag: '',
+        host: 'https://gitlab.com/',
+        token: '',
+        group: ''
+    };
 
     window: (Window & typeof globalThis) | null;
 
@@ -54,6 +62,7 @@ export class DiskModel {
             useSeperateResultsRepo: false,
             useTagsOnly: true
         },
+        gitlabConfig: this.gitlabConfigModel,
         headset: "None",
         interApp: {
             appName: '',
@@ -90,7 +99,7 @@ export class DiskModel {
         uploadSummary: [],
         validateProtocols: true,
         versionCheck: false,
-        savedDevices: {"tympan": [], "cha": [], "svantek": []}
+        savedDevices: { "tympan": [], "cha": [], "svantek": [] },
     };
     
     diskSubject = new BehaviorSubject<DiskInterface>(this.disk);
@@ -160,5 +169,9 @@ export class DiskModel {
         };
         this.disk.uploadSummary.unshift(meta);
         this.storeDisk();
+    }
+
+    getGitlabConfigModel(): GitlabConfigInterface {
+        return this.gitlabConfigModel;
     }
 }

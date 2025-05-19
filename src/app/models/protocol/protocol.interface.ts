@@ -3,16 +3,7 @@ import { ProtocolDictionary } from "../../interfaces/protocol-dictionary";
 import { ProtocolErrorInterface } from "../../interfaces/protocol-error.interface";
 import { ProtocolSchemaInterface } from "../../interfaces/protocol-schema.interface";
 import { ProtocolServer } from "../../utilities/constants";
-
-
-
-export interface GitlabConfigInterface {
-  host: string;
-  repository: string;
-  token: string;
-  group: string;
-  tag: string;
-}
+import { GitlabConfigInterface } from "../disk/disk.interface";
 
 export interface ProtocolMetaInterface {
   group?: string;
