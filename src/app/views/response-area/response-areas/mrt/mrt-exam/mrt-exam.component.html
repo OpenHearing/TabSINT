@@ -28,7 +28,12 @@
         <button class="btn btn-danger btn-block" (click)="pauseExam()">
             {{ isPausedText }}
         </button>
-        <button class="btn btn-danger btn-block" [disabled]="isPaused" (click)="finishExam()">
+        <button class="btn btn-danger btn-block" 
+        [disabled]="!isPaused" 
+        [ngStyle]="{
+          'visibility': getVisibilityStyle()
+        }"
+        (click)="finishExam()">
             {{'End Early'}}
         </button>
       </div>

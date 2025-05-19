@@ -27,7 +27,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   results: ResultsInterface;
   state: StateInterface;
   mrtResults: MrtResultsInterface[] = [];
-  trialListResults: MrtTrialResultInterface[] = [];;
+  trialListResults: MrtTrialResultInterface[] = [];
 
   // Configuration Variables
   tabsintId: string = mrtSchema.properties.tabsintId.default;
@@ -46,6 +46,8 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   instructions: string = 'Press Submit to start the exam.'
   pctComplete: number = 0;
   nbTrials: number = 0;
+  isAutoSubmit: boolean = true;
+  waitingMs: number = 2000;
 
   // Subscriptions
   selectedResponseIndex: number | null = null;
@@ -118,7 +120,11 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     }
   }
 
-  choose(index: number): void {
+  delay(ms: number) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  async choose(index: number) {
     this.selectedResponseIndex = index;
     if (index === this.currentTrial.answer-1) {
       this.isCorrect = true;
@@ -129,6 +135,11 @@ export class MrtExamComponent implements OnInit, OnDestroy {
       this.feedbackMessage = `The correct word was '${correctWord}'`;
     }
     this.state.isSubmittable = true;
+
+    if (this.isAutoSubmit) {
+      await this.delay(this.waitingMs);
+      this.nextStep()
+    }
   }
   
   async finishExam() {    
@@ -164,6 +175,10 @@ export class MrtExamComponent implements OnInit, OnDestroy {
       return 'incorrect';
     }
     return '';
+  }
+
+  getVisibilityStyle(): string {
+    return this.isPaused ? 'visible' : 'hidden';
   }
 
   trackByIndex(index: number, item: any): number {
