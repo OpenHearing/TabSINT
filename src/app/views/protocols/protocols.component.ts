@@ -370,8 +370,10 @@ export class ProtocolsComponent {
     }
 }
 
-
-
+  onGitlabConfigChange() {
+    console.log("onGitLabConfigChange store to disk");
+    this.diskModel.storeDisk();
+  }
 
   gitlabButtonClass(): string {
     return this.disk.server === ProtocolServer.Gitlab
