@@ -7,7 +7,7 @@ export interface MrtExamInterface extends CommonResponseAreaInterface {
     outputChannel?: string[] | string;
     randomizeTrials?: boolean;
     trialList?: MrtTrialInterface[];
-    showResults?: boolean
+    showResults?: boolean;
 }
 
 export interface MrtTrialInterface {

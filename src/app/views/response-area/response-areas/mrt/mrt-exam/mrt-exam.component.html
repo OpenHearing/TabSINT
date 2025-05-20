@@ -12,7 +12,7 @@
             [class.correct]="getButtonClass(i * 3 + idx) === 'correct'"
             [class.incorrect]="getButtonClass(i * 3 + idx) === 'incorrect'"
             (click)="choose(i * 3 + idx)"
-            [disabled]="selectedResponseIndex !== null"
+            [disabled]="selectedResponseIndex !== null || isPaused"
           >
             {{ choice }}
           </button>
@@ -25,9 +25,14 @@
 
       <div class="fixed-footer">
         <mat-progress-bar class="progress-bar" mode="determinate" [value]="pctComplete"></mat-progress-bar>
-            
-        <button class="btn btn-danger btn-block" (click)="finishExam()">
-            {{'Abort'}}
+        <button class="btn btn-danger btn-block" (click)="pauseExam()">
+            {{ isPausedText }}
+        </button>
+        <button class="btn btn-danger btn-block" 
+        [disabled]="!isPaused" 
+        [ngStyle]="{'visibility': getVisibilityStyle()}"
+        (click)="finishExam()">
+            {{'End Early'}}
         </button>
       </div>
     </div>
