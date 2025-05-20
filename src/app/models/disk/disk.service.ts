@@ -14,14 +14,6 @@ import { metaDefaults, partialMetaDefaults } from '../../utilities/defaults';
 
 export class DiskModel {
 
-    gitlabConfigModel: GitlabConfigInterface = {
-        repository: '',
-        tag: '',
-        host: 'https://gitlab.com/',
-        token: '',
-        group: ''
-    };
-
     window: (Window & typeof globalThis) | null;
 
     disk: DiskInterface = {
@@ -62,7 +54,13 @@ export class DiskModel {
             useSeperateResultsRepo: false,
             useTagsOnly: true
         },
-        gitlabConfig: this.gitlabConfigModel,
+        gitlabConfig: {
+            repository: '',
+            tag: '',
+            host: 'https://gitlab.com/',
+            token: '',
+            group: ''
+        },
         headset: "None",
         interApp: {
             appName: '',
@@ -169,9 +167,5 @@ export class DiskModel {
         };
         this.disk.uploadSummary.unshift(meta);
         this.storeDisk();
-    }
-
-    getGitlabConfigModel(): GitlabConfigInterface {
-        return this.gitlabConfigModel;
     }
 }

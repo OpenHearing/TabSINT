@@ -32,7 +32,7 @@ export class ProtocolsComponent {
   protocolModel: ProtocolModelInterface;
   state: StateInterface;
   selectedSource = 'device';
-  gitlabConfig: GitlabConfigInterface;
+  gitlabConfig;
 
   constructor (
     private readonly diskModel: DiskModel,
@@ -49,7 +49,9 @@ export class ProtocolsComponent {
     this.disk = this.diskModel.getDisk();
     this.protocolModel = this.protocolM.getProtocolModel();
     this.state = this.stateModel.getState();
-    this.gitlabConfig = this.diskModel.getGitlabConfigModel();
+    this.gitlabConfig = this.disk.gitlabConfig;
+    console.log(this.disk)
+    console.log("protocol initiated: " + this.gitlabConfig.group)
   }
 
   ngOnInit(): void {
@@ -371,7 +373,7 @@ export class ProtocolsComponent {
 }
 
   onGitlabConfigChange() {
-    console.log("onGitLabConfigChange store to disk");
+    this.disk.gitlabConfig = this.gitlabConfig;
     this.diskModel.storeDisk();
   }
 
