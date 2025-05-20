@@ -16,6 +16,7 @@ import { MrtExamInterface, MrtResultsInterface, MrtTrialInterface, MrtTrialResul
 import { StateInterface } from '../../../../../models/state/state.interface';
 import { StateModel } from '../../../../../models/state/state.service';
 import { shuffleArray } from '../../../../../utilities/shuffle-array';
+import { pageSchema } from '../../../../../../schema/page.schema';
 
 @Component({
   selector: 'mrt-exam',
@@ -32,7 +33,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   // Configuration Variables
   tabsintId: string = mrtSchema.properties.tabsintId.default;
   showResults: boolean = mrtSchema.properties.showResults.default;
-  enableAutoSubmit: boolean = mrtSchema.properties.enableAutoSubmit.default;
+  isAutoSubmit: boolean = pageSchema.properties.isAutoSubmit.default;
   currentStep: string = 'Ready';
   outputChannel!: string[];
   trialList!: MrtTrialInterface[];
@@ -110,6 +111,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
           await this.waitForReadyState();
           await this.playTrial(this.currentTrial);
         } else {
+          this.isAutoSubmit = false;
           this.finishExam();
         }
         break;
@@ -134,11 +136,13 @@ export class MrtExamComponent implements OnInit, OnDestroy {
       const correctWord = this.currentTrial.choices[this.currentTrial.answer-1];
       this.feedbackMessage = `The correct word was '${correctWord}'`;
     }
-    this.state.isSubmittable = true;
 
-    if (this.enableAutoSubmit) {
+    if (this.isAutoSubmit) {
       await this.delay(this.waitingMs);
+      this.state.isSubmittable = false;
       this.nextStep()
+    } else {
+      this.state.isSubmittable = true;
     }
   }
   
@@ -157,7 +161,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
 
   async pauseExam() {
     this.isPaused = !this.isPaused
-    this.enableAutoSubmit = !this.enableAutoSubmit
+    this.isAutoSubmit = !this.isAutoSubmit
     if (this.isPaused) {
       this.isPausedText = 'Resume'
     } else {
