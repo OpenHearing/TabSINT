@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 
-import { DiskInterface, GitlabConfigInterface } from './disk.interface';
+import { DiskInterface } from './disk.interface';
 import { ExamResults } from '../results/results.interface';
 import { ProtocolServer, ResultsMode } from '../../utilities/constants';
 import { metaDefaults, partialMetaDefaults } from '../../utilities/defaults';
