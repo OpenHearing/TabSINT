@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 
-import { DiskInterface } from './disk.interface';
+import { DiskInterface, GitlabConfigInterface } from './disk.interface';
 import { ExamResults } from '../results/results.interface';
 import { ProtocolServer, ResultsMode } from '../../utilities/constants';
 import { metaDefaults, partialMetaDefaults } from '../../utilities/defaults';
@@ -13,6 +13,15 @@ import { metaDefaults, partialMetaDefaults } from '../../utilities/defaults';
 })
 
 export class DiskModel {
+
+    gitlabConfigModel: GitlabConfigInterface = {
+        repository: '',
+        tag: '',
+        host: 'https://gitlab.com/',
+        token: '',
+        group: ''
+    };
+ 
 
     window: (Window & typeof globalThis) | null;
 
@@ -54,13 +63,7 @@ export class DiskModel {
             useSeperateResultsRepo: false,
             useTagsOnly: true
         },
-        gitlabConfig: {
-            repository: '',
-            tag: '',
-            host: 'https://gitlab.com/',
-            token: '',
-            group: ''
-        },
+        gitlabConfig: this.gitlabConfigModel,
         headset: "None",
         interApp: {
             appName: '',

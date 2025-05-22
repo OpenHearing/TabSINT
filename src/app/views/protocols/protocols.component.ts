@@ -6,7 +6,7 @@ import { DialogDataInterface } from '../../interfaces/dialog-data.interface';
 import { ProtocolSchemaInterface } from '../../interfaces/protocol-schema.interface';
 import { StateInterface } from '../../models/state/state.interface';
 import { ProtocolInterface, ProtocolMetaInterface, ProtocolModelInterface } from '../../models/protocol/protocol.interface';
-import { DiskInterface } from '../../models/disk/disk.interface';
+import { DiskInterface, GitlabConfigInterface } from '../../models/disk/disk.interface';
 import { DiskModel } from '../../models/disk/disk.service';
 import { ProtocolModel } from '../../models/protocol/protocol-model.service';
 import { StateModel } from '../../models/state/state.service';
@@ -32,7 +32,7 @@ export class ProtocolsComponent {
   protocolModel: ProtocolModelInterface;
   state: StateInterface;
   selectedSource = 'device';
-  gitlabConfig;
+  gitlabConfig: GitlabConfigInterface;
 
   constructor (
     private readonly diskModel: DiskModel,
