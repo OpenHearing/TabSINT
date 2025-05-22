@@ -50,8 +50,6 @@ export class ProtocolsComponent {
     this.protocolModel = this.protocolM.getProtocolModel();
     this.state = this.stateModel.getState();
     this.gitlabConfig = this.disk.gitlabConfig;
-    console.log(this.disk)
-    console.log("protocol initiated: " + this.gitlabConfig.group)
   }
 
   ngOnInit(): void {
