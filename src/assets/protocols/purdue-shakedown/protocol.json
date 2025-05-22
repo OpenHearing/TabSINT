@@ -2590,7 +2590,8 @@
           "title": "Modified Rhyme Test",
           "responseArea": {
             "type": "mrtResponseArea",
-            "examDefinitionFilename": "mrt-exam-definition.csv"
+            "examDefinitionFilename": "mrt-exam-definition.csv",
+            "randomizeTrials": true
           }
         },
         {
