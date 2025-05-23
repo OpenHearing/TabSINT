@@ -2,6 +2,15 @@ import { MediaReposInterface } from "../../interfaces/media-repos.interface"
 import { ProtocolServer, ResultsMode } from "../../utilities/constants"
 import { ProtocolMetaInterface } from "../protocol/protocol.interface"
 
+
+export interface GitlabConfigInterface {
+  host: string;
+  repository: string;
+  token: string;
+  group: string;
+  tag: string;
+}
+
 export interface DiskInterface {
   activeProtocolMeta?: ProtocolMetaInterface,
   adminSkipMode: boolean,
@@ -32,6 +41,7 @@ export interface DiskInterface {
       useSeperateResultsRepo: boolean,
       useTagsOnly: boolean
   },
+  gitlabConfig: GitlabConfigInterface,
   headset: string,
   interApp: {
       appName: string,

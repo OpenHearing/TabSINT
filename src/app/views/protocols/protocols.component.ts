@@ -6,7 +6,7 @@ import { DialogDataInterface } from '../../interfaces/dialog-data.interface';
 import { ProtocolSchemaInterface } from '../../interfaces/protocol-schema.interface';
 import { StateInterface } from '../../models/state/state.interface';
 import { ProtocolInterface, ProtocolMetaInterface, ProtocolModelInterface } from '../../models/protocol/protocol.interface';
-import { DiskInterface } from '../../models/disk/disk.interface';
+import { DiskInterface, GitlabConfigInterface } from '../../models/disk/disk.interface';
 import { DiskModel } from '../../models/disk/disk.service';
 import { ProtocolModel } from '../../models/protocol/protocol-model.service';
 import { StateModel } from '../../models/state/state.service';
@@ -32,13 +32,7 @@ export class ProtocolsComponent {
   protocolModel: ProtocolModelInterface;
   state: StateInterface;
   selectedSource = 'device';
-  gitlabConfig = {
-    repository: '',
-    tag: '',
-    host: 'https://gitlab.com/',
-    token: '',
-    group: ''
-  };
+  gitlabConfig: GitlabConfigInterface;
 
   constructor (
     private readonly diskModel: DiskModel,
@@ -55,6 +49,7 @@ export class ProtocolsComponent {
     this.disk = this.diskModel.getDisk();
     this.protocolModel = this.protocolM.getProtocolModel();
     this.state = this.stateModel.getState();
+    this.gitlabConfig = this.disk.gitlabConfig;
   }
 
   ngOnInit(): void {
@@ -151,7 +146,19 @@ export class ProtocolsComponent {
   async fetchGitlabProtocol() {
     try {
       if (!this.gitlabConfig.host || !this.gitlabConfig.token || !this.gitlabConfig.group || !this.gitlabConfig.repository) {
+        this.notifications.alert({
+          title: "Alert",
+          content: "Missing required GitLab configuration. Please specify a GitLab host, token, group, and repository.",
+          type: DialogType.Alert
+        }).subscribe();
         throw new Error("Missing required GitLab configuration. Please specify a GitLab host, token, group, and repository.");
+      } else if (this.gitlabConfig.group.endsWith('/')) {
+        this.notifications.alert({
+          title: "Alert",
+          content: "GitLab configuration typo. Please make sure the group does not have a '/' at the end.",
+          type: DialogType.Alert
+        }).subscribe();
+        throw new Error("GitLab configuration typo. Please make sure the group does not have a '/' at the end.");
       }
       const headers = new Headers({ 'PRIVATE-TOKEN': this.gitlabConfig.token });
       const projectId = await this.getGitlabProjectId(this.gitlabConfig.host,this.gitlabConfig.repository,this.gitlabConfig.group,headers)
@@ -363,8 +370,10 @@ export class ProtocolsComponent {
     }
 }
 
-
-
+  onGitlabConfigChange() {
+    this.disk.gitlabConfig = this.gitlabConfig;
+    this.diskModel.storeDisk();
+  }
 
   gitlabButtonClass(): string {
     return this.disk.server === ProtocolServer.Gitlab

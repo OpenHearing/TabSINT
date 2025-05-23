@@ -132,7 +132,7 @@
         <div class="row pad-top">
           <div class="col-3"><label for="repository">Repository:</label></div>
           <div class="col-6">
-            <input id="repository" type="text" class="form-control" placeholder="Name" [(ngModel)]="gitlabConfig.repository" />
+            <input id="repository" type="text" class="form-control" placeholder="Name" (ngModelChange)="onGitlabConfigChange()" [(ngModel)]="gitlabConfig.repository" />
           </div>
           <div class="col-1">
             <i [matMenuTriggerFor]="repositoryHelpMenu" class="ion-help-circled"></i>
@@ -146,7 +146,7 @@
         <div class="row pad-top">
           <div class="col-3"><label for="tag">Tag:</label></div>
           <div class="col-6">
-            <input id="version" type="text" class="form-control" placeholder="Latest" [(ngModel)]="gitlabConfig.tag" />
+            <input id="version" type="text" class="form-control" placeholder="Latest" (ngModelChange)="onGitlabConfigChange()" [(ngModel)]="gitlabConfig.tag" />
           </div>
           <div class="col-1">
             <i [matMenuTriggerFor]="versionHelpMenu" class="ion-help-circled"></i>
@@ -160,7 +160,7 @@
         <div class="row pad-top">
           <div class="col-3"><label for="host">Host:</label></div>
           <div class="col-6">
-            <input id="host" type="text" class="form-control" placeholder="https://gitlab.com/" [(ngModel)]="gitlabConfig.host" />
+            <input id="host" type="text" class="form-control" placeholder="https://gitlab.com/" (ngModelChange)="onGitlabConfigChange()" [(ngModel)]="gitlabConfig.host" />
           </div>
           <div class="col-1">
             <i [matMenuTriggerFor]="hostHelpMenu" class="ion-help-circled"></i>
@@ -174,7 +174,7 @@
         <div class="row pad-top">
           <div class="col-3"><label for="token">Token:</label></div>
           <div class="col-6">
-            <input id="token" type="password" class="form-control" placeholder="Token" [(ngModel)]="gitlabConfig.token" />
+            <input id="token" type="text" class="form-control" placeholder="Token" (ngModelChange)="onGitlabConfigChange()" [(ngModel)]="gitlabConfig.token" />
           </div>
           <div class="col-1">
             <i [matMenuTriggerFor]="tokenHelpMenu" class="ion-help-circled"></i>
@@ -188,7 +188,7 @@
         <div class="row pad-top">
           <div class="col-3"><label for="group">Group:</label></div>
           <div class="col-6">
-            <input id="group" type="text" class="form-control" placeholder="Group" [(ngModel)]="gitlabConfig.group" />
+            <input id="group" type="text" class="form-control" placeholder="Group" (ngModelChange)="onGitlabConfigChange()" [(ngModel)]="gitlabConfig.group" />
           </div>
           <div class="col-1">
             <i [matMenuTriggerFor]="groupHelpMenu" class="ion-help-circled"></i>
