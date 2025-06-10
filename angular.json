@@ -35,7 +35,8 @@
               "src/protocols"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "./node_modules/material-icons-font/material-icons-font.css"
             ],
             "scripts": [],
             "server": "src/main.server.ts",
