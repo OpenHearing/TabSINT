@@ -132,7 +132,7 @@
         <div class="row pad-top">
           <div class="col-3"><label for="repository">Repository:</label></div>
           <div class="col-6">
-            <input id="repository" type="text" class="form-control" placeholder="Name" (ngModelChange)="onGitlabConfigChange($event,'repository')" [(ngModel)]="gitlabConfig.repository" />
+            <input id="repository" type="text" class="form-control" placeholder="Name" (input)="onGitlabConfigChange($event,'repository')" [(ngModel)]="gitlabConfig.repository" />
           </div>
           <div class="col-1">
             <i [matMenuTriggerFor]="repositoryHelpMenu" class="ion-help-circled"></i>
@@ -146,7 +146,7 @@
         <div class="row pad-top">
           <div class="col-3"><label for="tag">Tag:</label></div>
           <div class="col-6">
-            <input id="version" type="text" class="form-control" placeholder="Latest" (ngModelChange)="onGitlabConfigChange($event,'tag')" [(ngModel)]="gitlabConfig.tag" />
+            <input id="version" type="text" class="form-control" placeholder="Latest" (input)="onGitlabConfigChange($event,'tag')" [(ngModel)]="gitlabConfig.tag" />
           </div>
           <div class="col-1">
             <i [matMenuTriggerFor]="versionHelpMenu" class="ion-help-circled"></i>
@@ -160,7 +160,7 @@
         <div class="row pad-top">
           <div class="col-3"><label for="host">Host:</label></div>
           <div class="col-6">
-            <input id="host" type="text" class="form-control" placeholder="https://gitlab.com/" (ngModelChange)="onGitlabConfigChange($event,'host')" [(ngModel)]="gitlabConfig.host" />
+            <input id="host" type="text" class="form-control" placeholder="https://gitlab.com/" (input)="onGitlabConfigChange($event,'host')" [(ngModel)]="gitlabConfig.host" />
           </div>
           <div class="col-1">
             <i [matMenuTriggerFor]="hostHelpMenu" class="ion-help-circled"></i>
@@ -188,7 +188,7 @@
         <div class="row pad-top">
           <div class="col-3"><label for="group">Group:</label></div>
           <div class="col-6">
-            <input id="group" type="text" class="form-control" placeholder="Group" (ngModelChange)="onGitlabConfigChange($event,'group')" [(ngModel)]="gitlabConfig.group" />
+            <input id="group" type="text" class="form-control" placeholder="Group" (input)="onGitlabConfigChange($event,'group')" [(ngModel)]="gitlabConfig.group" />
           </div>
           <div class="col-1">
             <i [matMenuTriggerFor]="groupHelpMenu" class="ion-help-circled"></i>
