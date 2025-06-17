@@ -50,6 +50,7 @@ export class ProtocolsComponent {
     this.protocolModel = this.protocolM.getProtocolModel();
     this.state = this.stateModel.getState();
     this.gitlabConfig = this.disk.gitlabConfig;
+    console.log(this.disk.gitlabConfig,this.gitlabConfig);
   }
 
   ngOnInit(): void {
@@ -370,8 +371,18 @@ export class ProtocolsComponent {
     }
 }
 
-  onGitlabConfigChange() {
-    this.disk.gitlabConfig = this.gitlabConfig;
+  onGitlabConfigChange(event:any, value:string) {
+    if (value=='host') {
+      this.disk.gitlabConfig.host = event.target.value;
+    } else if (value=='repository') {
+      this.disk.gitlabConfig.repository = event.target.value;
+    } else if (value=='token') {
+      this.disk.gitlabConfig.token = event.target.value;
+    } else if (value=='group') {
+      this.disk.gitlabConfig.group = event.target.value;
+    } else if (value=='tag') {
+      this.disk.gitlabConfig.tag = event.target.value;
+    }
     this.diskModel.storeDisk();
   }
 
