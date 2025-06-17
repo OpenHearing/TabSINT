@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Tasks } from '../../../../utilities/tasks.service';
 import { SqLite } from '../../../../utilities/sqLite.service';
@@ -31,6 +31,11 @@ export class LogConfigComponent {
   ) { 
     this.state = this.stateModel.getState();
     this.showLogs = this.state.isPaneOpen.appLog;
+  }
+
+  async ngOnInit(): Promise<void> {
+    this.logs = await this.sqLite.getAllLogs();
+    this.logsCount = this.sqLite.count['logs']
   }
 
   logsCount = this.sqLite.count['logs'];
