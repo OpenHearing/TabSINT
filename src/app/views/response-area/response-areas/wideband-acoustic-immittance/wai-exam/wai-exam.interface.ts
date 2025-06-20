@@ -3,17 +3,18 @@ import { CommonResponseAreaInterface } from "../../../../../interfaces/page-defi
 export interface WAIInterface extends CommonResponseAreaInterface {
   exportToCSV?: boolean;
   tabsintId?: string;
-  fStart?: number,
-  fEnd?: number,
-  sweepDuration?: number,
-  sweepType?: 'log' | 'linear',
-  level?: number,
-  numSweeps?: number,
-  windowDuration?: number,
-  numFrequencies?: number,
-  filename?: string,
-  outputRawMeasurements?: boolean,
-  showResults?: boolean
+  fStart?: number;
+  fEnd?: number;
+  sweepDuration?: number;
+  sweepType?: 'log' | 'linear';
+  level?: number;
+  numSweeps?: number;
+  windowDuration?: number;
+  numFrequencies?: number;
+  filename?: string;
+  outputRawMeasurements?: boolean;
+  showResults?: boolean;
+  normativeAbsorbanceDataPath?: string;
 }
 
 export interface WAIResultsInterface { 

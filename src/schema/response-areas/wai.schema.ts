@@ -19,7 +19,8 @@ export const waiSchema: JSONSchemaType<WAIInterface> = {
     numFrequencies: { type: "number", nullable: true, default: 256 },
     filename: { type: "string", nullable: true, default: "WAI_0001.WAV" },
     outputRawMeasurements: { type: "boolean", nullable: true, default: false },
-    showResults: { type: "boolean", nullable: true, default: true }
+    showResults: { type: "boolean", nullable: true, default: true },
+    normativeAbsorbanceDataPath: { type: "string", nullable: true, default: "" },
   },
   required: ["type"]
 };

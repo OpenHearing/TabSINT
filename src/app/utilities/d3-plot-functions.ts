@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import { NormativeDataInterface } from '../interfaces/normative-data-interface';
 import { WAIResultsPlotInterface } from '../views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.interface';
 interface LegendItemInterface {
     label: string;
@@ -246,4 +247,26 @@ export function createLegend(
           .attr('stroke-width', 2)
           .attr('stroke-dasharray', legendItem.line === 'dashed' ? '5,5' : '0');
   }
+}
+
+/**
+ * Create a path data string from normative data
+ * @summary Create a path data string from normative data
+ * @param data The normative data for the area to use
+ * @param xScale The scale of the data in the x-direction
+ * @param yScale The scale of the data in the y-direction
+ * @returns Path data string of the area
+ */
+export function createNormativeDataPath(
+  data: NormativeDataInterface[],
+  xScale: d3.ScaleContinuousNumeric<number, number, never>,
+  yScale: d3.ScaleContinuousNumeric<number, number, never>
+): string | null {
+
+  const pathAreaGenerator = d3.area<NormativeDataInterface>()
+    .x((d) => xScale(d.x))
+    .y0((d) => yScale(d.yMin))
+    .y1((d) => yScale(d.yMax));
+
+  return pathAreaGenerator(data);
 }
