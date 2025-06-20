@@ -19,7 +19,8 @@ export interface WAIInterface extends CommonResponseAreaInterface {
   aurenLength?: number,
   earCanalDiameter?: number,
   earCanalLength?: number,
-  showResults?: boolean
+  showResults?: boolean,
+  normativeAbsorbanceDataPath?: string;
 }
 
 export interface WAIResultsInterface { 
