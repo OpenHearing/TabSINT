@@ -65,12 +65,12 @@
       },
       {
         "name": "readFile",
-        "signature": "(options: { rootUri?: string | undefined; filePath?: string | undefined; fileUri?: string | undefined; }) => Promise<{ contentUri: string; mimeType: string; name: string; size: number; content: string; }>",
+        "signature": "(options: { rootUri?: string | undefined; filePath?: string | undefined; fileUri?: string | undefined; asBase64?: boolean | undefined; }) => Promise<{ contentUri: string; mimeType: string; name: string; size: number; content: string; }>",
         "parameters": [
           {
             "name": "options",
             "docs": "",
-            "type": "{ rootUri?: string | undefined; filePath?: string | undefined; fileUri?: string | undefined; }"
+            "type": "{ rootUri?: string | undefined; filePath?: string | undefined; fileUri?: string | undefined; asBase64?: boolean | undefined; }"
           }
         ],
         "returns": "Promise<{ contentUri: string; mimeType: string; name: string; size: number; content: string; }>",

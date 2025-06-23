@@ -13,7 +13,7 @@ import { NormativeDataInterface } from '../../../../../interfaces/normative-data
 import { ButtonTextService } from '../../../../../controllers/button-text.service';
 import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
 import { waiSchema } from '../../../../../../schema/response-areas/wai.schema';
-import { loadNormativeDataCsv } from '../../../../../utilities/load-normative-data-csv';
+import { loadNormativeDataXlsx } from '../../../../../utilities/load-normative-data-xlsx';
 import { ProtocolMetaInterface } from '../../../../../models/protocol/protocol.interface';
 
 @Component({
@@ -147,7 +147,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
    */
   private async loadNormativeData() {
     if (this.examService.protocol.activeProtocol) {
-      this.normativeAbsorbanceData = await loadNormativeDataCsv(this.normativeAbsorbanceDataPath, this.examService.protocol.activeProtocol as ProtocolMetaInterface);
+      this.normativeAbsorbanceData = await loadNormativeDataXlsx(this.normativeAbsorbanceDataPath, this.examService.protocol.activeProtocol as ProtocolMetaInterface);
     }
   }
 }

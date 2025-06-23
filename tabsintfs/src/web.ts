@@ -23,7 +23,7 @@ export class TabsintFsWeb extends WebPlugin implements TabsintFsPlugin {
     return { success: false, message: 'Not implemented on web' };
   }
 
-  async readFile(options: { rootUri?: string | undefined;fileUri?: string | undefined; filePath?: string | undefined }): Promise<{ contentUri: string; mimeType: string; name: string; size: number; content: string }> {
+  async readFile(options: { rootUri?: string | undefined;fileUri?: string | undefined; filePath?: string | undefined; asBase64?: boolean | undefined; }): Promise<{ contentUri: string; mimeType: string; name: string; size: number; content: string }> {
     console.log('readFile not implemented for web', options);
     return { contentUri: '', mimeType: '', name: '', size: 0, content: '' };
   }

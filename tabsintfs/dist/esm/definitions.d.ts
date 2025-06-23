@@ -28,6 +28,7 @@ export interface TabsintFsPlugin {
         rootUri?: string | null;
         filePath?: string | undefined;
         fileUri?: string | undefined;
+        asBase64?: boolean | undefined;
     }): Promise<{
         contentUri: string;
         mimeType: string;

@@ -2574,7 +2574,7 @@
             "type": "WAIResponseArea",
             "fStart": 500,
             "fEnd": 4000,
-            "normativeAbsorbanceDataPath": "wai-normative-absorbance-data.csv"
+            "normativeAbsorbanceDataPath": "wai-normative-absorbance-data.xlsx"
           }
         },
         {

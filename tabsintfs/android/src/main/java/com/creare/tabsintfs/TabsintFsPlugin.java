@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import android.provider.DocumentsContract;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 
 @CapacitorPlugin(
@@ -111,6 +112,7 @@ public class TabsintFsPlugin extends Plugin {
       String fileUri = call.getString("fileUri");
       String rootUri = call.getString("rootUri");
       String filePath = call.getString("filePath");
+      boolean asBase64 = call.getBoolean("asBase64", false);
   
       DocumentFile file = null;
   
@@ -140,7 +142,7 @@ public class TabsintFsPlugin extends Plugin {
           return;
       }
   
-      String content = readFileContent(file);
+      String content = readFileContent(file, asBase64);
   
       if (content == null) {
           call.reject("Failed to read content from the file");
@@ -472,11 +474,18 @@ private boolean writeFileContent(DocumentFile file, String content) {
 }
 
 private String readFileContent(DocumentFile file) {
+    return readFileContent(file, false);
+}
+
+private String readFileContent(DocumentFile file, boolean asBase64) {
     try (ParcelFileDescriptor pfd = getContext().getContentResolver().openFileDescriptor(file.getUri(), "r");
          FileInputStream fis = new FileInputStream(pfd.getFileDescriptor())) {
 
         byte[] contentBytes = new byte[(int) file.length()];
         fis.read(contentBytes);
+        if (asBase64) {
+            return Base64.getEncoder().encodeToString(contentBytes);
+        }
         return new String(contentBytes, StandardCharsets.UTF_8);
 
     } catch (IOException e) {
