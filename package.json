@@ -55,6 +55,7 @@
     "jeep-sqlite": "2.7.2",
     "jsonformatter": "^0.7.0",
     "lodash": "^4.17.21",
+    "material-icons-font": "^2.1.0",
     "ngx-csv-parser": "^2.0.0",
     "ngx-json-viewer": "^3.2.1",
     "papaparse": "^5.5.2",
