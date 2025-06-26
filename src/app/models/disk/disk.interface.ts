@@ -114,4 +114,5 @@ interface SavedDevice {
     tabsintId: string;
     name: string;
     deviceId: string;
+    maxByteLength: number;
 }

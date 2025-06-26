@@ -89,17 +89,13 @@ export class TympanWrap {
         }, timeout);
     }
 
-    async write(deviceId: string, msg: string) {
+    async write(deviceId: string, msg: string, chunkSize: number) {
         this.clearTMPBuffer(deviceId);
         let msg_to_write = this.msgToDataView(msg);
 
         this.logger.debug("TIME - about to write bytes to tympan: " + String(Date.now()));
         this.logger.debug("Writing "+JSON.stringify(msg)+" to tympan with ID: "+deviceId);
 
-        // TODO: Should we dynamically determine this number in case it ever changes? Or just keep hardcoded here?
-        // Getable by: BleClient.getMtu(), could be done during connection and set as a var
-        // Make sure messages are sent in chunks <=244 bytes
-        const chunkSize: number = 244;
         const original_msg_buffer: ArrayBufferLike = msg_to_write.buffer;
         const byteOffset: number = msg_to_write.byteOffset;
         const byteLength: number = msg_to_write.byteLength;
@@ -112,7 +108,6 @@ export class TympanWrap {
         }
     }
 
-      
     async connect(deviceId: string, onDisconnect: Function) {
         await BleClient.connect(deviceId, (deviceId: string) => onDisconnect(deviceId));
         this.clearTMPBuffer(deviceId);
@@ -120,6 +115,11 @@ export class TympanWrap {
             this.handleIncomingBytes(deviceId, dv);
         });
         this.logger.debug('connected to device:'+JSON.stringify(deviceId));
+    }
+
+    async getMaxByteLength(deviceId: string): Promise<number> {
+        let maxByteLength = await BleClient.getMtu(deviceId);
+        return maxByteLength
     }
 
     async disconnect(deviceId: string) {
