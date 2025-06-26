@@ -2573,7 +2573,12 @@
           "responseArea": {
             "type": "WAIResponseArea",
             "fStart": 500,
-            "fEnd": 4000
+            "fEnd": 4000,
+            "outputChannel": "HPL1",
+            "numFrequencies": 128,
+            "numSweeps": 5,
+            "windowDuration": 0.05,
+            "inputChannels": ["EPSHIELD_RIGHT_PDM_MIC1","EPSHIELD_LEFT_PDM_MIC2","EPSHIELD_LEFT_PDM_MIC1"]
           }
         },
         {

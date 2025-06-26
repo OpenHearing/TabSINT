@@ -25,6 +25,12 @@ export class WAIInProgressComponent implements OnInit, OnDestroy {
   @Input() numFrequencies!: number;
   @Input() filename!: string;
   @Input() outputRawMeasurements!: boolean;
+  @Input() outputChannel!: string;
+  @Input() inputChannels!: Array<string>;
+  @Input() aurenInsideDiameter!: number;
+  @Input() aurenLength!: number;
+  @Input() earCanalDiameter!: number;
+  @Input() earCanalLength!: number;
   @Output() WAIResultsEvent = new EventEmitter<WAIResultsInterface>();
 
   state: StateInterface;

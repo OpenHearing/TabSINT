@@ -181,9 +181,13 @@ export class TympanService {
             await this.tympanWrap.write(tympanId, msg);
             await this.waitForResponse();
             resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
-        } catch (e) {
+        } catch (error: unknown) {
             this.state.examState = ExamState.DeviceError;
-            this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));
+            if (error instanceof Error) {
+                this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(error.message));
+            } else {
+                this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(error));
+            }
         }
         return resp
     }

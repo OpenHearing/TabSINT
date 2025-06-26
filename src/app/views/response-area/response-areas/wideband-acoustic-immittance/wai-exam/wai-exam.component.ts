@@ -24,12 +24,18 @@ export class WAIExamComponent implements OnInit, OnDestroy {
   fEnd: number = waiSchema.properties.fEnd.default;
   sweepDuration: number = waiSchema.properties.sweepDuration.default;
   sweepType: string = waiSchema.properties.sweepType.default;
-  level: number = waiSchema.properties.level.default;
+  l: number = waiSchema.properties.l.default;
   numSweeps: number = waiSchema.properties.numSweeps.default;
   windowDuration: number = waiSchema.properties.windowDuration.default;
   numFrequencies: number = waiSchema.properties.numFrequencies.default;
   filename: string = waiSchema.properties.filename.default;
   outputRawMeasurements: boolean = waiSchema.properties.outputRawMeasurements.default;
+  outputChannel: string = waiSchema.properties.outputChannel.default;
+  inputChannels: Array<string> = waiSchema.properties.inputChannels.default;
+  aurenInsideDiameter: number = waiSchema.properties.aurenInsideDiameter.default;
+  aurenLength: number = waiSchema.properties.aurenLength.default;
+  earCanalDiameter: number = waiSchema.properties.earCanalDiameter.default;
+  earCanalLength: number = waiSchema.properties.earCanalLength.default;
   results: ResultsInterface;
   showResults: boolean = waiSchema.properties.showResults.default;
   pageSubscription: Subscription | undefined;
@@ -68,12 +74,18 @@ export class WAIExamComponent implements OnInit, OnDestroy {
         this.fEnd = responseArea.fEnd ?? this.fEnd;
         this.sweepDuration = responseArea.sweepDuration ?? this.sweepDuration;
         this.sweepType = responseArea.sweepType ?? this.sweepType;
-        this.level = responseArea.level ?? this.level;
+        this.l = responseArea.l ?? this.l;
         this.numSweeps = responseArea.numSweeps ?? this.numSweeps;
         this.windowDuration = responseArea.windowDuration ?? this.windowDuration;
         this.numFrequencies = responseArea.numFrequencies ?? this.numFrequencies;
         this.filename = responseArea.filename ?? this.filename;
         this.outputRawMeasurements = responseArea.outputRawMeasurements ?? this.outputRawMeasurements;
+        this.outputChannel = responseArea.outputChannel ?? this.outputChannel,
+        this.inputChannels = responseArea.inputChannels ?? this.inputChannels,
+        this.aurenInsideDiameter = responseArea.aurenInsideDiameter ?? this.aurenInsideDiameter,
+        this.aurenLength = responseArea.aurenLength ?? this.aurenLength,
+        this.earCanalDiameter = responseArea.earCanalDiameter ?? this.earCanalDiameter,
+        this.earCanalLength = responseArea.earCanalLength ?? this.earCanalLength
 
         // Update xTicks and scales
         this.xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000].filter(tick => tick >= this.fStart && tick <= this.fEnd);
@@ -111,24 +123,34 @@ export class WAIExamComponent implements OnInit, OnDestroy {
     // generate absorbance from power reflectance data (Absorbance = 1 - Reflectance)
     this.waiResults.PowerReflectance = this.waiResults.Absorbance!.map(num => 1 - num);
     // Convert ImpedancePhase from radians to degrees (multiply by 180/pi)
-    this.waiResults.ImpedancePhase = this.waiResults.ImpedancePhase!.map(num => num*180/Math.PI);
+    // NOTE: commenting out for now as the plot has radians
+    // this.waiResults.ImpedancePhase = this.waiResults.ImpedancePhase!.map(num => num*180/Math.PI);
+    // TODO:
+    // 1 Display units and values in degrees
+    // 2) Make y-axis for impedance magnitude scalable based on values (not hardcoded)
     this.results.currentPage.response = waiResults;
   }
 
   private async beginExam() {
     this.device = this.deviceUtil.getDeviceFromTabsintId(this.tabsintId);
     if (this.device) {
-      const examProperties = {
+      const examProperties: any = {
         FStart: this.fStart,
         FEnd:  this.fEnd,
         SweepDuration: this.sweepDuration,
         SweepType: this.sweepType,
-        Level: this.level,
+        L: this.l,
         NumSweeps: this.numSweeps,
         WindowDuration: this.windowDuration,
         NumFrequencies: this.numFrequencies,
         Filename: this.filename,
-        OutputRawMeasurements: this.outputRawMeasurements
+        OutputRawMeasurements: this.outputRawMeasurements,
+        OutputChannel: this.outputChannel,
+        InputChannels: this.inputChannels,
+        AurenInsideDiameter: this.aurenInsideDiameter,
+        AurenLength: this.aurenLength,
+        EarCanalDiameter: this.earCanalDiameter,
+        EarCanalLength: this.earCanalLength,
       };
       await this.devicesService.queueExam(this.device, "WAI", examProperties);
     } else {

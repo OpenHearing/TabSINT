@@ -248,6 +248,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
                 }
             } catch (error) {
                 this.logger.error("Error in waitForReadyState: " + error);
+                // TODO: Should this be a throw instead?
                 reject(error);
             }
         };

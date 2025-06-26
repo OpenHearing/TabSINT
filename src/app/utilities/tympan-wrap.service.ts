@@ -92,9 +92,24 @@ export class TympanWrap {
     async write(deviceId: string, msg: string) {
         this.clearTMPBuffer(deviceId);
         let msg_to_write = this.msgToDataView(msg);
-        this.logger.debug("TIME - about to write bytes to tympan" + String(Date.now()));
+
+        this.logger.debug("TIME - about to write bytes to tympan: " + String(Date.now()));
         this.logger.debug("Writing "+JSON.stringify(msg)+" to tympan with ID: "+deviceId);
-        await BleClient.write(deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID, msg_to_write);
+
+        // TODO: Should we dynamically determine this number in case it ever changes? Or just keep hardcoded here?
+        // Getable by: BleClient.getMtu(), could be done during connection and set as a var
+        // Make sure messages are sent in chunks <=244 bytes
+        const chunkSize: number = 244;
+        const original_msg_buffer: ArrayBufferLike = msg_to_write.buffer;
+        const byteOffset: number = msg_to_write.byteOffset;
+        const byteLength: number = msg_to_write.byteLength;
+        let currentOffset: number = byteOffset;
+        while (currentOffset < byteOffset + byteLength) {
+            let currChunkLength = Math.min(chunkSize, (byteOffset + byteLength) - currentOffset);
+            let chunkDataView = new DataView(original_msg_buffer, currentOffset, currChunkLength);
+            await BleClient.write(deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID, chunkDataView); 
+            currentOffset += currChunkLength;
+        }
     }
 
       
@@ -114,7 +129,6 @@ export class TympanWrap {
 
     handleIncomingBytes(deviceId: string, dv: DataView) {     
         let byteArray = new Uint8Array(dv.buffer.slice(dv.byteOffset, dv.byteOffset + dv.byteLength));
-
         if (!this.isUnhandledByteMessage(byteArray)) {
             this.TMP_BUFFER[deviceId] = this.appendDataView(this.TMP_BUFFER[deviceId],dv);
         } else {
@@ -175,7 +189,7 @@ export class TympanWrap {
             } else {
                 msg = "invalid checksum";
             }
-            this.logger.debug("TIME - msg parsed and checksum verified" + String(Date.now()));
+            this.logger.debug("TIME - msg parsed and checksum verified: " + String(Date.now()));
             this.clearTMPBuffer(deviceId);
         }
         return msg
