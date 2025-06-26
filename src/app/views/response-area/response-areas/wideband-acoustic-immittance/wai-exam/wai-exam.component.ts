@@ -120,14 +120,10 @@ export class WAIExamComponent implements OnInit, OnDestroy {
 
   saveResults(waiResults: WAIResultsInterface) {
     this.waiResults = waiResults;
-    // generate absorbance from power reflectance data (Absorbance = 1 - Reflectance)
+    // Generate absorbance from power reflectance data (Absorbance = 1 - Reflectance)
     this.waiResults.PowerReflectance = this.waiResults.Absorbance!.map(num => 1 - num);
     // Convert ImpedancePhase from radians to degrees (multiply by 180/pi)
-    // NOTE: commenting out for now as the plot has radians
-    // this.waiResults.ImpedancePhase = this.waiResults.ImpedancePhase!.map(num => num*180/Math.PI);
-    // TODO:
-    // 1 Display units and values in degrees
-    // 2) Make y-axis for impedance magnitude scalable based on values (not hardcoded)
+    this.waiResults.ImpedancePhase = this.waiResults.ImpedancePhase!.map(num => num*180/Math.PI);
     this.results.currentPage.response = waiResults;
   }
 

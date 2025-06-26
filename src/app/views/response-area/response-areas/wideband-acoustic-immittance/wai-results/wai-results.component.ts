@@ -65,13 +65,13 @@ export class WAIResultsComponent implements AfterViewInit {
         yAxisFormat: ".0e",
         data: this.waiResults.ImpedanceAmp! 
       },
-      { id: "Impedance Phase (radians)", 
+      { id: "Impedance Phase (degrees)", 
         x: plotWidth + this.margin.spacerW + this.margin.left, 
         y: plotHeight + this.margin.spacerH + this.margin.top, 
         w: plotWidth,
         h: plotHeight,
         xRange: xRange,
-        yRange: [-3.14, 3.14], 
+        yRange: [-180, 180], 
         yAxisFormat: ".0f",
         data: this.waiResults.ImpedancePhase! 
       },
