@@ -80,12 +80,12 @@ export class WAIExamComponent implements OnInit, OnDestroy {
         this.numFrequencies = responseArea.numFrequencies ?? this.numFrequencies;
         this.filename = responseArea.filename ?? this.filename;
         this.outputRawMeasurements = responseArea.outputRawMeasurements ?? this.outputRawMeasurements;
-        this.outputChannel = responseArea.outputChannel ?? this.outputChannel,
-        this.inputChannels = responseArea.inputChannels ?? this.inputChannels,
-        this.aurenInsideDiameter = responseArea.aurenInsideDiameter ?? this.aurenInsideDiameter,
-        this.aurenLength = responseArea.aurenLength ?? this.aurenLength,
-        this.earCanalDiameter = responseArea.earCanalDiameter ?? this.earCanalDiameter,
-        this.earCanalLength = responseArea.earCanalLength ?? this.earCanalLength
+        this.outputChannel = responseArea.outputChannel ?? this.outputChannel;
+        this.inputChannels = responseArea.inputChannels ?? this.inputChannels;
+        this.aurenInsideDiameter = responseArea.aurenInsideDiameter ?? this.aurenInsideDiameter;
+        this.aurenLength = responseArea.aurenLength ?? this.aurenLength;
+        this.earCanalDiameter = responseArea.earCanalDiameter ?? this.earCanalDiameter;
+        this.earCanalLength = responseArea.earCanalLength ?? this.earCanalLength;
 
         // Update xTicks and scales
         this.xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000].filter(tick => tick >= this.fStart && tick <= this.fEnd);
