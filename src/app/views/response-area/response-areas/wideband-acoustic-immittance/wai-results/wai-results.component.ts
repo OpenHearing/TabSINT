@@ -30,6 +30,9 @@ export class WAIResultsComponent implements AfterViewInit {
           .attr('width', this.width + this.margin.left + this.margin.right + this.margin.spacerW)
           .attr('height', this.height + this.margin.top + this.margin.bottom + this.margin.spacerH);
 
+    // Define definitions for the svg
+    const defs = svg.append("defs");
+
     // Define the individual graph dimensions
     const plotWidth = this.width / 2;
     const plotHeight = this.height / 2;
@@ -88,7 +91,7 @@ export class WAIResultsComponent implements AfterViewInit {
       frequency: number;
       value: number;
     }>;
-    graphs.forEach(({ id, x, y, w, h, xRange, yRange, yAxisFormat, data }) => {
+    graphs.forEach(({ id, x, y, w, h, xRange, yRange, yAxisFormat, data }, index) => {
       xScale = d3.scaleLog()
         .domain(xRange)
         .range([0, plotWidth]);
@@ -114,39 +117,35 @@ export class WAIResultsComponent implements AfterViewInit {
       }
       svg = createWAIResultsChartSvg(plotData);
 
-      // Add the shaded region for Absorbance normative data
-      if (id == "Absorbance") {
-        // Filter data to fit on plot
-        let normativeAbsorbanceDataFiltered: NormativeDataInterface[] = [];
-        this.normativeAbsorbanceData.forEach((d) => {
-          if (d.x >= this.xTicks[0] && d.x <= this.xTicks[this.xTicks.length - 1]) {
-            normativeAbsorbanceDataFiltered.push(d);
-          }
-        });
-        const normativeAbsorbancePath = createNormativeDataPath(normativeAbsorbanceDataFiltered, xScale, yScale);
+      // Add a clipping definition for each graph
+      const clipId = `clip${index}`;
+      defs.append("clipPath")
+        .attr("id", clipId)
+        .append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("height", h)
+        .attr("width", w);
 
-        svg.append('path')
-          .attr('transform', `translate(${x},${y})`)
+      // Apply transformations and clipping to the group for additional plotting steps
+      const transformedClipGroup = svg.append("g")
+        .attr("clip-path", `url(#${clipId})`)
+        .attr('transform', `translate(${x},${y})`);
+
+      // Add the shaded region for absorbance normative data
+      if (id == "Absorbance") {
+        const normativeAbsorbancePath = createNormativeDataPath(this.normativeAbsorbanceData, xScale, yScale);
+        transformedClipGroup.append('path')
           .attr('d', normativeAbsorbancePath)
           .attr('fill', 'gray');
 
       } else if (id == "Power Reflectance") {
-        // Filter data to fit on plot
-        let normativeReflectanceDataFiltered: NormativeDataInterface[] = [];
         // Power reflectance based on absorbance
-        this.normativeAbsorbanceData.forEach((d) => {
-          if (d.x > this.xTicks[0] && d.x < this.xTicks[this.xTicks.length - 1]) {
-            const reflectanceData = {...d, yMin: 1 - d.yMin, yMax: 1 - d.yMax}
-            normativeReflectanceDataFiltered.push(reflectanceData); 
-          }
-        });
-        const normativeReflectancePath = createNormativeDataPath(normativeReflectanceDataFiltered, xScale, yScale);
-
-        svg.append('path')
-          .attr('transform', `translate(${x},${y})`)
+        const normativeReflectanceData = this.normativeAbsorbanceData.map(data => ({ ...data, yMin: 1 - data.yMin, yMax: 1 - data.yMax }));
+        const normativeReflectancePath = createNormativeDataPath(normativeReflectanceData, xScale, yScale);
+        transformedClipGroup.append('path')
           .attr('d', normativeReflectancePath)
           .attr('fill', 'gray');
-
       }
 
       lineData = this.waiResults.Frequency!.map((frequency, i) => ({
@@ -161,8 +160,7 @@ export class WAIResultsComponent implements AfterViewInit {
         .curve(d3.curveLinear); // smoothing
   
       // Append the line path
-      svg.append('path')
-        .attr('transform', `translate(${x},${y})`)
+      transformedClipGroup.append('path')
         .datum(lineData) // Bind data
         .attr('fill', 'none') // Ensure no area is filled
         .attr('stroke', 'blue') // Set line color
