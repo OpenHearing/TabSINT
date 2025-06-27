@@ -19,7 +19,8 @@ export const sweptDpoaeSchema: JSONSchemaType<SweptDpoaeInterface> = {
     maxSweeps: { type: "number", nullable: true, default: 32 },
     noiseFloorThreshold: { type: "number", nullable: true, default: -10 },
     outputRawMeasurements: { type: "boolean", nullable: true, default: false },
-    showResults: { type: "boolean", nullable: true, default: true }
+    showResults: { type: "boolean", nullable: true, default: true },
+    normativeDataPath: { type: "string", nullable: true, default: "" },
   },
   required: ["type"]
 };
