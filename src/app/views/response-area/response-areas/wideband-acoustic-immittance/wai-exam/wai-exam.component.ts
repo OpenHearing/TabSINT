@@ -146,7 +146,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
    * Load the normative data which will be displayed in the results
    */
   private async loadNormativeData() {
-    if (this.examService.protocol.activeProtocol) {
+    if (this.examService.protocol.activeProtocol && this.normativeAbsorbanceDataPath) {
       this.normativeAbsorbanceData = await loadNormativeDataXlsx(this.normativeAbsorbanceDataPath, this.examService.protocol.activeProtocol as ProtocolMetaInterface);
     }
   }

@@ -1,7 +1,8 @@
 import { AfterViewInit, Component, Input } from '@angular/core';
 import * as d3 from 'd3';
 import { SweptDpoaeResultsInterface } from '../swept-dpoae-exam/swept-dpoae-exam.interface';
-import { createLegend, createOAEResultsChartSvg } from '../../../../../utilities/d3-plot-functions';
+import { createLegend, createOAEResultsChartSvg, createNormativeDataPath } from '../../../../../utilities/d3-plot-functions';
+import { NormativeDataInterface } from '../../../../../interfaces/normative-data-interface';
 
 @Component({
   selector: 'swept-dpoae-results',
@@ -17,6 +18,7 @@ export class SweptDpoaeResultsComponent implements AfterViewInit {
   @Input() height!: number;
   @Input() xTicks!: number[];
   @Input() margin!: { top: number, right: number, bottom: number, left: number };
+  @Input() normativeData!: NormativeDataInterface[];
   
   svg: d3.Selection<SVGGElement, unknown, HTMLElement, any> | undefined;
 
@@ -45,6 +47,19 @@ export class SweptDpoaeResultsComponent implements AfterViewInit {
     
     svg = createOAEResultsChartSvg(svg, this.width, this.height, this.xTicks, this.xScale, yScale);
 
+    // Plot normative data (grey area)
+    let normativeDataFiltered: NormativeDataInterface[] = [];
+    this.normativeData.forEach((d) => {
+      if (d.x >= this.xTicks[0] && d.x <= this.xTicks[this.xTicks.length - 1]) {
+        normativeDataFiltered.push(d);
+      }
+    });
+    const normativePath = createNormativeDataPath(normativeDataFiltered, this.xScale, yScale);
+
+    svg.append('path')
+      .attr('d', normativePath)
+      .attr('fill', 'gray');
+  
     // Plot DpLow Amplitude (blue line)
     svg.selectAll('.dot')
       .data(filteredData.DpLow.Frequency)

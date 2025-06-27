@@ -115,11 +115,11 @@ export class WAIResultsComponent implements AfterViewInit {
       svg = createWAIResultsChartSvg(plotData);
 
       // Add the shaded region for Absorbance normative data
-      if (id=="Absorbance") {
-        // filter normativeAbsorbanceData to fit on plot
-        let normativeAbsorbanceDataFiltered: any = [];
+      if (id == "Absorbance") {
+        // Filter data to fit on plot
+        let normativeAbsorbanceDataFiltered: NormativeDataInterface[] = [];
         this.normativeAbsorbanceData.forEach((d) => {
-          if (d.x > this.xTicks[0] && d.x < this.xTicks[this.xTicks.length - 1]) {
+          if (d.x >= this.xTicks[0] && d.x <= this.xTicks[this.xTicks.length - 1]) {
             normativeAbsorbanceDataFiltered.push(d);
           }
         });
@@ -128,6 +128,23 @@ export class WAIResultsComponent implements AfterViewInit {
         svg.append('path')
           .attr('transform', `translate(${x},${y})`)
           .attr('d', normativeAbsorbancePath)
+          .attr('fill', 'gray');
+
+      } else if (id == "Power Reflectance") {
+        // Filter data to fit on plot
+        let normativeReflectanceDataFiltered: NormativeDataInterface[] = [];
+        // Power reflectance based on absorbance
+        this.normativeAbsorbanceData.forEach((d) => {
+          if (d.x > this.xTicks[0] && d.x < this.xTicks[this.xTicks.length - 1]) {
+            const reflectanceData = {...d, yMin: 1 - d.yMin, yMax: 1 - d.yMax}
+            normativeReflectanceDataFiltered.push(reflectanceData); 
+          }
+        });
+        const normativeReflectancePath = createNormativeDataPath(normativeReflectanceDataFiltered, xScale, yScale);
+
+        svg.append('path')
+          .attr('transform', `translate(${x},${y})`)
+          .attr('d', normativeReflectancePath)
           .attr('fill', 'gray');
 
       }

@@ -325,7 +325,8 @@
           "id": "swept_oae_001",
           "title": "Swept DPOAE",
           "responseArea": {
-            "type": "sweptDPOAEResponseArea"
+            "type": "sweptDPOAEResponseArea",
+            "normativeDataPath": "swept-dpoae-normative-data-human.xlsx"
           }
         },
         {
@@ -344,7 +345,7 @@
             "type": "WAIResponseArea",
             "fStart": 500,
             "fEnd": 4000,
-            "normativeAbsorbanceDataPath": "wai-normative-absorbance-data.xlsx"
+            "normativeAbsorbanceDataPath": "wai-normative-absorbance-data-human.xlsx"
           }
         },
         {
