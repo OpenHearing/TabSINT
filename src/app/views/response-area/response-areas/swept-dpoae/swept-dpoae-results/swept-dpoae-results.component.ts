@@ -47,19 +47,26 @@ export class SweptDpoaeResultsComponent implements AfterViewInit {
     
     svg = createOAEResultsChartSvg(svg, this.width, this.height, this.xTicks, this.xScale, yScale);
 
-    // Plot normative data (grey area)
-    let normativeDataFiltered: NormativeDataInterface[] = [];
-    this.normativeData.forEach((d) => {
-      if (d.x >= this.xTicks[0] && d.x <= this.xTicks[this.xTicks.length - 1]) {
-        normativeDataFiltered.push(d);
-      }
-    });
-    const normativePath = createNormativeDataPath(normativeDataFiltered, this.xScale, yScale);
+    // Define definitions for the svg and add clip path
+    const defs = svg.append("defs");
+    defs.append("clipPath")
+      .attr("id", "clipRect")
+      .append("rect")
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('height', this.height)
+      .attr('width', this.width);
 
-    svg.append('path')
+    // Apply clipping to the group for additional plotting steps
+    const clippedGroup = svg.append("g").attr("clip-path", `url(#clipRect)`);
+
+    // Plot normative data (grey area)
+    const normativePath = createNormativeDataPath(this.normativeData, this.xScale, yScale);
+    clippedGroup
+      .append('path')
       .attr('d', normativePath)
       .attr('fill', 'gray');
-  
+
     // Plot DpLow Amplitude (blue line)
     svg.selectAll('.dot')
       .data(filteredData.DpLow.Frequency)
