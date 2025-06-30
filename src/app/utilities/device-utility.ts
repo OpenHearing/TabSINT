@@ -59,7 +59,8 @@ export class DeviceUtil {
             "deviceId": newConnection.deviceId!,
             "name": newConnection.name!,
             "state": DeviceState.Connected,
-            "msgId": 1
+            "msgId": 1,
+            "maxByteLength": newConnection.maxByteLength!
         };
         return connection
     }
@@ -147,6 +148,11 @@ export class DeviceUtil {
         return connection
     }
 
+    getMaxByteLengthFromDeviceId(tabsintId:string): number {
+        let device = this.getDeviceFromDeviceId(tabsintId);
+        return device?.maxByteLength!
+    }
+
     updateDeviceInfo(tabsintId: string, info: {[key: string]: string}): boolean {
         let wasDeviceInfoUpdated = false;
         for (const device of this.devices.connectedDevices.tympan) {
@@ -164,7 +170,8 @@ export class DeviceUtil {
         let savedDevice = {
             "tabsintId": connection.tabsintId,
             "name": connection.name,
-            "deviceId": connection.deviceId
+            "deviceId": connection.deviceId,
+            "maxByteLength": connection.maxByteLength
         };
         let savedDevices = JSON.parse(JSON.stringify(this.disk.savedDevices));
         savedDevices.tympan.push(savedDevice);
@@ -190,7 +197,8 @@ export class DeviceUtil {
                 "deviceId": device.deviceId,
                 "name": device.name,
                 "state": DeviceState.Disconnected,
-                "msgId": 1
+                "msgId": 1,
+                "maxByteLength": device.maxByteLength
             };
             this.devices.connectedDevices.tympan.push(savedConnection);
         }

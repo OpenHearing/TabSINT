@@ -5,4 +5,5 @@ export interface ConnectedTympan {
     name: string;
     state: DeviceState;
     msgId: number;
+    maxByteLength: number;
 }

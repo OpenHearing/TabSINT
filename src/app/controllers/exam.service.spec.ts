@@ -140,7 +140,8 @@ describe('ExamService', () => {
                                 deviceId: 'dev-001',
                                 name: 'Tympan Device',
                                 state: DeviceState.Connected,
-                                msgId: 123
+                                msgId: 123,
+                                "maxByteLength": 244
                             }
                         ],
                         cha: [{}], 

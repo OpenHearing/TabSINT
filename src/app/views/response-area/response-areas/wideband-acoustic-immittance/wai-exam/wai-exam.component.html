@@ -5,12 +5,18 @@
         [fEnd]="fEnd"
         [sweepDuration]="sweepDuration"
         [sweepType]="sweepType"
-        [level]="level"
+        [l]="l"
         [numSweeps]="numSweeps"
         [windowDuration]="windowDuration"
         [numFrequencies]="numFrequencies"
         [filename]="filename"
-        [outputRawMeasurements]="outputRawMeasurements">
+        [outputRawMeasurements]="outputRawMeasurements"
+        [outputChannel]="outputChannel" 
+        [inputChannels]="inputChannels"
+        [aurenInsideDiameter]="aurenInsideDiameter"
+        [aurenLength]="aurenLength"
+        [earCanalDiameter]="earCanalDiameter"
+        [earCanalLength]="earCanalLength">
     </wai-input-parameters>
     
     <wai-in-progress
@@ -20,12 +26,18 @@
         [fEnd]="fEnd"
         [sweepDuration]="sweepDuration"
         [sweepType]="sweepType"
-        [level]="level"
+        [l]="l"
         [numSweeps]="numSweeps"
         [windowDuration]="windowDuration"
         [numFrequencies]="numFrequencies"
         [filename]="filename"
         [outputRawMeasurements]="outputRawMeasurements"
+        [outputChannel]="outputChannel" 
+        [inputChannels]="inputChannels"
+        [aurenInsideDiameter]="aurenInsideDiameter"
+        [aurenLength]="aurenLength"
+        [earCanalDiameter]="earCanalDiameter"
+        [earCanalLength]="earCanalLength"
         (WAIResultsEvent)="saveResults($event)">
     </wai-in-progress>
 
