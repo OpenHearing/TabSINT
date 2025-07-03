@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 
 import { DiskInterface } from '../../../../models/disk/disk.interface';
 import { DevicesInterface } from '../../../../models/devices/devices.interface';
@@ -18,7 +18,7 @@ import { DevicesModel } from '../../../../models/devices/devices-model.service';
 export class SoftwareConfigComponent {
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
-  devices: DevicesInterface;
+  devices$?: Observable<DevicesInterface>;
   version: VersionInterface;
 
   constructor(
@@ -28,7 +28,6 @@ export class SoftwareConfigComponent {
     private versionModel: VersionModel,
   ) {
     this.disk = this.diskModel.getDisk();
-    this.devices = this.devicesModel.getDevices();
     this.version = {
       tabsint: '',
       date: '',
@@ -48,6 +47,7 @@ export class SoftwareConfigComponent {
         this.disk = updatedDisk;
     })
     this.initializeVersion();
+    this.devices$ = this.devicesModel.devicesModel$;
   }
 
   ngOnDestroy() {

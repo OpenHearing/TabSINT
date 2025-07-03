@@ -19,8 +19,8 @@ import { ProtocolModel } from './models/protocol/protocol-model.service';
 import { SqLite } from './utilities/sqLite.service';
 import { Logger } from './utilities/logger.service';
 import { FileService } from './utilities/file.service';
-import { DeviceUtil } from './utilities/device-utility';
 import { DisclaimerComponent } from './views/disclaimer/disclaimer.component';
+import { DevicesModel } from './models/devices/devices-model.service';
 
 @Component({
   selector: 'app-root',
@@ -35,7 +35,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(    
     private readonly appModel: AppModel,
-    private readonly deviceUtil: DeviceUtil,
+    private readonly devicesModel: DevicesModel,
     private readonly diskModel: DiskModel,
     private readonly fileService:FileService,
     private readonly logger: Logger,
@@ -80,7 +80,7 @@ export class AppComponent implements OnInit, OnDestroy {
       this.openDisclaimer();
       this.diskModel.updateDiskModel('showDisclaimer',false);
     }
-    this.deviceUtil.addSavedDevices();
+    this.devicesModel.addSavedDevices(this.disk.savedDevices);
   }
   
   ngOnDestroy() {

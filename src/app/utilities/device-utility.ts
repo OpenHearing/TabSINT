@@ -13,33 +13,24 @@ import { PendingMsgInfo } from '../interfaces/pending-msg-info.interface';
 })
 
 export class DeviceUtil {
-    devices: DevicesInterface;
+    devices?: DevicesInterface;
     disk: DiskInterface;
     diskSubscription: Subscription | undefined;
 
     constructor(private readonly devicesModel: DevicesModel, private readonly diskModel: DiskModel) {
-        this.devices = this.devicesModel.getDevices();
         this.disk = this.diskModel.getDisk();
         this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
             this.disk = updatedDisk;
-        })    
-    }
-
-    updateDeviceState(deviceId: string|undefined, newState: DeviceState): boolean {
-        let wasDeviceStateUpdated: boolean = false;
-        for (const device of this.devices.connectedDevices.tympan) {
-            if (device.deviceId === deviceId) {
-                device.state = newState;
-                wasDeviceStateUpdated = true;
-            }
-        }
-        return wasDeviceStateUpdated
+        })  
+        this.devicesModel.devicesModel$.subscribe( (value: DevicesInterface) => {
+            this.devices = value;
+        })   
     }
 
     getNextFreeTabsintId(): string {
         let nextFreeId: string = "1";
         let takenIds: Array<string> = [];
-        for (const [ , deviceType] of Object.entries(this.devices.connectedDevices)) {
+        for (const [ , deviceType] of Object.entries(this.devices?.connectedDevices ?? [])) {
             deviceType.forEach( (device: ConnectedDevice) => {
                 if (device.tabsintId) {
                     takenIds.push(device.tabsintId);
@@ -65,18 +56,6 @@ export class DeviceUtil {
         return connection
     }
 
-    incrementDeviceMsgId(deviceId: string): void {
-        for (const device of this.devices.connectedDevices.tympan) {
-            if (device.deviceId === deviceId) {
-                if (device.msgId>=99) {
-                    device.msgId=1;
-                } else {
-                    device.msgId+=1;
-                }
-            }
-        }
-    }
-
     isResponseInvalidChecksum(response: TympanResponse): boolean {
         if (response.msg === 'invalid checksum') {
             return true;
@@ -97,24 +76,9 @@ export class DeviceUtil {
         return resp;
     }
 
-    removeDevice(device: ConnectedDevice): boolean {
-        let wasDeviceRemoved = false;
-        let indexToRemove: number = -1;
-        for (let i = 0; i < this.devices.connectedDevices.tympan.length; i++) {
-            if (this.devices.connectedDevices.tympan[i].deviceId==device.deviceId) {
-                indexToRemove = i;
-            }
-        }
-        if (indexToRemove !== -1) {
-            this.devices.connectedDevices.tympan.splice(indexToRemove, 1);
-            wasDeviceRemoved = true;
-        }
-        return wasDeviceRemoved
-    }
-
     getTabsintIdFromDeviceId(deviceId: string): string|undefined {
         let tabsintId: string|undefined;
-        for (const [ , deviceType] of Object.entries(this.devices.connectedDevices)) {
+        for (const [ , deviceType] of Object.entries(this.devices?.connectedDevices ?? [])) {
             deviceType.forEach( (device: ConnectedDevice) => {
                 if (device.deviceId === deviceId) {
                     tabsintId = device.tabsintId;
@@ -126,7 +90,7 @@ export class DeviceUtil {
 
     getDeviceFromDeviceId(deviceId: string): ConnectedDevice|undefined {
         let connection: ConnectedDevice|undefined;
-        for (const [ , deviceType] of Object.entries(this.devices.connectedDevices)) {
+        for (const [ , deviceType] of Object.entries(this.devices?.connectedDevices ?? [])) {
             deviceType.forEach( (device: ConnectedDevice) => {
                 if (device.deviceId === deviceId) {
                     connection = device;
@@ -138,7 +102,7 @@ export class DeviceUtil {
 
     getDeviceFromTabsintId(tabsintId:string): ConnectedDevice|undefined {
         let connection: ConnectedDevice|undefined;
-        for (const [ , deviceType] of Object.entries(this.devices.connectedDevices)) {
+        for (const [ , deviceType] of Object.entries(this.devices?.connectedDevices ?? [])) {
             deviceType.forEach( (device: ConnectedDevice) => {
                 if (device.tabsintId === tabsintId) {
                     connection = device;
@@ -151,19 +115,6 @@ export class DeviceUtil {
     getMaxByteLengthFromDeviceId(tabsintId:string): number {
         let device = this.getDeviceFromDeviceId(tabsintId);
         return device?.maxByteLength!
-    }
-
-    updateDeviceInfo(tabsintId: string, info: {[key: string]: string}): boolean {
-        let wasDeviceInfoUpdated = false;
-        for (const device of this.devices.connectedDevices.tympan) {
-            if (device.tabsintId === tabsintId) {
-                device.description = info?.["description"];
-                device.buildDateTime = info?.["buildDateTime"];
-                device.serialNumber = info?.["serialNumber"];
-                wasDeviceInfoUpdated = true;
-            }
-        }
-        return wasDeviceInfoUpdated
     }
     
     addNewSavedDevice(connection: ConnectedDevice): void {
@@ -186,21 +137,6 @@ export class DeviceUtil {
                 savedDevices.tympan.splice(indexToRemove, 1);
                 this.diskModel.updateDiskModel('savedDevices', savedDevices);
             }
-        }
-    }
-
-    addSavedDevices(): void {
-        for (const device of this.disk.savedDevices.tympan) {
-            let savedConnection: ConnectedDevice = {
-                "type": "Tympan",
-                "tabsintId": device.tabsintId,
-                "deviceId": device.deviceId,
-                "name": device.name,
-                "state": DeviceState.Disconnected,
-                "msgId": 1,
-                "maxByteLength": device.maxByteLength
-            };
-            this.devices.connectedDevices.tympan.push(savedConnection);
         }
     }
 }

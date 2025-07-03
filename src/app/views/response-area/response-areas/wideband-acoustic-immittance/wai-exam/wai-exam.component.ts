@@ -150,6 +150,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
       };
       await this.devicesService.queueExam(this.device, "WAI", examProperties);
     } else {
+      await this.devicesService.deviceNotFound();
       this.logger.error("Error setting up WAI exam");
     }
   }

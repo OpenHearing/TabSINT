@@ -6,7 +6,7 @@
   
 
 <!-- tympan status -->
-<a href="javascript:" class="header-text" *ngIf="devices?.connectedDevices?.tympan?.[0]?.state==DeviceState.Connected" title="Tympan Connected">
+<a href="javascript:" class="header-text" *ngIf="(devices$ | async)?.connectedDevices?.tympan?.[0]?.state==DeviceState.Connected" title="Tympan Connected">
     <span>
         <i [matMenuTriggerFor]= "TympanConnectedMenu" class="tympan-logo"></i>
     </span>

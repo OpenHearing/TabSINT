@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 
 import { DiskInterface } from '../../../../models/disk/disk.interface';
 import { StateInterface } from '../../../../models/state/state.interface';
@@ -21,7 +21,7 @@ export class DeviceInfoComponent {
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
   state: StateInterface;
-  devices: DevicesInterface;
+  devices$?: Observable<DevicesInterface>;
 
   constructor(
     private readonly devicesModel: DevicesModel,
@@ -31,7 +31,6 @@ export class DeviceInfoComponent {
   ) { 
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();
-    this.devices = this.devicesModel.getDevices();
   }
 
   ngOnInit(): void {
@@ -39,6 +38,7 @@ export class DeviceInfoComponent {
         this.disk = updatedDisk;
     })    
     this.state.appState = AppState.Admin;
+    this.devices$ = this.devicesModel.devicesModel$;
   }
 
   ngOnDestroy() {

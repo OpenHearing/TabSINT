@@ -51,7 +51,7 @@
 <ul class="admin-info">
     <li>
         <b>{{'Device UUID' | translate}}:</b>
-        <span>{{devices.uuid}}</span>
+        <span *ngIf="(devices$ | async) as devices">{{devices.uuid}}</span>
     </li>
     <!-- <li>
         <b>{{'TabSINT UUID' | translate}}:</b>
@@ -59,15 +59,15 @@
     </li> -->
     <li>
         <b>{{'Device Model' | translate}}:</b>
-        <span>{{devices.model}}</span>
+        <span  *ngIf="(devices$ | async) as devices">>{{devices.model}}</span>
     </li>
     <li>
         <b>{{'Operating System' | translate}}:</b>
-        <span>{{devices.platform}} {{devices.version}}</span>
+        <span  *ngIf="(devices$ | async) as devices">>{{devices.platform}} {{devices.version}}</span>
     </li>
     <li>
         <b>{{'Free Disk Space' | translate}}:</b>
-        <span>{{devices.diskspace}} MB</span>
+        <span  *ngIf="(devices$ | async) as devices">{{devices.diskspace}} MB</span>
     </li>
     <li>
         <b>{{'Network Status' | translate}}:</b>

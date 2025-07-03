@@ -1,9 +1,12 @@
 <!-- Add new connection (hardcoded to accept one device at a time) -->
-<div class="row pad-top" *ngIf="!state.newDeviceConnection && devices.connectedDevices.tympan.length+devices.connectedDevices.cha.length+devices.connectedDevices.svantek.length<maxConnectedDevices">
-  <div class="col-12">
-    <button (click)="addNewConnection()">+ New Connection</button>
+<ng-container *ngIf="(devices$ | async) as devices">
+  <div class="row pad-top"
+    *ngIf="!state.newDeviceConnection && devices.connectedDevices.tympan.length+devices.connectedDevices.cha.length+devices.connectedDevices.svantek.length<maxConnectedDevices">
+    <div class="col-12">
+      <button (click)="addNewConnection()">+ New Connection</button>
+    </div>
   </div>
-</div>
+</ng-container>
 
 <!-- Configure new connection -->
 <ng-container *ngIf="state.newDeviceConnection">

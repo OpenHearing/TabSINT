@@ -40,5 +40,5 @@ export interface ExamResults {
       };
     headset: string;
     calibrationVersion: any; // TODO: define calibrationVersion interface
-    devices: DevicesInterface
+    devices?: DevicesInterface
 }

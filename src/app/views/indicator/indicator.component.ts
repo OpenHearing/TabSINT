@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 
 import { DiskInterface } from '../../models/disk/disk.interface';
@@ -21,7 +21,7 @@ export class IndicatorComponent {
   disk: DiskInterface;  
   diskSubscription: Subscription | undefined;
   state: StateInterface;
-  devices: DevicesInterface;
+  devices$?: Observable<DevicesInterface>;
   SvantekState = SvantekState;
   DeviceState = DeviceState;
 
@@ -33,13 +33,13 @@ export class IndicatorComponent {
   ) { 
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();
-    this.devices = this.deviceModel.getDevices();
   }
 
   ngOnInit() {
     this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
         this.disk = updatedDisk;
     })    
+    this.devices$ = this.deviceModel.devicesModel$;
   }
 
   ngOnDestroy() {

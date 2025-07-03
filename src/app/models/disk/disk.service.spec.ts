@@ -1,7 +1,9 @@
 import { TestBed } from '@angular/core/testing';
+import { Subscription } from 'rxjs';
 import { DiskModel } from './disk.service';
 import { DOCUMENT } from '@angular/common';
 import { DiskInterface } from './disk.interface';
+import { DevicesInterface } from '../devices/devices.interface';
 import { ExamResults } from '../results/results.interface';
 import { ProtocolServer } from '../../utilities/constants';
 import { PageDefinition } from '../../interfaces/page-definition.interface';
@@ -16,7 +18,9 @@ describe('DiskModel', () => {
     let appModel: AppModel;
     let sqLite: SqLite;
     let logger: Logger;
+    let devices: DevicesInterface | undefined;
     let devicesModel: DevicesModel;
+    let deviceModelSubscription: Subscription;
     let versionModel: VersionModel;
 
     beforeEach(async () => {
@@ -27,7 +31,11 @@ describe('DiskModel', () => {
         appModel = new AppModel;
         sqLite = new SqLite(appModel, diskModel);
         logger = new Logger(diskModel, sqLite);
+        devices = undefined;
         devicesModel = new DevicesModel(logger);
+        deviceModelSubscription = devicesModel.devicesModel$.subscribe( (value: DevicesInterface) => {
+            devices = value;
+        })
         versionModel = new VersionModel(logger);
     })
 
@@ -104,7 +112,7 @@ describe('DiskModel', () => {
             },
             responses: [1,2,3],
             softwareVersion: versionModel.version,
-            devices: devicesModel.getDevices(),
+            devices: devices,
             tabletLocation: {},
             headset: 'mock',
             calibrationVersion: 0

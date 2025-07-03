@@ -104,7 +104,7 @@ interface UploadSummary {
     output: ProtocolServer;
 }
 
-interface SavedDevices {
+export interface SavedDevices {
     tympan: Array<SavedDevice>;
     cha: Array<SavedDevice>;
     svantek: Array<SavedDevice>;

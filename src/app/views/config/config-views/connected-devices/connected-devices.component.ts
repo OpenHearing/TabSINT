@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Observable } from 'rxjs';
 import { DevicesModel } from '../../../../models/devices/devices-model.service';
 import { DevicesInterface } from '../../../../models/devices/devices.interface';
 import { DeviceState } from '../../../../utilities/constants';
@@ -15,7 +16,7 @@ import { TranslateService } from '@ngx-translate/core';
   templateUrl: './connected-devices.component.html'
 })
 export class ConnectedDevicesComponent {
-  devices: DevicesInterface;
+  devices$?: Observable<DevicesInterface>;
   state: StateInterface
   DeviceState = DeviceState;
   expanded: boolean = false;
@@ -28,8 +29,11 @@ export class ConnectedDevicesComponent {
     private readonly deviceUtil: DeviceUtil,
     private readonly translate: TranslateService
   ) { 
-    this.devices = this.deviceModel.getDevices();
     this.state = this.stateModel.getState();
+  }
+
+  ngOnInit() {
+    this.devices$ = this.deviceModel.devicesModel$;
   }
 
   reconnect(device: ConnectedDevice) {

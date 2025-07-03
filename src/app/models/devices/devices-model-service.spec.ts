@@ -1,16 +1,13 @@
 import { TestBed } from '@angular/core/testing';
+import { AppModel } from '../app/app.service';
+import { DiskModel } from '../disk/disk.service';
+import { Logger } from '../../utilities/logger.service';
 import { Subscription } from 'rxjs';
-import { DeviceUtil } from '../device-utility';
-import { AppModel } from '../../models/app/app.service';
-import { DiskModel } from '../../models/disk/disk.service';
-import { SqLite } from '../sqLite.service';
-import { Logger } from '../logger.service';
-import { DevicesModel } from '../../models/devices/devices-model.service';
-import { DeviceState } from '../constants';
+import { SqLite } from '../../utilities/sqLite.service';
+import { DeviceState } from '../../utilities/constants';
+import { DevicesModel } from './devices-model.service';
 import { DevicesInterface } from '../../models/devices/devices.interface';
-import { ConnectedDevice, NewConnectedDevice } from '../../interfaces/connected-device.interface';
-import { TympanResponse } from '../../models/devices/devices.interface';
-import { PendingMsgInfo } from '../../interfaces/pending-msg-info.interface';
+import { ConnectedDevice } from '../../interfaces/connected-device.interface';
 
 const connectedDevices1 = {
     "tympan": [
@@ -329,7 +326,6 @@ const connection2: ConnectedDevice = {
 };
 
 describe('deviceUtil', () => {
-    let deviceUtil: DeviceUtil;
     let appModel: AppModel;
     let diskModel: DiskModel;
     let sqLite: SqLite;
@@ -349,145 +345,86 @@ describe('deviceUtil', () => {
         deviceModelSubscription = devicesModel.devicesModel$.subscribe( (value: DevicesInterface) => {
             devices = value;
         })
-        deviceUtil = new DeviceUtil(devicesModel, diskModel);
     })
-    
-    it('get new tabsint id without multiple connections', () => {
+
+    afterEach(() => {
+        deviceModelSubscription.unsubscribe();
+    });
+
+    it('updating device state but without changing the state', () => {
         connectedDevices1.tympan.forEach(device => {
             devicesModel.addTympanConnectedDevice(device)
         }); 
-        let nextFreeId = deviceUtil.getNextFreeTabsintId();
-        expect(nextFreeId).toBe("2");
+        let wasDeviceStateUpdated = devicesModel.updateDeviceState("testDevice1", DeviceState.Disconnected);
+        expect(wasDeviceStateUpdated).toBe(true);
+        expect(devices?.connectedDevices).toEqual(connectedDevices1);
     })
 
-    it('get new tabsint id with multiple connections', () => {
-        connectedDevices4.tympan.forEach(device => {
+    it('updating device state', () => {
+        connectedDevices2.tympan.forEach(device => {
             devicesModel.addTympanConnectedDevice(device)
         }); 
-        let nextFreeId = deviceUtil.getNextFreeTabsintId();
-        expect(nextFreeId).toBe("4");
+        let wasDeviceStateUpdated = devicesModel.updateDeviceState("testDevice1", DeviceState.Disconnected);
+        expect(wasDeviceStateUpdated).toBe(true);
+        expect(devices?.connectedDevices).toEqual(connectedDevices1);
     })
 
-    it('create new device connection without existing connections', () => {
-        let newConnection: NewConnectedDevice = {
-            "type": "tympan"
-        };
-        newConnection["deviceId"] = "testDevice2";
-        newConnection["name"] = "testName2";
-        newConnection["maxByteLength"] = 244;
-        connectedDevices1.tympan.forEach(device => {
+    it('updating device state with multiple connections', () => {
+        connectedDevices3.tympan.forEach(device => {
             devicesModel.addTympanConnectedDevice(device)
         }); 
-        let connection = deviceUtil.createDeviceConnection(newConnection);
-        expect(connection).toEqual(connection1);
+        let wasDeviceStateUpdated = devicesModel.updateDeviceState("testDevice2", DeviceState.Disconnected);
+        expect(wasDeviceStateUpdated).toBe(true);
+        expect(devices?.connectedDevices).toEqual(connectedDevices4);
     })
 
-    it('create new device connection with existing connections', () => {
-        let newConnection: NewConnectedDevice = {
-            "type": "tympan"
-        };
-        newConnection["deviceId"] = "testDevice4";
-        newConnection["name"] = "testName4";
-        newConnection["maxByteLength"] = 244;
-        connectedDevices4.tympan.forEach(device => {
+    it('incrementing tympan msg id', () => {
+        connectedDevices5.tympan.forEach(device => {
             devicesModel.addTympanConnectedDevice(device)
         }); 
-        let connection = deviceUtil.createDeviceConnection(newConnection);
-        expect(connection).toEqual(connection2);
+        devicesModel.incrementDeviceMsgId("testDevice2");
+        expect(devices?.connectedDevices).toEqual(connectedDevices6);
     })
 
-    it('checking the tympan response', () => {
-        let expectedMsgInfo1: PendingMsgInfo = {
-            "tabsintId": 1,
-            "msgId": "5"
-        };
-        let expectedMsgInfo2: PendingMsgInfo = {
-            "tabsintId": 1,
-            "msgId": "2"
-        };
-        let tympanResponse: TympanResponse = {
-            "tabsintId": "1",
-            "msg": "[-2,\"OK\"]"
-        };
-        let resp1 = deviceUtil.doTympanResponseMsgIdsMatch(expectedMsgInfo1, tympanResponse);
-        let resp2 = deviceUtil.doTympanResponseMsgIdsMatch(expectedMsgInfo2, tympanResponse);
-        expect(resp1).toEqual(false);
-        expect(resp2).toEqual(true);
-    })
-
-    it('getting tabsint id from device id', () => {
-        let deviceID = "testDevice1";
-        connectedDevices1.tympan.forEach(device => {
+    it('incrementing tympan msg id', () => {
+        connectedDevices7.tympan.forEach(device => {
             devicesModel.addTympanConnectedDevice(device)
         }); 
-        let tabsintId = deviceUtil.getTabsintIdFromDeviceId(deviceID);
-        expect(tabsintId).toBe("1");
+        devicesModel.incrementDeviceMsgId("testDevice2");
+        expect(devices?.connectedDevices).toEqual(connectedDevices8);
     })
 
-    it('getting device from device id', () => {
-        let deviceID = "testDevice1";
-        let expectedDevice: ConnectedDevice = {
+    it('removing device from saved devices', () => {
+        let deviceToRemove: ConnectedDevice = {
             "type": "tympan",
-            "tabsintId": "1",
+            "tabsintId": "2",
             "msgId": 1,
-            "deviceId": "testDevice1",
-            "name": "testName1",
-            "state": DeviceState.Disconnected,
+            "deviceId": "testDevice2",
+            "name": "testName2",
+            "state": DeviceState.Connected,
             "maxByteLength": 244
 
         };
-        connectedDevices1.tympan.forEach(device => {
+        connectedDevices9.tympan.forEach(device => {
             devicesModel.addTympanConnectedDevice(device)
         }); 
-        let device = deviceUtil.getDeviceFromDeviceId(deviceID);
-        expect(device).toEqual(expectedDevice);
+        let wasDeviceRemoved = devicesModel.removeDevice(deviceToRemove);
+        expect(wasDeviceRemoved).toBe(true);
+        expect(devices?.connectedDevices).toEqual(connectedDevices1);
     })
 
-    it('getting device from tabsint id', () => {
+    it('updating device info', () => {
         let tabsintId = "1";
-        let expectedDevice: ConnectedDevice = {
-            "type": "tympan",
-            "tabsintId": "1",
-            "msgId": 1,
-            "deviceId": "testDevice1",
-            "name": "testName1",
-            "state": DeviceState.Disconnected,
-            "maxByteLength": 244
-
+        let info = {
+            "description": "description would be here",
+            "buildDateTime": "this is a datetime",
+            "serialNumber": "7114"
         };
-        connectedDevices1.tympan.forEach(device => {
+        connectedDevices10.tympan.forEach(device => {
             devicesModel.addTympanConnectedDevice(device)
         }); 
-        let device = deviceUtil.getDeviceFromTabsintId(tabsintId);
-        expect(device).toEqual(expectedDevice);
+        let wasDeviceInfoUpdated = devicesModel.updateDeviceInfo(tabsintId, info);
+        expect(wasDeviceInfoUpdated).toBe(true);
+        expect(devices?.connectedDevices).toEqual(connectedDevices11);
     })
-
-    it('adding new saved device', () => {
-        let newDevice: ConnectedDevice = {
-            "type": "tympan",
-            "tabsintId": "1",
-            "msgId": 1,
-            "deviceId": "testDevice1",
-            "name": "testName1",
-            "state": DeviceState.Disconnected,
-            "maxByteLength": 244
-
-        };
-        let expectedSavedDevices = {
-            "tympan": [
-                {
-                    "tabsintId": "1",
-                    "name": "testName1",
-                    "deviceId": "testDevice1",
-                    "maxByteLength": 244
-                }
-            ], 
-            "cha": [], "svantek": []
-        };
-        deviceUtil.addNewSavedDevice(newDevice);
-        expect(diskModel.disk.savedDevices).toEqual(expectedSavedDevices);
-    })
-
-    
-
 })

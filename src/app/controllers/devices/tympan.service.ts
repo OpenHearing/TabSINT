@@ -18,7 +18,6 @@ import { Command } from '../../types/custom-types';
 })
 
 export class TympanService {
-    devices: DevicesInterface;
     state: StateInterface;
     tympanSubscription: Subscription|undefined;
     pendingMsgInfo: PendingMsgInfo|null = null;
@@ -36,7 +35,6 @@ export class TympanService {
         private readonly logger: Logger,
         private readonly deviceUtil: DeviceUtil
     ) {
-        this.devices = this.devicesModel.getDevices();
         this.state = this.stateModel.getState();
 
         this.tympanSubscription = this.devicesModel.tympanResponseSubject.subscribe((response: TympanResponse) => {
@@ -79,7 +77,7 @@ export class TympanService {
 
     onDisconnect(deviceId: string): void {
         this.logger.debug(`device ${deviceId} disconnected`);
-        this.deviceUtil.updateDeviceState(deviceId, DeviceState.Disconnected);
+        this.devicesModel.updateDeviceState(deviceId, DeviceState.Disconnected);
     }
 
     async startScan() {
@@ -106,7 +104,7 @@ export class TympanService {
             newConnection["maxByteLength"] = maxByteLength - 3; // max byte length is MTU -3
 
             let connection: ConnectedDevice = this.deviceUtil.createDeviceConnection(newConnection);
-            this.devices.connectedDevices.tympan.push(connection);
+            this.devicesModel.addTympanConnectedDevice(connection);
             this.state.isPaneOpen.tympans = true;
             return connection;
         } catch {
@@ -118,7 +116,7 @@ export class TympanService {
     async reconnect(tympanId: string): Promise<ConnectedDevice|undefined> {
         try {
             await this.tympanWrap.connect(tympanId, this.onDisconnect.bind(this));
-            this.deviceUtil.updateDeviceState(tympanId, DeviceState.Connected);
+            this.devicesModel.updateDeviceState(tympanId, DeviceState.Connected);
             return this.deviceUtil.getDeviceFromDeviceId(tympanId);
         } catch {
             this.logger.error("failed to reconnect to tympan: "+JSON.stringify(tympanId));
@@ -128,7 +126,7 @@ export class TympanService {
 
     async disconnect(tympanId: string) {
         await this.tympanWrap.disconnect(tympanId);
-        this.deviceUtil.updateDeviceState(tympanId, DeviceState.Disconnected);
+        this.devicesModel.updateDeviceState(tympanId, DeviceState.Disconnected);
     }
 
     async requestId(tympanId: string, msgId: string): Promise<Array<any>> {

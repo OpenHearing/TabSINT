@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Observable } from 'rxjs';
 import { AvailableConnectableDevices } from '../../../../utilities/constants';
 import { DevicesInterface } from '../../../../models/devices/devices.interface';
 import { DevicesModel } from '../../../../models/devices/devices-model.service';
@@ -14,7 +15,7 @@ import { DevicesService } from '../../../../controllers/devices.service';
 
 export class NewConnectionComponent {
   state: StateInterface
-  devices: DevicesInterface;
+  devices$?: Observable<DevicesInterface>;
   newConnectedDevice: NewConnectedDevice;
   deviceTypes = AvailableConnectableDevices;
   maxConnectedDevices: number = 1;
@@ -24,9 +25,12 @@ export class NewConnectionComponent {
     private readonly devicesService: DevicesService, 
     private readonly stateModel: StateModel
   ) {
-    this.devices = this.deviceModel.getDevices();
     this.state = this.stateModel.getState();
     this.newConnectedDevice = {"type":"Select One"};
+  }
+
+  ngOnInit() {
+    this.devices$ = this.deviceModel.devicesModel$;
   }
 
   changeDeviceType(type:string) {
