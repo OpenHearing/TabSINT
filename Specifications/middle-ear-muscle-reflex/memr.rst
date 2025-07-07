@@ -44,11 +44,11 @@ GUI
 
 The GUI should look like the image below with the following features.
 
-* The following parameters should be configurable in the protocol: name of the sound (WAV) file, a boolean flag for using the metascalar, the number of trials to play, a 2D array of sound levels (specified in dB SP), the name of the recorded file (to be post-processed for results), and the submission interval
+* The following parameters should be configurable in the protocol: level change, folder name where the sound files are stored, probe stimulus level, elicitor level array, number of trials in a block, submission interval, probe output channel, elicitor output channel, a boolean for using the gain metascalar, the name of the folder where the results are stored, and the results file name.
 * The GUI should display parameters from the protocol in a table similar to the one shown below
 * There should be a `Submit` button to initiate the exam. The `Submit` button becomes inactive after initating the exam.
-* After initiating the exam, a progress bar appears along with a reported numerical value for the number of trials played. The `Submit` button is replaced with an `Abort` button (See screen 2 image below) should early termination of the exam be required.
-* After the MEMR exam concludes, a Results page is displayed with a message indicating the exam is complete. The displayed `Finish` button returns the user to the admin page.
+* After initiating the exam, a progress bar appears along with a reported numerical value for the number of blocks completed and a progress bar displaying the total (accumulated) number of trials played. The `Submit` button is replaced with an `Abort` button (See screen 2 image below) should early termination of the exam be required.
+* After the MEMR exam concludes, a Results page is displayed with a message indicating the exam is complete. The displayed `Finish` button saves the results and proceeds to the next page specified in the protocol (or to the main menu if no subsequent page is defined).
 
 .. list-table::
    :widths: 50, 50
@@ -56,19 +56,27 @@ The GUI should look like the image below with the following features.
 
    * - Parameter
      - Value
-   * - Subject Type
-     - [Chinchilla/Human]
-   * - Sound File Name
+   * - Level Change
+     - [LevelChange]
+   * - Sound File Folder
      - [SoundFileName]
-   * - Gain Scale
-     - [metaDataScalar]
+   * - Probe Stimulus Level [dBP]
+     - [ProbeStimulusLevel]
+   * - Elicitor Level Array [dBSPL]
+     - [Level_dbSPL]
    * - Number of Trials
      - [NumTrials]
-   * - Min Level [dB SPL] 
-     - [min([Level_dbSPL])]
-   * - Max Level [dB SPL] 
-     - [max([Level_dbSPL])]
-   * - Results File Name
+   * - Submission Interval [ms] 
+     - [SubmissionInterval_ms]
+   * - Probe Output Channel 
+     - [ProbeOutputChannel]
+   * - Elicitor Output Channel
+     - [ElicitorOutputChannel]
+   * - Gain Scaling
+     - [metaDataScalar]
+   * - Results File Folder
+     - [RecordFileFolder]
+   * - Results File name
      - [RecordFileName]
 
 .. figure:: memr-GUI-Screen1.png
@@ -126,7 +134,7 @@ Algorithm
      - Initiate an exam normally. Once the exam is active, click `Abort`.
      - Verify that the exam aborts successfully and proceeds to the results-view.
      - 
-   * - The exam correctly exports the recorded WAV file.
+   * - The exam correctly exports the recorded WAV files.
      - Complete an exam normally. Then click the `Finish` button. Proceed to the results-view page.
      - Verify that the recorded result is saved in the specified location and with the name specified in the exam protocol.
      - 
@@ -166,6 +174,10 @@ GUI
      - Load a MEMR exam protocol. Then, click `Submit`.
      - Verify that the GUI displays the parameters in the exam protocol and that the exam is initiated after `Submit` is pressed.
      - 
+   * - The interim status of an exam is displayed with a progress bar and numerical value of the completed blocks.
+     - Load a MEMR exam protocol. Then, click `Submit`.
+     - Verify that the correct number of completed blocks is displayed throughout the exam.
+     -
    * - The user can abort the exam.
      - During an active exam, press `Abort`.
      - Verify that the exam aborted.
