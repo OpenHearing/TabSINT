@@ -120,7 +120,7 @@ export class TympanWrap {
             if (!this.requestedDisconnectionIds.has(deviceId)) {
                 this.notifications.alert({
                     title: "Alert",
-                    content: this.translate.instant(`Tympan device disconnected unexpectedly.`),
+                    content: this.translate.instant("Tympan device disconnected unexpectedly."),
                     type: DialogType.Alert
                 });
             }
