@@ -20,7 +20,7 @@ export class TympanWrap {
     state: StateInterface;
     scanning: boolean = false;    
     continuousScan: boolean = false;   
-    requestedDisconnectionIds: Set<String> = new Set(); // Set of devices which requested disconnection
+    requestedDisconnectionIds: Set<string> = new Set(); // Set of devices which requested disconnection
     ADAFRUIT_SERVICE_UUID = "BC2F4CC6-AAEF-4351-9034-D66268E328F0"; // custom tympan service
     ADAFRUIT_CHARACTERISTIC_UUID = "06D1E5E7-79AD-4A71-8FAA-373789F7D93C"; // custom tympan characteristic
     CRC8_TABLE = this.genCRC8Table();
