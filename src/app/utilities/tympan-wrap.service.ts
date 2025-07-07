@@ -1,4 +1,5 @@
 import { Injectable, Inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { Logger } from './logger.service';
 import { BleClient } from '@capacitor-community/bluetooth-le';
 import { BleDevice } from '../interfaces/bluetooth.interface';
@@ -8,6 +9,8 @@ import { WINDOW } from './window';
 import { BehaviorSubject } from 'rxjs';
 import { DevicesModel } from '../models/devices/devices-model.service';
 import { DeviceUtil } from './device-utility';
+import { Notifications } from '../utilities/notifications.service';
+import { DialogType } from "../utilities/constants";
 
 @Injectable({
     providedIn: 'root',
@@ -16,7 +19,8 @@ import { DeviceUtil } from './device-utility';
 export class TympanWrap {
     state: StateInterface;
     scanning: boolean = false;    
-    continuousScan: boolean = false;    
+    continuousScan: boolean = false;   
+    requestedDisconnectionIds: Set<String> = new Set(); // Set of devices which requested disconnection
     ADAFRUIT_SERVICE_UUID = "BC2F4CC6-AAEF-4351-9034-D66268E328F0"; // custom tympan service
     ADAFRUIT_CHARACTERISTIC_UUID = "06D1E5E7-79AD-4A71-8FAA-373789F7D93C"; // custom tympan characteristic
     CRC8_TABLE = this.genCRC8Table();
@@ -28,7 +32,9 @@ export class TympanWrap {
         @Inject(WINDOW) private readonly window: Window, 
         private readonly logger: Logger,
         private readonly devicesModel: DevicesModel,
-        private readonly deviceUtil: DeviceUtil
+        private readonly deviceUtil: DeviceUtil,
+        private readonly notifications: Notifications,
+        private readonly translate: TranslateService,
     ) {
         this.state = this.stateModel.getState();
         // TODO: Move this to generic utility for running async functions in constructor
@@ -109,7 +115,17 @@ export class TympanWrap {
     }
 
     async connect(deviceId: string, onDisconnect: Function) {
-        await BleClient.connect(deviceId, (deviceId: string) => onDisconnect(deviceId));
+        await BleClient.connect(deviceId, (deviceId: string) => {
+            onDisconnect(deviceId);
+            if (!this.requestedDisconnectionIds.has(deviceId)) {
+                this.notifications.alert({
+                    title: "Alert",
+                    content: this.translate.instant(`Tympan device disconnected unexpectedly.`),
+                    type: DialogType.Alert
+                });
+            }
+            this.requestedDisconnectionIds.delete(deviceId);
+        });
         this.clearTMPBuffer(deviceId);
         await BleClient.startNotifications(deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID,(dv:DataView) => {
             this.handleIncomingBytes(deviceId, dv);
@@ -123,6 +139,7 @@ export class TympanWrap {
     }
 
     async disconnect(deviceId: string) {
+        this.requestedDisconnectionIds.add(deviceId);
         await BleClient.disconnect(deviceId);
         this.logger.debug('disconnected from device:'+JSON.stringify(deviceId));
     }
