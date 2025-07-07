@@ -77,7 +77,7 @@ The GUI should look like the image below with the following features.
 
    **Figure 1.** *GUI for the MEMR exam prior to submission. Screen 1*
 
-.. figure:: memr-GUI-Screen1.png
+.. figure:: memr-GUI-Screen2.png
    :align: center
    :width: 400px
 
@@ -88,7 +88,7 @@ Results-View
 
 The GUI should display the concluding page after the MEMR exam:
 
-.. figure:: swept-oae-GUI-Screen3.png
+.. figure:: memr-GUI-Screen3.png
    :align: center
    :width: 400px
 
