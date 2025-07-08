@@ -33,7 +33,6 @@ $tabsint-training-site-theme: mat.define-light-theme((
 // that you are using.
 @include mat.all-component-themes($tabsint-training-site-theme);
 
-@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css");
 
 @import "../node_modules/bootstrap/dist/css/bootstrap.css";
 @import "../node_modules/ionicons/css/ionicons.css";
