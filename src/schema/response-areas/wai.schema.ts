@@ -25,7 +25,8 @@ export const waiSchema: JSONSchemaType<WAIInterface> = {
     aurenLength: { type: "number", nullable: true, default: 31.7 },
     earCanalDiameter: { type: "number", nullable: true, default: 7.5 },
     earCanalLength: { type: "number", nullable: true, default: 20 },
-    showResults: { type: "boolean", nullable: true, default: true }
+    showResults: { type: "boolean", nullable: true, default: true },
+    normativeAbsorbanceDataPath: { type: "string", nullable: true, default: "" },
   },
   required: ["type"]
 };
