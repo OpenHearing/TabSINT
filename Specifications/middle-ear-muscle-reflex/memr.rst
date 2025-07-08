@@ -27,14 +27,15 @@ Related internal documents
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-This software specification relates to the `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/feeature/MEMR/Specifications/play_record_exam.rst>`_.
+This software specification relates to the `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/feature/play-record-exam/Specifications/play_record_exam.rst?ref_type=heads>`_.
 
+Background information on this exam: "\\Olympus\Projects\1010564-OPEN-HEARING\Technical Work\Pictures & Video\2025-05-05_MEMR_Diagram\2022-05-27_MEMR Specs.pptx"
 
 
 Algorithm
 --------------
 
-See `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/feeature/MEMR/Specifications/play_record_exam.rst>`_.
+See `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/feature/play-record-exam/Specifications/play_record_exam.rst?ref_type=heads>`_.
 
 Implementation
 --------------
@@ -42,13 +43,35 @@ Implementation
 GUI
 ^^^^
 
-The GUI should look like the image below with the following features.
+- The following parameters should be configurable in the protocol
 
-* The following parameters should be configurable in the protocol: level change, folder name where the sound files are stored, probe stimulus level, elicitor level array, number of trials in a block, submission interval, probe output channel, elicitor output channel, a boolean for using the gain metascalar, the name of the folder where the results are stored, and the results file name.
-* The GUI should display parameters from the protocol in a table similar to the one shown below
-* There should be a `Submit` button to initiate the exam. The `Submit` button becomes inactive after initating the exam.
-* After initiating the exam, a progress bar appears along with a reported numerical value for the number of blocks completed and a progress bar displaying the total (accumulated) number of trials played. The `Submit` button is replaced with an `Abort` button (See screen 2 image below) should early termination of the exam be required.
-* After the MEMR exam concludes, a Results page is displayed with a message indicating the exam is complete. The displayed `Finish` button saves the results and proceeds to the next page specified in the protocol (or to the main menu if no subsequent page is defined).
+   - Elicitor level change
+
+      - Enum: "Within Block" or "Between Blocks"
+      - Within Block: for a chinchilla exam -- the elicitor level changes within a block, but each block presents the same level progression.
+      - Between Blocks: for a human exam -- the elicitor level remains the same within a block, but changes for different blocks.
+   - Elicitor level array
+
+      - Changes each trial or block and determines # of trials or blocks, depending on the level change parameter
+      - If Level Change is “Between Blocks”, then elicitor levels change accross blocks, length of elicitor level array is the # of blocks in the exam.
+      - If Level Change is “Within Block”, then elicitor levels change within blocks, length of elicitor level array is the # of trials within the block.
+   - Number of repeats at the trial or block level
+      
+      - If Level Change is “Between Blocks”, then repeats are the # of trials within the block.
+      - If Level Change is “Within Block”, then repeats are the # of blocks.
+   - Probe stimulus level, remains the same accross all blocks and trials
+   - Submission interval: wait period after completing all trials, in msec
+   - Probe output channel
+
+      - Sets the output channels ( e.g."HPL0" or ["HPL0","HPR0"])
+   - Elicitor output channel
+
+      - Sets the input channels (e.g."LEFT:BOARD_MIC" or ["LEFT:BOARD_MIC", "RIGHT:BOARD_MIC"])
+   - Boolean for using the gain metascalar. If true, read the metadata scalar from the wavefile and record
+   - Sound file name. Path of the wavefile to play on the Tympan. This can include a directory such as /MEMR/play.wav.
+   - Folder name on the Tympan where the recorded sound files are stored.
+   - Record file name. Path of the WAV file to to record. Files are appended with _NNN, e.g., a specification of /MEMR/blk001/rec.wav results in /MEMR/blk001/rec_001.wav,
+- The GUI should display the following information in a table like the one below prior to starting the exam (Figure 1): 
 
 .. list-table::
    :widths: 50, 50
@@ -58,14 +81,16 @@ The GUI should look like the image below with the following features.
      - Value
    * - Level Change
      - [LevelChange]
-   * - Sound File Folder
-     - [SoundFileName]
-   * - Probe Stimulus Level [dBP]
-     - [ProbeStimulusLevel]
-   * - Elicitor Level Array [dBSPL]
-     - [Level_dbSPL]
+   * - Subject Type
+     - [Human or Chinchilla]
+   * - Number of Blocks
+     - [NumBlocks]
    * - Number of Trials
      - [NumTrials]
+   * - Elicitor Level Array [dBSPL]
+     - [Level_dbSPL]
+   * - Probe Stimulus Level [dBP]
+     - [ProbeStimulusLevel]
    * - Submission Interval [ms] 
      - [SubmissionInterval_ms]
    * - Probe Output Channel 
@@ -74,10 +99,20 @@ The GUI should look like the image below with the following features.
      - [ElicitorOutputChannel]
    * - Gain Scaling
      - [metaDataScalar]
+   * - Sound File Folder
+     - [SoundFileName]
    * - Results File Folder
      - [RecordFileFolder]
    * - Results File name
      - [RecordFileName]
+
+* There should be a `Submit` button to initiate the exam. The `Submit` button becomes inactive after initating the exam.
+* After initiating the exam, a progress bar appears along with a reported numerical value for the number of blocks completed and a progress bar displaying the total (accumulated) number of trials played. The `Submit` button is replaced with an `Abort` button (See Figure 2 below) should early termination of the exam be required.
+* If "Abort" is selected, display a message to the user confirming they want to abort this exam. Aborting the exam should save partial results for this page and proceed to the next page in the protocol.
+* After the MEMR exam concludes, a Results page is displayed with a message indicating the exam is complete. The displayed `Finish` button saves the results and proceeds to the next page specified in the protocol.
+
+
+The GUI should look like Figures 1-3 below.
 
 .. figure:: memr-GUI-Screen1.png
    :align: center
@@ -150,11 +185,11 @@ Data
      - Test Case
      - Acceptance
      - Verified
-   * - The exam must return all fields defined in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/feeature/MEMR/Specifications/play_record_exam.rst>`_. 
+   * - The exam must return all fields defined in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/feature/play-record-exam/Specifications/play_record_exam.rst?ref_type=heads>`_. 
      - Start a Swept OAE exam and complete the exam successfully. 
-     - Verify the exam returns all result fields defined in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/feeature/MEMR/Specifications/play_record_exam.rst>`_ with appropriate values.
+     - Verify the exam returns all result fields defined in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/feature/play-record-exam/Specifications/play_record_exam.rst?ref_type=heads>`_ with appropriate values.
      - 
-   * - The exam must export all `MEMRResults` fields defined in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/feeature/MEMR/Specifications/play_record_exam.rst>`_.
+   * - The exam must export all `MEMRResults` fields defined in `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/feature/play-record-exam/Specifications/play_record_exam.rst?ref_type=heads>`_.
      - Submit the exam and export results.
      - Verify that all results are accurately exported.
      - 
