@@ -65,7 +65,9 @@ export class SweptDpoaeResultsComponent implements AfterViewInit {
     clippedGroup
       .append('path')
       .attr('d', normativePath)
-      .attr('fill', 'gray');
+      .attr('fill', 'gray')
+      .attr('stroke', 'gray')
+      .attr('stroke-width', 2);
 
     // Plot DpLow Amplitude (blue line)
     svg.selectAll('.dot')

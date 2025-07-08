@@ -255,18 +255,24 @@ export function createLegend(
  * @param data The normative data for the area to use
  * @param xScale The scale of the data in the x-direction
  * @param yScale The scale of the data in the y-direction
+ * @param yClampMin Optional minimum y value to clamp the data above
+ * @param yClampMax Optional maximum y value to clamp the data below
  * @returns Path data string of the area
  */
 export function createNormativeDataPath(
   data: NormativeDataInterface[],
   xScale: d3.ScaleContinuousNumeric<number, number, never>,
-  yScale: d3.ScaleContinuousNumeric<number, number, never>
+  yScale: d3.ScaleContinuousNumeric<number, number, never>,
+  yClampMin?: number | undefined,
+  yClampMax?: number | undefined,
 ): string | null {
+  const minAllowableY = yClampMin ?? Number.NEGATIVE_INFINITY;
+  const maxAllowableY = yClampMax ?? Number.POSITIVE_INFINITY;
 
   const pathAreaGenerator = d3.area<NormativeDataInterface>()
     .x((d) => xScale(d.x))
-    .y0((d) => yScale(d.yMin))
-    .y1((d) => yScale(d.yMax));
+    .y0((d) => yScale(Math.min(Math.max(d.yMin, minAllowableY), maxAllowableY)))
+    .y1((d) => yScale(Math.min(Math.max(d.yMax, minAllowableY), maxAllowableY)));
 
   return pathAreaGenerator(data);
 }

@@ -134,18 +134,22 @@ export class WAIResultsComponent implements AfterViewInit {
 
       // Add the shaded region for absorbance normative data
       if (id == "Absorbance") {
-        const normativeAbsorbancePath = createNormativeDataPath(this.normativeAbsorbanceData, xScale, yScale);
+        const normativeAbsorbancePath = createNormativeDataPath(this.normativeAbsorbanceData, xScale, yScale, yRange[0], yRange[1]);
         transformedClipGroup.append('path')
           .attr('d', normativeAbsorbancePath)
-          .attr('fill', 'gray');
+          .attr('fill', 'gray')
+          .attr('stroke', 'gray')
+          .attr('stroke-width', 2);
 
       } else if (id == "Power Reflectance") {
         // Power reflectance based on absorbance
         const normativeReflectanceData = this.normativeAbsorbanceData.map(data => ({ ...data, yMin: 1 - data.yMin, yMax: 1 - data.yMax }));
-        const normativeReflectancePath = createNormativeDataPath(normativeReflectanceData, xScale, yScale);
+        const normativeReflectancePath = createNormativeDataPath(normativeReflectanceData, xScale, yScale, yRange[0], yRange[1]);
         transformedClipGroup.append('path')
           .attr('d', normativeReflectancePath)
-          .attr('fill', 'gray');
+          .attr('fill', 'gray')
+          .attr('stroke', 'gray')
+          .attr('stroke-width', 2);
       }
 
       lineData = this.waiResults.Frequency!.map((frequency, i) => ({
