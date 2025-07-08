@@ -33,6 +33,11 @@ export class LogConfigComponent {
     this.showLogs = this.state.isPaneOpen.appLog;
   }
 
+  async ngOnInit(): Promise<void> {
+    this.logs = await this.sqLite.getAllLogs();
+    this.logsCount = this.sqLite.count['logs']
+  }
+
   logsCount = this.sqLite.count['logs'];
 
   async displayLogs() {

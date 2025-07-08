@@ -90,7 +90,7 @@
             <button id="submit-btn" type="button"
                     class="btn btn-block btn-lg btn-primary btn-centered"
                     [ngClass]="state.isSubmittable ? '' : 'disabled custom-disabled'"
-                    [disabled]= "!state.isSubmittable"
+                    [disabled]="!state.isSubmittable"
                     (click)="submit()">
                 <div *ngIf="currentPage?.submitText"> {{currentPage.submitText}}</div>
                 <div *ngIf="currentPage?.submitText===undefined"> {{buttonText || 'Submit' | translate}}</div>

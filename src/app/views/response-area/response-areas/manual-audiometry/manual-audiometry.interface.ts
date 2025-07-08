@@ -5,10 +5,11 @@ export interface ManualAudiometryInterface extends CommonResponseAreaInterface {
     tabsintId?: string;
     maxOutputLevel?: number;
     minOutputLevel?: number;
-    targetLevel?: number; 
+    targetLevelInLevelUnits?: number; 
     levelUnits?: string;
     frequencies?: number[];  
-    adjustments?: number[];
+    adjustmentStepSize?: 2|3|4|5;
+    incrementRatioMultiplier?: 1|2;
     retspls?: RetsplsInterface;
     showResults?: boolean;
 }

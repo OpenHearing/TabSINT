@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnDestroy, OnInit} from "@angular/core";
+import { ChangeDetectorRef, Component, OnDestroy, OnInit} from "@angular/core";
 import { Subscription } from "rxjs";
 import { ScreenOrientation } from "@capacitor/screen-orientation";
 
@@ -37,7 +37,8 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     retspls?: RetsplsInterface;
     levelUnits: string = manualAudiometrySchema.properties.levelUnits.default;
     frequencies: number[] = manualAudiometrySchema.properties.frequencies.default;
-    adjustments: number[] = manualAudiometrySchema.properties.adjustments.default;
+    adjustments: number[] = [5,-5];
+    adjustmentStepSize: 2|3|4|5 = manualAudiometrySchema.properties.adjustmentStepSize.default;
     maxOutputLevel: number = manualAudiometrySchema.properties.maxOutputLevel.default;
     minOutputLevel: number = manualAudiometrySchema.properties.minOutputLevel.default;
 
@@ -57,12 +58,12 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     // Controller Variables
     currentStep: string = 'Exam';
     selectedEar: "Left" | "Right" = "Left";
-    currentDb: number = manualAudiometrySchema.properties.targetLevel.default;
-    currentDbSpl: number = manualAudiometrySchema.properties.targetLevel.default;
+    currentDb: number = manualAudiometrySchema.properties.targetLevelInLevelUnits.default;
+    currentDbSpl: number = manualAudiometrySchema.properties.targetLevelInLevelUnits.default;
     maskingLevel: number = -20;
     isPlaying: boolean = false;
     refreshGraph: boolean = true; 
-    selectedFrequency: number = this.frequencies[0];
+    selectedFrequency: number = this.frequencies[1];
 
     // Subscriptions
     pageSubscription: Subscription|undefined;
@@ -114,8 +115,6 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     // ======= Audiometry Controls =======    
     async selectEar(ear: "Left" | "Right"): Promise<void> {
         this.selectedEar = ear;
-        this.refreshGraph = false;
-        setTimeout(() => (this.refreshGraph = true), 0);
     }
     
     async adjustTone(amount: number): Promise<void> {
@@ -141,30 +140,31 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         if (this.maskingLevel < -50) this.maskingLevel = -50;
         await this.submitAudiometryExam()
     }
-
     async playTone() {
         this.isPlaying = true;
+        const playButton = document.querySelector('.play-btn') as HTMLElement;
+        if (playButton) {
+            playButton.classList.add('button-pressed');
+        }
+        
         await this.submitAudiometryExam();
-    
+        
         setTimeout(() => {
             this.isPlaying = false;
-            this.refreshGraph = false;
-    
-            setTimeout(() => {
-                this.refreshGraph = true;
-            }, 0);
+            if (playButton) {
+                playButton.classList.remove('button-pressed');
+            }
         }, 1000);
     }
-    
-    
+
     noResponse(): void {
-        const resultType =
-          this.currentDbSpl >= this.maxOutputLevel ? ResultType.Beyond : ResultType.Better;
-        this.updateThreshold(this.selectedEar, this.selectedFrequency, this.currentDbSpl, resultType);
+        this.updateThreshold(this.selectedEar, this.selectedFrequency, this.currentDbSpl, ResultType.Beyond);
     }
 
     recordThreshold(): void {
-        this.updateThreshold(this.selectedEar, this.selectedFrequency, this.currentDbSpl);
+        const resultType =
+          this.currentDbSpl <= (this.minOutputLevel+this.adjustmentStepSize) ? ResultType.Better : ResultType.Threshold;
+        this.updateThreshold(this.selectedEar, this.selectedFrequency, this.currentDb, resultType);
     }
 
     deleteThreshold(): void {
@@ -188,7 +188,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
 
     // ========== UI getters ====================
     get isNoResponseEnabled(): boolean {
-        return this.currentDbSpl >= this.maxOutputLevel || this.currentDbSpl <= this.minOutputLevel;
+        return this.currentDbSpl >= (this.maxOutputLevel-this.adjustmentStepSize);
       }
     
     getEarData(ear: "Left" | "Right"): AudiometryResultsInterface {
@@ -217,10 +217,22 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     }
 
     private updateCurrentDb() {
-        this.currentDb = 
+        const tempDb = 
             this.retspls && this.levelUnits === LevelUnits.dB_HL
                 ? this.currentDbSpl - this.getRetsplAtFrequency(this.selectedFrequency)
                 : this.currentDbSpl;
+
+        const steps = tempDb / this.adjustmentStepSize;
+        // Round closest to 0
+        // For positive numbers: floor (round down)
+        // For negative numbers: ceiling (round up)
+        const roundedSteps = tempDb >= 0 
+            ? Math.floor(steps) 
+            : Math.ceil(steps);
+        const snappedDb = roundedSteps * this.adjustmentStepSize;
+        const adjustment = snappedDb - tempDb;
+        this.currentDb = snappedDb;
+        this.currentDbSpl += adjustment;
     }
 
     private getRetsplAtFrequency(frequency: number): number {
@@ -244,16 +256,35 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
           this.audiogramData.thresholds[index] = threshold;
           this.audiogramData.resultTypes[index] = resultType;
         } else {
-          // Add new entry if not already in the data
-          this.audiogramData.frequencies.push(frequency);
-          this.audiogramData.channels.push(channel);
-          this.audiogramData.thresholds.push(threshold);
-          this.audiogramData.resultTypes.push(resultType);
-          this.audiogramData.masking.push(false); // Default masking
+            // Find the insertion point to maintain ascending frequency order
+            // First, get all indices for the current channel
+            const channelIndices = this.audiogramData.channels
+              .map((c, i) => c === channel ? i : -1)
+              .filter(i => i !== -1);
+            
+            // Find the appropriate insertion index
+            let insertionIndex = this.audiogramData.frequencies.length; // Default to end
+            
+            for (const idx of channelIndices) {
+              if (this.audiogramData.frequencies[idx] > frequency) {
+                // Found a frequency that's higher than the current one
+                insertionIndex = idx;
+                break;
+              }
+            }
+            
+            // Insert the new data at the found position
+            this.audiogramData.frequencies.splice(insertionIndex, 0, frequency);
+            this.audiogramData.channels.splice(insertionIndex, 0, channel);
+            this.audiogramData.thresholds.splice(insertionIndex, 0, threshold);
+            this.audiogramData.resultTypes.splice(insertionIndex, 0, resultType);
+            this.audiogramData.masking.splice(insertionIndex, 0, false); // Default masking
         }
 
         this.refreshGraph = false;
-        setTimeout(() => (this.refreshGraph = true), 0);
+        setTimeout(() => {
+            this.refreshGraph = true;
+        }, 0);
     }
 
     private async submitAudiometryExam() {
@@ -281,11 +312,17 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         this.minOutputLevel = updatedAudiometryResponseArea.minOutputLevel ?? this.minOutputLevel;
         this.levelUnits = updatedAudiometryResponseArea.levelUnits ?? this.levelUnits;
         this.frequencies = updatedAudiometryResponseArea.frequencies ?? this.frequencies;
-        this.adjustments = updatedAudiometryResponseArea.adjustments?.length === 2
-            ? updatedAudiometryResponseArea.adjustments
-            : this.adjustments;
-        this.selectedFrequency = this.frequencies[0];
+        this.adjustmentStepSize = updatedAudiometryResponseArea.adjustmentStepSize ?? this.adjustmentStepSize;
+        this.adjustments = [
+            (updatedAudiometryResponseArea.adjustmentStepSize??this.adjustmentStepSize) * 
+                (updatedAudiometryResponseArea.incrementRatioMultiplier??manualAudiometrySchema.properties.incrementRatioMultiplier.default),
+            -(updatedAudiometryResponseArea.adjustmentStepSize??this.adjustmentStepSize)
+        ];
+        this.selectedFrequency = this.frequencies[1];
         this.retspls = updatedAudiometryResponseArea.retspls;
+        this.currentDbSpl = this.levelUnits === LevelUnits.dB_SPL
+            ? updatedAudiometryResponseArea.targetLevelInLevelUnits ?? manualAudiometrySchema.properties.targetLevelInLevelUnits.default
+            :  (updatedAudiometryResponseArea.targetLevelInLevelUnits ?? manualAudiometrySchema.properties.targetLevelInLevelUnits.default) + this.getRetsplAtFrequency(this.selectedFrequency);
         this.updateCurrentDb();
 
         if (this.retspls && this.levelUnits === LevelUnits.dB_HL) {

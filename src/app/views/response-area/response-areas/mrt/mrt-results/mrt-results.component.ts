@@ -18,4 +18,8 @@ export class MrtResultsComponent {
     this.state = this.stateModel.getState();
     this.state.isSubmittable = true;
   }
+
+  sortMrtResults() {
+    return this.mrtResults.sort((a, b) => b.snr - a.snr);
+  }
 }

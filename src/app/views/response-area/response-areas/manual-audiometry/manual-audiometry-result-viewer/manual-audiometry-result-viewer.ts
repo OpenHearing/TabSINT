@@ -2,6 +2,7 @@ import { Component, Input } from "@angular/core";
 
 import { AudiometryResultsInterface } from "../../../../../interfaces/audiometry-results.interface";
 import { ExamService } from "../../../../../controllers/exam.service";
+import { ResultType } from "../../../../../utilities/constants";
 
 
 @Component({
@@ -20,4 +21,7 @@ export class ManualAudiometryResultViewerComponent {
         this.examService.submitDefault();
       }
 
+    get ResultType() {
+        return ResultType;
+    }
 }

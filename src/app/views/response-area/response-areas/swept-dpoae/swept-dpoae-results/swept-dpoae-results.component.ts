@@ -1,7 +1,8 @@
 import { AfterViewInit, Component, Input } from '@angular/core';
 import * as d3 from 'd3';
 import { SweptDpoaeResultsInterface } from '../swept-dpoae-exam/swept-dpoae-exam.interface';
-import { createLegend, createOAEResultsChartSvg } from '../../../../../utilities/d3-plot-functions';
+import { createLegend, createOAEResultsChartSvg, createNormativeDataPath } from '../../../../../utilities/d3-plot-functions';
+import { NormativeDataInterface } from '../../../../../interfaces/normative-data-interface';
 
 @Component({
   selector: 'swept-dpoae-results',
@@ -17,6 +18,7 @@ export class SweptDpoaeResultsComponent implements AfterViewInit {
   @Input() height!: number;
   @Input() xTicks!: number[];
   @Input() margin!: { top: number, right: number, bottom: number, left: number };
+  @Input() normativeData!: NormativeDataInterface[];
   
   svg: d3.Selection<SVGGElement, unknown, HTMLElement, any> | undefined;
 
@@ -44,6 +46,28 @@ export class SweptDpoaeResultsComponent implements AfterViewInit {
           .attr('transform', `translate(${this.margin.left},${this.margin.top})`);;
     
     svg = createOAEResultsChartSvg(svg, this.width, this.height, this.xTicks, this.xScale, yScale);
+
+    // Define definitions for the svg and add clip path
+    const defs = svg.append("defs");
+    defs.append("clipPath")
+      .attr("id", "clipRect")
+      .append("rect")
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('height', this.height)
+      .attr('width', this.width);
+
+    // Apply clipping to the group for additional plotting steps
+    const clippedGroup = svg.append("g").attr("clip-path", `url(#clipRect)`);
+
+    // Plot normative data (grey area)
+    const normativePath = createNormativeDataPath(this.normativeData, this.xScale, yScale);
+    clippedGroup
+      .append('path')
+      .attr('d', normativePath)
+      .attr('fill', 'gray')
+      .attr('stroke', 'gray')
+      .attr('stroke-width', 2);
 
     // Plot DpLow Amplitude (blue line)
     svg.selectAll('.dot')

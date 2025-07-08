@@ -7,13 +7,20 @@ export interface WAIInterface extends CommonResponseAreaInterface {
   fEnd?: number,
   sweepDuration?: number,
   sweepType?: 'log' | 'linear',
-  level?: number,
+  l?: number,
   numSweeps?: number,
   windowDuration?: number,
   numFrequencies?: number,
   filename?: string,
   outputRawMeasurements?: boolean,
-  showResults?: boolean
+  outputChannel?: string,
+  inputChannels?: Array<string>,
+  aurenInsideDiameter?: number,
+  aurenLength?: number,
+  earCanalDiameter?: number,
+  earCanalLength?: number,
+  showResults?: boolean,
+  normativeAbsorbanceDataPath?: string;
 }
 
 export interface WAIResultsInterface { 
@@ -24,7 +31,14 @@ export interface WAIResultsInterface {
   ImpedanceAmp?: Array<number>;
   ImpedancePhase?: Array<number>;
   Absorbance?: Array<number>;
-  PowerReflectance?: Array<number>;
+  PowerReflectance?: Array<number>; // not provided by firmware, calculated in tabsint (1-Absorbance)
+  Raw?: any;
+  // below are likely temporary
+  A0_real?: any,
+  A0_imag?: any,
+  B0_real?: any,
+  B0_imag?: any,
+  LSF_result?: any
 }
 
 export interface WAIResultsPlotInterface { 

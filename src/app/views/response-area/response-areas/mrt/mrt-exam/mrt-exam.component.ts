@@ -16,6 +16,7 @@ import { MrtExamInterface, MrtResultsInterface, MrtTrialInterface, MrtTrialResul
 import { StateInterface } from '../../../../../models/state/state.interface';
 import { StateModel } from '../../../../../models/state/state.service';
 import { shuffleArray } from '../../../../../utilities/shuffle-array';
+import { pageSchema } from '../../../../../../schema/page.schema';
 
 @Component({
   selector: 'mrt-exam',
@@ -27,11 +28,12 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   results: ResultsInterface;
   state: StateInterface;
   mrtResults: MrtResultsInterface[] = [];
-  trialListResults: MrtTrialResultInterface[] = [];;
+  trialListResults: MrtTrialResultInterface[] = [];
 
   // Configuration Variables
   tabsintId: string = mrtSchema.properties.tabsintId.default;
   showResults: boolean = mrtSchema.properties.showResults.default;
+  isAutoSubmit: boolean = pageSchema.properties.isAutoSubmit.default;
   currentStep: string = 'Ready';
   outputChannel!: string[];
   trialList!: MrtTrialInterface[];
@@ -40,10 +42,13 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   // Controller variables
   currentTrial!: MrtTrialInterface;
   feedbackMessage: string = ' ';
+  isPausedText: string = 'Pause';
+  isPaused: boolean = false;
   isCorrect: boolean | null = null;
   instructions: string = 'Press Submit to start the exam.'
   pctComplete: number = 0;
   nbTrials: number = 0;
+  waitingMs: number = 2000;
 
   // Subscriptions
   selectedResponseIndex: number | null = null;
@@ -106,6 +111,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
           await this.waitForReadyState();
           await this.playTrial(this.currentTrial);
         } else {
+          this.isAutoSubmit = false;
           this.finishExam();
         }
         break;
@@ -116,7 +122,11 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     }
   }
 
-  choose(index: number): void {
+  delay(ms: number) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  async choose(index: number) {
     this.selectedResponseIndex = index;
     if (index === this.currentTrial.answer-1) {
       this.isCorrect = true;
@@ -126,7 +136,14 @@ export class MrtExamComponent implements OnInit, OnDestroy {
       const correctWord = this.currentTrial.choices[this.currentTrial.answer-1];
       this.feedbackMessage = `The correct word was '${correctWord}'`;
     }
-    this.state.isSubmittable = true;
+
+    if (this.isAutoSubmit) {
+      await this.delay(this.waitingMs);
+      this.state.isSubmittable = false;
+      this.nextStep()
+    } else {
+      this.state.isSubmittable = true;
+    }
   }
   
   async finishExam() {    
@@ -142,6 +159,16 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     this.logger.debug("resp from tympan after MRT exam abort exams:" + resp);
   }
 
+  async pauseExam() {
+    this.isPaused = !this.isPaused
+    this.isAutoSubmit = !this.isAutoSubmit
+    if (this.isPaused) {
+      this.isPausedText = 'Resume'
+    } else {
+      this.isPausedText = 'Pause'
+    }
+  }
+
   getButtonClass(index: number): string {
     if (this.selectedResponseIndex === null) {
       return '';
@@ -153,6 +180,10 @@ export class MrtExamComponent implements OnInit, OnDestroy {
       return 'incorrect';
     }
     return '';
+  }
+
+  getVisibilityStyle(): string {
+    return this.isPaused ? 'visible' : 'hidden';
   }
 
   trackByIndex(index: number, item: any): number {

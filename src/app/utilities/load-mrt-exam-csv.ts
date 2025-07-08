@@ -98,7 +98,7 @@ export async function loadMrtExamCsv(responseArea: MrtExamInterface, meta: Proto
       console.error('Error fetching or parsing CSV file:', error);
       throw error;
     }
-  } else if (meta.server === ProtocolServer.LocalServer) {
+  } else if (meta.server === ProtocolServer.LocalServer || meta.server === ProtocolServer.Gitlab) {
       const resp = await TabsintFs.readFile({rootUri: meta.contentURI, filePath: responseArea.examDefinitionFilename});
       csvString = resp?.content;
   }

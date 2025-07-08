@@ -112,7 +112,7 @@ export class AudiogramComponent implements OnInit{
     const strokeWidthMap = () => 2;
     // M -10,12 L -8,7
     const symbolMap = (d: any): string => {
-      if (d.resultType === ResultType.Beyond || d.resultType=== ResultType.Better) {
+      if (d.resultType === ResultType.Beyond) {
         if (d.channel === 'left') {
           // X with a proper southeast arrowhead
           return `

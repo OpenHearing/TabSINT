@@ -64,6 +64,11 @@
   color: white;
 }
 
+.response-btn.no-response {
+  background-color: #e0e0e0;
+  color: white;
+}
+
 .response-btn:disabled {
   background-color: #e0e0e0;
   color: #888;
@@ -145,10 +150,13 @@
   font-size: 18px;
   font-weight: bold;
   color: #007bff;
+  transition: all 0.1s ease-in-out;
 }
 
-.play-btn:hover {
-  background-color: #f0f0f0;
+.button-pressed {
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5); 
+  transform: scale(0.95); 
+  transition: all 0.1s ease-in-out;
 }
 
 .tone-display, .frequency-display, .masking-display {
@@ -218,6 +226,15 @@
 
 .response-panel-vertical .response-btn:hover {
   background-color: #e0e0e0;
+}
+
+.response-panel-vertical .response-btn.no-response {
+  background-color: #888;
+  color: white;
+}
+.response-panel-vertical .response-btn.no-response:disabled {
+  background-color: #e0e0e0;
+  color: white;
 }
 
 .response-panel-vertical .response-btn.record-threshold {

@@ -85,12 +85,12 @@ copyFileOrFolder(options: { rootUri: string | undefined; sourcePath: string; des
 ### readFile(...)
 
 ```typescript
-readFile(options: { rootUri?: string | undefined; filePath?: string | undefined; fileUri?: string | undefined; }) => Promise<{ contentUri: string; mimeType: string; name: string; size: number; content: string; }>
+readFile(options: { rootUri?: string | undefined; filePath?: string | undefined; fileUri?: string | undefined; asBase64?: boolean | undefined; }) => Promise<{ contentUri: string; mimeType: string; name: string; size: number; content: string; }>
 ```
 
 | Param         | Type                                                                    |
 | ------------- | ----------------------------------------------------------------------- |
-| **`options`** | <code>{ rootUri?: string; filePath?: string; fileUri?: string; }</code> |
+| **`options`** | <code>{ rootUri?: string; filePath?: string; fileUri?: string; asBase64?: boolean }</code> |
 
 **Returns:** <code>Promise&lt;{ contentUri: string; mimeType: string; name: string; size: number; content: string; }&gt;</code>
 

@@ -89,15 +89,25 @@ export class TympanWrap {
         }, timeout);
     }
 
-    async write(deviceId: string, msg: string) {
+    async write(deviceId: string, msg: string, chunkSize: number) {
         this.clearTMPBuffer(deviceId);
         let msg_to_write = this.msgToDataView(msg);
-        this.logger.debug("TIME - about to write bytes to tympan" + String(Date.now()));
+
+        this.logger.debug("TIME - about to write bytes to tympan: " + String(Date.now()));
         this.logger.debug("Writing "+JSON.stringify(msg)+" to tympan with ID: "+deviceId);
-        await BleClient.write(deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID, msg_to_write);
+
+        const original_msg_buffer: ArrayBufferLike = msg_to_write.buffer;
+        const byteOffset: number = msg_to_write.byteOffset;
+        const byteLength: number = msg_to_write.byteLength;
+        let currentOffset: number = byteOffset;
+        while (currentOffset < byteOffset + byteLength) {
+            let currChunkLength = Math.min(chunkSize, (byteOffset + byteLength) - currentOffset);
+            let chunkDataView = new DataView(original_msg_buffer, currentOffset, currChunkLength);
+            await BleClient.write(deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID, chunkDataView); 
+            currentOffset += currChunkLength;
+        }
     }
 
-      
     async connect(deviceId: string, onDisconnect: Function) {
         await BleClient.connect(deviceId, (deviceId: string) => onDisconnect(deviceId));
         this.clearTMPBuffer(deviceId);
@@ -107,6 +117,11 @@ export class TympanWrap {
         this.logger.debug('connected to device:'+JSON.stringify(deviceId));
     }
 
+    async getMaxByteLength(deviceId: string): Promise<number> {
+        let maxByteLength = await BleClient.getMtu(deviceId);
+        return maxByteLength
+    }
+
     async disconnect(deviceId: string) {
         await BleClient.disconnect(deviceId);
         this.logger.debug('disconnected from device:'+JSON.stringify(deviceId));
@@ -114,7 +129,6 @@ export class TympanWrap {
 
     handleIncomingBytes(deviceId: string, dv: DataView) {     
         let byteArray = new Uint8Array(dv.buffer.slice(dv.byteOffset, dv.byteOffset + dv.byteLength));
-
         if (!this.isUnhandledByteMessage(byteArray)) {
             this.TMP_BUFFER[deviceId] = this.appendDataView(this.TMP_BUFFER[deviceId],dv);
         } else {
@@ -175,7 +189,7 @@ export class TympanWrap {
             } else {
                 msg = "invalid checksum";
             }
-            this.logger.debug("TIME - msg parsed and checksum verified" + String(Date.now()));
+            this.logger.debug("TIME - msg parsed and checksum verified: " + String(Date.now()));
             this.clearTMPBuffer(deviceId);
         }
         return msg

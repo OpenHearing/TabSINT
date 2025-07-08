@@ -16,7 +16,7 @@
 
         <!-- Response Buttons -->    
         <div class="response-panel-vertical">
-          <button class="response-btn" [disabled]="!isNoResponseEnabled" (click)="noResponse()">No Response</button>
+          <button class="response-btn no-response" [disabled]="!isNoResponseEnabled" (click)="noResponse()">No Response</button>
           <button class="response-btn delete-threshold" (click)="deleteThreshold()">Delete Threshold</button>
           <button class="response-btn record-threshold" (click)="recordThreshold()">Record Threshold</button>
           <button class="response-btn submit-results" (click)="examService.submit()">Submit Results</button>
@@ -67,10 +67,10 @@
           </div>
           <div class="tone-display">
             <div class="tone-value">
-              <ng-container *ngIf="currentDbSpl <= minOutputLevel || currentDbSpl >= maxOutputLevel">
+              <ng-container *ngIf="currentDbSpl <= (minOutputLevel+adjustmentStepSize) || currentDbSpl >= (maxOutputLevel-adjustmentStepSize)">
                 ({{ currentDb }})
               </ng-container>
-              <ng-container *ngIf="currentDbSpl > minOutputLevel && currentDbSpl < maxOutputLevel">
+              <ng-container *ngIf="currentDbSpl > (minOutputLevel+adjustmentStepSize) && currentDbSpl < (maxOutputLevel-adjustmentStepSize)">
                 {{ currentDb }}
               </ng-container>
             </div>

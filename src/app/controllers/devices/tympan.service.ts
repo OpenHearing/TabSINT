@@ -102,6 +102,9 @@ export class TympanService {
             newConnection["deviceId"] = tympan.deviceId;
             newConnection["name"] = tympan.name;
 
+            let maxByteLength = await this.tympanWrap.getMaxByteLength(tympan.deviceId);
+            newConnection["maxByteLength"] = maxByteLength - 3; // max byte length is MTU -3
+
             let connection: ConnectedDevice = this.deviceUtil.createDeviceConnection(newConnection);
             this.devices.connectedDevices.tympan.push(connection);
             this.state.isPaneOpen.tympans = true;
@@ -137,7 +140,8 @@ export class TympanService {
         };
         try {
             this.startTracking(tympanId, msgId, this.currentCommand);
-            await this.tympanWrap.write(tympanId, msg);
+            let maxByteLength = this.deviceUtil.getMaxByteLengthFromDeviceId(tympanId);
+            await this.tympanWrap.write(tympanId, msg, maxByteLength);
             await this.waitForResponse();
             resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
         } catch (e) {
@@ -158,7 +162,8 @@ export class TympanService {
         };
         try {
             this.startTracking(tympanId, msgId, this.currentCommand);
-            await this.tympanWrap.write(tympanId, msg);
+            let maxByteLength = this.deviceUtil.getMaxByteLengthFromDeviceId(tympanId);
+            await this.tympanWrap.write(tympanId, msg, maxByteLength);
             await this.waitForResponse();
             resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
         } catch (e) {
@@ -178,12 +183,17 @@ export class TympanService {
         };
         try {
             this.startTracking(tympanId, msgId, this.currentCommand);
-            await this.tympanWrap.write(tympanId, msg);
+            let maxByteLength = this.deviceUtil.getMaxByteLengthFromDeviceId(tympanId);
+            await this.tympanWrap.write(tympanId, msg, maxByteLength);
             await this.waitForResponse();
             resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
-        } catch (e) {
+        } catch (error: unknown) {
             this.state.examState = ExamState.DeviceError;
-            this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));
+            if (error instanceof Error) {
+                this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(error.message));
+            } else {
+                this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(error));
+            }
         }
         return resp
     }
@@ -198,7 +208,8 @@ export class TympanService {
         };
         try {
             this.startTracking(tympanId, msgId, this.currentCommand);
-            await this.tympanWrap.write(tympanId, msg);
+            let maxByteLength = this.deviceUtil.getMaxByteLengthFromDeviceId(tympanId);
+            await this.tympanWrap.write(tympanId, msg, maxByteLength);
             await this.waitForResponse();
             resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
         } catch (e) {
@@ -218,7 +229,8 @@ export class TympanService {
         };
         try {
             this.startTracking(tympanId, msgId, this.currentCommand);
-            await this.tympanWrap.write(tympanId, msg);
+            let maxByteLength = this.deviceUtil.getMaxByteLengthFromDeviceId(tympanId);
+            await this.tympanWrap.write(tympanId, msg, maxByteLength);
             await this.waitForResponse(timeoutTimeMs);
             resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
         } catch (e) {
