@@ -146,6 +146,7 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
         };
         await this.devicesService.queueExam(this.device, "SweptDPOAE", examProperties);
     } else {
+        await this.devicesService.deviceNotFound();
         this.logger.error("Error setting up Swept DPOAE exam");
     }
   }

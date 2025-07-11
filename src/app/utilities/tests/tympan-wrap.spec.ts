@@ -1,4 +1,6 @@
 import { TestBed } from '@angular/core/testing';
+import { MatDialog } from '@angular/material/dialog';
+import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
 import { TympanWrap } from "../tympan-wrap.service";
 import { StateModel } from '../../models/state/state.service';
 import { DiskModel } from '../../models/disk/disk.service';
@@ -7,6 +9,7 @@ import { SqLite } from '../sqLite.service';
 import { Logger } from '../logger.service';
 import { DevicesModel } from '../../models/devices/devices-model.service';
 import { DeviceUtil } from '../device-utility';
+import { Notifications } from '../../utilities/notifications.service';
 
 const msg: string = '[1,"requestId"]';
 const DataView1: DataView = new DataView((new Uint8Array([5,91,49,44,34,114,101,113,117,101,115,116,73,100,34,93,3,143,2])).buffer);
@@ -24,8 +27,33 @@ describe('tympanWrap', () => {
     let devicesModel: DevicesModel;
     let tympanWrap: TympanWrap;
 
-    beforeEach( async () => {
-        TestBed.configureTestingModule({})
+    const spy = jasmine.createSpyObj('MatDialog', ['open']);
+
+    beforeEach(async () => {
+        TestBed.configureTestingModule({
+            imports: [
+                TranslateModule.forRoot({
+                    loader: {
+                        provide: TranslateLoader,
+                        useClass: TranslateFakeLoader
+                    }
+                }),
+            ],
+            providers: [
+                Notifications,
+                { provide: MatDialog, useValue: spy },
+                TranslateService,
+                TranslateStore
+            ]
+        })
+
+        let mockTranslateService = {
+            get: jasmine.createSpy('get').and.callFake((key: string) => ({
+                subscribe: (callback: (value: string) => void) => callback(key),
+            })),
+            instant: jasmine.createSpy('instant').and.callFake((key: string) => key),
+            use: jasmine.createSpy('use').and.callFake((lang: string) => { }),
+        } as unknown as TranslateService;
 
         appModel = new AppModel;
         diskModel = new DiskModel(new Document);
@@ -37,7 +65,9 @@ describe('tympanWrap', () => {
             window,
             logger,
             new DevicesModel(logger),
-            new DeviceUtil(devicesModel, diskModel)
+            new DeviceUtil(devicesModel, diskModel),
+            new Notifications(spy),
+            mockTranslateService,
         );
     })
 

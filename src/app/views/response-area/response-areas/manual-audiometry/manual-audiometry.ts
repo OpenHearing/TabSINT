@@ -340,6 +340,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
             const examProperties = {};
             await this.devicesService.queueExam(this.device, "ManualAudiometry", examProperties);
         } else {
+            await this.devicesService.deviceNotFound();
             this.logger.error("Error setting up Manual Audiometry exam");
         }
     }

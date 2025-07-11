@@ -94,6 +94,15 @@ export class DevicesService {
         }
     }
 
+    /**
+     * Replicate the firmware response for when a device is not found.
+     */
+    async deviceNotFound() {
+        const resp = [-4, "ERROR", "Error failed to write to device. Make sure it is connected and try again."]
+        await this.deviceErrorHandler(resp);
+    }
+
+
     /** Requests device ID.
      * @summary Requests deviceID
     */
