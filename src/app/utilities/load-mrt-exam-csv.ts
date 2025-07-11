@@ -68,7 +68,7 @@ async function parseCsvString(csvFileContent: string): Promise<any> {
     if (line.length >= 6) {
       trialList.push({
         filename: line[1].trim(),
-        leveldBSpl: line[2],
+        leveldBSpl: [line[2]],
         useMeta: line[3],
         choices: line[4].trim().split(',').map((choice: string) => choice.trim()),
         answer: line[5],

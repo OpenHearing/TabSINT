@@ -12,7 +12,7 @@ export interface MrtExamInterface extends CommonResponseAreaInterface {
 
 export interface MrtTrialInterface {
   filename: string;
-  leveldBSpl: number;
+  leveldBSpl: number[];
   useMeta: boolean;
   choices: string[];
   answer: number;
@@ -21,7 +21,7 @@ export interface MrtTrialInterface {
 
 export interface MrtTrialResultInterface  {
   filename: string,
-  leveldBSpl: number;
+  leveldBSpl: number[];
   useMeta: boolean;
   choices: string[];
   answer: number;

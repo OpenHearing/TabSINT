@@ -5,7 +5,7 @@ export const mrtTrialSchema: JSONSchemaType<MrtTrialInterface> = {
   type: "object",
   properties: {
     filename: { type: "string" },
-    leveldBSpl: { type: "number" },
+    leveldBSpl: { type: "array", items: {type: "number" } },
     useMeta: { type: "boolean" },
     choices: { type: "array", items: { type: "string"} },
     answer: { type: "number" },
