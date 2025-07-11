@@ -1,0 +1,18 @@
+<p class="instructions">{{ instruction }}</p>
+
+<div class="input-parameters-container">
+    <table class="input-parameters-table">
+        <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let parameter of parameterMap | keyvalue: originalOrder">
+                <td>{{ parameter.key }}</td>
+                <td>{{ parameter.value }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

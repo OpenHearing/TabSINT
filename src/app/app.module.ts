@@ -101,6 +101,8 @@ import { WAIResultsComponent } from './views/response-area/response-areas/wideba
 import { BuildDetailsComponent } from './views/build-details/build-details.component';
 import { MrtExamComponent } from './views/response-area/response-areas/mrt/mrt-exam/mrt-exam.component';
 import { MrtResultsComponent } from './views/response-area/response-areas/mrt/mrt-results/mrt-results.component';
+import { MemrExamComponent } from './views/response-area/response-areas/memr/memr-exam/memr-exam.component';
+import { InputParametersComponent } from './views/response-area/response-areas/shared/input-parameters/input-parameters.component';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -159,7 +161,9 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     WAIResultsComponent,
     BuildDetailsComponent,
     MrtExamComponent,
-    MrtResultsComponent
+    MrtResultsComponent,
+    MemrExamComponent,
+    InputParametersComponent,
   ],
   imports: [
     BrowserModule,

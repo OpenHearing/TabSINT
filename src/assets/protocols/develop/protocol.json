@@ -49,6 +49,9 @@
                 "id": "MRT Exam"
               },
               {
+                "id": "MEMR Exam"
+              },
+              {
                 "id":"End All"
               }
             ]
@@ -100,6 +103,12 @@
               "conditional": "result.response=='MRT Exam'",
               "target": {
                 "reference": "MRTExam"
+              }
+            },
+            {
+              "conditional": "result.response=='MEMR Exam'",
+              "target": {
+                "reference": "MEMRExam"
               }
             },
             {
@@ -363,6 +372,33 @@
           "responseArea": {
             "type": "mrtResponseArea",
             "examDefinitionFilename": "mrt-exam-definition.csv"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "MEMRExam",
+      "pages": [
+        {
+          "id": "MEMR",
+          "title": "Middle Ear Muscle Reflex Exam",
+          "isAutoSubmit": false,
+          "responseArea": {
+            "type": "memrResponseArea",
+            "soundFileName": "AUDIO001.WAV",
+            "recordFileName": "REC.WAV",
+            "nRepeats": 3,
+            "useMetaRMS": false,
+            "elicitorLevelChange": "Within Block",
+            "elicitorLevelArray": [[70.0], [71.0], [72.0]],
+            "probeStimulusLevel": 10,
+            "submissionIntervalMs": 500,
+            "probeOutputChannel": "HPL0",
+            "elicitorOutputChannel": "LEFT:BOARD_MIC"
           }
         },
         {
