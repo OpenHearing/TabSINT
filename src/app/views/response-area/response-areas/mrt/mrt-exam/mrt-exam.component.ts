@@ -214,6 +214,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
       };
       await this.devicesService.queueExam(this.device, "MrtExam", examProperties);
     } else {
+      await this.devicesService.deviceNotFound();
       this.logger.error("Error setting up MRT exam");
     }
   }

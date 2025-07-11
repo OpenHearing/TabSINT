@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { Logger } from '../../utilities/logger.service';
 import { TympanWrap } from '../../utilities/tympan-wrap.service';
 import { BleDevice } from '../../interfaces/bluetooth.interface';
@@ -34,7 +34,8 @@ export class TympanService {
         private readonly devicesModel: DevicesModel,
         private readonly stateModel: StateModel,
         private readonly logger: Logger,
-        private readonly deviceUtil: DeviceUtil
+        private readonly deviceUtil: DeviceUtil,
+        private readonly zone: NgZone,
     ) {
         this.devices = this.devicesModel.getDevices();
         this.state = this.stateModel.getState();
@@ -79,7 +80,10 @@ export class TympanService {
 
     onDisconnect(deviceId: string): void {
         this.logger.debug(`device ${deviceId} disconnected`);
-        this.deviceUtil.updateDeviceState(deviceId, DeviceState.Disconnected);
+        this.zone.run(() => {
+            // Run the device update inside the zone to ensure UI changes are handled
+            this.deviceUtil.updateDeviceState(deviceId, DeviceState.Disconnected);
+        });
     }
 
     async startScan() {
