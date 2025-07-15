@@ -391,14 +391,15 @@
             "type": "memrResponseArea",
             "soundFileName": "AUDIO001.WAV",
             "recordFileName": "REC.WAV",
-            "nRepeats": 3,
+            "recordFileFolder": "MEMR",
+            "nRepeats": 5,
             "useMetaRMS": false,
             "elicitorLevelChange": "Within Block",
-            "elicitorLevelArray": [[70.0], [71.0], [72.0]],
+            "elicitorLevelArray": [70.0, 71.0, 72.0],
             "probeStimulusLevel": 10,
             "submissionIntervalMs": 500,
-            "probeOutputChannel": "HPL0",
-            "elicitorOutputChannel": "LEFT:BOARD_MIC"
+            "probeOutputChannel": ["HPL0"],
+            "elicitorOutputChannel": ["LEFT:BOARD_MIC"]
           }
         },
         {

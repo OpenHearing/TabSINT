@@ -11,25 +11,36 @@ export const memrSchema: JSONSchemaType<MemrExamInterface> = {
     tabsintId: { type: "string", nullable: true, default: "1" },
     soundFileName: { type: "string", nullable: true },
     recordFileName: { type: "string", nullable: true },
+    recordFileFolder: { type: "string", nullable: true },
     nRepeats: { type: "number", nullable: true },
     useMetaRMS: { type: "boolean", nullable: true, default: false },
     elicitorLevelChange: { type: "string", nullable: true, enum: ["Within Block", "Between Blocks"] },
     elicitorLevelArray: {
       type: "array",
       items: {
-        type: "array",
-        items: {
-          type: "number"
-        },
-        minItems: 0,
+        type: "number"
       },
       minItems: 0,
       nullable: true
     },
     probeStimulusLevel: { type: "number", nullable: true },
     submissionIntervalMs: { type: "number", nullable: true },
-    probeOutputChannel: { type: "string", nullable: true },
-    elicitorOutputChannel: { type: "string", nullable: true },
+    probeOutputChannel: {
+      type: "array",
+      items: {
+        type: "string"
+      },
+      minItems: 0,
+      nullable: true
+    },
+    elicitorOutputChannel: {
+      type: "array",
+      items: {
+        type: "string"
+      },
+      minItems: 0,
+      nullable: true
+    },
   },
   required: ["type"]
 };
