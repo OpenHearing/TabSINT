@@ -50,21 +50,23 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   inputParameterMap: Map<string, string> = new Map(); // Parameter map to display to the user in ready state
   trialsPerBlock: number = 0;
   blockCount: number = 0;
-  blocksComplete: number = 0;
+  currentBlockIndex: number = -1;
+  deviceId: string = "1";
 
   // Configuration Variables
   isAutoSubmit: boolean = pageSchema.properties.isAutoSubmit.default;
   currentStep: string = 'Ready';
   chinchillaType = "Chinchilla";
   humanType = "Human";
+  knownStates = ["OFF", "PLAYING", "WAITING", "READY"];
 
   // Controller variables
   instructions: string = 'Press submit to start the exam.';
   pctComplete: number = 0;
+  blocksComplete: number = 0;
 
   // Subscriptions
   pageSubscription: Subscription | undefined;
-  device: ConnectedDevice | undefined;
 
   constructor(
     private readonly devicesService: DevicesService,
@@ -89,7 +91,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
         setTimeout(() => {
           this.isAutoSubmit = updatedPage.isAutoSubmit ?? this.isAutoSubmit;
           this.initializeResponseArea(updatedPage.responseArea as MemrExamInterface);
-          this.setupDevice(updatedPage.responseArea as MemrExamInterface);
+          this.setupDeviceId(updatedPage.responseArea as MemrExamInterface);
         });
       }
     });
@@ -102,6 +104,15 @@ export class MemrExamComponent implements OnInit, OnDestroy {
       this.examService.submit = this.examService.submitDefault.bind(this.examService);
       this.pageSubscription?.unsubscribe();
     })();
+  }
+
+  /**
+   * Function to provide an artificial delay.
+   * 
+   * @param ms Delay time in milliseconds.
+   */
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   /**
@@ -145,7 +156,8 @@ export class MemrExamComponent implements OnInit, OnDestroy {
    */
   private async abortExam(): Promise<void> {
     this.currentStep = 'Complete';
-    let resp = await this.devicesService.abortExams(this.device!);
+    const device = this.getDevice();
+    let resp = device ? await this.devicesService.abortExams(device) : undefined;
     this.logger.debug("resp from tympan after MEMR exam abort exams:" + resp);
   }
 
@@ -161,7 +173,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   /**
    * Dialog to abort the currently running exam and save results.
    */
-  public showCancelExamDialog() {
+  public showCancelExamDialog(): void {
     let msg: DialogDataInterface = {
       title: "Confirm",
       content: "Cancel the MEMR exam",
@@ -177,7 +189,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   /**
    * Initialize response area and parameter map for initial exam page.
    */
-  private initializeResponseArea(responseArea: MemrExamInterface) {
+  private initializeResponseArea(responseArea: MemrExamInterface): void {
     this.memrExamProperties = Object.assign(this.memrExamProperties, responseArea);
     this.results.currentPage.response = [];
     this.trialsPerBlock = (this.isWithinBlock() ? this.memrExamProperties.elicitorLevelArray?.length : this.memrExamProperties.nRepeats) ?? this.trialsPerBlock;
@@ -201,24 +213,33 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Get the the device for the exam.
+   * Set up the device id for the exam.
    * @param updatedResponseArea The response area used to determine the device id.
    */
-  private async setupDevice(updatedResponseArea: MemrExamInterface) {
-    this.device = this.deviceUtil.getDeviceFromTabsintId(updatedResponseArea.tabsintId ?? "1");
+  private setupDeviceId(updatedResponseArea: MemrExamInterface): void {
+    this.deviceId = updatedResponseArea.tabsintId ?? this.deviceId;
+  }
+
+  /**
+   * Get the device for the exam based on the set id.
+   * @returns The connected device or undefined.
+   */
+  private getDevice(): ConnectedDevice | undefined {
+    return this.deviceUtil.getDeviceFromTabsintId(this.deviceId);
   }
 
   /**
    * Begin the exam for the connected device.
    */
-  private async beginExam() {
-    if (this.device) {
+  private async beginExam(): Promise<void> {
+    const device = this.getDevice();
+    if (device) {
       const examProperties: MemrQueueExamInterface = {
         InputChannel: this.memrExamProperties.elicitorOutputChannel,
         OutputChannel: this.memrExamProperties.probeOutputChannel,
       };
-      await this.devicesService.queueExam(this.device, "PlayRecordExam", examProperties);
-      await this.runExamSubmissions();
+      await this.devicesService.queueExam(device, "PlayRecordExam", examProperties);
+      this.startPollingResults();
     } else {
       await this.devicesService.deviceNotFound();
       this.logger.error("Error running the MEMR exam");
@@ -226,83 +247,96 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Submit exam data to the device to start the play/record functionality.
+   * Submit exam data to the device to start the play/record functionality when ready and check for exam completion.
    */
-  private async examSubmission() {
+  private async handleReadyState(results: MemrResultsInterface): Promise<void> {
+    this.currentBlockIndex += 1; // Increment the current block
+    this.updateExamProgress(results); // Update UI components
+    if (this.currentBlockIndex >= this.blockCount) {
+      await this.delay(1000); // Delay to show final block count to the user before the next step
+      if (this.isAutoSubmit) {
+        await this.finishExam();
+      } else {
+        this.nextStep();
+      }
+      return;
+    }
     // Compute block data based on change type (2D Array Data: CH 0: Elicitor, CH 1: Probe)
     const blockData = this.isWithinBlock() ?
       this.memrExamProperties.elicitorLevelArray?.map(value => [value, this.memrExamProperties.probeStimulusLevel]) :
-      Array(this.memrExamProperties.nRepeats).fill([this.memrExamProperties.elicitorLevelArray?.at(this.blocksComplete), this.memrExamProperties.probeStimulusLevel]);
+      Array(this.memrExamProperties.nRepeats).fill([this.memrExamProperties.elicitorLevelArray?.at(this.currentBlockIndex), this.memrExamProperties.probeStimulusLevel]);
 
     let examProperties: MemrExamSubmissionInterface = {
       SoundFileName: this.memrExamProperties.soundFileName,
       UseMetaRMS: this.memrExamProperties.useMetaRMS,
       NumTrials: this.trialsPerBlock,
       Level_dBSpl: blockData,
-      RecordFileName: this.getRecordBlockPath(this.blocksComplete),
+      RecordFileName: this.getRecordBlockPath(this.currentBlockIndex),
       SubmissionInterval_ms: this.memrExamProperties.submissionIntervalMs,
     };
-    await this.devicesService.examSubmission(this.device!, examProperties);
-  }
-
-  /**
-   * Update the state of the exam based on the progress of completed trials.
-   * 
-   * @param results The MEMR request results response.
-   */
-  private async updateExamProgress(results: MemrResultsInterface) {
-    this.memrResults = {
-      State: results.State,
-      NumTrialsComplete: results.NumTrialsComplete,
-      RecordedLevel_LeqdBSPL: results.RecordedLevel_LeqdBSPL,
-      RecordedLevel_dBP: results.RecordedLevel_dBP,
-    };
-    const trialsTotal = this.trialsPerBlock * this.blockCount;
-    this.pctComplete = trialsTotal == 0 ? 100 : (results.NumTrialsComplete / trialsTotal) * 100;
-    this.blocksComplete = results.NumTrialsComplete % this.trialsPerBlock;
-    if (results.NumTrialsComplete == this.trialsPerBlock * this.blockCount) {
-      if (this.isAutoSubmit) {
-        await this.finishExam();
-      } else {
-        this.nextStep();
-      }
+    const device = this.getDevice();
+    if (device) {
+      await this.devicesService.examSubmission(device, examProperties);
+    } else {
+      await this.finishExam();
+      this.logger.error("Error in the examSubmission, finishing exam.");
     }
   }
 
   /**
-   * Poll the device for results until the device enters a ready state.
+   * Update the state of the exam based on the progress of completed trials and blocks.
+   * 
+   * @param results The MEMR request results response.
    */
-  private async runExamSubmissions(): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      const shouldPollResults = async () => {
-        try {
-          let resp = await this.devicesService.requestResults(this.device!);
-          if (typeof resp![1] === 'object' && 'State' in resp![1]) {
-            if (resp![1].State === "PLAYING" || resp![1].State === "WAITING") {
-              await this.updateExamProgress(resp![1]);
-              if (resp![1].NumTrialsComplete == this.trialsPerBlock * this.blockCount) {
-                resolve();
-              } else {
-                setTimeout(shouldPollResults, 500);
-              }
-            } else if (resp![1].State === "READY") {
-              await this.examSubmission();
-              setTimeout(shouldPollResults, 500);
-            } else {
-              this.logger.debug(
-                "In memr-exam.component.ts runExamSubmissions, unknown result state: " + resp![1]
-              );
-              reject(new Error("Unknown result state: " + resp![1].State));
+  private async updateExamProgress(results: MemrResultsInterface): Promise<void> {
+    this.memrResults = {
+      State: results.State,
+      TrialsCompleted: results.TrialsCompleted,
+      RecordedLevel_LeqdBSPL: results.RecordedLevel_LeqdBSPL,
+      RecordedLevel_dBP: results.RecordedLevel_dBP,
+    };
+    if (results.State === "READY") {
+      // Block based percentage calculation
+      this.pctComplete = this.blockCount == 0 ? 100 : (this.currentBlockIndex / this.blockCount) * 100;
+    } else {
+      // Trial based percentage calculation
+      const trialsTotal = this.trialsPerBlock * this.blockCount;
+      const previousTrialsComplete = this.currentBlockIndex * this.trialsPerBlock;
+      this.pctComplete = trialsTotal == 0 ? 100 : ((results.TrialsCompleted + previousTrialsComplete) / trialsTotal) * 100;
+    }
+    this.blocksComplete = Math.max(this.currentBlockIndex, 0);
+  }
+
+  /**
+   * Poll the device for results and update progress.
+   */
+  private startPollingResults(): void {
+    const pollResults = async () => {
+      try {
+        const device = this.getDevice();
+        let resp = device ? await this.devicesService.requestResults(device) : undefined;
+        if (typeof resp![1] === 'object' && 'State' in resp![1] && this.knownStates.includes(resp![1].State)) {
+          if (resp![1].State === "READY") {
+            await this.handleReadyState(resp![1]);
+            if (this.currentBlockIndex < this.blockCount) {
+              setTimeout(pollResults, 500);
             }
+          } else {
+            await this.updateExamProgress(resp![1]);
+            setTimeout(pollResults, 500);
           }
-        } catch (error) {
-          this.logger.error("Error in waitForReadyState: " + error);
-          const err = error instanceof Error ? error : new Error(String(error));
-          reject(err);
+        } else {
+          this.logger.debug(
+            "In memr-exam.component.ts runExamSubmissions, unknown result: " + resp![1]
+          );
+          await this.finishExam();
         }
-      };
-      shouldPollResults();
-    });
+      } catch (error) {
+        this.logger.error("Error running exam submissions: " + error);
+        await this.finishExam();
+      }
+    };
+    pollResults();
   };
 
   /**

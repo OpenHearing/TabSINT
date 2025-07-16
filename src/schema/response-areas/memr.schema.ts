@@ -30,7 +30,7 @@ export const memrSchema: JSONSchemaType<MemrExamInterface> = {
       items: {
         type: "string"
       },
-      minItems: 0,
+      minItems: 1,
       nullable: true
     },
     elicitorOutputChannel: {
@@ -38,7 +38,7 @@ export const memrSchema: JSONSchemaType<MemrExamInterface> = {
       items: {
         type: "string"
       },
-      minItems: 0,
+      minItems: 1,
       nullable: true
     },
   },

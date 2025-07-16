@@ -71,13 +71,13 @@ export interface MemrExamSubmissionInterface {
 
  * 
  * @field State The state of the exam ("OFF", "READY", "PLAYING").
- * @field NumTrialsComplete Number of completed trials for the exam.
+ * @field TrialsCompleted Number of completed trials for the exam.
  * @field RecordedLevel_LeqdBSPL Equivalent sound levels of each output channel for the last completed trial.
  * @field RecordedLevel_dBP Peak sound level of each output channel for the last completed trial.
  */
 export interface MemrResultsInterface {
   State: string;
-  NumTrialsComplete: number;
+  TrialsCompleted: number;
   RecordedLevel_LeqdBSPL: number;
   RecordedLevel_dBP: number;
 }
