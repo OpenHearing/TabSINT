@@ -50,6 +50,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
     State: 'READY',
     PctComplete: 0
   };
+  inputParameterMap: Map<string, string> = new Map(); // Parameter map to display the user in the input parameters
 
   // Set default dimensions and margins
   margin = { top: 20, right: 30, bottom: 60, left: 70, spacerW: 80, spacerH: 70 };
@@ -92,6 +93,20 @@ export class WAIExamComponent implements OnInit, OnDestroy {
         this.earCanalDiameter = responseArea.earCanalDiameter ?? this.earCanalDiameter;
         this.earCanalLength = responseArea.earCanalLength ?? this.earCanalLength;
         this.normativeAbsorbanceDataPath = responseArea.normativeAbsorbanceDataPath ?? this.normativeAbsorbanceDataPath;
+
+        this.inputParameterMap = new Map([
+          ["Start Frequency [Hz]", this.fStart.toString()],
+          ["End Frequency [Hz]", this.fEnd.toString()],
+          ["Sweep Duration [s]", this.sweepDuration.toString()],
+          ["Sweep Type", this.sweepType.toString()],
+          ["Level", this.l.toString()],
+          ["Number of Sweeps", this.numSweeps.toString()],
+          ["Window Duration [s]", this.windowDuration.toString()],
+          ["Number of Frequencies", this.numFrequencies.toString()],
+          ["Filename", this.filename.toString()],
+          ["OutputRawMeasurements", this.outputRawMeasurements.toString()],
+        ]);
+
         // Update xTicks and scales
         this.xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000].filter(tick => tick >= this.fStart && tick <= this.fEnd);
       }

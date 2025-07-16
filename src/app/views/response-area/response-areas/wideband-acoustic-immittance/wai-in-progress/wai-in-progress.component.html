@@ -1,23 +1,6 @@
 <p class="instructions">{{instructions}}</p>
-
-<wai-input-parameters
-    [fStart]="fStart"
-    [fEnd]="fEnd"
-    [sweepDuration]="sweepDuration"
-    [sweepType]="sweepType"
-    [l]="l"
-    [numSweeps]="numSweeps"
-    [windowDuration]="windowDuration"
-    [numFrequencies]="numFrequencies"
-    [filename]="filename"
-    [outputRawMeasurements]="outputRawMeasurements"
-    [outputChannel]="outputChannel" 
-    [inputChannels]="inputChannels"
-    [aurenInsideDiameter]="aurenInsideDiameter"
-    [aurenLength]="aurenLength"
-    [earCanalDiameter]="earCanalDiameter"
-    [earCanalLength]="earCanalLength">
-</wai-input-parameters>
+<input-parameters [parameterMap]="parameterMap">
+</input-parameters>
 
 <br />
 

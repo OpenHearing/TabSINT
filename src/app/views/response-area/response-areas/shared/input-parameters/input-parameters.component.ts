@@ -11,7 +11,7 @@ import { KeyValue } from '@angular/common';
 })
 export class InputParametersComponent {
   /** A message to display above the tabulated data.*/
-  @Input() instruction!: string;
+  @Input() instruction?: string;
   /** The data to be displayed in a table format.*/
   @Input() parameterMap!: Map<string, string>;
 

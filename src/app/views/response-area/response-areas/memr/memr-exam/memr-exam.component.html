@@ -1,7 +1,7 @@
 <div [ngSwitch]="currentStep">
   <p class="instructions">{{ instructions }}</p>
 
-  <input-parameters *ngSwitchCase="'Ready'" [instructions]="instructions" [parameterMap]="inputParameterMap">
+  <input-parameters *ngSwitchCase="'Ready'" [parameterMap]="inputParameterMap">
   </input-parameters>
 
   <div *ngSwitchCase="'Exam'">

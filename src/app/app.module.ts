@@ -91,12 +91,10 @@ import { ExamDeviceErrorComponent } from './views/exam-device-error/exam-device-
 import { MultipleInputComponent } from './views/response-area/response-areas/multiple-input/multiple-input.component';
 import { LikertComponent } from './views/response-area/response-areas/likert/likert/likert.component';
 import { SweptDpoaeExamComponent } from './views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/swept-dpoae-exam.component';
-import { SweptDpoaeInputParametersComponent } from './views/response-area/response-areas/swept-dpoae/swept-dpoae-input-parameters/swept-dpoae-input-parameters.component';
 import { SweptDpoaeInProgressComponent } from './views/response-area/response-areas/swept-dpoae/swept-dpoae-in-progress/swept-dpoae-in-progress.component';
 import { SweptDpoaeResultsComponent } from './views/response-area/response-areas/swept-dpoae/swept-dpoae-results/swept-dpoae-results.component';
 import { WAIExamComponent } from './views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.component';
 import { WAIInProgressComponent } from './views/response-area/response-areas/wideband-acoustic-immittance/wai-in-progress/wai-in-progress.component';
-import { WAIInputParametersComponent } from './views/response-area/response-areas/wideband-acoustic-immittance/wai-input-parameters/wai-input-parameters.component';
 import { WAIResultsComponent } from './views/response-area/response-areas/wideband-acoustic-immittance/wai-results/wai-results.component';
 import { BuildDetailsComponent } from './views/build-details/build-details.component';
 import { MrtExamComponent } from './views/response-area/response-areas/mrt/mrt-exam/mrt-exam.component';
@@ -152,11 +150,9 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     MultipleInputComponent,
     LikertComponent,
     SweptDpoaeExamComponent,
-    SweptDpoaeInputParametersComponent,
     SweptDpoaeInProgressComponent,
     SweptDpoaeResultsComponent,
     WAIExamComponent,
-    WAIInputParametersComponent,
     WAIInProgressComponent,
     WAIResultsComponent,
     BuildDetailsComponent,
