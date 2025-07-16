@@ -50,7 +50,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
     State: 'READY',
     PctComplete: 0
   };
-  inputParameterMap: Map<string, string> = new Map(); // Parameter map to display the user in the input parameters
+  inputParameterMap: Map<string, string> = new Map(); // Parameter map to display the user input parameters
 
   // Set default dimensions and margins
   margin = { top: 20, right: 30, bottom: 60, left: 70, spacerW: 80, spacerH: 70 };
