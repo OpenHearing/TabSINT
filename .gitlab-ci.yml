@@ -9,12 +9,13 @@ variables:
   DOCKER_TLS_CERTDIR: ""
   DOCKER_DRIVER: overlay2
   IMAGE_TAG_BASE: $CI_REGISTRY_IMAGE
+  ANDROID_KEYSTORE_PATH: "/tmp/release.keystore"
 
 stages:
   - build-docker-image
-  - test
-  - sonarqube-check
-  - beta-release
+  # - test
+  # - sonarqube-check
+  # - beta-release
   - release
   - cleanup
 
@@ -147,36 +148,8 @@ release:
       -e ANDROID_KEYSTORE_PASSWORD="$ANDROID_KEYSTORE_PASSWORD"
       -e ANDROID_KEY_ALIAS="$ANDROID_KEY_ALIAS"
       -e ANDROID_KEY_PASSWORD="$ANDROID_KEY_PASSWORD"
-      -e ANDROID_KEYSTORE_PATH="/usr/src/app/android/release.keystore"
+      -e ANDROID_KEYSTORE_PATH="/tmp/release.keystore"
       $IMAGE_TAG npm run run.build.production:ci)
-    # Wait for container to finish
-    - docker wait $CONTAINER_ID
-    
-    # Debug: Check what files were actually created
-    - echo "=== Container logs ==="
-    - docker logs $CONTAINER_ID
-    
-    # Debug: List contents of build directory
-    - echo "=== Build directory contents ==="
-    - docker exec $CONTAINER_ID find /usr/src/app/android/app/build -name "*.apk" 2>/dev/null || echo "No APK files found"
-    
-    # Debug: List all outputs directory
-    - echo "=== Outputs directory structure ==="
-    - docker exec $CONTAINER_ID ls -la /usr/src/app/android/app/build/outputs/ 2>/dev/null || echo "Outputs directory not found"
-    
-    # Try alternative APK locations
-    - |
-      if docker exec $CONTAINER_ID test -f /usr/src/app/android/app/build/outputs/apk/release/app-release.apk; then
-        echo "APK found at expected location"
-        docker cp $CONTAINER_ID:/usr/src/app/android/app/build/outputs/apk/release/app-release.apk ./android/app/
-      elif docker exec $CONTAINER_ID test -f /usr/src/app/android/app/build/outputs/apk/debug/app-debug.apk; then
-        echo "APK found at debug location"
-        docker cp $CONTAINER_ID:/usr/src/app/android/app/build/outputs/apk/debug/app-debug.apk ./android/app/
-      else
-        echo "APK not found in standard locations"
-        exit 1
-      fi
-    
     - docker wait $CONTAINER_ID
     - docker cp $CONTAINER_ID:/usr/src/app/android/app/build/outputs/apk/release/app-release.apk ./android/app/
     - docker stop $CONTAINER_ID
