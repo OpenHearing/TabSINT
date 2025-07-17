@@ -56,9 +56,6 @@ RUN sdkmanager --update && \
 # Set working directory
 WORKDIR /usr/src/app
 
-# Setup keystore for release signing
-RUN echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > /tmp/release.keystore
-
 # Copy project files
 COPY . .
 
