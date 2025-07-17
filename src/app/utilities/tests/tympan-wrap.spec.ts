@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { NgZone } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
 import { TympanWrap } from "../tympan-wrap.service";
@@ -43,7 +44,8 @@ describe('tympanWrap', () => {
                 Notifications,
                 { provide: MatDialog, useValue: spy },
                 TranslateService,
-                TranslateStore
+                TranslateStore,
+                NgZone
             ]
         })
 
@@ -54,6 +56,10 @@ describe('tympanWrap', () => {
             instant: jasmine.createSpy('instant').and.callFake((key: string) => key),
             use: jasmine.createSpy('use').and.callFake((lang: string) => { }),
         } as unknown as TranslateService;
+
+        let mockNgZone = {
+            run: jasmine.createSpy('run').and.callFake(fn => fn())
+        } as unknown as NgZone;
 
         appModel = new AppModel;
         diskModel = new DiskModel(new Document);
@@ -68,6 +74,7 @@ describe('tympanWrap', () => {
             new DeviceUtil(devicesModel, diskModel),
             new Notifications(spy),
             mockTranslateService,
+            mockNgZone
         );
     })
 

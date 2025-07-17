@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@angular/core';
+import { Injectable, Inject, NgZone } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Logger } from './logger.service';
 import { BleClient } from '@capacitor-community/bluetooth-le';
@@ -35,6 +35,7 @@ export class TympanWrap {
         private readonly deviceUtil: DeviceUtil,
         private readonly notifications: Notifications,
         private readonly translate: TranslateService,
+        private readonly zone: NgZone,
     ) {
         this.state = this.stateModel.getState();
         // TODO: Move this to generic utility for running async functions in constructor
@@ -116,15 +117,17 @@ export class TympanWrap {
 
     async connect(deviceId: string, onDisconnect: Function) {
         await BleClient.connect(deviceId, (deviceId: string) => {
-            onDisconnect(deviceId);
-            if (!this.requestedDisconnectionIds.has(deviceId)) {
-                this.notifications.alert({
-                    title: "Alert",
-                    content: this.translate.instant("Tympan device disconnected unexpectedly."),
-                    type: DialogType.Alert
-                });
-            }
-            this.requestedDisconnectionIds.delete(deviceId);
+            this.zone.run(() => {
+                onDisconnect(deviceId);
+                if (!this.requestedDisconnectionIds.has(deviceId)) {
+                    this.notifications.alert({
+                        title: "Alert",
+                        content: this.translate.instant("The tympan device's connection has timed out."),
+                        type: DialogType.Alert
+                    });
+                }
+                this.requestedDisconnectionIds.delete(deviceId);
+            });
         });
         this.clearTMPBuffer(deviceId);
         await BleClient.startNotifications(deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID,(dv:DataView) => {

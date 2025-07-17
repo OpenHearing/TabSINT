@@ -49,6 +49,12 @@
                 "id": "MRT Exam"
               },
               {
+                "id": "MEMR Exam (Within Block)"
+              },
+              {
+                "id": "MEMR Exam (Between Blocks)"
+              },
+              {
                 "id":"End All"
               }
             ]
@@ -100,6 +106,18 @@
               "conditional": "result.response=='MRT Exam'",
               "target": {
                 "reference": "MRTExam"
+              }
+            },
+            {
+              "conditional": "result.response=='MEMR Exam (Within Block)'",
+              "target": {
+                "reference": "MEMRExamWithinBlock"
+              }
+            },
+            {
+              "conditional": "result.response=='MEMR Exam (Between Blocks)'",
+              "target": {
+                "reference": "MEMRExamBetweenBlocks"
               }
             },
             {
@@ -363,6 +381,78 @@
           "responseArea": {
             "type": "mrtResponseArea",
             "examDefinitionFilename": "mrt-exam-definition.csv"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "MEMRExamWithinBlock",
+      "pages": [
+        {
+          "id": "MEMR",
+          "title": "MEMR Exam (Within Block)",
+          "isAutoSubmit": false,
+          "responseArea": {
+            "type": "memrResponseArea",
+            "soundFileName": "900Hz_1000Hz_Tones_Level_-3dBrms.wav",
+            "recordFileName": "REC.WAV",
+            "recordFileFolder": "MEMR",
+            "nRepeats": 2,
+            "useMetaRMS": false,
+            "elicitorLevelChange": "Within Block",
+            "elicitorLevelArray": [
+              70.0,
+              71.0,
+              72.0
+            ],
+            "probeStimulusLevel": 10,
+            "submissionIntervalMs": 500,
+            "probeOutputChannel": [
+              "HPL0"
+            ],
+            "elicitorOutputChannel": [
+              "LEFT:BOARD_MIC"
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "MEMRExamBetweenBlocks",
+      "pages": [
+        {
+          "id": "MEMR",
+          "title": "MEMR Exam (Between Blocks)",
+          "isAutoSubmit": false,
+          "responseArea": {
+            "type": "memrResponseArea",
+            "soundFileName": "900Hz_1000Hz_Tones_Level_-3dBrms.wav",
+            "recordFileName": "REC.WAV",
+            "recordFileFolder": "MEMR",
+            "nRepeats": 2,
+            "useMetaRMS": false,
+            "elicitorLevelChange": "Between Blocks",
+            "elicitorLevelArray": [
+              70.0,
+              71.0,
+              72.0
+            ],
+            "probeStimulusLevel": 10,
+            "submissionIntervalMs": 500,
+            "probeOutputChannel": [
+              "HPL0"
+            ],
+            "elicitorOutputChannel": [
+              "LEFT:BOARD_MIC"
+            ]
           }
         },
         {

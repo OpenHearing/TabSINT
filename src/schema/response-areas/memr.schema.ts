@@ -1,0 +1,46 @@
+import { JSONSchemaType } from "ajv";
+import { MemrExamInterface } from "../../app/views/response-area/response-areas/memr/memr-exam/memr-exam.interface";
+
+export const memrSchema: JSONSchemaType<MemrExamInterface> = {
+  type: "object",
+  properties: {
+    type: { type: "string", enum: ["memrResponseArea"] },
+    enableSkip: { type: "boolean", nullable: true, default: false },
+    responseRequired: { type: "boolean", nullable: true, default: false },
+    exportToCSV: { type: "boolean", nullable: true, default: false },
+    tabsintId: { type: "string", nullable: true, default: "1" },
+    soundFileName: { type: "string", nullable: true },
+    recordFileName: { type: "string", nullable: true },
+    recordFileFolder: { type: "string", nullable: true },
+    nRepeats: { type: "number", nullable: true },
+    useMetaRMS: { type: "boolean", nullable: true, default: false },
+    elicitorLevelChange: { type: "string", nullable: true, enum: ["Within Block", "Between Blocks"] },
+    elicitorLevelArray: {
+      type: "array",
+      items: {
+        type: "number"
+      },
+      minItems: 0,
+      nullable: true
+    },
+    probeStimulusLevel: { type: "number", nullable: true },
+    submissionIntervalMs: { type: "number", nullable: true },
+    probeOutputChannel: {
+      type: "array",
+      items: {
+        type: "string"
+      },
+      minItems: 1,
+      nullable: true
+    },
+    elicitorOutputChannel: {
+      type: "array",
+      items: {
+        type: "string"
+      },
+      minItems: 1,
+      nullable: true
+    },
+  },
+  required: ["type"]
+};

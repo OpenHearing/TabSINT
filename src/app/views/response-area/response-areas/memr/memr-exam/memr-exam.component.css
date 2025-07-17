@@ -1,0 +1,24 @@
+.progress-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-column {
+  width: 90%;
+}
+
+.col-6 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mat-mdc-progress-bar {
+  --mdc-linear-progress-active-indicator-color: #337ab7;
+  --mdc-linear-progress-track-color: rgba(0, 0, 0, .1);
+  --mdc-linear-progress-track-height: 24px;
+  --mdc-linear-progress-active-indicator-height: 24px;
+  border-radius: 10px;
+  margin-bottom: 3vh; 
+}
