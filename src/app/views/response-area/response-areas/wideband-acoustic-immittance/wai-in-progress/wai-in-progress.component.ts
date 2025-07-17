@@ -15,22 +15,7 @@ import { Logger } from '../../../../../utilities/logger.service';
 })
 export class WAIInProgressComponent implements OnInit, OnDestroy {
   @Input() device: ConnectedDevice | undefined;
-  @Input() fStart!: number;
-  @Input() fEnd!: number;
-  @Input() sweepDuration!: number;
-  @Input() sweepType!: string;
-  @Input() l!: number;
-  @Input() numSweeps!: number;
-  @Input() windowDuration!: number;
-  @Input() numFrequencies!: number;
-  @Input() filename!: string;
-  @Input() outputRawMeasurements!: boolean;
-  @Input() outputChannel!: string;
-  @Input() inputChannels!: Array<string>;
-  @Input() aurenInsideDiameter!: number;
-  @Input() aurenLength!: number;
-  @Input() earCanalDiameter!: number;
-  @Input() earCanalLength!: number;
+  @Input() parameterMap!: Map<string,string>;
   @Output() WAIResultsEvent = new EventEmitter<WAIResultsInterface>();
 
   state: StateInterface;

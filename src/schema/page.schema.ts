@@ -14,6 +14,7 @@ import { likertSchema } from "./response-areas/likert.schema";
 import { sweptDpoaeSchema } from "./response-areas/swept-dpoae.schema";
 import { waiSchema } from "./response-areas/wai.schema";
 import { mrtSchema } from "./response-areas/mrt.schema";
+import { memrSchema } from "./response-areas/memr.schema";
 
 export const pageSchema: JSONSchemaType<PageDefinition> = {
     $id: "page_base",
@@ -92,7 +93,8 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
           likertSchema,
           sweptDpoaeSchema,
           waiSchema,
-          mrtSchema
+          mrtSchema,
+          memrSchema,
         ],
         required: ["type"],
         nullable: true

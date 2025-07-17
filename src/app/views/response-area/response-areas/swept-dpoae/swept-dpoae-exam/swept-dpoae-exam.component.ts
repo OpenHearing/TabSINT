@@ -23,7 +23,7 @@ import { ProtocolMetaInterface } from '../../../../../models/protocol/protocol.i
   templateUrl: './swept-dpoae-exam.component.html',
   styleUrl: './swept-dpoae-exam.component.css'
 })
-export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
+export class SweptDpoaeExamComponent implements OnInit, OnDestroy {  
   tabsintId: string = sweptDpoaeSchema.properties.tabsintId.default;
   f2Start: number = sweptDpoaeSchema.properties.f2Start.default;
   f2End: number = sweptDpoaeSchema.properties.f2End.default;
@@ -46,6 +46,7 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
     State: 'READY',
     PctComplete: 0
   };
+  inputParameterMap: Map<string, string> = new Map(); // Parameter map to display the user input parameters
 
   // Set default dimensions and margins
   margin = { top: 20, right: 30, bottom: 60, left: 70 };
@@ -84,6 +85,18 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
         this.noiseFloorThreshold = responseArea.noiseFloorThreshold ?? this.noiseFloorThreshold;
         this.outputRawMeasurements = responseArea.outputRawMeasurements ?? this.outputRawMeasurements;
         this.normativeDataPath = responseArea.normativeDataPath ?? this.normativeDataPath;
+
+        this.inputParameterMap = new Map([
+          ["Start Frequency [Hz]", this.f2Start.toString()],
+          ["End Frequency [Hz]", this.f2End.toString()],
+          ["Ratio", this.frequencyRatio.toString()],
+          ["Sweep Duration [s]", this.sweepDuration.toString()],
+          ["Window Duration [s]", this.windowDuration.toString()],
+          ["Sweep Type", this.sweepType.toString()],
+          ["Minimum Num Sweeps", this.minSweeps.toString()],
+          ["Maximum Num Sweeps", this.maxSweeps.toString()],
+          ["Noise Floor Threshold", this.noiseFloorThreshold.toString()],
+        ]);
 
         // Update xTicks and scales
         this.xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000].filter(tick => tick >= this.f2Start && tick <= this.f2End);
