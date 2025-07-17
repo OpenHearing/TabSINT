@@ -13,6 +13,9 @@ variables:
 
 stages:
   - build-docker-image
+  - test
+  - sonarqube-check
+  - beta-release
   - release
   - cleanup
 
