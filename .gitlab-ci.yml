@@ -9,7 +9,6 @@ variables:
   DOCKER_TLS_CERTDIR: ""
   DOCKER_DRIVER: overlay2
   IMAGE_TAG_BASE: $CI_REGISTRY_IMAGE
-  ANDROID_KEYSTORE_PATH: "./android/release.keystore"
 
 stages:
   - build-docker-image
@@ -148,7 +147,7 @@ release:
       -e ANDROID_KEYSTORE_PASSWORD="$ANDROID_KEYSTORE_PASSWORD"
       -e ANDROID_KEY_ALIAS="$ANDROID_KEY_ALIAS"
       -e ANDROID_KEY_PASSWORD="$ANDROID_KEY_PASSWORD"
-      -e ANDROID_KEYSTORE_PATH="./android/release.keystore"
+      -e ANDROID_KEYSTORE_PATH="/usr/src/app/android/release.keystore"
       $IMAGE_TAG npm run run.build.production:ci)
     # Wait for container to finish
     - docker wait $CONTAINER_ID
