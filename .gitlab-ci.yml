@@ -154,9 +154,13 @@ release:
         -e ANDROID_KEY_PASSWORD="$ANDROID_KEY_PASSWORD" \
         -e ANDROID_KEYSTORE_PATH="/tmp/release.keystore" \
         "$IMAGE_TAG" sh -c "
+          echo 'Checking keystore base64 length...' &&
+          echo \$ANDROID_KEYSTORE_BASE64 | wc -c && 
           echo 'Creating keystore...' &&
           echo \$ANDROID_KEYSTORE_BASE64 | base64 -d > /tmp/release.keystore &&
           ls -la /tmp/release.keystore &&
+          echo 'Testing keystore validity...' &&
+          keytool -list -keystore /tmp/release.keystore -storepass \$ANDROID_KEYSTORE_PASSWORD -v &&
           echo 'Running build...' &&
           npm run run.build.production:ci &&
           echo 'Build completed, checking outputs...' &&
