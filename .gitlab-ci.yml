@@ -140,6 +140,10 @@ release:
   script:
     - SAFE_COMMIT_REF_NAME=$(echo "$CI_COMMIT_REF_NAME" | tr '/' '-')
     - IMAGE_TAG="$IMAGE_TAG_BASE:$SAFE_COMMIT_REF_NAME"
+    - echo "DEBUG - IMAGE_TAG_BASE=$IMAGE_TAG_BASE"
+    - echo "DEBUG - CI_COMMIT_REF_NAME=$CI_COMMIT_REF_NAME"
+    - echo "DEBUG - SAFE_COMMIT_REF_NAME=$SAFE_COMMIT_REF_NAME"
+    - echo "DEBUG - IMAGE_TAG=$IMAGE_TAG"
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker pull $IMAGE_TAG
     - CONTAINER_ID=$(docker run -d \
@@ -148,8 +152,8 @@ release:
       -e ANDROID_KEY_ALIAS="$ANDROID_KEY_ALIAS" \
       -e ANDROID_KEY_PASSWORD="$ANDROID_KEY_PASSWORD" \
       -e ANDROID_KEYSTORE_PATH="/tmp/release.keystore" \
-      $IMAGE_TAG sh -c "
-        echo \$ANDROID_KEYSTORE_BASE64 | base64 -d > /tmp/release.keystore
+      "$IMAGE_TAG" sh -c "
+        echo \$ANDROID_KEYSTORE_BASE64 | base64 -d > /tmp/release.keystore && \
         npm run run.build.production:ci
       ")
     - docker wait $CONTAINER_ID
