@@ -69,7 +69,6 @@ test:
     access: all
     expire_in: "1 days"
   rules:
-    - when: never
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_BRANCH == 'master'
     - if: $CI_COMMIT_BRANCH == 'main'
@@ -90,7 +89,6 @@ sonarqube-check:
     - sonar-scanner
   allow_failure: true
   rules:
-    - when: never
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_BRANCH == 'master'
     - if: $CI_COMMIT_BRANCH == 'main'
@@ -123,7 +121,6 @@ beta-release:
       - android/app/app-debug.apk
     expire_in: 2 days
   rules:
-    - when: never
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_BRANCH == 'master'
     - if: $CI_COMMIT_BRANCH == 'main'
@@ -141,17 +138,8 @@ release:
   dependencies:
     - build-docker-image
   script:
-    - echo "Checking environment variables..."
-    - echo "ANDROID_KEYSTORE_BASE64 length:" $(echo "$ANDROID_KEYSTORE_BASE64" | wc -c)
-    - echo "ANDROID_KEYSTORE_PASSWORD set:" $([ -n "$ANDROID_KEYSTORE_PASSWORD" ] && echo "YES" || echo "NO")
-    - echo "ANDROID_KEY_ALIAS set:" $([ -n "$ANDROID_KEY_ALIAS" ] && echo "YES" || echo "NO")
-    - echo "ANDROID_KEY_PASSWORD set:" $([ -n "$ANDROID_KEY_PASSWORD" ] && echo "YES" || echo "NO")
     - SAFE_COMMIT_REF_NAME=$(echo "$CI_COMMIT_REF_NAME" | tr '/' '-')
     - IMAGE_TAG="$IMAGE_TAG_BASE:$SAFE_COMMIT_REF_NAME"
-    - echo "DEBUG - IMAGE_TAG_BASE=$IMAGE_TAG_BASE"
-    - echo "DEBUG - CI_COMMIT_REF_NAME=$CI_COMMIT_REF_NAME"
-    - echo "DEBUG - SAFE_COMMIT_REF_NAME=$SAFE_COMMIT_REF_NAME"
-    - echo "DEBUG - IMAGE_TAG=$IMAGE_TAG"
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker pull $IMAGE_TAG
     - |
@@ -162,23 +150,10 @@ release:
         -e ANDROID_KEY_PASSWORD="$ANDROID_KEY_PASSWORD" \
         -e ANDROID_KEYSTORE_PATH="/tmp/release.keystore" \
         "$IMAGE_TAG" sh -c "
-          echo 'Checking keystore base64 length...' &&
-          echo \$ANDROID_KEYSTORE_BASE64 | wc -c && 
-          echo 'Creating keystore...' &&
-          echo \$ANDROID_KEYSTORE_BASE64 | base64 -d > /tmp/release.keystore &&
           ls -la /tmp/release.keystore &&
-          echo 'Testing keystore validity...' &&
-          keytool -list -keystore /tmp/release.keystore -storepass \$ANDROID_KEYSTORE_PASSWORD -v &&
-          echo 'Running build...' &&
           npm run run.build.production:ci &&
-          echo 'Build completed, checking outputs...' &&
-          find /usr/src/app -name '*.apk' -type f
         ")
     - docker wait $CONTAINER_ID
-    - echo "Container logs:"
-    - docker logs $CONTAINER_ID
-    - echo "Checking for APK files:"
-    - docker exec $CONTAINER_ID find /usr/src/app -name "*.apk" -type f || true
     - docker cp $CONTAINER_ID:/usr/src/app/android/app/build/outputs/apk/release/app-release.apk ./android/app/
     - docker stop $CONTAINER_ID
     - docker rm $CONTAINER_ID
@@ -187,7 +162,7 @@ release:
       - android/app/app-release.apk
     expire_in: 2 days
   rules:
-    - if: $CI_COMMIT_TAG 
+    - if: $CI_COMMIT_TAG
 
 cleanup:
   stage: cleanup
