@@ -541,7 +541,7 @@ export class ProtocolsComponent {
   );
 
   protocolServerPopover = this.translate.instant(
-    "Choose the location to use as the protocol source and results output. <br /><br />Additional configuration for <b>Gitlab</b> will become active below this box when it is selected"
+    "Choose the location to use as the protocol source and results output. <br /><br />Additional configuration for <b>Gitlab</b> will become active below this box when it is selected."
   );
 
   protocolTablePopover = this.translate.instant(
