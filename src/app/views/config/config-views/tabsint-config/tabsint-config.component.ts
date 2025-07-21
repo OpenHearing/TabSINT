@@ -149,7 +149,7 @@ export class TabsintConfigComponent {
   // );
 
   adminPopover = this.translate.instant(
-    "Includes additional configuration options, displays expandable <b>debug</b> menus showing program state at the bottom of exam pages, and suppresses Admin Password prompts"
+    "Includes additional configuration options, displays expandable <b>debug</b> menus showing program state at the bottom of exam pages, and suppresses Admin Password prompts."
   );
 
   adminPinPopover = this.translate.instant(
