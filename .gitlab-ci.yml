@@ -149,7 +149,10 @@ release:
         -e ANDROID_KEY_ALIAS="$ANDROID_KEY_ALIAS" \
         -e ANDROID_KEY_PASSWORD="$ANDROID_KEY_PASSWORD" \
         -e ANDROID_KEYSTORE_PATH="/tmp/release.keystore" \
-        "$IMAGE_TAG" sh -c "npm run run.build.production:ci")
+        "$IMAGE_TAG" sh -c "
+          echo \$ANDROID_KEYSTORE_BASE64 | base64 -d > /tmp/release.keystore &&
+          npm run run.build.production:ci &&
+        ")
     - docker wait $CONTAINER_ID
     - docker cp $CONTAINER_ID:/usr/src/app/android/app/build/outputs/apk/release/app-release.apk ./android/app/
     - docker stop $CONTAINER_ID
