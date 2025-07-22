@@ -152,13 +152,21 @@ export class ProtocolsComponent {
           type: DialogType.Alert
         }).subscribe();
         throw new Error("Missing required GitLab configuration. Please specify a GitLab host, token, group, and repository.");
-      } else if (this.gitlabConfig.group.endsWith('/')) {
+      }
+      // Detect if there "/" in the repository name and alert user
+      if (this.gitlabConfig.repository.includes("/")) {
         this.notifications.alert({
           title: "Alert",
-          content: "GitLab configuration typo. Please make sure the group does not have a '/' at the end.",
+          content: "Repository name should not contain any '/'. If applicable, please move the parent directories to the group field.",
           type: DialogType.Alert
         }).subscribe();
-        throw new Error("GitLab configuration typo. Please make sure the group does not have a '/' at the end.");
+        // move the "/" to the group field and remove from repository field
+        this.fixGitlabRepositoryAndGroupSlashs();
+        console.log("this.gitlabConfig",this.gitlabConfig);
+      }
+      // fix issue if a trailing "/" is in the group field
+      if (this.gitlabConfig.group.endsWith("/")) {
+        this.gitlabConfig.group = this.gitlabConfig.group.slice(0,-1);
       }
       const headers = new Headers({ 'PRIVATE-TOKEN': this.gitlabConfig.token });
       const projectId = await this.getGitlabProjectId(this.gitlabConfig.host,this.gitlabConfig.repository,this.gitlabConfig.group,headers)
@@ -169,6 +177,7 @@ export class ProtocolsComponent {
 
     const protocol = {
       ...partialMetaDefaults,
+      version: ref,
       name: this.gitlabConfig.repository,
       server: ProtocolServer.Gitlab,
       contentURI: folderUri,
@@ -190,7 +199,20 @@ export class ProtocolsComponent {
     }
   }
 
-  
+  fixGitlabRepositoryAndGroupSlashs() {
+    // handle edge cases related to "/"s
+    if (!this.gitlabConfig.group.endsWith("/")) {
+      this.gitlabConfig.group = this.gitlabConfig.group + "/";
+    }
+    if (this.gitlabConfig.repository.endsWith("/")) {
+      this.gitlabConfig.repository = this.gitlabConfig.repository.slice(0,-1);
+    }
+    // move "/"s (directories) from repository to group
+    let tmpGroup = this.gitlabConfig.group + this.gitlabConfig.repository.split("/").slice(0, -1).join("/");
+    let tmpRepository = this.gitlabConfig.repository.split("/")[this.gitlabConfig.repository.split("/").length - 1];
+    this.gitlabConfig.repository = tmpRepository;
+    this.gitlabConfig.group = tmpGroup;
+  }
 
   isProtocolActive(): boolean {
     return this.isActive(this.selected);
@@ -565,7 +587,7 @@ export class ProtocolsComponent {
   );
 
   gitlabAddPopover = this.translate.instant(
-    "Type in the name of the protocol repository located on the host and group"
+    "Type in the name of the protocol repository located on the host and group. If applicable, put all parent directories in the group field."
   );
 
   gitlabAddVersionPopover = this.translate.instant(
