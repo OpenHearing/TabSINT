@@ -101,6 +101,7 @@ import { MrtExamComponent } from './views/response-area/response-areas/mrt/mrt-e
 import { MrtResultsComponent } from './views/response-area/response-areas/mrt/mrt-results/mrt-results.component';
 import { MemrExamComponent } from './views/response-area/response-areas/memr/memr-exam/memr-exam.component';
 import { InputParametersComponent } from './views/response-area/response-areas/shared/input-parameters/input-parameters.component';
+import { NetworkService } from './controllers/network.service';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -214,7 +215,8 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     TranslateService,
     TympanWrap,
     TympanService,
-    DevicesService
+    DevicesService,
+    NetworkService,
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
