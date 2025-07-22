@@ -21,6 +21,8 @@ import { Logger } from './utilities/logger.service';
 import { FileService } from './utilities/file.service';
 import { DeviceUtil } from './utilities/device-utility';
 import { DisclaimerComponent } from './views/disclaimer/disclaimer.component';
+import { StateModel } from './models/state/state.service';
+import { NetworkService } from './controllers/network.service';
 
 @Component({
   selector: 'app-root',
@@ -44,7 +46,9 @@ export class AppComponent implements OnInit, OnDestroy {
     private readonly router: Router,
     private readonly sqLite: SqLite,
     private readonly translate: TranslateService,
-    private readonly dialog: MatDialog
+    private readonly dialog: MatDialog,
+    private readonly stateModel: StateModel,
+    private readonly networkService: NetworkService,
   ) {
     this.translate.setDefaultLang('English');
     this.translate.use('English');
@@ -81,8 +85,9 @@ export class AppComponent implements OnInit, OnDestroy {
       this.diskModel.updateDiskModel('showDisclaimer',false);
     }
     this.deviceUtil.addSavedDevices();
+    this.setupNetworkListener();
   }
-  
+
   ngOnDestroy() {
     this.diskSubscription?.unsubscribe();
   }
@@ -94,5 +99,14 @@ export class AppComponent implements OnInit, OnDestroy {
     });
   }
 
+  
+  /**
+   * Setup a network listener to update wifi status.
+   */
+  private setupNetworkListener() {
+    this.networkService.addListener(true, (status) => {
+      this.stateModel.updateWifiStatus(status.connectionType === 'wifi');
+    });
+  };
 }
 

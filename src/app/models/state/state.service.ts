@@ -45,6 +45,16 @@ export class StateModel {
     getState(): StateInterface {
         return this.stateModel;
     }
+
+    
+    /**
+     * Update the wifi status for the state model.
+     *
+     * @param {boolean} isConnected Whether there is a current wifi connection or not.
+     */
+    updateWifiStatus(isConnected: boolean) {
+        this.stateModel.wifiConnected = isConnected;
+    }
     
     /** Set page isSubmittable state.
      * @summary Checks if a page is submittable and sets isSubmittable state variable
