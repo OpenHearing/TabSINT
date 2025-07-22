@@ -89,7 +89,7 @@ export class ExamService {
         this.resultsService.pushResults(this.results.currentPage);
         this.advancePage();
 
-        this.submit = this.submitDefault;        
+        this.submit = this.submitDefault;
 
         this.logger.debug("this.results.currentExam: "+JSON.stringify(this.results.currentExam));
     }
@@ -114,7 +114,8 @@ export class ExamService {
     }
 
     submitPartial() {
-        this.submitDefault();
+        this.resultsService.pushResults(this.results.currentPage);
+        this.submit = this.submitDefault;
         this.endExam();
     }
 
