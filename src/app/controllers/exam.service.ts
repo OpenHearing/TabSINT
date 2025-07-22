@@ -114,7 +114,6 @@ export class ExamService {
     }
 
     submitPartial() {
-        console.log("submitPartial");
         this.resultsService.pushResults(this.results.currentPage);
         this.submit = this.submitDefault;
         this.endExam();
