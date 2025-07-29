@@ -53,8 +53,8 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
   async ngOnInit(): Promise<void> {
     this.requestResults();
     this.inProgressResultsSubscription = this.inProgressResultsSubject.subscribe((updatedResults: SweptDpoaeResultsInterface) => {
-      if (updatedResults.DpLow) {
-        this.updatePlot(updatedResults.DpLow);
+      if (updatedResults.DpLow && updatedResults.F2) {
+        this.updatePlot(updatedResults.DpLow, updatedResults.F2);
       }
       this.inProgressResults = updatedResults;
       this.inProgressResults.PctComplete = Math.round(this.inProgressResults.PctComplete);
@@ -135,17 +135,17 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
     
   }
 
-  private updatePlot(data: DPOAEDataInterface) {
+  private updatePlot(dpLowData: DPOAEDataInterface, f2Data: DPOAEDataInterface) {
     // TODO: May not need to filter data after we get real firmware
-    const filteredData = this.filterData(data);
+    const filteredData = this.filterData(dpLowData, f2Data);
 
     // Plot DpLow Amplitude / DPOAE (blue open circles)
     this.svg.selectAll('.dot')
-      .data(filteredData.Frequency)
+      .data(filteredData['F2Frequency'])
       .enter()
       .append('circle')
-      .attr('cx', (d, i) => this.xScale(filteredData.Frequency[i]))
-      .attr('cy', (d, i) => this.yScale(filteredData.Amplitude[i]))
+      .attr('cx', (d, i) => this.xScale(filteredData['F2Frequency'][i]))
+      .attr('cy', (d, i) => this.yScale(filteredData['Amplitude'][i]))
       .attr('r', 4)
       .style('fill', 'none')
       .style('stroke', 'blue')
@@ -153,11 +153,11 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
 
     // Plot DpLow NoiseFloor (red X)
     this.svg.selectAll('.cross')
-      .data(filteredData.Frequency)
+      .data(filteredData['F2Frequency'])
       .enter()
       .append('text')
-      .attr('x', (d, i) => this.xScale(filteredData.Frequency[i]))
-      .attr('y', (d, i) => this.yScale(filteredData.NoiseFloor[i]))
+      .attr('x', (d, i) => this.xScale(filteredData['F2Frequency'][i]))
+      .attr('y', (d, i) => this.yScale(filteredData['NoiseFloor'][i]))
       .attr('text-anchor', 'middle')
       .attr('alignment-baseline', 'middle')
       .style('fill', 'red')
@@ -167,17 +167,23 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
 
   }
 
-  private filterData(data: DPOAEDataInterface) {
-    const validIndices = data.Frequency
-      .map((freq, index) => (freq >= this.f2Start && freq <= this.f2End ? index : -1))
-      .filter(index => index !== -1);
-  
-    return {
-      Frequency: validIndices.map(index => data.Frequency[index]),
-      Amplitude: validIndices.map(index => data.Amplitude[index]),
-      Phase: validIndices.map(index => data.Phase[index]),
-      NoiseFloor: validIndices.map(index => data.NoiseFloor![index]),
+  private filterData(dpLowData: DPOAEDataInterface, f2Data: DPOAEDataInterface) {
+    let filteredData: { [key: string]: number[] } = {
+      Frequency: [],
+      F2Frequency: [],
+      Amplitude: [],
+      NoiseFloor: [],
     };
+    for (let i = 0; i < dpLowData.Frequency.length; i++) {
+      const freq = dpLowData.Frequency[i];
+      filteredData['Frequency'].push(freq);
+      filteredData['F2Frequency'].push(f2Data.Frequency[i]);
+      filteredData['Amplitude'].push(dpLowData.Amplitude[i]);
+      if (dpLowData['NoiseFloor'] && filteredData['NoiseFloor']) {
+        filteredData['NoiseFloor'].push(dpLowData.NoiseFloor[i]);
+      }
+    }
+    return filteredData
   }
 
   

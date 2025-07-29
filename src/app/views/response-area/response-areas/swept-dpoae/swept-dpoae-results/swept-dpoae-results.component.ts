@@ -203,7 +203,6 @@ export class SweptDpoaeResultsComponent implements AfterViewInit {
   
     // Update the DpLow frequencies for plotting
     filteredData.DpLow.F2Frequency = filteredData.F2.Frequency;
-    console.log("filteredData",filteredData);
     return filteredData;
   }
 }
