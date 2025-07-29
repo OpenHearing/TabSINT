@@ -3,16 +3,24 @@ import { CommonResponseAreaInterface } from "../../../../../interfaces/page-defi
 export interface SweptDpoaeInterface extends CommonResponseAreaInterface {
   exportToCSV?: boolean;
   tabsintId?: string;
-  f2Start?: number,
-  f2End?: number,
-  frequencyRatio?: number,
-  sweepDuration?: number,
-  windowDuration?: number,
-  sweepType?: 'log' | 'linear',
-  minSweeps?: number,
-  maxSweeps?: number,
-  noiseFloorThreshold?: number,
-  outputRawMeasurements?: boolean,
+  outputChannel1?: string;
+  outputChannel2?: string;
+  inputChannel?: string;
+  f2Start?: number;
+  f2End?: number;
+  ratio?: number;
+  sweepDuration?: number;
+  sweepType?: 'log' | 'linear';
+  l1?: number;
+  l2?:  number;
+  minSweeps?: number;
+  maxSweeps?: number;
+  noiseFloorThreshold?: number;
+  SNRThreshold?: number;
+  windowDuration?: number;
+  numFrequencies?: number;
+  filename?: string;
+  outputRawMeasurements?: boolean;
   showResults?: boolean;
   normativeDataPath?: string;
 }

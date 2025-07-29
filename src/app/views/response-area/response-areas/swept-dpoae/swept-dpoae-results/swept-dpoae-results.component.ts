@@ -71,10 +71,10 @@ export class SweptDpoaeResultsComponent implements AfterViewInit {
 
     // Plot DpLow Amplitude (blue line)
     svg.selectAll('.dot')
-      .data(filteredData.DpLow.Frequency)
+      .data(filteredData.DpLow.F2Frequency)
       .enter()
       .append('circle')
-      .attr('cx', (d, i) => this.xScale(filteredData.DpLow.Frequency[i]))
+      .attr('cx', (d, i) => this.xScale(filteredData.DpLow.F2Frequency[i]))
       .attr('cy', (d, i) => yScale(filteredData.DpLow.Amplitude[i]))
       .attr('r', 4)
       .style('fill', 'none')
@@ -83,10 +83,10 @@ export class SweptDpoaeResultsComponent implements AfterViewInit {
 
     // Plot Noise Floor (dashed red line)
     svg.selectAll('.dot')
-      .data(filteredData.DpLow.Frequency)
+      .data(filteredData.DpLow.F2Frequency)
       .enter()
       .append('circle')
-      .attr('cx', (d, i) => this.xScale(filteredData.DpLow.Frequency[i]))
+      .attr('cx', (d, i) => this.xScale(filteredData.DpLow.F2Frequency[i]))
       .attr('cy', (d, i) => yScale(filteredData.DpLow.NoiseFloor[i]))
       .attr('r', 4)
       .style('fill', 'none')
@@ -124,7 +124,7 @@ export class SweptDpoaeResultsComponent implements AfterViewInit {
       .y(d => yScale(d.amplitude)) // Map y values
       .curve(d3.curveLinear); // smoothing
 
-    const lineData = filteredData.DpLow.Frequency.map((frequency, i) => ({
+    const lineData = filteredData.DpLow.F2Frequency.map((frequency, i) => ({
       frequency,
       amplitude: filteredData.DpLow.Amplitude[i],
     }));
@@ -152,7 +152,7 @@ export class SweptDpoaeResultsComponent implements AfterViewInit {
   private filterSweptDpoaeResults(
     data: SweptDpoaeResultsInterface
   ): {
-    DpLow: { Frequency: number[]; Amplitude: number[]; NoiseFloor: number[] };
+    DpLow: { Frequency: number[]; F2Frequency: number[]; Amplitude: number[]; NoiseFloor: number[] };
     F2: { Frequency: number[]; Amplitude: number[] };
     F1: { Frequency: number[]; Amplitude: number[] };
   } {
@@ -160,6 +160,7 @@ export class SweptDpoaeResultsComponent implements AfterViewInit {
     const filteredData = {
       DpLow: {
         Frequency: [],
+        F2Frequency: [],
         Amplitude: [],
         NoiseFloor: [],
       },
@@ -180,12 +181,10 @@ export class SweptDpoaeResultsComponent implements AfterViewInit {
     ) => {
       for (let i = 0; i < source.Frequency.length; i++) {
         const freq = source.Frequency[i];
-        if (freq >= this.f2Start && freq <= this.f2End) {
-          target.Frequency.push(freq);
-          target.Amplitude.push(source.Amplitude[i]);
-          if (source.NoiseFloor && target.NoiseFloor) {
-            target.NoiseFloor.push(source.NoiseFloor[i]);
-          }
+        target.Frequency.push(freq);
+        target.Amplitude.push(source.Amplitude[i]);
+        if (source.NoiseFloor && target.NoiseFloor) {
+          target.NoiseFloor.push(source.NoiseFloor[i]);
         }
       }
     }
@@ -202,6 +201,9 @@ export class SweptDpoaeResultsComponent implements AfterViewInit {
       filterAndPush(data.F1, filteredData.F1);
     }
   
+    // Update the DpLow frequencies for plotting
+    filteredData.DpLow.F2Frequency = filteredData.F2.Frequency;
+    console.log("filteredData",filteredData);
     return filteredData;
   }
 }

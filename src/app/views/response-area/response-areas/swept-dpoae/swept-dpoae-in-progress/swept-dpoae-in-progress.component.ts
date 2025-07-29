@@ -81,8 +81,8 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
     const pollResults = async () => {
       if (this.shouldAbort) return;
   
-      this.isRequestingResults = true;  
-      let resp = await this.devicesService.requestResults(this.device!, 300000);  
+      this.isRequestingResults = true;
+      let resp = await this.devicesService.requestResults(this.device!, 300000);
       this.isRequestingResults = false;
   
       if (this.shouldAbort) return;
