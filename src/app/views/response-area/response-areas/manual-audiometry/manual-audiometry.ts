@@ -138,7 +138,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         this.maskingLevel += amount;
         if (this.maskingLevel > 50) this.maskingLevel = 50;
         if (this.maskingLevel < -50) this.maskingLevel = -50;
-        await this.submitAudiometryExam()
+        await this.manualAudiometryExamSubmission();
     }
     async playTone() {
         this.isPlaying = true;
@@ -147,7 +147,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
             playButton.classList.add('button-pressed');
         }
         
-        await this.submitAudiometryExam();
+        await this.manualAudiometryExamSubmission();
         
         setTimeout(() => {
             this.isPlaying = false;
@@ -158,12 +158,11 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     }
 
     noResponse(): void {
-        this.updateThreshold(this.selectedEar, this.selectedFrequency, this.currentDbSpl, ResultType.Beyond);
+        this.updateThreshold(this.selectedEar, this.selectedFrequency, this.currentDb, ResultType.Beyond);
     }
 
     recordThreshold(): void {
-        const resultType =
-          this.currentDbSpl <= (this.minOutputLevel+this.adjustmentStepSize) ? ResultType.Better : ResultType.Threshold;
+        const resultType = this.currentDbSpl <= (this.minOutputLevel+this.adjustmentStepSize) ? ResultType.Better : ResultType.Threshold;
         this.updateThreshold(this.selectedEar, this.selectedFrequency, this.currentDb, resultType);
     }
 
@@ -287,7 +286,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         }, 0);
     }
 
-    private async submitAudiometryExam() {
+    private async manualAudiometryExamSubmission() {
         let examProperties = {
             "F": this.selectedFrequency,
             "Level": this.currentDbSpl,
@@ -295,7 +294,17 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
             // "PlayStimulus": this.isPlaying, --> only needed with masking
             // "MaskerLevel": this.maskingLevel
         };
-        let resp = await this.devicesService.examSubmission(this.device!, examProperties);
+        let ignore_error_msg = "Error executing examSubmission: Requested frequency outside calibration";
+        let resp = await this.devicesService.examSubmission(this.device!, examProperties, [ignore_error_msg]);
+        if (resp && resp[1]=="ERROR" && resp[2]==ignore_error_msg) {
+            this.notifications
+                .alert({
+                    title: "Alert",
+                    content: `The frequency requested does not have a calibration. Please update the calibration or play tones with valid calibrations.`,
+                    type: DialogType.Alert,
+                })
+                .subscribe();
+        }
         this.logger.debug("resp from tympan after manual audiometry exam submission:" + resp);
     }
 
