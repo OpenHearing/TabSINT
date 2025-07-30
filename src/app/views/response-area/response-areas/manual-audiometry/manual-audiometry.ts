@@ -232,8 +232,6 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         const adjustment = snappedDb - tempDb;
         this.currentDb = snappedDb;
         this.currentDbSpl += adjustment;
-        console.log("this.currentDb",this.currentDb);
-        console.log("this.currentDbSpl",this.currentDbSpl);
     }
 
     private getRetsplAtFrequency(frequency: number): number {
