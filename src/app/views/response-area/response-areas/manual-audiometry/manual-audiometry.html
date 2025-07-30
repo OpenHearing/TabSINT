@@ -68,7 +68,7 @@
           <div class="tone-display">
             <div class="tone-value">
               <ng-container *ngIf="currentDbSpl <= (minOutputLevel+adjustmentStepSize) || currentDbSpl >= (maxOutputLevel-adjustmentStepSize)">
-                ({{ currentDb }})
+                ({{ currentDb }}+)
               </ng-container>
               <ng-container *ngIf="currentDbSpl > (minOutputLevel+adjustmentStepSize) && currentDbSpl < (maxOutputLevel-adjustmentStepSize)">
                 {{ currentDb }}

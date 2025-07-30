@@ -158,12 +158,15 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     }
 
     noResponse(): void {
-        this.updateThreshold(this.selectedEar, this.selectedFrequency, this.currentDbSpl, ResultType.Beyond);
+        // let dbSPLResponse = this.currentDbSpl < 100 ? this.currentDbSpl : 100;
+        this.updateThreshold(this.selectedEar, this.selectedFrequency, this.currentDb, ResultType.Beyond);
     }
 
     recordThreshold(): void {
-        const resultType =
-          this.currentDbSpl <= (this.minOutputLevel+this.adjustmentStepSize) ? ResultType.Better : ResultType.Threshold;
+        const resultType = this.currentDbSpl <= (this.minOutputLevel+this.adjustmentStepSize) ? ResultType.Better : ResultType.Threshold;
+        console.log("this.currentDb",this.currentDb);
+        console.log("this.currentDbSpl",this.currentDbSpl);
+        console.log("resultType",resultType);
         this.updateThreshold(this.selectedEar, this.selectedFrequency, this.currentDb, resultType);
     }
 
@@ -233,6 +236,8 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         const adjustment = snappedDb - tempDb;
         this.currentDb = snappedDb;
         this.currentDbSpl += adjustment;
+        console.log("this.currentDb",this.currentDb);
+        console.log("this.currentDbSpl",this.currentDbSpl);
     }
 
     private getRetsplAtFrequency(frequency: number): number {
