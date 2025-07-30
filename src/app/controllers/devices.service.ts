@@ -87,10 +87,16 @@ export class DevicesService {
         this.deviceUtil.removeDevice(device);
     }
 
-    async deviceErrorHandler(resp: Array<any> | undefined) {
+    async deviceErrorHandler(resp: Array<any> | undefined, ignoreErrors: Array<string> = []) {
         if (resp && resp[1] === "ERROR") {
-            this.state.examState = ExamState.DeviceError;
-            this.state.deviceError = resp;
+            if (ignoreErrors) {
+                if (ignoreErrors.includes(resp[2])) {
+                    // ignore the error
+                }
+            } else {
+                this.state.examState = ExamState.DeviceError;
+                this.state.deviceError = resp;
+            }
         }
     }
 
@@ -139,7 +145,7 @@ export class DevicesService {
         return resp
     }
 
-    async examSubmission(device: ConnectedDevice, examProperties: object) {
+    async examSubmission(device: ConnectedDevice, examProperties: object, ignoreErrors: Array<string> = []) {
         let resp: Array<any> | undefined;
         if (isTympanDevice(device)) {
             let msgId = device.msgId.toString();
@@ -150,7 +156,8 @@ export class DevicesService {
             this.logger.error("Unsupported device type: "+JSON.stringify(device.type));
         }
 
-        await this.deviceErrorHandler(resp);
+        // need to handle this but its inside of the examsubmission call...
+        await this.deviceErrorHandler(resp, ignoreErrors);
         return resp
     }
 
