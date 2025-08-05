@@ -29,6 +29,7 @@ export class WAIResultsComponent implements AfterViewInit {
       .append('svg')
           .attr('width', this.width + this.margin.left + this.margin.right + this.margin.spacerW)
           .attr('height', this.height + this.margin.top + this.margin.bottom + this.margin.spacerH);
+    const xRangeTicks = this.xTicks.filter(tick => tick >= Math.min(...xRange) && tick <= Math.max(...xRange));
 
     // Define definitions for the svg
     const defs = svg.append("defs");
@@ -109,7 +110,7 @@ export class WAIResultsComponent implements AfterViewInit {
         "chartY": y, 
         "chartWidth": w, 
         "chartHeight": h, 
-        "xTicks": this.xTicks, 
+        "xTicks": xRangeTicks, 
         "xScale": xScale, 
         "yScale": yScale, 
         "yAxisFormat": yAxisFormat, 
