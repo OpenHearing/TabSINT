@@ -10,7 +10,7 @@ import * as XLSX from 'xlsx';
  * @param actualHeaders The headers read from the file
  * @param expectedPositions The expected headers which align with data properties
  */
-function validateHeaders(actualHeaders: string[], expectedPositions: { [key: string]: number }) {
+function validateHeaders(actualHeaders: string[], expectedPositions: { [key: string]: number; }) {
   for (const [expectedHeader, expectedIndex] of Object.entries(expectedPositions)) {
     if (actualHeaders[expectedIndex] !== expectedHeader) {
       throw new Error(`Header validation failed: Expected "${expectedHeader}" at index ${expectedIndex}, but found "${actualHeaders[expectedIndex]}"`);
@@ -36,19 +36,19 @@ async function parseXlsxBuffer(xlsxFileContent: ArrayBuffer): Promise<NormativeD
   const lines: any[][] = XLSX.utils.sheet_to_json(workSheet, { header: 1 });
   const headerIndex = lines.findIndex((line) => line[0].startsWith('X'));
   const header = lines[headerIndex];
-  const expectedHeaderPositions: { [key: string]: number } = {
+  const expectedHeaderPositions: { [key: string]: number; } = {
     'X': 0,
-    'Y_MEAN': 1,
-    'Y_SD': 2,
+    'Y_MIN': 1,
+    'Y_MAX': 2,
   };
   validateHeaders(header, expectedHeaderPositions);
 
   lines.slice(headerIndex + 1).forEach((line: any[], idx: number) => {
     if (line.length >= 3) {
       dataList.push({
-        x: line[0],
-        yMin: line[1] - line[2],
-        yMax: line[1] + line[2],
+        x: parseFloat(line[0]),
+        yMin: parseFloat(line[1]),
+        yMax: parseFloat(line[2]),
       });
     }
   });
