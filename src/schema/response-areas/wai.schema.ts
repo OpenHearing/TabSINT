@@ -9,6 +9,7 @@ export const waiSchema: JSONSchemaType<WAIInterface> = {
     type: { type: "string", enum: ["WAIResponseArea"] },
     exportToCSV: { type: "boolean", nullable: true, default: false },
     tabsintId: { type: "string", nullable: true, default: "1" },
+    outputCalibrationType: { type: "string", nullable: true, default: "SPL" },
     fStart: { type: "number", nullable: true, default: 1000 },
     fEnd: { type: "number", nullable: true, default: 8000 },
     sweepDuration: { type: "number", nullable: true, default: 6, description: "Duration of sweep, not including start and end ramps. In seconds." },

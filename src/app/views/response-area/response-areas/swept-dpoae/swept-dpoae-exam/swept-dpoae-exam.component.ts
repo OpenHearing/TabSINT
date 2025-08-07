@@ -17,6 +17,7 @@ import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-
 import { NormativeDataInterface } from '../../../../../interfaces/normative-data-interface';
 import { loadNormativeDataXlsx } from '../../../../../utilities/load-normative-data-xlsx';
 import { ProtocolMetaInterface } from '../../../../../models/protocol/protocol.interface';
+import { handleOutputCalibration } from '../../../../../utilities/exam-helper-functions';
 
 @Component({
   selector: 'swept-dpoae-exam',
@@ -25,6 +26,7 @@ import { ProtocolMetaInterface } from '../../../../../models/protocol/protocol.i
 })
 export class SweptDpoaeExamComponent implements OnInit, OnDestroy {  
   tabsintId: string = sweptDpoaeSchema.properties.tabsintId.default;
+  outputCalibrationType: string = sweptDpoaeSchema.properties.outputCalibrationType.default;
   outputChannel1: string = sweptDpoaeSchema.properties.outputChannel1.default;
   outputChannel2: string = sweptDpoaeSchema.properties.outputChannel2.default;
   inputChannel: string = sweptDpoaeSchema.properties.inputChannel.default;
@@ -82,6 +84,7 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
       if (updatedPage?.responseArea?.type === 'sweptDPOAEResponseArea') {
         const responseArea = updatedPage.responseArea as SweptDpoaeInterface;
         this.tabsintId = responseArea.tabsintId ?? this.tabsintId;
+        this.outputCalibrationType = responseArea.outputCalibrationType ?? this.outputCalibrationType;
         this.outputChannel1 = responseArea.outputChannel1 ?? this.outputChannel1;
         this.outputChannel2 = responseArea.outputChannel2 ?? this.outputChannel2;
         this.inputChannel = responseArea.inputChannel ?? this.inputChannel;
@@ -162,8 +165,8 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
     this.device = this.deviceUtil.getDeviceFromTabsintId(this.tabsintId);
     if (this.device) {
         const examProperties = {
-          OutputChannel1: this.outputChannel1,
-          OutputChannel2: this.outputChannel2,
+          OutputChannel1: handleOutputCalibration(this.outputChannel1, this.outputCalibrationType), 
+          OutputChannel2: handleOutputCalibration(this.outputChannel2, this.outputCalibrationType),
           InputChannel: this.inputChannel,
           F2Start: this.f2Start,
           F2End: this.f2End,

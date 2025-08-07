@@ -3,6 +3,7 @@ import { CommonResponseAreaInterface } from "../../../../../interfaces/page-defi
 export interface SweptDpoaeInterface extends CommonResponseAreaInterface {
   exportToCSV?: boolean;
   tabsintId?: string;
+  outputCalibrationType?: string;
   outputChannel1?: string;
   outputChannel2?: string;
   inputChannel?: string;

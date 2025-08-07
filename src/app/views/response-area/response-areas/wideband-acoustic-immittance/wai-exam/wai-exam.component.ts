@@ -15,6 +15,7 @@ import { ConnectedDevice } from '../../../../../interfaces/connected-device.inte
 import { waiSchema } from '../../../../../../schema/response-areas/wai.schema';
 import { loadNormativeDataXlsx } from '../../../../../utilities/load-normative-data-xlsx';
 import { ProtocolMetaInterface } from '../../../../../models/protocol/protocol.interface';
+import { handleOutputCalibration } from '../../../../../utilities/exam-helper-functions';
 
 @Component({
   selector: 'wai-exam',
@@ -23,6 +24,7 @@ import { ProtocolMetaInterface } from '../../../../../models/protocol/protocol.i
 })
 export class WAIExamComponent implements OnInit, OnDestroy {
   tabsintId: string = waiSchema.properties.tabsintId.default;
+  outputCalibrationType: string = waiSchema.properties.outputCalibrationType.default;
   fStart: number = waiSchema.properties.fStart.default;
   fEnd: number = waiSchema.properties.fEnd.default;
   sweepDuration: number = waiSchema.properties.sweepDuration.default;
@@ -76,6 +78,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
       if (updatedPage?.responseArea?.type === 'WAIResponseArea') {
         const responseArea = updatedPage.responseArea as WAIInterface;
         this.tabsintId = responseArea.tabsintId ?? this.tabsintId;
+        this.outputCalibrationType = responseArea.outputCalibrationType ?? this.outputCalibrationType;
         this.fStart = responseArea.fStart ?? this.fStart;
         this.fEnd = responseArea.fEnd ?? this.fEnd;
         this.sweepDuration = responseArea.sweepDuration ?? this.sweepDuration;
@@ -162,7 +165,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
         NumFrequencies: this.numFrequencies,
         Filename: this.filename,
         OutputRawMeasurements: this.outputRawMeasurements,
-        OutputChannel: this.outputChannel,
+        OutputChannel: handleOutputCalibration(this.outputChannel, this.outputCalibrationType),
         InputChannels: this.inputChannels,
         AurenInsideDiameter: this.aurenInsideDiameter,
         AurenLength: this.aurenLength,

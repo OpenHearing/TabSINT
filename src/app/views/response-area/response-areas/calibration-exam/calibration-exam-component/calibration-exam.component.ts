@@ -76,7 +76,8 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
           this.showResults = calibrationResponse.showResults ?? true;
           this.device = this.deviceUtil.getDeviceFromTabsintId(calibrationResponse.tabsintId ?? "1");
           if (this.device) {
-            let resp = await this.devicesService.queueExam(this.device, "HNCalibration", { "OutputChannel": this.earCup == "Left" ? "HPL0" : "HPR0" });
+            // let resp = await this.devicesService.queueExam(this.device, "HNCalibration", { "OutputChannel": this.earCup == "Left" ? "HPL0" : "HPR0" });
+            let resp = await this.devicesService.requestId(this.device);
             this.logger.debug("resp from tympan after calibration exam queue exams:" + resp);
           } else {
             await this.devicesService.deviceNotFound();

@@ -360,7 +360,8 @@
             "maxSweeps": 24,
             "numFrequencies": 64,
             "noiseFloorThreshold": -10,
-            "outputRawMeasurements": false
+            "outputRawMeasurements": false,
+            "outputCalibrationType": "SPL"
           }
         },
         {
@@ -379,7 +380,8 @@
             "type": "WAIResponseArea",
             "fStart": 500,
             "fEnd": 4000,
-            "normativeAbsorbanceDataPath": "wai-normative-absorbance-data-human.xlsx"
+            "normativeAbsorbanceDataPath": "wai-normative-absorbance-data-human.xlsx",
+            "outputCalibrationType": "SPL"
           }
         },
         {

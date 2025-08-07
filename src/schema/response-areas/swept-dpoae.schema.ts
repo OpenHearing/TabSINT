@@ -9,6 +9,7 @@ export const sweptDpoaeSchema: JSONSchemaType<SweptDpoaeInterface> = {
     type: { type: "string", enum: ["sweptDPOAEResponseArea"] },
     exportToCSV: { type: "boolean", nullable: true, default: false },
     tabsintId: { type: "string", nullable: true, default: "1" },
+    outputCalibrationType: { type: "string", nullable: true, default: "SPL" },
     outputChannel1: { type: "string", nullable: true, default: "HPL0" },
     outputChannel2: { type: "string", nullable: true, default: "HPR0" },
     inputChannel: { type: "string", nullable: true, default: "JACK_AS_MIC" },

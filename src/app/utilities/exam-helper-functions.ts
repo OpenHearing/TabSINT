@@ -42,3 +42,13 @@ export function checkForSpecialReference(id: string | undefined) {
     }
     return hasSpecialReference
 }
+
+export function handleOutputCalibration(outputChannel: string, outputCalibrationType: string): string {
+    let newOutputChannel: string = outputChannel;
+    if (outputCalibrationType == "FPL") {
+      newOutputChannel = "FPL/" + outputChannel;
+    } else if (outputCalibrationType == "SPL") {
+      newOutputChannel = outputChannel;
+    }
+    return newOutputChannel
+  }

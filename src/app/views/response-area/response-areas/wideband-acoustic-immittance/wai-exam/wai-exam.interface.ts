@@ -3,6 +3,7 @@ import { CommonResponseAreaInterface } from "../../../../../interfaces/page-defi
 export interface WAIInterface extends CommonResponseAreaInterface {
   exportToCSV?: boolean;
   tabsintId?: string;
+  outputCalibrationType?: string;
   fStart?: number,
   fEnd?: number,
   sweepDuration?: number,
