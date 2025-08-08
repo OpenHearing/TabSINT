@@ -24,7 +24,7 @@ export const sweptDpoaeSchema: JSONSchemaType<SweptDpoaeInterface> = {
     noiseFloorThreshold: { type: "number", nullable: true, default: -10, description: "Early stopping criterion based on the DPlow noise floor." },
     SNRThreshold: { type: "number", nullable: true, default: 10, description: "Early stopping criterion based on the difference between DPlow and the DPlow noise floor." },
     windowDuration: { type: "number", nullable: true, default: 0.125, description: "Span of analysis windows for least-squares fit. In seconds." },
-    numFrequencies: { type: "number", nullable: true, default: 512, description: "Number of frequencies in the returned data. Spaced across the range of F2, F1, and Fdp values in the sweep. Frequencies are spaced using the same function as the SweepType." },
+    numFrequencies: { type: "number", nullable: true, default: 128, description: "Number of frequencies in the returned data. Spaced across the range of F2, F1, and Fdp values in the sweep. Frequencies are spaced using the same function as the SweepType." },
     filename: { type: "string", nullable: true, default: "", description: "Filename to use to store full waveform" },
     outputRawMeasurements: { type: "boolean", nullable: true, default: false },
     showResults: { type: "boolean", nullable: true, default: true },

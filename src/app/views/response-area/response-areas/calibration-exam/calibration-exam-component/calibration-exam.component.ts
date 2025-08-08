@@ -23,8 +23,8 @@ import { CalibrationResultsViewerComponent } from '../calibration-results-viewer
 })
 export class CalibrationExamComponent implements OnInit, OnDestroy {
   @ViewChild(CalibrationResultsViewerComponent) resultsViewer!: CalibrationResultsViewerComponent;
-  @ViewChild(MeasurementScreenComponent) measurementScreen!: MeasurementScreenComponent
-  @ViewChild(MaxOutputScreenComponent) maxOutputScreen!: MaxOutputScreenComponent
+  @ViewChild(MeasurementScreenComponent) measurementScreen!: MeasurementScreenComponent;
+  @ViewChild(MaxOutputScreenComponent) maxOutputScreen!: MaxOutputScreenComponent;
   @Output() buttonTextChange = new EventEmitter<string>();
   showSkipButton: boolean = false;
   frequencies: number[] = [];
@@ -56,12 +56,8 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     private readonly buttonTextService: ButtonTextService
   ) {
     this.results = this.resultsModel.getResults()
-    this.examService.submit = () => {
-      this.nextStep();
-    };;
-    this.examService.back = () => {
-      this.previousStep();
-    };;
+    this.examService.submit = () => { this.nextStep(); };
+    this.examService.back = () => { this.previousStep(); };
   }
 
   ngOnInit(): void {
