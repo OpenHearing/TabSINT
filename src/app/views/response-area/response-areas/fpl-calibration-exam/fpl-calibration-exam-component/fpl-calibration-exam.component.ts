@@ -1,6 +1,7 @@
-import { Component, OnInit, OnDestroy} from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { BehaviorSubject, Subscription } from 'rxjs';
+
 import { PageModel } from "../../../../../models/page/page.service";
-import { Subscription } from 'rxjs';
 import { FPLCalibrationExamInterface } from './fpl-calibration-exam.interface';
 import { PageInterface } from "../../../../../models/page/page.interface";
 import { DevicesService } from '../../../../../controllers/devices.service';
@@ -13,6 +14,7 @@ import { ExamService } from '../../../../../controllers/exam.service';
 import { ButtonTextService } from '../../../../../controllers/button-text.service';
 import { FPLcalibrationExamSchema } from '../../../../../../schema/response-areas/fpl-calibration-exam.schema';
 import { waiSchema } from '../../../../../../schema/response-areas/wai.schema';
+import { WAIResultsInterface } from '../../wideband-acoustic-immittance/wai-exam/wai-exam.interface';
 
 @Component({
   selector: 'app-fpl-calibration-exam',
@@ -28,6 +30,14 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   results: ResultsInterface;
   navigationHistory: { step: string; outputChannel: string; }[] = [];
   outputChannelIndex: number = 0;
+  shouldAbort: boolean = false;
+  isRequestingResults: boolean = false;
+  inProgressResults: WAIResultsInterface = {
+    State: 'READY',
+    PctComplete: 0
+  };
+  inProgressResultsSubject = new BehaviorSubject<WAIResultsInterface>(this.inProgressResults);
+  inProgressResultsSubscription: Subscription | undefined;
 
   // Default to WAI default, but this will be overwritten with FPL response area values
   outputChannels: string[] = [];
@@ -56,7 +66,9 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   writeFPLCalibration: boolean = true;
   returnResultData: boolean = false;
 
-  constructor(private readonly pageModel: PageModel,
+  constructor(
+    private readonly changeDetectorRef: ChangeDetectorRef,
+    private readonly pageModel: PageModel,
     private readonly devicesService: DevicesService,
     private readonly deviceUtil: DeviceUtil, 
     private readonly logger: Logger, 
@@ -68,12 +80,6 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
     this.examService.submit = () => { this.nextStep(); };
     this.examService.back = () => { this.previousStep(); };
   }
-
-  // landing page with a start button
-  // once started, have an obvious in progress message with abort option
-  // once completed, ability to restart or confirm
-  // optional back button
-
 
   ngOnInit(): void {
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
@@ -87,9 +93,8 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
         this.sweepDuration = responseArea.sweepDuration ?? this.sweepDuration;
         this.device = this.deviceUtil.getDeviceFromTabsintId(responseArea.tabsintId ?? "1");
         if (!this.device) {
-          // await this.devicesService.deviceNotFound();
-          // this.logger.error("Error setting up FPL Calibration exam, device not found.");
-          console.log("debug mode, no device connected");
+          await this.devicesService.deviceNotFound();
+          this.logger.error("Error setting up FPL Calibration exam, device not found.");
         }
         if (this.outputChannels.length < 1) {
           this.logger.error("Error setting up FPL Calibration exam, no outputChannel(s) specified.");
@@ -100,17 +105,16 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   }
 
   async ngOnDestroy(): Promise<void> {
-    // let resp = await this.devicesService.abortExams(this.device!);
-    // this.logger.debug("resp from tympan after fpl calibration exam abort exams:" + resp);
-    // this.examService.submit = this.examService.submitDefault.bind(this.examService);
-    // this.examService.back = this.examService.back.bind(this.examService);
-    // this.pageSubscription?.unsubscribe();
-    // this.tympanSubscription?.unsubscribe();
-    // this.buttonTextService.updateButtonText("Submit");
+    let resp = await this.devicesService.abortExams(this.device!);
+    this.logger.debug("resp from tympan after fpl calibration exam abort exams:" + resp);
+    this.examService.submit = this.examService.submitDefault.bind(this.examService);
+    this.examService.back = this.examService.back.bind(this.examService);
+    this.pageSubscription?.unsubscribe();
+    this.tympanSubscription?.unsubscribe();
+    this.buttonTextService.updateButtonText("Submit");
   }
 
   async startWAIExam() {
-    this.device = this.deviceUtil.getDeviceFromTabsintId(this.tabsintId);
     if (this.device) {
       const examProperties: any = {
         OutputChannel: this.outputChannel,
@@ -132,19 +136,73 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
         WriteFPLCalibration: this.writeFPLCalibration,
         ReturnResultData: this.returnResultData,
       };
-      await this.devicesService.queueExam(this.device, "WAI", examProperties);
+      let resp = await this.devicesService.queueExam(this.device, "WAI", examProperties);
+      if (resp![1] != "ERROR") {
+        await this.waitForWAIExamCompletion();
+      }
     } else {
       await this.devicesService.deviceNotFound();
-      this.logger.error("Error setting up WAI exam");
+      this.logger.error("Error setting up WAI exam during FPL calibration");
     }
   }
 
   async abortWAIExam() {
-    // abort WAI exam
+    let resp = await this.devicesService.abortExams(this.device!);
+    this.logger.debug("resp from tympan after fpl calibration exam abort exams:" + resp);
   }
 
   async waitForWAIExamCompletion() {
-    // Poll until WAI exam completes
+    const pollResults = async () => {
+      if (this.shouldAbort) return;
+  
+      this.isRequestingResults = true;  
+      let resp = await this.devicesService.requestResults(this.device!, 300000);
+      // TODO: check if we need to stop requesting if it fails? same for WAI?
+      this.isRequestingResults = false;
+  
+      if (this.shouldAbort) return;
+  
+      if (this.doesRespContainResults(resp)) {
+        this.inProgressResultsSubject.next(resp![1]);
+        if (this.inProgressResults.State === 'DONE') {
+          // this.state.isSubmittable = true;
+          this.changeDetectorRef.detectChanges();
+          return;
+        }
+      } else {
+        this.logger.debug('WAI in-progress component. Request results did not return expected results. It may be too early to receive results.');
+      }
+  
+      setTimeout(pollResults, 1000);
+    };
+  
+    pollResults();
+  }
+
+  async abort() {
+    this.waitForRequestResultsDone();
+    await this.devicesService.abortExams(this.device!);
+    this.updateStateOnAbort();
+  }
+
+  private doesRespContainResults(resp: any[] | undefined) {
+    return resp !== undefined && 
+           resp.length > 1 && 
+           resp[1] !== 'ERROR' && 
+           resp[2] !== 'timeout' &&
+           resp[1] !== 'OK';
+  }
+  
+  private async waitForRequestResultsDone() {
+    this.shouldAbort = true;
+    while (this.isRequestingResults) {
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    }  
+  }
+
+  private updateStateOnAbort() {
+    // this.state.isSubmittable = true;
+    this.inProgressResults.State = 'ABORTED';
   }
 
   updateButtonLabel(): void {

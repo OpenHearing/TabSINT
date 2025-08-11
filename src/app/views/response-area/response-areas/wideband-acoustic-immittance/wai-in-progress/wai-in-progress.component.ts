@@ -48,6 +48,7 @@ export class WAIInProgressComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.inProgressResultsSubscription?.unsubscribe();
     this.state.isSubmittable = true;
   }
 

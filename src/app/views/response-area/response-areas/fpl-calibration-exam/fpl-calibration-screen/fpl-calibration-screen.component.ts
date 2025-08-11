@@ -8,10 +8,9 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 })
 export class FPLCalibrationScreenComponent {
   @Input() outputChannel: string = "";
+  @Input() PctComplete: number = 0;
   @Output() runCalibration = new EventEmitter<void>();
   @Output() abortCalibration = new EventEmitter<void>();
-  @Output() waitForWAIExam = new EventEmitter<void>();
-  @Output() nextStep = new EventEmitter<void>();
 
   calibrate(): void {
     this.runCalibration.emit();
@@ -19,14 +18,6 @@ export class FPLCalibrationScreenComponent {
 
   abort(): void {
     this.abortCalibration.emit();
-  }
-
-  waitForWAIExamCompletion(): void {
-    this.waitForWAIExam.emit();
-  }
-
-  next(): void {
-    this.nextStep.emit();
   }
 
 }

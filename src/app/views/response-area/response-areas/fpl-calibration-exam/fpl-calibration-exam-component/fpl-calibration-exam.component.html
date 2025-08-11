@@ -7,10 +7,9 @@
   <app-fpl-calibration-screen
     *ngSwitchCase="'calibration'"
     [outputChannel]="outputChannel"
+    [PctComplete]="inProgressResults.PctComplete"
     (runCalibration)="startWAIExam()"
-    (abortCalibration)="abortWAIExam()"
-    (waitForWAIExam)="waitForWAIExamCompletion()"
-    (nextStep)="nextStep()">
+    (abortCalibration)="abort()">
   </app-fpl-calibration-screen>
 
 </div>
