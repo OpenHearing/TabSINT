@@ -9,6 +9,7 @@ import { textBoxResultViewerSchema, textBoxSchema } from "./response-areas/textb
 import { multipleChoiceSchema } from "./response-areas/multiple-choice.schema";
 import { manualAudiometrySchema } from "./response-areas/manual-audiometry.schema";
 import { calibrationExamSchema } from "./response-areas/calibration-exam.schema";
+import { FPLcalibrationExamSchema } from "./response-areas/fpl-calibration-exam.schema";
 import { multipleInputSchema } from "./response-areas/multiple-input.schema";
 import { likertSchema } from "./response-areas/likert.schema";
 import { sweptDpoaeSchema } from "./response-areas/swept-dpoae.schema";
@@ -90,6 +91,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
           multipleInputSchema,
           manualAudiometrySchema,
           calibrationExamSchema,
+          FPLcalibrationExamSchema,
           likertSchema,
           sweptDpoaeSchema,
           waiSchema,
@@ -99,7 +101,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
         required: ["type"],
         nullable: true
       },
-      submitText: { type: "string", nullable: true, default: "Submit" },
+      submitText: { type: "string", nullable: true },
       followOns: { type: "array", items: followOnSchema, nullable: true },
       setFlags: { type: "array", items: setFlagSchema, nullable: true }
     },

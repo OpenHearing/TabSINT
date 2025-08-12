@@ -44,7 +44,7 @@ export const pageInterfaceDefaults: PageInterface = {
     responseArea: {
         type: ''
     },
-    submitText: 'Begin',
+    submitText: undefined,
     // followOns: [],
     name: '',
     filename: '',

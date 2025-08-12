@@ -1,0 +1,20 @@
+<p class="instructions">
+  <span> 
+    Press Start Calibration to begin FPL calibration for {{ outputChannel }}
+  </span>
+</p>
+
+<div class="calibration-box" style="padding-top: 5em;">
+  <div class="button-container">
+    <button class="btn btn-block btn-lg btn-primary btn-centered" (click)="calibrate()" [disabled]="calibrationRunning && PctComplete!=100">Run Calibration</button>
+  </div>
+
+  <div class="calibration-running-container">
+    <mat-progress-bar mode="determinate" [value]="PctComplete"></mat-progress-bar>
+    <div class="progress-label"> {{ PctComplete }}% Completed </div>
+  </div>
+  
+  <div class="button-container">
+    <button class="btn btn-block btn-lg btn-danger btn-centered" (click)="abort()" [disabled]="!calibrationRunning || PctComplete==100">Abort Calibration</button>
+  </div>
+</div>

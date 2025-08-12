@@ -83,6 +83,8 @@ import { CalibrationExamComponent } from './views/response-area/response-areas/c
 import { CalibrationScreenComponent } from './views/response-area/response-areas/calibration-exam/calibration-screen/calibration-screen.component';
 import { MeasurementScreenComponent } from './views/response-area/response-areas/calibration-exam/measurement-screen/measurement-screen.component';
 import { MaxOutputScreenComponent } from './views/response-area/response-areas/calibration-exam/max-output-screen/max-output-screen.component';
+import { FPLCalibrationExamComponent } from './views/response-area/response-areas/fpl-calibration-exam/fpl-calibration-exam-component/fpl-calibration-exam.component';
+import { FPLCalibrationScreenComponent } from './views/response-area/response-areas/fpl-calibration-exam/fpl-calibration-screen/fpl-calibration-screen.component';
 import { DevicesService } from './controllers/devices.service';
 import { CalibrationResultsViewerComponent } from './views/response-area/response-areas/calibration-exam/calibration-results-viewer/calibration-results-viewer.component';
 import { ManualAudiometryResultViewerComponent } from './views/response-area/response-areas/manual-audiometry/manual-audiometry-result-viewer/manual-audiometry-result-viewer';
@@ -146,6 +148,8 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     CalibrationScreenComponent,
     MeasurementScreenComponent,
     MaxOutputScreenComponent,
+    FPLCalibrationExamComponent,
+    FPLCalibrationScreenComponent,
     CalibrationResultsViewerComponent,
     ExamDeviceErrorComponent,
     MultipleInputComponent,

@@ -89,10 +89,8 @@ export class DevicesService {
 
     async deviceErrorHandler(resp: Array<any> | undefined, ignoreErrors: Array<string> = []) {
         if (resp && resp[1] === "ERROR") {
-            if (ignoreErrors) {
-                if (ignoreErrors.includes(resp[2])) {
-                    // ignore the error
-                }
+            if (ignoreErrors?.includes(resp[2])) {
+                // ignore the error
             } else {
                 this.state.examState = ExamState.DeviceError;
                 this.state.deviceError = resp;
