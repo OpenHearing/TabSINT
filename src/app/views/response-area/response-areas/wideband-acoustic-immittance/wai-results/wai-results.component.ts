@@ -186,7 +186,6 @@ export class WAIResultsComponent implements AfterViewInit {
   private getImpedanceMagnitudeYAxisLimits(): [number,number] {
     let yMin: number = Math.min(...this.waiResults.ImpedanceAmp!);
     let yMax: number = Math.max(...this.waiResults.ImpedanceAmp!);
-    console.log("new impedance magnitude limits",yMin,yMax);
     return [yMin, yMax]
   }
 

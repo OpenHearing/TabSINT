@@ -18,7 +18,7 @@ const protocolSchemaBase: JSONSchemaType<ProtocolSchemaInterface> = {
     subtitle: { type: "string", nullable: true },
     instructionText: { type: "string", nullable: true },
     helpText: { type: "string", nullable: true },
-    submitText: { type: "string", default: "Submit", nullable: true },
+    submitText: { type: "string", nullable: true },
     tablet: { type: "string", nullable: true },
     headset: { type: "string", enum: ["VicFirth", "VicFirthS2", "HDA200", "WAHTS", "Audiometer", "EPHD1"], nullable: true, default: "VicFirth" },
     chaStream: { type: "boolean", default: false, nullable: true },

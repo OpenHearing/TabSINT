@@ -40,6 +40,9 @@
                 "id": "Calibration Exam"
               },
               {
+                "id": "FPL Calibration Exam"
+              },
+              {
                 "id": "Swept DPOAE Exam"
               },
               {
@@ -88,6 +91,12 @@
               "conditional": "result.response=='Calibration Exam'",
               "target": {
                 "reference": "CalibrationExam"
+              }
+            },
+            {
+              "conditional": "result.response=='FPL Calibration Exam'",
+              "target": {
+                "reference": "FPLCalibrationExam"
               }
             },
             {
@@ -322,11 +331,34 @@
         {
           "id": "calibration_001",
           "title": "Calibration Exam",
-          "enableBackButton" :true,
+          "enableBackButton": true,
           "responseArea": {
             "type": "calibrationResponseArea",
             "frequencies": [500, 1000],
             "targetLevels": [60, 70],
+            "showResults": true
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "FPLCalibrationExam",
+      "pages": [
+        {
+          "id": "fpl_calibration_001",
+          "title": "FPL Calibration Exam",
+          "enableBackButton": true,
+          "responseArea": {
+            "type": "fplCalibrationResponseArea",
+            "outputChannels": ["HPL1","HPR1"],
+            "fStart": 500,
+            "fEnd": 12000,
+            "sweepDuration": 6,
+            "numFrequencies": 64,
             "showResults": true
           }
         },
@@ -381,7 +413,12 @@
             "fStart": 500,
             "fEnd": 4000,
             "normativeAbsorbanceDataPath": "wai-normative-absorbance-data-human.xlsx",
-            "outputCalibrationType": "SPL"
+            "outputCalibrationType": "SPL",
+            "outputChannel": "HPL1",
+            "numFrequencies": 128,
+            "numSweeps": 5,
+            "windowDuration": 0.05,
+            "inputChannels": ["EPSHIELD_RIGHT_PDM_MIC1","EPSHIELD_LEFT_PDM_MIC2","EPSHIELD_LEFT_PDM_MIC1"]
           }
         },
         {

@@ -1,0 +1,15 @@
+<div [ngSwitch]="currentStep">
+
+  <div *ngSwitchCase="'landing'">
+    Press begin to start
+  </div>
+
+  <app-fpl-calibration-screen
+    *ngSwitchCase="'calibration'"
+    [outputChannel]="outputChannel"
+    [PctComplete]="inProgressResults.PctComplete"
+    (runCalibration)="startWAIExam()"
+    (abortCalibration)="abort()">
+  </app-fpl-calibration-screen>
+
+</div>

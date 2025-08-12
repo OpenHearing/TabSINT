@@ -41,6 +41,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
   aurenLength: number = waiSchema.properties.aurenLength.default;
   earCanalDiameter: number = waiSchema.properties.earCanalDiameter.default;
   earCanalLength: number = waiSchema.properties.earCanalLength.default;
+  writeFPLCalibration: boolean = waiSchema.properties.writeFPLCalibration.default;
   results: ResultsInterface;
   showResults: boolean = waiSchema.properties.showResults.default;
   normativeAbsorbanceDataPath: string = waiSchema.properties.normativeAbsorbanceDataPath.default;
@@ -95,6 +96,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
         this.aurenLength = responseArea.aurenLength ?? this.aurenLength;
         this.earCanalDiameter = responseArea.earCanalDiameter ?? this.earCanalDiameter;
         this.earCanalLength = responseArea.earCanalLength ?? this.earCanalLength;
+        this.writeFPLCalibration = responseArea.writeFPLCalibration ?? this.writeFPLCalibration;
         this.normativeAbsorbanceDataPath = responseArea.normativeAbsorbanceDataPath ?? this.normativeAbsorbanceDataPath;
 
         this.inputParameterMap = new Map([
@@ -171,6 +173,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
         AurenLength: this.aurenLength,
         EarCanalDiameter: this.earCanalDiameter,
         EarCanalLength: this.earCanalLength,
+        WriteFPLCalibration: this.writeFPLCalibration,
       };
       await this.devicesService.queueExam(this.device, "WAI", examProperties);
     } else {
