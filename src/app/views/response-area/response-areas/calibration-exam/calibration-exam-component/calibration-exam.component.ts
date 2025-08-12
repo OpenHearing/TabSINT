@@ -245,7 +245,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     }
     this.examService.submit = () => {
       this.nextStep();
-    };;
+    };
     this.updateButtonLabel();
   }
   

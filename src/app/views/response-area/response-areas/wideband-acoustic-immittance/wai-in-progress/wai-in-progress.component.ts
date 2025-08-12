@@ -33,7 +33,7 @@ export class WAIInProgressComponent implements OnInit, OnDestroy {
     private readonly changeDetectorRef: ChangeDetectorRef,
     private readonly devicesService: DevicesService,
     private readonly logger: Logger, 
-    private readonly stateModel: StateModel,
+    private readonly stateModel: StateModel
   ) {
     this.state = this.stateModel.getState();
     this.state.isSubmittable = false;
@@ -53,7 +53,7 @@ export class WAIInProgressComponent implements OnInit, OnDestroy {
   }
 
   async abort() {
-    this.waitForRequestResultsDone();
+    this.waitForRequestResultsCompletion();
     this.updateInstructions();
     await this.devicesService.abortExams(this.device!);
     this.updateStateOnAbort();
@@ -73,6 +73,7 @@ export class WAIInProgressComponent implements OnInit, OnDestroy {
       if (this.doesRespContainResults(resp)) {
         this.inProgressResultsSubject.next(resp![1]);
         if (this.inProgressResults.State === 'DONE') {
+          this.shouldAbort = true;
           this.state.isSubmittable = true;
           this.WAIResultsEvent.emit(resp![1]);
           this.instructions = "Exam complete, press 'Next' to continue."
@@ -97,7 +98,7 @@ export class WAIInProgressComponent implements OnInit, OnDestroy {
            resp[1] !== 'OK';
   }
   
-  private async waitForRequestResultsDone() {
+  private async waitForRequestResultsCompletion() {
     this.shouldAbort = true;
     while (this.isRequestingResults) {
       await new Promise((resolve) => setTimeout(resolve, 10));

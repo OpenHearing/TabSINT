@@ -15,6 +15,8 @@ import { ButtonTextService } from '../../../../../controllers/button-text.servic
 import { FPLcalibrationExamSchema } from '../../../../../../schema/response-areas/fpl-calibration-exam.schema';
 import { waiSchema } from '../../../../../../schema/response-areas/wai.schema';
 import { WAIResultsInterface } from '../../wideband-acoustic-immittance/wai-exam/wai-exam.interface';
+import { StateModel } from '../../../../../models/state/state.service';
+import { StateInterface } from '../../../../../models/state/state.interface';
 
 @Component({
   selector: 'app-fpl-calibration-exam',
@@ -32,6 +34,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   outputChannelIndex: number = 0;
   shouldAbort: boolean = false;
   isRequestingResults: boolean = false;
+  state: StateInterface;
   inProgressResults: WAIResultsInterface = {
     State: 'READY',
     PctComplete: 0
@@ -74,11 +77,18 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
     private readonly logger: Logger, 
     private readonly resultsModel: ResultsModel,
     private readonly examService: ExamService, 
-    private readonly buttonTextService: ButtonTextService
+    private readonly buttonTextService: ButtonTextService,
+    private readonly stateModel: StateModel
   ) {
     this.results = this.resultsModel.getResults();
     this.examService.submit = () => { this.nextStep(); };
     this.examService.back = () => { this.previousStep(); };
+    this.state = this.stateModel.getState();
+    this.state.isSubmittable = true;
+    this.inProgressResultsSubscription = this.inProgressResultsSubject.subscribe((updatedResults: WAIResultsInterface) => {
+      this.inProgressResults = updatedResults;
+      this.inProgressResults.PctComplete = Math.round(this.inProgressResults.PctComplete);
+    });
   }
 
   ngOnInit(): void {
@@ -136,6 +146,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
         WriteFPLCalibration: this.writeFPLCalibration,
         ReturnResultData: this.returnResultData,
       };
+      this.state.isSubmittable = false;
       let resp = await this.devicesService.queueExam(this.device, "WAI", examProperties);
       if (resp![1] != "ERROR") {
         await this.waitForWAIExamCompletion();
@@ -146,16 +157,11 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
     }
   }
 
-  async abortWAIExam() {
-    let resp = await this.devicesService.abortExams(this.device!);
-    this.logger.debug("resp from tympan after fpl calibration exam abort exams:" + resp);
-  }
-
   async waitForWAIExamCompletion() {
     const pollResults = async () => {
       if (this.shouldAbort) return;
   
-      this.isRequestingResults = true;  
+      this.isRequestingResults = true;
       let resp = await this.devicesService.requestResults(this.device!, 300000);
       // TODO: check if we need to stop requesting if it fails? same for WAI?
       this.isRequestingResults = false;
@@ -165,7 +171,8 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
       if (this.doesRespContainResults(resp)) {
         this.inProgressResultsSubject.next(resp![1]);
         if (this.inProgressResults.State === 'DONE') {
-          // this.state.isSubmittable = true;
+          this.state.isSubmittable = true;
+          this.shouldAbort = true;
           this.changeDetectorRef.detectChanges();
           return;
         }
@@ -201,7 +208,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   }
 
   private updateStateOnAbort() {
-    // this.state.isSubmittable = true;
+    this.state.isSubmittable = true;
     this.inProgressResults.State = 'ABORTED';
   }
 
@@ -217,6 +224,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   async nextStep(): Promise<void> {
     if (this.currentStep == 'landing') {
       this.currentStep = 'calibration';
+      this.state.isSubmittable = false;
     } else {
       this.navigationHistory.push({
         step: this.currentStep,
@@ -224,7 +232,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
       });
       this.outputChannelIndex += 1;
     }
-    this.examService.submit = this.outputChannelIndex < this.outputChannels.length - 1 ? () => { this.nextStep(); } : () => { this.examService.submitDefault(); };
+    this.resetCalibrationExam();
     this.outputChannel = this.outputChannels[this.outputChannelIndex];
     this.updateButtonLabel();
   }
@@ -234,7 +242,18 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
     this.navigationHistory.pop();
     this.outputChannelIndex -= 1;
     this.outputChannel = this.outputChannels[this.outputChannelIndex];
+    this.resetCalibrationExam();
     this.updateButtonLabel();
+  }
+
+  private resetCalibrationExam() {
+    this.examService.submit = this.outputChannelIndex < this.outputChannels.length - 1 ? () => { this.nextStep(); } : () => { this.examService.submitDefault(); };
+    this.examService.back = () => { this.previousStep(); };
+    this.shouldAbort = false;
+    this.inProgressResults = {
+      State: 'READY',
+      PctComplete: 0
+    };
   }
 
 }

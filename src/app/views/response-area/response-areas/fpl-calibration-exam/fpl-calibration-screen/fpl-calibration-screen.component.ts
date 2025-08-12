@@ -1,5 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-
+import { Component, Input, Output, OnChanges, SimpleChanges, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-fpl-calibration-screen',
@@ -7,6 +6,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
   styleUrls: ['./fpl-calibration-screen.component.css']
 })
 export class FPLCalibrationScreenComponent {
+  calibrationRunning: boolean = false;
   @Input() outputChannel: string = "";
   @Input() PctComplete: number = 0;
   @Output() runCalibration = new EventEmitter<void>();
@@ -14,10 +14,18 @@ export class FPLCalibrationScreenComponent {
 
   calibrate(): void {
     this.runCalibration.emit();
+    this.calibrationRunning = true;
   }
 
   abort(): void {
     this.abortCalibration.emit();
+    this.calibrationRunning = false;
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['outputChannel']) {
+      this.calibrationRunning = false;
+    }
   }
 
 }
