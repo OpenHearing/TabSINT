@@ -101,7 +101,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
         required: ["type"],
         nullable: true
       },
-      submitText: { type: "string", nullable: true, default: "Submit" },
+      submitText: { type: "string", nullable: true },
       followOns: { type: "array", items: followOnSchema, nullable: true },
       setFlags: { type: "array", items: setFlagSchema, nullable: true }
     },
