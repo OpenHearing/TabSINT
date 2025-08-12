@@ -163,7 +163,6 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   
       this.isRequestingResults = true;
       let resp = await this.devicesService.requestResults(this.device!, 300000);
-      // TODO: check if we need to stop requesting if it fails? same for WAI?
       this.isRequestingResults = false;
   
       if (this.shouldAbort) return;
@@ -177,7 +176,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
           return;
         }
       } else {
-        this.logger.debug('WAI in-progress component. Request results did not return expected results. It may be too early to receive results.');
+        this.logger.debug('FPL calibration request results did not return expected results. It may be too early to receive results.');
       }
   
       setTimeout(pollResults, 1000);
@@ -213,7 +212,6 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   }
 
   updateButtonLabel(): void {
-    console.log("updateButtonLabel() called");
     if (this.currentStep === 'landing') {
       this.buttonTextService.updateButtonText('Begin');
     } else if (this.currentStep === 'calibration') {
