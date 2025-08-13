@@ -90,6 +90,7 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
       if (this.doesRespContainResults(resp)) {
         this.inProgressResultsSubject.next(resp![1]);
         if (this.inProgressResults.State === 'DONE') {
+          this.shouldAbort = true;
           this.state.isSubmittable = true;
           this.sweptDPOAEResultsEvent.emit(resp![1]);
           this.instructions = "Exam complete, press 'Next' to continue."

@@ -43,7 +43,10 @@
                 "id": "FPL Calibration Exam"
               },
               {
-                "id": "Swept DPOAE Exam"
+                "id": "Swept DPOAE Exam (SPL)"
+              },
+              {
+                "id": "Swept DPOAE Exam (FPL)"
               },
               {
                 "id": "WAI Exam"
@@ -100,9 +103,15 @@
               }
             },
             {
-              "conditional": "result.response=='Swept DPOAE Exam'",
+              "conditional": "result.response=='Swept DPOAE Exam (SPL)'",
               "target": {
-                "reference": "SweptDpoaeExam"
+                "reference": "SweptDpoaeExamSPL"
+              }
+            },
+            {
+              "conditional": "result.response=='Swept DPOAE Exam (FPL)'",
+              "target": {
+                "reference": "SweptDpoaeExamFPL"
               }
             },
             {
@@ -355,11 +364,10 @@
           "responseArea": {
             "type": "fplCalibrationResponseArea",
             "outputChannels": ["HPL1","HPR1"],
-            "fStart": 500,
-            "fEnd": 12000,
+            "fStart": 100,
+            "fEnd": 18000,
             "sweepDuration": 6,
-            "numFrequencies": 64,
-            "showResults": true
+            "numFrequencies": 64
           }
         },
         {
@@ -369,11 +377,11 @@
       ]
     },
     {
-      "protocolId": "SweptDpoaeExam",
+      "protocolId": "SweptDpoaeExamSPL",
       "pages": [
         {
           "id": "swept_oae_001",
-          "title": "Swept DPOAE",
+          "title": "Swept DPOAE (SPL)",
           "responseArea": {
             "type": "sweptDPOAEResponseArea",
             "normativeDataPath": "swept-dpoae-normative-data-human.xlsx",
@@ -394,6 +402,40 @@
             "noiseFloorThreshold": -10,
             "outputRawMeasurements": false,
             "outputCalibrationType": "SPL"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "SweptDpoaeExamFPL",
+      "pages": [
+        {
+          "id": "swept_oae_002",
+          "title": "Swept DPOAE (FPL)",
+          "responseArea": {
+            "type": "sweptDPOAEResponseArea",
+            "normativeDataPath": "swept-dpoae-normative-data-human.xlsx",
+            "outputChannel1": "HPL1",
+            "outputChannel2": "HPR1",
+            "inputChannel": "EPSHIELD_LEFT_PDM_MIC1",
+            "l1": 75,
+            "l2": 65,
+            "f2Start": 500,
+            "f2End": 16000,
+            "frequencyRatio": 1.22,
+            "sweepDuration": 5.25,
+            "windowDuration": 0.25,
+            "sweepType": "log",
+            "minSweeps": 16,
+            "maxSweeps": 50,
+            "numFrequencies": 64,
+            "noiseFloorThreshold": -10,
+            "outputRawMeasurements": false,
+            "outputCalibrationType": "FPL"
           }
         },
         {

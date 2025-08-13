@@ -27,7 +27,7 @@ export class TympanService {
     currentTimeoutTimeMs: number = 0;
     currentCommand: Command<Array<any>> | null = null;
     defaultErrorMsg = ["ERROR", "Failed to write message to tympan. Make sure Tympan is connected and try again."];
-    defaultTimeoutTimeMs = 5000;
+    defaultTimeoutTimeMs = 10000;
 
     constructor(
         private readonly tympanWrap: TympanWrap, 
