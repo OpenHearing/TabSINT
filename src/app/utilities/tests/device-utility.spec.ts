@@ -158,7 +158,7 @@ const connectedDevices6 = {
         {
             "tabsintId": "2",
             "type": "tympan",
-            "msgId": 2,
+            "msgId": 1,
             "deviceId": "testDevice2",
             "name": "testName2",
             "state": DeviceState.Disconnected,
@@ -401,13 +401,13 @@ describe('deviceUtil', () => {
         expect(connection).toEqual(connection2);
     })
 
-    it('incrementing tympan msg id', () => {
+    it('incrementing tympan msg id 1', () => {
         devicesModel.devicesModel.connectedDevices = connectedDevices5;
         deviceUtil.incrementDeviceMsgId("testDevice2");
         expect(devicesModel.devicesModel.connectedDevices).toEqual(connectedDevices6);
     })
 
-    it('incrementing tympan msg id', () => {
+    it('incrementing tympan msg id 2', () => {
         devicesModel.devicesModel.connectedDevices = connectedDevices7;
         deviceUtil.incrementDeviceMsgId("testDevice2");
         expect(devicesModel.devicesModel.connectedDevices).toEqual(connectedDevices8);
