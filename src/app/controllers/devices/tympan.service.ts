@@ -50,7 +50,6 @@ export class TympanService {
         });
     }
 
-
     startTracking(deviceId: string, msgId: string, command: Command<Array<any>>) {
         let tabsintId: string | undefined = this.deviceUtil.getTabsintIdFromDeviceId(deviceId);
         this.pendingMsgInfo = {
@@ -199,7 +198,6 @@ export class TympanService {
     }
 
     async abortExams(tympanId: string, msgId: string): Promise<Array<any>> {
-        // This aborts ALL running exams
         let resp: Array<any> = [-msgId].concat(JSON.parse(JSON.stringify(this.defaultErrorMsg)));
         let msg = '['+msgId+',"abortExams"]';
         this.currentCommand = {
