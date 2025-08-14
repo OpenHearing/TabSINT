@@ -6,7 +6,7 @@
 
 <div class="calibration-box" style="padding-top: 5em;">
   <div class="button-container">
-    <button class="btn btn-block btn-lg btn-primary btn-centered" (click)="calibrate()" [disabled]="calibrationRunning && PctComplete!=100">Run Calibration</button>
+    <button class="btn btn-block btn-lg btn-primary btn-centered" (click)="calibrate()" [disabled]="calibrationRunning">Run Calibration</button>
   </div>
 
   <div class="calibration-running-container">
@@ -15,6 +15,6 @@
   </div>
   
   <div class="button-container">
-    <button class="btn btn-block btn-lg btn-danger btn-centered" (click)="abort()" [disabled]="!calibrationRunning || PctComplete==100">Abort Calibration</button>
+    <button class="btn btn-block btn-lg btn-danger btn-centered" (click)="abort()" [disabled]="!calibrationRunning || shouldAbort">Abort Calibration</button>
   </div>
 </div>

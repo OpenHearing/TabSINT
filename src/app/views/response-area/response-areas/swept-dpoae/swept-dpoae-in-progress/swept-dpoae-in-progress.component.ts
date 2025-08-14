@@ -66,13 +66,17 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
   }
 
   ngOnDestroy(): void {
+    this.inProgressResultsSubscription?.unsubscribe();
     this.state.isSubmittable = true;
+    this.shouldAbort = true;
   }
 
   async abort() {
-    this.waitForRequestResultsDone();
-    this.updateInstructions();
+    this.shouldAbort = true;
+    this.updateInstructionsAfterAbortButtonPressed();
+    await this.waitForRequestResultsDone();
     await this.devicesService.abortExams(this.device!);
+    this.updateInstructionsAfterAbortComplete();
     this.updateStateOnAbort();
     this.sweptDPOAEResultsEvent.emit(this.inProgressResults);
   }
@@ -80,17 +84,16 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
   private async requestResults() {
     const pollResults = async () => {
       if (this.shouldAbort) return;
-  
+
       this.isRequestingResults = true;
       let resp = await this.devicesService.requestResults(this.device!, 300000);
       this.isRequestingResults = false;
-  
+
       if (this.shouldAbort) return;
   
       if (this.doesRespContainResults(resp)) {
         this.inProgressResultsSubject.next(resp![1]);
         if (this.inProgressResults.State === 'DONE') {
-          this.shouldAbort = true;
           this.state.isSubmittable = true;
           this.sweptDPOAEResultsEvent.emit(resp![1]);
           this.instructions = "Exam complete, press 'Next' to continue."
@@ -133,11 +136,9 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
     createLegend(svg, legendData, this.width, 85);
 
     return svg;
-    
   }
 
   private updatePlot(dpLowData: DPOAEDataInterface, f2Data: DPOAEDataInterface) {
-    // TODO: May not need to filter data after we get real firmware
     const filteredData = this.filterData(dpLowData, f2Data);
 
     // Plot DpLow Amplitude / DPOAE (blue open circles)
@@ -187,15 +188,18 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
     return filteredData
   }
 
-  
   private async waitForRequestResultsDone() {
-    this.shouldAbort = true;
     while (this.isRequestingResults) {
       await new Promise((resolve) => setTimeout(resolve, 10));
     }  
   }
 
-  private updateInstructions() {
+  private updateInstructionsAfterAbortButtonPressed() {
+    this.instructions = "Abort pressed, please wait while exam is aborted.";
+    this.changeDetectorRef.detectChanges();
+  }
+
+  private updateInstructionsAfterAbortComplete() {
     this.instructions = "Exam aborted, press 'Next' to continue.";
     this.changeDetectorRef.detectChanges();
   }
@@ -203,6 +207,7 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
   private updateStateOnAbort() {
     this.state.isSubmittable = true;
     this.inProgressResults.State = 'ABORTED';
+    this.shouldAbort = false;
   }
 
 }

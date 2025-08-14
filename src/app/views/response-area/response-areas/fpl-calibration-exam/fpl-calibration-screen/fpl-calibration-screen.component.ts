@@ -9,6 +9,7 @@ export class FPLCalibrationScreenComponent {
   calibrationRunning: boolean = false;
   @Input() outputChannel: string = "";
   @Input() PctComplete: number = 0;
+  @Input() shouldAbort: boolean = false;
   @Output() runCalibration = new EventEmitter<void>();
   @Output() abortCalibration = new EventEmitter<void>();
 
@@ -19,11 +20,16 @@ export class FPLCalibrationScreenComponent {
 
   abort(): void {
     this.abortCalibration.emit();
-    this.calibrationRunning = false;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['outputChannel']) {
+      this.calibrationRunning = false;
+    }
+    if (changes['shouldAbort'] && this.shouldAbort === false) {
+      this.calibrationRunning = false;
+    }
+    if (changes['PctComplete'] && this.PctComplete === 100) {
       this.calibrationRunning = false;
     }
   }

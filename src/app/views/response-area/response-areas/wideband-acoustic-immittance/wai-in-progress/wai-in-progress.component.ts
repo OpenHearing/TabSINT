@@ -50,12 +50,15 @@ export class WAIInProgressComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.inProgressResultsSubscription?.unsubscribe();
     this.state.isSubmittable = true;
+    this.shouldAbort = true;
   }
 
   async abort() {
-    this.waitForRequestResultsCompletion();
-    this.updateInstructions();
+    this.shouldAbort = true;
+    this.updateInstructionsAfterAbortButtonPressed();
+    await this.waitForRequestResultsDone();
     await this.devicesService.abortExams(this.device!);
+    this.updateInstructionsAfterAbortComplete();
     this.updateStateOnAbort();
     this.WAIResultsEvent.emit(this.inProgressResults);
   }
@@ -63,17 +66,16 @@ export class WAIInProgressComponent implements OnInit, OnDestroy {
   private async requestResults() {
     const pollResults = async () => {
       if (this.shouldAbort) return;
-  
-      this.isRequestingResults = true;  
+      
+      this.isRequestingResults = true;
       let resp = await this.devicesService.requestResults(this.device!, 300000);
       this.isRequestingResults = false;
-  
+
       if (this.shouldAbort) return;
   
       if (this.doesRespContainResults(resp)) {
         this.inProgressResultsSubject.next(resp![1]);
         if (this.inProgressResults.State === 'DONE') {
-          this.shouldAbort = true;
           this.state.isSubmittable = true;
           this.WAIResultsEvent.emit(resp![1]);
           this.instructions = "Exam complete, press 'Next' to continue."
@@ -97,15 +99,19 @@ export class WAIInProgressComponent implements OnInit, OnDestroy {
            resp[2] !== 'timeout' &&
            resp[1] !== 'OK';
   }
-  
-  private async waitForRequestResultsCompletion() {
-    this.shouldAbort = true;
+
+  private async waitForRequestResultsDone() {
     while (this.isRequestingResults) {
       await new Promise((resolve) => setTimeout(resolve, 10));
     }  
   }
 
-  private updateInstructions() {
+  private updateInstructionsAfterAbortButtonPressed() {
+    this.instructions = "Abort pressed, please wait while exam is aborted.";
+    this.changeDetectorRef.detectChanges();
+  }
+
+  private updateInstructionsAfterAbortComplete() {
     this.instructions = "Exam aborted, press 'Next' to continue.";
     this.changeDetectorRef.detectChanges();
   }
@@ -113,6 +119,7 @@ export class WAIInProgressComponent implements OnInit, OnDestroy {
   private updateStateOnAbort() {
     this.state.isSubmittable = true;
     this.inProgressResults.State = 'ABORTED';
+    this.shouldAbort = false;
   }
 
 }

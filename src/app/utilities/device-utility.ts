@@ -59,7 +59,7 @@ export class DeviceUtil {
             "deviceId": newConnection.deviceId!,
             "name": newConnection.name!,
             "state": DeviceState.Connected,
-            "msgId": 1,
+            "msgId": 0,
             "maxByteLength": newConnection.maxByteLength!
         };
         return connection
@@ -69,7 +69,7 @@ export class DeviceUtil {
         for (const device of this.devices.connectedDevices.tympan) {
             if (device.deviceId === deviceId) {
                 if (device.msgId>=99) {
-                    device.msgId=1;
+                    device.msgId=0;
                 } else {
                     device.msgId+=1;
                 }
@@ -197,7 +197,7 @@ export class DeviceUtil {
                 "deviceId": device.deviceId,
                 "name": device.name,
                 "state": DeviceState.Disconnected,
-                "msgId": 1,
+                "msgId": 0,
                 "maxByteLength": device.maxByteLength
             };
             this.devices.connectedDevices.tympan.push(savedConnection);
