@@ -27,7 +27,7 @@ Related internal documents
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-This software specification relates to the `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/feature/play-sd-wav-file/Specifications/modified_rhyme_test.rst?ref_type=heads>`_.
+This software specification relates to the `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/modified_rhyme_test.rst?ref_type=heads>`_.
 
 
 
