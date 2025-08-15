@@ -233,10 +233,8 @@ export class MrtExamComponent implements OnInit, OnDestroy {
         const pollResults = async () => {
             try {
                 let resp = await this.devicesService.requestResults(this.device!);
-                console.log('REQUESTING RESULTS');
                 if (typeof resp![1] === 'object' && 'State' in resp![1]) {
                   if (resp![1].State === "PLAYING") {
-                    console.log("CALL PollResults after timeout");
                       setTimeout(pollResults, 500);
                   } else if (resp![1].State === "READY") {
                       resolve();
@@ -252,7 +250,6 @@ export class MrtExamComponent implements OnInit, OnDestroy {
                 reject(error);
             }
         };
-        console.log("CALL PollResults first time");
         pollResults();
     });
   }

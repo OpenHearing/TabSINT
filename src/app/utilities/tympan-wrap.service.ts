@@ -24,6 +24,7 @@ export class TympanWrap {
     ADAFRUIT_SERVICE_UUID = "BC2F4CC6-AAEF-4351-9034-D66268E328F0"; // custom tympan service
     ADAFRUIT_CHARACTERISTIC_UUID = "06D1E5E7-79AD-4A71-8FAA-373789F7D93C"; // custom tympan characteristic
     CRC8_TABLE = this.genCRC8Table();
+    ACCUMULATE_BYTES = false;
     TMP_BUFFER: {[key: string]: DataView} = {};
     
 
@@ -130,7 +131,7 @@ export class TympanWrap {
             });
         });
         this.clearTMPBuffer(deviceId);
-        await BleClient.startNotifications(deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID,(dv:DataView) => {
+        await BleClient.startNotifications(deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID, (dv:DataView) => {
             this.handleIncomingBytes(deviceId, dv);
         });
         this.logger.debug('connected to device:'+JSON.stringify(deviceId));
@@ -149,17 +150,32 @@ export class TympanWrap {
 
     handleIncomingBytes(deviceId: string, dv: DataView) {     
         let byteArray = new Uint8Array(dv.buffer.slice(dv.byteOffset, dv.byteOffset + dv.byteLength));
-        if (!this.isUnhandledByteMessage(byteArray)) {
-            this.TMP_BUFFER[deviceId] = this.appendDataView(this.TMP_BUFFER[deviceId],dv);
-        } else {
-            this.logger.debug(`Unhandled byte sequence detected and ignored: ${this.formatHexArray(byteArray)}`);        
+        
+        // check for a start character to begin accumulating bytes
+        if (byteArray.length == 1 && byteArray[0]==5) {
+            if (this.ACCUMULATE_BYTES === true) {
+                this.logger.debug("Bytes in ble buffer reset");
+                this.clearTMPBuffer(deviceId);
+            }
+            this.ACCUMULATE_BYTES = true;
         }
 
-        let tabsintId: string|undefined = this.deviceUtil.getTabsintIdFromDeviceId(deviceId);
-        let msg = this.checkForCompleteMsg(deviceId);
-        
-        if (tabsintId && msg) {
-            this.devicesModel.tympanResponseSubject.next({"tabsintId":tabsintId,"msg":msg});
+        // accumulate bytes
+        if (this.ACCUMULATE_BYTES === true) {
+            if (!this.isUnhandledByteMessage(byteArray)) {
+                this.TMP_BUFFER[deviceId] = this.appendDataView(this.TMP_BUFFER[deviceId],dv);
+            } else {
+                this.logger.debug(`Unhandled byte sequence detected and ignored: ${this.formatHexArray(byteArray)}`);
+            }
+
+            // check for a completed msg (last byte in buffer is a 2)
+            if (this.TMP_BUFFER[deviceId].getUint8(this.TMP_BUFFER[deviceId].buffer.byteLength-1)==2) {
+                let tabsintId: string|undefined = this.deviceUtil.getTabsintIdFromDeviceId(deviceId);
+                let msg = this.parseCompletedMsg(deviceId);
+                this.devicesModel.tympanResponseSubject.next({"tabsintId":tabsintId!,"msg":msg});
+                this.clearTMPBuffer(deviceId);
+                this.ACCUMULATE_BYTES = false;
+            }
         }
     }
 
@@ -182,36 +198,49 @@ export class TympanWrap {
     }
 
     private isUnhandledByteMessage(byteArray: Uint8Array): boolean {
-        const unhandledSequences = [
+        let unhandled_byte = false;
+        const exactUnhandledSequences = [
             [0x55, 0x6E, 0x68, 0x61, 0x6E, 0x64, 0x6C, 0x65, 0x64, 0x20, 0x62, 0x79, 0x74, 0x65, 0x20, 0x72, 0x65, 0x63], // "Unhandled byte rec"
-            [0x65, 0x69, 0x76, 0x65, 0x64, 0x3A, 0x20, 0x27, 0x5C, 0x78, 0x61, 0x27], // "eived: '\xa'"
             [0x0A] // Single newline byte
         ];
-    
-        return unhandledSequences.some(seq => this.arrayEquals(byteArray, seq));
+        const partialUnhandledSequences = [
+            [0x65, 0x69, 0x76, 0x65, 0x64, 0x3A, 0x20, 0x27, 0x5C, 0x78] // "eived: '\x" - NOTE: will be 2-3 more bytes ?(?)' after
+        ];
+        
+        if (exactUnhandledSequences.some(seq => this.arrayEquals(byteArray, seq))) {
+            unhandled_byte = true;
+        }
+        partialUnhandledSequences.forEach( (arr) => {
+            if (byteArray.length >= arr.length) {
+                if (this.arrayEquals(byteArray.slice(0, arr.length),arr)) {
+                    unhandled_byte = true;
+                }
+            }
+        });
+
+        return unhandled_byte;
     }
     
     private arrayEquals(a: Uint8Array, b: number[]): boolean {
         return a.length === b.length && a.every((val, index) => val === b[index]);
     }
 
-    private checkForCompleteMsg(deviceId: string): string|undefined {
+    private parseCompletedMsg(deviceId: string): string {
         let dv = this.TMP_BUFFER[deviceId];
-        let msg: string|undefined;
-        if (dv.byteLength>0 && dv.getUint8(0)==5 && dv.getUint8(dv.buffer.byteLength-1)==2) {
-            let tmp = new Uint8Array(dv.buffer.slice(0));
-            let unescapedArray = this.handleUnescaping(tmp.slice(1,tmp.byteLength-1));
-            let crc = unescapedArray.slice(unescapedArray.byteLength-1);
-            let expectedChecksum = this.genCRC8Checksum(unescapedArray.slice(0,unescapedArray.byteLength-1));
-            if (crc[0]==expectedChecksum[0]) {
-                let tmpDV = new DataView(unescapedArray.slice(0,unescapedArray.byteLength-1).buffer);
-                msg = this.dataViewToString(tmpDV);
-            } else {
-                msg = "invalid checksum";
-            }
-            this.logger.debug("TIME - msg parsed and checksum verified: " + String(Date.now()));
-            this.clearTMPBuffer(deviceId);
+        let msg: string;
+        
+        let tmp = new Uint8Array(dv.buffer.slice(0));
+        let unescapedArray = this.handleUnescaping(tmp.slice(1,tmp.byteLength-1));
+        let crc = unescapedArray.slice(unescapedArray.byteLength-1);
+        let expectedChecksum = this.genCRC8Checksum(unescapedArray.slice(0,unescapedArray.byteLength-1));
+        if (crc[0]==expectedChecksum[0]) {
+            let tmpDV = new DataView(unescapedArray.slice(0,unescapedArray.byteLength-1).buffer);
+            msg = this.dataViewToString(tmpDV);
+        } else {
+            msg = "invalid checksum";
         }
+        this.logger.debug("TIME - msg parsed and checksum verified: " + String(Date.now()));
+        
         return msg
     }
 

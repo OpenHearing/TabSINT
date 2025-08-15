@@ -1,8 +1,8 @@
 {
   "tabsint": "5.0.0-dev",
-  "date": "2025-08-12T17:06:44.740Z",
-  "rev": "v5.0.0-1-0945571",
-  "version_code": "600",
+  "date": "2025-08-14T17:09:38.733Z",
+  "rev": "v5.0.0-1-4a7a310",
+  "version_code": "632",
   "deps": {
     "user_agent": "angular/^17.1.1",
     "node": "node/v18.16.0",

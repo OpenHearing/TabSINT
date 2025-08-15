@@ -34,6 +34,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   outputChannelIndex: number = 0;
   shouldAbort: boolean = false;
   isRequestingResults: boolean = false;
+  abortText: string = "";
   state: StateInterface;
   inProgressResults: WAIResultsInterface = {
     State: 'READY',
@@ -122,6 +123,9 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
     this.pageSubscription?.unsubscribe();
     this.tympanSubscription?.unsubscribe();
     this.buttonTextService.updateButtonText("Submit");
+    this.inProgressResultsSubscription?.unsubscribe();
+    this.state.isSubmittable = true;
+    this.shouldAbort = true;
   }
 
   async startWAIExam() {
@@ -160,18 +164,17 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   async waitForWAIExamCompletion() {
     const pollResults = async () => {
       if (this.shouldAbort) return;
-  
+
       this.isRequestingResults = true;
       let resp = await this.devicesService.requestResults(this.device!, 300000);
       this.isRequestingResults = false;
-  
+
       if (this.shouldAbort) return;
   
       if (this.doesRespContainResults(resp)) {
         this.inProgressResultsSubject.next(resp![1]);
         if (this.inProgressResults.State === 'DONE') {
           this.state.isSubmittable = true;
-          this.shouldAbort = true;
           this.changeDetectorRef.detectChanges();
           return;
         }
@@ -186,8 +189,12 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   }
 
   async abort() {
-    this.waitForRequestResultsDone();
+    this.shouldAbort = true;
+    this.updateTextAfterAbortButtonPressed();
+    await this.waitForRequestResultsDone();
     await this.devicesService.abortExams(this.device!);
+    this.shouldAbort = false;
+    this.updateTextAfterAbortComplete();
     this.updateStateOnAbort();
   }
 
@@ -198,9 +205,8 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
            resp[2] !== 'timeout' &&
            resp[1] !== 'OK';
   }
-  
+
   private async waitForRequestResultsDone() {
-    this.shouldAbort = true;
     while (this.isRequestingResults) {
       await new Promise((resolve) => setTimeout(resolve, 10));
     }  
@@ -248,10 +254,19 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
     this.examService.submit = this.outputChannelIndex < this.outputChannels.length - 1 ? () => { this.nextStep(); } : () => { this.examService.submitDefault(); };
     this.examService.back = () => { this.previousStep(); };
     this.shouldAbort = false;
+    this.state.isSubmittable = false;
     this.inProgressResults = {
       State: 'READY',
       PctComplete: 0
     };
+  }
+
+  private updateTextAfterAbortButtonPressed() {
+    this.abortText = "Abort pressed, please wait while exam is aborted.";
+  }
+
+  private updateTextAfterAbortComplete() {
+    this.abortText = "";
   }
 
 }

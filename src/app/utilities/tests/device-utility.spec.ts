@@ -15,7 +15,7 @@ const connectedDevices1 = {
         {
             "tabsintId": "1",
             "type": "tympan",
-            "msgId": 1,
+            "msgId": 0,
             "deviceId": "testDevice1",
             "name": "testName1",
             "state": DeviceState.Disconnected,
@@ -31,7 +31,7 @@ const connectedDevices2 = {
         {
             "tabsintId": "1",
             "type": "tympan",
-            "msgId": 1,
+            "msgId": 0,
             "deviceId": "testDevice1",
             "name": "testName1",
             "state": DeviceState.Connected,
@@ -47,7 +47,7 @@ const connectedDevices3 = {
         {
             "tabsintId": "1",
             "type": "tympan",
-            "msgId": 1,
+            "msgId": 0,
             "deviceId": "testDevice1",
             "name": "testName1",
             "state": DeviceState.Connected,
@@ -56,7 +56,7 @@ const connectedDevices3 = {
         {
             "tabsintId": "2",
             "type": "tympan",
-            "msgId": 1,
+            "msgId": 0,
             "deviceId": "testDevice2",
             "name": "testName2",
             "state": DeviceState.Connected,
@@ -65,7 +65,7 @@ const connectedDevices3 = {
         {
             "tabsintId": "3",
             "type": "tympan",
-            "msgId": 1,
+            "msgId": 0,
             "deviceId": "testDevice3",
             "name": "testName3",
             "state": DeviceState.Connected,
@@ -81,7 +81,7 @@ const connectedDevices4 = {
         {
             "tabsintId": "1",
             "type": "tympan",
-            "msgId": 1,
+            "msgId": 0,
             "deviceId": "testDevice1",
             "name": "testName1",
             "state": DeviceState.Connected,
@@ -90,7 +90,7 @@ const connectedDevices4 = {
         {
             "tabsintId": "2",
             "type": "tympan",
-            "msgId": 1,
+            "msgId": 0,
             "deviceId": "testDevice2",
             "name": "testName2",
             "state": DeviceState.Disconnected,
@@ -99,7 +99,7 @@ const connectedDevices4 = {
         {
             "tabsintId": "3",
             "type": "tympan",
-            "msgId": 1,
+            "msgId": 0,
             "deviceId": "testDevice3",
             "name": "testName3",
             "state": DeviceState.Connected,
@@ -115,7 +115,7 @@ const connectedDevices5 = {
         {
             "tabsintId": "1",
             "type": "tympan",
-            "msgId": 1,
+            "msgId": 0,
             "deviceId": "testDevice1",
             "name": "testName1",
             "state": DeviceState.Connected,
@@ -124,7 +124,7 @@ const connectedDevices5 = {
         {
             "tabsintId": "2",
             "type": "tympan",
-            "msgId": 1,
+            "msgId": 0,
             "deviceId": "testDevice2",
             "name": "testName2",
             "state": DeviceState.Disconnected,
@@ -133,7 +133,7 @@ const connectedDevices5 = {
         {
             "tabsintId": "3",
             "type": "tympan",
-            "msgId": 1,
+            "msgId": 0,
             "deviceId": "testDevice3",
             "name": "testName3",
             "state": DeviceState.Connected,
@@ -149,7 +149,7 @@ const connectedDevices6 = {
         {
             "tabsintId": "1",
             "type": "tympan",
-            "msgId": 1,
+            "msgId": 0,
             "deviceId": "testDevice1",
             "name": "testName1",
             "state": DeviceState.Connected,
@@ -158,7 +158,7 @@ const connectedDevices6 = {
         {
             "tabsintId": "2",
             "type": "tympan",
-            "msgId": 2,
+            "msgId": 1,
             "deviceId": "testDevice2",
             "name": "testName2",
             "state": DeviceState.Disconnected,
@@ -167,7 +167,7 @@ const connectedDevices6 = {
         {
             "tabsintId": "3",
             "type": "tympan",
-            "msgId": 1,
+            "msgId": 0,
             "deviceId": "testDevice3",
             "name": "testName3",
             "state": DeviceState.Connected,
@@ -183,7 +183,7 @@ const connectedDevices7 = {
         {
             "tabsintId": "1",
             "type": "tympan",
-            "msgId": 1,
+            "msgId": 0,
             "deviceId": "testDevice1",
             "name": "testName1",
             "state": DeviceState.Connected,
@@ -201,7 +201,7 @@ const connectedDevices7 = {
         {
             "tabsintId": "3",
             "type": "tympan",
-            "msgId": 1,
+            "msgId": 0,
             "deviceId": "testDevice3",
             "name": "testName3",
             "state": DeviceState.Connected,
@@ -217,7 +217,7 @@ const connectedDevices8 = {
         {
             "tabsintId": "1",
             "type": "tympan",
-            "msgId": 1,
+            "msgId": 0,
             "deviceId": "testDevice1",
             "name": "testName1",
             "state": DeviceState.Connected,
@@ -226,7 +226,7 @@ const connectedDevices8 = {
         {
             "tabsintId": "2",
             "type": "tympan",
-            "msgId": 1,
+            "msgId": 0,
             "deviceId": "testDevice2",
             "name": "testName2",
             "state": DeviceState.Disconnected,
@@ -235,7 +235,7 @@ const connectedDevices8 = {
         {
             "tabsintId": "3",
             "type": "tympan",
-            "msgId": 1,
+            "msgId": 0,
             "deviceId": "testDevice3",
             "name": "testName3",
             "state": DeviceState.Connected,
@@ -251,7 +251,7 @@ const connectedDevices9 = {
         {
             "tabsintId": "1",
             "type": "tympan",
-            "msgId": 1,
+            "msgId": 0,
             "deviceId": "testDevice1",
             "name": "testName1",
             "state": DeviceState.Disconnected,
@@ -260,7 +260,7 @@ const connectedDevices9 = {
         {
             "tabsintId": "2",
             "type": "tympan",
-            "msgId": 1,
+            "msgId": 0,
             "deviceId": "testDevice2",
             "name": "testName2",
             "state": DeviceState.Connected,
@@ -276,7 +276,7 @@ const connectedDevices10 = {
         {
             "tabsintId": "1",
             "type": "tympan",
-            "msgId": 1,
+            "msgId": 0,
             "deviceId": "testDevice1",
             "name": "testName1",
             "state": DeviceState.Connected,
@@ -292,7 +292,7 @@ const connectedDevices11 = {
         {
             "tabsintId": "1",
             "type": "tympan",
-            "msgId": 1,
+            "msgId": 0,
             "deviceId": "testDevice1",
             "name": "testName1",
             "state": DeviceState.Connected,
@@ -312,7 +312,7 @@ const connection1: ConnectedDevice = {
     "deviceId": "testDevice2",
     "name": "testName2",
     "state": DeviceState.Connected,
-    "msgId": 1,
+    "msgId": 0,
     "maxByteLength": 244
 };
 
@@ -322,7 +322,7 @@ const connection2: ConnectedDevice = {
     "deviceId": "testDevice4",
     "name": "testName4",
     "state": DeviceState.Connected,
-    "msgId": 1,
+    "msgId": 0,
     "maxByteLength": 244
 };
 
@@ -401,13 +401,13 @@ describe('deviceUtil', () => {
         expect(connection).toEqual(connection2);
     })
 
-    it('incrementing tympan msg id', () => {
+    it('incrementing tympan msg id 1', () => {
         devicesModel.devicesModel.connectedDevices = connectedDevices5;
         deviceUtil.incrementDeviceMsgId("testDevice2");
         expect(devicesModel.devicesModel.connectedDevices).toEqual(connectedDevices6);
     })
 
-    it('incrementing tympan msg id', () => {
+    it('incrementing tympan msg id 2', () => {
         devicesModel.devicesModel.connectedDevices = connectedDevices7;
         deviceUtil.incrementDeviceMsgId("testDevice2");
         expect(devicesModel.devicesModel.connectedDevices).toEqual(connectedDevices8);
@@ -436,7 +436,7 @@ describe('deviceUtil', () => {
         let deviceToRemove: ConnectedDevice = {
             "type": "tympan",
             "tabsintId": "2",
-            "msgId": 1,
+            "msgId": 0,
             "deviceId": "testDevice2",
             "name": "testName2",
             "state": DeviceState.Connected,
@@ -461,7 +461,7 @@ describe('deviceUtil', () => {
         let expectedDevice: ConnectedDevice = {
             "type": "tympan",
             "tabsintId": "1",
-            "msgId": 1,
+            "msgId": 0,
             "deviceId": "testDevice1",
             "name": "testName1",
             "state": DeviceState.Disconnected,
@@ -478,7 +478,7 @@ describe('deviceUtil', () => {
         let expectedDevice: ConnectedDevice = {
             "type": "tympan",
             "tabsintId": "1",
-            "msgId": 1,
+            "msgId": 0,
             "deviceId": "testDevice1",
             "name": "testName1",
             "state": DeviceState.Disconnected,
@@ -507,7 +507,7 @@ describe('deviceUtil', () => {
         let newDevice: ConnectedDevice = {
             "type": "tympan",
             "tabsintId": "1",
-            "msgId": 1,
+            "msgId": 0,
             "deviceId": "testDevice1",
             "name": "testName1",
             "state": DeviceState.Disconnected,

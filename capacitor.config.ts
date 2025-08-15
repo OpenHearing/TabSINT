@@ -14,7 +14,8 @@ const config: CapacitorConfig = {
     TabsintFs: {
       android: 'com.creare.tabsintfs.TabsintFsPlugin'
     }
-  }
+  },
+  loggingBehavior: 'none'
 };
 
 export default config;

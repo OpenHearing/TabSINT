@@ -27,7 +27,7 @@ export class TympanService {
     currentTimeoutTimeMs: number = 0;
     currentCommand: Command<Array<any>> | null = null;
     defaultErrorMsg = ["ERROR", "Failed to write message to tympan. Make sure Tympan is connected and try again."];
-    defaultTimeoutTimeMs = 5000;
+    defaultTimeoutTimeMs = 10000;
 
     constructor(
         private readonly tympanWrap: TympanWrap, 
@@ -49,7 +49,6 @@ export class TympanService {
             }
         });
     }
-
 
     startTracking(deviceId: string, msgId: string, command: Command<Array<any>>) {
         let tabsintId: string | undefined = this.deviceUtil.getTabsintIdFromDeviceId(deviceId);
@@ -199,7 +198,6 @@ export class TympanService {
     }
 
     async abortExams(tympanId: string, msgId: string): Promise<Array<any>> {
-        // This aborts ALL running exams
         let resp: Array<any> = [-msgId].concat(JSON.parse(JSON.stringify(this.defaultErrorMsg)));
         let msg = '['+msgId+',"abortExams"]';
         this.currentCommand = {

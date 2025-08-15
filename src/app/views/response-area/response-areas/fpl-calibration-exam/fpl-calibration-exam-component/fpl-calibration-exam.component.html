@@ -8,8 +8,11 @@
     *ngSwitchCase="'calibration'"
     [outputChannel]="outputChannel"
     [PctComplete]="inProgressResults.PctComplete"
+    [shouldAbort]="shouldAbort"
     (runCalibration)="startWAIExam()"
     (abortCalibration)="abort()">
   </app-fpl-calibration-screen>
+
+  <div style="padding-top: 1em;"> {{abortText}} </div>
 
 </div>

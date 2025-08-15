@@ -20,6 +20,6 @@
 
 <br />
 
-<button [disabled]="inProgressResults.State==='DONE' || inProgressResults.State==='BUSY' || inProgressResults.State==='ABORTED'" class="btn btn-danger btn-block" (click)="abort()">
+<button [disabled]="inProgressResults.State==='DONE' || inProgressResults.State==='BUSY' || inProgressResults.State==='ABORTED' || shouldAbort" class="btn btn-danger btn-block" (click)="abort()">
     {{'Abort'}}
 </button>
