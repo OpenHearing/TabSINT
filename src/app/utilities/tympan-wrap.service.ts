@@ -152,7 +152,6 @@ export class TympanWrap {
     }
 
     handleIncomingBytes(deviceId: string, dv: DataView) {
-        console.log("byte received");
         // TODO: Update this to be more robust to multiple characters sent from tympan
         let byteArray = new Uint8Array(dv.buffer.slice(dv.byteOffset, dv.byteOffset + dv.byteLength));
         
@@ -202,13 +201,11 @@ export class TympanWrap {
 
     private innerByteChecker(deviceId: string) {
         if (this.ACCUMULATE_BYTES[deviceId] === true) {
-            console.log("checking on bytes");
             if (new Date().getTime() - this.lastByteReceived[deviceId] > this.inner_byte_timeout) {
                 let tabsintId: string|undefined = this.deviceUtil.getTabsintIdFromDeviceId(deviceId);
                 let msg = "[byte timeout]";
                 this.devicesModel.tympanResponseSubject.next({"tabsintId":tabsintId!,"msg":msg});
                 this.stopAccumulatingBytes(deviceId);
-                console.log("byte timeout hit");
             } else {
                 setTimeout(this.innerByteChecker.bind(this, deviceId), 100);
             }

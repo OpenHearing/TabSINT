@@ -115,6 +115,7 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
            resp.length > 1 && 
            resp[1] !== 'ERROR' && 
            resp[2] !== 'timeout' &&
+           resp[2] !== 'byte timeout' &&
            resp[1] !== 'OK';
   }
 

@@ -164,7 +164,7 @@ export class TympanService {
             let maxByteLength = this.deviceUtil.getMaxByteLengthFromDeviceId(tympanId);
             await this.tympanWrap.write(tympanId, msg, maxByteLength);
             await this.waitForResponse();
-            resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
+            resp = this.handleTimeoutErrors(msgId);
         } catch (e) {
             this.state.examState = ExamState.DeviceError;
             this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));
@@ -185,7 +185,7 @@ export class TympanService {
             let maxByteLength = this.deviceUtil.getMaxByteLengthFromDeviceId(tympanId);
             await this.tympanWrap.write(tympanId, msg, maxByteLength);
             await this.waitForResponse();
-            resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
+            resp = this.handleTimeoutErrors(msgId);
         } catch (error: unknown) {
             this.state.examState = ExamState.DeviceError;
             if (error instanceof Error) {
@@ -209,7 +209,7 @@ export class TympanService {
             let maxByteLength = this.deviceUtil.getMaxByteLengthFromDeviceId(tympanId);
             await this.tympanWrap.write(tympanId, msg, maxByteLength);
             await this.waitForResponse();
-            resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
+            resp = this.handleTimeoutErrors(msgId);
         } catch (e) {
             this.state.examState = ExamState.DeviceError;
             this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));
@@ -230,7 +230,7 @@ export class TympanService {
             let maxByteLength = this.deviceUtil.getMaxByteLengthFromDeviceId(tympanId);
             await this.tympanWrap.write(tympanId, msg, maxByteLength);
             await this.waitForResponse(timeoutTimeMs);
-            resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
+            resp = this.handleTimeoutErrors(msgId);
         } catch (e) {
             this.state.examState = ExamState.DeviceError;
             this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));
