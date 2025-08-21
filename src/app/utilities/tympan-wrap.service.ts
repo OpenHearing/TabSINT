@@ -24,7 +24,9 @@ export class TympanWrap {
     ADAFRUIT_SERVICE_UUID = "BC2F4CC6-AAEF-4351-9034-D66268E328F0"; // custom tympan service
     ADAFRUIT_CHARACTERISTIC_UUID = "06D1E5E7-79AD-4A71-8FAA-373789F7D93C"; // custom tympan characteristic
     CRC8_TABLE = this.genCRC8Table();
-    ACCUMULATE_BYTES = false;
+    ACCUMULATE_BYTES: {[key: string]: boolean} = {};
+    lastByteReceived: {[key: string]: number} = {};
+    inner_byte_timeout: number = 2000;
     TMP_BUFFER: {[key: string]: DataView} = {};
     
 
@@ -98,6 +100,7 @@ export class TympanWrap {
     }
 
     async write(deviceId: string, msg: string, chunkSize: number) {
+        // TODO: Do we really need to clear here?
         this.clearTMPBuffer(deviceId);
         let msg_to_write = this.msgToDataView(msg);
 
@@ -148,22 +151,23 @@ export class TympanWrap {
         this.logger.debug('disconnected from device:'+JSON.stringify(deviceId));
     }
 
-    handleIncomingBytes(deviceId: string, dv: DataView) {     
+    handleIncomingBytes(deviceId: string, dv: DataView) {
+        // TODO: Update this to be more robust to multiple characters sent from tympan
         let byteArray = new Uint8Array(dv.buffer.slice(dv.byteOffset, dv.byteOffset + dv.byteLength));
         
         // check for a start character to begin accumulating bytes
-        if (byteArray.length == 1 && byteArray[0]==5) {
-            if (this.ACCUMULATE_BYTES === true) {
+        if (byteArray.length == 1 && byteArray[0] == 5) {
+            if (this.ACCUMULATE_BYTES[deviceId] === true) {
                 this.logger.debug("Bytes in ble buffer reset");
                 this.clearTMPBuffer(deviceId);
             }
-            this.ACCUMULATE_BYTES = true;
+            this.startAccumulatingBytes(deviceId);
         }
 
         // accumulate bytes
-        if (this.ACCUMULATE_BYTES === true) {
+        if (this.ACCUMULATE_BYTES[deviceId] === true) {
             if (!this.isUnhandledByteMessage(byteArray)) {
-                this.TMP_BUFFER[deviceId] = this.appendDataView(this.TMP_BUFFER[deviceId],dv);
+                this.addBytesToBuffer(deviceId, dv);
             } else {
                 this.logger.debug(`Unhandled byte sequence detected and ignored: ${this.formatHexArray(byteArray)}`);
             }
@@ -173,8 +177,37 @@ export class TympanWrap {
                 let tabsintId: string|undefined = this.deviceUtil.getTabsintIdFromDeviceId(deviceId);
                 let msg = this.parseCompletedMsg(deviceId);
                 this.devicesModel.tympanResponseSubject.next({"tabsintId":tabsintId!,"msg":msg});
-                this.clearTMPBuffer(deviceId);
-                this.ACCUMULATE_BYTES = false;
+                this.stopAccumulatingBytes(deviceId);
+            }
+        }
+    }
+
+    private startAccumulatingBytes(deviceId: string) {
+        this.ACCUMULATE_BYTES[deviceId] = true;
+        this.lastByteReceived[deviceId] = new Date().getTime();
+        this.innerByteChecker(deviceId);
+    }
+
+    private stopAccumulatingBytes(deviceId: string) {
+        // TODO: Should we always clear with this call?
+        this.clearTMPBuffer(deviceId);
+        this.ACCUMULATE_BYTES[deviceId] = false;
+    }
+
+    private addBytesToBuffer(deviceId: string, dv: DataView) {
+        this.TMP_BUFFER[deviceId] = this.appendDataView(this.TMP_BUFFER[deviceId], dv);
+        this.lastByteReceived[deviceId] = new Date().getTime();
+    }
+
+    private innerByteChecker(deviceId: string) {
+        if (this.ACCUMULATE_BYTES[deviceId] === true) {
+            if (new Date().getTime() - this.lastByteReceived[deviceId] > this.inner_byte_timeout) {
+                let tabsintId: string|undefined = this.deviceUtil.getTabsintIdFromDeviceId(deviceId);
+                let msg = "[byte timeout]";
+                this.devicesModel.tympanResponseSubject.next({"tabsintId":tabsintId!,"msg":msg});
+                this.stopAccumulatingBytes(deviceId);
+            } else {
+                setTimeout(this.innerByteChecker.bind(this, deviceId), 100);
             }
         }
     }

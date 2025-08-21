@@ -93,6 +93,9 @@ export class DeviceUtil {
             if (-parseInt(expectedMsgInfo!.msgId) === JSON.parse(response.msg)[0]) {
                 resp = true;
             }
+            if (response.msg === "['byte timeout']") {
+                resp = true;
+            }
         }        
         return resp;
     }

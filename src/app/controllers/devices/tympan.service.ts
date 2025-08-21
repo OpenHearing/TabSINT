@@ -42,7 +42,7 @@ export class TympanService {
         this.tympanSubscription = this.devicesModel.tympanResponseSubject.subscribe((response: TympanResponse) => {
             logger.debug("tympanService device msg: "+JSON.stringify(response));
             if (this.deviceUtil.isResponseInvalidChecksum(response)) {
-                this.retryTympanCommand();
+                this.retryTympanCommand();            
             } else if (this.deviceUtil.doTympanResponseMsgIdsMatch(this.pendingMsgInfo, response)) {
                 this.pendingMsg = false;
                 this.response = JSON.parse(response.msg);
@@ -142,7 +142,7 @@ export class TympanService {
             let maxByteLength = this.deviceUtil.getMaxByteLengthFromDeviceId(tympanId);
             await this.tympanWrap.write(tympanId, msg, maxByteLength);
             await this.waitForResponse();
-            resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
+            resp = this.handleTimeoutErrors(msgId);
         } catch (e) {
             this.state.examState = ExamState.DeviceError;
             this.state.deviceError = resp;
@@ -164,7 +164,7 @@ export class TympanService {
             let maxByteLength = this.deviceUtil.getMaxByteLengthFromDeviceId(tympanId);
             await this.tympanWrap.write(tympanId, msg, maxByteLength);
             await this.waitForResponse();
-            resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
+            resp = this.handleTimeoutErrors(msgId);
         } catch (e) {
             this.state.examState = ExamState.DeviceError;
             this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));
@@ -185,7 +185,7 @@ export class TympanService {
             let maxByteLength = this.deviceUtil.getMaxByteLengthFromDeviceId(tympanId);
             await this.tympanWrap.write(tympanId, msg, maxByteLength);
             await this.waitForResponse();
-            resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
+            resp = this.handleTimeoutErrors(msgId);
         } catch (error: unknown) {
             this.state.examState = ExamState.DeviceError;
             if (error instanceof Error) {
@@ -209,7 +209,7 @@ export class TympanService {
             let maxByteLength = this.deviceUtil.getMaxByteLengthFromDeviceId(tympanId);
             await this.tympanWrap.write(tympanId, msg, maxByteLength);
             await this.waitForResponse();
-            resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
+            resp = this.handleTimeoutErrors(msgId);
         } catch (e) {
             this.state.examState = ExamState.DeviceError;
             this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));
@@ -230,7 +230,7 @@ export class TympanService {
             let maxByteLength = this.deviceUtil.getMaxByteLengthFromDeviceId(tympanId);
             await this.tympanWrap.write(tympanId, msg, maxByteLength);
             await this.waitForResponse(timeoutTimeMs);
-            resp = this.response.length === 0 ? [-msgId,"ERROR","timeout"] : this.response;
+            resp = this.handleTimeoutErrors(msgId);
         } catch (e) {
             this.state.examState = ExamState.DeviceError;
             this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));
@@ -242,6 +242,18 @@ export class TympanService {
         this.logger.error('INVALID CHECKSUM in Tympan Service');
         this.logger.error("RETRYING COMMAND " + String(this.currentCommand?.func));
         await this.currentCommand?.func(...this.currentCommand.params);
+    }
+
+    private handleTimeoutErrors(msgId: string) {
+        let resp;
+        if (this.response.length === 0) {
+            resp = [-msgId,"ERROR","timeout"];
+        } else if (JSON.stringify(this.response).includes("byte timeout")) {
+            resp = [-msgId,"ERROR","byte timeout"];
+        } else {
+            resp = this.response;
+        }
+        return resp
     }
 }
 
