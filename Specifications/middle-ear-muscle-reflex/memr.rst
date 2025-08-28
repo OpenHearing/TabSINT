@@ -65,16 +65,21 @@ GUI
       - If Level Change is “Within Block”, then repeats are the # of blocks.
    - Probe stimulus level, remains the same accross all blocks and trials
    - Submission interval: wait period after completing all trials, in msec
-   - Probe output channel
-
-      - Sets the probe output channel ( e.g."HPL0" or ["HPL0","HPR0"])
    - Elicitor output channel
 
-      - Sets the elicitor output channel ( e.g."HPL0" or ["HPL0","HPR0"])
-      - Note: the MEMR firmware `PlaybackChannel` corresponds to `[ProbeOutputChannel, EllicitorOutputChannel]`
+      - Sets the elicitor output channel ( e.g."HPL1" -- default and designed for the Auren probe. For testing without a Tympan Shield, use "HPL0". )
+      - Note: the MEMR firmware `PlaybackChannel` corresponds to `[EllicitorOutputChannel, ProbeOutputChannel]`
+      - Note: if Elicitor output channel and probe output channel are set to the same, they are mixed 1:1 (0 dB gain)
+
+   - Probe output channel
+
+      - Sets the probe output channel ( e.g."HPR1" -- default and designed for the Auren probe. For testing without a Tympan Shield, use "HPR0". )
 
 
-   - Recording Channels (e.g."LEFT:BOARD_MIC" or ["LEFT:BOARD_MIC", "RIGHT:BOARD_MIC"])
+   - Record Channels: Channels recorded to a wavefile, typically these can are input channels but can also be output channels
+
+     - Default, designed for the Auren probe: ["EPSHIELD_RIGHT_PDM_MIC1", "EPSHIELD_RIGHT_PDM_MIC2", "EPSHIELD_LEFT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2"]
+     - For testing without a Tympan Shield: ["LEFT:BOARD_MIC", "LEFT:JACK_AS_LINEIN", "HPL0", "HPR0"])
    
      - Note: this parameter maps directly to the firmware `RecordChannel`
 
