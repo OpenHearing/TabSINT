@@ -53,7 +53,7 @@ export class DiskModel {
             myCha: ''
         },
         contentURI: null,
-        debugMode: true,
+        debugMode: false,
         disableAudioStreaming: true,
         disableLogs: false,
         downloadInProgress: false,
