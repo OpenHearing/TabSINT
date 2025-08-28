@@ -18,6 +18,10 @@ Revision Table
      - 3 July 2025
      - BGraybill
      - Initial commit for a MEMR exam.
+   * - 2
+     - 28 August 2025
+     - VAL
+     - MVP updates for a MEMR exam.
 
 
 References
@@ -63,12 +67,22 @@ GUI
    - Submission interval: wait period after completing all trials, in msec
    - Probe output channel
 
-      - Sets the output channels ( e.g."HPL0" or ["HPL0","HPR0"])
+      - Sets the probe output channel ( e.g."HPL0" or ["HPL0","HPR0"])
    - Elicitor output channel
 
-      - Sets the input channels (e.g."LEFT:BOARD_MIC" or ["LEFT:BOARD_MIC", "RIGHT:BOARD_MIC"])
+      - Sets the elicitor output channel ( e.g."HPL0" or ["HPL0","HPR0"])
+      - Note: the MEMR firmware `PlaybackChannel` corresponds to `[ProbeOutputChannel, EllicitorOutputChannel]`
+
+
+   - Recording Channels (e.g."LEFT:BOARD_MIC" or ["LEFT:BOARD_MIC", "RIGHT:BOARD_MIC"])
+   
+     - Note: this parameter maps directly to the firmware `RecordChannel`
+
    - Boolean for using the gain metascalar. If true, read the metadata scalar from the wavefile and record
    - Sound file name. Path of the wavefile to play on the Tympan. This can include a directory such as /MEMR/play.wav.
+
+     - Note: Specify a 2-channel WAV file for playback, with the elicitor on channel-0 and the probe stimulus on channel-1.
+     
    - Folder name on the Tympan where the recorded sound files are stored.
    - Record file name. Path of the WAV file to to record. Files are appended with _NNN, e.g., a specification of /MEMR/blk001/rec.wav results in /MEMR/blk001/rec_001.wav,
 - The GUI should display the following information in a table like the one below prior to starting the exam (Figure 1): 
