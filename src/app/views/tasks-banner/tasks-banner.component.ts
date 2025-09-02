@@ -29,9 +29,6 @@ export class TasksBannerComponent implements OnInit, OnDestroy{
 
   getOngoingTasksMessage(): string[] {
     const taskMessages = Object.values(this.taskList);
-    if (taskMessages){
-      return taskMessages
-    }
-    return []
+    return taskMessages || [];
   }
 }

@@ -21,8 +21,6 @@ export class CalibrationResultsViewerComponent implements OnInit {
   ngOnInit(): void {
     const calibrationResult = this.resultsModel.getResults().currentExam.responses
       .filter((response: ExamResponse) => response.responseArea === 'calibrationExam');
-    console.log(this.resultsModel.getResults().currentExam.responses)
-    console.log(calibrationResult);
     if (calibrationResult.length > 0) {
       this.results = JSON.parse(calibrationResult[calibrationResult.length-1].response) as CalibrationResults;
     }
@@ -34,7 +32,6 @@ export class CalibrationResultsViewerComponent implements OnInit {
   }
 
   navigateToCalibration(ear: string, frequency: string): void {
-    console.log(`Frequency is = ${frequency} and ear is = ${ear}`);
     this.entryClicked.emit({ ear, frequency });
   }
 

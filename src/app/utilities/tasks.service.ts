@@ -15,7 +15,7 @@ export class Tasks {
 
     register(task: string, msg: string): void {
         this.list[task] = msg;
-        this.taskSubject.next(this.list);
+        this.taskSubject.next({...this.list});
     }
     
     deregister(task: string): void {

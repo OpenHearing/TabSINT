@@ -77,23 +77,24 @@ export class ProtocolService {
     ) {
         this.loading.meta = meta;
         this.loading.notify = notify;
-
+        this.tasks.register("Load Protocol", "Load Protocol");
         try {
             await this.loadFiles();
-            this.setCalibration();
+            await this.setCalibration();
             this.initializeProtocol();
             let validationError = await this.validateIfCalledFor();
                 // .then(loadCustomJs)
                 // .then(validateCustomJsIfCalledFor)
             this.handleLoadErrors(validationError);
         } catch(e) {
-            this.tasks.deregister("updating protocol");
             this.logger.error("Could not load protocol.  " + JSON.stringify(e));
             this.notifications.alert({
                 title: "Alert",
                 content: "Could not load protocol.",
                 type: DialogType.Alert
             }).subscribe();
+        } finally {
+            this.tasks.deregister("Load Protocol");
         }
     };
 
@@ -122,6 +123,8 @@ export class ProtocolService {
 
     private async loadFiles() {
         try {
+            
+            this.tasks.register("Load Files", "Loading Files...");
             let protocol;
             let finalProtocol: ProtocolSchemaInterface;
 
@@ -142,7 +145,15 @@ export class ProtocolService {
             }
 
         } catch(err) {
+            let error: ProtocolErrorInterface = {
+                type: "Load Files",
+                error: JSON.stringify(err)
+            };
+            this.loading.errors = this.loading.errors || [];
+            this.loading.errors.push(error);
             this.logger.error("Error while loading files: " + err);
+        } finally {
+            this.tasks.deregister("Load Files");
         }
     }
 
@@ -160,11 +171,12 @@ export class ProtocolService {
 
     private async validateIfCalledFor() {
         if (this.loading.notify) {
-            this.tasks.register("updating protocol", "Validating Protocol... This process could take several minutes");
+            this.tasks.register("Validate Protocol", "Validating Protocol... This process could take several minutes");
         }
 
         if (this.disk.validateProtocols) {
             let validationResult = await this.validate();
+            this.tasks.deregister("Validate Protocol");
             if (validationResult.valid) {
                 return;
             } else {
@@ -184,7 +196,7 @@ export class ProtocolService {
 
         if (!_.isUndefined(validationError)) this.protocolModel.activeProtocol!.errors!.push(validationError);
 
-        this.tasks.register("updating protocol", "Checking Protocol Files...");
+        this.tasks.register("Handle Load Errors", "Checking Protocol Files...");
         let msg = checkCalibrationFiles(this.protocolModel.activeProtocol!);
         if (typeof msg === "string") {
             this.logger.debug(msg);
@@ -225,24 +237,28 @@ export class ProtocolService {
                 type: DialogType.Alert
             }).subscribe();
         }
-        this.tasks.deregister("updating protocol");
+        this.tasks.deregister("Handle Load Errors");
     }
 
     private initializeProtocol() {
-        this.tasks.register("updating protocol", "Initializing Protocol...");
+        this.tasks.register("Initialize Protocol", "Initializing Protocol...");
         this.loading = initializeLoadingProtocol(
             this.loading,
             this.logger,
             this.translate,
             this.disk,
             this.fileService);
-        this.tasks.register("updating protocol", "Processing Protocol...");
+        this.tasks.register("Initialize Protocol", "Processing Protocol...");
 
         [this.protocolModel.activeProtocol,
             this.protocolModel.activeProtocolDictionary,
             this.protocolModel.activeProtocolFollowOnsDictionary
         ] = processProtocol(this.loading);
 
+        if (this.loading.errors && this.loading.errors.length > 0) {
+            this.protocolModel.activeProtocol!.errors = this.protocolModel.activeProtocol!.errors || [];
+            this.protocolModel.activeProtocol!.errors.push(...this.loading.errors);
+        }
         if (this.protocolModel.activeProtocol && "key" in this.protocolModel.activeProtocol) {
             if (this.protocolModel.activeProtocol.key !== undefined) {
                 this.protocolModel.activeProtocol.publicKey = decodeURI(this.protocolModel.activeProtocol.key);
@@ -258,6 +274,7 @@ export class ProtocolService {
 
         this.state.examIndex = 0;
         this.state.examState = ExamState.Ready;
+        this.tasks.deregister("Initialize Protocol");
     }
 
     private async setCalibration() {
@@ -271,7 +288,6 @@ export class ProtocolService {
         if (calibration) {
             this.loading.calibration = JSON.parse(calibration);
         }
-
     }
 
     private notifyProtocolDidntLoadProperly() {

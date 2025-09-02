@@ -28,7 +28,7 @@ export class ExamDeviceErrorComponent {
   }
 
   retry() {
-    console.log("retry button pressed, setting state to TESTING and clearing deviceError(s)");
+    this.logger.debug("retry button pressed, setting state to TESTING and clearing deviceError(s)");
     this.state.examState = ExamState.Testing;
     this.state.deviceError = [];
   }

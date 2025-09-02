@@ -87,8 +87,6 @@ export class DeviceUtil {
 
     doTympanResponseMsgIdsMatch(expectedMsgInfo: PendingMsgInfo|null, response: TympanResponse): boolean {
         let resp = false;
-        console.log("expectedMsgInfo: ", expectedMsgInfo);
-        console.log("response: ", response);
         if (expectedMsgInfo!.tabsintId === parseInt(response.tabsintId)) {
             if (-parseInt(expectedMsgInfo!.msgId) === JSON.parse(response.msg)[0]) {
                 resp = true;

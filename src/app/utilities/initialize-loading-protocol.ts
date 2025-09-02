@@ -93,7 +93,6 @@ export function initializeLoadingProtocol(
         loading.protocol.protocolUsbCMissing = false; // default/reset to false.
         if (loading.protocol.headset === "EPHD1") {
             // loading.protocol.protocolUsbCMissing = !tabsintNative.isUsbConnected;
-            console.log("About to run registerUsbDeviceListener()");
         // tabsintNative.registerUsbDeviceListener(api.usbEventCallback);
         } else {
         // tabsintNative.unregisterUsbDeviceListener(api.usbEventCallback);
