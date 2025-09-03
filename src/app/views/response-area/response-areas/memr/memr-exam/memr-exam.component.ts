@@ -151,6 +151,64 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     })();
   }
 
+  /* Get the record channels as an array from inputParameterMap
+  * @returns Array of channel names
+  */
+  getRecordChannelsArray(): string[] {
+    const channelsString = this.inputParameterMap.get('Record Channels') || '[]';
+    try {
+      const parsed = JSON.parse(channelsString);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      this.logger.error('Error parsing record channels: ' + error);
+      return [];
+    }
+  }
+
+  /**
+   * Get the recorded Leq level for a specific channel index
+   * @param index Channel index
+   * @returns Recorded Leq level or 'N/A'
+   */
+  getRecordedLevelLeq(index: number): string {
+    if (this.memrResults?.RecordedLeq_dBSPL && 
+        Array.isArray(this.memrResults.RecordedLeq_dBSPL) &&
+        index < this.memrResults.RecordedLeq_dBSPL.length) {
+      return this.memrResults.RecordedLeq_dBSPL[index].toFixed(1);
+    }
+    return 'N/A';
+  }
+
+  /**
+   * Get the recorded peak level for a specific channel index
+   * @param index Channel index
+   * @returns Recorded peak level or 'N/A'
+   */
+  getRecordedLevelPeak(index: number): string {
+    if (this.memrResults?.RecordedPeak_dBP && 
+        Array.isArray(this.memrResults.RecordedPeak_dBP) &&
+        index < this.memrResults.RecordedPeak_dBP.length) {
+      return this.memrResults.RecordedPeak_dBP[index].toFixed(1);
+    }
+    return 'N/A';
+  }
+
+  /**
+   * Dialog to abort the currently running exam and save results.
+   */
+  public showCancelExamDialog(): void {
+    let msg: DialogDataInterface = {
+      title: "Confirm",
+      content: "Cancel the MEMR exam",
+      type: DialogType.Confirm
+    };
+    this.notifications.alert(msg).subscribe(async result => {
+      if (result === "OK" && this.currentStep == "Exam") {
+        await this.finishExam();
+      }
+    });
+  }
+
   /**
    * Abort the exam and cancel any ongoing tasks.
    */
@@ -171,22 +229,6 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Dialog to abort the currently running exam and save results.
-   */
-  public showCancelExamDialog(): void {
-    let msg: DialogDataInterface = {
-      title: "Confirm",
-      content: "Cancel the MEMR exam",
-      type: DialogType.Confirm
-    };
-    this.notifications.alert(msg).subscribe(async result => {
-      if (result === "OK" && this.currentStep == "Exam") {
-        await this.finishExam();
-      }
-    });
-  }
-
-  /**
    * Initialize response area and parameter map for initial exam page.
    */
   private initializeResponseArea(responseArea: MemrExamInterface): void {
@@ -203,8 +245,9 @@ export class MemrExamComponent implements OnInit, OnDestroy {
       ["Elicitor Level Array", JSON.stringify(this.memrExamProperties.elicitorLevelArray ?? [])],
       ["Probe Stimulus Level", this.memrExamProperties.probeStimulusLevel?.toString() ?? ""],
       ["Submission Interval (ms)", this.memrExamProperties.submissionIntervalMs?.toString() ?? ""],
-      ["Probe Output Channel", JSON.stringify(this.memrExamProperties.probeOutputChannel ?? [])],
-      ["Elicitor Output Channel", JSON.stringify(this.memrExamProperties.elicitorOutputChannel ?? [])],
+      ["Probe Output Channel", JSON.stringify(this.memrExamProperties.probeOutputChannel ?? memrSchema.properties.probeOutputChannel.default)],
+      ["Elicitor Output Channel", JSON.stringify(this.memrExamProperties.elicitorOutputChannel ?? memrSchema.properties.elicitorOutputChannel.default)],
+      ["Record Channels", JSON.stringify(this.memrExamProperties.recordChannels ?? memrSchema.properties.recordChannels.default)],
       ["Gain Scale", this.memrExamProperties.useMetaRMS?.toString() ?? ""],
       ["Sound File", this.memrExamProperties.soundFileName?.toString() ?? ""],
       ["Results File", this.memrExamProperties.recordFileName?.toString() ?? ""],
@@ -235,8 +278,8 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     const device = this.getDevice();
     if (device) {
       const examProperties: MemrQueueExamInterface = {
-        InputChannel: this.memrExamProperties.elicitorOutputChannel,
-        OutputChannel: this.memrExamProperties.probeOutputChannel,
+        PlaybackChannels: [...this.memrExamProperties.elicitorOutputChannel!, ...this.memrExamProperties.probeOutputChannel!],
+        RecordChannels: this.memrExamProperties.recordChannels,
       };
       await this.devicesService.queueExam(device, "PlayRecordExam", examProperties);
       this.startPollingResults();
@@ -272,7 +315,8 @@ export class MemrExamComponent implements OnInit, OnDestroy {
       NumTrials: this.trialsPerBlock,
       Level_dBSpl: blockData,
       RecordFileName: this.getRecordBlockPath(this.currentBlockIndex),
-      SubmissionInterval_ms: this.memrExamProperties.submissionIntervalMs,
+      SubmissionInterval_ms: this.memrExamProperties.submissionIntervalMs
+      // NumOutputChans: this.memrExamProperties.probeOutputChannel?.length
     };
     const device = this.getDevice();
     if (device) {
@@ -292,8 +336,8 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     this.memrResults = {
       State: results.State,
       TrialsCompleted: results.TrialsCompleted,
-      RecordedLevel_LeqdBSPL: results.RecordedLevel_LeqdBSPL,
-      RecordedLevel_dBP: results.RecordedLevel_dBP,
+      RecordedLeq_dBSPL: results.RecordedLeq_dBSPL,
+      RecordedPeak_dBP: results.RecordedPeak_dBP,
     };
     if (results.State === "READY") {
       // Block based percentage calculation

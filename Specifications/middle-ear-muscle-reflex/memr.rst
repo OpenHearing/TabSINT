@@ -97,6 +97,8 @@ GUI
      - [ProbeOutputChannel]
    * - Elicitor Output Channel
      - [ElicitorOutputChannel]
+   * - Record Channels
+     - [recordChannels]
    * - Gain Scaling
      - [metaDataScalar]
    * - Sound File Folder

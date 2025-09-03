@@ -4,7 +4,49 @@
   <input-parameters *ngSwitchCase="'Ready'" [parameterMap]="inputParameterMap">
   </input-parameters>
 
+  <div *ngSwitchCase="'Finish'">
+
+    <div *ngIf="memrResults && getRecordChannelsArray().length > 0" class="results-container">
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th>Channel</th>
+            <th>Average Leq (dB SPL)</th>
+            <th>Peak Leq (dB SPL)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let channel of getRecordChannelsArray(); let i = index">
+            <td>{{ channel }}</td>
+            <td>{{ getRecordedLevelLeq(i) }}</td>
+            <td>{{ getRecordedLevelPeak(i) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
   <div *ngSwitchCase="'Exam'">
+
+    <div *ngIf="memrResults && getRecordChannelsArray().length > 0" class="results-container">
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th>Channel</th>
+            <th>Average Leq (dB SPL)</th>
+            <th>Peak Leq (dB SPL)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let channel of getRecordChannelsArray(); let i = index">
+            <td>{{ channel }}</td>
+            <td>{{ getRecordedLevelLeq(i) }}</td>
+            <td>{{ getRecordedLevelPeak(i) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
     <div class="row pad-top">
       <div class="col-6 justify-content-center text-center">
         {{ 'Blocks Complete' | translate }}
@@ -15,6 +57,7 @@
         </button>
       </div>
     </div>
+
     <div class="row pad-top progress-container">
       <div class="col-12 progress-column">
         <mat-progress-bar class="progress-bar" mode="determinate" [value]="pctComplete"></mat-progress-bar>

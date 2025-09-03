@@ -31,7 +31,8 @@ export const memrSchema: JSONSchemaType<MemrExamInterface> = {
         type: "string"
       },
       minItems: 1,
-      nullable: true
+      nullable: true,
+      default: ["HPR1"]
     },
     elicitorOutputChannel: {
       type: "array",
@@ -39,7 +40,18 @@ export const memrSchema: JSONSchemaType<MemrExamInterface> = {
         type: "string"
       },
       minItems: 1,
-      nullable: true
+      nullable: true,
+      default: ["HPL1"]
+    },
+     recordChannels: {
+      type: "array",
+      items: {
+        type: "string"
+      },
+      minItems: 1,
+      nullable: true,
+      default: ["EPSHIELD_RIGHT_PDM_MIC1", "EPSHIELD_RIGHT_PDM_MIC2", "EPSHIELD_LEFT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2"],
+      description: 'Channels recorded to a wavefile, typically these can are input channels but can also be output channels. Defaults are designed for Auren probe, for testing without a Tympan Shield, use: ["LEFT:BOARD_MIC", "LEFT:JACK_AS_LINEIN", "HPL0", "HPR0"]'
     },
   },
   required: ["type"]

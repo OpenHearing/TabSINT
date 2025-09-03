@@ -33,17 +33,18 @@ export interface MemrExamInterface extends CommonResponseAreaInterface {
   submissionIntervalMs?: number;
   probeOutputChannel?: string[];
   elicitorOutputChannel?: string[];
+  recordChannels?: string[];
 }
 
 /**
  * MEMR Queue Exam Interface
  * 
- * @field OutputChannel The probe channels for the exam.
- * @field InputChannel The elicitor channels for the exam.
+ * @field RecordChannels The probe channels for the exam.
+ * @field PlaybackChannels The elicitor channels for the exam.
  */
 export interface MemrQueueExamInterface {
-  OutputChannel?: string[];
-  InputChannel?: string[];
+  RecordChannels?: string[];
+  PlaybackChannels?: string[];
 }
 
 /**
@@ -64,6 +65,7 @@ export interface MemrExamSubmissionInterface {
   UseMetaRMS?: boolean;
   Level_dBSpl?: number[][];
   SubmissionInterval_ms?: number;
+  NumOutputChans?: number
 }
 
 /**
@@ -78,6 +80,6 @@ export interface MemrExamSubmissionInterface {
 export interface MemrResultsInterface {
   State: string;
   TrialsCompleted: number;
-  RecordedLevel_LeqdBSPL: number;
-  RecordedLevel_dBP: number;
+  RecordedLeq_dBSPL: number;
+  RecordedPeak_dBP: number;
 }
