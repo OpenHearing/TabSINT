@@ -24,7 +24,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
       id: { type: "string" },
       headset: {
         type: "string",
-        enum: ["VicFirth", "Vic Firth S2", "HDA200", "WAHTS", "Audiometer", "EPHD1"],
+        enum: ["None", "VicFirth", "Vic Firth S2", "HDA200", "WAHTS", "Audiometer", "EPHD1"],
         nullable: true,
       },
       skipIf: { type: "string", nullable: true },

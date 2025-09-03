@@ -31,6 +31,8 @@ export class MultipleInputComponent  implements OnInit {
   }];
 
   pageSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
+  resultsSubscription: Subscription | undefined;
 
   constructor (
     private readonly pageModel: PageModel,
@@ -42,6 +44,12 @@ export class MultipleInputComponent  implements OnInit {
   }
 
   ngOnInit() {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+      this.state = updatedState;
+    });
+    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe( (updatedResults) => {
+      this.results = updatedResults;
+    });
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type == 'multipleInputResponseArea') {
         let updatedMultipleInputResponseArea = updatedPage.responseArea as MultipleInputInterface;
@@ -58,6 +66,8 @@ export class MultipleInputComponent  implements OnInit {
 
   ngOnDestroy() {
     this.pageSubscription?.unsubscribe();
+    this.resultsSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
   }
 
   enableReview(status: boolean): void {
@@ -65,13 +75,13 @@ export class MultipleInputComponent  implements OnInit {
   }
 
   selectResponse(i: number, option: any): void {
-    this.results.currentPage.response[i] = option;
+    this.resultsModel.updateCurrentPageResponseElement(i, option);
     this.updateSubmittableLogic();
   }
 
   selectMultiResponse(i: number): void {
     const multiResp = this.multiDropdownModel[i];
-    this.results.currentPage.response[i] = multiResp;
+    this.resultsModel.updateCurrentPageResponseElement(i, multiResp);
     this.updateSubmittableLogic();
   }
 
@@ -80,7 +90,7 @@ export class MultipleInputComponent  implements OnInit {
       (item: any, idx: number) =>
         !item.required || this.isDefined(item, this.results.currentPage.response[idx])
     );
-    this.state.isSubmittable = isSubmittable;
+    this.stateModel.updateState({isSubmittable: isSubmittable});
   }
 
   isDefined(item: any, val: any): boolean {
@@ -122,7 +132,7 @@ export class MultipleInputComponent  implements OnInit {
   }
 
   private initializeReponses(updatedMultipleInputResponseArea: MultipleInputInterface) {
-    this.results.currentPage.response = updatedMultipleInputResponseArea.inputList.map(
+    this.resultsModel.updateCurrentPage({response: updatedMultipleInputResponseArea.inputList.map(
       (item: any) => {
         if (item.inputType === 'date' && item.dateProperties.default === 'today') {
           return this.today;
@@ -130,7 +140,7 @@ export class MultipleInputComponent  implements OnInit {
           return item.value;
         }
       }
-    );
+    )});
   }
 
 }

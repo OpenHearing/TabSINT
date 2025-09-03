@@ -23,7 +23,10 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
   results: ResultsInterface;
   state: StateInterface;
   protocol: ProtocolModelInterface;
-  pageSubscription: Subscription|undefined;
+
+  pageSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
+  resultsSubscription: Subscription | undefined;
 
   constructor (
     private readonly logger: Logger,
@@ -56,6 +59,12 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
   ];
 
   ngOnInit() {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+      this.state = updatedState;
+    });
+    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe( (updatedResults) => {
+      this.results = updatedResults;
+    });
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage:PageInterface) => {
       if (updatedPage?.responseArea?.type == "multipleChoiceResponseArea") {
         const updatedMultipleChoiceResponseArea = updatedPage.responseArea as MultipleChoiceInterface;
@@ -76,11 +85,13 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.pageSubscription?.unsubscribe();
+    this.resultsSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
   }
 
   choose(id: string) {
-    this.results.currentPage.response = id;
-    this.state.doesResponseExist = true;
+    this.resultsModel.updateCurrentPage({response: id});
+    this.stateModel.updateState({doesResponseExist: true});
     this.stateModel.setPageSubmittable();
     if (this.state.isSubmittable && this.results.currentPage.response !== "Other") {
       this.examService.submit = this.examService.submitDefault;

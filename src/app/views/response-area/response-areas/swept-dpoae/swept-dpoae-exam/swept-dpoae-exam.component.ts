@@ -50,6 +50,7 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
   results: ResultsInterface;
   showResults: boolean = sweptDpoaeSchema.properties.showResults.default;
   pageSubscription: Subscription | undefined;
+  resultsSubscription: Subscription | undefined;
   currentStep: string = 'input-parameters';
   device: ConnectedDevice | undefined;
   sweptDPOAEResults: SweptDpoaeResultsInterface = {
@@ -80,6 +81,9 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe( (updatedResults) => {
+      this.results = updatedResults;
+    });
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'sweptDPOAEResponseArea') {
         const responseArea = updatedPage.responseArea as SweptDpoaeInterface;
@@ -135,6 +139,7 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
     this.logger.debug("resp from tympan after swept DPOAE exam abort exams:" + resp);
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
     this.pageSubscription?.unsubscribe();
+    this.resultsSubscription?.unsubscribe();
     this.buttonTextService.updateButtonText("Submit");
   }
 
@@ -158,7 +163,7 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
 
   saveResults(sweptDPOAEResults: SweptDpoaeResultsInterface) {
     this.sweptDPOAEResults = sweptDPOAEResults;
-    this.results.currentPage.response = sweptDPOAEResults;
+    this.resultsModel.updateCurrentPage({response: sweptDPOAEResults});
   }
 
   private async beginExam() {

@@ -47,6 +47,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
   normativeAbsorbanceDataPath: string = waiSchema.properties.normativeAbsorbanceDataPath.default;
   normativeAbsorbanceData: NormativeDataInterface[] = [];
   pageSubscription: Subscription | undefined;
+  resultsSubscription: Subscription | undefined;
   currentStep: string = 'input-parameters';
   device: ConnectedDevice | undefined;
   waiResults: WAIResultsInterface = {
@@ -75,6 +76,9 @@ export class WAIExamComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe( (updatedResults) => {
+      this.results = updatedResults;
+    });
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'WAIResponseArea') {
         const responseArea = updatedPage.responseArea as WAIInterface;
@@ -123,6 +127,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
     this.logger.debug("resp from tympan after WAI exam abort exams:" + resp);
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
     this.pageSubscription?.unsubscribe();
+    this.resultsSubscription?.unsubscribe();
     this.buttonTextService.updateButtonText("Submit");
   }
 
@@ -150,7 +155,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
     this.waiResults.PowerReflectance = this.waiResults.Absorbance!.map(num => 1 - num);
     // Convert ImpedancePhase from radians to degrees (multiply by 180/pi)
     this.waiResults.ImpedancePhase = this.waiResults.ImpedancePhase!.map(num => num*180/Math.PI);
-    this.results.currentPage.response = waiResults;
+    this.resultsModel.updateCurrentPage({response: waiResults});
   }
 
   private async beginExam() {

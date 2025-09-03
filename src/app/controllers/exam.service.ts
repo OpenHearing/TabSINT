@@ -30,7 +30,10 @@ export class ExamService {
     results: ResultsInterface;
     state: StateInterface;
     currentPage: PageInterface;
+
     pageSubscription: Subscription | undefined;
+    stateSubscription: Subscription | undefined;
+    resultsSubscription: Subscription | undefined;
 
     constructor (
         private readonly logger: Logger,
@@ -48,6 +51,12 @@ export class ExamService {
         });
         this.state = this.stateModel.getState();
         this.protocol = this.protocolM.getProtocolModel();
+        this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+            this.state = updatedState;
+        });
+        this.resultsSubscription = this.resultsModel.resultsSubject.subscribe( (updatedResults) => {
+            this.results = updatedResults;
+        });
     }
 
     /** Switches to exam view.
@@ -65,7 +74,7 @@ export class ExamService {
         }
 
         if (this.pageModel.stack.length == 0) {
-            this.state.examState = ExamState.Ready;
+            this.stateModel.updateState({examState: ExamState.Ready});
         }
     }
 
@@ -73,12 +82,12 @@ export class ExamService {
      * @summary Adds pages to protocolStack and changes examState to Testing.
      * @models protocol, state
     */
-    async begin() {     
+    async begin() {
         this.resetProtocolStack();   
         this.addPagesToStack(this.protocol.activeProtocol?.pages!, 0);
         this.resultsService.initializeExamResults();
         this.startPage();
-        this.state.examState = ExamState.Testing;
+        this.stateModel.updateState({examState: ExamState.Testing});
     }
 
     /** Default submit function for exam pages.
@@ -110,7 +119,7 @@ export class ExamService {
     }
 
     reset() {
-        this.state.examState = ExamState.Ready;
+        this.stateModel.updateState({examState: ExamState.Ready});
     }
 
     submitPartial() {
@@ -125,7 +134,7 @@ export class ExamService {
             conditional: "true",
             target: {reference: subProtocolID}
         }];
-        this.state.examState = ExamState.Testing;
+        this.stateModel.updateState({examState: ExamState.Testing});
         this.submitDefault();
     }
 
@@ -160,7 +169,7 @@ export class ExamService {
             }
             // make sure there are more pages, if not end the exam
             if (this.pageModel.stack.length > nextExamIndex) {
-                this.state.examIndex = nextExamIndex;
+                this.stateModel.updateState({examIndex: nextExamIndex});
                 this.startPage();
             } else {
                 this.endExam();
@@ -232,8 +241,10 @@ export class ExamService {
     private startPage() {
         this.pageModel.currentPageSubject.next(this.pageModel.stack[this.state.examIndex]);
         this.resultsService.initializePageResults(this.currentPage);
-        this.state.doesResponseExist = false;
-        this.state.isResponseRequired = this.isPageResponseRequired();
+        this.stateModel.updateState({
+            doesResponseExist: false,
+            isResponseRequired: this.isPageResponseRequired()
+        });
         this.stateModel.setPageSubmittable();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -291,7 +302,7 @@ export class ExamService {
     */
     private resetProtocolStack() {
         this.pageModel.stack = [];
-        this.state.examIndex = 0;
+        this.stateModel.updateState({examIndex: 0});
     }
 
     /**
@@ -300,9 +311,9 @@ export class ExamService {
      * @models state
      */
     private endExam() {
-        this.results.currentExam.elapsedTime = calculateElapsedTime(this.results.currentExam.testDateTime!);
+        this.resultsModel.updateCurrentExam({elapsedTime: calculateElapsedTime(this.results.currentExam.testDateTime!)});
         this.resultsService.save(this.results.currentExam);
-        this.state.examState = ExamState.Finalized;
+        this.stateModel.updateState({examState: ExamState.Finalized});
         this.resetProtocolStack();
         window.scrollTo(0, 0);
     }

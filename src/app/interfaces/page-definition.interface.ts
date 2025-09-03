@@ -14,7 +14,7 @@ import { FPLCalibrationExamInterface } from "../views/response-area/response-are
 
 export interface PageDefinition {
     id: string;
-    headset?: "VicFirth" | "Vic Firth S2" | "HDA200" | "WAHTS" | "Audiometer" | "EPHD1";
+    headset?: "None" | "VicFirth" | "Vic Firth S2" | "HDA200" | "WAHTS" | "Audiometer" | "EPHD1";
     skipIf?: string;
     hideProgressBar?: boolean;
     autoSubmitDelay?: number;

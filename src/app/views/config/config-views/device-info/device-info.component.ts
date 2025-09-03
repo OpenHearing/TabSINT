@@ -19,9 +19,11 @@ import { AppState } from '../../../../utilities/constants';
 })
 export class DeviceInfoComponent {
   disk: DiskInterface;
-  diskSubscription: Subscription | undefined;
   state: StateInterface;
   devices: DevicesInterface;
+
+  diskSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
 
   constructor(
     private readonly devicesModel: DevicesModel,
@@ -38,11 +40,15 @@ export class DeviceInfoComponent {
     this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
         this.disk = updatedDisk;
     })    
-    this.state.appState = AppState.Admin;
+    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+      this.state = updatedState;
+    });
+    this.stateModel.updateState({appState: AppState.Admin});
   }
 
   ngOnDestroy() {
     this.diskSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
   }
 
   setShutdownTimerPopover = this.translate.instant(

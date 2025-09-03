@@ -21,9 +21,11 @@ import { Tasks } from '../../utilities/tasks.service';
 })
 export class WelcomeComponent {
   disk: DiskInterface;
-  diskSubscription: Subscription | undefined;
   app: AppInterface;
   state: StateInterface;
+
+  diskSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
 
   constructor(
     private readonly appModel: AppModel,
@@ -43,14 +45,18 @@ export class WelcomeComponent {
     this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
         this.disk = updatedDisk;
     })    
-    this.state.appState = AppState.Welcome;
+    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+      this.state = updatedState;
+    });
+    this.stateModel.updateState({appState: AppState.Welcome});
     this.tasks.hide();
   }
 
   ngOnDestroy() {
-    this.diskSubscription?.unsubscribe();
-    this.state.appState = AppState.null;
+    this.stateModel.updateState({appState: AppState.null});
     this.tasks.unhide();
+    this.diskSubscription?.unsubscribe();
+    this.diskSubscription?.unsubscribe();
   }
 
   // TODO: Replace this variable with a model?

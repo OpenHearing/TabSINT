@@ -142,11 +142,11 @@ export class ResultsComponent {
     }
 
     const successMessage = uploadResults.success.map(s => 
-        `✔️ ${s.result.protocolName || "Unknown Protocol"}: ${s.message}`
+        `✔️ ${s.result.protocol.name || "Unknown Protocol"}: ${s.message}`
     ).join("<br>");
 
     const failureMessage = uploadResults.failed.map(f => 
-        `❌ ${f.result.protocolName || "Unknown Protocol"}: ${f.message}`
+        `❌ ${f.result.protocol.name || "Unknown Protocol"}: ${f.message}`
     ).join("<br>");
 
     this.notifications.alert({

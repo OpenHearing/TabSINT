@@ -36,6 +36,8 @@ export class LikertComponent implements OnInit, OnDestroy {
   state: StateInterface;
 
   private pageSubscription?: Subscription;
+  stateSubscription: Subscription | undefined;
+  resultsSubscription: Subscription | undefined;
 
   constructor (
     private readonly examService: ExamService, 
@@ -48,6 +50,12 @@ export class LikertComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+      this.state = updatedState;
+    });
+    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe( (updatedResults) => {
+      this.results = updatedResults;
+    });
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type == "likertResponseArea") {
         setTimeout(() => {
@@ -59,11 +67,13 @@ export class LikertComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.pageSubscription?.unsubscribe();
+    this.resultsSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
   }
 
   onResponseChange(questionIndex: number, levelIndex: number | string | null): void {
-    this.results.currentPage.response[questionIndex] = levelIndex;
-    this.state.doesResponseExist = this.results.currentPage.response !== Array.from({ length: this.questions.length }, () => null);
+    this.resultsModel.updateCurrentPageResponseElement(questionIndex, levelIndex);
+    this.stateModel.updateState({doesResponseExist: this.results.currentPage.response !== Array.from({ length: this.questions.length }, () => null)});
     this.stateModel.setPageSubmittable();
     this.responseChange.emit(this.results.currentPage.response);
   }
@@ -103,7 +113,7 @@ export class LikertComponent implements OnInit, OnDestroy {
     this.useEmoticons = responseArea.useEmoticons ?? likertSchema.properties.useEmoticons.default;
     this.useSlider = responseArea.useSlider ?? likertSchema.properties.useSlider.default;
     this.naBox = responseArea.naBox ?? likertSchema.properties.naBox.default;
-    this.results.currentPage.response = Array.from({ length: this.questions.length }, () => []);
+    this.resultsModel.updateCurrentPage({response: Array.from({ length: this.questions.length }, () => [])});
   }
 
 }

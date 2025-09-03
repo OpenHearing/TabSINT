@@ -32,6 +32,7 @@ export class ExamComponent implements OnInit, OnDestroy  {
   // Subscriptions
   diskSubscription: Subscription | undefined;
   pageSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
   buttonTextSubscription: Subscription | undefined;
   private keyboardShowListener?: PluginListenerHandle;
   private keyboardHideListener?: PluginListenerHandle;
@@ -57,19 +58,23 @@ export class ExamComponent implements OnInit, OnDestroy  {
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
       this.currentPage = updatedPage;
     });
+    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+      this.state = updatedState;
+    });
     this.examService.switchToExamView();
-    this.state.appState = AppState.Exam;
+    this.stateModel.updateState({appState: AppState.Exam});
     this.buttonTextSubscription = this.buttonTextService.buttonText$.subscribe((newText: string) => {
       this.buttonText = newText;
     });
   }
 
   ngOnDestroy(): void {
+    this.stateModel.updateState({appState: AppState.null});
     this.removeKeyboardListeners();
     this.diskSubscription?.unsubscribe();
     this.pageSubscription?.unsubscribe();
-    this.state.appState = AppState.null;
     this.buttonTextSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
   }
 
   begin() {

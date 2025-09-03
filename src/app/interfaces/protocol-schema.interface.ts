@@ -11,7 +11,7 @@ export interface ProtocolSchemaInterface {
     instructionText?: string;
     helpText?: string;
     submitText?: string;
-    headset?: "VicFirth" | "VicFirthS2" | "HDA200" | "WAHTS" | "Audiometer" | "EPHD1";
+    headset?: "None" | "VicFirth" | "VicFirthS2" | "HDA200" | "WAHTS" | "Audiometer" | "EPHD1";
     chaStream?: boolean;
     randomization?: "WithoutReplacement";
     minTabsintVersion?: string;

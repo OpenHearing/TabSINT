@@ -69,6 +69,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     pageSubscription: Subscription|undefined;
     deviceSubscription: Subscription|undefined;
     device: ConnectedDevice|undefined;
+    resultsSubscription: Subscription | undefined;
 
     constructor(
         readonly examService: ExamService, 
@@ -86,10 +87,12 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         this.results = this.resultsModel.getResults();
         this.protocol = this.protocolModel.getProtocolModel();
         this.state = this.stateModel.getState();
-        
     }
 
     async ngOnInit() {
+        this.resultsSubscription = this.resultsModel.resultsSubject.subscribe( (updatedResults) => {
+            this.results = updatedResults;
+        });        
         this.pageSubscription = this.pageModel.currentPageSubject.subscribe(this.handlePageUpdate.bind(this));
         this.deviceSubscription = this.devicesModel.tympanResponseSubject.subscribe(this.logDeviceResponse.bind(this));
         try {
@@ -105,6 +108,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         }
         this.pageSubscription?.unsubscribe();
         this.deviceSubscription?.unsubscribe();
+        this.resultsSubscription?.unsubscribe();
         try {
             await ScreenOrientation.unlock();
           } catch (error) {
@@ -182,7 +186,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         this.currentStep = 'Results';
         this.cdr.detectChanges();
         this.examService.submit = this.examService.submitDefault.bind(this.examService);
-        this.results.currentPage.response = this.audiogramData;
+        this.resultsModel.updateCurrentPage({response:  this.audiogramData});
     }
 
     // ========== UI getters ====================

@@ -100,7 +100,7 @@ export class ResultsUploadService {
         const fileName = `${fileUuid}-${timeStamp}.json`;
         const fullPath = encodeURIComponent(`${folderName}/${fileName}`);
         const fileUrl = `${gitlabHost}/api/v4/projects/${resultsRepoId}/repository/files/${fullPath}`;
-        const commitMessage = `Add result for exam: ${singleExamResult.protocolName}`;
+        const commitMessage = `Add result for exam: ${singleExamResult.protocol.name}`;
         const body = {
           branch: 'master', // or 'main', depending on your repo
           commit_message: commitMessage,
@@ -126,8 +126,8 @@ export class ResultsUploadService {
         }
         
         const uploadSummaryEntry = {
-          protocolId: singleExamResult.protocolId,
-          protocolName: singleExamResult.protocolName,
+          protocolId: singleExamResult.protocol.protocolId,
+          protocolName: singleExamResult.protocol.name,
           testDateTime: singleExamResult.testDateTime ?? new Date().toISOString(),
           nResponses: singleExamResult.responses ? Object.keys(singleExamResult.responses).length : 0,
           source: ProtocolServer.Gitlab,

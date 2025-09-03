@@ -24,8 +24,6 @@ export interface CurrentResults {
 }
 
 export interface ExamResults {
-    protocolName: string;
-    protocolId?: string;
     protocol: ProtocolInterface;
     testDateTime?: string;
     elapsedTime?: string;
@@ -38,7 +36,6 @@ export interface ExamResults {
         longitude?: number,
         accuracy?: number
       };
-    headset: string;
     calibrationVersion: any; // TODO: define calibrationVersion interface
     devices: DevicesInterface
 }

@@ -58,7 +58,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   currentStep: string = 'Ready';
   chinchillaType = "Chinchilla";
   humanType = "Human";
-  knownStates = ["OFF", "PLAYING", "WAITING", "READY"];
+  knownStates = ["OFF", "PLAYING", "POSTTRIAL", "READY", "POSTBLOCK"];
 
   // Controller variables
   instructions: string = 'Press submit to start the exam.';
@@ -67,6 +67,8 @@ export class MemrExamComponent implements OnInit, OnDestroy {
 
   // Subscriptions
   pageSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
+  resultsSubscription: Subscription | undefined;
 
   constructor(
     private readonly devicesService: DevicesService,
@@ -82,10 +84,16 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     this.state = this.stateModel.getState();
     this.results = this.resultsModel.getResults();
     this.examService.submit = this.nextStep.bind(this);
-    this.state.isSubmittable = true;
+    this.stateModel.updateState({isSubmittable: true});
   }
 
   ngOnInit(): void {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+      this.state = updatedState;
+    });
+    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe( (updatedResults) => {
+      this.results = updatedResults;
+    });
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'memrResponseArea') {
         setTimeout(() => {
@@ -103,6 +111,8 @@ export class MemrExamComponent implements OnInit, OnDestroy {
       await this.abortExam();
       this.examService.submit = this.examService.submitDefault.bind(this.examService);
       this.pageSubscription?.unsubscribe();
+      this.resultsSubscription?.unsubscribe();
+      this.stateSubscription?.unsubscribe();
     })();
   }
 
@@ -135,12 +145,12 @@ export class MemrExamComponent implements OnInit, OnDestroy {
           await this.beginExam();
           this.instructions = 'Exam in progress. Please wait.';
           this.currentStep = 'Exam';
-          this.state.isSubmittable = false;
+          this.stateModel.updateState({isSubmittable: false});
           break;
         case 'Exam': {
           this.instructions = "Exam Complete. Press Submit to Save.";
           this.currentStep = 'Finish';
-          this.state.isSubmittable = true;
+          this.stateModel.updateState({isSubmittable: true});
           break;
         }
         case 'Finish': {
@@ -233,7 +243,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
    */
   private initializeResponseArea(responseArea: MemrExamInterface): void {
     this.memrExamProperties = Object.assign(this.memrExamProperties, responseArea);
-    this.results.currentPage.response = [];
+    this.resultsModel.updateCurrentPage({response: []});
     this.trialsPerBlock = (this.isWithinBlock() ? this.memrExamProperties.elicitorLevelArray?.length : this.memrExamProperties.nRepeats) ?? this.trialsPerBlock;
     this.blockCount = (this.isWithinBlock() ? this.memrExamProperties.nRepeats : this.memrExamProperties.elicitorLevelArray?.length) ?? this.blockCount;
     const subjectType = this.isWithinBlock() ? this.chinchillaType : this.humanType;

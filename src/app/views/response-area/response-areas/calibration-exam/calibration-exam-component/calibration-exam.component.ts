@@ -35,7 +35,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   targetLevel: number = 0;
   calFactor: number = -40;
   pageSubscription: Subscription | undefined;
-  tympanSubscription: Subscription | undefined;
+  resultsSubscription: Subscription | undefined;
   device: ConnectedDevice | undefined;
   earCup: string = 'Left';
   isPlaying: boolean = false;
@@ -61,6 +61,9 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe( (updatedResults) => {
+      this.results = updatedResults;
+    });
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === "calibrationResponseArea") {
         const calibrationResponse = updatedPage?.responseArea as CalibrationExamInterface;
@@ -81,7 +84,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
         }
       }
     });
-    this.results.currentExam.responses = [];
+    this.resultsModel.updateCurrentExam({responses: []});
     this.updateButtonLabel();
   }
 
@@ -92,9 +95,10 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     this.logger.debug("resp from tympan after calibration exam abort exams:" + resp);
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
     this.examService.back = this.examService.back.bind(this.examService);
-    this.pageSubscription?.unsubscribe();
-    this.tympanSubscription?.unsubscribe();
     this.buttonTextService.updateButtonText("Submit");
+
+    this.pageSubscription?.unsubscribe();
+    this.resultsSubscription?.unsubscribe();
   }
 
   async adjustCalFactor(amount: number): Promise<void> {

@@ -37,10 +37,12 @@ import { protocolSchema } from '../../schema/protocol.schema';
 export class ProtocolService {
     app: AppInterface;
     disk: DiskInterface;
-    diskSubscription: Subscription | undefined;
     loading: LoadingProtocolInterface;
     protocolModel: ProtocolModelInterface;
     state: StateInterface;
+    
+    diskSubscription: Subscription | undefined;
+    stateSubscription: Subscription | undefined;
 
     constructor(
         private readonly appModel: AppModel,
@@ -56,6 +58,9 @@ export class ProtocolService {
         this.app = this.appModel.getApp();
         this.protocolModel = this.protocolM.getProtocolModel();
         this.state = this.stateModel.getState();
+        this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+            this.state = updatedState;
+        });
         this.disk = this.diskModel.getDisk();
         this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
             this.disk = updatedDisk;
@@ -272,8 +277,10 @@ export class ProtocolService {
         // setTimeout(cha.connect, 1000);
         }
 
-        this.state.examIndex = 0;
-        this.state.examState = ExamState.Ready;
+        this.stateModel.updateState({
+            examIndex: 0,
+            examState: ExamState.Ready
+        });
         this.tasks.deregister("Initialize Protocol");
     }
 

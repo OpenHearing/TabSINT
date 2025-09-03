@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { StateInterface } from './state.interface';
 import { AppState, ExamState, ProtocolState } from "../../utilities/constants";
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -32,7 +33,7 @@ export class StateModel {
             completedExams: true,
             exportedAndUploadedResults: true
         },
-        examProgress: {
+        examProgress: { //not implemented
             pctProgress: 1,
             anticipatedProtocols: [],
             activatedProtocols: []
@@ -42,10 +43,16 @@ export class StateModel {
         newDeviceConnection: false
     }
 
+    stateSubject = new BehaviorSubject<StateInterface>(this.stateModel);
+
     getState(): StateInterface {
         return this.stateModel;
     }
 
+    updateState(updates: Partial<StateInterface>): void {
+        this.stateModel = { ...this.stateModel, ...updates };
+        this.stateSubject.next(this.stateModel);
+    }
     
     /**
      * Update the wifi status for the state model.
@@ -53,14 +60,21 @@ export class StateModel {
      * @param {boolean} isConnected Whether there is a current wifi connection or not.
      */
     updateWifiStatus(isConnected: boolean) {
-        this.stateModel.wifiConnected = isConnected;
+        this.updateState({ wifiConnected: isConnected });
     }
     
     /** Set page isSubmittable state.
      * @summary Checks if a page is submittable and sets isSubmittable state variable
     */
     setPageSubmittable(): void {
-        this.stateModel.isSubmittable = !this.stateModel.isResponseRequired || (this.stateModel.isResponseRequired && this.stateModel.doesResponseExist);
+        const isSubmittable = !this.stateModel.isResponseRequired || 
+                             (this.stateModel.isResponseRequired && this.stateModel.doesResponseExist);
+        this.updateState({ isSubmittable: isSubmittable });
+    }
+
+    updatePaneOpen(paneUpdates: Partial<StateInterface['isPaneOpen']>): void {
+        const updatedPanes = { ...this.stateModel.isPaneOpen, ...paneUpdates };
+        this.updateState({ isPaneOpen: updatedPanes });
     }
 
 }

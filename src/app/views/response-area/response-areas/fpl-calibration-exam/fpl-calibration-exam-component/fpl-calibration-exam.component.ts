@@ -25,8 +25,6 @@ import { StateInterface } from '../../../../../models/state/state.interface';
 })
 export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   currentStep: string = 'landing';
-  pageSubscription: Subscription | undefined;
-  tympanSubscription: Subscription | undefined;
   device: ConnectedDevice | undefined;
   tabsintId: string = FPLcalibrationExamSchema.properties.tabsintId.default;
   results: ResultsInterface;
@@ -41,7 +39,10 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
     PctComplete: 0
   };
   inProgressResultsSubject = new BehaviorSubject<WAIResultsInterface>(this.inProgressResults);
+  
   inProgressResultsSubscription: Subscription | undefined;
+  pageSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
 
   // Default to WAI default, but this will be overwritten with FPL response area values
   outputChannels: string[] = [];
@@ -85,7 +86,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
     this.examService.submit = () => { this.nextStep(); };
     this.examService.back = () => { this.previousStep(); };
     this.state = this.stateModel.getState();
-    this.state.isSubmittable = true;
+    this.stateModel.updateState({isSubmittable: true});
     this.inProgressResultsSubscription = this.inProgressResultsSubject.subscribe((updatedResults: WAIResultsInterface) => {
       this.inProgressResults = updatedResults;
       this.inProgressResults.PctComplete = Math.round(this.inProgressResults.PctComplete);
@@ -93,6 +94,9 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+      this.state = updatedState;
+    });
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === "fplCalibrationResponseArea") {
         const responseArea = updatedPage?.responseArea as FPLCalibrationExamInterface;
@@ -120,12 +124,13 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
     this.logger.debug("resp from tympan after fpl calibration exam abort exams:" + resp);
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
     this.examService.back = this.examService.back.bind(this.examService);
-    this.pageSubscription?.unsubscribe();
-    this.tympanSubscription?.unsubscribe();
     this.buttonTextService.updateButtonText("Submit");
-    this.inProgressResultsSubscription?.unsubscribe();
-    this.state.isSubmittable = true;
+    this.stateModel.updateState({isSubmittable: true});
     this.shouldAbort = true;
+
+    this.pageSubscription?.unsubscribe();
+    this.inProgressResultsSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
   }
 
   async startWAIExam() {
@@ -150,7 +155,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
         WriteFPLCalibration: this.writeFPLCalibration,
         ReturnResultData: this.returnResultData,
       };
-      this.state.isSubmittable = false;
+      this.stateModel.updateState({isSubmittable: false});
       let resp = await this.devicesService.queueExam(this.device, "WAI", examProperties);
       if (resp![1] != "ERROR") {
         await this.waitForWAIExamCompletion();
@@ -174,7 +179,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
       if (this.doesRespContainResults(resp)) {
         this.inProgressResultsSubject.next(resp![1]);
         if (this.inProgressResults.State === 'DONE') {
-          this.state.isSubmittable = true;
+          this.stateModel.updateState({isSubmittable: true});
           this.changeDetectorRef.detectChanges();
           return;
         }
@@ -214,7 +219,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   }
 
   private updateStateOnAbort() {
-    this.state.isSubmittable = true;
+    this.stateModel.updateState({isSubmittable: true});
     this.inProgressResults.State = 'ABORTED';
   }
 
@@ -229,7 +234,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   async nextStep(): Promise<void> {
     if (this.currentStep == 'landing') {
       this.currentStep = 'calibration';
-      this.state.isSubmittable = false;
+      this.stateModel.updateState({isSubmittable: false});
     } else {
       this.navigationHistory.push({
         step: this.currentStep,
@@ -255,7 +260,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
     this.examService.submit = this.outputChannelIndex < this.outputChannels.length - 1 ? () => { this.nextStep(); } : () => { this.examService.submitDefault(); };
     this.examService.back = () => { this.previousStep(); };
     this.shouldAbort = false;
-    this.state.isSubmittable = false;
+    this.stateModel.updateState({isSubmittable: false});
     this.inProgressResults = {
       State: 'READY',
       PctComplete: 0

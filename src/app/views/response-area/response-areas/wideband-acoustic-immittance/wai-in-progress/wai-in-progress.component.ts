@@ -24,10 +24,12 @@ export class WAIInProgressComponent implements OnInit, OnDestroy {
     PctComplete: 0
   };
   inProgressResultsSubject = new BehaviorSubject<WAIResultsInterface>(this.inProgressResults);
-  inProgressResultsSubscription: Subscription | undefined;
   shouldAbort: boolean = false;
   isRequestingResults: boolean = false;
   instructions: string = "Exam in progress please wait.";
+
+  inProgressResultsSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
 
   constructor(
     private readonly changeDetectorRef: ChangeDetectorRef,
@@ -36,11 +38,14 @@ export class WAIInProgressComponent implements OnInit, OnDestroy {
     private readonly stateModel: StateModel
   ) {
     this.state = this.stateModel.getState();
-    this.state.isSubmittable = false;
+    this.stateModel.updateState({isSubmittable: false});
   }
 
   async ngOnInit(): Promise<void> {
     this.requestResults();
+    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+      this.state = updatedState;
+    });
     this.inProgressResultsSubscription = this.inProgressResultsSubject.subscribe((updatedResults: WAIResultsInterface) => {
       this.inProgressResults = updatedResults;
       this.inProgressResults.PctComplete = Math.round(this.inProgressResults.PctComplete);
@@ -48,9 +53,10 @@ export class WAIInProgressComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.inProgressResultsSubscription?.unsubscribe();
-    this.state.isSubmittable = true;
+    this.stateModel.updateState({isSubmittable: true});
     this.shouldAbort = true;
+    this.inProgressResultsSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
   }
 
   async abort() {
@@ -76,7 +82,7 @@ export class WAIInProgressComponent implements OnInit, OnDestroy {
       if (this.doesRespContainResults(resp)) {
         this.inProgressResultsSubject.next(resp![1]);
         if (this.inProgressResults.State === 'DONE') {
-          this.state.isSubmittable = true;
+          this.stateModel.updateState({isSubmittable: true});
           this.WAIResultsEvent.emit(resp![1]);
           this.instructions = "Exam complete, press 'Next' to continue."
           this.changeDetectorRef.detectChanges();
@@ -118,7 +124,7 @@ export class WAIInProgressComponent implements OnInit, OnDestroy {
   }
 
   private updateStateOnAbort() {
-    this.state.isSubmittable = true;
+    this.stateModel.updateState({isSubmittable: true});
     this.inProgressResults.State = 'ABORTED';
     this.shouldAbort = false;
   }
