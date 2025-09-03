@@ -103,7 +103,7 @@ export class ProtocolsComponent {
   };
 
   /**
-   * Add protocols to protocols table
+   * Add local protocols 
    * @summary Launch file chooser, extract meta data from selected protocol folder, 
    * save it to disk model, then retrieve protocol model to refresh the view.
    * @models dik, protocol
@@ -132,6 +132,26 @@ export class ProtocolsComponent {
           };
           const protocolMetaData: ProtocolMetaInterface = getProtocolMetaData(protocol);
           let availableMetaProtocols = this.disk.availableProtocolsMeta;
+          
+          // Check if a protocol with this name already exists
+          const existingProtocolEntry = Object.entries(availableMetaProtocols).find(
+            ([key, p]) => p.name === protocolMetaData.name
+          );
+          
+          if (existingProtocolEntry) {
+            const [existingKey, existingProtocol] = existingProtocolEntry;
+            
+            // Never overwrite Developer protocols
+            if (existingProtocol.server === ProtocolServer.Developer) {
+              this.notifications.alert({
+                title: "Cannot Overwrite Developer Protocol",
+                content: `Cannot add protocol "${protocolMetaData.name}" because a Developer protocol with the same name already exists. Developer protocols cannot be overwritten.`,
+                type: DialogType.Alert
+              }).subscribe();
+              continue; // Don't add it
+            }
+          }
+
           availableMetaProtocols[protocolMetaData.name] = protocolMetaData;
           this.diskModel.updateDiskModel('availableProtocolsMeta', availableMetaProtocols);
           this.protocolModel = this.protocolM.getProtocolModel();

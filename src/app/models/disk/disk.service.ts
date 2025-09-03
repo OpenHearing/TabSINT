@@ -36,7 +36,7 @@ export class DiskModel {
             PurdueShakedown: {
                 ...partialMetaDefaults,
                 creator: "Creare",
-                name: "PurdueShakedown",
+                name: "Purdue Shakedown",
                 path: "protocols/purdue-shakedown"
             },
             develop: {

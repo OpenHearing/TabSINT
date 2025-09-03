@@ -19,6 +19,7 @@
         <thead>
           <tr>
             <th scope="col" class="row-Name" i18n>Name</th>
+            <th scope="col" class="row-Server" i18n>Source</th>
             <th scope="col" class="row-Version" i18n>Version</th>
             <th scope="col" class="row-Date" i18n>Date</th>
           </tr>
@@ -26,6 +27,7 @@
         <tbody>
           <tr *ngFor="let p of getAvailableProtocols(); trackBy: trackByIndex; let i = index" class="no-border" (click)="select(p.value)" (keypress)="select(p.value)">
               <td [ngClass]="pclass(p.value)" class="row-Name">{{p.value.name}}</td>
+              <td [ngClass]="pclass(p.value)" class="row-Name">{{p.value.server}}</td>
               <td [ngClass]="pclass(p.value)" class="row-Version">{{p.value.version}}</td>
               <td [ngClass]="pclass(p.value)" class="row-Date">{{p.value.date}}</td>
           </tr>
