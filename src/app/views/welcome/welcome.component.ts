@@ -12,6 +12,7 @@ import { StateModel } from '../../models/state/state.service';
 import { AppState } from '../../utilities/constants';
 import { StateInterface } from '../../models/state/state.interface';
 import { AdminService } from '../../controllers/admin.service';
+import { Tasks } from '../../utilities/tasks.service';
 
 @Component({
   selector: 'app-welcome',
@@ -30,6 +31,7 @@ export class WelcomeComponent {
     private readonly diskModel: DiskModel,
     private readonly stateModel: StateModel,
     private readonly router: Router,
+    private readonly tasks: Tasks,
     public adminService: AdminService
   ) {
     this.disk = this.diskModel.getDisk();
@@ -42,11 +44,13 @@ export class WelcomeComponent {
         this.disk = updatedDisk;
     })    
     this.state.appState = AppState.Welcome;
+    this.tasks.hide();
   }
 
   ngOnDestroy() {
     this.diskSubscription?.unsubscribe();
     this.state.appState = AppState.null;
+    this.tasks.unhide();
   }
 
   // TODO: Replace this variable with a model?

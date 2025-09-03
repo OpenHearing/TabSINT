@@ -17,7 +17,7 @@ export class TasksBannerComponent implements OnInit, OnDestroy{
   ngOnInit(): void {
     this.taskSubscription = this.tasks.tasks$.subscribe(tasks => {
       this.taskList = tasks;
-      this.isVisible = Object.keys(this.taskList).length > 0;
+      this.isVisible = !this.tasks.hidden && Object.keys(this.taskList).length > 0;
     });
   }
 
