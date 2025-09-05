@@ -4,6 +4,7 @@ import { AppState } from '../../utilities/constants';
 import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
 import { ExamService } from '../../controllers/exam.service';
+import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
   selector: 'config-view',
@@ -12,6 +13,7 @@ import { ExamService } from '../../controllers/exam.service';
 })
 export class ConfigComponent {
   state: StateInterface;
+  stateSubscription: Subscription | undefined;
 
   constructor(
     private readonly examService: ExamService,
@@ -22,8 +24,15 @@ export class ConfigComponent {
   }
 
   ngOnInit(): void {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+      this.state = updatedState;
+    });
     this.examService.switchToAdminView();
-    this.state.appState = AppState.Admin;
+    this.stateModel.updateState({appState: AppState.Admin});
+  }
+
+  ngOnDestroy() {
+    this.stateSubscription?.unsubscribe();
   }
 
   title = 'config';

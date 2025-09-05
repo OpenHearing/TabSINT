@@ -191,10 +191,23 @@ export class FileService {
         return result;
     }
 
-    async writeBinaryFile(path: string, data: Blob, rootDir: string | null = this.rootUri) {
+    async writeBinaryFile(path: string, data: any, rootDir: string | null = this.rootUri) {
         let result = null;
         try {
-            const base64Data = await this.blobToBase64(data);
+            let base64Data: string;
+            
+            if (typeof data === 'string') {
+                // If it's already a base64 string
+                base64Data = data;
+            } else if (data instanceof Blob) {
+                // If it's actually a Blob, convert it
+                base64Data = await this.blobToBase64(data);
+            } else {
+                // Handle other formats (ArrayBuffer, etc.)
+                const blob = new Blob([data]);
+                base64Data = await this.blobToBase64(blob);
+            }
+
             result = await Filesystem.writeFile({
                 path: path,
                 data: base64Data,

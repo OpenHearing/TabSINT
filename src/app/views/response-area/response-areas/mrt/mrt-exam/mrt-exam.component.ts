@@ -54,6 +54,8 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   selectedResponseIndex: number | null = null;
   pageSubscription: Subscription | undefined;
   device: ConnectedDevice | undefined;
+  stateSubscription: Subscription | undefined;
+  resultsSubscription: Subscription | undefined;
   
   constructor(
     private readonly buttonTextService: ButtonTextService,
@@ -71,6 +73,12 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+      this.state = updatedState;
+    });
+    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe( (updatedResults) => {
+      this.results = updatedResults;
+    });
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'mrtResponseArea') {
         setTimeout(() => {
@@ -85,8 +93,11 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     let resp = await this.devicesService.abortExams(this.device!);
     this.logger.debug("resp from tympan after MRT exam abort exams:" + resp);
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
-    this.pageSubscription?.unsubscribe();
     this.buttonTextService.updateButtonText("Submit");
+
+    this.pageSubscription?.unsubscribe();
+    this.resultsSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
   }
 
   async nextStep(): Promise<void> {
@@ -95,11 +106,11 @@ export class MrtExamComponent implements OnInit, OnDestroy {
         await this.playTrial(this.currentTrial);
         this.instructions = 'Select the word prompted by the voice';
         this.currentStep = 'Exam';
-        this.state.isSubmittable = false;
+        this.stateModel.updateState({isSubmittable: false});
         this.buttonTextService.updateButtonText('Next');
         break;
       case 'Exam': {
-        this.state.isSubmittable = false;
+        this.stateModel.updateState({isSubmittable: false});
         this.saveResponse();
         const nbTrialsCompleted = this.results.currentPage.response.length;
         if (this.trialList.length > 0) {
@@ -139,10 +150,10 @@ export class MrtExamComponent implements OnInit, OnDestroy {
 
     if (this.isAutoSubmit) {
       await this.delay(this.waitingMs);
-      this.state.isSubmittable = false;
+      this.stateModel.updateState({isSubmittable: false});
       this.nextStep()
     } else {
-      this.state.isSubmittable = true;
+      this.stateModel.updateState({isSubmittable: true});
     }
   }
   
@@ -199,7 +210,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     this.trialList = responseArea.trialList!.slice();
     if (this.randomizeTrials) shuffleArray(this.trialList);
     this.currentTrial = this.trialList.shift()!;
-    this.results.currentPage.response = [];
+    this.resultsModel.updateCurrentPage({response: []});
   }
     
   private async setupDevice(updatedResponseArea: MrtExamInterface) {
@@ -260,7 +271,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
       userResponseIndex: this.selectedResponseIndex!,
       isCorrect: this.isCorrect!
     });
-    this.results.currentPage.response = this.trialListResults;
+    this.resultsModel.updateCurrentPage({response: this.trialListResults});
   }
 
   private gradeExam() {

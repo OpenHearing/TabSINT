@@ -20,7 +20,6 @@ import { Command } from '../../types/custom-types';
 export class TympanService {
     devices: DevicesInterface;
     state: StateInterface;
-    tympanSubscription: Subscription|undefined;
     pendingMsgInfo: PendingMsgInfo|null = null;
     pendingMsg: boolean = false;
     response: Array<any> = [];
@@ -28,6 +27,9 @@ export class TympanService {
     currentCommand: Command<Array<any>> | null = null;
     defaultErrorMsg = ["ERROR", "Failed to write message to tympan. Make sure Tympan is connected and try again."];
     defaultTimeoutTimeMs = 10000;
+
+    tympanSubscription: Subscription|undefined;
+    stateSubscription: Subscription | undefined; 
 
     constructor(
         private readonly tympanWrap: TympanWrap, 
@@ -38,6 +40,9 @@ export class TympanService {
     ) {
         this.devices = this.devicesModel.getDevices();
         this.state = this.stateModel.getState();
+        this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+            this.state = updatedState;
+        });
 
         this.tympanSubscription = this.devicesModel.tympanResponseSubject.subscribe((response: TympanResponse) => {
             logger.debug("tympanService device msg: "+JSON.stringify(response));
@@ -106,7 +111,7 @@ export class TympanService {
 
             let connection: ConnectedDevice = this.deviceUtil.createDeviceConnection(newConnection);
             this.devices.connectedDevices.tympan.push(connection);
-            this.state.isPaneOpen.tympans = true;
+            this.stateModel.updatePaneOpen({tympans: true});
             return connection;
         } catch {
             this.logger.error("failed to connect to tympan: "+JSON.stringify(tympan));
@@ -144,8 +149,10 @@ export class TympanService {
             await this.waitForResponse();
             resp = this.handleTimeoutErrors(msgId);
         } catch (e) {
-            this.state.examState = ExamState.DeviceError;
-            this.state.deviceError = resp;
+            this.stateModel.updateState({
+                examState: ExamState.DeviceError,
+                deviceError: resp
+            });
             this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));
         }
         return resp
@@ -166,7 +173,7 @@ export class TympanService {
             await this.waitForResponse();
             resp = this.handleTimeoutErrors(msgId);
         } catch (e) {
-            this.state.examState = ExamState.DeviceError;
+            this.stateModel.updateState({examState: ExamState.DeviceError});
             this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));
         }
         return resp
@@ -187,7 +194,7 @@ export class TympanService {
             await this.waitForResponse();
             resp = this.handleTimeoutErrors(msgId);
         } catch (error: unknown) {
-            this.state.examState = ExamState.DeviceError;
+            this.stateModel.updateState({examState: ExamState.DeviceError});
             if (error instanceof Error) {
                 this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(error.message));
             } else {
@@ -211,7 +218,7 @@ export class TympanService {
             await this.waitForResponse();
             resp = this.handleTimeoutErrors(msgId);
         } catch (e) {
-            this.state.examState = ExamState.DeviceError;
+            this.stateModel.updateState({examState: ExamState.DeviceError});
             this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));
         }
         return resp
@@ -232,7 +239,7 @@ export class TympanService {
             await this.waitForResponse(timeoutTimeMs);
             resp = this.handleTimeoutErrors(msgId);
         } catch (e) {
-            this.state.examState = ExamState.DeviceError;
+            this.stateModel.updateState({examState: ExamState.DeviceError});
             this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));
         }
         return resp

@@ -104,7 +104,7 @@ export class AppComponent implements OnInit, OnDestroy {
    * Setup a network listener to update wifi status.
    */
   private setupNetworkListener() {
-    this.networkService.addListener(true, (status) => {
+    this.networkService.addListener(true, (status: { connectionType: string; }) => {
       this.stateModel.updateWifiStatus(status.connectionType === 'wifi');
     });
   };

@@ -20,7 +20,7 @@ const protocolSchemaBase: JSONSchemaType<ProtocolSchemaInterface> = {
     helpText: { type: "string", nullable: true },
     submitText: { type: "string", nullable: true },
     tablet: { type: "string", nullable: true },
-    headset: { type: "string", enum: ["VicFirth", "VicFirthS2", "HDA200", "WAHTS", "Audiometer", "EPHD1"], nullable: true, default: "VicFirth" },
+    headset: { type: "string", enum: ["None", "VicFirth", "VicFirthS2", "HDA200", "WAHTS", "Audiometer", "EPHD1"], nullable: true, default: "None" },
     chaStream: { type: "boolean", default: false, nullable: true },
     randomization: { type: "string", enum: ["WithoutReplacement"], nullable: true },
     minTabsintVersion: { type: "string", nullable: true },

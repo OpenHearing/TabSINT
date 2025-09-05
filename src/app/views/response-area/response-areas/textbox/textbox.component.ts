@@ -22,7 +22,10 @@ export class TextboxComponent implements OnInit, OnDestroy {
   results: ResultsInterface;
   state: StateInterface;
   rows: number;
+
   pageSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
+  resultsSubscription: Subscription | undefined;
 
   constructor (
     private readonly examService: ExamService, 
@@ -36,6 +39,12 @@ export class TextboxComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+      this.state = updatedState;
+    });
+    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe( (updatedResults) => {
+      this.results = updatedResults;
+    });
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type == "textboxResponseArea") {
         const updatedTextboxResponseArea = updatedPage.responseArea as TextBoxInterface;
@@ -48,10 +57,13 @@ export class TextboxComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.pageSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
+    this.resultsSubscription?.unsubscribe();
   }
 
   onResponseChange() {    
-    this.state.doesResponseExist = this.results.currentPage.response !== '';
+    this.stateModel.updateState({doesResponseExist: this.results.currentPage.response !== ''});
+    this.resultsModel.updateCurrentPage({response: this.results.currentPage.response});
     this.stateModel.setPageSubmittable();
   }
 

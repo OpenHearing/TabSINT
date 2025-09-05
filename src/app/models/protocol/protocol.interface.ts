@@ -29,7 +29,7 @@ export interface ProtocolInterface extends ProtocolSchemaInterface, ProtocolMeta
     commonRepo?: any;
     protocolTabsintOutdated?: boolean;
     protocolUsbCMissing?: boolean;
-    currentCalibration?: "VicFirth" | "VicFirthS2" | "HDA200" | "WAHTS" | "Audiometer" | "EPHD1" | "None";
+    currentCalibration?: "None" | "VicFirth" | "VicFirthS2" | "HDA200" | "WAHTS" | "Audiometer" | "EPHD1";
     _audioProfileVersion?: string;
     _calibrationPySVNRevision?: string;
     _calibrationPyManualReleaseDate?: string;

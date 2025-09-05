@@ -5,28 +5,70 @@
         <span *ngIf="isCollapsed" ><small>{{'Show Debug Info'|translate}} <i class="ion-chevron-down"></i></small></span>
     </button>
   
-    <div uib-collapse="isCollapsed" class="small text-left" id="showDebugInfoCollapseId">
+    <div [ngClass]="{'collapsed': isCollapsed}" class="small text-left" id="showDebugInfoCollapseId">
   
       <div class="well">
         
-        <!-- <b id="page">Page</b>
-        <json-formatter json="page.dm" open="0" aria-labelledby="page"></json-formatter>
+        <!-- Page Section -->
+        <div class="debug-section">
+          <button type="button" class="debug-section-header" (click)="toggleSection('page')">
+            <b id="page">Page</b>
+            <i class="section-icon" [ngClass]="sectionExpanded.page ? 'ion-chevron-up' : 'ion-chevron-down'"></i>
+          </button>
+          <div [ngClass]="{'section-collapsed': !sectionExpanded.page}" class="debug-section-content">
+            <ngx-json-viewer 
+              [json]="currentPage" 
+              [expanded]="false"
+              aria-labelledby="page">
+            </ngx-json-viewer>
+          </div>
+        </div>
         
-        <b id="pageresult">Page Result</b>
-        <json-formatter json="page.result" open="0" aria-labelledby="pageresult"></json-formatter>
-  
-        <b id="examresults">Exam Results</b>
-        <json-formatter json="results.currentPage" open="0" aria-labelledby="examresults"></json-formatter>
-  
-        <b id="flags">Flags</b>
-        <json-formatter json="state.flags" open="0" aria-labelledby="flags"></json-formatter>
-  
-        <b id="progress">Progress</b>
-        <div aria-labelledby="progress">
-          {{state.progress ? formatNumber(state.progress.pctProgress) : ""}}
-        </div> -->
+        <!-- Page Results Section -->
+        <div class="debug-section">
+          <button type="button" class="debug-section-header" (click)="toggleSection('pageResults')">
+            <b id="pageResults">Page Results</b>
+            <i class="section-icon" [ngClass]="sectionExpanded.pageResults ? 'ion-chevron-up' : 'ion-chevron-down'"></i>
+          </button>
+          <div [ngClass]="{'section-collapsed': !sectionExpanded.pageResults}" class="debug-section-content">
+            <ngx-json-viewer 
+              [json]="results.currentPage" 
+              [expanded]="false"
+              aria-labelledby="pageResults">
+            </ngx-json-viewer>
+          </div>
+        </div>
         
-      </div>
-  
+        <!-- Exam Results Section -->
+        <div class="debug-section">
+          <button type="button" class="debug-section-header" (click)="toggleSection('examResults')">
+            <b id="examResults">Exam Results</b>
+            <i class="section-icon" [ngClass]="sectionExpanded.examResults ? 'ion-chevron-up' : 'ion-chevron-down'"></i>
+          </button>
+          <div [ngClass]="{'section-collapsed': !sectionExpanded.examResults}" class="debug-section-content">
+            <ngx-json-viewer 
+              [json]="results.currentExam" 
+              [expanded]="false"
+              aria-labelledby="examResults">
+            </ngx-json-viewer>
+          </div>
+        </div>
+        
+        <!-- State Section -->
+        <div class="debug-section">
+          <button type="button" class="debug-section-header" (click)="toggleSection('state')">
+            <b id="state">State</b>
+            <i class="section-icon" [ngClass]="sectionExpanded.state ? 'ion-chevron-up' : 'ion-chevron-down'"></i>
+          </button>
+          <div [ngClass]="{'section-collapsed': !sectionExpanded.state}" class="debug-section-content">
+            <ngx-json-viewer 
+              [json]="state" 
+              [expanded]="false"
+              aria-labelledby="state">
+            </ngx-json-viewer>
+          </div>
+        </div>
+                
+      </div>  
     </div>
   </div>

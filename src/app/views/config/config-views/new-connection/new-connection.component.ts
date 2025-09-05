@@ -6,6 +6,7 @@ import { NewConnectedDevice } from '../../../../interfaces/connected-device.inte
 import { StateInterface } from '../../../../models/state/state.interface';
 import { StateModel } from '../../../../models/state/state.service';
 import { DevicesService } from '../../../../controllers/devices.service';
+import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
   selector: 'new-connection',
@@ -18,6 +19,7 @@ export class NewConnectionComponent {
   newConnectedDevice: NewConnectedDevice;
   deviceTypes = AvailableConnectableDevices;
   maxConnectedDevices: number = 1;
+  stateSubscription: Subscription | undefined;
 
   constructor(
     private readonly deviceModel: DevicesModel, 
@@ -29,22 +31,32 @@ export class NewConnectionComponent {
     this.newConnectedDevice = {"type":"Select One"};
   }
 
+  ngOnInit(){
+    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+      this.state = updatedState;
+    });
+  }
+
+  ngOnDestroy() {
+    this.stateSubscription?.unsubscribe();
+  }
+
   changeDeviceType(type:string) {
     this.newConnectedDevice.type = type;
   }
 
   addNewConnection(): void {
-    this.state.newDeviceConnection = true;
+    this.stateModel.updateState({newDeviceConnection: true});
   }
 
   async scanAndConnect() {
     await this.devicesService.scan(this.newConnectedDevice);
-    this.state.newDeviceConnection = false;
+    this.stateModel.updateState({newDeviceConnection: false});
     this.newConnectedDevice = {"type":"Select One"};
   }
 
   cancel() {
-    this.state.newDeviceConnection = false;
+    this.stateModel.updateState({newDeviceConnection: false});
     this.newConnectedDevice = {"type":"Select One"};
   }
 

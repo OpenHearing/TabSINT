@@ -31,6 +31,7 @@ export class ResultsService {
     version: VersionInterface;
     disk: DiskInterface;
     diskSubscription: Subscription | undefined;
+    resultsSubscription: Subscription | undefined;
 
     constructor (
         private readonly devicesModel: DevicesModel,
@@ -50,6 +51,9 @@ export class ResultsService {
         this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
             this.disk = updatedDisk;
         })
+        this.resultsSubscription = this.resultsModel.resultsSubject.subscribe( (updatedResults) => {
+            this.results = updatedResults;
+        });
     }
 
     /** Initializes Exam results before starting the first page.
@@ -57,9 +61,7 @@ export class ResultsService {
      * @models results, protocol, disk
     */
     initializeExamResults() {
-        this.results.currentExam = {
-            protocolId: this.protocol.activeProtocol!.protocolId,
-            protocolName: this.protocol.activeProtocol!.name,
+        const currentExam = {
             testDateTime: new Date().toJSON(),
             elapsedTime: undefined,
             protocol: _.cloneDeep(this.protocol.activeProtocol!),
@@ -67,13 +69,15 @@ export class ResultsService {
             softwareVersion: this.version,
             devices: this.devices,
             tabletLocation: this.disk.tabletLocation,
-            headset: this.protocol.activeProtocol!.headset ?? "None",
             calibrationVersion: {
                 audioProfileVersion: this.protocol.activeProtocol!._audioProfileVersion,
                 calibrationPySVNRevision: this.protocol.activeProtocol!._calibrationPySVNRevision,
                 calibrationPyManualReleaseDate: this.protocol.activeProtocol!._calibrationPyManualReleaseDate
             }
         }
+
+        this.resultsModel.updateCurrentExam(currentExam);
+        this.results = this.resultsModel.getResults();
     };
 
     /** Initializes page results before starting the page.
@@ -82,7 +86,7 @@ export class ResultsService {
      * @models results
     */
     initializePageResults(currentPage: PageInterface) {
-        this.results.currentPage = {
+        const res = {
             pageId: currentPage.id,
             response: '',
             correct: undefined,
@@ -90,15 +94,18 @@ export class ResultsService {
             responseArea: currentPage.responseArea ? currentPage.responseArea.type : undefined,
             page: currentPage
           };
+          
+        this.resultsModel.updateCurrentPage(res);
+        this.results = this.resultsModel.getResults(); 
     }
 
     /**
-     * Push current page results to current exam results.
+     * Push response to current exam results.
      * @models results
-     * @param currentPageResults Results for the current page.
+     * @param response Response for the current page.
      */
     pushResults(currentPageResults: CurrentResults) {
-        this.results.currentExam.responses.push(currentPageResults);
+        this.resultsModel.pushResponse(currentPageResults);
     }
 
     /**
@@ -117,7 +124,7 @@ export class ResultsService {
      */
     async backup(result: ExamResults) {
         let filename = constructFilename(this.devices.uuid.slice(-6), this.protocol.activeProtocol?.resultFilename, result.testDateTime, 'json');
-        let dir = ".tabsint-results-backup/" + result.protocolName + "/";
+        let dir = ".tabsint-results-backup/" + this.protocol.activeProtocol?.name + "/";
 
         try {
             await this.fileService.writeFile(dir + filename, JSON.stringify(result));

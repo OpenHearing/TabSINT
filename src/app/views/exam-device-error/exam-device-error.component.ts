@@ -3,6 +3,7 @@ import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
 import { Logger } from '../../utilities/logger.service';
 import { ExamState } from '../../utilities/constants';
+import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
   selector: 'exam-device-error-view',
@@ -13,12 +14,16 @@ import { ExamState } from '../../utilities/constants';
 export class ExamDeviceErrorComponent {
   state: StateInterface;
   deviceErrors: Array<any> = [];
+  stateSubscription: Subscription | undefined;
 
   constructor(
     private readonly stateModel: StateModel,
     private readonly logger: Logger,
   ) {
     this.state = this.stateModel.getState();
+    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+      this.state = updatedState;
+    });
     this.state.deviceError?.slice(2).forEach((err: string|number) => {
       if (typeof err === "string") {
         this.deviceErrors.push(err);
@@ -26,11 +31,23 @@ export class ExamDeviceErrorComponent {
     });
     
   }
+  
+  ngOnInit() {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+      this.state = updatedState;
+    });
+  }
 
+  ngOnDestroy() {
+    this.stateSubscription?.unsubscribe();
+  }
+  
   retry() {
-    console.log("retry button pressed, setting state to TESTING and clearing deviceError(s)");
-    this.state.examState = ExamState.Testing;
-    this.state.deviceError = [];
+    this.logger.debug("retry button pressed, setting state to TESTING and clearing deviceError(s)");
+    this.stateModel.updateState({
+      examState: ExamState.Testing,
+      deviceError: []
+    });
   }
 
 }

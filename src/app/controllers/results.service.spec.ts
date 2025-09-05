@@ -38,14 +38,14 @@ describe('ResultsService', () => {
     it('initializes exam results', () => {
         let returnedResults: ResultsInterface = resultsService.results;
         expect(returnedResults.currentExam.testDateTime).toBeUndefined();
-        expect(returnedResults.currentExam.protocolName).toBe('');
+        expect(returnedResults.currentExam.protocol.name).toBe('');
         resultsService.protocol.activeProtocol = {
             ...resultsService.disk.availableProtocolsMeta['develop'],
             ...DeveloperProtocols['develop']
         };
         resultsService.initializeExamResults();
         expect(returnedResults.currentExam.testDateTime).toBeDefined();
-        expect(returnedResults.currentExam.protocolName).toBe('develop');
+        expect(returnedResults.currentExam.protocol.name).toBe('develop');
     });
 
     it('initializes page results', () => {

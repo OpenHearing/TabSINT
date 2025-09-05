@@ -155,7 +155,7 @@ describe('ProtocolService', () => {
             await protocolService.load(protocolService.disk.availableProtocolsMeta['badTest']);
         } catch {
         }
-        expect(protocolService.protocolModel.activeProtocol?.errors?.length).toBeGreaterThan(0);
+        expect(protocolService.protocolModel.activeProtocol).toBeUndefined();
         protocolService.delete(badTestProtocol);
     });
 

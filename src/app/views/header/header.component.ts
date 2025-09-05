@@ -35,6 +35,7 @@ export class HeaderComponent {
   app: AppInterface;
   pageSubscription: Subscription | undefined;
   diskSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
 
   constructor(
     public adminService: AdminService,
@@ -56,6 +57,9 @@ export class HeaderComponent {
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
         this.currentPage = updatedPage;
     });
+    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState: StateInterface) => {
+      this.state = updatedState;
+    })
   }
 
   resetExam() {

@@ -6,7 +6,7 @@ import { BleDevice } from '../interfaces/bluetooth.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { StateModel } from '../models/state/state.service';
 import { WINDOW } from './window';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { DevicesModel } from '../models/devices/devices-model.service';
 import { DeviceUtil } from './device-utility';
 import { Notifications } from '../utilities/notifications.service';
@@ -18,6 +18,7 @@ import { DialogType } from "../utilities/constants";
 
 export class TympanWrap {
     state: StateInterface;
+    stateSubscription: Subscription | undefined;
     scanning: boolean = false;    
     continuousScan: boolean = false;   
     requestedDisconnectionIds: Set<string> = new Set(); // Set of devices which requested disconnection
@@ -41,6 +42,9 @@ export class TympanWrap {
         private readonly zone: NgZone,
     ) {
         this.state = this.stateModel.getState();
+        this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+            this.state = updatedState;
+        });
         // TODO: Move this to generic utility for running async functions in constructor
         setTimeout(async () => {
             await this.initialize();
@@ -51,9 +55,9 @@ export class TympanWrap {
         this.logger.debug("Initializing BLE...");
         try {
             await BleClient.initialize();
-            this.state.bluetoothConnected = true;
+            this.stateModel.updateState({bluetoothConnected: true});
         } catch {
-            this.state.bluetoothConnected = false;
+            this.stateModel.updateState({bluetoothConnected: false});
         }
     }
 
@@ -100,8 +104,6 @@ export class TympanWrap {
     }
 
     async write(deviceId: string, msg: string, chunkSize: number) {
-        // TODO: Do we really need to clear here?
-        this.clearTMPBuffer(deviceId);
         let msg_to_write = this.msgToDataView(msg);
 
         this.logger.debug("TIME - about to write bytes to tympan: " + String(Date.now()));

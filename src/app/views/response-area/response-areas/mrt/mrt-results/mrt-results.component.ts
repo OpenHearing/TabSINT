@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { MrtResultsInterface } from '../mrt-exam/mrt-exam.interface';
 import { StateModel } from '../../../../../models/state/state.service';
 import { StateInterface } from '../../../../../models/state/state.interface';
+import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
   selector: 'mrt-results',
@@ -11,12 +12,23 @@ import { StateInterface } from '../../../../../models/state/state.interface';
 export class MrtResultsComponent {
   @Input() mrtResults!: MrtResultsInterface[];
   state: StateInterface;
+  stateSubscription: Subscription | undefined;
 
   constructor(
     private readonly stateModel: StateModel
   ) {
     this.state = this.stateModel.getState();
-    this.state.isSubmittable = true;
+    this.stateModel.updateState({isSubmittable: true});
+  }
+
+  ngOnInit() {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+      this.state = updatedState;
+    });
+  }
+
+  ngOnDestroy() {
+    this.stateSubscription?.unsubscribe();
   }
 
   sortMrtResults() {

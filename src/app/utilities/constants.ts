@@ -71,7 +71,7 @@ import PurdueShakedown from '../../assets/protocols/purdue-shakedown/protocol.js
 import develop from '../../assets/protocols/develop/protocol.json';
 import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
 export const DeveloperProtocols: { [key: string]: ProtocolSchemaInterface } = {
-    "PurdueShakedown": PurdueShakedown,
+    "Purdue Shakedown": PurdueShakedown,
     "develop" : develop
 }
 

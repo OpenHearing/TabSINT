@@ -40,6 +40,8 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
   isRequestingResults: boolean = false;
   instructions: string = "Exam in progress please wait.";
 
+  stateSubscription: Subscription | undefined;
+
   constructor(
     private readonly changeDetectorRef: ChangeDetectorRef,
     private readonly devicesService: DevicesService,
@@ -47,11 +49,14 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
     private readonly stateModel: StateModel,
   ) {
     this.state = this.stateModel.getState();
-    this.state.isSubmittable = false;
+    this.stateModel.updateState({isSubmittable: false});
   }
 
   async ngOnInit(): Promise<void> {
     this.requestResults();
+    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+      this.state = updatedState;
+    });
     this.inProgressResultsSubscription = this.inProgressResultsSubject.subscribe((updatedResults: SweptDpoaeResultsInterface) => {
       if (updatedResults.DpLow && updatedResults.F2) {
         this.updatePlot(updatedResults.DpLow, updatedResults.F2);
@@ -66,9 +71,10 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
   }
 
   ngOnDestroy(): void {
-    this.inProgressResultsSubscription?.unsubscribe();
-    this.state.isSubmittable = true;
+    this.stateModel.updateState({isSubmittable: true});
     this.shouldAbort = true;
+    this.inProgressResultsSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
   }
 
   async abort() {
@@ -94,7 +100,7 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
       if (this.doesRespContainResults(resp)) {
         this.inProgressResultsSubject.next(resp![1]);
         if (this.inProgressResults.State === 'DONE') {
-          this.state.isSubmittable = true;
+          this.stateModel.updateState({isSubmittable: true});
           this.sweptDPOAEResultsEvent.emit(resp![1]);
           this.instructions = "Exam complete, press 'Next' to continue."
           this.changeDetectorRef.detectChanges();
@@ -196,7 +202,7 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
   }
 
   private updateInstructionsAfterAbortButtonPressed() {
-    this.instructions = "Abort pressed, please wait while exam is aborted.";
+    this.instructions = "Abort pressed, please wait while exam is aborted. This may take several minutes, but the data collected so far will be saved.";
     this.changeDetectorRef.detectChanges();
   }
 
@@ -206,7 +212,7 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
   }
 
   private updateStateOnAbort() {
-    this.state.isSubmittable = true;
+    this.stateModel.updateState({isSubmittable: true});
     this.inProgressResults.State = 'ABORTED';
     this.shouldAbort = false;
   }

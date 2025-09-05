@@ -58,7 +58,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   currentStep: string = 'Ready';
   chinchillaType = "Chinchilla";
   humanType = "Human";
-  knownStates = ["OFF", "PLAYING", "WAITING", "READY"];
+  knownStates = ["OFF", "PLAYING", "POSTTRIAL", "READY", "POSTBLOCK"];
 
   // Controller variables
   instructions: string = 'Press submit to start the exam.';
@@ -67,6 +67,8 @@ export class MemrExamComponent implements OnInit, OnDestroy {
 
   // Subscriptions
   pageSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
+  resultsSubscription: Subscription | undefined;
 
   constructor(
     private readonly devicesService: DevicesService,
@@ -82,10 +84,16 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     this.state = this.stateModel.getState();
     this.results = this.resultsModel.getResults();
     this.examService.submit = this.nextStep.bind(this);
-    this.state.isSubmittable = true;
+    this.stateModel.updateState({isSubmittable: true});
   }
 
   ngOnInit(): void {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+      this.state = updatedState;
+    });
+    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe( (updatedResults) => {
+      this.results = updatedResults;
+    });
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'memrResponseArea') {
         setTimeout(() => {
@@ -103,6 +111,8 @@ export class MemrExamComponent implements OnInit, OnDestroy {
       await this.abortExam();
       this.examService.submit = this.examService.submitDefault.bind(this.examService);
       this.pageSubscription?.unsubscribe();
+      this.resultsSubscription?.unsubscribe();
+      this.stateSubscription?.unsubscribe();
     })();
   }
 
@@ -135,12 +145,12 @@ export class MemrExamComponent implements OnInit, OnDestroy {
           await this.beginExam();
           this.instructions = 'Exam in progress. Please wait.';
           this.currentStep = 'Exam';
-          this.state.isSubmittable = false;
+          this.stateModel.updateState({isSubmittable: false});
           break;
         case 'Exam': {
           this.instructions = "Exam Complete. Press Submit to Save.";
           this.currentStep = 'Finish';
-          this.state.isSubmittable = true;
+          this.stateModel.updateState({isSubmittable: true});
           break;
         }
         case 'Finish': {
@@ -149,6 +159,64 @@ export class MemrExamComponent implements OnInit, OnDestroy {
         }
       }
     })();
+  }
+
+  /* Get the record channels as an array from inputParameterMap
+  * @returns Array of channel names
+  */
+  getRecordChannelsArray(): string[] {
+    const channelsString = this.inputParameterMap.get('Record Channels') ?? '[]';
+    try {
+      const parsed = JSON.parse(channelsString);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      this.logger.error('Error parsing record channels: ' + error);
+      return [];
+    }
+  }
+
+  /**
+   * Get the recorded Leq level for a specific channel index
+   * @param index Channel index
+   * @returns Recorded Leq level or 'N/A'
+   */
+  getRecordedLevelLeq(index: number): string {
+    if (this.memrResults?.RecordedLeq_dBSPL && 
+        Array.isArray(this.memrResults.RecordedLeq_dBSPL) &&
+        index < this.memrResults.RecordedLeq_dBSPL.length) {
+      return this.memrResults.RecordedLeq_dBSPL[index].toFixed(1);
+    }
+    return 'N/A';
+  }
+
+  /**
+   * Get the recorded peak level for a specific channel index
+   * @param index Channel index
+   * @returns Recorded peak level or 'N/A'
+   */
+  getRecordedLevelPeak(index: number): string {
+    if (this.memrResults?.RecordedPeak_dBP && 
+        Array.isArray(this.memrResults.RecordedPeak_dBP) &&
+        index < this.memrResults.RecordedPeak_dBP.length) {
+      return this.memrResults.RecordedPeak_dBP[index].toFixed(1);
+    }
+    return 'N/A';
+  }
+
+  /**
+   * Dialog to abort the currently running exam and save results.
+   */
+  public showCancelExamDialog(): void {
+    let msg: DialogDataInterface = {
+      title: "Confirm",
+      content: "Cancel the MEMR exam",
+      type: DialogType.Confirm
+    };
+    this.notifications.alert(msg).subscribe(async result => {
+      if (result === "OK" && this.currentStep == "Exam") {
+        await this.finishExam();
+      }
+    });
   }
 
   /**
@@ -171,27 +239,11 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Dialog to abort the currently running exam and save results.
-   */
-  public showCancelExamDialog(): void {
-    let msg: DialogDataInterface = {
-      title: "Confirm",
-      content: "Cancel the MEMR exam",
-      type: DialogType.Confirm
-    };
-    this.notifications.alert(msg).subscribe(async result => {
-      if (result === "OK" && this.currentStep == "Exam") {
-        await this.finishExam();
-      }
-    });
-  }
-
-  /**
    * Initialize response area and parameter map for initial exam page.
    */
   private initializeResponseArea(responseArea: MemrExamInterface): void {
     this.memrExamProperties = Object.assign(this.memrExamProperties, responseArea);
-    this.results.currentPage.response = [];
+    this.resultsModel.updateCurrentPage({response: []});
     this.trialsPerBlock = (this.isWithinBlock() ? this.memrExamProperties.elicitorLevelArray?.length : this.memrExamProperties.nRepeats) ?? this.trialsPerBlock;
     this.blockCount = (this.isWithinBlock() ? this.memrExamProperties.nRepeats : this.memrExamProperties.elicitorLevelArray?.length) ?? this.blockCount;
     const subjectType = this.isWithinBlock() ? this.chinchillaType : this.humanType;
@@ -203,8 +255,9 @@ export class MemrExamComponent implements OnInit, OnDestroy {
       ["Elicitor Level Array", JSON.stringify(this.memrExamProperties.elicitorLevelArray ?? [])],
       ["Probe Stimulus Level", this.memrExamProperties.probeStimulusLevel?.toString() ?? ""],
       ["Submission Interval (ms)", this.memrExamProperties.submissionIntervalMs?.toString() ?? ""],
-      ["Probe Output Channel", JSON.stringify(this.memrExamProperties.probeOutputChannel ?? [])],
-      ["Elicitor Output Channel", JSON.stringify(this.memrExamProperties.elicitorOutputChannel ?? [])],
+      ["Probe Output Channel", JSON.stringify(this.memrExamProperties.probeOutputChannel ?? memrSchema.properties.probeOutputChannel.default)],
+      ["Elicitor Output Channel", JSON.stringify(this.memrExamProperties.elicitorOutputChannel ?? memrSchema.properties.elicitorOutputChannel.default)],
+      ["Record Channels", JSON.stringify(this.memrExamProperties.recordChannels ?? memrSchema.properties.recordChannels.default)],
       ["Gain Scale", this.memrExamProperties.useMetaRMS?.toString() ?? ""],
       ["Sound File", this.memrExamProperties.soundFileName?.toString() ?? ""],
       ["Results File", this.memrExamProperties.recordFileName?.toString() ?? ""],
@@ -235,8 +288,8 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     const device = this.getDevice();
     if (device) {
       const examProperties: MemrQueueExamInterface = {
-        InputChannel: this.memrExamProperties.elicitorOutputChannel,
-        OutputChannel: this.memrExamProperties.probeOutputChannel,
+        PlaybackChannels: [...this.memrExamProperties.elicitorOutputChannel!, ...this.memrExamProperties.probeOutputChannel!],
+        RecordChannels: this.memrExamProperties.recordChannels,
       };
       await this.devicesService.queueExam(device, "PlayRecordExam", examProperties);
       this.startPollingResults();
@@ -272,7 +325,8 @@ export class MemrExamComponent implements OnInit, OnDestroy {
       NumTrials: this.trialsPerBlock,
       Level_dBSpl: blockData,
       RecordFileName: this.getRecordBlockPath(this.currentBlockIndex),
-      SubmissionInterval_ms: this.memrExamProperties.submissionIntervalMs,
+      SubmissionInterval_ms: this.memrExamProperties.submissionIntervalMs
+      // NumOutputChans: this.memrExamProperties.probeOutputChannel?.length
     };
     const device = this.getDevice();
     if (device) {
@@ -292,8 +346,8 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     this.memrResults = {
       State: results.State,
       TrialsCompleted: results.TrialsCompleted,
-      RecordedLevel_LeqdBSPL: results.RecordedLevel_LeqdBSPL,
-      RecordedLevel_dBP: results.RecordedLevel_dBP,
+      RecordedLeq_dBSPL: results.RecordedLeq_dBSPL,
+      RecordedPeak_dBP: results.RecordedPeak_dBP,
     };
     if (results.State === "READY") {
       // Block based percentage calculation

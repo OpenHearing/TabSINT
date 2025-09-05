@@ -36,7 +36,7 @@ export class DiskModel {
             PurdueShakedown: {
                 ...partialMetaDefaults,
                 creator: "Creare",
-                name: "PurdueShakedown",
+                name: "Purdue Shakedown",
                 path: "protocols/purdue-shakedown"
             },
             develop: {
@@ -53,7 +53,7 @@ export class DiskModel {
             myCha: ''
         },
         contentURI: null,
-        debugMode: true,
+        debugMode: false,
         disableAudioStreaming: true,
         disableLogs: false,
         downloadInProgress: false,
@@ -160,8 +160,8 @@ export class DiskModel {
      */
     updateSummary(result: ExamResults) {
         const meta = {
-            protocolId: result.protocolId,
-            protocolName: result.protocolName,
+            protocolId: result.protocol.protocolId,
+            protocolName: result.protocol.name,
             testDateTime: result.testDateTime!,
             nResponses: _.isUndefined(result.responses) ? 0 : result.responses.length,
             source: result.protocol.server,

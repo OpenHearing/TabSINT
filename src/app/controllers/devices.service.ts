@@ -10,6 +10,7 @@ import { BleDevice } from '../interfaces/bluetooth.interface';
 import { DeviceChooseComponent } from '../views/config/config-views/device-choose/device-choose.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ExamState } from '../utilities/constants';
+import { Subscription } from 'rxjs/internal/Subscription';
 
 @Injectable({
     providedIn: 'root',
@@ -17,6 +18,7 @@ import { ExamState } from '../utilities/constants';
 
 export class DevicesService {
     state: StateInterface;
+    stateSubscription: Subscription | undefined;
 
     constructor(
         private readonly stateModel: StateModel,
@@ -26,6 +28,9 @@ export class DevicesService {
         private readonly dialog: MatDialog
     ) {
         this.state = this.stateModel.getState();
+        this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+        this.state = updatedState;
+        });
     }
 
     /** Scan for new device connection
@@ -92,8 +97,8 @@ export class DevicesService {
             if (ignoreErrors?.includes(resp[2])) {
                 // ignore the error
             } else {
-                this.state.examState = ExamState.DeviceError;
-                this.state.deviceError = resp;
+                this.stateModel.updateState({examState: ExamState.DeviceError});
+                this.stateModel.updateState({deviceError: resp});
             }
         }
     }
