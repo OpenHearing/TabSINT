@@ -202,7 +202,7 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
   }
 
   private updateInstructionsAfterAbortButtonPressed() {
-    this.instructions = "Abort pressed, please wait while exam is aborted.";
+    this.instructions = "Abort pressed, please wait while exam is aborted. This may take several minutes, but the data collected so far will be saved.";
     this.changeDetectorRef.detectChanges();
   }
 
