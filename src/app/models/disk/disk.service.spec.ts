@@ -87,8 +87,6 @@ describe('DiskModel', () => {
             instructionText: 'instructionText'
         };  
         let examResult: ExamResults = {
-            protocolName: 'test',
-            protocolId: 't',
             protocol: {
                 pages: [page],
                 protocolId: '',
@@ -106,7 +104,6 @@ describe('DiskModel', () => {
             softwareVersion: versionModel.version,
             devices: devicesModel.getDevices(),
             tabletLocation: {},
-            headset: 'mock',
             calibrationVersion: 0
         };
         let returnedDisk: DiskInterface = diskModel.getDisk();

@@ -10,6 +10,8 @@ import { Logger } from '../utilities/logger.service';
 import { AppState, DeviceState, ExamState, ProtocolServer, ProtocolState } from '../utilities/constants';
 import { BehaviorSubject, of } from 'rxjs';
 import { PageInterface } from '../models/page/page.interface';
+import { StateInterface } from '../models/state/state.interface';
+import { ResultsInterface } from '../models/results/results.interface';
 
 describe('ExamService', () => {
     let examService: ExamService;
@@ -25,15 +27,68 @@ describe('ExamService', () => {
         mockResultsService = jasmine.createSpyObj('ResultsService', ['initializeExamResults', 'pushResults', 'save','initializePageResults']);
         mockResultsModel = jasmine.createSpyObj('ResultsModel', ['getResults']);
         mockPageModel = jasmine.createSpyObj('PageModel', ['getPage', 'stack']);
-        mockPageModel.currentPageSubject = new BehaviorSubject({}) as any;
+        mockPageModel.currentPageSubject = new BehaviorSubject<PageInterface>({
+            id: 'test-page',
+            responseArea: {
+                responseRequired: false,
+                type: 'text'
+            },
+            title: 'Mock Page',
+            questionMainText: '',
+            questionSubText: '',
+            instructionText: '',
+            helpText: '',
+            submitText: ''
+        } as PageInterface);
     
         mockProtocolModel = jasmine.createSpyObj('ProtocolModel', ['getProtocolModel']);
         mockProtocolModel.getProtocolModel.and.returnValue({ activeProtocol: undefined });
         const mockProtocol = {
-            activeProtocol: undefined
+            activeProtocol: {
+                name: 'Test Protocol',
+                date: new Date().toISOString(),
+                version: '1.0',
+                server: ProtocolServer.LocalServer,
+                admin: true,
+                pages: []
+            }
         };
         mockProtocolModel.getProtocolModel.and.returnValue(mockProtocol);
-        mockStateModel = jasmine.createSpyObj('StateModel', ['getState', 'setPageSubmittable']);
+        mockStateModel = jasmine.createSpyObj('StateModel', ['getState', 'setPageSubmittable', 'updateState']);
+        mockStateModel.stateSubject = new BehaviorSubject<StateInterface>({
+            examState: ExamState.Ready,
+            appState: AppState.Exam,
+            protocolState: ProtocolState.null,
+            deviceError: [],
+            doesResponseExist: false,
+            isResponseRequired: false,
+            isSubmittable: false,
+            examIndex: 0,
+            canGoBack: () => true,
+            isPaneOpen: {
+                general: false,
+                advanced: false,
+                devices: false,
+                tympans: false,
+                dosimeter: false,
+                softwareHardware: false,
+                appLog: false,
+                protocols: false,
+                protocolsSource: false,
+                deviceAdvanced: false,
+                completedExams: false,
+                exportedAndUploadedResults: false
+            },
+            examProgress: {
+                pctProgress: 0,
+                anticipatedProtocols: [],
+                activatedProtocols: []
+            },
+            bluetoothConnected: true,
+            wifiConnected: true,
+            newDeviceConnection: false
+        });
+        
         mockStateModel.getState.and.returnValue({
             examState: ExamState.Ready,
             appState: {
@@ -79,14 +134,92 @@ describe('ExamService', () => {
             newDeviceConnection: false
         });
         
+        mockResultsModel.resultsSubject = new BehaviorSubject<ResultsInterface>({
+            currentPage: {
+                pageId: 'test-page',
+                page: {
+                    id: 'test-page',
+                    responseArea: {
+                        responseRequired: false,
+                        type: 'text'
+                    },
+                    title: 'Mock Page',
+                    questionMainText: '',
+                    questionSubText: '',
+                    instructionText: '',
+                    helpText: '',
+                    submitText: ''
+                } as PageInterface
+            },
+            currentExam: {
+                protocol: {
+                    name: 'Test Protocol',
+                    date: new Date().toISOString(),
+                    version: '1.0',
+                    server: ProtocolServer.LocalServer,
+                    admin: true,
+                    pages: []
+                },
+                testDateTime: new Date().toISOString(),
+                elapsedTime: '00:30:00',
+                exportLocation: ProtocolServer.LocalServer,
+                responses: [],
+                partialresults: [],
+                softwareVersion: {
+                    tabsint: '1.0.0',
+                    date: new Date().toISOString(),
+                    rev: 'rev-123',
+                    version_code: 'v1.2',
+                    deps: {
+                        user_agent: 'Mozilla/5.0',
+                        node: '14.17.0',
+                        capacitor: '3.2.0'
+                    },
+                    plugins: ['plugin1', 'plugin2']
+                },
+                tabletLocation: {
+                    latitude: 37.7749,
+                    longitude: -122.4194,
+                    accuracy: 5
+                },
+                calibrationVersion: 'v1.2',
+                devices: {
+                    build: '2024.01',
+                    uuid: 'device-uuid-123',
+                    version: '1.0.3',
+                    platform: 'Android',
+                    model: 'Galaxy Tab S7',
+                    os: 'Android 11',
+                    other: 'Some other info',
+                    diskspace: '64GB',
+                    connectedDevices: {
+                        tympan: [
+                            {
+                                type: 'hearing-device',
+                                tabsintId: 'tym-001',
+                                description: 'Test Tympan Device',
+                                buildDateTime: new Date().toISOString(),
+                                serialNumber: 'SN-12345',
+                                deviceId: 'dev-001',
+                                name: 'Tympan Device',
+                                state: DeviceState.Connected,
+                                msgId: 123,
+                                maxByteLength: 244
+                            }
+                        ],
+                        cha: [{}], 
+                        svantek: [{}]
+                    }
+                }
+            }
+        });
+        
         mockResultsModel.getResults.and.returnValue({
             currentPage: {
                 pageId: 'test-page',
                 page: {} 
             },
             currentExam: {
-                protocolName: 'Test Protocol',
-                protocolId: '12345',
                 protocol: {
                     name: 'Test Protocol',
                     date: new Date().toISOString(),
@@ -118,7 +251,6 @@ describe('ExamService', () => {
                     longitude: -122.4194,
                     accuracy: 5
                 },
-                headset: 'Test Headset',
                 calibrationVersion: 'v1.2',
                 devices: {
                     build: '2024.01',
