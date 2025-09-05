@@ -495,11 +495,11 @@
           "isAutoSubmit": false,
           "responseArea": {
             "type": "memrResponseArea",
-            "soundFileName": "900Hz_1000Hz_Tones_Level_-3dBrms.wav",
+            "soundFileName": "/MEMR_TEST/Tones_900Hz_1000Hz_Level_-15dBrms_-15dBrms_MetaScaler_120dB_120dB.wav",
             "recordFileName": "REC.WAV",
-            "recordFileFolder": "MEMR",
+            "recordFileFolder": "MEMR_TEST",
             "nRepeats": 2,
-            "useMetaRMS": false,
+            "useMetaRMS": true,
             "elicitorLevelChange": "Within Block",
             "elicitorLevelArray": [
               70.0,
@@ -509,10 +509,15 @@
             "probeStimulusLevel": 10,
             "submissionIntervalMs": 500,
             "probeOutputChannel": [
-              "HPL0"
+              "HPR0"
             ],
             "elicitorOutputChannel": [
-              "LEFT:BOARD_MIC"
+              "HPL0"
+            ],
+            "recordChannels": [
+              "LEFT:BOARD_MIC", 
+              "HPL0", 
+              "HPR0"
             ]
           }
         },
@@ -545,10 +550,15 @@
             "probeStimulusLevel": 10,
             "submissionIntervalMs": 500,
             "probeOutputChannel": [
-              "HPL0"
+              "HPR0"
             ],
             "elicitorOutputChannel": [
-              "LEFT:BOARD_MIC"
+              "HPL0"
+            ],
+            "recordChannels": [
+              "LEFT:BOARD_MIC", 
+              "HPL0", 
+              "HPR0"
             ]
           }
         },
