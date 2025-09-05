@@ -165,7 +165,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   * @returns Array of channel names
   */
   getRecordChannelsArray(): string[] {
-    const channelsString = this.inputParameterMap.get('Record Channels') || '[]';
+    const channelsString = this.inputParameterMap.get('Record Channels') ?? '[]';
     try {
       const parsed = JSON.parse(channelsString);
       return Array.isArray(parsed) ? parsed : [];

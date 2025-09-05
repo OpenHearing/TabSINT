@@ -12,7 +12,6 @@ import { textBoxSchema } from '../../../../../schema/response-areas/textbox.sche
 import { StateInterface } from '../../../../models/state/state.interface';
 import { StateModel } from '../../../../models/state/state.service';
 import { ExamService } from '../../../../controllers/exam.service';
-import { response } from 'express';
 
 @Component({
   selector: 'textbox-view',

@@ -139,7 +139,7 @@ export class ProtocolsComponent {
           );
           
           if (existingProtocolEntry) {
-            const [existingKey, existingProtocol] = existingProtocolEntry;
+            const [, existingProtocol] = existingProtocolEntry;
             
             // Never overwrite Developer protocols
             if (existingProtocol.server === ProtocolServer.Developer) {
@@ -468,7 +468,6 @@ export class ProtocolsComponent {
   };
 
   private async fetchGitlabData(url: string, headers: { 'Authorization': string }, errorMessagePrefix: string) {
-    // const response = await fetch(url, { headers });
     const options = {
       url: url,
       headers: headers,

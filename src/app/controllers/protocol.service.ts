@@ -261,8 +261,8 @@ export class ProtocolService {
         ] = processProtocol(this.loading);
 
         if (this.loading.errors && this.loading.errors.length > 0) {
-            this.protocolModel.activeProtocol!.errors = this.protocolModel.activeProtocol!.errors || [];
-            this.protocolModel.activeProtocol!.errors.push(...this.loading.errors);
+            this.protocolModel.activeProtocol.errors = this.protocolModel.activeProtocol.errors || [];
+            this.protocolModel.activeProtocol.errors.push(...this.loading.errors);
         }
         if (this.protocolModel.activeProtocol && "key" in this.protocolModel.activeProtocol) {
             if (this.protocolModel.activeProtocol.key !== undefined) {
