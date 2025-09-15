@@ -13,7 +13,7 @@ interface CalibrationResults {
   styleUrls: ['./calibration-results-viewer.component.css']
 })
 export class CalibrationResultsViewerComponent implements OnInit {
-  @Output() entryClicked = new EventEmitter<{ frequency: string; ear: string }>();
+  @Output() entryClicked = new EventEmitter<{ frequency: string; ear: string; step: string; }>();
   results: CalibrationResults | undefined;
 
   constructor(private readonly resultsModel: ResultsModel) { }
@@ -22,7 +22,7 @@ export class CalibrationResultsViewerComponent implements OnInit {
     const calibrationResult = this.resultsModel.getResults().currentExam.responses
       .filter((response: ExamResponse) => response.responseArea === 'calibrationExam');
     if (calibrationResult.length > 0) {
-      this.results = JSON.parse(calibrationResult[calibrationResult.length-1].response) as CalibrationResults;
+      this.results = JSON.parse(calibrationResult[calibrationResult.length - 1].response) as CalibrationResults;
     }
     calibrationResult.pop();
   }
@@ -31,8 +31,7 @@ export class CalibrationResultsViewerComponent implements OnInit {
     return Object.keys(obj);
   }
 
-  navigateToCalibration(ear: string, frequency: string): void {
-    this.entryClicked.emit({ ear, frequency });
+  navigateToStep(ear: string, frequency: string, step: string): void {
+    this.entryClicked.emit({ ear, frequency, step });
   }
-
 }

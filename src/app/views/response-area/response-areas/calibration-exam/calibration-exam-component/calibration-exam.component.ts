@@ -106,6 +106,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     if (this.isPlaying) {
       await this.playTone(this.calFactor);
     }
+    this.updateCalibrationData(this.currentFrequency, this.calFactor, null, null);
   }
 
   async togglePlay(): Promise<void> {
@@ -218,28 +219,28 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   }
 
 
-  async handleEntryClicked(entry: { frequency: string, ear: string }): Promise<void> {
+  async handleEntryClicked(entry: { frequency: string, ear: string, step: string }): Promise<void> {
     this.showSkipButton = true;
     const frequencyIndex = this.frequencies.indexOf(+entry.frequency);
     if (frequencyIndex === -1) {
       console.error(`Frequency ${entry.frequency} not found in frequencies array.`);
       return;
     }
-    this.currentStep = 'calibration';
+    this.currentStep = entry.step;
     this.currentFrequency = +entry.frequency;
     this.earCup = entry.ear;
     this.currentFrequencyIndex = frequencyIndex;
-    const currentEarData = this.earCup === 'Left' ? this.leftEarData : this.rightEarData;
     let resp = await this.devicesService.abortExams(this.device!);
     this.logger.debug("resp from tympan after calibration exam abort exams:" + resp);
     resp = await this.devicesService.queueExam(this.device!, "HNCalibration", { "OutputChannel": this.earCup == "Left" ? "HPL0" : "HPR0" });
     this.logger.debug("resp from tympan after calibration exam queue exam:" + resp);
-    this.userInput = Number(currentEarData[this.currentFrequency].measurement) || null;
+    this.updateUserInputBasedOnStep();
+    this.updateButtonLabel();
     while (this.navigationHistory.length > 0) {
       const lastEntry = this.navigationHistory[this.navigationHistory.length - 1];
       if (
         lastEntry.frequencyIndex === this.currentFrequencyIndex &&
-        lastEntry.earCup === this.earCup && lastEntry.step==="calibration"
+        lastEntry.earCup === this.earCup && lastEntry.step===entry.step
       ) {
         const element = this.navigationHistory.pop()!;
         this.poppedHistory.push(element);
@@ -250,7 +251,6 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     this.examService.submit = () => {
       this.nextStep();
     };
-    this.updateButtonLabel();
   }
   
 
