@@ -78,7 +78,7 @@ export async function loadNormativeDataXlsx(normativeDataFilePath: string, meta:
     }
   } else if (meta.server === ProtocolServer.LocalServer) {
     const resp = await TabsintFs.readFile({ rootUri: meta.contentURI, filePath: normativeDataFilePath, asBase64: true });
-    xlsxArrayBuffer = Buffer.from(resp?.content, 'base64');
+    xlsxArrayBuffer = Buffer.from(resp?.content, 'base64').buffer;
   }
 
   if (xlsxArrayBuffer) {

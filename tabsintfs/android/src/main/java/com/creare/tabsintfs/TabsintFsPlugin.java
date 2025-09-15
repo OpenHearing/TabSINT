@@ -488,8 +488,8 @@ private String readFileContent(DocumentFile file, boolean asBase64) {
         }
         return new String(contentBytes, StandardCharsets.UTF_8);
 
-    } catch (IOException e) {
-        // Handle the IOException here and return null or an appropriate value
+    } catch (IOException | OutOfMemoryError e) {
+        // Handle the IOException or OOM here and return null or an appropriate value
         Log.e("TabsintFsPlugin", "Failed to read content from the file: " + file.getName(), e);
         return null; // Or you could return an empty string or some error message
     }
@@ -529,35 +529,38 @@ public void listFilesInDirectory(PluginCall call) {
         call.reject("Specified path is not a directory or does not exist");
         return;
     }
+    try {
+        DocumentFile[] files = targetDir.listFiles();
+        JSArray fileList = new JSArray();
 
-    DocumentFile[] files = targetDir.listFiles();
-    JSArray fileList = new JSArray();
+        if (files != null) {
+            for (DocumentFile file : files) {
+                if (file.isFile()) {
+                    JSObject fileInfo = new JSObject();
+                    fileInfo.put("name", file.getName());
+                    fileInfo.put("uri", file.getUri().toString());
+                    fileInfo.put("mimeType", file.getType());
+                    fileInfo.put("size", file.length());
 
-    if (files != null) {
-        for (DocumentFile file : files) {
-            if (file.isFile()) {
-                JSObject fileInfo = new JSObject();
-                fileInfo.put("name", file.getName());
-                fileInfo.put("uri", file.getUri().toString());
-                fileInfo.put("mimeType", file.getType());
-                fileInfo.put("size", file.length());
+                    // Optionally, you can read the content of the file (depends on your use case)
+                    String content = readFileContent(file);
+                    if (content != null) {
+                        fileInfo.put("content", content);
+                    } else {
+                        fileInfo.put("content", "Failed to read file content");
+                    }
 
-                // Optionally, you can read the content of the file (depends on your use case)
-                String content = readFileContent(file);
-                if (content != null) {
-                    fileInfo.put("content", content);
-                } else {
-                    fileInfo.put("content", "Failed to read file content");
+                    fileList.put(fileInfo);
                 }
-
-                fileList.put(fileInfo);
             }
         }
+        JSObject result = new JSObject();
+        result.put("files", fileList);
+        call.resolve(result);
+    } catch (OutOfMemoryError e) {
+        call.reject("Specified path is too large to load content into memory");
+        return;
     }
-
-    JSObject result = new JSObject();
-    result.put("files", fileList);
-    call.resolve(result);
+    return;
 }
-
 }

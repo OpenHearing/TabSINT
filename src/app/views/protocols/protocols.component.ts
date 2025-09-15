@@ -120,43 +120,17 @@ export class ProtocolsComponent {
       const resultFromListFiles = await this.fileService.listDirectory(protocolsFolderUri);
       const fileList = resultFromListFiles?.files;
       for (const file of fileList!) {
-        if (file.name=="protocol.json") {
+        if (file.name == "protocol.json") {
           const protocolContent: ProtocolSchemaInterface = JSON.parse(file.content);
           const protocol: ProtocolInterface = {
-            ...partialMetaDefaults, 
-            name: protocolName!, 
-            contentURI: protocolsFolderUri!, 
+            ...partialMetaDefaults,
+            name: protocolName!,
+            contentURI: protocolsFolderUri!,
             server: ProtocolServer.LocalServer,
             admin: false,
             ...protocolContent
           };
-          const protocolMetaData: ProtocolMetaInterface = getProtocolMetaData(protocol);
-          let availableMetaProtocols = this.disk.availableProtocolsMeta;
-          
-          // Check if a protocol with this name already exists
-          const existingProtocolEntry = Object.entries(availableMetaProtocols).find(
-            ([key, p]) => p.name === protocolMetaData.name
-          );
-          
-          if (existingProtocolEntry) {
-            const [, existingProtocol] = existingProtocolEntry;
-            
-            // Never overwrite Developer protocols
-            if (existingProtocol.server === ProtocolServer.Developer) {
-              this.notifications.alert({
-                title: "Cannot Overwrite Developer Protocol",
-                content: `Cannot add protocol "${protocolMetaData.name}" because a Developer protocol with the same name already exists. Developer protocols cannot be overwritten.`,
-                type: DialogType.Alert
-              }).subscribe();
-              continue; // Don't add it
-            }
-          }
-
-          availableMetaProtocols[protocolMetaData.name] = protocolMetaData;
-          this.diskModel.updateDiskModel('availableProtocolsMeta', availableMetaProtocols);
-          this.protocolModel = this.protocolM.getProtocolModel();
-          this.select(protocolMetaData);
-          await this.loadProtocol();
+          await this.updateDiskModel(protocol);
         }
       }
     } catch (error) {
@@ -212,13 +186,15 @@ export class ProtocolsComponent {
         ...protocolContent
       };
 
-      this.updateDiskModel(protocol);
+      const isProtocolAdded = await this.updateDiskModel(protocol);
 
-      this.notifications.alert({
+      if (isProtocolAdded) {
+        this.notifications.alert({
           title: "Success",
           content: `Protocol '${protocol.name}' imported successfully from GitLab.`,
           type: DialogType.Confirm
-      });
+        });
+      }
     } catch (error: any) {
       this.handleGitlabError(error);
     } finally {
@@ -336,93 +312,94 @@ export class ProtocolsComponent {
 
   async update(): Promise<void> {
     if (!this.selected || this.selected.server !== ProtocolServer.Gitlab) {
-        this.notifications.alert({
-            title: "Error",
-            content: "Selected protocol was not imported from GitLab.",
-            type: DialogType.Alert
-        });
-        return;
+      this.notifications.alert({
+        title: "Error",
+        content: "Selected protocol was not imported from GitLab.",
+        type: DialogType.Alert
+      });
+      return;
     }
 
     try {
-        this.tasks.register("Update Protocol", `Checking for updates for ${this.selected.name}...`);
+      this.tasks.register("Update Protocol", `Checking for updates for ${this.selected.name}...`);
 
-        const selectedGitlabConfig = this.selected.gitlabConfig;
-        if (!selectedGitlabConfig) {
-            throw new Error("GitLab configuration is missing for the selected protocol.");
-        }
-        this.logger.debug("Printing selected protocols gitlab configuration")
-        this.logger.debug(JSON.stringify(selectedGitlabConfig));
-        if(!selectedGitlabConfig.host || !selectedGitlabConfig.token || !selectedGitlabConfig.group || !selectedGitlabConfig.repository) {
-          throw new Error("Missing required GitLab configuration. Please specify a GitLab host, token, group, and repository.");
-        }
-        const headers = {
+      const selectedGitlabConfig = this.selected.gitlabConfig;
+      if (!selectedGitlabConfig) {
+        throw new Error("GitLab configuration is missing for the selected protocol.");
+      }
+      this.logger.debug("Printing selected protocols gitlab configuration");
+      this.logger.debug(JSON.stringify(selectedGitlabConfig));
+      if (!selectedGitlabConfig.host || !selectedGitlabConfig.token || !selectedGitlabConfig.group || !selectedGitlabConfig.repository) {
+        throw new Error("Missing required GitLab configuration. Please specify a GitLab host, token, group, and repository.");
+      }
+      const headers = {
         'Authorization': `Bearer ${selectedGitlabConfig.token}`
       };
-        const projectId = await this.getGitlabProjectId(selectedGitlabConfig.host,selectedGitlabConfig.repository,selectedGitlabConfig.group,headers);
-        this.logger.debug(`Project id is -- ${projectId}`);
-        const latestCommitHash = await this.getLatestCommitHash(selectedGitlabConfig.host,projectId, headers);
-        this.logger.debug(`Latest commit hash: ${latestCommitHash}`);
+      const projectId = await this.getGitlabProjectId(selectedGitlabConfig.host, selectedGitlabConfig.repository, selectedGitlabConfig.group, headers);
+      this.logger.debug(`Project id is -- ${projectId}`);
+      const latestCommitHash = await this.getLatestCommitHash(selectedGitlabConfig.host, projectId, headers);
+      this.logger.debug(`Latest commit hash: ${latestCommitHash}`);
 
-        if (selectedGitlabConfig.tag === latestCommitHash) {
-            this.notifications.alert({
-                title: "Up-to-date",
-                content: "Your protocol is already up-to-date.",
-                type: DialogType.Confirm
-            });
-            return;
-        }
-
-        this.logger.debug(`Protocol is outdated. Checking if protocol.json has changed...`);
-
-        const fileUrl = `${selectedGitlabConfig.host}/api/v4/projects/${projectId}/repository/files/protocol.json/raw?ref=${latestCommitHash}`;
-
-        const latestProtocolJson = await this.fetchGitlabData(fileUrl,headers,"Failed to fetch protocol.json:",)
-        const localDir = `.tabsint-protocols/${selectedGitlabConfig.repository}`;
-        const localProtocolFile = await this.fileService.readFile(`${localDir}/protocol.json`);
-
-        if (localProtocolFile) {
-            const localProtocolJson = JSON.parse(localProtocolFile.content);
-
-            if (_.isEqual(localProtocolJson, latestProtocolJson)) {
-                this.notifications.alert({
-                    title: "No Changes Detected",
-                    content: "The protocol.json file has not changed in the latest commit.",
-                    type: DialogType.Confirm
-                });
-                return;
-            }
-        } else {
-          throw new Error("Could not read local protocol.json file.");
-        }
-        
-        this.logger.debug(`protocol.json has changed. Updating protocol...`);
-
-        const [protocolContent,localDirUri] = await this.downloadAndSaveFiles(projectId,latestCommitHash,selectedGitlabConfig.host,headers,localDir);
-        const updatedProtocol: ProtocolInterface = {
-            ...partialMetaDefaults,
-            name: selectedGitlabConfig.repository,
-            server: ProtocolServer.Gitlab,
-            contentURI: localDirUri,
-            admin: false,
-            gitlabConfig: { ...selectedGitlabConfig, tag: latestCommitHash },
-            ...protocolContent
-        };
-
-        this.updateDiskModel(updatedProtocol);
-
+      if (selectedGitlabConfig.tag === latestCommitHash) {
         this.notifications.alert({
-            title: "Success",
-            content: `Protocol '${this.selected?.name}' has been updated successfully.`,
-            type: DialogType.Confirm
+          title: "Up-to-date",
+          content: "Your protocol is already up-to-date.",
+          type: DialogType.Confirm
         });
+        return;
+      }
 
+      this.logger.debug(`Protocol is outdated. Checking if protocol.json has changed...`);
+
+      const fileUrl = `${selectedGitlabConfig.host}/api/v4/projects/${projectId}/repository/files/protocol.json/raw?ref=${latestCommitHash}`;
+
+      const latestProtocolJson = await this.fetchGitlabData(fileUrl, headers, "Failed to fetch protocol.json:",);
+      const localDir = `.tabsint-protocols/${selectedGitlabConfig.repository}`;
+      const localProtocolFile = await this.fileService.readFile(`${localDir}/protocol.json`);
+
+      if (localProtocolFile) {
+        const localProtocolJson = JSON.parse(localProtocolFile.content);
+
+        if (_.isEqual(localProtocolJson, latestProtocolJson)) {
+          this.notifications.alert({
+            title: "No Changes Detected",
+            content: "The protocol.json file has not changed in the latest commit.",
+            type: DialogType.Confirm
+          });
+          return;
+        }
+      } else {
+        throw new Error("Could not read local protocol.json file.");
+      }
+
+      this.logger.debug(`protocol.json has changed. Updating protocol...`);
+
+      const [protocolContent, localDirUri] = await this.downloadAndSaveFiles(projectId, latestCommitHash, selectedGitlabConfig.host, headers, localDir);
+      const updatedProtocol: ProtocolInterface = {
+        ...partialMetaDefaults,
+        name: selectedGitlabConfig.repository,
+        server: ProtocolServer.Gitlab,
+        contentURI: localDirUri,
+        admin: false,
+        gitlabConfig: { ...selectedGitlabConfig, tag: latestCommitHash },
+        ...protocolContent
+      };
+
+      const protocolUpdated = await this.updateDiskModel(updatedProtocol);
+
+      if (protocolUpdated) {
+        this.notifications.alert({
+          title: "Success",
+          content: `Protocol '${this.selected?.name}' has been updated successfully.`,
+          type: DialogType.Confirm
+        });
+      }
     } catch (error: any) {
-        this.handleGitlabError(error);
+      this.handleGitlabError(error);
     } finally {
-        this.tasks.deregister("Update Protocol");
+      this.tasks.deregister("Update Protocol");
     }
-}
+  }
 
   onGitlabConfigChange(event:any, value:string) {
     if (value=='host') {
@@ -558,15 +535,34 @@ export class ProtocolsComponent {
   }
 
 
-  private updateDiskModel(protocol: ProtocolInterface) {
+  private async updateDiskModel(protocol: ProtocolInterface): Promise<boolean> {
     const protocolMetaData: ProtocolMetaInterface = getProtocolMetaData(protocol);
     let availableMetaProtocols = this.disk.availableProtocolsMeta;
-    availableMetaProtocols[protocolMetaData.name] = protocolMetaData;
 
+    // Check if a protocol with this name already exists
+    const existingProtocolEntry = Object.entries(availableMetaProtocols).find(
+      ([key, p]) => p.name === protocolMetaData.name
+    );
+
+    if (existingProtocolEntry) {
+      const [, existingProtocol] = existingProtocolEntry;
+
+      // Never overwrite Developer protocols
+      if (existingProtocol.server === ProtocolServer.Developer) {
+        this.notifications.alert({
+          title: "Cannot Overwrite Developer Protocol",
+          content: `Cannot add protocol "${protocolMetaData.name}" because a Developer protocol with the same name already exists. Developer protocols cannot be overwritten.`,
+          type: DialogType.Alert
+        }).subscribe();
+        return false; // Don't add it
+      }
+    }
+    availableMetaProtocols[protocolMetaData.name] = protocolMetaData;
     this.diskModel.updateDiskModel('availableProtocolsMeta', availableMetaProtocols);
     this.protocolModel = this.protocolM.getProtocolModel();
     this.select(protocolMetaData);
-    this.loadProtocol();
+    await this.loadProtocol();
+    return true;
   }
 
   private handleGitlabError(error: any) {
