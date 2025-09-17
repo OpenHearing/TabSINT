@@ -84,6 +84,7 @@ export class TympanService {
     onDisconnect(deviceId: string): void {
         this.logger.debug(`device ${deviceId} disconnected`);
         this.deviceUtil.updateDeviceState(deviceId, DeviceState.Disconnected);
+        this.stateModel.updatePaneOpen({tympans: true});
     }
 
     async startScan() {
@@ -110,8 +111,7 @@ export class TympanService {
             newConnection["maxByteLength"] = maxByteLength - 3; // max byte length is MTU -3
 
             let connection: ConnectedDevice = this.deviceUtil.createDeviceConnection(newConnection);
-            this.devices.connectedDevices.tympan.push(connection);
-            this.stateModel.updatePaneOpen({tympans: true});
+            connection.state = DeviceState.Disconnected;
             return connection;
         } catch {
             this.logger.error("failed to connect to tympan: "+JSON.stringify(tympan));
@@ -122,7 +122,6 @@ export class TympanService {
     async reconnect(tympanId: string): Promise<ConnectedDevice|undefined> {
         try {
             await this.tympanWrap.connect(tympanId, this.onDisconnect.bind(this));
-            this.deviceUtil.updateDeviceState(tympanId, DeviceState.Connected);
             return this.deviceUtil.getDeviceFromDeviceId(tympanId);
         } catch {
             this.logger.error("failed to reconnect to tympan: "+JSON.stringify(tympanId));
