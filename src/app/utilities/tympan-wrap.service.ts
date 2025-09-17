@@ -205,7 +205,7 @@ export class TympanWrap {
         if (this.ACCUMULATE_BYTES[deviceId] === true) {
             if (new Date().getTime() - this.lastByteReceived[deviceId] > this.inner_byte_timeout) {
                 let tabsintId: string|undefined = this.deviceUtil.getTabsintIdFromDeviceId(deviceId);
-                let msg = "[byte timeout]";
+                let msg = '["byte timeout"]';
                 this.devicesModel.tympanResponseSubject.next({"tabsintId":tabsintId!,"msg":msg});
                 this.stopAccumulatingBytes(deviceId);
             } else {

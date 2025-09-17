@@ -473,7 +473,7 @@ export class ProtocolsComponent {
       headers: headers,
     };
 
-    const response = await CapacitorHttp.get(options)
+    const response = await CapacitorHttp.get(options);
     if (response.status < 200 || response.status >= 300) {
         if (response.status === 401) {
             throw new Error("Unauthorized: Check your GitLab credentials.");
@@ -595,7 +595,7 @@ export class ProtocolsComponent {
     );
 
     const matchedProject = projects.find((p: { name: string; namespace: { full_path: string } }) =>
-        p.name === repository && p.namespace.full_path === group
+        p.name === repository && p.namespace.full_path.toLowerCase() === group.toLowerCase()
     );
 
     if (!matchedProject) {
