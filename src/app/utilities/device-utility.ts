@@ -88,9 +88,7 @@ export class DeviceUtil {
     doTympanResponseMsgIdsMatch(expectedMsgInfo: PendingMsgInfo|null, response: TympanResponse): boolean {
         let resp = false;
         if (expectedMsgInfo!.tabsintId === parseInt(response.tabsintId)) {
-            if (JSON.stringify(response).includes("byte timeout")) {
-                resp = true;
-            } else if (-parseInt(expectedMsgInfo!.msgId) === JSON.parse(response.msg)[0]) {
+            if (JSON.stringify(response).includes("byte timeout") || -parseInt(expectedMsgInfo!.msgId) === JSON.parse(response.msg)[0]) {
                 resp = true;
             }
         }        
