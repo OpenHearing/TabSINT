@@ -366,7 +366,7 @@
             "outputChannels": ["HPL1","HPR1"],
             "fStart": 100,
             "fEnd": 18000,
-            "sweepDuration": 6,
+            "sweepDuration": 18,
             "numFrequencies": 64
           }
         },

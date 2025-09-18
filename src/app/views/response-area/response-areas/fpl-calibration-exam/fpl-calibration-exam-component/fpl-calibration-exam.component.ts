@@ -67,7 +67,8 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   outputRawMeasurements: boolean = waiSchema.properties.outputRawMeasurements.default;
 
   // WAI parameters for FPL calibration different from WAI defaults
-  windowDuration: number = (2*this.sweepDuration/(this.numFrequencies - 1));
+  // windowDuration: number = (2*this.sweepDuration/(this.numFrequencies - 1)); // out of date as of 09_18_2025
+  windowDuration: number = 0.057;
   writeFPLCalibration: boolean = true;
   returnResultData: boolean = false;
 
