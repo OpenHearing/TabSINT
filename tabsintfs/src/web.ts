@@ -8,7 +8,7 @@ export class TabsintFsWeb extends WebPlugin implements TabsintFsPlugin {
     return { uri: '', name: '' };
   }
 
-  async createPath(options: { rootUri: string | undefined; path: string; content?: string }): Promise<{ uri: string }> {
+  async createPath(options: { rootUri: string | undefined; path: string; content?: string; asBase64?: boolean }): Promise<{ uri: string }> {
     console.log('createPath not implemented for web', options);
     return { uri: '' };
   }

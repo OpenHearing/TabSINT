@@ -7,6 +7,7 @@ export interface TabsintFsPlugin {
         rootUri: string | null;
         path: string;
         content?: string;
+        asBase64?: boolean;
     }): Promise<{
         uri: string;
     }>;

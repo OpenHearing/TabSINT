@@ -166,7 +166,12 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     }
 
     recordThreshold(): void {
-        const resultType = this.currentDbSpl <= (this.minOutputLevel+this.adjustmentStepSize) ? ResultType.Better : ResultType.Threshold;
+        let resultType = ResultType.Threshold;
+        if (this.currentDbSpl <= (this.minOutputLevel + this.adjustmentStepSize)) {
+            resultType = ResultType.Better;
+        } else if (this.currentDbSpl >= (this.maxOutputLevel - this.adjustmentStepSize)) {
+            resultType = ResultType.Beyond;
+        }
         this.updateThreshold(this.selectedEar, this.selectedFrequency, this.currentDb, resultType);
     }
 

@@ -195,7 +195,7 @@ export class FileService {
         let result = null;
         try {
             let base64Data: string;
-            
+
             if (typeof data === 'string') {
                 // If it's already a base64 string
                 base64Data = data;
@@ -207,12 +207,9 @@ export class FileService {
                 const blob = new Blob([data]);
                 base64Data = await this.blobToBase64(blob);
             }
-
-            result = await Filesystem.writeFile({
-                path: path,
-                data: base64Data,
-                directory: Directory.Documents,
-            });
+            result = base64Data
+                ? await TabsintFs.createPath({ rootUri: rootDir, path: path, content: base64Data, asBase64: true })
+                : await TabsintFs.createPath({ rootUri: rootDir, path: path });
             this.logger.debug(`✅ Binary file written successfully: ${path}`);
         } catch (error) {
             this.logger.error(`❌ Failed to write binary file: ${error}`);
