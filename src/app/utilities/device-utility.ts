@@ -126,7 +126,7 @@ export class DeviceUtil {
         let connection: ConnectedDevice|undefined;
         for (const [ , deviceType] of Object.entries(this.devices.connectedDevices)) {
             deviceType.forEach( (device: ConnectedDevice) => {
-                if (device.deviceId === deviceId) {
+                if (device.deviceId === deviceId && device.state === DeviceState.Connected) {
                     connection = device;
                 }
             });
