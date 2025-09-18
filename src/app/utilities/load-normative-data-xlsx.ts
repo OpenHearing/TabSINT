@@ -76,9 +76,10 @@ export async function loadNormativeDataXlsx(normativeDataFilePath: string, meta:
       console.error('Error fetching or parsing XLSX file:', error);
       throw error;
     }
-  } else if (meta.server === ProtocolServer.LocalServer) {
+  } else if (meta.server === ProtocolServer.LocalServer || meta.server === ProtocolServer.Gitlab) {
     const resp = await TabsintFs.readFile({ rootUri: meta.contentURI, filePath: normativeDataFilePath, asBase64: true });
-    xlsxArrayBuffer = Buffer.from(resp?.content, 'base64');
+    const xlsxBuffer = Buffer.from(resp?.content, 'base64');
+    xlsxArrayBuffer = xlsxBuffer.buffer.slice(xlsxBuffer.byteOffset, xlsxBuffer.byteOffset + xlsxBuffer.byteLength);
   }
 
   if (xlsxArrayBuffer) {

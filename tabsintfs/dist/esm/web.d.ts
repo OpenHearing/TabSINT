@@ -9,6 +9,7 @@ export declare class TabsintFsWeb extends WebPlugin implements TabsintFsPlugin {
         rootUri: string | undefined;
         path: string;
         content?: string;
+        asBase64?: boolean;
     }): Promise<{
         uri: string;
     }>;

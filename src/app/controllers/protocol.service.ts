@@ -175,11 +175,10 @@ export class ProtocolService {
     }
 
     private async validateIfCalledFor() {
-        if (this.loading.notify) {
-            this.tasks.register("Validate Protocol", "Validating Protocol... This process could take several minutes");
-        }
-
         if (this.disk.validateProtocols) {
+            if (this.loading.notify) {
+                this.tasks.register("Validate Protocol", "Validating Protocol... This process could take several minutes");
+            }
             let validationResult = await this.validate();
             this.tasks.deregister("Validate Protocol");
             if (validationResult.valid) {

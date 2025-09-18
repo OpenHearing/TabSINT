@@ -187,6 +187,7 @@ public class TabsintFsPlugin extends Plugin {
     // Remove leading and trailing slashes if present
     path = path.replaceAll("^/+|/+$", "");
     String content = call.getString("content");
+    boolean asBase64 = call.getBoolean("asBase64", false);
 
     if (rootUri == null || path == null) {
         call.reject("Must provide rootUri and path");
@@ -200,7 +201,7 @@ public class TabsintFsPlugin extends Plugin {
         call.reject("Cannot write to the specified root directory");
         return;
     }
-    DocumentFile currentDir = createPathHelper(path, rootDir,content);
+    DocumentFile currentDir = createPathHelper(path, rootDir, content, asBase64);
     if(currentDir==null){
         call.reject("Failed to create or access file/directory");
     }
@@ -209,7 +210,7 @@ public class TabsintFsPlugin extends Plugin {
     call.resolve(ret);
 }
 
-private DocumentFile createPathHelper(String path,DocumentFile rootDir,String content){
+private DocumentFile createPathHelper(String path, DocumentFile rootDir, String content, boolean asBase64) {
     if(path==null || path.isEmpty() || rootDir==null){
         return null;
     }
@@ -225,7 +226,7 @@ private DocumentFile createPathHelper(String path,DocumentFile rootDir,String co
 
         if (isFile) {
             // Create file
-            currentDir = createFile(currentDir, component, content);
+            currentDir = createFile(currentDir, component, content, asBase64);
         } else {
             // Create or navigate to directory
             currentDir = createOrGetDirectory(currentDir, component);
@@ -247,7 +248,7 @@ private boolean hasFileExtension(String component) {
     return false;
 }
 
-private DocumentFile createFile(DocumentFile parentDir, String fileName, String content) {
+private DocumentFile createFile(DocumentFile parentDir, String fileName, String content, boolean asBase64) {
     String extension = fileName.substring(fileName.lastIndexOf(".") + 1);
     String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
 
@@ -261,7 +262,7 @@ private DocumentFile createFile(DocumentFile parentDir, String fileName, String 
     }
 
     if (content != null) {
-        if (!writeFileContent(newFile, content)) {
+        if (!writeFileContent(newFile, content, asBase64)) {
             return null;
         }
     }
@@ -372,7 +373,7 @@ public void copyFileOrFolder(PluginCall call) {
         call.reject("Destination path specified is a file path, please specify a valid destination path");
     }
 
-    DocumentFile destinationFolder = createPathHelper(destinationPath, rootDir,null);
+    DocumentFile destinationFolder = createPathHelper(destinationPath, rootDir, null, false);
     if (destinationFolder==null){
         call.reject("Error creating destination path");
     }
@@ -461,13 +462,20 @@ public void deletePath(PluginCall call) {
 }
 
 private boolean writeFileContent(DocumentFile file, String content) {
-    try (ParcelFileDescriptor pfd = getContext().getContentResolver().openFileDescriptor(file.getUri(), "w");
-         FileOutputStream fos = new FileOutputStream(pfd.getFileDescriptor())) {
+    return writeFileContent(file, content, false);
+}
 
-        fos.write(content.getBytes());
+private boolean writeFileContent(DocumentFile file, String content, boolean asBase64) {
+    try (ParcelFileDescriptor pfd = getContext().getContentResolver().openFileDescriptor(file.getUri(), "w");
+            FileOutputStream fos = new FileOutputStream(pfd.getFileDescriptor())) {
+        if (content != null) {
+            byte[] contentBytes = asBase64 ? Base64.getDecoder().decode(content.replaceAll("\\s+", ""))
+                    : content.getBytes();
+            fos.write(contentBytes);
+        }
         return true;
 
-    } catch (IOException e) {
+    } catch (IOException | IllegalArgumentException e) {
         Log.e(TAG, "Failed to write content to the file: " + file.getName(), e);
         return false;
     }
@@ -488,8 +496,8 @@ private String readFileContent(DocumentFile file, boolean asBase64) {
         }
         return new String(contentBytes, StandardCharsets.UTF_8);
 
-    } catch (IOException e) {
-        // Handle the IOException here and return null or an appropriate value
+    } catch (IOException | OutOfMemoryError e) {
+        // Handle the IOException or OOM here and return null or an appropriate value
         Log.e("TabsintFsPlugin", "Failed to read content from the file: " + file.getName(), e);
         return null; // Or you could return an empty string or some error message
     }
@@ -529,35 +537,38 @@ public void listFilesInDirectory(PluginCall call) {
         call.reject("Specified path is not a directory or does not exist");
         return;
     }
+    try {
+        DocumentFile[] files = targetDir.listFiles();
+        JSArray fileList = new JSArray();
 
-    DocumentFile[] files = targetDir.listFiles();
-    JSArray fileList = new JSArray();
+        if (files != null) {
+            for (DocumentFile file : files) {
+                if (file.isFile()) {
+                    JSObject fileInfo = new JSObject();
+                    fileInfo.put("name", file.getName());
+                    fileInfo.put("uri", file.getUri().toString());
+                    fileInfo.put("mimeType", file.getType());
+                    fileInfo.put("size", file.length());
 
-    if (files != null) {
-        for (DocumentFile file : files) {
-            if (file.isFile()) {
-                JSObject fileInfo = new JSObject();
-                fileInfo.put("name", file.getName());
-                fileInfo.put("uri", file.getUri().toString());
-                fileInfo.put("mimeType", file.getType());
-                fileInfo.put("size", file.length());
+                    // Optionally, you can read the content of the file (depends on your use case)
+                    String content = readFileContent(file);
+                    if (content != null) {
+                        fileInfo.put("content", content);
+                    } else {
+                        fileInfo.put("content", "Failed to read file content");
+                    }
 
-                // Optionally, you can read the content of the file (depends on your use case)
-                String content = readFileContent(file);
-                if (content != null) {
-                    fileInfo.put("content", content);
-                } else {
-                    fileInfo.put("content", "Failed to read file content");
+                    fileList.put(fileInfo);
                 }
-
-                fileList.put(fileInfo);
             }
         }
+        JSObject result = new JSObject();
+        result.put("files", fileList);
+        call.resolve(result);
+    } catch (OutOfMemoryError e) {
+        call.reject("Specified path is too large to load content into memory");
+        return;
     }
-
-    JSObject result = new JSObject();
-    result.put("files", fileList);
-    call.resolve(result);
+    return;
 }
-
 }
