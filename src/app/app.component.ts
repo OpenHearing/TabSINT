@@ -2,9 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from "@ngx-translate/core";
 import _ from 'lodash';
-import { Subscription } from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
-
+import { Subscription, firstValueFrom } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog'; 
 
 import { TabsintFs } from 'tabsintfs';
 
@@ -23,6 +22,8 @@ import { DeviceUtil } from './utilities/device-utility';
 import { DisclaimerComponent } from './views/disclaimer/disclaimer.component';
 import { StateModel } from './models/state/state.service';
 import { NetworkService } from './controllers/network.service';
+import { Notifications } from './utilities/notifications.service';
+import { DialogType } from './utilities/constants';
 
 @Component({
   selector: 'app-root',
@@ -49,6 +50,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private readonly dialog: MatDialog,
     private readonly stateModel: StateModel,
     private readonly networkService: NetworkService,
+    private readonly notifications: Notifications
   ) {
     this.translate.setDefaultLang('English');
     this.translate.use('English');
@@ -67,6 +69,13 @@ export class AppComponent implements OnInit, OnDestroy {
     this.router.navigate(['']);
 
     if (!this.disk.contentURI) {
+      await firstValueFrom(
+        this.notifications.alert({
+          title: "Select Documents Folder",
+          content: `Please use the Android File Chooser to select the docuements folder.`,
+          type: DialogType.Alert
+        })
+      );
       try {
         const result = await TabsintFs.chooseFolder();
         this.diskModel.updateDiskModel('contentURI', result.uri);

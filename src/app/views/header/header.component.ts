@@ -105,6 +105,10 @@ export class HeaderComponent {
       if (result === "OK") {
         if (isProtocolReferenceInterface(navMenuItem.target)) {
           this.examService.navigateToTarget(navMenuItem.target.reference);
+          this.stateModel.updateState({
+            examState: ExamState.Testing,
+            deviceError: []
+          });
         } else {
           this.logger.debug('navigateToNavMenuItem() not implemented for inline pages or subprotocol, only for protocol reference.')
         }        

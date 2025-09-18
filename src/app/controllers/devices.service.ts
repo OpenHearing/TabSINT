@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Logger } from '../utilities/logger.service';
+import { DevicesModel } from '../models/devices/devices-model.service';
+import { DevicesInterface } from '../models/devices/devices.interface';
 import { StateModel } from '../models/state/state.service';
 import { StateInterface } from '../models/state/state.interface';
 import { TympanService } from './devices/tympan.service';
@@ -9,7 +11,7 @@ import { isTympanDevice } from '../guards/type.guard';
 import { BleDevice } from '../interfaces/bluetooth.interface';
 import { DeviceChooseComponent } from '../views/config/config-views/device-choose/device-choose.component';
 import { MatDialog } from '@angular/material/dialog';
-import { ExamState } from '../utilities/constants';
+import { DeviceState, ExamState } from '../utilities/constants';
 import { Subscription } from 'rxjs/internal/Subscription';
 
 @Injectable({
@@ -17,16 +19,19 @@ import { Subscription } from 'rxjs/internal/Subscription';
 })
 
 export class DevicesService {
+    devices: DevicesInterface;
     state: StateInterface;
     stateSubscription: Subscription | undefined;
 
     constructor(
+        private readonly devicesModel: DevicesModel,
         private readonly stateModel: StateModel,
         private readonly tympanService: TympanService,
         private readonly deviceUtil: DeviceUtil,
         private readonly logger: Logger,
         private readonly dialog: MatDialog
     ) {
+        this.devices = this.devicesModel.getDevices();
         this.state = this.stateModel.getState();
         this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
         this.state = updatedState;
@@ -46,8 +51,11 @@ export class DevicesService {
                     let connection = await this.tympanService.connect(tympan, newConnectedDevice);
                     if (connection) {
                         this.deviceUtil.addNewSavedDevice(connection);
+                        this.devices.connectedDevices.tympan.push(connection);
                         await this.abortExams(connection);
                         await this.requestId(connection);
+                        this.deviceUtil.updateDeviceState(connection.deviceId, DeviceState.Connected);
+                        this.stateModel.updatePaneOpen({tympans: true});
                     }
                 } else {
                     await this.tympanService.stopScan();
@@ -78,6 +86,7 @@ export class DevicesService {
             if (connection) {
                 await this.abortExams(connection);
                 await this.requestId(connection);
+                this.deviceUtil.updateDeviceState(device.deviceId, DeviceState.Connected);
             }
         } else {
             this.logger.error("Unsupported device type: "+JSON.stringify(device.type));
