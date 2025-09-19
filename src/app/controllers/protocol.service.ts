@@ -86,16 +86,17 @@ export class ProtocolService {
         try {
             await this.loadFiles();
             await this.setCalibration();
-            this.initializeProtocol();
+            await this.initializeProtocol();
             let validationError = await this.validateIfCalledFor();
                 // .then(loadCustomJs)
                 // .then(validateCustomJsIfCalledFor)
             this.handleLoadErrors(validationError);
-        } catch(e) {
-            this.logger.error("Could not load protocol.  " + JSON.stringify(e));
+        } catch (error: unknown) {
+            let err = error instanceof Error ? error.message : error;
+            this.logger.error(`Could not load protocol. ${err}`);
             this.notifications.alert({
                 title: "Alert",
-                content: "Could not load protocol.",
+                content: "Could not load protocol. See logs for more information.",
                 type: DialogType.Alert
             }).subscribe();
         } finally {
@@ -245,43 +246,47 @@ export class ProtocolService {
         this.tasks.deregister("Handle Load Errors");
     }
 
-    private initializeProtocol() {
-        this.tasks.register("Initialize Protocol", "Initializing Protocol...");
-        this.loading = initializeLoadingProtocol(
-            this.loading,
-            this.logger,
-            this.translate,
-            this.disk,
-            this.fileService);
-        this.tasks.register("Initialize Protocol", "Processing Protocol...");
+    private async initializeProtocol() {
+        try {
+            this.tasks.register("Initialize Protocol", "Initializing Protocol...");
+            this.loading = initializeLoadingProtocol(this.loading, this.logger, this.translate, this.disk, this.fileService);
+            this.tasks.register("Initialize Protocol", "Processing Protocol...");
 
-        [this.protocolModel.activeProtocol,
-            this.protocolModel.activeProtocolDictionary,
-            this.protocolModel.activeProtocolFollowOnsDictionary
-        ] = processProtocol(this.loading);
+            [this.protocolModel.activeProtocol,
+                this.protocolModel.activeProtocolDictionary,
+                this.protocolModel.activeProtocolFollowOnsDictionary
+            ] = await processProtocol(this.loading);
 
-        if (this.loading.errors && this.loading.errors.length > 0) {
-            this.protocolModel.activeProtocol.errors = this.protocolModel.activeProtocol.errors || [];
-            this.protocolModel.activeProtocol.errors.push(...this.loading.errors);
-        }
-        if (this.protocolModel.activeProtocol && "key" in this.protocolModel.activeProtocol) {
-            if (this.protocolModel.activeProtocol.key !== undefined) {
-                this.protocolModel.activeProtocol.publicKey = decodeURI(this.protocolModel.activeProtocol.key);
+            if (this.loading.errors && this.loading.errors.length > 0) {
+                this.protocolModel.activeProtocol.errors = this.protocolModel.activeProtocol.errors || [];
+                this.protocolModel.activeProtocol.errors.push(...this.loading.errors);
             }
+            if (this.protocolModel.activeProtocol && "key" in this.protocolModel.activeProtocol) {
+                if (this.protocolModel.activeProtocol.key !== undefined) {
+                    this.protocolModel.activeProtocol.publicKey = decodeURI(this.protocolModel.activeProtocol.key);
+                }
+            }
+
+            this.diskModel.updateDiskModel('headset', this.protocolModel.activeProtocol.headset ?? "None");
+
+            if (this.loading.protocol._requiresCha) {
+                this.logger.debug("This exam requires the CHA, attempting to connect...");
+            // setTimeout(cha.connect, 1000);
+            }
+
+            this.stateModel.updateState({
+                examIndex: 0,
+                examState: ExamState.Ready
+            });
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                throw new Error(`Failed to initialize protocol: ${error.message}`);
+            } else {
+                throw new Error(`Failed to initialize protocol: ${error}`);
+            }
+        } finally {
+            this.tasks.deregister("Initialize Protocol");
         }
-
-        this.diskModel.updateDiskModel('headset', this.protocolModel.activeProtocol.headset ?? "None");
-
-        if (this.loading.protocol._requiresCha) {
-            this.logger.debug("This exam requires the CHA, attempting to connect...");
-        // setTimeout(cha.connect, 1000);
-        }
-
-        this.stateModel.updateState({
-            examIndex: 0,
-            examState: ExamState.Ready
-        });
-        this.tasks.deregister("Initialize Protocol");
     }
 
     private async setCalibration() {
