@@ -22,7 +22,7 @@ export class TympanService {
     state: StateInterface;
     pendingMsgInfo: PendingMsgInfo|null = null;
     pendingMsg: boolean = false;
-    firstByteRecieved: boolean = false;
+    firstByteReceived: boolean = false;
     response: Array<any> = [];
     currentTimeoutTimeMs: number = 0;
     currentCommand: Command<Array<any>> | null = null;
@@ -57,7 +57,7 @@ export class TympanService {
         });
         this.firstByteSubscription = this.devicesModel.firstByteHandlerSubject.subscribe((response: any) => {
             // Eventually should check the msg ID to extend to multiple tympans
-            this.firstByteRecieved = true;
+            this.firstByteReceived = true;
         });
     }
 
@@ -68,7 +68,7 @@ export class TympanService {
             msgId: msgId
         };
         this.pendingMsg = true;
-        this.firstByteRecieved = false;
+        this.firstByteReceived = false;
         this.response = [];
         this.currentTimeoutTimeMs = 0;
         this.currentCommand = command;
@@ -78,7 +78,7 @@ export class TympanService {
         while (this.pendingMsg) {
             await this.delay(timeoutPollingDelayMs);
             this.currentTimeoutTimeMs += timeoutPollingDelayMs;
-            if (this.firstByteRecieved === false && this.currentTimeoutTimeMs >= timeoutTimeMs) {
+            if (this.firstByteReceived === false && this.currentTimeoutTimeMs >= timeoutTimeMs) {
                 this.pendingMsg = false;
             }
         }
