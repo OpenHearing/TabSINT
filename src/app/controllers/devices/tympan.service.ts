@@ -30,6 +30,7 @@ export class TympanService {
     defaultTimeoutTimeMs = 3000;
 
     tympanSubscription: Subscription|undefined;
+    firstByteSubscription: Subscription|undefined;
     stateSubscription: Subscription | undefined; 
 
     constructor(
@@ -54,7 +55,7 @@ export class TympanService {
                 this.response = JSON.parse(response.msg);
             }
         });
-        this.tympanSubscription = this.devicesModel.firstByteHandlerSubject.subscribe((response: any) => {
+        this.firstByteSubscription = this.devicesModel.firstByteHandlerSubject.subscribe((response: any) => {
             // Eventually should check the msg ID to extend to multiple tympans
             this.firstByteRecieved = true;
         });
