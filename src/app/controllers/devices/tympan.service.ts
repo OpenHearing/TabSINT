@@ -22,13 +22,15 @@ export class TympanService {
     state: StateInterface;
     pendingMsgInfo: PendingMsgInfo|null = null;
     pendingMsg: boolean = false;
+    firstByteReceived: boolean = false;
     response: Array<any> = [];
     currentTimeoutTimeMs: number = 0;
     currentCommand: Command<Array<any>> | null = null;
     defaultErrorMsg = ["ERROR", "Failed to write message to tympan. Make sure Tympan is connected and try again."];
-    defaultTimeoutTimeMs = 10000;
+    defaultTimeoutTimeMs = 3000;
 
     tympanSubscription: Subscription|undefined;
+    firstByteSubscription: Subscription|undefined;
     stateSubscription: Subscription | undefined; 
 
     constructor(
@@ -53,6 +55,10 @@ export class TympanService {
                 this.response = JSON.parse(response.msg);
             }
         });
+        this.firstByteSubscription = this.devicesModel.firstByteHandlerSubject.subscribe((response: any) => {
+            // Eventually should check the msg ID to extend to multiple tympans
+            this.firstByteReceived = true;
+        });
     }
 
     startTracking(deviceId: string, msgId: string, command: Command<Array<any>>) {
@@ -62,6 +68,7 @@ export class TympanService {
             msgId: msgId
         };
         this.pendingMsg = true;
+        this.firstByteReceived = false;
         this.response = [];
         this.currentTimeoutTimeMs = 0;
         this.currentCommand = command;
@@ -71,7 +78,7 @@ export class TympanService {
         while (this.pendingMsg) {
             await this.delay(timeoutPollingDelayMs);
             this.currentTimeoutTimeMs += timeoutPollingDelayMs;
-            if (this.currentTimeoutTimeMs >= timeoutTimeMs) {
+            if (this.firstByteReceived === false && this.currentTimeoutTimeMs >= timeoutTimeMs) {
                 this.pendingMsg = false;
             }
         }

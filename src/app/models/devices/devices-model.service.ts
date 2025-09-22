@@ -30,6 +30,7 @@ export class DevicesModel {
 
     availableDevicesSubject = new BehaviorSubject<BleDevice[]>([]);
     tympanResponseSubject = new Subject<TympanResponse>();
+    firstByteHandlerSubject = new Subject<string>();
 
     constructor(private readonly logger: Logger) {
         // TODO: Move this to generic utility for running async functions in constructor

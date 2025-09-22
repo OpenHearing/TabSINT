@@ -164,6 +164,7 @@ export class TympanWrap {
                 this.clearTMPBuffer(deviceId);
             }
             this.startAccumulatingBytes(deviceId);
+            this.devicesModel.firstByteHandlerSubject.next(deviceId);
         }
 
         // accumulate bytes
