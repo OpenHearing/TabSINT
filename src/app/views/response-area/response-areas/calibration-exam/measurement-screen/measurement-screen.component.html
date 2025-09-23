@@ -19,6 +19,7 @@
              type="number"
              [ngModel]="userInput"
              (ngModelChange)="userInput = $event"
+             (keydown.enter)="onEnterPressed()"
              [ngClass]="{'input-error': showValidationError}"
              class="measured-value-input"
              step="0.1">

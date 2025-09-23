@@ -19,7 +19,9 @@
       <input id="maxOutputInput" 
              type="number" 
              [ngClass]="{'input-error': showValidationError}" 
-             [(ngModel)]="userInput"
+             [ngModel]="userInput"
+             (ngModelChange)="userInput = $event"
+             (keydown.enter)="onEnterPressed()"
              class="max-output-input" 
              step="0.1">
       <span class="unit">dB SPL</span>

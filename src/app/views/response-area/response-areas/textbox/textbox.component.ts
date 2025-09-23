@@ -67,4 +67,8 @@ export class TextboxComponent implements OnInit, OnDestroy {
     this.stateModel.setPageSubmittable();
   }
 
+  onEnter() {
+    this.examService.submit();
+  }
+
 }
