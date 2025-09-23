@@ -46,7 +46,6 @@
 .response-buttons, .ear-buttons {
   display: flex;
   gap: 10px;
-  margin-top: 10vh;
 }
 
 .response-btn, .ear-btn {
@@ -57,6 +56,15 @@
   border-radius: 5px;
   cursor: pointer;
   background-color: #f0f0f0;
+}
+
+.ear-submit-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 10vh;
+  position: relative;
 }
 
 .response-btn.record-threshold {
@@ -255,7 +263,7 @@
   background-color: #a71d2a;
 }
 
-.response-panel-vertical .response-btn.submit-results {
+.response-btn.submit-results {
   background-color: #28a745;
   color: white;
   font-size: 14px;
@@ -263,8 +271,12 @@
   border-radius: 5px;
   border: none;
   cursor: pointer;
+  width: 160px;
+  height: auto;
+  position: absolute;
+  right: 0;
 }
 
-.response-panel-vertical .response-btn.submit-results:hover {
+.response-btn.submit-results:hover {
   background-color: #218838;
 }
