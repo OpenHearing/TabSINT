@@ -17,7 +17,10 @@ export class DeviceUtil {
     disk: DiskInterface;
     diskSubscription: Subscription | undefined;
 
-    constructor(private readonly devicesModel: DevicesModel, private readonly diskModel: DiskModel) {
+    constructor(
+        private readonly devicesModel: DevicesModel, 
+        private readonly diskModel: DiskModel
+    ) {
         this.devices = this.devicesModel.getDevices();
         this.disk = this.diskModel.getDisk();
         this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {

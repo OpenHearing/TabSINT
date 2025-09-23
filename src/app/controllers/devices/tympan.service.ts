@@ -123,17 +123,18 @@ export class TympanService {
         } catch {
             this.logger.error("failed to connect to tympan: "+JSON.stringify(tympan));
             return undefined;
-        }      
+        } 
     }
 
     async reconnect(tympanId: string): Promise<ConnectedDevice|undefined> {
         try {
             await this.tympanWrap.connect(tympanId, this.onDisconnect.bind(this));
+            await this.waitForResponse();
             return this.deviceUtil.getDeviceFromDeviceId(tympanId);
         } catch {
             this.logger.error("failed to reconnect to tympan: "+JSON.stringify(tympanId));
-            return undefined
-        }
+            return undefined;
+        } 
     }
 
     async disconnect(tympanId: string) {

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { CapacitorSQLite, CapacitorSQLitePlugin, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 
 import { NumDictionary } from '../interfaces/num-dictionary.interface';
@@ -23,6 +23,7 @@ export class SqLite {
         logs: 0,
         results: 0
     };
+    countSubject = new BehaviorSubject<NumDictionary>(this.count);
     sqlitePlugin!: CapacitorSQLitePlugin;
     sqliteConnection!: SQLiteConnection;    
     
@@ -44,6 +45,12 @@ export class SqLite {
         await this.initializePlugin();
         await this.initializeWeb();
         await this.open();
+        let logs = await this.getAllLogs();
+        let results = await this.getAllResults();
+        this. count = {
+            logs: logs?.length ?? 0,
+            results: results?.length ?? 0
+        }
     }
 
     async store(
@@ -55,6 +62,7 @@ export class SqLite {
                 const sql = "INSERT INTO " + tableName + " (data) VALUES (?)";
                 await this.db.run(sql, [data]);
                 this.count[tableName] += 1;
+                this.countSubject.next(this.count);
             } 
         } catch(e) {
             console.log("SQLITE Error storing " + tableName + " with error " + e);
@@ -86,6 +94,7 @@ export class SqLite {
                         `;
             await this.db.run(sql, [index]);
             this.count['results'] -= 1;
+            this.countSubject.next(this.count);
         } catch(e) {
             console.log("SQLITE Error deleting result " + index + " with error " + e);
         }
@@ -96,6 +105,7 @@ export class SqLite {
         try {
             await this.db.run(query);
             this.count[tableName] = 0;
+            this.countSubject.next(this.count);
         } catch (e) {
             console.log("SQLITE Error deleting all " + tableName + " with error: " + e);
         }
@@ -110,6 +120,7 @@ export class SqLite {
                     console.log("SQLITE Error deleting " + delCount + " logs with error " + e);
                 }
                 this.count['logs'] -= delCount;
+                this.countSubject.next(this.count);
             }
     }
     
