@@ -48,4 +48,8 @@ export class MaxOutputScreenComponent {
     this.togglePlay.emit();
   }
 
+  onEnterPressed(){
+    this.nextStep.emit();
+  }
+  
 }

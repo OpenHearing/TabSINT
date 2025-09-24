@@ -122,8 +122,11 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     }
     
     async adjustTone(amount: number): Promise<void> {
-        this.currentDbSpl = Math.max( this.minOutputLevel, Math.min(this.currentDbSpl + amount, this.maxOutputLevel));
-        this.updateCurrentDb();
+        this.currentDb = Math.max( 
+            this.minOutputLevel - this.getRetsplAtFrequency(this.selectedFrequency), 
+            Math.min(this.currentDb + amount, this.maxOutputLevel - this.getRetsplAtFrequency(this.selectedFrequency))
+        );
+        this.updateCurrentDbSpl();
     }
 
     async adjustFrequency(direction: number): Promise<void> {
@@ -135,6 +138,8 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
                 (currentIndex - 1 + this.frequencies.length) % this.frequencies.length
             ];
         }
+
+        this.updateCurrentDbSpl();
     }
     
     async adjustMasking(amount: number): Promise<void> {
@@ -224,11 +229,8 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         this.logger.debug("device msg:" + JSON.stringify(msg));
     }
 
-    private updateCurrentDb() {
-        const tempDb = 
-            this.retspls && this.levelUnits === LevelUnits.dB_HL
-                ? this.currentDbSpl - this.getRetsplAtFrequency(this.selectedFrequency)
-                : this.currentDbSpl;
+    private updateCurrentDbSpl() {
+        const tempDb = this.currentDb;
 
         const steps = tempDb / this.adjustmentStepSize;
         // Round closest to 0
@@ -240,7 +242,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         const snappedDb = roundedSteps * this.adjustmentStepSize;
         const adjustment = snappedDb - tempDb;
         this.currentDb = snappedDb;
-        this.currentDbSpl += adjustment;
+        this.currentDbSpl = this.currentDb + this.getRetsplAtFrequency(this.selectedFrequency);
     }
 
     private getRetsplAtFrequency(frequency: number): number {
@@ -338,10 +340,10 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         ];
         this.selectedFrequency = this.frequencies[1];
         this.retspls = updatedAudiometryResponseArea.retspls;
-        this.currentDbSpl = this.levelUnits === LevelUnits.dB_SPL
+        this.currentDb = this.levelUnits === LevelUnits.dB_HL
             ? updatedAudiometryResponseArea.targetLevelInLevelUnits ?? manualAudiometrySchema.properties.targetLevelInLevelUnits.default
-            :  (updatedAudiometryResponseArea.targetLevelInLevelUnits ?? manualAudiometrySchema.properties.targetLevelInLevelUnits.default) + this.getRetsplAtFrequency(this.selectedFrequency);
-        this.updateCurrentDb();
+            :  (updatedAudiometryResponseArea.targetLevelInLevelUnits ?? manualAudiometrySchema.properties.targetLevelInLevelUnits.default) - this.getRetsplAtFrequency(this.selectedFrequency);
+        this.updateCurrentDbSpl();
 
         if (this.retspls && this.levelUnits === LevelUnits.dB_HL) {
             this.verifyEachFrequencyHasRetspl();

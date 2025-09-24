@@ -13,6 +13,7 @@ import { DeviceChooseComponent } from '../views/config/config-views/device-choos
 import { MatDialog } from '@angular/material/dialog';
 import { DeviceState, ExamState } from '../utilities/constants';
 import { Subscription } from 'rxjs/internal/Subscription';
+import { Tasks } from '../utilities/tasks.service';
 
 @Injectable({
     providedIn: 'root',
@@ -29,12 +30,13 @@ export class DevicesService {
         private readonly tympanService: TympanService,
         private readonly deviceUtil: DeviceUtil,
         private readonly logger: Logger,
-        private readonly dialog: MatDialog
+        private readonly dialog: MatDialog,
+        private readonly tasks: Tasks,
     ) {
         this.devices = this.devicesModel.getDevices();
         this.state = this.stateModel.getState();
         this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
-        this.state = updatedState;
+            this.state = updatedState;
         });
     }
 
@@ -48,6 +50,7 @@ export class DevicesService {
             this.dialog.open(DeviceChooseComponent).afterClosed().subscribe(
             async (tympan: BleDevice|undefined) => {
                 if (tympan!=undefined) {
+                    this.tasks.register("Connect Device", `Connecting to Device... `);
                     let connection = await this.tympanService.connect(tympan, newConnectedDevice);
                     if (connection) {
                         this.deviceUtil.addNewSavedDevice(connection);
@@ -56,6 +59,7 @@ export class DevicesService {
                         await this.requestId(connection);
                         this.deviceUtil.updateDeviceState(connection.deviceId, DeviceState.Connected);
                         this.stateModel.updatePaneOpen({tympans: true});
+                        this.tasks.deregister("Connect Device");
                     }
                 } else {
                     await this.tympanService.stopScan();
@@ -82,11 +86,14 @@ export class DevicesService {
     */
     async reconnect(device: ConnectedDevice) {
         if (isTympanDevice(device)) {
+            this.tasks.register("Reconnect Device", "Reconnect Device");
             let connection = await this.tympanService.reconnect(device.deviceId);
             if (connection) {
                 await this.abortExams(connection);
                 await this.requestId(connection);
                 this.deviceUtil.updateDeviceState(device.deviceId, DeviceState.Connected);
+                this.stateModel.updatePaneOpen({tympans: true});
+                this.tasks.deregister("Reconnect Device");
             }
         } else {
             this.logger.error("Unsupported device type: "+JSON.stringify(device.type));

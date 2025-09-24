@@ -30,5 +30,9 @@ export class MeasurementScreenComponent {
       return false;
     }
   }
+
+  onEnterPressed(){
+    this.nextStep.emit();
+  }
   
 }

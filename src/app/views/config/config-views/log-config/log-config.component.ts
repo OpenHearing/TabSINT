@@ -9,6 +9,7 @@ import { DialogDataInterface } from '../../../../interfaces/dialog-data.interfac
 import { DialogType } from '../../../../utilities/constants';
 import { Notifications } from '../../../../utilities/notifications.service';
 import { Logger } from '../../../../utilities/logger.service';
+import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
   selector: 'log-config-view',
@@ -20,6 +21,10 @@ export class LogConfigComponent {
   state: StateInterface;
   showLogs: boolean;
   logs?: string[] = [];
+  logsCount: number = 0;
+  
+  // Subscriptions
+  logsCountSubscription: Subscription | undefined;
 
   constructor(
     public translate: TranslateService,
@@ -34,16 +39,14 @@ export class LogConfigComponent {
   }
 
   async ngOnInit(): Promise<void> {
-    this.logs = await this.sqLite.getAllLogs();
-    this.logsCount = this.sqLite.count['logs']
+    this.logsCountSubscription = this.sqLite.countSubject.subscribe( async (updatedLogsCount) => {
+      this.logsCount = updatedLogsCount['logs'];
+      this.logs = await this.sqLite.getAllLogs();
+    })
   }
-
-  logsCount = this.sqLite.count['logs'];
 
   async displayLogs() {
     this.showLogs = !this.showLogs;
-    this.logs = await this.sqLite.getAllLogs();
-    this.logsCount = this.sqLite.count['logs']
   }
 
   // async logExportUpload() {
@@ -83,9 +86,9 @@ export class LogConfigComponent {
       const logData = JSON.stringify({ logs: formattedLogs }, null, 2);
       const filename = `tabsint-logs/${currentTimeStamp}.json`;
       await this.fileService.writeFile(filename, logData);
-  } catch (error){
-    console.error('Error exporting logs:', error);
-  }
+    } catch (error){
+      console.error('Error exporting logs:', error);
+    }
   }
 
 }

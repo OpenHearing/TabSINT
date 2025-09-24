@@ -19,7 +19,6 @@
           <button class="response-btn no-response" [disabled]="!isNoResponseEnabled" (click)="noResponse()">No Response</button>
           <button class="response-btn delete-threshold" (click)="deleteThreshold()">Delete Threshold</button>
           <button class="response-btn record-threshold" (click)="recordThreshold()">Record Threshold</button>
-          <button class="response-btn submit-results" (click)="examService.submit()">Submit Results</button>
         </div>
 
         <!-- Left Audiogram -->
@@ -34,20 +33,26 @@
   
       <div class="response-panel">
 
-        <!-- Ear Selection Panel -->
-        <div class="ear-buttons">
-          <button
-            class="ear-btn"
-            [ngStyle]="{'background-color': selectedEar === 'Right' ? '#dc3545' : 'transparent', 'color': selectedEar === 'Right' ? 'white' : 'black'}"
-            (click)="selectEar('Right')" >
-            Right
-          </button>
-          <button
-            class="ear-btn"
-            [ngStyle]="{'background-color': selectedEar === 'Left' ? '#007bff' : 'transparent', 'color': selectedEar === 'Left' ? 'white' : 'black'}"
-            (click)="selectEar('Left')">
-            Left
-          </button>
+        <div class="ear-submit-container">
+          <!-- Ear Selection Panel -->
+          <div class="ear-buttons">
+            <button
+              class="ear-btn"
+              [ngStyle]="{'background-color': selectedEar === 'Right' ? '#dc3545' : 'transparent', 'color': selectedEar === 'Right' ? 'white' : 'black'}"
+              (click)="selectEar('Right')" >
+              Right
+            </button>
+            <button
+              class="ear-btn"
+              [ngStyle]="{'background-color': selectedEar === 'Left' ? '#007bff' : 'transparent', 'color': selectedEar === 'Left' ? 'white' : 'black'}"
+              (click)="selectEar('Left')">
+              Left
+            </button>
+          </div>
+
+        
+          <button class="response-btn submit-results" (click)="examService.submit()">Submit Results</button>
+
         </div>
       </div>
   

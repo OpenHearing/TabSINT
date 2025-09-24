@@ -20,6 +20,7 @@
              type="number" 
              [ngClass]="{'input-error': showValidationError}" 
              [(ngModel)]="userInput"
+             (keydown.enter)="onEnterPressed()"
              class="max-output-input" 
              step="0.1">
       <span class="unit">dB SPL</span>

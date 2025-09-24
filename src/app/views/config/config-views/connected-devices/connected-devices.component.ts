@@ -9,6 +9,7 @@ import { DevicesService } from '../../../../controllers/devices.service';
 import { Logger } from '../../../../utilities/logger.service';
 import { DeviceUtil } from '../../../../utilities/device-utility';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
   selector: 'connected-devices',
@@ -19,6 +20,9 @@ export class ConnectedDevicesComponent {
   state: StateInterface
   DeviceState = DeviceState;
   expanded: boolean = false;
+
+  // Subscriptions
+  stateSubscription: Subscription | undefined;
   
   constructor(
     private readonly deviceModel: DevicesModel, 
@@ -30,6 +34,13 @@ export class ConnectedDevicesComponent {
   ) { 
     this.devices = this.deviceModel.getDevices();
     this.state = this.stateModel.getState();
+    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+        this.state = updatedState;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.stateSubscription?.unsubscribe();
   }
 
   reconnect(device: ConnectedDevice) {
