@@ -129,7 +129,6 @@ export class TympanService {
     async reconnect(tympanId: string): Promise<ConnectedDevice|undefined> {
         try {
             await this.tympanWrap.connect(tympanId, this.onDisconnect.bind(this));
-            await this.waitForResponse();
             return this.deviceUtil.getDeviceFromDeviceId(tympanId);
         } catch {
             this.logger.error("failed to reconnect to tympan: "+JSON.stringify(tympanId));

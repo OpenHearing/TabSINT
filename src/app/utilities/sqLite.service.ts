@@ -47,7 +47,7 @@ export class SqLite {
         await this.open();
         let logs = await this.getAllLogs();
         let results = await this.getAllResults();
-        this. count = {
+        this.count = {
             logs: logs?.length ?? 0,
             results: results?.length ?? 0
         }

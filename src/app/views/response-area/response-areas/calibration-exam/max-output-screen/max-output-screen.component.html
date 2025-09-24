@@ -19,8 +19,7 @@
       <input id="maxOutputInput" 
              type="number" 
              [ngClass]="{'input-error': showValidationError}" 
-             [ngModel]="userInput"
-             (ngModelChange)="userInput = $event"
+             [(ngModel)]="userInput"
              (keydown.enter)="onEnterPressed()"
              class="max-output-input" 
              step="0.1">
