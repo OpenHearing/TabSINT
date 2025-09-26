@@ -6,7 +6,7 @@
 
 <div class="calibration-box" style="padding-top: 5em;">
   <div class="button-container">
-    <button class="btn btn-block btn-lg btn-primary btn-centered" (click)="calibrate()" [disabled]="calibrationRunning">Run Calibration</button>
+    <button class="btn btn-block btn-lg btn-primary btn-centered" (click)="calibrate()" [disabled]="calibrationRunning || device?.isMsgPending">Run Calibration</button>
   </div>
 
   <div class="calibration-running-container">

@@ -60,7 +60,8 @@ export class DeviceUtil {
             "name": newConnection.name!,
             "state": DeviceState.Connected,
             "msgId": 0,
-            "maxByteLength": newConnection.maxByteLength!
+            "maxByteLength": newConnection.maxByteLength!,
+            "isMsgPending": false,
         };
         return connection
     }
@@ -196,7 +197,8 @@ export class DeviceUtil {
                 "name": device.name,
                 "state": DeviceState.Disconnected,
                 "msgId": 0,
-                "maxByteLength": device.maxByteLength
+                "maxByteLength": device.maxByteLength,
+                "isMsgPending": false
             };
             this.devices.connectedDevices.tympan.push(savedConnection);
         }

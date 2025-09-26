@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { StateModel } from '../../models/state/state.service';
 import { AppState, DialogType, ExamState } from '../../utilities/constants';
 import { DialogDataInterface } from '../../interfaces/dialog-data.interface';
@@ -25,7 +25,7 @@ import { PageModel } from '../../models/page/page.service';
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit, OnDestroy {
   state: StateInterface;
   protocol: ProtocolModelInterface;
   ExamState = ExamState;
@@ -54,12 +54,20 @@ export class HeaderComponent {
     this.disk = this.diskModel.getDisk();
     this.app = this.appModel.getApp();
     this.currentPage = this.pageModel.getPage();
-    this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
-        this.currentPage = updatedPage;
+  }
+
+  ngOnInit(): void {
+    this.pageSubscription = this.pageModel.currentPageSubject.subscribe((updatedPage: PageInterface) => {
+      this.currentPage = updatedPage;
     });
-    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState: StateInterface) => {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe((updatedState: StateInterface) => {
       this.state = updatedState;
-    })
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.pageSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
   }
 
   resetExam() {

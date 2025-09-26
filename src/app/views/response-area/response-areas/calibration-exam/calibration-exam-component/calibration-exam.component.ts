@@ -56,8 +56,10 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     private readonly buttonTextService: ButtonTextService
   ) {
     this.results = this.resultsModel.getResults()
-    this.examService.submit = () => { this.nextStep(); };
-    this.examService.back = () => { this.previousStep(); };
+    this.examService.submit = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep(); };
+    this.examService.back = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.previousStep(); };
+    this.examService.reset = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault(); };
+    this.examService.submitPartial = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault(); };
   }
 
   ngOnInit(): void {
@@ -73,14 +75,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
           this.initializeEarData();
           this.updateFrequencyAndTargetLevel();
           this.showResults = calibrationResponse.showResults ?? true;
-          this.device = this.deviceUtil.getDeviceFromTabsintId(calibrationResponse.tabsintId ?? "1");
-          if (this.device) {
-            let resp = await this.devicesService.queueExam(this.device, "HNCalibration", { "OutputChannel": this.earCup == "Left" ? "HPL0" : "HPR0" });
-            this.logger.debug("resp from tympan after calibration exam queue exams:" + resp);
-          } else {
-            await this.devicesService.deviceNotFound();
-            this.logger.error("Error setting up HNCalibration exam");
-          }
+          await this.setupDevice(calibrationResponse);
         }
       }
     });
@@ -94,11 +89,28 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     let resp = await this.devicesService.abortExams(this.device!);
     this.logger.debug("resp from tympan after calibration exam abort exams:" + resp);
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
+    this.examService.reset = this.examService.resetDefault.bind(this.examService);
+    this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);
     this.examService.back = this.examService.back.bind(this.examService);
     this.buttonTextService.updateButtonText("Submit");
 
     this.pageSubscription?.unsubscribe();
     this.resultsSubscription?.unsubscribe();
+  }
+
+  private async setupDevice(updatedResponseArea: CalibrationExamInterface) {
+    this.device = this.deviceUtil.getDeviceFromTabsintId(updatedResponseArea.tabsintId ?? "1");
+
+    if (!this.device) {
+      await this.devicesService.deviceNotFound();
+      this.logger.error("Error setting up HNCalibration exam");
+    } else if (this.devicesService.isDeviceMessagePending(this.device, false)) {
+      await this.devicesService.deviceMessagePendingError();
+      this.logger.error("Error setting up HNCalibration exam: Device message pending");
+    } else {
+      let resp = await this.devicesService.queueExam(this.device, "HNCalibration", { "OutputChannel": this.earCup == "Left" ? "HPL0" : "HPR0" });
+      this.logger.debug("resp from tympan after calibration exam queue exams:" + resp);
+    }
   }
 
   async adjustCalFactor(amount: number): Promise<void> {
@@ -249,7 +261,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       this.poppedHistory.push(this.navigationHistory.pop()!); // Store popped entries
     }
     this.examService.submit = () => {
-      this.nextStep();
+      !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep();
     };
   }
   
@@ -279,7 +291,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
 
 private async handleFinishedStep(): Promise<void> {
     this.examService.submit = () => {
-        this.nextStep();
+        !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep();
     };
 
     let resp = await this.devicesService.abortExams(this.device!);

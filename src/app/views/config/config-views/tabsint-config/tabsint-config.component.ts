@@ -1,4 +1,4 @@
-import { Component,ChangeDetectorRef  } from '@angular/core';
+import { Component,ChangeDetectorRef, OnInit, OnDestroy  } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
@@ -24,7 +24,7 @@ import { ChangeMaxLogLengthComponent } from '../../../change-max-log-length/chan
   templateUrl: './tabsint-config.component.html',
   styleUrl: './tabsint-config.component.css'
 })
-export class TabsintConfigComponent {
+export class TabsintConfigComponent implements OnInit, OnDestroy {
   disk: DiskInterface;
   state: StateInterface;
   version!: VersionInterface;

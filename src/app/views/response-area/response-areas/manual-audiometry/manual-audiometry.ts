@@ -70,6 +70,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     deviceSubscription: Subscription|undefined;
     device: ConnectedDevice|undefined;
     resultsSubscription: Subscription | undefined;
+    stateSubscription: Subscription | undefined;
 
     constructor(
         readonly examService: ExamService, 
@@ -87,17 +88,23 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         this.results = this.resultsModel.getResults();
         this.protocol = this.protocolModel.getProtocolModel();
         this.state = this.stateModel.getState();
+        this.examService.submit = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitDefault(); };
+        this.examService.reset = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault(); };
+        this.examService.submitPartial = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault(); };
     }
 
     async ngOnInit() {
-        this.resultsSubscription = this.resultsModel.resultsSubject.subscribe( (updatedResults) => {
+        this.resultsSubscription = this.resultsModel.resultsSubject.subscribe((updatedResults) => {
             this.results = updatedResults;
-        });        
+        });
         this.pageSubscription = this.pageModel.currentPageSubject.subscribe(this.handlePageUpdate.bind(this));
         this.deviceSubscription = this.devicesModel.tympanResponseSubject.subscribe(this.logDeviceResponse.bind(this));
+        this.stateSubscription = this.stateModel.stateSubject.subscribe((updatedState) => {
+            this.state = updatedState;
+        });
         try {
             await ScreenOrientation.lock({ orientation: "landscape" });
-          } catch (error) {
+        } catch (error) {
             this.logger.error("Failed to lock screen orientation:" + error);
         }
     }
@@ -109,11 +116,15 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         this.pageSubscription?.unsubscribe();
         this.deviceSubscription?.unsubscribe();
         this.resultsSubscription?.unsubscribe();
+        this.stateSubscription?.unsubscribe();
         try {
             await ScreenOrientation.unlock();
-          } catch (error) {
+        } catch (error) {
             this.logger.error("Failed to unlock screen orientation:" + error);
-          }
+        }
+        this.examService.submit = this.examService.submitDefault.bind(this.examService);
+        this.examService.reset = this.examService.resetDefault.bind(this.examService);
+        this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);
     }
 
     // ======= Audiometry Controls =======    
@@ -356,12 +367,15 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
 
     private async setupDevice(updatedAudiometryResponseArea: ManualAudiometryInterface) {
         this.device = this.deviceUtil.getDeviceFromTabsintId(updatedAudiometryResponseArea.tabsintId ?? "1");
-        if (this.device) {
-            const examProperties = {};
-            await this.devicesService.queueExam(this.device, "ManualAudiometry", examProperties);
-        } else {
+        if (!this.device) {
             await this.devicesService.deviceNotFound();
             this.logger.error("Error setting up Manual Audiometry exam");
+        } else if (this.devicesService.isDeviceMessagePending(this.device, false)) {
+            await this.devicesService.deviceMessagePendingError();
+            this.logger.error("Error setting up Manual Audiometry exam: Device message pending");
+        } else {
+            const examProperties = {};
+            await this.devicesService.queueExam(this.device, "ManualAudiometry", examProperties);
         }
     }
  

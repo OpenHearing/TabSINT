@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import _ from 'lodash';
 import { Subscription } from 'rxjs';
@@ -24,12 +24,13 @@ import { ResultsUploadService } from '../../controllers/results-upload.service';
   templateUrl: './results.component.html',
   styleUrl: './results.component.css'
 })
-export class ResultsComponent {
+export class ResultsComponent implements OnInit, OnDestroy {
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
   state: StateInterface;
   index: number = 0;
   results?: ExamResults[];
+  stateSubscription: Subscription | undefined;
 
   constructor (
     public dialog: MatDialog,
@@ -49,14 +50,18 @@ export class ResultsComponent {
   async ngOnInit() {
     this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
         this.disk = updatedDisk;
-    })    
+    })
+    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+        this.state = updatedState;
+      });
     this.results = await this.sqLite.getAllResults();
   }
 
   ngOnDestroy() {
     this.diskSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
   }
-  
+
   trackByIndex(index: number, item: any): number {
     return index;
   }

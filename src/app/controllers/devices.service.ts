@@ -11,9 +11,10 @@ import { isTympanDevice } from '../guards/type.guard';
 import { BleDevice } from '../interfaces/bluetooth.interface';
 import { DeviceChooseComponent } from '../views/config/config-views/device-choose/device-choose.component';
 import { MatDialog } from '@angular/material/dialog';
-import { DeviceState, ExamState } from '../utilities/constants';
+import { DeviceState, ExamState, DialogType } from '../utilities/constants';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { Tasks } from '../utilities/tasks.service';
+import { Notifications } from '../utilities/notifications.service';
 
 @Injectable({
     providedIn: 'root',
@@ -32,6 +33,7 @@ export class DevicesService {
         private readonly logger: Logger,
         private readonly dialog: MatDialog,
         private readonly tasks: Tasks,
+        private readonly notifications: Notifications,
     ) {
         this.devices = this.devicesModel.getDevices();
         this.state = this.stateModel.getState();
@@ -127,6 +129,13 @@ export class DevicesService {
         await this.deviceErrorHandler(resp);
     }
 
+    /**
+     * Produce an error for when the device is handling previous messages.
+     */
+    async deviceMessagePendingError() {
+        const resp = [0, "ERROR", "Device is currently handling previous messages, wait until completion to try again."];
+        await this.deviceErrorHandler(resp);
+    }
 
     /** Requests device ID.
      * @summary Requests deviceID
@@ -210,4 +219,21 @@ export class DevicesService {
         return resp
     }
 
+    /**
+     * Check if a device message is pending and alert the user if necessary.
+     * @param device Connected device to check for a pending message.
+     * @param alert Whether to push an alert to the user.
+     * @returns Whether a message is pending or not.
+     */
+    public isDeviceMessagePending(device: ConnectedDevice | undefined, alert: boolean = true): boolean {
+        const pendingMsg = device?.isMsgPending ?? false;
+        if (pendingMsg && alert) {
+            this.notifications.alert({
+                title: "Alert",
+                content: "Device is currently handling previous messages, wait until completion to continue.",
+                type: DialogType.Alert
+            }).subscribe();
+        }
+        return pendingMsg;
+    }
 }

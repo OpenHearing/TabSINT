@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Tasks } from '../../../../utilities/tasks.service';
 import { SqLite } from '../../../../utilities/sqLite.service';
@@ -16,7 +16,7 @@ import { Subscription } from 'rxjs/internal/Subscription';
   templateUrl: './log-config.component.html',
   styleUrl: './log-config.component.css'
 })
-export class LogConfigComponent {
+export class LogConfigComponent implements OnInit, OnDestroy {
 
   state: StateInterface;
   showLogs: boolean;
@@ -25,6 +25,7 @@ export class LogConfigComponent {
   
   // Subscriptions
   logsCountSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
 
   constructor(
     public translate: TranslateService,
@@ -43,6 +44,14 @@ export class LogConfigComponent {
       this.logsCount = updatedLogsCount['logs'];
       this.logs = await this.sqLite.getAllLogs();
     })
+    this.stateSubscription = this.stateModel.stateSubject.subscribe((updatedState) => {
+      this.state = updatedState;
+    });
+  }
+
+  ngOnDestroy() {
+    this.logsCountSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
   }
 
   async displayLogs() {

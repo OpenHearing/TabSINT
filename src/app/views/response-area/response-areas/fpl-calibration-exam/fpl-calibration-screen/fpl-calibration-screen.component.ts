@@ -1,4 +1,5 @@
 import { Component, Input, Output, SimpleChanges, EventEmitter } from '@angular/core';
+import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
 
 @Component({
   selector: 'app-fpl-calibration-screen',
@@ -10,6 +11,7 @@ export class FPLCalibrationScreenComponent {
   @Input() outputChannel: string = "";
   @Input() PctComplete: number = 0;
   @Input() shouldAbort: boolean = false;
+  @Input() device: ConnectedDevice | undefined;
   @Output() runCalibration = new EventEmitter<void>();
   @Output() abortCalibration = new EventEmitter<void>();
 

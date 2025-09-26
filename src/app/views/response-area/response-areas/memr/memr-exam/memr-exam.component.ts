@@ -51,7 +51,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   trialsPerBlock: number = 0;
   blockCount: number = 0;
   currentBlockIndex: number = -1;
-  deviceId: string = "1";
+  device: ConnectedDevice | undefined;
 
   // Configuration Variables
   isAutoSubmit: boolean = pageSchema.properties.isAutoSubmit.default;
@@ -83,15 +83,17 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   ) {
     this.state = this.stateModel.getState();
     this.results = this.resultsModel.getResults();
-    this.examService.submit = this.nextStep.bind(this);
-    this.stateModel.updateState({isSubmittable: true});
+    this.examService.submit = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep(); };
+    this.examService.reset = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault(); };
+    this.examService.submitPartial = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault(); };
+    this.stateModel.updateState({ isSubmittable: true });
   }
 
   ngOnInit(): void {
-    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe((updatedState) => {
       this.state = updatedState;
     });
-    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe( (updatedResults) => {
+    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe((updatedResults) => {
       this.results = updatedResults;
     });
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
@@ -99,7 +101,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
         setTimeout(() => {
           this.isAutoSubmit = updatedPage.isAutoSubmit ?? this.isAutoSubmit;
           this.initializeResponseArea(updatedPage.responseArea as MemrExamInterface);
-          this.setupDeviceId(updatedPage.responseArea as MemrExamInterface);
+          this.setupDevice(updatedPage.responseArea as MemrExamInterface);
         });
       }
     });
@@ -110,6 +112,8 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     (async () => {
       await this.abortExam();
       this.examService.submit = this.examService.submitDefault.bind(this.examService);
+      this.examService.reset = this.examService.resetDefault.bind(this.examService);
+      this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);
       this.pageSubscription?.unsubscribe();
       this.resultsSubscription?.unsubscribe();
       this.stateSubscription?.unsubscribe();
@@ -145,12 +149,12 @@ export class MemrExamComponent implements OnInit, OnDestroy {
           await this.beginExam();
           this.instructions = 'Exam in progress. Please wait.';
           this.currentStep = 'Exam';
-          this.stateModel.updateState({isSubmittable: false});
+          this.stateModel.updateState({ isSubmittable: false });
           break;
         case 'Exam': {
           this.instructions = "Exam Complete. Press Submit to Save.";
           this.currentStep = 'Finish';
-          this.stateModel.updateState({isSubmittable: true});
+          this.stateModel.updateState({ isSubmittable: true });
           break;
         }
         case 'Finish': {
@@ -181,9 +185,9 @@ export class MemrExamComponent implements OnInit, OnDestroy {
    * @returns Recorded Leq level or 'N/A'
    */
   getRecordedLevelLeq(index: number): string {
-    if (this.memrResults?.RecordedLeq_dBSPL && 
-        Array.isArray(this.memrResults.RecordedLeq_dBSPL) &&
-        index < this.memrResults.RecordedLeq_dBSPL.length) {
+    if (this.memrResults?.RecordedLeq_dBSPL &&
+      Array.isArray(this.memrResults.RecordedLeq_dBSPL) &&
+      index < this.memrResults.RecordedLeq_dBSPL.length) {
       return this.memrResults.RecordedLeq_dBSPL[index].toFixed(1);
     }
     return 'N/A';
@@ -195,9 +199,9 @@ export class MemrExamComponent implements OnInit, OnDestroy {
    * @returns Recorded peak level or 'N/A'
    */
   getRecordedLevelPeak(index: number): string {
-    if (this.memrResults?.RecordedPeak_dBP && 
-        Array.isArray(this.memrResults.RecordedPeak_dBP) &&
-        index < this.memrResults.RecordedPeak_dBP.length) {
+    if (this.memrResults?.RecordedPeak_dBP &&
+      Array.isArray(this.memrResults.RecordedPeak_dBP) &&
+      index < this.memrResults.RecordedPeak_dBP.length) {
       return this.memrResults.RecordedPeak_dBP[index].toFixed(1);
     }
     return 'N/A';
@@ -224,8 +228,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
    */
   private async abortExam(): Promise<void> {
     this.currentStep = 'Complete';
-    const device = this.getDevice();
-    let resp = device ? await this.devicesService.abortExams(device) : undefined;
+    let resp = this.device ? await this.devicesService.abortExams(this.device) : undefined;
     this.logger.debug("resp from tympan after MEMR exam abort exams:" + resp);
   }
 
@@ -243,7 +246,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
    */
   private initializeResponseArea(responseArea: MemrExamInterface): void {
     this.memrExamProperties = Object.assign(this.memrExamProperties, responseArea);
-    this.resultsModel.updateCurrentPage({response: []});
+    this.resultsModel.updateCurrentPage({ response: [] });
     this.trialsPerBlock = (this.isWithinBlock() ? this.memrExamProperties.elicitorLevelArray?.length : this.memrExamProperties.nRepeats) ?? this.trialsPerBlock;
     this.blockCount = (this.isWithinBlock() ? this.memrExamProperties.nRepeats : this.memrExamProperties.elicitorLevelArray?.length) ?? this.blockCount;
     const subjectType = this.isWithinBlock() ? this.chinchillaType : this.humanType;
@@ -269,29 +272,20 @@ export class MemrExamComponent implements OnInit, OnDestroy {
    * Set up the device id for the exam.
    * @param updatedResponseArea The response area used to determine the device id.
    */
-  private setupDeviceId(updatedResponseArea: MemrExamInterface): void {
-    this.deviceId = updatedResponseArea.tabsintId ?? this.deviceId;
-  }
-
-  /**
-   * Get the device for the exam based on the set id.
-   * @returns The connected device or undefined.
-   */
-  private getDevice(): ConnectedDevice | undefined {
-    return this.deviceUtil.getDeviceFromTabsintId(this.deviceId);
+  private setupDevice(updatedResponseArea: MemrExamInterface): void {
+    this.device = this.deviceUtil.getDeviceFromTabsintId(updatedResponseArea.tabsintId ?? "1");
   }
 
   /**
    * Begin the exam for the connected device.
    */
   private async beginExam(): Promise<void> {
-    const device = this.getDevice();
-    if (device) {
+    if (this.device) {
       const examProperties: MemrQueueExamInterface = {
         PlaybackChannels: [...this.memrExamProperties.elicitorOutputChannel!, ...this.memrExamProperties.probeOutputChannel!],
         RecordChannels: this.memrExamProperties.recordChannels,
       };
-      await this.devicesService.queueExam(device, "PlayRecordExam", examProperties);
+      await this.devicesService.queueExam(this.device, "PlayRecordExam", examProperties);
       this.startPollingResults();
     } else {
       await this.devicesService.deviceNotFound();
@@ -328,9 +322,8 @@ export class MemrExamComponent implements OnInit, OnDestroy {
       SubmissionInterval_ms: this.memrExamProperties.submissionIntervalMs
       // NumOutputChans: this.memrExamProperties.probeOutputChannel?.length
     };
-    const device = this.getDevice();
-    if (device) {
-      await this.devicesService.examSubmission(device, examProperties);
+    if (this.device) {
+      await this.devicesService.examSubmission(this.device, examProperties);
     } else {
       await this.finishExam();
       this.logger.error("Error in the examSubmission, finishing exam.");
@@ -367,8 +360,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   private startPollingResults(): void {
     const pollResults = async () => {
       try {
-        const device = this.getDevice();
-        let resp = device ? await this.devicesService.requestResults(device) : undefined;
+        let resp = this.device ? await this.devicesService.requestResults(this.device) : undefined;
         if (typeof resp![1] === 'object' && 'State' in resp![1] && this.knownStates.includes(resp![1].State)) {
           if (resp![1].State === "READY") {
             await this.handleReadyState(resp![1]);

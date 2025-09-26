@@ -72,7 +72,9 @@ export class WAIExamComponent implements OnInit, OnDestroy {
     private readonly buttonTextService: ButtonTextService,
   ) {
     this.results = this.resultsModel.getResults();
-    this.examService.submit = this.nextStep.bind(this);
+    this.examService.submit = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep(); };
+    this.examService.reset = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault(); };
+    this.examService.submitPartial = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault(); };
   }
 
   ngOnInit(): void {
@@ -126,6 +128,8 @@ export class WAIExamComponent implements OnInit, OnDestroy {
     let resp = await this.devicesService.abortExams(this.device!);
     this.logger.debug("resp from tympan after WAI exam abort exams:" + resp);
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
+    this.examService.reset = this.examService.resetDefault.bind(this.examService);
+    this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);
     this.pageSubscription?.unsubscribe();
     this.resultsSubscription?.unsubscribe();
     this.buttonTextService.updateButtonText("Submit");

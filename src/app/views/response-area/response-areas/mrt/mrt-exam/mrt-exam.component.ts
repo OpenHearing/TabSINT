@@ -69,7 +69,9 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   ) {
     this.state = this.stateModel.getState();
     this.results = this.resultsModel.getResults();
-    this.examService.submit = this.nextStep.bind(this);
+    this.examService.submit = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep(); };
+    this.examService.reset = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault(); };
+    this.examService.submitPartial = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault(); };
   }
 
   ngOnInit(): void {
@@ -93,6 +95,8 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     let resp = await this.devicesService.abortExams(this.device!);
     this.logger.debug("resp from tympan after MRT exam abort exams:" + resp);
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
+    this.examService.reset = this.examService.resetDefault.bind(this.examService);
+    this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);
     this.buttonTextService.updateButtonText("Submit");
 
     this.pageSubscription?.unsubscribe();
@@ -214,8 +218,16 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   }
     
   private async setupDevice(updatedResponseArea: MrtExamInterface) {
-      this.device = this.deviceUtil.getDeviceFromTabsintId(updatedResponseArea.tabsintId ?? "1");
+    this.device = this.deviceUtil.getDeviceFromTabsintId(updatedResponseArea.tabsintId ?? "1");
+    if (!this.device) {
+      await this.devicesService.deviceNotFound();
+      this.logger.error("Error setting up MRT exam");
+    } else if (this.devicesService.isDeviceMessagePending(this.device, false)) {
+      await this.devicesService.deviceMessagePendingError();
+      this.logger.error("Error setting up MRT exam: Device message pending");
+    } else {
       await this.beginExam();
+    }
   }
     
   private async beginExam() {

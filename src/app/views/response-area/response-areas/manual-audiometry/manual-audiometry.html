@@ -87,7 +87,7 @@
             <div class="tone-label">{{levelUnits}}</div>
           </div>
           <div class="play-button-container">
-            <button class="play-btn" [disabled]="isPlaying" (click)="playTone()">
+            <button class="play-btn" [disabled]="isPlaying || device?.isMsgPending" (click)="playTone()">
               <span>▶</span>
             </button>
           </div>

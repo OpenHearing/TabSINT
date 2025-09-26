@@ -6,6 +6,7 @@
     [calFactor]="calFactor"
     [earCup]="earCup"
     [isPlaying]="isPlaying"
+    [device]="device"
     (calFactorAdjusted)="adjustCalFactor($event)"
     (nextStep)="nextStep()"
     (togglePlay)="togglePlay()">
@@ -29,6 +30,7 @@
     [userInput]="userInput"
     [earCup]="earCup"
     [isPlaying]="isPlaying"
+    [device]="device"
     (nextStep)="nextStep()"
     (togglePlay)="togglePlay()"
     (maxOutputUpdated)="handleMaxOutputUpdate($event)">
@@ -36,7 +38,7 @@
 
   <div *ngSwitchCase="'finished'">
     <h3 *ngIf="!showResults" style="color: #0369ad;">Calibration Exam Finished!!</h3>
-    <app-calibration-results-viewer *ngIf="showResults" (entryClicked)="handleEntryClicked($event)"></app-calibration-results-viewer>
+    <app-calibration-results-viewer *ngIf="showResults" [device]="device" (entryClicked)="handleEntryClicked($event)"></app-calibration-results-viewer>
   </div>
 
   <div class="skip-button-container">

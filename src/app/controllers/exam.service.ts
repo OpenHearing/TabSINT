@@ -118,14 +118,28 @@ export class ExamService {
         console.log("ExamService back() called");
     }
 
-    reset() {
+    /**
+     * Default reset function for exam pages.
+     */
+    resetDefault() {
         this.stateModel.updateState({examState: ExamState.Ready});
     }
 
-    submitPartial() {
+    reset() {
+        this.resetDefault();
+    }
+
+    /**
+     * Default submit partial function for exam pages.
+     */
+    submitPartialDefault() {
         this.resultsService.pushResults(this.results.currentPage);
         this.submit = this.submitDefault;
         this.endExam();
+    }
+
+    submitPartial() {
+        this.submitPartialDefault();
     }
 
     navigateToTarget(subProtocolID: string) {

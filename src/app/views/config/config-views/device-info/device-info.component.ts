@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
@@ -17,7 +17,7 @@ import { AppState } from '../../../../utilities/constants';
   templateUrl: './device-info.component.html',
   styleUrl: './device-info.component.css'
 })
-export class DeviceInfoComponent {
+export class DeviceInfoComponent implements OnInit, OnDestroy {
   disk: DiskInterface;
   state: StateInterface;
   devices: DevicesInterface;

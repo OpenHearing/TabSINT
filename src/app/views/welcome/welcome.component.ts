@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -19,7 +19,7 @@ import { Tasks } from '../../utilities/tasks.service';
   templateUrl: './welcome.component.html',
   styleUrl: './welcome.component.css'
 })
-export class WelcomeComponent {
+export class WelcomeComponent implements OnInit, OnDestroy {
   disk: DiskInterface;
   app: AppInterface;
   state: StateInterface;
@@ -56,7 +56,7 @@ export class WelcomeComponent {
     this.stateModel.updateState({appState: AppState.null});
     this.tasks.unhide();
     this.diskSubscription?.unsubscribe();
-    this.diskSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
   }
 
   // TODO: Replace this variable with a model?

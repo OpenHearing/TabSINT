@@ -19,7 +19,8 @@ const connectedDevices1 = {
             "deviceId": "testDevice1",
             "name": "testName1",
             "state": DeviceState.Disconnected,
-            "maxByteLength": 244
+            "maxByteLength": 244,
+            "isMsgPending": false
         }
     ],
     "cha": [],
@@ -35,7 +36,8 @@ const connectedDevices2 = {
             "deviceId": "testDevice1",
             "name": "testName1",
             "state": DeviceState.Connected,
-            "maxByteLength": 244
+            "maxByteLength": 244,
+            "isMsgPending": false
         }
     ],
     "cha": [],
@@ -51,7 +53,8 @@ const connectedDevices3 = {
             "deviceId": "testDevice1",
             "name": "testName1",
             "state": DeviceState.Connected,
-            "maxByteLength": 244
+            "maxByteLength": 244,
+            "isMsgPending": false
         },
         {
             "tabsintId": "2",
@@ -60,7 +63,8 @@ const connectedDevices3 = {
             "deviceId": "testDevice2",
             "name": "testName2",
             "state": DeviceState.Connected,
-            "maxByteLength": 244
+            "maxByteLength": 244,
+            "isMsgPending": false
         },
         {
             "tabsintId": "3",
@@ -69,7 +73,8 @@ const connectedDevices3 = {
             "deviceId": "testDevice3",
             "name": "testName3",
             "state": DeviceState.Connected,
-            "maxByteLength": 244
+            "maxByteLength": 244,
+            "isMsgPending": false
         }
     ],
     "cha": [],
@@ -85,7 +90,8 @@ const connectedDevices4 = {
             "deviceId": "testDevice1",
             "name": "testName1",
             "state": DeviceState.Connected,
-            "maxByteLength": 244
+            "maxByteLength": 244,
+            "isMsgPending": false
         },
         {
             "tabsintId": "2",
@@ -94,7 +100,8 @@ const connectedDevices4 = {
             "deviceId": "testDevice2",
             "name": "testName2",
             "state": DeviceState.Disconnected,
-            "maxByteLength": 244
+            "maxByteLength": 244,
+            "isMsgPending": false
         },
         {
             "tabsintId": "3",
@@ -103,7 +110,8 @@ const connectedDevices4 = {
             "deviceId": "testDevice3",
             "name": "testName3",
             "state": DeviceState.Connected,
-            "maxByteLength": 244
+            "maxByteLength": 244,
+            "isMsgPending": false
         }
     ],
     "cha": [],
@@ -119,7 +127,8 @@ const connectedDevices5 = {
             "deviceId": "testDevice1",
             "name": "testName1",
             "state": DeviceState.Connected,
-            "maxByteLength": 244
+            "maxByteLength": 244,
+            "isMsgPending": false
         },
         {
             "tabsintId": "2",
@@ -128,7 +137,8 @@ const connectedDevices5 = {
             "deviceId": "testDevice2",
             "name": "testName2",
             "state": DeviceState.Disconnected,
-            "maxByteLength": 244
+            "maxByteLength": 244,
+            "isMsgPending": false
         },
         {
             "tabsintId": "3",
@@ -137,7 +147,8 @@ const connectedDevices5 = {
             "deviceId": "testDevice3",
             "name": "testName3",
             "state": DeviceState.Connected,
-            "maxByteLength": 244
+            "maxByteLength": 244,
+            "isMsgPending": false
         }
     ],
     "cha": [],
@@ -153,7 +164,8 @@ const connectedDevices6 = {
             "deviceId": "testDevice1",
             "name": "testName1",
             "state": DeviceState.Connected,
-            "maxByteLength": 244
+            "maxByteLength": 244,
+            "isMsgPending": false
         },
         {
             "tabsintId": "2",
@@ -162,7 +174,8 @@ const connectedDevices6 = {
             "deviceId": "testDevice2",
             "name": "testName2",
             "state": DeviceState.Disconnected,
-            "maxByteLength": 244
+            "maxByteLength": 244,
+            "isMsgPending": false
         },
         {
             "tabsintId": "3",
@@ -171,7 +184,8 @@ const connectedDevices6 = {
             "deviceId": "testDevice3",
             "name": "testName3",
             "state": DeviceState.Connected,
-            "maxByteLength": 244
+            "maxByteLength": 244,
+            "isMsgPending": false
         }
     ],
     "cha": [],
@@ -187,7 +201,8 @@ const connectedDevices7 = {
             "deviceId": "testDevice1",
             "name": "testName1",
             "state": DeviceState.Connected,
-            "maxByteLength": 244
+            "maxByteLength": 244,
+            "isMsgPending": false
         },
         {
             "tabsintId": "2",
@@ -196,7 +211,8 @@ const connectedDevices7 = {
             "deviceId": "testDevice2",
             "name": "testName2",
             "state": DeviceState.Disconnected,
-            "maxByteLength": 244
+            "maxByteLength": 244,
+            "isMsgPending": false
         },
         {
             "tabsintId": "3",
@@ -205,7 +221,8 @@ const connectedDevices7 = {
             "deviceId": "testDevice3",
             "name": "testName3",
             "state": DeviceState.Connected,
-            "maxByteLength": 244
+            "maxByteLength": 244,
+            "isMsgPending": false
         }
     ],
     "cha": [],
@@ -221,7 +238,8 @@ const connectedDevices8 = {
             "deviceId": "testDevice1",
             "name": "testName1",
             "state": DeviceState.Connected,
-            "maxByteLength": 244
+            "maxByteLength": 244,
+            "isMsgPending": false
         },
         {
             "tabsintId": "2",
@@ -230,7 +248,8 @@ const connectedDevices8 = {
             "deviceId": "testDevice2",
             "name": "testName2",
             "state": DeviceState.Disconnected,
-            "maxByteLength": 244
+            "maxByteLength": 244,
+            "isMsgPending": false
         },
         {
             "tabsintId": "3",
@@ -239,7 +258,8 @@ const connectedDevices8 = {
             "deviceId": "testDevice3",
             "name": "testName3",
             "state": DeviceState.Connected,
-            "maxByteLength": 244
+            "maxByteLength": 244,
+            "isMsgPending": false
         }
     ],
     "cha": [],
@@ -255,7 +275,8 @@ const connectedDevices9 = {
             "deviceId": "testDevice1",
             "name": "testName1",
             "state": DeviceState.Disconnected,
-            "maxByteLength": 244
+            "maxByteLength": 244,
+            "isMsgPending": false
         },
         {
             "tabsintId": "2",
@@ -264,7 +285,8 @@ const connectedDevices9 = {
             "deviceId": "testDevice2",
             "name": "testName2",
             "state": DeviceState.Connected,
-            "maxByteLength": 244
+            "maxByteLength": 244,
+            "isMsgPending": false
         }
     ],
     "cha": [],
@@ -280,7 +302,8 @@ const connectedDevices10 = {
             "deviceId": "testDevice1",
             "name": "testName1",
             "state": DeviceState.Connected,
-            "maxByteLength": 244
+            "maxByteLength": 244,
+            "isMsgPending": false
         }
     ],
     "cha": [],
@@ -299,7 +322,8 @@ const connectedDevices11 = {
             "description": "description would be here",
             "buildDateTime": "this is a datetime",
             "serialNumber": "7114",
-            "maxByteLength": 244
+            "maxByteLength": 244,
+            "isMsgPending": false
         }
     ],
     "cha": [],
@@ -313,7 +337,8 @@ const connection1: ConnectedDevice = {
     "name": "testName2",
     "state": DeviceState.Connected,
     "msgId": 0,
-    "maxByteLength": 244
+    "maxByteLength": 244,
+    "isMsgPending": false
 };
 
 const connection2: ConnectedDevice = {
@@ -323,7 +348,8 @@ const connection2: ConnectedDevice = {
     "name": "testName4",
     "state": DeviceState.Connected,
     "msgId": 0,
-    "maxByteLength": 244
+    "maxByteLength": 244,
+    "isMsgPending": false
 };
 
 describe('deviceUtil', () => {
@@ -440,7 +466,8 @@ describe('deviceUtil', () => {
             "deviceId": "testDevice2",
             "name": "testName2",
             "state": DeviceState.Connected,
-            "maxByteLength": 244
+            "maxByteLength": 244,
+            "isMsgPending": false
 
         };
         devicesModel.devicesModel.connectedDevices = connectedDevices9;
@@ -465,7 +492,8 @@ describe('deviceUtil', () => {
             "deviceId": "testDevice1",
             "name": "testName1",
             "state": DeviceState.Disconnected,
-            "maxByteLength": 244
+            "maxByteLength": 244,
+            "isMsgPending": false
 
         };
         devicesModel.devicesModel.connectedDevices = connectedDevices1;
@@ -482,7 +510,8 @@ describe('deviceUtil', () => {
             "deviceId": "testDevice1",
             "name": "testName1",
             "state": DeviceState.Disconnected,
-            "maxByteLength": 244
+            "maxByteLength": 244,
+            "isMsgPending": false
 
         };
         devicesModel.devicesModel.connectedDevices = connectedDevices1;
@@ -511,7 +540,8 @@ describe('deviceUtil', () => {
             "deviceId": "testDevice1",
             "name": "testName1",
             "state": DeviceState.Disconnected,
-            "maxByteLength": 244
+            "maxByteLength": 244,
+            "isMsgPending": false
 
         };
         let expectedSavedDevices = {
