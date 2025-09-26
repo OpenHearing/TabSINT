@@ -1,5 +1,6 @@
 
 import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
+import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
 
 @Component({
   selector: 'app-max-output-screen',
@@ -11,6 +12,7 @@ export class MaxOutputScreenComponent {
   @Input() currentFrequency: number = 0;
   @Input() targetLevel: number = 0;
   @Input() earCup: string = '';
+  @Input() device: ConnectedDevice | undefined;
   @Output() nextStep = new EventEmitter<void>();
   @Output() togglePlay = new EventEmitter<void>();
   @Output() maxOutputUpdated = new EventEmitter<number>();

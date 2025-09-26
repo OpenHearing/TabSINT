@@ -83,8 +83,10 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
     private readonly stateModel: StateModel
   ) {
     this.results = this.resultsModel.getResults();
-    this.examService.submit = () => { this.nextStep(); };
-    this.examService.back = () => { this.previousStep(); };
+    this.examService.submit = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep(); };
+    this.examService.back = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.previousStep(); };
+    this.examService.reset = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault(); };
+    this.examService.submitPartial = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault(); };
     this.state = this.stateModel.getState();
     this.stateModel.updateState({isSubmittable: true});
     this.inProgressResultsSubscription = this.inProgressResultsSubject.subscribe((updatedResults: WAIResultsInterface) => {
@@ -123,6 +125,8 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
     let resp = await this.devicesService.abortExams(this.device!);
     this.logger.debug("resp from tympan after fpl calibration exam abort exams:" + resp);
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
+    this.examService.reset = this.examService.resetDefault.bind(this.examService);
+    this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);
     this.examService.back = this.examService.back.bind(this.examService);
     this.buttonTextService.updateButtonText("Submit");
     this.stateModel.updateState({isSubmittable: true});
@@ -257,8 +261,8 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   }
 
   private resetCalibrationExam() {
-    this.examService.submit = this.outputChannelIndex < this.outputChannels.length - 1 ? () => { this.nextStep(); } : () => { this.examService.submitDefault(); };
-    this.examService.back = () => { this.previousStep(); };
+    this.examService.submit = this.outputChannelIndex < this.outputChannels.length - 1 ? () => { !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep(); } : () => { this.examService.submitDefault(); };
+    this.examService.back = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.previousStep(); };
     this.shouldAbort = false;
     this.stateModel.updateState({isSubmittable: false});
     this.inProgressResults = {

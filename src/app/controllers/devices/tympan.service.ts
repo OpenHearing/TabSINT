@@ -21,13 +21,13 @@ export class TympanService {
     devices: DevicesInterface;
     state: StateInterface;
     pendingMsgInfo: PendingMsgInfo|null = null;
-    pendingMsg: boolean = false;
     firstByteReceived: boolean = false;
     response: Array<any> = [];
     currentTimeoutTimeMs: number = 0;
     currentCommand: Command<Array<any>> | null = null;
     defaultErrorMsg = ["ERROR", "Failed to write message to tympan. Make sure Tympan is connected and try again."];
     defaultTimeoutTimeMs = 3000;
+    trackedDeviceId: string | undefined;
 
     tympanSubscription: Subscription|undefined;
     firstByteSubscription: Subscription|undefined;
@@ -51,7 +51,7 @@ export class TympanService {
             if (this.deviceUtil.isResponseInvalidChecksum(response)) {
                 this.retryTympanCommand();            
             } else if (this.deviceUtil.doTympanResponseMsgIdsMatch(this.pendingMsgInfo, response)) {
-                this.pendingMsg = false;
+                this.setMessagePending(this.trackedDeviceId, false);
                 this.response = JSON.parse(response.msg);
             }
         });
@@ -67,19 +67,42 @@ export class TympanService {
             tabsintId: Number(tabsintId!),
             msgId: msgId
         };
-        this.pendingMsg = true;
+        this.trackedDeviceId = deviceId;
+        this.setMessagePending(this.trackedDeviceId, true);
         this.firstByteReceived = false;
         this.response = [];
         this.currentTimeoutTimeMs = 0;
         this.currentCommand = command;
     }
 
+    /**
+     * Set the state of message pending for a specific device.
+     * @param deviceId The device to set the state for.
+     * @param isPending Whether a message is pending or not.
+     */
+    private setMessagePending(deviceId: string | undefined, isPending: boolean) {
+        const device = this.devices.connectedDevices.tympan.find(value => value.deviceId === deviceId);
+        if (device) {
+            device.isMsgPending = isPending;
+        }
+    }
+
+    /**
+     * Get whether a message is pending for a specific device
+     * @param deviceId The device to get the state for.
+     * @returns isPending Whether a message is pending or not.
+     */
+    private getMessagePending(deviceId: string | undefined): boolean {
+        const device = this.devices.connectedDevices.tympan.find(value => value.deviceId === deviceId);
+        return device?.isMsgPending ?? false;
+    }
+
     async waitForResponse(timeoutTimeMs: number = this.defaultTimeoutTimeMs, timeoutPollingDelayMs: number = 100) {
-        while (this.pendingMsg) {
+        while (this.getMessagePending(this.trackedDeviceId)) {
             await this.delay(timeoutPollingDelayMs);
             this.currentTimeoutTimeMs += timeoutPollingDelayMs;
             if (this.firstByteReceived === false && this.currentTimeoutTimeMs >= timeoutTimeMs) {
-                this.pendingMsg = false;
+                this.setMessagePending(this.trackedDeviceId, false);
             }
         }
     }

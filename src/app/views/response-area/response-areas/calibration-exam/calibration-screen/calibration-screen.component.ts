@@ -1,4 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
 
 @Component({
   selector: 'app-calibration-screen',
@@ -11,6 +12,7 @@ export class CalibrationScreenComponent {
   @Input() targetLevel: number = 0;
   @Input() calFactor: number = 0;
   @Input() earCup: string = '';
+  @Input() device: ConnectedDevice | undefined;
   @Output() calFactorAdjusted = new EventEmitter<number>();
   @Output() nextStep = new EventEmitter<void>();
   @Output() togglePlay = new EventEmitter<void>();

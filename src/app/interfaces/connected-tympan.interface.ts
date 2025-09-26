@@ -6,4 +6,5 @@ export interface ConnectedTympan {
     state: DeviceState;
     msgId: number;
     maxByteLength: number;
+    isMsgPending: boolean;
 }

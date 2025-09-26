@@ -24,6 +24,7 @@ export class ExternalResponseAreaComponent implements OnInit, OnDestroy {
   testHTML: string;
   testJS: string;
   subscription: Subscription|undefined;
+  stateSubscription: Subscription | undefined;
 
   constructor (
     public pageModel: PageModel, 
@@ -45,10 +46,14 @@ export class ExternalResponseAreaComponent implements OnInit, OnDestroy {
       this.testJS = updatedPage?.responseArea?.externalJS;
       this.waitForHTMLToLoad();
     });
+    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+      this.state = updatedState;
+    });
   }
 
   ngOnDestroy() {
     this.subscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
   }
 
   async waitForHTMLToLoad() {

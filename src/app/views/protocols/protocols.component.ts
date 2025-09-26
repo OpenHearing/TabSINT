@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import _ from 'lodash';
@@ -26,10 +26,11 @@ import { CapacitorHttp } from '@capacitor/core';
   templateUrl: './protocols.component.html',
   styleUrl: './protocols.component.css'
 })
-export class ProtocolsComponent {
+export class ProtocolsComponent implements OnInit, OnDestroy {
   selected?: ProtocolMetaInterface;
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
   protocolModel: ProtocolModelInterface;
   state: StateInterface;
   selectedSource = 'device';
@@ -56,12 +57,16 @@ export class ProtocolsComponent {
   ngOnInit(): void {
     this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
-    })    
+    })  
+    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+      this.state = updatedState;
+    });  
     // sort protocols by name here
   }
 
   ngOnDestroy() {
     this.diskSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
   }
 
   setSource(source: string) {

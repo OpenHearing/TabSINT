@@ -204,7 +204,8 @@ describe('ExamService', () => {
                                 name: 'Tympan Device',
                                 state: DeviceState.Connected,
                                 msgId: 123,
-                                maxByteLength: 244
+                                maxByteLength: 244,
+                                isMsgPending: false,
                             }
                         ],
                         cha: [{}], 
@@ -273,7 +274,8 @@ describe('ExamService', () => {
                                 name: 'Tympan Device',
                                 state: DeviceState.Connected,
                                 msgId: 123,
-                                "maxByteLength": 244
+                                "maxByteLength": 244,
+                                isMsgPending: false,
                             }
                         ],
                         cha: [{}], 
