@@ -21,6 +21,12 @@ export const calibrationExamSchema: JSONSchemaType<CalibrationExamInterface> = {
             items: { type: "number" },
             nullable: true
         },
+        batchFrequencies: { 
+            type: "boolean", 
+            description: "Whether frequencies should be grouped during the exam. If true, calibration and measurement are done for all frequencies before moving on to max output. Otherwise calibration, measurement and max output are done for a single frequency before moving on to the next frequency", 
+            nullable: true, 
+            default: false, 
+        },
     },
     required: ["type"]
 };

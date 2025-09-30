@@ -1,5 +1,5 @@
 
-import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
 
 @Component({
@@ -7,7 +7,7 @@ import { ConnectedDevice } from '../../../../../interfaces/connected-device.inte
   templateUrl: './max-output-screen.component.html',
   styleUrls: ['./max-output-screen.component.css']
 })
-export class MaxOutputScreenComponent {
+export class MaxOutputScreenComponent implements OnChanges {
   @Input() isPlaying: boolean = false;
   @Input() currentFrequency: number = 0;
   @Input() targetLevel: number = 0;
@@ -25,7 +25,7 @@ export class MaxOutputScreenComponent {
   validationMessage: string = '';
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['userInput'] && changes['userInput'].currentValue !== undefined) {
+    if (changes['userInput'] && changes['userInput'].currentValue !== null) {
       // Reset validation state when userInput changes
       this.showValidationError = false;
       this.validationMessage = '';

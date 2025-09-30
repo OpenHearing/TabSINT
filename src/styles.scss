@@ -685,6 +685,8 @@ $tabsint-training-site-theme: mat.define-light-theme((
   .exam-footer {
     position: fixed;
     bottom: 0;
+    left: 0;
+    right: 0;
     width: 100%;
     background-color: #f5f5f5;
     padding: 0px 15px 0px 15px;
