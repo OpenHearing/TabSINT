@@ -10,10 +10,11 @@ import { Logger } from '../../../../../utilities/logger.service';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { ResultsInterface } from '../../../../../models/results/results.interface';
 import { ExamService } from '../../../../../controllers/exam.service';
-import { MeasurementScreenComponent } from '../measurement-screen/measurement-screen.component';
 import { MaxOutputScreenComponent } from '../max-output-screen/max-output-screen.component';
 import { ButtonTextService } from '../../../../../controllers/button-text.service';
 import { CalibrationResultsViewerComponent } from '../calibration-results-viewer/calibration-results-viewer.component';
+import { CalibrationScreenComponent } from '../calibration-screen/calibration-screen.component';
+import { calibrationExamSchema } from '../../../../../../schema/response-areas/calibration-exam.schema';
 
 
 @Component({
@@ -23,8 +24,8 @@ import { CalibrationResultsViewerComponent } from '../calibration-results-viewer
 })
 export class CalibrationExamComponent implements OnInit, OnDestroy {
   @ViewChild(CalibrationResultsViewerComponent) resultsViewer!: CalibrationResultsViewerComponent;
-  @ViewChild(MeasurementScreenComponent) measurementScreen!: MeasurementScreenComponent;
   @ViewChild(MaxOutputScreenComponent) maxOutputScreen!: MaxOutputScreenComponent;
+  @ViewChild(CalibrationScreenComponent) calibrationScreen!: CalibrationScreenComponent;
   @Output() buttonTextChange = new EventEmitter<string>();
   showSkipButton: boolean = false;
   frequencies: number[] = [];
@@ -46,6 +47,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   navigationHistory: { step: string; frequencyIndex: number; earCup: string }[] = [];
   userInput: number | null = null;
   poppedHistory: { step: string; frequencyIndex: number; earCup: string }[] = [];
+  batchFrequencies: boolean = calibrationExamSchema.properties.batchFrequencies.default;
 
   constructor(private readonly pageModel: PageModel,
     private readonly devicesService: DevicesService,
@@ -72,6 +74,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
         if (calibrationResponse) {
           this.frequencies = calibrationResponse.frequencies ?? [500, 1000, 2000];
           this.targetLevels = calibrationResponse.targetLevels ?? [60, 70, 80];
+          this.batchFrequencies = calibrationResponse.batchFrequencies ?? this.batchFrequencies;
           this.initializeEarData();
           this.updateFrequencyAndTargetLevel();
           this.showResults = calibrationResponse.showResults ?? true;
@@ -135,13 +138,10 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   }
 
   updateButtonLabel(): void {
-    if (this.currentStep === 'calibration') {
-      this.buttonTextService.updateButtonText('Next');
-    } else if (this.currentStep === 'measurement' || this.currentStep === 'max-output') {
-      this.buttonTextService.updateButtonText('Submit');
-    }
-    else if (this.currentStep === 'finished') {
+    if (this.currentStep === 'finished') {
       this.buttonTextService.updateButtonText('Finish Calibration');
+    } else {
+      this.buttonTextService.updateButtonText('Submit');
     }
   }
 
@@ -156,9 +156,6 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       case 'calibration':
         await this.handleCalibrationStep();
         break;
-      case 'measurement':
-        await this.handleMeasurementStep();
-        break;
       case 'max-output':
         await this.handleMaxOutputStep();
         break;
@@ -168,37 +165,41 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     }
 
     this.updateFrequencyAndTargetLevel();
-    this.updateUserInput();
+    this.updateUserInputBasedOnStep();
     this.updateButtonLabel();
+
+    // The current step has now been updated, adjust tone as needed
+    if (this.isPlaying) {
+      if (this.currentStep === 'calibration') {
+        await this.playTone(this.calFactor);
+      } else if (this.currentStep === 'max-output') {
+        await this.playTone(0);
+      } else {
+        await this.stopTone();
+      }
+    }
   }
 
   private async handleCalibrationStep(): Promise<void> {
-    await this.playTone(this.calFactor);
-    this.currentStep = 'measurement';
-  }
-
-  private async handleMeasurementStep(): Promise<void> {
-    const isValid = this.measurementScreen?.validateAndProceed();
+    const isValid = this.calibrationScreen?.validateAndProceed();
     if (!isValid) {
-      this.navigationHistory.pop();
       return;
     }
-
-    if (this.currentFrequencyIndex < this.frequencies.length - 1) {
-      this.currentFrequencyIndex++;
-      await this.sendExamSubmission("CalibrationFactor");
-      this.currentStep = 'calibration';
-    } else {
-      await this.finalizeMeasurementStep();
-    }
-  }
-
-  private async finalizeMeasurementStep(): Promise<void> {
-    this.currentStep = 'max-output';
-    this.isPlaying = false;
     await this.sendExamSubmission("CalibrationFactor");
-    await this.stopTone();
-    this.currentFrequencyIndex = 0;
+
+    if (this.batchFrequencies) {
+      if (this.currentFrequencyIndex < this.frequencies.length - 1) {
+        this.currentFrequencyIndex++;
+        this.currentStep = 'calibration';
+      } else {
+        this.currentFrequencyIndex = 0;
+        this.currentStep = 'max-output';
+      }
+    } else if (this.currentFrequencyIndex < this.frequencies.length - 1) {
+      this.currentStep = 'max-output';
+    } else {
+      await this.handleNextEarOrFinish();
+    }
   }
 
   private async handleMaxOutputStep(): Promise<void> {
@@ -208,28 +209,15 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       return;
     }
     await this.sendExamSubmission("MaximumOutputLevel");
-    this.handleNextEarOrFinish();
-  }
 
-  private async updateUserInput(): Promise<void> {
-    const currentEarData = this.earCup === 'Left' ? this.leftEarData : this.rightEarData;
-
-    switch (this.currentStep) {
-      case 'calibration':
-        this.userInput = Number(currentEarData[this.currentFrequency].measurement) || null;
-        if (this.isPlaying) {
-          await this.playTone(this.calFactor);
-        }
-        break;
-      case 'max-output':
-        this.userInput = Number(currentEarData[this.currentFrequency].maxOutput) || null;
-        if (this.isPlaying) {
-          await this.playTone(0);
-        }
-        break;
+    const nextStep = this.batchFrequencies ? 'max-output' : 'calibration';
+    if (this.currentFrequencyIndex < this.frequencies.length - 1) {
+      this.currentFrequencyIndex++;
+      this.currentStep = nextStep;
+    } else {
+      await this.handleNextEarOrFinish();
     }
   }
-
 
   async handleEntryClicked(entry: { frequency: string, ear: string, step: string }): Promise<void> {
     this.showSkipButton = true;
@@ -329,8 +317,6 @@ private updateUserInputBasedOnStep(): void {
     switch (this.currentStep) {
         case 'calibration':
             this.calFactor = currentEarData[this.currentFrequency]?.calFactor ?? this.calFactor;
-            break;
-        case 'measurement':
             this.userInput = Number(currentEarData[this.currentFrequency]?.measurement) || null;
             break;
         case 'max-output':
@@ -381,13 +367,13 @@ private updateUserInputBasedOnStep(): void {
       this.currentFrequencyIndex = 0;
       this.currentStep = 'calibration';
       await this.writeCalibrationResults();
-      this.isPlaying = false;
-      await this.stopTone();
       let resp = await this.devicesService.abortExams(this.device!);
       this.logger.debug("resp from tympan after calibration exam abort exams:" + resp);
       resp = await this.devicesService.queueExam(this.device!, "HNCalibration", { "OutputChannel": this.earCup == "Left" ? "HPL0" : "HPR0" });
       this.logger.debug("resp from tympan after calibration exam queue exam:" + resp);
     } else {
+      this.isPlaying = false;
+      await this.stopTone();
       this.currentStep = 'finished';
       this.examService.submit = this.examService.submitDefault.bind(this.examService);
       this.saveResults();

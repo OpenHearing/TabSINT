@@ -81,7 +81,6 @@ import { ConnectedDevicesComponent } from './views/config/config-views/connected
 import { NewConnectionComponent } from './views/config/config-views/new-connection/new-connection.component';
 import { CalibrationExamComponent } from './views/response-area/response-areas/calibration-exam/calibration-exam-component/calibration-exam.component';
 import { CalibrationScreenComponent } from './views/response-area/response-areas/calibration-exam/calibration-screen/calibration-screen.component';
-import { MeasurementScreenComponent } from './views/response-area/response-areas/calibration-exam/measurement-screen/measurement-screen.component';
 import { MaxOutputScreenComponent } from './views/response-area/response-areas/calibration-exam/max-output-screen/max-output-screen.component';
 import { FPLCalibrationExamComponent } from './views/response-area/response-areas/fpl-calibration-exam/fpl-calibration-exam-component/fpl-calibration-exam.component';
 import { FPLCalibrationScreenComponent } from './views/response-area/response-areas/fpl-calibration-exam/fpl-calibration-screen/fpl-calibration-screen.component';
@@ -146,7 +145,6 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     AudiogramComponent,
     CalibrationExamComponent,
     CalibrationScreenComponent,
-    MeasurementScreenComponent,
     MaxOutputScreenComponent,
     FPLCalibrationExamComponent,
     FPLCalibrationScreenComponent,

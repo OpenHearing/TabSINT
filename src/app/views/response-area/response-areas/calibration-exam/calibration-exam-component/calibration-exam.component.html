@@ -3,25 +3,16 @@
     *ngSwitchCase="'calibration'"
     [currentFrequency]="currentFrequency"
     [targetLevel]="targetLevel"
+    [userInput]="userInput"
     [calFactor]="calFactor"
     [earCup]="earCup"
     [isPlaying]="isPlaying"
     [device]="device"
     (calFactorAdjusted)="adjustCalFactor($event)"
+    (measurementUpdated)="handleMeasurementUpdate($event)"
     (nextStep)="nextStep()"
     (togglePlay)="togglePlay()">
   </app-calibration-screen>
-
-  <app-measurement-screen
-    *ngSwitchCase="'measurement'"
-    [currentFrequency]="currentFrequency"
-    [targetLevel]="targetLevel"
-    [userInput]="userInput"
-    [isPlaying]="isPlaying"
-    (nextStep)="nextStep()"
-    (togglePlay)="togglePlay()"
-    (measurementUpdated)="handleMeasurementUpdate($event)">
-  </app-measurement-screen>
 
   <app-max-output-screen
     *ngSwitchCase="'max-output'"
