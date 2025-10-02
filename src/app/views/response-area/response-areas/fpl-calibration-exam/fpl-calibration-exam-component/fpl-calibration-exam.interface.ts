@@ -8,6 +8,7 @@ export interface FPLCalibrationExamInterface extends CommonResponseAreaInterface
     fStart?: number,
     fEnd?: number,
     sweepDuration?: number,
+    windowDuration?: number,
     numFrequencies?: number,
     responseRequired?: boolean;
     showResults?: boolean;
