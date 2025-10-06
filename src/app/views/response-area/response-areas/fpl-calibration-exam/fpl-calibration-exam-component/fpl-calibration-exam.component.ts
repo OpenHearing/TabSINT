@@ -52,6 +52,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   fStart: number = FPLcalibrationExamSchema.properties.fStart.default;
   fEnd: number = FPLcalibrationExamSchema.properties.fEnd.default;
   sweepDuration: number = FPLcalibrationExamSchema.properties.sweepDuration.default;
+  windowDuration: number = FPLcalibrationExamSchema.properties.windowDuration.default;
   numFrequencies: number = FPLcalibrationExamSchema.properties.numFrequencies.default;
 
   // WAI parameters not specified from FPL calibration response area
@@ -67,7 +68,6 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   outputRawMeasurements: boolean = waiSchema.properties.outputRawMeasurements.default;
 
   // WAI parameters for FPL calibration different from WAI defaults
-  windowDuration: number = (2*this.sweepDuration/(this.numFrequencies - 1));
   writeFPLCalibration: boolean = true;
   returnResultData: boolean = false;
 
@@ -109,6 +109,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
         this.fEnd = responseArea.fEnd ?? this.fEnd;
         this.numFrequencies = responseArea.numFrequencies ?? this.numFrequencies;
         this.sweepDuration = responseArea.sweepDuration ?? this.sweepDuration;
+        this.windowDuration = responseArea.windowDuration ?? this.windowDuration;
         this.device = this.deviceUtil.getDeviceFromTabsintId(responseArea.tabsintId ?? "1");
         if (!this.device) {
           await this.devicesService.deviceNotFound();
@@ -177,7 +178,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
       if (this.shouldAbort) return;
 
       this.isRequestingResults = true;
-      let resp = await this.devicesService.requestResults(this.device!, 300000);
+      let resp = await this.devicesService.requestResults(this.device!);
       this.isRequestingResults = false;
 
       if (this.shouldAbort) return;

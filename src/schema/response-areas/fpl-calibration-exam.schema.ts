@@ -12,9 +12,10 @@ export const FPLcalibrationExamSchema: JSONSchemaType<FPLCalibrationExamInterfac
         tabsintId: { type: "string", nullable: true },
         exportToCSV: { type: "boolean", nullable: true, default: false },
         outputChannels: { type: "array", nullable: false, items: { type: "string" } },
-        fStart: { type: "number", nullable: true, default: 500 },
-        fEnd: { type: "number", nullable: true, default: 12000 },
+        fStart: { type: "number", nullable: true, default: 390 },
+        fEnd: { type: "number", nullable: true, default: 16500 },
         sweepDuration: { type: "number", nullable: true, default: 6, description: "Duration of sweep, not including start and end ramps. In seconds." },
+        windowDuration: { type: "number", nullable: true, default: 0.100, description: "Duration of sweep, not including start and end ramps. In seconds." },
         numFrequencies: { type: "number", nullable: true, default: 64 }
     },
     required: ["type"]
