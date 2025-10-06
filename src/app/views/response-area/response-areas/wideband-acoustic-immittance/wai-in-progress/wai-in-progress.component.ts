@@ -74,7 +74,7 @@ export class WAIInProgressComponent implements OnInit, OnDestroy {
       if (this.shouldAbort) return;
       
       this.isRequestingResults = true;
-      let resp = await this.devicesService.requestResults(this.device!, 300000);
+      let resp = await this.devicesService.requestResults(this.device!);
       this.isRequestingResults = false;
 
       if (this.shouldAbort) return;
