@@ -123,23 +123,32 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
       let protocolsFolderUri = result?.uri;
       let protocolName = result?.name;
       const resultFromListFiles = await this.fileService.listDirectory(protocolsFolderUri);
-      const fileList = resultFromListFiles?.files;
-      for (const file of fileList!) {
-        if (file.name == "protocol.json") {
-          const protocolContent: ProtocolSchemaInterface = JSON.parse(file.content);
-          const protocol: ProtocolInterface = {
-            ...partialMetaDefaults,
-            name: protocolName!,
-            contentURI: protocolsFolderUri!,
-            server: ProtocolServer.LocalServer,
-            admin: false,
-            ...protocolContent
-          };
-          await this.updateDiskModel(protocol);
+      if (!resultFromListFiles) {
+        throw new Error("Unable to load protocol directory.");
+      } else {
+        const fileList = resultFromListFiles?.files;
+        for (const file of fileList) {
+          if (file.name == "protocol.json") {
+            const protocolContent: ProtocolSchemaInterface = JSON.parse(file.content);
+            const protocol: ProtocolInterface = {
+              ...partialMetaDefaults,
+              name: protocolName!,
+              contentURI: protocolsFolderUri!,
+              server: ProtocolServer.LocalServer,
+              admin: false,
+              ...protocolContent
+            };
+            await this.updateDiskModel(protocol);
+          }
         }
       }
-    } catch (error) {
-      this.logger.error(""+ error);
+    } catch (error: any) {
+      this.logger.error("" + error);
+      this.notifications.alert({
+        title: "Alert",
+        content: "Error Loading Protocol: Unable to properly load the protocol file, see logs for more information.",
+        type: DialogType.Alert
+      }).subscribe();
     } finally {
       this.tasks.deregister("Add Local Protocol");
     }

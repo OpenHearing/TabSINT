@@ -51,8 +51,8 @@ export class TympanService {
             if (this.deviceUtil.isResponseInvalidChecksum(response)) {
                 this.retryTympanCommand();            
             } else if (this.deviceUtil.doTympanResponseMsgIdsMatch(this.pendingMsgInfo, response)) {
-                this.setMessagePending(this.trackedDeviceId, false);
                 this.response = JSON.parse(response.msg);
+                this.stopTracking();
             }
         });
         this.firstByteSubscription = this.devicesModel.firstByteHandlerSubject.subscribe((response: any) => {
@@ -73,6 +73,14 @@ export class TympanService {
         this.response = [];
         this.currentTimeoutTimeMs = 0;
         this.currentCommand = command;
+    }
+
+    /**
+     * Stop the current pending message from being tracked.
+     */
+    private stopTracking() {
+        this.setMessagePending(this.trackedDeviceId, false);
+        this.trackedDeviceId = undefined;
     }
 
     /**
@@ -102,7 +110,7 @@ export class TympanService {
             await this.delay(timeoutPollingDelayMs);
             this.currentTimeoutTimeMs += timeoutPollingDelayMs;
             if (this.firstByteReceived === false && this.currentTimeoutTimeMs >= timeoutTimeMs) {
-                this.setMessagePending(this.trackedDeviceId, false);
+                this.stopTracking();
             }
         }
     }
@@ -183,6 +191,7 @@ export class TympanService {
                 deviceError: resp
             });
             this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));
+            this.stopTracking();
         }
         return resp
     }
@@ -204,6 +213,7 @@ export class TympanService {
         } catch (e) {
             this.stateModel.updateState({examState: ExamState.DeviceError});
             this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));
+            this.stopTracking();
         }
         return resp
     }
@@ -229,6 +239,7 @@ export class TympanService {
             } else {
                 this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(error));
             }
+            this.stopTracking();
         }
         return resp
     }
@@ -249,6 +260,7 @@ export class TympanService {
         } catch (e) {
             this.stateModel.updateState({examState: ExamState.DeviceError});
             this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));
+            this.stopTracking();
         }
         return resp
     }
@@ -270,6 +282,7 @@ export class TympanService {
         } catch (e) {
             this.stateModel.updateState({examState: ExamState.DeviceError});
             this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));
+            this.stopTracking();
         }
         return resp
     }

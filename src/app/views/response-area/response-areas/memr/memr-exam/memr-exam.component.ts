@@ -86,6 +86,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     this.examService.submit = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep(); };
     this.examService.reset = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault(); };
     this.examService.submitPartial = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault(); };
+    this.examService.navigateToTarget = (subProtocolId) => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.navigateToTargetDefault(subProtocolId); };
     this.stateModel.updateState({ isSubmittable: true });
   }
 
@@ -114,6 +115,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
       this.examService.submit = this.examService.submitDefault.bind(this.examService);
       this.examService.reset = this.examService.resetDefault.bind(this.examService);
       this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);
+      this.examService.navigateToTarget = this.examService.navigateToTargetDefault.bind(this.examService);
       this.pageSubscription?.unsubscribe();
       this.resultsSubscription?.unsubscribe();
       this.stateSubscription?.unsubscribe();
