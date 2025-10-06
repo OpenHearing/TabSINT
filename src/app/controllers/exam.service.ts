@@ -142,7 +142,11 @@ export class ExamService {
         this.submitPartialDefault();
     }
 
-    navigateToTarget(subProtocolID: string) {
+    /**
+     * Default navigate to target function, which navigates to the specified subprotocol.
+     * @param subProtocolID The sub protocol page identifier.
+     */
+    navigateToTargetDefault(subProtocolID: string) {
         // TODO: returnHereAfterward NOT IMPLEMENTED
         this.currentPage.followOns = [{
             conditional: "true",
@@ -150,6 +154,14 @@ export class ExamService {
         }];
         this.stateModel.updateState({examState: ExamState.Testing});
         this.submitDefault();
+    }
+
+    /**
+     * Navigate to target function. Can be overwritten by exams.
+     * @param subProtocolID The sub protocol page identifier.
+     */
+    navigateToTarget(subProtocolID: string) {
+        this.navigateToTargetDefault(subProtocolID);
     }
 
     /** Checks if a page response is required.

@@ -87,6 +87,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
     this.examService.back = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.previousStep(); };
     this.examService.reset = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault(); };
     this.examService.submitPartial = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault(); };
+    this.examService.navigateToTarget = (subProtocolId) => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.navigateToTargetDefault(subProtocolId); };
     this.state = this.stateModel.getState();
     this.stateModel.updateState({isSubmittable: true});
     this.inProgressResultsSubscription = this.inProgressResultsSubject.subscribe((updatedResults: WAIResultsInterface) => {
@@ -127,6 +128,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
     this.examService.reset = this.examService.resetDefault.bind(this.examService);
     this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);
+    this.examService.navigateToTarget = this.examService.navigateToTargetDefault.bind(this.examService);
     this.examService.back = this.examService.back.bind(this.examService);
     this.buttonTextService.updateButtonText("Submit");
     this.stateModel.updateState({isSubmittable: true});
