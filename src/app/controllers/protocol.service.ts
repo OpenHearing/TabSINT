@@ -84,13 +84,13 @@ export class ProtocolService {
         this.loading.notify = notify;
         this.tasks.register("Load Protocol", "Load Protocol");
         try {
-            await this.loadFiles();
+            const loadError = await this.loadFiles();
             await this.setCalibration();
             await this.initializeProtocol();
             let validationError = await this.validateIfCalledFor();
-                // .then(loadCustomJs)
-                // .then(validateCustomJsIfCalledFor)
-            this.handleLoadErrors(validationError);
+            // .then(loadCustomJs)
+            // .then(validateCustomJsIfCalledFor)
+            this.handleLoadErrors([loadError, validationError]);
         } catch (error: unknown) {
             let err = error instanceof Error ? error.message : error;
             this.logger.error(`Could not load protocol. ${err}`);
@@ -127,9 +127,9 @@ export class ProtocolService {
         }
     };
 
-    private async loadFiles() {
+    private async loadFiles(): Promise<ProtocolErrorInterface | undefined> {
+        let loadError: ProtocolErrorInterface | undefined = undefined;
         try {
-            
             this.tasks.register("Load Files", "Loading Files...");
             let protocol;
             let finalProtocol: ProtocolSchemaInterface;
@@ -150,17 +150,16 @@ export class ProtocolService {
                 this.notifyProtocolDidntLoadProperly();
             }
 
-        } catch(err) {
-            let error: ProtocolErrorInterface = {
+        } catch (err) {
+            loadError = {
                 type: "Load Files",
                 error: JSON.stringify(err)
             };
-            this.loading.errors = this.loading.errors || [];
-            this.loading.errors.push(error);
             this.logger.error("Error while loading files: " + err);
         } finally {
             this.tasks.deregister("Load Files");
         }
+        return loadError;
     }
 
     private async validate() {
@@ -175,7 +174,7 @@ export class ProtocolService {
         return ret;
     }
 
-    private async validateIfCalledFor() {
+    private async validateIfCalledFor(): Promise<ProtocolErrorInterface | undefined> {
         if (this.disk.validateProtocols) {
             if (this.loading.notify) {
                 this.tasks.register("Validate Protocol", "Validating Protocol... This process could take several minutes");
@@ -197,9 +196,10 @@ export class ProtocolService {
         }
     }
 
-    private handleLoadErrors(validationError?: ProtocolErrorInterface) {
-
-        if (!_.isUndefined(validationError)) this.protocolModel.activeProtocol!.errors!.push(validationError);
+    private handleLoadErrors(errors: Array<ProtocolErrorInterface | undefined>) {
+        errors.forEach((error) => {
+            if (!_.isUndefined(error)) this.protocolModel.activeProtocol!.errors!.push(error);
+        });
 
         this.tasks.register("Handle Load Errors", "Checking Protocol Files...");
         let msg = checkCalibrationFiles(this.protocolModel.activeProtocol!);
@@ -252,14 +252,10 @@ export class ProtocolService {
             this.tasks.register("Initialize Protocol", "Processing Protocol...");
 
             [this.protocolModel.activeProtocol,
-                this.protocolModel.activeProtocolDictionary,
-                this.protocolModel.activeProtocolFollowOnsDictionary
+            this.protocolModel.activeProtocolDictionary,
+            this.protocolModel.activeProtocolFollowOnsDictionary
             ] = await processProtocol(this.loading);
 
-            if (this.loading.errors && this.loading.errors.length > 0) {
-                this.protocolModel.activeProtocol.errors = this.protocolModel.activeProtocol.errors || [];
-                this.protocolModel.activeProtocol.errors.push(...this.loading.errors);
-            }
             if (this.protocolModel.activeProtocol && "key" in this.protocolModel.activeProtocol) {
                 if (this.protocolModel.activeProtocol.key !== undefined) {
                     this.protocolModel.activeProtocol.publicKey = decodeURI(this.protocolModel.activeProtocol.key);
