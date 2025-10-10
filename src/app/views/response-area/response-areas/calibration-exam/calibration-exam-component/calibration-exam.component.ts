@@ -197,10 +197,8 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
         this.currentFrequencyIndex = 0;
         this.currentStep = 'max-output';
       }
-    } else if (this.currentFrequencyIndex < this.frequencies.length - 1) {
-      this.currentStep = 'max-output';
     } else {
-      await this.handleNextEarOrFinish();
+      this.currentStep = 'max-output';
     }
   }
 
