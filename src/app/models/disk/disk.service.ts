@@ -33,12 +33,13 @@ export class DiskModel {
         audhere: '',
         autoUpload: true,
         availableProtocolsMeta: {
-            PurdueShakedown: {
-                ...partialMetaDefaults,
-                creator: "Creare",
-                name: "Purdue Shakedown",
-                path: "protocols/purdue-shakedown"
-            },
+            // Commenting out purdue shakedown while we develop
+            // PurdueShakedown: {
+            //     ...partialMetaDefaults,
+            //     creator: "Creare",
+            //     name: "Purdue Shakedown",
+            //     path: "protocols/purdue-shakedown"
+            // },
             develop: {
                 ...partialMetaDefaults,
                 creator: "Creare",
