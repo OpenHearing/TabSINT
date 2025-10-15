@@ -1,5 +1,6 @@
 import { JSONSchemaType } from "ajv";
 import { WAIInterface } from "../../app/views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.interface";
+import { normativeDataSchema } from "../definitions/normative-data.schema";
 
 export const waiSchema: JSONSchemaType<WAIInterface> = {
   type: "object",
@@ -30,6 +31,7 @@ export const waiSchema: JSONSchemaType<WAIInterface> = {
     returnResultData: { type: "boolean", nullable: true, default: true },
     showResults: { type: "boolean", nullable: true, default: true },
     normativeAbsorbanceDataPath: { type: "string", nullable: true, default: "" },
+    normativeAbsorbanceData: { type: "array", items: normativeDataSchema, nullable: true, default: [] },
   },
   required: ["type"]
 };

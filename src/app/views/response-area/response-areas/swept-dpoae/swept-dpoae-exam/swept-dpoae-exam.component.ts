@@ -15,8 +15,6 @@ import { ButtonTextService } from '../../../../../controllers/button-text.servic
 import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
 import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-dpoae.schema';
 import { NormativeDataInterface } from '../../../../../interfaces/normative-data-interface';
-import { loadNormativeDataXlsx } from '../../../../../utilities/load-normative-data-xlsx';
-import { ProtocolMetaInterface } from '../../../../../models/protocol/protocol.interface';
 import { handleOutputCalibration } from '../../../../../utilities/exam-helper-functions';
 
 @Component({
@@ -46,7 +44,7 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
   filename: string = sweptDpoaeSchema.properties.filename.default;
   outputRawMeasurements: boolean = sweptDpoaeSchema.properties.outputRawMeasurements.default;
   normativeDataPath: string = sweptDpoaeSchema.properties.normativeDataPath.default;
-  normativeData: NormativeDataInterface[] = [];
+  normativeData: NormativeDataInterface[] = sweptDpoaeSchema.properties.normativeData.default;
   results: ResultsInterface;
   showResults: boolean = sweptDpoaeSchema.properties.showResults.default;
   pageSubscription: Subscription | undefined;
@@ -111,6 +109,7 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
         this.filename = responseArea.filename ?? this.filename;
         this.outputRawMeasurements = responseArea.outputRawMeasurements ?? this.outputRawMeasurements;
         this.normativeDataPath = responseArea.normativeDataPath ?? this.normativeDataPath;
+        this.normativeData = responseArea.normativeData ?? this.normativeData;
 
         this.inputParameterMap = new Map([
           ["Start Frequency [Hz]", this.f2Start.toString()],
@@ -157,7 +156,6 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
         this.buttonTextService.updateButtonText('Next');
         break;
       case 'in-progress':
-        await this.loadNormativeData();
         this.currentStep = 'results';
         this.buttonTextService.updateButtonText('Finish');
         break;
@@ -199,15 +197,6 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
     } else {
         await this.devicesService.deviceNotFound();
         this.logger.error("Error setting up Swept DPOAE exam");
-    }
-  }
-
-  /**
-   * Load the normative data which will be displayed in the results
-   */
-  private async loadNormativeData() {
-    if (this.examService.protocol.activeProtocol && this.normativeDataPath) {
-      this.normativeData = await loadNormativeDataXlsx(this.normativeDataPath, this.examService.protocol.activeProtocol as ProtocolMetaInterface);
     }
   }
 }

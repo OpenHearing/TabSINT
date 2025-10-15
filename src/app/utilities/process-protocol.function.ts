@@ -8,7 +8,10 @@ import { FollowOnsDictionary } from "../interfaces/follow-ons-dictionary";
 import { isPageDefinition, isProtocolReferenceInterface, isProtocolSchemaInterface } from "../guards/type.guard";
 import { PageTypes } from "../types/custom-types";
 import { loadMrtExamCsv } from "./load-mrt-exam-csv";
+import { loadSweptDPOAENormativeData, loadWAINormativeData } from "./load-normative-data-xlsx";
 import { MrtExamInterface } from "../views/response-area/response-areas/mrt/mrt-exam/mrt-exam.interface";
+import { WAIInterface } from "../views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.interface";
+import { SweptDpoaeInterface } from "../views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/swept-dpoae-exam.interface";
 
 /**
  * Adds variables to the active protocol and generates a stack of pages.
@@ -85,9 +88,24 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
 
     if (page.responseArea) {
       // TODO: deal with specific response area processing here
-      if (page.responseArea.type === "mrtResponseArea") {
-        const responseArea = page.responseArea as MrtExamInterface;
-        page.responseArea = await loadMrtExamCsv(responseArea, loading.meta);
+      switch (page.responseArea.type) {
+        case "mrtResponseArea": {
+          const responseArea = page.responseArea as MrtExamInterface;
+          page.responseArea = await loadMrtExamCsv(responseArea, loading.meta);
+          break;
+        }
+        case "WAIResponseArea": {
+          const responseArea = page.responseArea as WAIInterface;
+          page.responseArea = await loadWAINormativeData(responseArea, loading.meta);
+          break;
+        }
+        case "sweptDPOAEResponseArea": {
+          const responseArea = page.responseArea as SweptDpoaeInterface;
+          page.responseArea = await loadSweptDPOAENormativeData(responseArea, loading.meta);
+          break;
+        }
+        default:
+          break;
       }
     }
 
