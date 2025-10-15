@@ -13,8 +13,6 @@ import { NormativeDataInterface } from '../../../../../interfaces/normative-data
 import { ButtonTextService } from '../../../../../controllers/button-text.service';
 import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
 import { waiSchema } from '../../../../../../schema/response-areas/wai.schema';
-import { loadNormativeDataXlsx } from '../../../../../utilities/load-normative-data-xlsx';
-import { ProtocolMetaInterface } from '../../../../../models/protocol/protocol.interface';
 import { handleOutputCalibration } from '../../../../../utilities/exam-helper-functions';
 
 @Component({
@@ -45,7 +43,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
   results: ResultsInterface;
   showResults: boolean = waiSchema.properties.showResults.default;
   normativeAbsorbanceDataPath: string = waiSchema.properties.normativeAbsorbanceDataPath.default;
-  normativeAbsorbanceData: NormativeDataInterface[] = [];
+  normativeAbsorbanceData: NormativeDataInterface[] = waiSchema.properties.normativeAbsorbanceData.default;
   pageSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
   currentStep: string = 'input-parameters';
@@ -105,6 +103,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
         this.earCanalLength = responseArea.earCanalLength ?? this.earCanalLength;
         this.writeFPLCalibration = responseArea.writeFPLCalibration ?? this.writeFPLCalibration;
         this.normativeAbsorbanceDataPath = responseArea.normativeAbsorbanceDataPath ?? this.normativeAbsorbanceDataPath;
+        this.normativeAbsorbanceData = responseArea.normativeAbsorbanceData ?? this.normativeAbsorbanceData;
 
         this.inputParameterMap = new Map([
           ["Start Frequency [Hz]", this.fStart.toString()],
@@ -145,7 +144,6 @@ export class WAIExamComponent implements OnInit, OnDestroy {
         this.buttonTextService.updateButtonText('Next');
         break;
       case 'in-progress':
-        await this.loadNormativeData();
         this.currentStep = 'results';
         this.buttonTextService.updateButtonText('Finish');
         break;
@@ -190,15 +188,6 @@ export class WAIExamComponent implements OnInit, OnDestroy {
     } else {
       await this.devicesService.deviceNotFound();
       this.logger.error("Error setting up WAI exam");
-    }
-  }
-
-  /**
-   * Load the normative data which will be displayed in the results
-   */
-  private async loadNormativeData() {
-    if (this.examService.protocol.activeProtocol && this.normativeAbsorbanceDataPath) {
-      this.normativeAbsorbanceData = await loadNormativeDataXlsx(this.normativeAbsorbanceDataPath, this.examService.protocol.activeProtocol as ProtocolMetaInterface);
     }
   }
 }

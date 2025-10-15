@@ -4,6 +4,8 @@ import { NormativeDataInterface } from '../interfaces/normative-data-interface';
 import { ProtocolServer } from './constants';
 import { Buffer } from "buffer";
 import * as XLSX from 'xlsx';
+import { WAIInterface } from '../views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.interface';
+import { SweptDpoaeInterface } from '../views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/swept-dpoae-exam.interface';
 
 /**
  * Validate that the file headers align with the expected headers/properties for the data 
@@ -57,9 +59,37 @@ async function parseXlsxBuffer(xlsxFileContent: ArrayBuffer): Promise<NormativeD
 }
 
 /**
+ * Get normative data for the Swept DPOAE response area.
+ * @param responseArea The response area to load data for.
+ * @param meta The metadata associated with the protocol to determine the full file path information
+ * @returns A promise that resolves to the updated response area.
+ */
+export async function loadSweptDPOAENormativeData(responseArea: SweptDpoaeInterface, meta: ProtocolMetaInterface): Promise<SweptDpoaeInterface> {
+  if (responseArea.normativeDataPath) {
+    const normativeData = await loadNormativeDataXlsx(responseArea.normativeDataPath, meta);
+    return { ...responseArea, normativeData: normativeData };
+  }
+  return responseArea;
+}
+
+/**
+ * Get normative data for the WAI response area.
+ * @param responseArea The response area to load data for.
+ * @param meta The metadata associated with the protocol to determine the full file path information
+ * @returns A promise that resolves to the updated response area.
+ */
+export async function loadWAINormativeData(responseArea: WAIInterface, meta: ProtocolMetaInterface): Promise<WAIInterface> {
+  if (responseArea.normativeAbsorbanceDataPath) {
+    const normativeData = await loadNormativeDataXlsx(responseArea.normativeAbsorbanceDataPath, meta);
+    return { ...responseArea, normativeAbsorbanceData: normativeData };
+  }
+  return responseArea;
+}
+
+/**
  * Get normative data from the provided XLSX file
  * @param normativeDataFilePath The file name of the normative data 
- * @param meta The metadata associated with the running protocol to determine the full file path information
+ * @param meta The metadata associated with the protocol to determine the full file path information
  * @returns A promise that resolves to an array of normative data
  */
 export async function loadNormativeDataXlsx(normativeDataFilePath: string, meta: ProtocolMetaInterface): Promise<NormativeDataInterface[]> {

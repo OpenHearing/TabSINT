@@ -1,3 +1,4 @@
+import { NormativeDataInterface } from "../../../../../interfaces/normative-data-interface";
 import { CommonResponseAreaInterface } from "../../../../../interfaces/page-definition.interface";
 
 export interface WAIInterface extends CommonResponseAreaInterface {
@@ -23,6 +24,7 @@ export interface WAIInterface extends CommonResponseAreaInterface {
   writeFPLCalibration?: boolean,
   showResults?: boolean,
   normativeAbsorbanceDataPath?: string;
+  normativeAbsorbanceData?: NormativeDataInterface[];
 }
 
 export interface WAIResultsInterface { 

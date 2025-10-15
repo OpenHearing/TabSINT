@@ -85,12 +85,16 @@ export class ProtocolService {
         this.tasks.register("Load Protocol", "Load Protocol");
         try {
             const loadError = await this.loadFiles();
-            await this.setCalibration();
-            await this.initializeProtocol();
-            let validationError = await this.validateIfCalledFor();
-            // .then(loadCustomJs)
-            // .then(validateCustomJsIfCalledFor)
-            this.handleLoadErrors([loadError, validationError]);
+            if (loadError === undefined) {
+                await this.setCalibration();
+                await this.initializeProtocol();
+                let validationError = await this.validateIfCalledFor();
+                // .then(loadCustomJs)
+                // .then(validateCustomJsIfCalledFor)
+                this.handleLoadErrors([validationError]);
+            } else {
+                this.notifyProtocolDidntLoadProperly();
+            } 
         } catch (error: unknown) {
             let err = error instanceof Error ? error.message : error;
             this.logger.error(`Could not load protocol. ${err}`);
@@ -147,7 +151,10 @@ export class ProtocolService {
                 this.loading.protocol = {...this.loading.meta, ...finalProtocol };
                 this.diskModel.updateDiskModel('activeProtocolMeta', this.loading.meta);
             } else {
-                this.notifyProtocolDidntLoadProperly();
+                loadError = {
+                    type: "Load Files",
+                    error: "Failed to parse protocol.json"
+                };
             }
 
         } catch (err) {

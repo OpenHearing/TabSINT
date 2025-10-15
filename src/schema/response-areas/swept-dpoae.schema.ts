@@ -1,5 +1,6 @@
 import { JSONSchemaType } from "ajv";
 import { SweptDpoaeInterface } from "../../app/views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/swept-dpoae-exam.interface";
+import { normativeDataSchema } from "../definitions/normative-data.schema";
 
 export const sweptDpoaeSchema: JSONSchemaType<SweptDpoaeInterface> = {
   type: "object",
@@ -30,6 +31,7 @@ export const sweptDpoaeSchema: JSONSchemaType<SweptDpoaeInterface> = {
     outputRawMeasurements: { type: "boolean", nullable: true, default: false },
     showResults: { type: "boolean", nullable: true, default: true },
     normativeDataPath: { type: "string", nullable: true, default: "" },
+    normativeData: { type: "array", items: normativeDataSchema, nullable: true, default: [] },
   },
   required: ["type"]
 };

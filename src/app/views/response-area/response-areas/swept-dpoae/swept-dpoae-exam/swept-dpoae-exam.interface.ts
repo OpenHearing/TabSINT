@@ -1,3 +1,4 @@
+import { NormativeDataInterface } from "../../../../../interfaces/normative-data-interface";
 import { CommonResponseAreaInterface } from "../../../../../interfaces/page-definition.interface";
 
 export interface SweptDpoaeInterface extends CommonResponseAreaInterface {
@@ -24,6 +25,7 @@ export interface SweptDpoaeInterface extends CommonResponseAreaInterface {
   outputRawMeasurements?: boolean;
   showResults?: boolean;
   normativeDataPath?: string;
+  normativeData?: NormativeDataInterface[];
 }
 
 export interface SweptDpoaeResultsInterface { 
