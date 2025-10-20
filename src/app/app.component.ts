@@ -15,14 +15,14 @@ import { DiskModel } from './models/disk/disk.service';
 import { AppModel } from './models/app/app.service';
 import { ProtocolService } from './controllers/protocol.service';
 import { ProtocolModel } from './models/protocol/protocol-model.service';
-import { SqLite } from './utilities/sqLite.service';
-import { Logger } from './utilities/logger.service';
-import { FileService } from './utilities/file.service';
-import { DeviceUtil } from './utilities/device-utility';
+import { SqLite } from './services/sqLite.service';
+import { Logger } from './services/logger.service';
+import { FileService } from './services/file.service';
+import { DeviceUtil } from './services/device-utility.service';
 import { DisclaimerComponent } from './views/disclaimer/disclaimer.component';
 import { StateModel } from './models/state/state.service';
 import { NetworkService } from './controllers/network.service';
-import { Notifications } from './utilities/notifications.service';
+import { Notifications } from './services/notifications.service';
 import { DialogType } from './utilities/constants';
 
 @Component({

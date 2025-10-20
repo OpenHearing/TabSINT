@@ -12,7 +12,7 @@ import { StateModel } from '../../models/state/state.service';
 import { AppState } from '../../utilities/constants';
 import { StateInterface } from '../../models/state/state.interface';
 import { AdminService } from '../../controllers/admin.service';
-import { Tasks } from '../../utilities/tasks.service';
+import { Tasks } from '../../services/tasks.service';
 
 @Component({
   selector: 'app-welcome',

@@ -20,10 +20,10 @@ import { ProtocolModel } from "../../../../models/protocol/protocol-model.servic
 import { ResultsModel } from "../../../../models/results/results-model.service";
 import { DevicesModel } from "../../../../models/devices/devices-model.service";
 
-import { DeviceUtil } from "../../../../utilities/device-utility";
-import { Logger } from "../../../../utilities/logger.service";;
+import { DeviceUtil } from "../../../../services/device-utility.service";
+import { Logger } from "../../../../services/logger.service";;
 import { DialogType, LevelUnits, ResultType } from "../../../../utilities/constants";
-import { Notifications } from "../../../../utilities/notifications.service";
+import { Notifications } from "../../../../services/notifications.service";
 import { manualAudiometrySchema } from "../../../../../schema/response-areas/manual-audiometry.schema";
 
 @Component({

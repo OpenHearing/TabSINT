@@ -5,7 +5,7 @@ import { DiskInterface } from '../models/disk/disk.interface';
 import { ConnectedDevice, NewConnectedDevice } from '../interfaces/connected-device.interface';
 import { DevicesModel } from '../models/devices/devices-model.service';
 import { DiskModel } from '../models/disk/disk.service';
-import { DeviceState } from './constants';
+import { DeviceState } from '../utilities/constants';
 import { PendingMsgInfo } from '../interfaces/pending-msg-info.interface';
 
 @Injectable({

@@ -6,9 +6,9 @@ import { DiskInterface } from '../../../models/disk/disk.interface';
 import { ExamResults } from '../../../models/results/results.interface';
 import { DiskModel } from '../../../models/disk/disk.service';
 import { ResultsService } from '../../../controllers/results.service';
-import { SqLite } from '../../../utilities/sqLite.service';
-import { Notifications } from '../../../utilities/notifications.service';
-import { Logger } from '../../../utilities/logger.service';
+import { SqLite } from '../../../services/sqLite.service';
+import { Notifications } from '../../../services/notifications.service';
+import { Logger } from '../../../services/logger.service';
 import { DialogType} from '../../../utilities/constants';
 import { ResultsUploadService } from '../../../controllers/results-upload.service';
 

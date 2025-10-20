@@ -1,6 +1,6 @@
 import { Injectable, Inject, NgZone } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Logger } from './logger.service';
+import { Logger } from '../services/logger.service';
 import { BleClient } from '@capacitor-community/bluetooth-le';
 import { BleDevice } from '../interfaces/bluetooth.interface';
 import { StateInterface } from '../models/state/state.interface';
@@ -8,8 +8,8 @@ import { StateModel } from '../models/state/state.service';
 import { WINDOW } from './window';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { DevicesModel } from '../models/devices/devices-model.service';
-import { DeviceUtil } from './device-utility';
-import { Notifications } from '../utilities/notifications.service';
+import { DeviceUtil } from './device-utility.service';
+import { Notifications } from '../services/notifications.service';
 import { DialogType } from "../utilities/constants";
 
 @Injectable({

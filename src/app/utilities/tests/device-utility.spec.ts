@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { DeviceUtil } from '../device-utility';
+import { DeviceUtil } from '../../services/device-utility.service';
 import { AppModel } from '../../models/app/app.service';
 import { DiskModel } from '../../models/disk/disk.service';
 import { SqLite } from '../sqLite.service';
-import { Logger } from '../logger.service';
+import { Logger } from '../../services/logger.service';
 import { DevicesModel } from '../../models/devices/devices-model.service';
 import { DeviceState } from '../constants';
 import { ConnectedDevice, NewConnectedDevice } from '../../interfaces/connected-device.interface';

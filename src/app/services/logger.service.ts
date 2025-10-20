@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 import { DiskInterface } from '../models/disk/disk.interface';
 
 import { DiskModel } from '../models/disk/disk.service';
-import { SqLite } from './sqLite.service';
+import { SqLite } from '../services/sqLite.service';
 
 @Injectable({
     providedIn: 'root',

@@ -10,7 +10,7 @@ import { StateInterface } from '../../../../models/state/state.interface';
 import { VersionInterface } from '../../../../models/version/version.interface';
 
 import { DiskModel } from '../../../../models/disk/disk.service';
-import { Logger } from '../../../../utilities/logger.service';
+import { Logger } from '../../../../services/logger.service';
 import { VersionModel } from '../../../../models/version/version.service';
 import { ConfigService } from '../../../../controllers/config.service';
 import { StateModel } from '../../../../models/state/state.service';
