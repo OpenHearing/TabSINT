@@ -161,6 +161,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     MrtResultsComponent,
     MemrExamComponent,
     InputParametersComponent,
+    TabsintConfigComponent
   ],
   imports: [
     BrowserModule,

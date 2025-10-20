@@ -12,7 +12,6 @@ import { VersionInterface } from '../../../../models/version/version.interface';
 import { DiskModel } from '../../../../models/disk/disk.service';
 import { Logger } from '../../../../services/logger.service';
 import { VersionModel } from '../../../../models/version/version.service';
-import { ConfigService } from '../../../../controllers/config.service';
 import { StateModel } from '../../../../models/state/state.service';
 
 import { AppState } from '../../../../utilities/constants';
@@ -33,7 +32,6 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   stateSubscription: Subscription | undefined;
 
   constructor(
-    public configService: ConfigService,
     private readonly cdr: ChangeDetectorRef,
     private readonly diskModel: DiskModel,
     private readonly logger: Logger,
