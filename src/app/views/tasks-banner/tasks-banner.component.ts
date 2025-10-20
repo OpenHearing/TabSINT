@@ -12,7 +12,7 @@ export class TasksBannerComponent implements OnInit, OnDestroy{
   taskSubscription!: Subscription;
   taskList: { [key: string]: string } = {};
 
-  constructor(private tasks: Tasks) {}
+  constructor(private readonly tasks: Tasks) {}
 
   ngOnInit(): void {
     this.taskSubscription = this.tasks.tasks$.subscribe(tasks => {

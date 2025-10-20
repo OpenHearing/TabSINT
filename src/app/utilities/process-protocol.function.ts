@@ -72,11 +72,11 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
       rootProtocol._preProcessFunctionList!.push(page.preProcessFunction);
     }
 
-    if (page.wavfiles) {
-      for (const wavfile of page.wavfiles) {
+    // if (page.wavfiles) {
+      // for (const wavfile of page.wavfiles) {
         //TODO: deal with calibration and common repo
-      }
-    }
+      // }
+    // }
 
     if (isPageDefinition(page) && page.image) {
       page.image.path = prefix + page.image.path;

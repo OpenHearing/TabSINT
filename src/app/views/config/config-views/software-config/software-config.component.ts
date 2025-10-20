@@ -25,7 +25,7 @@ export class SoftwareConfigComponent {
     private readonly devicesModel: DevicesModel,
     private readonly diskModel: DiskModel,
     private readonly logger: Logger,
-    private versionModel: VersionModel,
+    private readonly versionModel: VersionModel,
   ) {
     this.disk = this.diskModel.getDisk();
     this.devices = this.devicesModel.getDevices();

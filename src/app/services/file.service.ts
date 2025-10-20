@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Filesystem, Directory} from '@capacitor/filesystem';
 import { TabsintFs } from 'tabsintfs';
 
 import { AppInterface } from '../models/app/app.interface';

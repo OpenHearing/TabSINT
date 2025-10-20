@@ -253,7 +253,6 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
             ? Math.floor(steps) 
             : Math.ceil(steps);
         const snappedDb = roundedSteps * this.adjustmentStepSize;
-        const adjustment = snappedDb - tempDb;
         this.currentDb = snappedDb;
         this.currentDbSpl = this.currentDb + this.getRetsplAtFrequency(this.selectedFrequency);
     }

@@ -1,11 +1,11 @@
 import { TestBed } from '@angular/core/testing';
-import { DeviceUtil } from '../../services/device-utility.service';
+import { DeviceUtil } from '../device-utility.service';
 import { AppModel } from '../../models/app/app.service';
 import { DiskModel } from '../../models/disk/disk.service';
 import { SqLite } from '../sqLite.service';
-import { Logger } from '../../services/logger.service';
+import { Logger } from '../logger.service';
 import { DevicesModel } from '../../models/devices/devices-model.service';
-import { DeviceState } from '../constants';
+import { DeviceState } from '../../utilities/constants';
 import { ConnectedDevice, NewConnectedDevice } from '../../interfaces/connected-device.interface';
 import { TympanResponse } from '../../models/devices/devices.interface';
 import { PendingMsgInfo } from '../../interfaces/pending-msg-info.interface';

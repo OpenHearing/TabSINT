@@ -91,12 +91,12 @@ export function initializeLoadingProtocol(
 
     function confirmEPHD1IsConnectedWhenHeadsetIsEPHD1() {
         loading.protocol.protocolUsbCMissing = false; // default/reset to false.
-        if (loading.protocol.headset === "EPHD1") {
+        // if (loading.protocol.headset === "EPHD1") {
             // loading.protocol.protocolUsbCMissing = !tabsintNative.isUsbConnected;
         // tabsintNative.registerUsbDeviceListener(api.usbEventCallback);
-        } else {
+        // } else {
         // tabsintNative.unregisterUsbDeviceListener(api.usbEventCallback);
-        }
+        // }
     }
 
     function checkCalibration() {
