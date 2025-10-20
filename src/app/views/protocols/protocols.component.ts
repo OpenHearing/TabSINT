@@ -143,7 +143,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
         }
       }
     } catch (error: any) {
-      this.logger.error("" + error);
+      this.logger.error(JSON.stringify(error));
       this.notifications.alert({
         title: "Alert",
         content: "Error Loading Protocol: Unable to properly load the protocol file, see logs for more information.",
@@ -363,8 +363,6 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
         return;
       }
 
-      this.logger.debug(`Protocol is outdated. Checking if protocol.json has changed...`);
-
       const fileUrl = `${selectedGitlabConfig.host}/api/v4/projects/${projectId}/repository/files/protocol.json/raw?ref=${latestCommitHash}`;
 
       const latestProtocolJson = await this.fetchGitlabData(fileUrl, headers, "Failed to fetch protocol.json:",);
@@ -385,8 +383,6 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
       } else {
         throw new Error("Could not read local protocol.json file.");
       }
-
-      this.logger.debug(`protocol.json has changed. Updating protocol...`);
 
       const [protocolContent, localDirUri] = await this.downloadAndSaveFiles(projectId, latestCommitHash, selectedGitlabConfig.host, headers, localDir);
       const updatedProtocol: ProtocolInterface = {

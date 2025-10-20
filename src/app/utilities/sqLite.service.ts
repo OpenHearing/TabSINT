@@ -10,6 +10,7 @@ import { AppModel } from '../models/app/app.service';
 import { DiskModel } from '../models/disk/disk.service';
 
 import { createLogsTableSql, createResultsTableSql, deleteSql } from './constants';
+import { Logger } from './logger.service';
 
 @Injectable({
     providedIn: 'root',
@@ -32,6 +33,7 @@ export class SqLite {
     constructor (
         private readonly appModel: AppModel,
         private readonly diskModel: DiskModel,
+        private readonly logger: Logger
     ) {
         this.sqlitePlugin = CapacitorSQLite;
         this.disk = this.diskModel.getDisk(); 
@@ -65,7 +67,7 @@ export class SqLite {
                 this.countSubject.next(this.count);
             } 
         } catch(e) {
-            console.log("SQLITE Error storing " + tableName + " with error " + e);
+            this.logger.error("SQLITE Error storing " + tableName + " with error " + e);
         }
       };
   
@@ -96,7 +98,7 @@ export class SqLite {
             this.count['results'] -= 1;
             this.countSubject.next(this.count);
         } catch(e) {
-            console.log("SQLITE Error deleting result " + index + " with error " + e);
+            this.logger.error("SQLITE Error deleting result " + index + " with error " + e);
         }
     }
 
@@ -107,7 +109,7 @@ export class SqLite {
             this.count[tableName] = 0;
             this.countSubject.next(this.count);
         } catch (e) {
-            console.log("SQLITE Error deleting all " + tableName + " with error: " + e);
+            this.logger.error("SQLITE Error deleting all " + tableName + " with error: " + e);
         }
     }
 
@@ -117,7 +119,7 @@ export class SqLite {
                 try {
                     await this.db.executeSet([{statement: deleteSql, values: [delCount]}]);
                 } catch(e) {
-                    console.log("SQLITE Error deleting " + delCount + " logs with error " + e);
+                    this.logger.error("SQLITE Error deleting " + delCount + " logs with error " + e);
                 }
                 this.count['logs'] -= delCount;
                 this.countSubject.next(this.count);

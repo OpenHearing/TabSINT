@@ -125,7 +125,6 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
 
   async ngOnDestroy(): Promise<void> {
     let resp = await this.devicesService.abortExams(this.device!);
-    this.logger.debug("resp from tympan after fpl calibration exam abort exams:" + resp);
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
     this.examService.reset = this.examService.resetDefault.bind(this.examService);
     this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);

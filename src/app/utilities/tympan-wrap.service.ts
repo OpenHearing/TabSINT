@@ -52,11 +52,11 @@ export class TympanWrap {
     }
 
     async initialize() {
-        this.logger.debug("Initializing BLE...");
         try {
             await BleClient.initialize();
             this.stateModel.updateState({bluetoothConnected: true});
         } catch {
+            this.logger.debug("Error initializing BLE");
             this.stateModel.updateState({bluetoothConnected: false});
         }
     }
@@ -73,7 +73,6 @@ export class TympanWrap {
         }
 
         try {
-            this.logger.debug("starting BLE scan");
             await this.scan(subject, timeout);
         } catch (error) {
             this.logger.error("Error starting BLE scan: "+JSON.stringify(error));
@@ -87,7 +86,6 @@ export class TympanWrap {
         this.scanning = true;
         let results: BleDevice[] = []
         await BleClient.requestLEScan({services: [this.ADAFRUIT_SERVICE_UUID],}, (result:any) => {
-            this.logger.debug("found device: "+JSON.stringify(result.device));
             if (!results.includes(result.device)) {
                 results.push(result.device);
             }
@@ -105,10 +103,6 @@ export class TympanWrap {
 
     async write(deviceId: string, msg: string, chunkSize: number) {
         let msg_to_write = this.msgToDataView(msg);
-
-        this.logger.debug("TIME - about to write bytes to tympan: " + String(Date.now()));
-        this.logger.debug("Writing "+JSON.stringify(msg)+" to tympan with ID: "+deviceId);
-
         const original_msg_buffer: ArrayBufferLike = msg_to_write.buffer;
         const byteOffset: number = msg_to_write.byteOffset;
         const byteLength: number = msg_to_write.byteLength;
@@ -160,7 +154,6 @@ export class TympanWrap {
         // check for a start character to begin accumulating bytes
         if (byteArray.length == 1 && byteArray[0] == 5) {
             if (this.ACCUMULATE_BYTES[deviceId] === true) {
-                this.logger.debug("Bytes in ble buffer reset");
                 this.clearTMPBuffer(deviceId);
             }
             this.startAccumulatingBytes(deviceId);
@@ -275,8 +268,7 @@ export class TympanWrap {
         } else {
             msg = "invalid checksum";
         }
-        this.logger.debug("TIME - msg parsed and checksum verified: " + String(Date.now()));
-        
+
         return msg
     }
 

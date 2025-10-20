@@ -20,6 +20,7 @@ import { DialogType, ExamState } from '../utilities/constants';
 import { Notifications } from '../utilities/notifications.service';
 import { Logger } from '../utilities/logger.service';
 import { calculateElapsedTime, checkForSpecialReference, getDefaultResponseRequired } from '../utilities/exam-helper-functions';
+import { AppState } from '../utilities/constants';
 
 @Injectable({
     providedIn: 'root',
@@ -97,10 +98,7 @@ export class ExamService {
     submitDefault() {
         this.resultsService.pushResults(this.results.currentPage);
         this.advancePage();
-
         this.submit = this.submitDefault;
-
-        this.logger.debug("this.results.currentExam: "+JSON.stringify(this.results.currentExam));
     }
 
     /** Submit function for exam pages. Can be overwritten by exams.
@@ -111,11 +109,11 @@ export class ExamService {
     }    
 
     skip() {
-        console.log("ExamService skip() called");
+        // TODO: Implement this?
     }
 
     back() {
-        console.log("ExamService back() called");
+        // TODO: Implement this?
     }
 
     /**
@@ -344,18 +342,18 @@ export class ExamService {
         window.scrollTo(0, 0);
     }
 
-    // Ignore the below functions for now
-
     switchToAdminView() {
-        console.log("ExamService switchToAdminView() called");
+        this.stateModel.updateState({appState: AppState.Admin});
     }
 
+    // Ignore the below functions for now
+
     finishActivateMedia() {
-        console.log("ExamService finishActivateMedia() called");
+        // TODO: Implement this?
     }
 
     help() {
-        console.log("ExamService help() called");
+        // TODO: Implement this?
     }
 
 }

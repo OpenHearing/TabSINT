@@ -1,6 +1,4 @@
 import { Component } from '@angular/core';
-import { Logger } from '../../utilities/logger.service';
-import { AppState } from '../../utilities/constants';
 import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
 import { ExamService } from '../../controllers/exam.service';
@@ -17,7 +15,6 @@ export class ConfigComponent {
 
   constructor(
     private readonly examService: ExamService,
-    private readonly logger: Logger, 
     private readonly stateModel: StateModel
   ) { 
     this.state = this.stateModel.getState();
@@ -28,7 +25,6 @@ export class ConfigComponent {
       this.state = updatedState;
     });
     this.examService.switchToAdminView();
-    this.stateModel.updateState({appState: AppState.Admin});
   }
 
   ngOnDestroy() {
@@ -36,10 +32,5 @@ export class ConfigComponent {
   }
 
   title = 'config';
-
-  // TEST FUNCTIONS
-  logTest() {
-    this.logger.debug("test");
-  }
 
 }

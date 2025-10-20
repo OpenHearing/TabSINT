@@ -64,7 +64,7 @@ export class WelcomeComponent implements OnInit, OnDestroy {
 
 
   scanQrCodeandAutoConfig() {
-    console.log("scanQrCodeandAutoConfig() called from welcome.component.ts");
+    // TODO: Implement QR
   }
 
 }

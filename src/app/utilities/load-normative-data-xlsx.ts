@@ -104,6 +104,7 @@ export async function loadNormativeDataXlsx(normativeDataFilePath: string, meta:
       xlsxArrayBuffer = await resp.arrayBuffer();
     } catch (error) {
       console.error('Error fetching or parsing XLSX file:', error);
+      // log?
       throw error;
     }
   } else if (meta.server === ProtocolServer.LocalServer || meta.server === ProtocolServer.Gitlab) {
@@ -118,6 +119,7 @@ export async function loadNormativeDataXlsx(normativeDataFilePath: string, meta:
       return normativeData;
     } catch (error) {
       console.log('Error parsing normative data XLSX: ', error);
+      // log?
       throw error;
     }
   } else {

@@ -96,7 +96,7 @@ export class LogConfigComponent implements OnInit, OnDestroy {
       const filename = `tabsint-logs/${currentTimeStamp}.json`;
       await this.fileService.writeFile(filename, logData);
     } catch (error){
-      console.error('Error exporting logs:', error);
+      this.logger.error('Error exporting logs: ' + JSON.stringify(error));
     }
   }
 

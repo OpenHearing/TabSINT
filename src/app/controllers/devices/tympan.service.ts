@@ -47,7 +47,6 @@ export class TympanService {
         });
 
         this.tympanSubscription = this.devicesModel.tympanResponseSubject.subscribe((response: TympanResponse) => {
-            logger.debug("tympanService device msg: "+JSON.stringify(response));
             if (this.deviceUtil.isResponseInvalidChecksum(response)) {
                 this.retryTympanCommand();            
             } else if (this.deviceUtil.doTympanResponseMsgIdsMatch(this.pendingMsgInfo, response)) {

@@ -4,6 +4,7 @@ import { pageInterfaceDefaults, protocolDefaults } from '../../utilities/default
 import { DevicesModel } from '../devices/devices-model.service';
 import { VersionModel } from '../version/version.service';
 import { BehaviorSubject } from 'rxjs';
+import { Logger } from '../../utilities/logger.service';
 
 @Injectable({
     providedIn: 'root',
@@ -16,7 +17,8 @@ export class ResultsModel {
 
     constructor(
         private readonly devicesModel: DevicesModel,
-        private readonly versionModel: VersionModel
+        private readonly versionModel: VersionModel,
+        private readonly logger: Logger
     ) {
         this.resultsModel = {
             currentPage: {
@@ -52,7 +54,6 @@ export class ResultsModel {
     }
 
     pushResponse(response: any): void {
-        console.log("results-model.service pushResponse");
         this.resultsModel.currentExam.responses.push(response);
         this.resultsSubject.next(this.resultsModel);
     }
@@ -64,7 +65,7 @@ export class ResultsModel {
             this.updateCurrentPage({response: updatedResponse});
         } else {
             // If response is not an array, convert it to an array or handle as needed
-            console.warn('Attempting to update array element but response is not an array');
+           this.logger.warning('Attempting to update array element but response is not an array');
         }
     }
 }

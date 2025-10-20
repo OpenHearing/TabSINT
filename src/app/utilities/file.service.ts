@@ -44,7 +44,7 @@ export class FileService {
         try{
             result = await TabsintFs.chooseFolder();
         } catch (error) {
-            this.logger.error(""+error);
+            this.logger.error(JSON.stringify(error));
         }
         return result;
     }
@@ -92,7 +92,7 @@ export class FileService {
             result = await this.isContentUri(input) 
                 ? await TabsintFs.readFile({rootUri:rootDir,filePath:undefined,fileUri:input}) 
                 : await TabsintFs.readFile({rootUri:rootDir,filePath:input,fileUri:undefined});
-            this.logger.debug(JSON.stringify(result));
+            this.logger.debug("TabsintFs read file: " + input);
             return result;
         } 
         catch (error) {
@@ -112,7 +112,6 @@ export class FileService {
 
         try {
             result = await TabsintFs.createPath({rootUri:rootDir,path:path});
-            this.logger.debug(JSON.stringify(result));
             this.logger.debug("Folder created successfully at: " + result.uri);
         } catch (error) {
             this.logger.error("Failed to create folder: " + error);
@@ -133,8 +132,7 @@ export class FileService {
         let result = null;
         try {
             result = await TabsintFs.copyFileOrFolder({rootUri:rootDir,sourcePath:sourcePath,destinationPath:destinationPath});
-            this.logger.debug(JSON.stringify(result));
-            this.logger.debug("Successfully copied file/folder content");
+            this.logger.debug("Successfully copied file/folder content from: " + sourcePath);
         } catch(error) {
             this.logger.error("Error copying file/folder"+ error);
         }
@@ -162,8 +160,7 @@ export class FileService {
         let result = null;
         try{
             result = await TabsintFs.deletePath({rootUri:rootDir,path:path});
-            this.logger.debug(JSON.stringify(result));
-            this.logger.debug("Successfully deleted specified folder/file");
+            this.logger.debug("Successfully deleted specified folder/file: " + path);
         } catch (error) {
             this.logger.error("Failed to delete specified file/folder with " + error);
         }
@@ -183,8 +180,7 @@ export class FileService {
             result = await this.isContentUri(input) 
                 ? await TabsintFs.listFilesInDirectory({rootUri:rootDir,folderPath:undefined,folderUri:input}) 
                 : await TabsintFs.listFilesInDirectory({rootUri:rootDir,folderPath:input,folderUri:undefined});
-            this.logger.debug(JSON.stringify(result));
-            this.logger.debug("Successfully listed all files");
+            this.logger.debug("Successfully listed all files: "+ input);
         } catch (error) {
             this.logger.error("Failed to list files " + error);
         }

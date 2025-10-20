@@ -124,7 +124,7 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   }
 
   gainReset() {
-    console.log("gainReset pressed");
+    // TODO: Should this be here?
   }
 
   async changeLocalResultsDir(){

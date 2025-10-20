@@ -329,7 +329,6 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
                 })
                 .subscribe();
         }
-        this.logger.debug("resp from tympan after manual audiometry exam submission:" + resp);
     }
 
     private async handlePageUpdate(updatedPage: PageInterface) {
