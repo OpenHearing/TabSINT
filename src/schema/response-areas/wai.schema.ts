@@ -24,7 +24,7 @@ export const waiSchema: JSONSchemaType<WAIInterface> = {
     outputChannel: { type: "string", nullable: true, default: "HPL0" },
     inputChannels: { type: "array", "items": {"type":"string"}, nullable: true, default: ["EPSHIELD_LEFT_PDM_MIC1","EPSHIELD_LEFT_PDM_MIC2","EPSHIELD_RIGHT_PDM_MIC1","EPSHIELD_RIGHT_PDM_MIC2"] },
     aurenInsideDiameter: { type: "number", nullable: true, default: 3.4 },
-    aurenLength: { type: "number", nullable: true, default: 31.7 },
+    aurenLength: { type: "number", nullable: true, default: 39.2 },
     earCanalDiameter: { type: "number", nullable: true, default: 7.5 },
     earCanalLength: { type: "number", nullable: true, default: 20 },
     writeFPLCalibration: { type: "boolean", nullable: true, default: false },
