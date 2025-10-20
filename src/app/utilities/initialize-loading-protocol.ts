@@ -2,8 +2,8 @@ import { TranslateService } from "@ngx-translate/core";
 import _ from "lodash";
 
 import { LoadingProtocolInterface } from "../interfaces/loading-protocol-object.interface";
-import { Logger } from "./logger.service";
-import { FileService } from "./file.service";
+import { Logger } from "../services/logger.service";
+import { FileService } from "../services/file.service";
 import { DiskInterface } from "../models/disk/disk.interface";
 
 export function initializeLoadingProtocol(
@@ -91,12 +91,12 @@ export function initializeLoadingProtocol(
 
     function confirmEPHD1IsConnectedWhenHeadsetIsEPHD1() {
         loading.protocol.protocolUsbCMissing = false; // default/reset to false.
-        if (loading.protocol.headset === "EPHD1") {
+        // if (loading.protocol.headset === "EPHD1") {
             // loading.protocol.protocolUsbCMissing = !tabsintNative.isUsbConnected;
         // tabsintNative.registerUsbDeviceListener(api.usbEventCallback);
-        } else {
+        // } else {
         // tabsintNative.unregisterUsbDeviceListener(api.usbEventCallback);
-        }
+        // }
     }
 
     function checkCalibration() {

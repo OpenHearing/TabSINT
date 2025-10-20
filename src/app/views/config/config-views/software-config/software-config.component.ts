@@ -6,7 +6,7 @@ import { DevicesInterface } from '../../../../models/devices/devices.interface';
 import { VersionInterface } from '../../../../models/version/version.interface';
 
 import { DiskModel } from '../../../../models/disk/disk.service';
-import { Logger } from '../../../../utilities/logger.service';
+import { Logger } from '../../../../services/logger.service';
 import { VersionModel } from '../../../../models/version/version.service';
 import { DevicesModel } from '../../../../models/devices/devices-model.service';
 
@@ -25,7 +25,7 @@ export class SoftwareConfigComponent {
     private readonly devicesModel: DevicesModel,
     private readonly diskModel: DiskModel,
     private readonly logger: Logger,
-    private versionModel: VersionModel,
+    private readonly versionModel: VersionModel,
   ) {
     this.disk = this.diskModel.getDisk();
     this.devices = this.devicesModel.getDevices();

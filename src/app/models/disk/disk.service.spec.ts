@@ -7,8 +7,8 @@ import { ProtocolServer } from '../../utilities/constants';
 import { PageDefinition } from '../../interfaces/page-definition.interface';
 import { DevicesModel } from '../devices/devices-model.service';
 import { VersionModel } from '../version/version.service';
-import { Logger } from '../../utilities/logger.service';
-import { SqLite } from '../../utilities/sqLite.service';
+import { Logger } from '../../services/logger.service';
+import { SqLite } from '../../services/sqLite.service';
 import { AppModel } from '../app/app.service';
 
 describe('DiskModel', () => {

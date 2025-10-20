@@ -5,7 +5,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
 import { DiskInterface } from '../../models/disk/disk.interface';
-import { Logger } from '../../utilities/logger.service';
+import { Logger } from '../../services/logger.service';
 import { DiskModel } from '../../models/disk/disk.service';
 
 @Component({

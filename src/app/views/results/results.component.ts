@@ -11,12 +11,12 @@ import { DiskModel } from '../../models/disk/disk.service';
 import { StateModel } from '../../models/state/state.service';
 import { ResultsModel } from '../../models/results/results-model.service';
 import { ResultsService } from '../../controllers/results.service';
-import { SqLite } from '../../utilities/sqLite.service';
-import { Logger } from '../../utilities/logger.service';
+import { SqLite } from '../../services/sqLite.service';
+import { Logger } from '../../services/logger.service';
 
 import { SingleResultModalComponent } from '../single-result-modal/single-result-modal/single-result-modal.component';
 import { DialogType } from '../../utilities/constants';
-import { Notifications } from '../../utilities/notifications.service';
+import { Notifications } from '../../services/notifications.service';
 import { ResultsUploadService } from '../../controllers/results-upload.service';
 
 @Component({

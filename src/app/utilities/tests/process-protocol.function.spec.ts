@@ -172,21 +172,20 @@ const loadingProtocol: LoadingProtocolInterface = {
     overwrite: false,
     notify: false
 }
+
 describe('processProtocol', () => {
     let activeProtocol: ProtocolInterface;
     let activeProtocolDictionary: ProtocolDictionary;
     let activeProtocolFollowOnsDictionary: FollowOnsDictionary;
 
     beforeEach(async () => {
-        TestBed.configureTestingModule({})
-    })
-
-    it("test", async () => {
-         [activeProtocol, 
+        TestBed.configureTestingModule({});
+        [activeProtocol, 
         activeProtocolDictionary,
         activeProtocolFollowOnsDictionary
-    ]  = await processProtocol(loadingProtocol);
+        ]  = await processProtocol(loadingProtocol);
     })
+
 
     it('returns active protocol', () => {
         expect(activeProtocol.title).toBe('Test Protocol');

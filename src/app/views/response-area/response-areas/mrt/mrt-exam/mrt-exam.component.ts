@@ -3,8 +3,8 @@ import { Subscription } from 'rxjs/internal/Subscription';
 
 import { PageModel } from '../../../../../models/page/page.service';
 import { DevicesService } from '../../../../../controllers/devices.service';
-import { DeviceUtil } from '../../../../../utilities/device-utility';
-import { Logger } from '../../../../../utilities/logger.service';
+import { DeviceUtil } from '../../../../../services/device-utility.service';
+import { Logger } from '../../../../../services/logger.service';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { ExamService } from '../../../../../controllers/exam.service';
 import { ResultsInterface } from '../../../../../models/results/results.interface';

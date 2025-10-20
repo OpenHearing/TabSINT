@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
-import { Logger } from '../../utilities/logger.service';
+import { Logger } from '../../services/logger.service';
 import { ExamState } from '../../utilities/constants';
 import { Subscription } from 'rxjs/internal/Subscription';
 

@@ -6,7 +6,7 @@ import { ConnectedDevice } from '../../../../../interfaces/connected-device.inte
 import { StateModel } from '../../../../../models/state/state.service';
 import { StateInterface } from '../../../../../models/state/state.interface';
 import { WAIResultsInterface } from '../wai-exam/wai-exam.interface';
-import { Logger } from '../../../../../utilities/logger.service';
+import { Logger } from '../../../../../services/logger.service';
 
 @Component({
   selector: 'wai-in-progress',

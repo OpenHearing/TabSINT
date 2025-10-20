@@ -9,7 +9,7 @@ import { AppInterface } from '../models/app/app.interface';
 import { AppModel } from '../models/app/app.service';
 import { DiskModel } from '../models/disk/disk.service';
 
-import { createLogsTableSql, createResultsTableSql, deleteSql } from './constants';
+import { createLogsTableSql, createResultsTableSql, deleteSql } from '../utilities/constants';
 
 @Injectable({
     providedIn: 'root',
