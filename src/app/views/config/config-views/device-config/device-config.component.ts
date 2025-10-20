@@ -29,7 +29,7 @@ export class DeviceConfigComponent implements OnInit, OnDestroy {
     this.stateModel.updateState({appState: AppState.Admin});
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.stateSubscription?.unsubscribe();
   }
 

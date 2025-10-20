@@ -35,13 +35,13 @@ export class ExamFinalizedComponent {
     this.currentExam = this.results.currentExam;
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
         this.disk = updatedDisk;
     })    
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
   }
 

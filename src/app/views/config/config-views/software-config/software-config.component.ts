@@ -50,7 +50,7 @@ export class SoftwareConfigComponent {
     this.initializeVersion();
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
   }
 

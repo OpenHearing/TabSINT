@@ -33,7 +33,7 @@ export class DeviceChooseComponent implements OnInit, OnDestroy {
     this.availableDevices = [];
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
     });
@@ -44,7 +44,7 @@ export class DeviceChooseComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
     this.devicesSubscription?.unsubscribe();
   }

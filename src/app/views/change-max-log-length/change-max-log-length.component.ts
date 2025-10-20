@@ -29,13 +29,13 @@ export class ChangeMaxLogLengthComponent {
     this.maxLogLength = this.disk.maxLogRows; // Initialize with the current max log length
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
         this.disk = updatedDisk;
     })    
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
   }
 

@@ -38,7 +38,7 @@ export class TextboxComponent implements OnInit, OnDestroy {
     this.rows = textBoxSchema.properties.rows.default;
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
       this.state = updatedState;
     });
@@ -55,7 +55,7 @@ export class TextboxComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.pageSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();
     this.resultsSubscription?.unsubscribe();

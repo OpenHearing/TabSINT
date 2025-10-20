@@ -31,7 +31,7 @@ export class ConfigComponent {
     this.stateModel.updateState({appState: AppState.Admin});
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.stateSubscription?.unsubscribe();
   }
 

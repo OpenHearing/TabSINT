@@ -49,7 +49,7 @@ export class LikertComponent implements OnInit, OnDestroy {
     this.state = this.stateModel.getState();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
       this.state = updatedState;
     });
@@ -65,7 +65,7 @@ export class LikertComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.pageSubscription?.unsubscribe();
     this.resultsSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();

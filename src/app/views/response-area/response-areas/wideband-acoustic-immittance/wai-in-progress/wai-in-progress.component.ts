@@ -41,7 +41,7 @@ export class WAIInProgressComponent implements OnInit, OnDestroy {
     this.stateModel.updateState({isSubmittable: false});
   }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.requestResults();
     this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
       this.state = updatedState;
