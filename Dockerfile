@@ -1,26 +1,28 @@
 # Start with Eclipse Temurin JDK 17 as the base image
 FROM eclipse-temurin:17-jdk
 
+# Hadolint (DL4006)
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 # Install necessary dependencies
-RUN apt-get update && apt-get install -y \
-    wget \
-    curl \
-    git \
-    unzip \
-    build-essential \
-    lib32z1 \
-    lib32stdc++6 \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    wget=1.21.4-1ubuntu4.1 \
+    git=1:2.43.0-1ubuntu7.3 \
+    unzip=6.0-28ubuntu4.1 \
+    build-essential=12.10ubuntu1 \
+    lib32z1=1:1.3.dfsg-3.1ubuntu2.1 \
+    lib32stdc++6=14.2.0-4ubuntu2~24.04 \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Google Chrome
-RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-RUN apt update && apt install -y ./google-chrome-stable_current_amd64.deb
+RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+RUN apt-get update && apt-get install -y --no-install-recommends ./google-chrome-stable_current_amd64.deb && rm -rf /var/lib/apt/lists/*
 RUN rm google-chrome-stable_current_amd64.deb
 ENV CHROME_BIN=/usr/bin/google-chrome-stable
 
 # Set up NVM (Node Version Manager)
 ENV NVM_DIR=/root/.nvm
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh | bash
+RUN wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh | bash
 
 # Add NVM to bash profile
 RUN echo "export NVM_DIR=\"$NVM_DIR\"" >> /root/.bashrc && \
@@ -40,14 +42,15 @@ ENV ANDROID_SDK_ROOT=$ANDROID_HOME
 ENV PATH=${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${PATH}
 
 RUN mkdir -p ${ANDROID_HOME}
-RUN wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -O /tmp/cmdline-tools.zip && \
+RUN wget -q https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -O /tmp/cmdline-tools.zip && \
     unzip /tmp/cmdline-tools.zip -d /tmp/cmdline-tools && \
     mkdir -p ${ANDROID_HOME}/cmdline-tools/latest && \
     mv /tmp/cmdline-tools/cmdline-tools/* ${ANDROID_HOME}/cmdline-tools/latest/ && \
     rm -rf /tmp/cmdline-tools.zip /tmp/cmdline-tools
 
 # Accept Android SDK licenses
-RUN yes | sdkmanager --licenses
+# Handle 141 exit codes from the yes command 
+RUN (yes || true) | sdkmanager --licenses
 
 # Update SDK and install specific Android platform and build tools
 RUN sdkmanager --update && \
@@ -63,10 +66,10 @@ COPY . .
 RUN bash -c "source $NVM_DIR/nvm.sh && npm install"
 
 # Create an entrypoint script to ensure NVM is loaded
-RUN echo '#!/bin/bash\n\
-source $NVM_DIR/nvm.sh\n\
-exec "$@"' > /usr/local/bin/entrypoint.sh && \
-chmod +x /usr/local/bin/entrypoint.sh
+RUN printf '%s\n' '#!/bin/bash'\
+    "source \"$NVM_DIR/nvm.sh\"" \
+    'exec "$@"' > /usr/local/bin/entrypoint.sh && \
+    chmod +x /usr/local/bin/entrypoint.sh
 
 # Set the entrypoint
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
