@@ -23,7 +23,7 @@ export class AdminService {
         });
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.diskSubscription?.unsubscribe();
     }
     

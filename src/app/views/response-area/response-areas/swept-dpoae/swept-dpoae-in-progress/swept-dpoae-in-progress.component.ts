@@ -52,7 +52,7 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
     this.stateModel.updateState({isSubmittable: false});
   }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.requestResults();
     this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
       this.state = updatedState;

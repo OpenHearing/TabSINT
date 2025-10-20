@@ -60,7 +60,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.diskModel.updateDiskModel('numLogRows',1);
   }
 
-  async ngOnInit() {
+  async ngOnInit(): Promise<void> {
     this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
     })
@@ -97,7 +97,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.setupNetworkListener();
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
   }
 

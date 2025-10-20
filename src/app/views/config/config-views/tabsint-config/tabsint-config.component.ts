@@ -57,7 +57,7 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
     this.stateModel.updateState({appState: AppState.Admin});
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();
   }

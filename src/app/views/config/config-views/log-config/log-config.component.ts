@@ -39,7 +39,7 @@ export class LogConfigComponent implements OnInit, OnDestroy {
     this.showLogs = this.state.isPaneOpen.appLog;
   }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.logsCountSubscription = this.sqLite.countSubject.subscribe( async (updatedLogsCount) => {
       this.logsCount = updatedLogsCount['logs'];
       this.logs = await this.sqLite.getAllLogs();
@@ -49,7 +49,7 @@ export class LogConfigComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.logsCountSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();
   }

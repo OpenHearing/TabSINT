@@ -108,18 +108,15 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {
-    // Wrap in IIFE to avoid mismatching return types
-    (async () => {
-      await this.abortExam();
-      this.examService.submit = this.examService.submitDefault.bind(this.examService);
-      this.examService.reset = this.examService.resetDefault.bind(this.examService);
-      this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);
-      this.examService.navigateToTarget = this.examService.navigateToTargetDefault.bind(this.examService);
-      this.pageSubscription?.unsubscribe();
-      this.resultsSubscription?.unsubscribe();
-      this.stateSubscription?.unsubscribe();
-    })();
+  async ngOnDestroy(): Promise<void> {
+    await this.abortExam();
+    this.examService.submit = this.examService.submitDefault.bind(this.examService);
+    this.examService.reset = this.examService.resetDefault.bind(this.examService);
+    this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);
+    this.examService.navigateToTarget = this.examService.navigateToTargetDefault.bind(this.examService);
+    this.pageSubscription?.unsubscribe();
+    this.resultsSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
   }
 
   /**

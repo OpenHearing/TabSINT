@@ -17,13 +17,13 @@ export class ResponseAreaComponent implements OnInit, OnDestroy {
     this.currentPage = pageModel.getPage();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
       this.currentPage = updatedPage;
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.pageSubscription?.unsubscribe();
   }
 }

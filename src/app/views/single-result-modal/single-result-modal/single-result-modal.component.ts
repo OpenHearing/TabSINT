@@ -35,14 +35,14 @@ export class SingleResultModalComponent {
     this.disk = diskModel.getDisk();
   }
 
-  async ngOnInit() {    
+  async ngOnInit(): Promise<void> {    
     this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
         this.disk = updatedDisk;
     })    
     this.singleExamResult = JSON.parse(await this.sqLite.getSingleResult(this.index));
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
   }
 

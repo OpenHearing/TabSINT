@@ -47,7 +47,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
     this.state = this.stateModel.getState();
   }
 
-  async ngOnInit() {
+  async ngOnInit(): Promise<void> {
     this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
         this.disk = updatedDisk;
     })
@@ -57,7 +57,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
     this.results = await this.sqLite.getAllResults();
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();
   }

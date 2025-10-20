@@ -64,7 +64,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
     // sort protocols by name here
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();
   }

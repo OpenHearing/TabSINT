@@ -94,7 +94,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         this.examService.navigateToTarget = (subProtocolId) => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.navigateToTargetDefault(subProtocolId); };
     }
 
-    async ngOnInit() {
+    async ngOnInit(): Promise<void> {
         this.resultsSubscription = this.resultsModel.resultsSubject.subscribe((updatedResults) => {
             this.results = updatedResults;
         });
@@ -110,7 +110,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         }
     }
 
-    async ngOnDestroy() {
+    async ngOnDestroy(): Promise<void> {
         if (this.device) {
             this.devicesService.abortExams(this.device);
         }

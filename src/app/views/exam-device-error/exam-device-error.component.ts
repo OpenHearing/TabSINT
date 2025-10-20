@@ -32,13 +32,13 @@ export class ExamDeviceErrorComponent implements OnInit, OnDestroy {
     
   }
   
-  ngOnInit() {
+  ngOnInit(): void {
     this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
       this.state = updatedState;
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.stateSubscription?.unsubscribe();
   }
   
