@@ -14,10 +14,13 @@
     "run.build.beta:ci": "npm run prepare --suffix beta && ng build && npx cap sync android && cd android && ./gradlew assembleDebug && cd ..",
     "run.build.production:ci": "npm run prepare && ng build && npx cap sync android && cd android && ./gradlew assembleRelease && cd ..",
     "run.android": "npm run prepare --suffix dev && ng build && npx cap sync android && npx cap run android",
-    "serve:ssr:tabsint": "node dist/tabsint/server/server.mjs"
+    "serve:ssr:tabsint": "node dist/tabsint/server/server.mjs",
+    "lint": "ng lint",
+    "format": "prettier --write ."
   },
   "private": true,
   "dependencies": {
+    "@angular-eslint/schematics": "^20.4.0",
     "@angular/animations": "^17.1.0",
     "@angular/cdk": "^17.1.0",
     "@angular/common": "^17.1.0",
@@ -80,14 +83,20 @@
     "@types/lodash": "^4.14.202",
     "@types/node": "^18.18.0",
     "@types/papaparse": "^5.3.15",
+    "angular-eslint": "20.4.0",
     "csv-parser": "^3.1.0",
+    "eslint": "^9.37.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
     "jasmine-core": "~5.1.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "prettier": "^3.0.0",
     "ts-node": "^10.9.2",
-    "typescript": "~5.3.2"
+    "typescript": "~5.3.2",
+    "typescript-eslint": "8.46.0"
   }
 }
