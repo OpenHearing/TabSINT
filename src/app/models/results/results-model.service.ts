@@ -4,7 +4,7 @@ import { pageInterfaceDefaults, protocolDefaults } from '../../utilities/default
 import { DevicesModel } from '../devices/devices-model.service';
 import { VersionModel } from '../version/version.service';
 import { BehaviorSubject } from 'rxjs';
-import { Logger } from '../../utilities/logger.service';
+import { Logger } from '../../services/logger.service';
 
 @Injectable({
     providedIn: 'root',
