@@ -5,9 +5,9 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-tasks-banner',
   templateUrl: './tasks-banner.component.html',
-  styleUrl: './tasks-banner.component.css'
+  styleUrl: './tasks-banner.component.css',
 })
-export class TasksBannerComponent implements OnInit, OnDestroy{
+export class TasksBannerComponent implements OnInit, OnDestroy {
   isVisible = false;
   taskSubscription!: Subscription;
   taskList: { [key: string]: string } = {};

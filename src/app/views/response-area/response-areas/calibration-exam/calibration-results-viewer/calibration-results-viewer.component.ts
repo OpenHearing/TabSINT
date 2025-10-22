@@ -11,18 +11,19 @@ interface CalibrationResults {
 @Component({
   selector: 'app-calibration-results-viewer',
   templateUrl: './calibration-results-viewer.component.html',
-  styleUrls: ['./calibration-results-viewer.component.css']
+  styleUrls: ['./calibration-results-viewer.component.css'],
 })
 export class CalibrationResultsViewerComponent implements OnInit {
   @Input() device: ConnectedDevice | undefined;
-  @Output() entryClicked = new EventEmitter<{ frequency: string; ear: string; step: string; }>();
+  @Output() entryClicked = new EventEmitter<{ frequency: string; ear: string; step: string }>();
   results: CalibrationResults | undefined;
 
-  constructor(private readonly resultsModel: ResultsModel) { }
+  constructor(private readonly resultsModel: ResultsModel) {}
 
   ngOnInit(): void {
-    const calibrationResult = this.resultsModel.getResults().currentExam.responses
-      .filter((response: ExamResponse) => response.responseArea === 'calibrationExam');
+    const calibrationResult = this.resultsModel
+      .getResults()
+      .currentExam.responses.filter((response: ExamResponse) => response.responseArea === 'calibrationExam');
     if (calibrationResult.length > 0) {
       this.results = JSON.parse(calibrationResult[calibrationResult.length - 1].response) as CalibrationResults;
     }

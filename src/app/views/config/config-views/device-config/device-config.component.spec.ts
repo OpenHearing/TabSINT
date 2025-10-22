@@ -14,21 +14,22 @@ describe('DeviceConfigComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [DeviceConfigComponent,NewConnectionComponent,ConnectedDevicesComponent],
-      imports: [NgbModule,
+      declarations: [DeviceConfigComponent, NewConnectionComponent, ConnectedDevicesComponent],
+      imports: [
+        NgbModule,
         MatMenuModule,
         MatExpansionModule,
         BrowserAnimationsModule,
         TranslateModule.forRoot({
-                  loader: {
-                    provide: TranslateLoader,
-                    useClass: TranslateFakeLoader
-                  }
-                })],
-      providers: [TranslateService, TranslateStore]
-    })
-    .compileComponents();
-    
+          loader: {
+            provide: TranslateLoader,
+            useClass: TranslateFakeLoader,
+          },
+        }),
+      ],
+      providers: [TranslateService, TranslateStore],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(DeviceConfigComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

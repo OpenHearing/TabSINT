@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs/internal/Subscription';
 @Component({
   selector: 'config-view',
   templateUrl: './config.component.html',
-  styleUrl: './config.component.css'
+  styleUrl: './config.component.css',
 })
 export class ConfigComponent {
   state: StateInterface;
@@ -17,18 +17,18 @@ export class ConfigComponent {
 
   constructor(
     private readonly examService: ExamService,
-    private readonly logger: Logger, 
+    private readonly logger: Logger,
     private readonly stateModel: StateModel
-  ) { 
+  ) {
     this.state = this.stateModel.getState();
   }
 
   ngOnInit(): void {
-    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
     this.examService.switchToAdminView();
-    this.stateModel.updateState({appState: AppState.Admin});
+    this.stateModel.updateState({ appState: AppState.Admin });
   }
 
   ngOnDestroy(): void {
@@ -39,7 +39,6 @@ export class ConfigComponent {
 
   // TEST FUNCTIONS
   logTest() {
-    this.logger.debug("test");
+    this.logger.debug('test');
   }
-
 }

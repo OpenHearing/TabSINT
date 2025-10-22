@@ -17,7 +17,7 @@ import { Tasks } from '../../services/tasks.service';
 @Component({
   selector: 'app-welcome',
   templateUrl: './welcome.component.html',
-  styleUrl: './welcome.component.css'
+  styleUrl: './welcome.component.css',
 })
 export class WelcomeComponent implements OnInit, OnDestroy {
   disk: DiskInterface;
@@ -42,29 +42,27 @@ export class WelcomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
-        this.disk = updatedDisk;
-    })    
-    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+    });
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
-    this.stateModel.updateState({appState: AppState.Welcome});
+    this.stateModel.updateState({ appState: AppState.Welcome });
     this.tasks.hide();
   }
 
   ngOnDestroy(): void {
-    this.stateModel.updateState({appState: AppState.null});
+    this.stateModel.updateState({ appState: AppState.null });
     this.tasks.unhide();
     this.diskSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();
   }
 
   // TODO: Replace this variable with a model?
-  config:any = {};
-
+  config: any = {};
 
   scanQrCodeandAutoConfig() {
-    console.log("scanQrCodeandAutoConfig() called from welcome.component.ts");
+    console.log('scanQrCodeandAutoConfig() called from welcome.component.ts');
   }
-
 }

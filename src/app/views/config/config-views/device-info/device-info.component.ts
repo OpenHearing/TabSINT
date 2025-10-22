@@ -15,7 +15,7 @@ import { AppState } from '../../../../utilities/constants';
 @Component({
   selector: 'device-info-view',
   templateUrl: './device-info.component.html',
-  styleUrl: './device-info.component.css'
+  styleUrl: './device-info.component.css',
 })
 export class DeviceInfoComponent implements OnInit, OnDestroy {
   disk: DiskInterface;
@@ -27,23 +27,23 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly devicesModel: DevicesModel,
-    private readonly diskModel: DiskModel, 
+    private readonly diskModel: DiskModel,
     private readonly stateModel: StateModel,
-    private readonly translate: TranslateService,
-  ) { 
+    private readonly translate: TranslateService
+  ) {
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();
     this.devices = this.devicesModel.getDevices();
   }
 
   ngOnInit(): void {
-    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
-        this.disk = updatedDisk;
-    })    
-    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+    });
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
-    this.stateModel.updateState({appState: AppState.Admin});
+    this.stateModel.updateState({ appState: AppState.Admin });
   }
 
   ngOnDestroy(): void {
@@ -51,8 +51,5 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     this.stateSubscription?.unsubscribe();
   }
 
-  setShutdownTimerPopover = this.translate.instant(
-    "Auto shutdown time (in minutes) for the WAHTS headset."
-  );
-
+  setShutdownTimerPopover = this.translate.instant('Auto shutdown time (in minutes) for the WAHTS headset.');
 }

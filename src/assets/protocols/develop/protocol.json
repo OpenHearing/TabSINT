@@ -3,7 +3,7 @@
   "subtitle": "Developer testing of open-tabsint responseArea's.",
   "instructionText": "instructionText goes here",
   "hideProgressBar": true,
-  "navMenu":[
+  "navMenu": [
     {
       "text": "Back to Main Menu",
       "target": {
@@ -14,27 +14,27 @@
   ],
   "pages": [
     {
-      "protocolId":"MainMenu",
-      "title":"Main Menu",
-      "pages":[
+      "protocolId": "MainMenu",
+      "title": "Main Menu",
+      "pages": [
         {
-          "id":"choose",
-          "title":"Response Area Testing",
-          "questionMainText":"Please select a response area to test:",
-          "responseArea":{
-            "type":"multipleChoiceResponseArea",
-            "choices":[
+          "id": "choose",
+          "title": "Response Area Testing",
+          "questionMainText": "Please select a response area to test:",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "choices": [
               {
-                "id":"Text Box"
+                "id": "Text Box"
               },
               {
-                "id":"LikeRT"
+                "id": "LikeRT"
               },
               {
-                "id":"Multiple Input"
+                "id": "Multiple Input"
               },
               {
-                "id":"Manual Audiometry"
+                "id": "Manual Audiometry"
               },
               {
                 "id": "Calibration Exam"
@@ -61,33 +61,33 @@
                 "id": "MEMR Exam (Between Blocks)"
               },
               {
-                "id":"End All"
+                "id": "End All"
               }
             ]
           },
-          "followOns":[
+          "followOns": [
             {
-              "conditional":"result.response=='Text Box'",
-              "target":{
-                "reference":"TextBox"
+              "conditional": "result.response=='Text Box'",
+              "target": {
+                "reference": "TextBox"
               }
             },
             {
-              "conditional":"result.response=='LikeRT'",
-              "target":{
-                "reference":"LikeRT"
+              "conditional": "result.response=='LikeRT'",
+              "target": {
+                "reference": "LikeRT"
               }
             },
             {
-              "conditional":"result.response=='Multiple Input'",
-              "target":{
-                "reference":"MultipleInput"
+              "conditional": "result.response=='Multiple Input'",
+              "target": {
+                "reference": "MultipleInput"
               }
             },
             {
-              "conditional":"result.response=='Manual Audiometry'",
-              "target":{
-                "reference":"ManualAudiometry"
+              "conditional": "result.response=='Manual Audiometry'",
+              "target": {
+                "reference": "ManualAudiometry"
               }
             },
             {
@@ -139,9 +139,9 @@
               }
             },
             {
-              "conditional":"result.response=='End All'",
-              "target":{
-                "reference":"@END_ALL"
+              "conditional": "result.response=='End All'",
+              "target": {
+                "reference": "@END_ALL"
               }
             }
           ]
@@ -149,10 +149,10 @@
       ]
     }
   ],
-  "subProtocols":[
+  "subProtocols": [
     {
       "protocolId": "TextBox",
-      "pages":[
+      "pages": [
         {
           "id": "textbox_001",
           "title": "Text Box",
@@ -189,12 +189,12 @@
           "instructionText": "Page should always be submittable",
           "responseArea": {
             "type": "textboxResponseAreaResultViewer",
-            "pageIdsToDisplay": ["textbox_001", "textbox_002","textbox_003"]
+            "pageIdsToDisplay": ["textbox_001", "textbox_002", "textbox_003"]
           }
         },
         {
           "id": "backtomain",
-          "reference":"MainMenu"
+          "reference": "MainMenu"
         }
       ]
     },
@@ -203,54 +203,42 @@
       "pages": [
         {
           "id": "default",
-          "instructionText":"Page should only be submittable when there is a response",
+          "instructionText": "Page should only be submittable when there is a response",
           "responseArea": {
             "type": "likertResponseArea",
             "levels": 5,
             "useEmoticons": true,
             "labels": ["Not at all", "Perfectly"],
-            "questions": [
-              "Question 1",
-              "Question 2",
-              "Question 3",
-              "Question 4"
-            ]
+            "questions": ["Question 1", "Question 2", "Question 3", "Question 4"]
           }
         },
         {
           "id": "default",
-          "instructionText":"Page should only be submittable when there is a response",
+          "instructionText": "Page should only be submittable when there is a response",
           "responseArea": {
             "type": "likertResponseArea",
             "levels": 5,
             "useSlider": true,
             "naBox": true,
             "labels": ["Not at all", "Perfectly"],
-            "questions": [
-              "Question 1",
-              "Question 2"
-            ]
+            "questions": ["Question 1", "Question 2"]
           }
         },
         {
           "id": "default",
-          "instructionText":"Page should always be submittable",
+          "instructionText": "Page should always be submittable",
           "responseArea": {
             "type": "likertResponseArea",
             "responseRequired": false,
             "levels": 5,
             "naBox": true,
             "labels": ["Not at all", "Perfectly"],
-            "questions": [
-              "Question 1",
-              "Question 2",
-              "Question 3"
-            ]
+            "questions": ["Question 1", "Question 2", "Question 3"]
           }
         },
         {
           "id": "backtomain",
-          "reference":"MainMenu"
+          "reference": "MainMenu"
         }
       ]
     },
@@ -277,10 +265,7 @@
               {
                 "text": "Have you ever had a ruptured eardrum? ",
                 "inputType": "dropdown",
-                "options": [
-                  "yes",
-                  "no"
-                ]
+                "options": ["yes", "no"]
               },
               {
                 "text": "Patient Date of Birth",
@@ -292,7 +277,7 @@
               },
               {
                 "inputType": "multi-dropdown",
-                "options": ["a","b","c"],
+                "options": ["a", "b", "c"],
                 "text": "Multi-dropdown Input"
               }
             ]
@@ -300,13 +285,13 @@
         },
         {
           "id": "backtomain",
-          "reference":"MainMenu"
+          "reference": "MainMenu"
         }
       ]
     },
     {
       "protocolId": "ManualAudiometry",
-      "pages":[
+      "pages": [
         {
           "id": "audiometry_001",
           "title": "Manual Audiometry Test",
@@ -330,7 +315,7 @@
         },
         {
           "id": "backtomain",
-          "reference":"MainMenu"
+          "reference": "MainMenu"
         }
       ]
     },
@@ -363,7 +348,7 @@
           "enableBackButton": true,
           "responseArea": {
             "type": "fplCalibrationResponseArea",
-            "outputChannels": ["HPL1","HPR1"],
+            "outputChannels": ["HPL1", "HPR1"],
             "fStart": 390,
             "fEnd": 16500,
             "sweepDuration": 10.806,
@@ -395,7 +380,7 @@
             "f2End": 16000,
             "frequencyRatio": 1.22,
             "sweepDuration": 10.0,
-            "windowDuration": 0.100,
+            "windowDuration": 0.1,
             "sweepType": "log",
             "minSweeps": 16,
             "maxSweeps": 24,
@@ -429,7 +414,7 @@
             "f2End": 16000,
             "frequencyRatio": 1.22,
             "sweepDuration": 10.0,
-            "windowDuration": 0.100,
+            "windowDuration": 0.1,
             "sweepType": "log",
             "minSweeps": 16,
             "maxSweeps": 50,
@@ -460,9 +445,9 @@
             "outputChannel": "HPL1",
             "numFrequencies": 128,
             "numSweeps": 5,
-            "windowDuration": 0.100,
+            "windowDuration": 0.1,
             "sweepDuration": 6.0,
-            "inputChannels": ["EPSHIELD_RIGHT_PDM_MIC1","EPSHIELD_LEFT_PDM_MIC2","EPSHIELD_LEFT_PDM_MIC1"]
+            "inputChannels": ["EPSHIELD_RIGHT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2", "EPSHIELD_LEFT_PDM_MIC1"]
           }
         },
         {
@@ -503,23 +488,12 @@
             "nRepeats": 2,
             "useMetaRMS": true,
             "elicitorLevelChange": "Within Block",
-            "elicitorLevelArray": [
-              70.0,
-              71.0,
-              72.0
-            ],
+            "elicitorLevelArray": [70.0, 71.0, 72.0],
             "probeStimulusLevel": 10,
             "submissionIntervalMs": 500,
-            "probeOutputChannel": [
-              "HPR1"
-            ],
-            "elicitorOutputChannel": [
-              "HPL1"
-            ],
-            "recordChannels": [
-              "EPSHIELD_LEFT_PDM_MIC1", 
-              "EPSHIELD_RIGHT_PDM_MIC1"
-            ]
+            "probeOutputChannel": ["HPR1"],
+            "elicitorOutputChannel": ["HPL1"],
+            "recordChannels": ["EPSHIELD_LEFT_PDM_MIC1", "EPSHIELD_RIGHT_PDM_MIC1"]
           }
         },
         {
@@ -543,23 +517,12 @@
             "nRepeats": 2,
             "useMetaRMS": false,
             "elicitorLevelChange": "Between Blocks",
-            "elicitorLevelArray": [
-              70.0,
-              71.0,
-              72.0
-            ],
+            "elicitorLevelArray": [70.0, 71.0, 72.0],
             "probeStimulusLevel": 10,
             "submissionIntervalMs": 500,
-            "probeOutputChannel": [
-              "HPR1"
-            ],
-            "elicitorOutputChannel": [
-              "HPL1"
-            ],
-            "recordChannels": [
-              "EPSHIELD_LEFT_PDM_MIC1", 
-              "EPSHIELD_RIGHT_PDM_MIC1"
-            ]
+            "probeOutputChannel": ["HPR1"],
+            "elicitorOutputChannel": ["HPL1"],
+            "recordChannels": ["EPSHIELD_LEFT_PDM_MIC1", "EPSHIELD_RIGHT_PDM_MIC1"]
           }
         },
         {

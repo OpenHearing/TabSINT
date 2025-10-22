@@ -23,10 +23,10 @@ export class ExamFinalizedComponent {
   currentExam: ExamResults;
 
   constructor(
-    private readonly diskModel: DiskModel, 
+    private readonly diskModel: DiskModel,
     private readonly protocolModel: ProtocolModel,
     private readonly resultsModel: ResultsModel
-  ) { 
+  ) {
     this.results = this.resultsModel.getResults();
     this.disk = this.diskModel.getDisk();
     this.protocol = this.protocolModel.getProtocolModel();
@@ -36,9 +36,9 @@ export class ExamFinalizedComponent {
   }
 
   ngOnInit(): void {
-    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
-        this.disk = updatedDisk;
-    })    
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+    });
   }
 
   ngOnDestroy(): void {
@@ -51,5 +51,4 @@ export class ExamFinalizedComponent {
     }
     return '';
   }
-
 }

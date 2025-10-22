@@ -16,20 +16,16 @@ describe('LikertComponent', () => {
   let fixture: ComponentFixture<LikertComponent>;
   let mockResultsModel: ResultsModel;
   let mockPageModel: PageModel;
-  let appModel = new AppModel;
-  let diskModel = new DiskModel(new Document);
+  let appModel = new AppModel();
+  let diskModel = new DiskModel(new Document());
   let sqLite = new SqLite(appModel, diskModel);
   let logger = new Logger(diskModel, sqLite);
   let devices: DevicesModel;
   let version = new VersionModel(logger);
-  
 
   beforeEach(async () => {
     devices = new DevicesModel(logger);
-    mockResultsModel = new ResultsModel(
-      devices,
-      version
-    );
+    mockResultsModel = new ResultsModel(devices, version);
 
     mockPageModel = new PageModel();
     mockPageModel.currentPage = {
@@ -39,9 +35,9 @@ describe('LikertComponent', () => {
         levels: 5,
         position: 'above',
         labels: ['Strongly Disagree', 'Strongly Agree'],
-        useEmoticons: false
+        useEmoticons: false,
       },
-      id: 'page1'
+      id: 'page1',
     };
     mockPageModel.currentPageSubject = new BehaviorSubject(mockPageModel.currentPage);
 
@@ -49,11 +45,10 @@ describe('LikertComponent', () => {
       declarations: [LikertComponent],
       providers: [
         { provide: ResultsModel, useValue: mockResultsModel },
-        { provide: PageModel, useValue: mockPageModel }
-      ]
-    })
-    .compileComponents();
-    
+        { provide: PageModel, useValue: mockPageModel },
+      ],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(LikertComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -84,9 +79,9 @@ describe('LikertComponent', () => {
         levels: 7,
         position: 'below',
         labels: ['Never', 'Always'],
-        useEmoticons: true
+        useEmoticons: true,
       },
-      id: 'page2'
+      id: 'page2',
     };
 
     mockPageModel.currentPageSubject.next(updatedPage);

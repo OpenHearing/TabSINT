@@ -1,29 +1,28 @@
-import { CommonResponseAreaInterface } from "../../../../../interfaces/page-definition.interface";
-
+import { CommonResponseAreaInterface } from '../../../../../interfaces/page-definition.interface';
 
 export interface CalibrationExamInterface extends CommonResponseAreaInterface {
-    exportToCSV?: boolean;
-    tabsintId?: string;
-    frequencies?: number[];
-    targetLevels?: number[];
-    responseRequired?: boolean
-    showResults?: boolean,
-    batchFrequencies?: boolean,
+  exportToCSV?: boolean;
+  tabsintId?: string;
+  frequencies?: number[];
+  targetLevels?: number[];
+  responseRequired?: boolean;
+  showResults?: boolean;
+  batchFrequencies?: boolean;
 }
 
 export interface CalibrationResultViewerInterface extends CommonResponseAreaInterface {
-    displayRightEar: boolean;
-    displayLeftEar: boolean;
+  displayRightEar: boolean;
+  displayLeftEar: boolean;
 }
 
 export interface EarData {
-    calFactor: number;
-    measurement: string | number;
-    maxOutput: string | number;
+  calFactor: number;
+  measurement: string | number;
+  maxOutput: string | number;
 }
-  
+
 export interface ExamResponse {
-    pageId: string;
-    response: string;
-    responseArea: string;
+  pageId: string;
+  response: string;
+  responseArea: string;
 }

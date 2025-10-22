@@ -10,10 +10,9 @@ describe('TextboxComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [TextboxComponent],
-      imports: [FormsModule]
-    })
-    .compileComponents();
-    
+      imports: [FormsModule],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(TextboxComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

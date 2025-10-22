@@ -9,10 +9,9 @@ describe('CalibrationScreenComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [CalibrationScreenComponent],
-      imports: [FormsModule]
-    })
-    .compileComponents();
-    
+      imports: [FormsModule],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(CalibrationScreenComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

@@ -10,10 +10,9 @@ describe('MaxOutputScreenComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [MaxOutputScreenComponent],
-      imports: [FormsModule]
-    })
-    .compileComponents();
-    
+      imports: [FormsModule],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(MaxOutputScreenComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

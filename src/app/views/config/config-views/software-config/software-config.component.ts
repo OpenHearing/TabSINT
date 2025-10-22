@@ -15,7 +15,7 @@ import { StateInterface } from '../../../../models/state/state.interface';
 @Component({
   selector: 'software-config-view',
   templateUrl: './software-config.component.html',
-  styleUrl: './software-config.component.css'
+  styleUrl: './software-config.component.css',
 })
 export class SoftwareConfigComponent {
   state: StateInterface;
@@ -40,18 +40,18 @@ export class SoftwareConfigComponent {
       rev: '',
       version_code: '',
       deps: {
-          user_agent: '',
-          node: '',
-          capacitor: ''
+        user_agent: '',
+        node: '',
+        capacitor: '',
       },
-      plugins: []
-  };
+      plugins: [],
+    };
   }
 
   ngOnInit(): void {
-    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
-        this.disk = updatedDisk;
-    })
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+    });
     this.initializeVersion();
   }
 
@@ -63,12 +63,11 @@ export class SoftwareConfigComponent {
     try {
       this.version = await this.versionModel.getVersion();
     } catch (error) {
-      this.logger.error("" + error);
+      this.logger.error('' + error);
     }
   }
 
   toggleAppDeveloperMode() {
-    console.log("toggleAppDeveloperMode");
+    console.log('toggleAppDeveloperMode');
   }
-
 }

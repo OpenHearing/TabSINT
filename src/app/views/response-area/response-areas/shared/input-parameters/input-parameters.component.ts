@@ -7,7 +7,7 @@ import { KeyValue } from '@angular/common';
 @Component({
   selector: 'input-parameters',
   templateUrl: './input-parameters.component.html',
-  styleUrl: './input-parameters.component.css'
+  styleUrl: './input-parameters.component.css',
 })
 export class InputParametersComponent {
   /** A message to display above the tabulated data.*/

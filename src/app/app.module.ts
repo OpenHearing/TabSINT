@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms'
+import { FormsModule } from '@angular/forms';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatIconModule } from '@angular/material/icon';
@@ -161,7 +161,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     MrtResultsComponent,
     MemrExamComponent,
     InputParametersComponent,
-    TabsintConfigComponent
+    TabsintConfigComponent,
   ],
   imports: [
     BrowserModule,
@@ -187,9 +187,9 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
       loader: {
         provide: TranslateLoader,
         useFactory: HttpLoaderFactory,
-        deps: [HttpClient]
-      }
-    })
+        deps: [HttpClient],
+      },
+    }),
   ],
   providers: [
     provideClientHydration(),
@@ -221,4 +221,4 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class AppModule { }
+export class AppModule {}

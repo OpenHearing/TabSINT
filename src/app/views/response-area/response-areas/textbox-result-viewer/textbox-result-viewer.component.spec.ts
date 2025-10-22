@@ -10,10 +10,9 @@ describe('TextboxResultViewerComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [TextboxResultViewerComponent],
-      imports: [FormsModule]
-    })
-    .compileComponents();
-    
+      imports: [FormsModule],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(TextboxResultViewerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

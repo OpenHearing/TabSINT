@@ -5,7 +5,7 @@ const versionJsonPath = path.join(__dirname, '../src/version.json');
 const versionJson = JSON.parse(fs.readFileSync(versionJsonPath, 'utf-8'));
 const packageJsonPath = path.join(__dirname, '../package.json');
 const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
-const androidmanifeststring = fs.readFileSync('android/app/src/main/AndroidManifest.xml', "utf-8"); 
+const androidmanifeststring = fs.readFileSync('android/app/src/main/AndroidManifest.xml', 'utf-8');
 const git = simpleGit();
 
 async function getCurrentCommitHash() {
@@ -19,7 +19,7 @@ async function getCurrentCommitHash() {
 }
 
 async function incrementRev() {
-  const baseVersion = 'v'+packageJson.version;
+  const baseVersion = 'v' + packageJson.version;
   let revNumber;
   const previousRevNumber = versionJson.rev.match(/v\d+\.\d+\.\d+-(\d+)-/)[1];
   if (packageJson.version !== versionJson.tabsint) {
@@ -28,7 +28,7 @@ async function incrementRev() {
     revNumber = (parseInt(previousRevNumber, 10) + 1).toString();
   } else {
     revNumber = '1';
-  }  
+  }
   const commitHash = await getCurrentCommitHash();
   return `${baseVersion}-${revNumber}-${commitHash}`;
 }
@@ -39,18 +39,18 @@ function getNodeVersion() {
 
 async function generateVersionJson() {
   const updatedRev = await incrementRev();
-  const suffix = process.argv.slice(2) ? "-"+process.argv.slice(2) : "";
+  const suffix = process.argv.slice(2) ? '-' + process.argv.slice(2) : '';
   const newVersionJson = {
-    tabsint: packageJson.version+suffix,
+    tabsint: packageJson.version + suffix,
     date: new Date().toISOString(),
     rev: updatedRev,
     version_code: (parseInt(versionJson.version_code, 10) + 1).toString(),
     deps: {
       user_agent: 'angular/' + packageJson.devDependencies['@angular/cli'],
       node: 'node/' + getNodeVersion(),
-      capacitor: 'capacitor/' + packageJson.devDependencies['@capacitor/cli']
+      capacitor: 'capacitor/' + packageJson.devDependencies['@capacitor/cli'],
     },
-    plugins: []
+    plugins: [],
   };
 
   console.log('New version.json content:', JSON.stringify(newVersionJson, null, 2));

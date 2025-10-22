@@ -24,7 +24,7 @@ import { CapacitorHttp } from '@capacitor/core';
 @Component({
   selector: 'protocols-view',
   templateUrl: './protocols.component.html',
-  styleUrl: './protocols.component.css'
+  styleUrl: './protocols.component.css',
 })
 export class ProtocolsComponent implements OnInit, OnDestroy {
   selected?: ProtocolMetaInterface;
@@ -36,7 +36,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
   selectedSource = 'device';
   gitlabConfig: GitlabConfigInterface;
 
-  constructor (
+  constructor(
     private readonly diskModel: DiskModel,
     private readonly examService: ExamService,
     private readonly protocolM: ProtocolModel,
@@ -46,7 +46,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
     private readonly notifications: Notifications,
     private readonly stateModel: StateModel,
     private readonly tasks: Tasks,
-    private readonly translate: TranslateService,
+    private readonly translate: TranslateService
   ) {
     this.disk = this.diskModel.getDisk();
     this.protocolModel = this.protocolM.getProtocolModel();
@@ -55,12 +55,12 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
-    })  
-    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+    });
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
-    });  
+    });
     // sort protocols by name here
   }
 
@@ -77,7 +77,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
     const availableProtocols = this.disk.availableProtocolsMeta;
     return Object.entries(availableProtocols).map(([key, value]) => ({ key, value }));
   }
-  
+
   trackByIndex(index: number, item: any): number {
     return index;
   }
@@ -97,38 +97,38 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
    */
   pclass(p: ProtocolMetaInterface): string {
     if (this.isActive(p)) {
-      return "active-row";
+      return 'active-row';
     } else if (this.selected === null || this.selected === undefined) {
-      return "";
+      return '';
     } else if (_.isEqual(this.selected.name, p.name)) {
-      return "table-selected";
+      return 'table-selected';
     } else {
-      return "";
+      return '';
     }
-  };
+  }
 
   /**
-   * Add local protocols 
-   * @summary Launch file chooser, extract meta data from selected protocol folder, 
+   * Add local protocols
+   * @summary Launch file chooser, extract meta data from selected protocol folder,
    * save it to disk model, then retrieve protocol model to refresh the view.
    * @models dik, protocol
    */
   async addProtocols() {
     try {
-      this.tasks.register("Add Local Protocol", "Add Local Protocol");
+      this.tasks.register('Add Local Protocol', 'Add Local Protocol');
       const result = await this.fileService.launchFileChooser();
       if (!result) {
-        this.logger.error("There was an error in choosing the folder");
+        this.logger.error('There was an error in choosing the folder');
       }
       let protocolsFolderUri = result?.uri;
       let protocolName = result?.name;
       const resultFromListFiles = await this.fileService.listDirectory(protocolsFolderUri);
       if (!resultFromListFiles) {
-        throw new Error("Unable to load protocol directory.");
+        throw new Error('Unable to load protocol directory.');
       } else {
         const fileList = resultFromListFiles?.files;
         for (const file of fileList) {
-          if (file.name == "protocol.json") {
+          if (file.name == 'protocol.json') {
             const protocolContent: ProtocolSchemaInterface = JSON.parse(file.content);
             const protocol: ProtocolInterface = {
               ...partialMetaDefaults,
@@ -136,58 +136,63 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
               contentURI: protocolsFolderUri!,
               server: ProtocolServer.LocalServer,
               admin: false,
-              ...protocolContent
+              ...protocolContent,
             };
             await this.updateDiskModel(protocol);
           }
         }
       }
     } catch (error: any) {
-      this.logger.error("" + error);
-      this.notifications.alert({
-        title: "Alert",
-        content: "Error Loading Protocol: Unable to properly load the protocol file, see logs for more information.",
-        type: DialogType.Alert
-      }).subscribe();
+      this.logger.error('' + error);
+      this.notifications
+        .alert({
+          title: 'Alert',
+          content: 'Error Loading Protocol: Unable to properly load the protocol file, see logs for more information.',
+          type: DialogType.Alert,
+        })
+        .subscribe();
     } finally {
-      this.tasks.deregister("Add Local Protocol");
+      this.tasks.deregister('Add Local Protocol');
     }
   }
 
   async fetchGitlabProtocol() {
-    this.tasks.register("Add Gitlab Protocol", "Checking Gitlab Protocol Configuration");
+    this.tasks.register('Add Gitlab Protocol', 'Checking Gitlab Protocol Configuration');
     try {
       if (!this.gitlabConfig.host || !this.gitlabConfig.token || !this.gitlabConfig.group || !this.gitlabConfig.repository) {
-        this.notifications.alert({
-          title: "Alert",
-          content: "Missing required GitLab configuration. Please specify a GitLab host, token, group, and repository.",
-          type: DialogType.Alert
-        }).subscribe();
-        throw new Error("Missing required GitLab configuration. Please specify a GitLab host, token, group, and repository.");
+        this.notifications
+          .alert({
+            title: 'Alert',
+            content: 'Missing required GitLab configuration. Please specify a GitLab host, token, group, and repository.',
+            type: DialogType.Alert,
+          })
+          .subscribe();
+        throw new Error('Missing required GitLab configuration. Please specify a GitLab host, token, group, and repository.');
       }
       // Detect if there "/" in the repository name and alert user
-      if (this.gitlabConfig.repository.includes("/")) {
-        this.notifications.alert({
-          title: "Alert",
-          content: "Repository name should not contain any '/'. If applicable, please move the parent directories to the group field.",
-          type: DialogType.Alert
-        }).subscribe();
+      if (this.gitlabConfig.repository.includes('/')) {
+        this.notifications
+          .alert({
+            title: 'Alert',
+            content: "Repository name should not contain any '/'. If applicable, please move the parent directories to the group field.",
+            type: DialogType.Alert,
+          })
+          .subscribe();
         // move the "/" to the group field and remove from repository field
         this.fixGitlabRepositoryAndGroupSlashs();
       }
       // fix issue if a trailing "/" is in the group field
-      if (this.gitlabConfig.group.endsWith("/")) {
-        this.gitlabConfig.group = this.gitlabConfig.group.slice(0,-1);
+      if (this.gitlabConfig.group.endsWith('/')) {
+        this.gitlabConfig.group = this.gitlabConfig.group.slice(0, -1);
       }
       const headers = {
-        'Authorization': `Bearer ${this.gitlabConfig.token}`
+        Authorization: `Bearer ${this.gitlabConfig.token}`,
       };
-      const projectId = await this.getGitlabProjectId(this.gitlabConfig.host,this.gitlabConfig.repository,this.gitlabConfig.group,headers)
+      const projectId = await this.getGitlabProjectId(this.gitlabConfig.host, this.gitlabConfig.repository, this.gitlabConfig.group, headers);
       const ref = await this.getGitlabRef(projectId, headers);
       const localDir = `.tabsint-protocols/${this.gitlabConfig.repository}`;
-      this.tasks.register("Add Gitlab Protocol", "Download protocol files");
-      const [protocolContent, folderUri] = await this.downloadAndSaveFiles(projectId, ref, this.gitlabConfig.host,headers, localDir);
-      
+      this.tasks.register('Add Gitlab Protocol', 'Download protocol files');
+      const [protocolContent, folderUri] = await this.downloadAndSaveFiles(projectId, ref, this.gitlabConfig.host, headers, localDir);
 
       const protocol = {
         ...partialMetaDefaults,
@@ -197,36 +202,36 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
         contentURI: folderUri,
         admin: false,
         gitlabConfig: { ...this.gitlabConfig, tag: ref },
-        ...protocolContent
+        ...protocolContent,
       };
 
       const isProtocolAdded = await this.updateDiskModel(protocol);
 
       if (isProtocolAdded) {
         this.notifications.alert({
-          title: "Success",
+          title: 'Success',
           content: `Protocol '${protocol.name}' imported successfully from GitLab.`,
-          type: DialogType.Confirm
+          type: DialogType.Confirm,
         });
       }
     } catch (error: any) {
       this.handleGitlabError(error);
     } finally {
-      this.tasks.deregister("Add Gitlab Protocol");
+      this.tasks.deregister('Add Gitlab Protocol');
     }
   }
 
   fixGitlabRepositoryAndGroupSlashs() {
     // handle edge cases related to "/"s
-    if (!this.gitlabConfig.group.endsWith("/")) {
-      this.gitlabConfig.group = this.gitlabConfig.group + "/";
+    if (!this.gitlabConfig.group.endsWith('/')) {
+      this.gitlabConfig.group = this.gitlabConfig.group + '/';
     }
-    if (this.gitlabConfig.repository.endsWith("/")) {
-      this.gitlabConfig.repository = this.gitlabConfig.repository.slice(0,-1);
+    if (this.gitlabConfig.repository.endsWith('/')) {
+      this.gitlabConfig.repository = this.gitlabConfig.repository.slice(0, -1);
     }
     // move "/"s (directories) from repository to group
-    let tmpGroup = this.gitlabConfig.group + this.gitlabConfig.repository.split("/").slice(0, -1).join("/");
-    let tmpRepository = this.gitlabConfig.repository.split("/")[this.gitlabConfig.repository.split("/").length - 1];
+    let tmpGroup = this.gitlabConfig.group + this.gitlabConfig.repository.split('/').slice(0, -1).join('/');
+    let tmpRepository = this.gitlabConfig.repository.split('/')[this.gitlabConfig.repository.split('/').length - 1];
     this.gitlabConfig.repository = tmpRepository;
     this.gitlabConfig.group = tmpGroup;
   }
@@ -237,21 +242,21 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
 
   isButtonDisabled(): boolean {
     return !this.selected;
-  };
+  }
 
   showUpdateButton(): boolean {
     if (!this.selected) {
       return false;
     }
     return this.selected.server === ProtocolServer.Gitlab;
-  };
+  }
 
   showDeleteButton(): boolean {
     if (!this.selected) {
       return false;
     }
     return this.selected.server !== ProtocolServer.Developer;
-  };
+  }
 
   /**
    * Load selected protocol: make it the active protocol.
@@ -264,7 +269,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.tasks.register("Load Protocol", "Loading Protocol...");
+    this.tasks.register('Load Protocol', 'Loading Protocol...');
 
     try {
       let protocolMetaData = getProtocolMetaData(this.selected);
@@ -273,27 +278,27 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
         await this.protocolService.load(protocolMetaData, true);
       } else {
         let msg: DialogDataInterface = {
-          title: "Confirm",
+          title: 'Confirm',
           content: `Switch to protocol ${this.selected.name} and reset the current test? The current test results will be deleted`,
-          type: DialogType.Confirm
-          };
+          type: DialogType.Confirm,
+        };
         if (this.isActive(this.selected)) {
           msg.content = `Overwrite protocol ${this.selected.name} and reset the current test? The current test will be reset`;
         }
 
         this.notifications.alert(msg).subscribe(async result => {
-          if (result === "OK") {
+          if (result === 'OK') {
             await this.protocolService.load(protocolMetaData, true);
             this.examService.reset();
           }
         });
       }
     } catch (e) {
-      this.logger.debug("loadProtocol failed with error: " + e);
+      this.logger.debug('loadProtocol failed with error: ' + e);
     } finally {
-      this.tasks.deregister("Load Protocol");
+      this.tasks.deregister('Load Protocol');
     }
-  };
+  }
 
   /**
    * Delete protocol from protocols table
@@ -301,64 +306,69 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
    * @models models
    */
   delete(): void {
-      if (!this.selected) {
-          return;
-      }
-
-      if (this.isActive(this.selected)) {
-        this.protocolModel.activeProtocol = undefined;
+    if (!this.selected) {
+      return;
     }
 
-      this.protocolService.delete(this.selected);
-      this.selected = undefined;
-      // notifications.alert(
-      //     "Delete protocol ") +
-      //     this.selected.name +
-      //     " and remove protocol files from disk?"),
-      //     (buttonIndex) => {
-      //         if (buttonIndex === 1) {
-      //             protocol.delete(this.selected);
-      //             this.selected = undefined;
-      //         }
-      //     }
-      // );
-  };
+    if (this.isActive(this.selected)) {
+      this.protocolModel.activeProtocol = undefined;
+    }
+
+    this.protocolService.delete(this.selected);
+    this.selected = undefined;
+    // notifications.alert(
+    //     "Delete protocol ") +
+    //     this.selected.name +
+    //     " and remove protocol files from disk?"),
+    //     (buttonIndex) => {
+    //         if (buttonIndex === 1) {
+    //             protocol.delete(this.selected);
+    //             this.selected = undefined;
+    //         }
+    //     }
+    // );
+  }
 
   async update(): Promise<void> {
     if (!this.selected || this.selected.server !== ProtocolServer.Gitlab) {
       this.notifications.alert({
-        title: "Error",
-        content: "Selected protocol was not imported from GitLab.",
-        type: DialogType.Alert
+        title: 'Error',
+        content: 'Selected protocol was not imported from GitLab.',
+        type: DialogType.Alert,
       });
       return;
     }
 
     try {
-      this.tasks.register("Update Protocol", `Checking for updates for ${this.selected.name}...`);
+      this.tasks.register('Update Protocol', `Checking for updates for ${this.selected.name}...`);
 
       const selectedGitlabConfig = this.selected.gitlabConfig;
       if (!selectedGitlabConfig) {
-        throw new Error("GitLab configuration is missing for the selected protocol.");
+        throw new Error('GitLab configuration is missing for the selected protocol.');
       }
-      this.logger.debug("Printing selected protocols gitlab configuration");
+      this.logger.debug('Printing selected protocols gitlab configuration');
       this.logger.debug(JSON.stringify(selectedGitlabConfig));
       if (!selectedGitlabConfig.host || !selectedGitlabConfig.token || !selectedGitlabConfig.group || !selectedGitlabConfig.repository) {
-        throw new Error("Missing required GitLab configuration. Please specify a GitLab host, token, group, and repository.");
+        throw new Error('Missing required GitLab configuration. Please specify a GitLab host, token, group, and repository.');
       }
       const headers = {
-        'Authorization': `Bearer ${selectedGitlabConfig.token}`
+        Authorization: `Bearer ${selectedGitlabConfig.token}`,
       };
-      const projectId = await this.getGitlabProjectId(selectedGitlabConfig.host, selectedGitlabConfig.repository, selectedGitlabConfig.group, headers);
+      const projectId = await this.getGitlabProjectId(
+        selectedGitlabConfig.host,
+        selectedGitlabConfig.repository,
+        selectedGitlabConfig.group,
+        headers
+      );
       this.logger.debug(`Project id is -- ${projectId}`);
       const latestCommitHash = await this.getLatestCommitHash(selectedGitlabConfig.host, projectId, headers);
       this.logger.debug(`Latest commit hash: ${latestCommitHash}`);
 
       if (selectedGitlabConfig.tag === latestCommitHash) {
         this.notifications.alert({
-          title: "Up-to-date",
-          content: "Your protocol is already up-to-date.",
-          type: DialogType.Confirm
+          title: 'Up-to-date',
+          content: 'Your protocol is already up-to-date.',
+          type: DialogType.Confirm,
         });
         return;
       }
@@ -367,7 +377,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
 
       const fileUrl = `${selectedGitlabConfig.host}/api/v4/projects/${projectId}/repository/files/protocol.json/raw?ref=${latestCommitHash}`;
 
-      const latestProtocolJson = await this.fetchGitlabData(fileUrl, headers, "Failed to fetch protocol.json:",);
+      const latestProtocolJson = await this.fetchGitlabData(fileUrl, headers, 'Failed to fetch protocol.json:');
       const localDir = `.tabsint-protocols/${selectedGitlabConfig.repository}`;
       const localProtocolFile = await this.fileService.readFile(`${localDir}/protocol.json`);
 
@@ -376,19 +386,25 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
 
         if (_.isEqual(localProtocolJson, latestProtocolJson)) {
           this.notifications.alert({
-            title: "No Changes Detected",
-            content: "The protocol.json file has not changed in the latest commit.",
-            type: DialogType.Confirm
+            title: 'No Changes Detected',
+            content: 'The protocol.json file has not changed in the latest commit.',
+            type: DialogType.Confirm,
           });
           return;
         }
       } else {
-        throw new Error("Could not read local protocol.json file.");
+        throw new Error('Could not read local protocol.json file.');
       }
 
       this.logger.debug(`protocol.json has changed. Updating protocol...`);
 
-      const [protocolContent, localDirUri] = await this.downloadAndSaveFiles(projectId, latestCommitHash, selectedGitlabConfig.host, headers, localDir);
+      const [protocolContent, localDirUri] = await this.downloadAndSaveFiles(
+        projectId,
+        latestCommitHash,
+        selectedGitlabConfig.host,
+        headers,
+        localDir
+      );
       const updatedProtocol: ProtocolInterface = {
         ...partialMetaDefaults,
         name: selectedGitlabConfig.repository,
@@ -396,51 +412,47 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
         contentURI: localDirUri,
         admin: false,
         gitlabConfig: { ...selectedGitlabConfig, tag: latestCommitHash },
-        ...protocolContent
+        ...protocolContent,
       };
 
       const protocolUpdated = await this.updateDiskModel(updatedProtocol);
 
       if (protocolUpdated) {
         this.notifications.alert({
-          title: "Success",
+          title: 'Success',
           content: `Protocol '${this.selected?.name}' has been updated successfully.`,
-          type: DialogType.Confirm
+          type: DialogType.Confirm,
         });
       }
     } catch (error: any) {
       this.handleGitlabError(error);
     } finally {
-      this.tasks.deregister("Update Protocol");
+      this.tasks.deregister('Update Protocol');
     }
   }
 
-  onGitlabConfigChange(event:any, value:string) {
-    if (value=='host') {
+  onGitlabConfigChange(event: any, value: string) {
+    if (value == 'host') {
       this.disk.gitlabConfig.host = event.target.value;
-    } else if (value=='repository') {
+    } else if (value == 'repository') {
       this.disk.gitlabConfig.repository = event.target.value;
-    } else if (value=='token') {
+    } else if (value == 'token') {
       this.disk.gitlabConfig.token = event.target.value;
-    } else if (value=='group') {
+    } else if (value == 'group') {
       this.disk.gitlabConfig.group = event.target.value;
-    } else if (value=='tag') {
+    } else if (value == 'tag') {
       this.disk.gitlabConfig.tag = event.target.value;
     }
     this.diskModel.storeDisk();
   }
 
   gitlabButtonClass(): string {
-    return this.disk.server === ProtocolServer.Gitlab
-    ? 'active'
-    : 'disabled';
-  };
+    return this.disk.server === ProtocolServer.Gitlab ? 'active' : 'disabled';
+  }
 
   localServerButtonClass(): string {
-    return this.disk.server === ProtocolServer.LocalServer
-    ? 'active'
-    : '';
-  };
+    return this.disk.server === ProtocolServer.LocalServer ? 'active' : '';
+  }
 
   /**
    * Checks whether a protocol is active.
@@ -451,14 +463,16 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
    * @returns whether protocol is active: boolean
    */
   private isActive(p: ProtocolMetaInterface | undefined): boolean {
-    return (this.protocolModel.activeProtocol
-            && p
-            && this.protocolModel.activeProtocol.name == p.name
-            && this.protocolModel.activeProtocol.path == p.path)
-        || false;
-  };
+    return (
+      (this.protocolModel.activeProtocol &&
+        p &&
+        this.protocolModel.activeProtocol.name == p.name &&
+        this.protocolModel.activeProtocol.path == p.path) ||
+      false
+    );
+  }
 
-  private async fetchGitlabData(url: string, headers: { 'Authorization': string }, errorMessagePrefix: string) {
+  private async fetchGitlabData(url: string, headers: { Authorization: string }, errorMessagePrefix: string) {
     const options = {
       url: url,
       headers: headers,
@@ -466,24 +480,30 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
 
     const response = await CapacitorHttp.get(options);
     if (response.status < 200 || response.status >= 300) {
-        if (response.status === 401) {
-            throw new Error("Unauthorized: Check your GitLab credentials.");
-        }
-        throw new Error(`${errorMessagePrefix} ${response.status}`);
+      if (response.status === 401) {
+        throw new Error('Unauthorized: Check your GitLab credentials.');
+      }
+      throw new Error(`${errorMessagePrefix} ${response.status}`);
     }
 
     return response.data;
   }
 
-  private async downloadAndSaveFiles(projectId: number, ref: string, host:string, headers: { 'Authorization': string }, localDir: string): Promise<[ProtocolSchemaInterface, string]> {
+  private async downloadAndSaveFiles(
+    projectId: number,
+    ref: string,
+    host: string,
+    headers: { Authorization: string },
+    localDir: string
+  ): Promise<[ProtocolSchemaInterface, string]> {
     const repoFiles = await this.fetchGitlabData(
-        `${host}/api/v4/projects/${projectId}/repository/tree?ref=${ref}&recursive=true`,
-        headers,
-        "Failed to fetch repository files: "
+      `${host}/api/v4/projects/${projectId}/repository/tree?ref=${ref}&recursive=true`,
+      headers,
+      'Failed to fetch repository files: '
     );
 
     if (!repoFiles.length) {
-        throw new Error("No files found in the repository.");
+      throw new Error('No files found in the repository.');
     }
 
     await this.fileService.deleteDirectory(localDir);
@@ -492,82 +512,80 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
     let protocolContent: ProtocolSchemaInterface | null = null;
 
     for (const file of repoFiles) {
-        const filePath = encodeURIComponent(file.path);
-        const fileUrl = `${host}/api/v4/projects/${projectId}/repository/files/${filePath}/raw?ref=${ref}`;
+      const filePath = encodeURIComponent(file.path);
+      const fileUrl = `${host}/api/v4/projects/${projectId}/repository/files/${filePath}/raw?ref=${ref}`;
 
-        const options = {
-          url: fileUrl,
-          responseType: (file.name === "protocol.json" ? 'json' : 'blob') as any,
-          headers: headers,
-        };
-        const response = await CapacitorHttp.get(options);
+      const options = {
+        url: fileUrl,
+        responseType: (file.name === 'protocol.json' ? 'json' : 'blob') as any,
+        headers: headers,
+      };
+      const response = await CapacitorHttp.get(options);
 
-        if (response.status < 200 || response.status >= 300) {
-          if (response.status === 401) {
-              throw new Error("Unauthorized: Check your GitLab credentials.");
-          }
-          throw new Error(`Error loading repo file ${filePath} ${response.status}`);
+      if (response.status < 200 || response.status >= 300) {
+        if (response.status === 401) {
+          throw new Error('Unauthorized: Check your GitLab credentials.');
         }
+        throw new Error(`Error loading repo file ${filePath} ${response.status}`);
+      }
 
-        try {
-          if (file.name === "protocol.json") {
-              protocolContent = await response.data;
-              await this.fileService.writeFile(`${localDir}/protocol.json`, JSON.stringify(protocolContent));
-          } else {
-              const blob = await response.data;
-              await this.fileService.writeBinaryFile(`${localDir}/${file.name}`, blob);
-          }
-        } catch (e) {
-          throw new Error(`Error writing file: ${file.name}`);
+      try {
+        if (file.name === 'protocol.json') {
+          protocolContent = await response.data;
+          await this.fileService.writeFile(`${localDir}/protocol.json`, JSON.stringify(protocolContent));
+        } else {
+          const blob = await response.data;
+          await this.fileService.writeBinaryFile(`${localDir}/${file.name}`, blob);
         }
+      } catch (e) {
+        throw new Error(`Error writing file: ${file.name}`);
+      }
     }
 
     if (!protocolContent) {
-        throw new Error("protocol.json not found in repository.");
+      throw new Error('protocol.json not found in repository.');
     }
 
-    return [protocolContent,fileServiceResult?.uri!];
-}
+    return [protocolContent, fileServiceResult?.uri!];
+  }
 
-
-  private async getLatestCommitHash(host:string,projectId: number, headers: { 'Authorization': string }): Promise<string> {
+  private async getLatestCommitHash(host: string, projectId: number, headers: { Authorization: string }): Promise<string> {
     const commits = await this.fetchGitlabData(
-        `${host}/api/v4/projects/${projectId}/repository/commits?per_page=1`,
-        headers,
-        "Failed to fetch latest commit: "
+      `${host}/api/v4/projects/${projectId}/repository/commits?per_page=1`,
+      headers,
+      'Failed to fetch latest commit: '
     );
 
-    if (!commits.length) throw new Error("No commits found in repository.");
-    return commits[0].id.substring(0,8);
+    if (!commits.length) throw new Error('No commits found in repository.');
+    return commits[0].id.substring(0, 8);
   }
 
-  private async getGitlabRef(projectId: number, headers: { 'Authorization': string }): Promise<string> {
+  private async getGitlabRef(projectId: number, headers: { Authorization: string }): Promise<string> {
     if (this.gitlabConfig.tag) {
-        return this.gitlabConfig.tag;
+      return this.gitlabConfig.tag;
     }
-    return this.getLatestCommitHash(this.gitlabConfig.host,projectId, headers)
+    return this.getLatestCommitHash(this.gitlabConfig.host, projectId, headers);
   }
-
 
   private async updateDiskModel(protocol: ProtocolInterface): Promise<boolean> {
     const protocolMetaData: ProtocolMetaInterface = getProtocolMetaData(protocol);
     let availableMetaProtocols = this.disk.availableProtocolsMeta;
 
     // Check if a protocol with this name already exists
-    const existingProtocolEntry = Object.entries(availableMetaProtocols).find(
-      ([key, p]) => p.name === protocolMetaData.name
-    );
+    const existingProtocolEntry = Object.entries(availableMetaProtocols).find(([key, p]) => p.name === protocolMetaData.name);
 
     if (existingProtocolEntry) {
       const [, existingProtocol] = existingProtocolEntry;
 
       // Never overwrite Developer protocols
       if (existingProtocol.server === ProtocolServer.Developer) {
-        this.notifications.alert({
-          title: "Cannot Overwrite Developer Protocol",
-          content: `Cannot add protocol "${protocolMetaData.name}" because a Developer protocol with the same name already exists. Developer protocols cannot be overwritten.`,
-          type: DialogType.Alert
-        }).subscribe();
+        this.notifications
+          .alert({
+            title: 'Cannot Overwrite Developer Protocol',
+            content: `Cannot add protocol "${protocolMetaData.name}" because a Developer protocol with the same name already exists. Developer protocols cannot be overwritten.`,
+            type: DialogType.Alert,
+          })
+          .subscribe();
         return false; // Don't add it
       }
     }
@@ -580,36 +598,32 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
   }
 
   private handleGitlabError(error: any) {
-    let errorMessage = error.message || "An error occurred while fetching the GitLab protocol.";
+    let errorMessage = error.message || 'An error occurred while fetching the GitLab protocol.';
 
-    if (errorMessage.includes("Unauthorized")) {
-        this.notifications.alert({
-            title: "Unauthorized",
-            content: "Check your GitLab credentials.",
-            type: DialogType.Alert
-        });
+    if (errorMessage.includes('Unauthorized')) {
+      this.notifications.alert({
+        title: 'Unauthorized',
+        content: 'Check your GitLab credentials.',
+        type: DialogType.Alert,
+      });
     } else {
-        this.notifications.alert({
-            title: "Error",
-            content: errorMessage,
-            type: DialogType.Alert
-        });
+      this.notifications.alert({
+        title: 'Error',
+        content: errorMessage,
+        type: DialogType.Alert,
+      });
     }
   }
 
-  private async getGitlabProjectId(host:string, repository: string, group:string, headers: { 'Authorization': string }): Promise<number> {
-    const projects = await this.fetchGitlabData(
-        `${host}/api/v4/projects?search=${repository}`,
-        headers,
-        "Failed to fetch project list: "
-    );
+  private async getGitlabProjectId(host: string, repository: string, group: string, headers: { Authorization: string }): Promise<number> {
+    const projects = await this.fetchGitlabData(`${host}/api/v4/projects?search=${repository}`, headers, 'Failed to fetch project list: ');
 
-    const matchedProject = projects.find((p: { name: string; namespace: { full_path: string } }) =>
-        p.name === repository && p.namespace.full_path.toLowerCase() === group.toLowerCase()
+    const matchedProject = projects.find(
+      (p: { name: string; namespace: { full_path: string } }) => p.name === repository && p.namespace.full_path.toLowerCase() === group.toLowerCase()
     );
 
     if (!matchedProject) {
-        throw new Error("Project not found. Check the repository name and group.");
+      throw new Error('Project not found. Check the repository name and group.');
     }
 
     return matchedProject.id;
@@ -620,76 +634,71 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
   }
 
   validateProtocolPopover = this.translate.instant(
-    "Validate protocols against the <b>Protocol Schema</b> before loading into the application. <br /><br /> The protocol schema defines the allowable inputs for use in protocols."
+    'Validate protocols against the <b>Protocol Schema</b> before loading into the application. <br /><br /> The protocol schema defines the allowable inputs for use in protocols.'
   );
 
   protocolServerPopover = this.translate.instant(
-    "Choose the location to use as the protocol source and results output. <br /><br />Additional configuration for <b>Gitlab</b> will become active below this box when it is selected."
+    'Choose the location to use as the protocol source and results output. <br /><br />Additional configuration for <b>Gitlab</b> will become active below this box when it is selected.'
   );
 
   protocolTablePopover = this.translate.instant(
-    "The table below shows a list of the available test protocols within TabSINT. You can select a protocol by pressing on the table row, then <b>load</b>, <b>update</b>, or <b>delete</b> the protocol using the buttons below. <br /><br />" +
-      "Protocols can be added from each of the servers listed on the <i>Configuration</i> page using the pane below this one. The input area will change depending on the server selected."
+    'The table below shows a list of the available test protocols within TabSINT. You can select a protocol by pressing on the table row, then <b>load</b>, <b>update</b>, or <b>delete</b> the protocol using the buttons below. <br /><br />' +
+      'Protocols can be added from each of the servers listed on the <i>Configuration</i> page using the pane below this one. The input area will change depending on the server selected.'
   );
 
   mediaTablePopover = this.translate.instant(
-    "This table shows a list of the downloaded media repositories. " +
-      "These repositories can be referenced by any protocols using the <code>mediaRepository</code> key in the top level of the protocol. <br /><br />" +
-      "Media repositories will be downloaded from the Gitlab Server defined in the <b>Gitlab Configuration</b> pane under the <i>Configuration</i> tab."
+    'This table shows a list of the downloaded media repositories. ' +
+      'These repositories can be referenced by any protocols using the <code>mediaRepository</code> key in the top level of the protocol. <br /><br />' +
+      'Media repositories will be downloaded from the Gitlab Server defined in the <b>Gitlab Configuration</b> pane under the <i>Configuration</i> tab.'
   );
 
   mediaAddPopover = this.translate.instant(
-    "Type in the name of a repository to use as a common media repository. <br /><br />" +
-      "The repository must be located on the host in the group defined in the <b>Gitlab Configuration</b> pane under the <i>Configuration</i> tab."
+    'Type in the name of a repository to use as a common media repository. <br /><br />' +
+      'The repository must be located on the host in the group defined in the <b>Gitlab Configuration</b> pane under the <i>Configuration</i> tab.'
   );
 
   serverDefaultPopover = this.translate.instant(
-    "Reset all configuration values to the defaults set in the build configuaration file. This file can only be edited when TabSINT is built from source code."
+    'Reset all configuration values to the defaults set in the build configuaration file. This file can only be edited when TabSINT is built from source code.'
   );
 
   gitlabAddPopover = this.translate.instant(
-    "Type in the name of the protocol repository located on the host and group. If applicable, put all parent directories in the group field."
+    'Type in the name of the protocol repository located on the host and group. If applicable, put all parent directories in the group field.'
   );
 
   gitlabAddVersionPopover = this.translate.instant(
-    "<strong>OPTIONAL:</strong> Type in the repository tag for the version of the repository you would like to download. Leave blank to download the latest tag/commit from the repository."
+    '<strong>OPTIONAL:</strong> Type in the repository tag for the version of the repository you would like to download. Leave blank to download the latest tag/commit from the repository.'
   );
 
-  gitlabHostPopover = this.translate.instant(
-    'Hostname of the gitlab server instance you are running. Generally this will be "https://gitlab.com/"'
-  );
+  gitlabHostPopover = this.translate.instant('Hostname of the gitlab server instance you are running. Generally this will be "https://gitlab.com/"');
 
   gitlabTokenPopover = this.translate.instant(
-    "The secret token used to access your gitlab repositories. See the user guide for more information about finding the Token."
+    'The secret token used to access your gitlab repositories. See the user guide for more information about finding the Token.'
   );
 
-  gitlabNamespacePopover = this.translate.instant(
-    "The group where protocol, media, and result repositories are stored."
-  );
+  gitlabNamespacePopover = this.translate.instant('The group where protocol, media, and result repositories are stored.');
 
   gitlabUseTagsPopover = this.translate.instant(
-    "By default, TabSINT will track changes to protocol files based on the <b>tags</b> to a repository.<br /><br />" +
-      "Uncheck this box if you would only like to download changes that are associated with repository <b>commits</b>."
+    'By default, TabSINT will track changes to protocol files based on the <b>tags</b> to a repository.<br /><br />' +
+      'Uncheck this box if you would only like to download changes that are associated with repository <b>commits</b>.'
   );
 
   gitlabUseSeperateResultsRepoPopover = this.translate.instant(
-    "Select this option to choose a different gitlab group or repository for results upload.  <br /><br />By default, results are uploaded to a <code>results</code> repository in the same group that contains the protocol."
+    'Select this option to choose a different gitlab group or repository for results upload.  <br /><br />By default, results are uploaded to a <code>results</code> repository in the same group that contains the protocol.'
   );
 
   gitlabResultsGroupPopover = this.translate.instant(
-    "Type the group that contains the <b>Results Repository</b> specified below. <br /><br /> <i>Note: This group must use the same <b>Host</b> and <b>Token</b> above.</i>"
+    'Type the group that contains the <b>Results Repository</b> specified below. <br /><br /> <i>Note: This group must use the same <b>Host</b> and <b>Token</b> above.</i>'
   );
 
   gitlabResultsRepoPopover = this.translate.instant(
-    "Type the name of the repository where results will be uploaded. To avoid errors, please create the repository before trying to upload results to it.<br /><br /> <i>Note: This repository must use the same <b>Host</b> and <b>Token</b> above.</i>"
+    'Type the name of the repository where results will be uploaded. To avoid errors, please create the repository before trying to upload results to it.<br /><br /> <i>Note: This repository must use the same <b>Host</b> and <b>Token</b> above.</i>'
   );
 
   downloadCreareProtocolsPopover = this.translate.instant(
-    "Select this option to download standard protocols from Creare.  Results will still go to the gitlab host, group, and repository defined in <b>Gitlab Configuration</b> on the <i>Configuration</i> tab.  When this option is not selected, protocols are downloaded from the host and group defined in <b>Gitlab Configuration</b> on the <i>Configuration</i> tab."
+    'Select this option to download standard protocols from Creare.  Results will still go to the gitlab host, group, and repository defined in <b>Gitlab Configuration</b> on the <i>Configuration</i> tab.  When this option is not selected, protocols are downloaded from the host and group defined in <b>Gitlab Configuration</b> on the <i>Configuration</i> tab.'
   );
 
   localAddPopover = this.translate.instant(
-    "The local directory under <code>Documents/tabsint-protocols</code> where the protocol is stored on the tablet. Press <b>Add</b> to select a protocol directory via a file chooser."
+    'The local directory under <code>Documents/tabsint-protocols</code> where the protocol is stored on the tablet. Press <b>Add</b> to select a protocol directory via a file chooser.'
   );
-
 }

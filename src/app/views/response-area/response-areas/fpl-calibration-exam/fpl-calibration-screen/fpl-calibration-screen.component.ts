@@ -4,11 +4,11 @@ import { ConnectedDevice } from '../../../../../interfaces/connected-device.inte
 @Component({
   selector: 'app-fpl-calibration-screen',
   templateUrl: './fpl-calibration-screen.component.html',
-  styleUrls: ['./fpl-calibration-screen.component.css']
+  styleUrls: ['./fpl-calibration-screen.component.css'],
 })
 export class FPLCalibrationScreenComponent {
   calibrationRunning: boolean = false;
-  @Input() outputChannel: string = "";
+  @Input() outputChannel: string = '';
   @Input() PctComplete: number = 0;
   @Input() shouldAbort: boolean = false;
   @Input() device: ConnectedDevice | undefined;
@@ -35,5 +35,4 @@ export class FPLCalibrationScreenComponent {
       this.calibrationRunning = false;
     }
   }
-
 }

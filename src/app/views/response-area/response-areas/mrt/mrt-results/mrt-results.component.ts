@@ -7,22 +7,20 @@ import { Subscription } from 'rxjs/internal/Subscription';
 @Component({
   selector: 'mrt-results',
   templateUrl: './mrt-results.component.html',
-  styleUrl: './mrt-results.component.css'
+  styleUrl: './mrt-results.component.css',
 })
 export class MrtResultsComponent implements OnInit, OnDestroy {
   @Input() mrtResults!: MrtResultsInterface[];
   state: StateInterface;
   stateSubscription: Subscription | undefined;
 
-  constructor(
-    private readonly stateModel: StateModel
-  ) {
+  constructor(private readonly stateModel: StateModel) {
     this.state = this.stateModel.getState();
-    this.stateModel.updateState({isSubmittable: true});
+    this.stateModel.updateState({ isSubmittable: true });
   }
 
   ngOnInit(): void {
-    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
   }

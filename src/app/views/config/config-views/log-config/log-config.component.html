@@ -1,46 +1,47 @@
 <div class="row">
-    <div class="col-12">{{'Number of log messages' | translate}}: {{logsCount}}</div>
+  <div class="col-12">{{ "Number of log messages" | translate }}: {{ logsCount }}</div>
 </div>
 <div class="row pad-top">
-    <div class="col-4">
-        <!-- <button class="btn btn-block btn-success"
+  <div class="col-4">
+    <!-- <button class="btn btn-block btn-success"
             (click)="logExportUpload()"><i class="ion-upload"></i> 
             {{'Upload' | translate}}</button> -->
-    </div>
-    <div class="col-4">
-        <button class="btn btn-block btn-primary"
-            (click)="logExportSave()"><span class="ion-document"></span>
-            {{'Export' | translate}}</button>
-    </div>
-    <div class="col-4">
-        <button class="btn btn-block btn-default" (click)="displayLogs()"><i
-                class="ion-document-text"></i> {{ showLogs ? 'Hide' : 'Display' | translate }}</button>
-    </div>
+  </div>
+  <div class="col-4">
+    <button class="btn btn-block btn-primary" (click)="logExportSave()"><span class="ion-document"></span> {{ "Export" | translate }}</button>
+  </div>
+  <div class="col-4">
+    <button class="btn btn-block btn-default" (click)="displayLogs()">
+      <i class="ion-document-text"></i> {{ showLogs ? "Hide" : ("Display" | translate) }}
+    </button>
+  </div>
 </div>
 
 <div class="row pad-top" *ngIf="showLogs">
-    <div class="col-12">
-        <div class="well admin-log-display">
-            <!-- <div *ngFor="log in logs.disp.slice(0, logs.nLogs)">
+  <div class="col-12">
+    <div class="well admin-log-display">
+      <!-- <div *ngFor="log in logs.disp.slice(0, logs.nLogs)">
                 <div class="row">
                     <div class="col-12"><strong>[{{log.date.split(' ')[1]}}]</strong>: {{log.data}}
                     </div>
                 </div>
             </div> -->
-            <!-- <div class="row" *ngIf="logs.disp.length - logs.nLogs > 0">
+      <!-- <div class="row" *ngIf="logs.disp.length - logs.nLogs > 0">
                 <div class="col-6">({{logs.disp.length - logs.nLogs}} not shown) </div>
                 <div class="col-6"><button type="button" class="btn btn-default btn-block"
                         (click)="logs.nLogs = logs.nLogs+50"> + 50</button></div>
             </div> -->
-        </div>
     </div>
-    <div class="row mt-4" *ngIf="showLogs">
-        <div class="col-12 log-textarea">
-          <div *ngFor="let log of logs; let i = index">
-            <div class="log-entry">
-              <pre>{{ log }}</pre>
-            </div>
-            <hr *ngIf="i < logs!.length - 1" /> <!-- Horizontal line to separate log entries -->
-          </div>
+  </div>
+  <div class="row mt-4" *ngIf="showLogs">
+    <div class="col-12 log-textarea">
+      <div *ngFor="let log of logs; let i = index">
+        <div class="log-entry">
+          <pre>{{ log }}</pre>
         </div>
+        <hr *ngIf="i < logs!.length - 1" />
+        <!-- Horizontal line to separate log entries -->
+      </div>
+    </div>
+  </div>
 </div>

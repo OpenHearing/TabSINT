@@ -10,16 +10,17 @@ describe('MultipleChoiceComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [MultipleChoiceComponent],
-      imports: [TranslateModule.forRoot({
-                  loader: {
-                    provide: TranslateLoader,
-                    useClass: TranslateFakeLoader
-                  }
-                })],
-      providers: [TranslateService, TranslateStore]
-    })
-    .compileComponents();
-    
+      imports: [
+        TranslateModule.forRoot({
+          loader: {
+            provide: TranslateLoader,
+            useClass: TranslateFakeLoader,
+          },
+        }),
+      ],
+      providers: [TranslateService, TranslateStore],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(MultipleChoiceComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

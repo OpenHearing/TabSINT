@@ -4,7 +4,7 @@ import { ConnectedDevice } from '../../../../../interfaces/connected-device.inte
 @Component({
   selector: 'app-calibration-screen',
   templateUrl: './calibration-screen.component.html',
-  styleUrls: ['./calibration-screen.component.css']
+  styleUrls: ['./calibration-screen.component.css'],
 })
 export class CalibrationScreenComponent implements OnChanges {
   @Input() isPlaying: boolean = false;

@@ -1,4 +1,4 @@
-import { Component,ChangeDetectorRef, OnInit, OnDestroy  } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
@@ -21,7 +21,7 @@ import { ChangeMaxLogLengthComponent } from '../../../change-max-log-length/chan
 @Component({
   selector: 'tabsint-config-view',
   templateUrl: './tabsint-config.component.html',
-  styleUrl: './tabsint-config.component.css'
+  styleUrl: './tabsint-config.component.css',
 })
 export class TabsintConfigComponent implements OnInit, OnDestroy {
   disk: DiskInterface;
@@ -38,7 +38,7 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
     private readonly dialog: MatDialog,
     private readonly stateModel: StateModel,
     private readonly translate: TranslateService,
-    private readonly versionModel: VersionModel,
+    private readonly versionModel: VersionModel
   ) {
     this.state = this.stateModel.getState();
     this.disk = this.diskModel.getDisk();
@@ -46,13 +46,13 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     this.version = await this.versionModel.getVersion();
-    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
-        this.disk = updatedDisk;
-    })
-    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+    });
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
-    this.stateModel.updateState({appState: AppState.Admin});
+    this.stateModel.updateState({ appState: AppState.Admin });
   }
 
   ngOnDestroy(): void {
@@ -80,7 +80,6 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   // ];
 
   // resultsModeOptions = ResultsMode;
-
 
   // Functions
 
@@ -114,19 +113,18 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   }
 
   toggleDebugMode() {
-    this.diskModel.updateDiskModel('debugMode',!this.diskModel.disk.debugMode);
+    this.diskModel.updateDiskModel('debugMode', !this.diskModel.disk.debugMode);
   }
 
   toggleDisableLogs() {
-      this.diskModel.updateDiskModel('disableLogs', !this.disk.disableLogs);
+    this.diskModel.updateDiskModel('disableLogs', !this.disk.disableLogs);
   }
 
   gainReset() {
-    console.log("gainReset pressed");
+    console.log('gainReset pressed');
   }
 
-  async changeLocalResultsDir(){
-
+  async changeLocalResultsDir() {
     try {
       const result = await TabsintFs.chooseFolder();
       let servers = this.disk.servers;
@@ -143,9 +141,9 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   // Popovers
 
   headsetPopover = this.translate.instant(
-    "Select the default headset used to administer hearing tests. " +
-    "This selection is overridden by the <code>headset</code> parameter in protocols. <br /><br /> If the protocol does not specify a <code>headset</code>, " +
-    "this value must match the value in the protocol's <code>calibration.json</code> file."
+    'Select the default headset used to administer hearing tests. ' +
+      'This selection is overridden by the <code>headset</code> parameter in protocols. <br /><br /> If the protocol does not specify a <code>headset</code>, ' +
+      "this value must match the value in the protocol's <code>calibration.json</code> file."
   );
 
   // languagePopover = this.translate.instant(
@@ -153,19 +151,19 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   // );
 
   adminPopover = this.translate.instant(
-    "Includes additional configuration options, displays expandable <b>debug</b> menus showing program state at the bottom of exam pages, and suppresses Admin Password prompts."
+    'Includes additional configuration options, displays expandable <b>debug</b> menus showing program state at the bottom of exam pages, and suppresses Admin Password prompts.'
   );
 
   adminPinPopover = this.translate.instant(
-    "Change the Admin PIN to any numerical value.  This PIN is required to switch to Admin View and to reset exams when Admin Mode is off."
+    'Change the Admin PIN to any numerical value.  This PIN is required to switch to Admin View and to reset exams when Admin Mode is off.'
   );
 
   disableLogsPopover = this.translate.instant(
-    "Disable log messages from being stored and uploaded. <br /><br />Logs are useful for investigating software bugs, but may introduce privacy concerns. Disable logging anytime sensitive data is being collected."
+    'Disable log messages from being stored and uploaded. <br /><br />Logs are useful for investigating software bugs, but may introduce privacy concerns. Disable logging anytime sensitive data is being collected.'
   );
 
   setMaxLogRowsPopover = this.translate.instant(
-    "Set the maximum number of log records to be saved. This will prevent the logs from consuming too much memory."
+    'Set the maximum number of log records to be saved. This will prevent the logs from consuming too much memory.'
   );
 
   // disableVolumePopover = this.translate.instant(
@@ -195,12 +193,11 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   // );
 
   automaticallyOutputResultsPopover = this.translate.instant(
-    "Automatically upload or export the result when a test is finished. The result will be uploaded or exported on the <b>Exam Complete</b> page. <br /><br /> Once the result is uploaded to a server or exported to a local file, it will be removed from TabSINT."
+    'Automatically upload or export the result when a test is finished. The result will be uploaded or exported on the <b>Exam Complete</b> page. <br /><br /> Once the result is uploaded to a server or exported to a local file, it will be removed from TabSINT.'
   );
 
   // gainPopover = this.translate.instant(
   //   "Apply a special gain in dB to the audio level output through TabSINT. " +
   //   "This can be used to calibrate the audio jack output to a specified level for all audio played through the tablet."
   // );
-
 }

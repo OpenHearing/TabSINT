@@ -1,12 +1,16 @@
 <div>
-    <h1 *ngIf="examType !== 'manualAudiometryResponseArea'">
-        {{ title}}
-    </h1>
-    <h2 *ngIf="questionMainText" [ngClass]="examTestingTitleClass">
-        {{questionMainText}}
-    </h2>
-    <p class="subtext pad-top" *ngIf="questionSubText && examType !== 'manualAudiometryResponseArea'"><span [textContent]="questionSubText" id="subtext-testing"></span></p>
-    <p class="instructions" *ngIf="instructionText && examType !== 'manualAudiometryResponseArea'"><span [textContent]="instructionText" id="instructions-testing"></span></p>
+  <h1 *ngIf="examType !== 'manualAudiometryResponseArea'">
+    {{ title }}
+  </h1>
+  <h2 *ngIf="questionMainText" [ngClass]="examTestingTitleClass">
+    {{ questionMainText }}
+  </h2>
+  <p class="subtext pad-top" *ngIf="questionSubText && examType !== 'manualAudiometryResponseArea'">
+    <span [textContent]="questionSubText" id="subtext-testing"></span>
+  </p>
+  <p class="instructions" *ngIf="instructionText && examType !== 'manualAudiometryResponseArea'">
+    <span [textContent]="instructionText" id="instructions-testing"></span>
+  </p>
 
-    <response-area></response-area>
+  <response-area></response-area>
 </div>

@@ -1,20 +1,17 @@
 <div [ngSwitch]="currentStep">
-    <input-parameters *ngSwitchCase="'input-parameters'" instruction="Press submit to start the exam."
-        [parameterMap]="inputParameterMap">
-    </input-parameters>
-    
-    <wai-in-progress *ngSwitchCase="'in-progress'" [device]="device" [parameterMap]="inputParameterMap"
-        (WAIResultsEvent)="saveResults($event)">
-    </wai-in-progress>
+  <input-parameters *ngSwitchCase="'input-parameters'" instruction="Press submit to start the exam." [parameterMap]="inputParameterMap">
+  </input-parameters>
 
-    <wai-results
-        *ngSwitchCase="'results'"
-        [width]="width"
-        [height]="height"
-        [xTicks]="xTicks"
-        [margin]="margin"
-        [waiResults]="waiResults"
-        [normativeAbsorbanceData]="normativeAbsorbanceData">
-    </wai-results>    
+  <wai-in-progress *ngSwitchCase="'in-progress'" [device]="device" [parameterMap]="inputParameterMap" (WAIResultsEvent)="saveResults($event)">
+  </wai-in-progress>
 
+  <wai-results
+    *ngSwitchCase="'results'"
+    [width]="width"
+    [height]="height"
+    [xTicks]="xTicks"
+    [margin]="margin"
+    [waiResults]="waiResults"
+    [normativeAbsorbanceData]="normativeAbsorbanceData">
+  </wai-results>
 </div>

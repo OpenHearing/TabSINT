@@ -1,5 +1,5 @@
 <div class="results-container" *ngIf="results">
-  <h2 style="color: #0369ad;">Calibration Results</h2>
+  <h2 style="color: #0369ad">Calibration Results</h2>
   <div class="ear-results left-ear">
     <h3>Left Ear</h3>
     <table class="results-table">
@@ -13,10 +13,25 @@
       </thead>
       <tbody>
         <tr *ngFor="let freq of getKeys(results.leftEar)">
-          <td (click)="!(device?.isMsgPending) && navigateToStep('Left', freq, 'calibration')">{{ freq }}</td>
-          <td (click)="!(device?.isMsgPending) && navigateToStep('Left', freq, 'calibration')">{{ results.leftEar[freq].calFactor }}</td>
-          <td (click)="!(device?.isMsgPending) && navigateToStep('Left', freq, 'calibration')">{{ results.leftEar[freq].measurement }}</td>
-          <td (click)=" !(device?.isMsgPending) && navigateToStep('Left', freq, 'max-output')">{{ results.leftEar[freq].maxOutput }}
+          <td
+            (click)="!device?.isMsgPending && navigateToStep('Left', freq, 'calibration')"
+            (keydown.enter)="!device?.isMsgPending && navigateToStep('Left', freq, 'calibration')">
+            {{ freq }}
+          </td>
+          <td
+            (click)="!device?.isMsgPending && navigateToStep('Left', freq, 'calibration')"
+            (keydown.enter)="!device?.isMsgPending && navigateToStep('Left', freq, 'calibration')">
+            {{ results.leftEar[freq].calFactor }}
+          </td>
+          <td
+            (click)="!device?.isMsgPending && navigateToStep('Left', freq, 'calibration')"
+            (keydown.enter)="!device?.isMsgPending && navigateToStep('Left', freq, 'calibration')">
+            {{ results.leftEar[freq].measurement }}
+          </td>
+          <td
+            (click)="!device?.isMsgPending && navigateToStep('Left', freq, 'max-output')"
+            (keydown.enter)="!device?.isMsgPending && navigateToStep('Left', freq, 'max-output')">
+            {{ results.leftEar[freq].maxOutput }}
           </td>
         </tr>
       </tbody>
@@ -36,10 +51,26 @@
       </thead>
       <tbody>
         <tr *ngFor="let freq of getKeys(results.rightEar)">
-          <td (click)="!(device?.isMsgPending) && navigateToStep('Right', freq, 'calibration')">{{ freq }}</td>
-          <td (click)="!(device?.isMsgPending) && navigateToStep('Right', freq, 'calibration')">{{ results.rightEar[freq].calFactor }}</td>
-          <td (click)="!(device?.isMsgPending) && navigateToStep('Right', freq, 'calibration')">{{ results.rightEar[freq].measurement }}</td>
-          <td (click)="!(device?.isMsgPending) && navigateToStep('Right', freq, 'max-output')">{{ results.rightEar[freq].maxOutput}}</td>
+          <td
+            (click)="!device?.isMsgPending && navigateToStep('Right', freq, 'calibration')"
+            (keydown.enter)="!device?.isMsgPending && navigateToStep('Right', freq, 'calibration')">
+            {{ freq }}
+          </td>
+          <td
+            (click)="!device?.isMsgPending && navigateToStep('Right', freq, 'calibration')"
+            (keydown.enter)="!device?.isMsgPending && navigateToStep('Right', freq, 'calibration')">
+            {{ results.rightEar[freq].calFactor }}
+          </td>
+          <td
+            (click)="!device?.isMsgPending && navigateToStep('Right', freq, 'calibration')"
+            (keydown.enter)="!device?.isMsgPending && navigateToStep('Right', freq, 'calibration')">
+            {{ results.rightEar[freq].measurement }}
+          </td>
+          <td
+            (click)="!device?.isMsgPending && navigateToStep('Right', freq, 'max-output')"
+            (keydown.enter)="!device?.isMsgPending && navigateToStep('Right', freq, 'max-output')">
+            {{ results.rightEar[freq].maxOutput }}
+          </td>
         </tr>
       </tbody>
     </table>

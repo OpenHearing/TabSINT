@@ -182,7 +182,8 @@
   background-color: white;
 }
 
-.results-table th, .results-table td {
+.results-table th,
+.results-table td {
   border: 1px solid #ddd;
   padding: 12px;
   text-align: center;
@@ -223,7 +224,9 @@
   font-weight: bold;
   cursor: pointer;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
 }
 
 .submit-btn:hover {
@@ -234,4 +237,3 @@
   background-color: #003f8f;
   transform: scale(0.98);
 }
-

@@ -5,15 +5,14 @@ import { StateModel } from '../../../../models/state/state.service';
 import { StateInterface } from '../../../../models/state/state.interface';
 import { Subscription } from 'rxjs/internal/Subscription';
 
-
 @Component({
   selector: 'device-config-view',
   templateUrl: './device-config.component.html',
-  styleUrl: './device-config.component.css'
+  styleUrl: './device-config.component.css',
 })
 export class DeviceConfigComponent implements OnInit, OnDestroy {
-  state: StateInterface
-    stateSubscription: Subscription | undefined;
+  state: StateInterface;
+  stateSubscription: Subscription | undefined;
 
   constructor(
     private readonly stateModel: StateModel,
@@ -23,14 +22,13 @@ export class DeviceConfigComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
-    this.stateModel.updateState({appState: AppState.Admin});
+    this.stateModel.updateState({ appState: AppState.Admin });
   }
 
   ngOnDestroy(): void {
     this.stateSubscription?.unsubscribe();
   }
-
 }

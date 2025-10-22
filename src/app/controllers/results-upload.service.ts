@@ -8,37 +8,40 @@ import { Device } from '@capacitor/device';
 import { DiskInterface } from '../models/disk/disk.interface';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-
-
 export class ResultsUploadService {
   disk: DiskInterface;
   constructor(
     private readonly diskModel: DiskModel,
-    private readonly logger: Logger,
+    private readonly logger: Logger
   ) {
     this.disk = diskModel.getDisk();
   }
 
   /**
    * Get the HTTP options for a Capacitor HTTP request.
-   * 
+   *
    * @param gitlabToken The token used for authorization.
    * @param url The URL of the request.
    * @param data The optional data for the request.
    * @param contentType The content type for request.
    * @returns The HttpOptions to be used with a Capacitor HTTP request.
    */
-  private gitlabHttpOptions(gitlabToken: string, url: string, data: string | undefined = undefined, contentType: string = "application/json"): HttpOptions {
-    const headers: { 'Authorization': string, 'Content-Type': string; } = {
-      'Authorization': `Bearer ${gitlabToken}`,
-      'Content-Type': contentType
+  private gitlabHttpOptions(
+    gitlabToken: string,
+    url: string,
+    data: string | undefined = undefined,
+    contentType: string = 'application/json'
+  ): HttpOptions {
+    const headers: { Authorization: string; 'Content-Type': string } = {
+      Authorization: `Bearer ${gitlabToken}`,
+      'Content-Type': contentType,
     };
     const options = {
       url: url,
       headers: headers,
-      ...(data && { data: data })
+      ...(data && { data: data }),
     };
     return options;
   }
@@ -59,12 +62,12 @@ export class ResultsUploadService {
     const groupResp = await CapacitorHttp.get(groupOptions);
     if (groupResp.status < 200 || groupResp.status >= 300) {
       if (groupResp.status === 401) {
-        throw new Error("Unauthorized: Check your GitLab credentials.");
+        throw new Error('Unauthorized: Check your GitLab credentials.');
       }
       throw new Error(`Failed to fetch group info: ${groupResp.status}`);
     }
     const groups = await groupResp.data;
-    const groupObj = groups.find((g: { full_path: string; }) => g.full_path === gitlabGroup);
+    const groupObj = groups.find((g: { full_path: string }) => g.full_path === gitlabGroup);
     if (!groupObj) {
       throw new Error(`Group '${gitlabGroup}' not found or no permission to view it.`);
     }
@@ -74,44 +77,44 @@ export class ResultsUploadService {
     const projectsResp = await CapacitorHttp.get(projectsOptions);
     if (projectsResp.status < 200 || projectsResp.status >= 300) {
       if (groupResp.status === 401) {
-        throw new Error("Unauthorized: Check your GitLab credentials.");
+        throw new Error('Unauthorized: Check your GitLab credentials.');
       }
       throw new Error(`Failed to fetch group projects: ${projectsResp.status}`);
     }
     const projects = await projectsResp.data;
-    let resultsRepo = projects.find((p: { name: string; }) => p.name === 'results');
+    let resultsRepo = projects.find((p: { name: string }) => p.name === 'results');
     if (!resultsRepo) {
       this.logger.debug("No 'results' repo found. Attempting to create...");
       const createProjectBody = {
-        name: "results",
-        path: "results",
+        name: 'results',
+        path: 'results',
         namespace_id: groupId,
-        visibility: "private"
+        visibility: 'private',
       };
       const createProjectsUrl = `${this.removeTrailingSlashes(gitlabHost)}/api/v4/projects`;
       const createProjectOptions = this.gitlabHttpOptions(gitlabToken, createProjectsUrl, JSON.stringify(createProjectBody));
       const createProjResp = await CapacitorHttp.post(createProjectOptions);
       if (createProjResp.status < 200 || createProjResp.status >= 300) {
         if (groupResp.status === 401) {
-          throw new Error("Unauthorized: Check your GitLab credentials.");
+          throw new Error('Unauthorized: Check your GitLab credentials.');
         }
         throw new Error(`Failed to create 'results' project: ${createProjResp.status}`);
       }
       resultsRepo = await createProjResp.data;
     }
-    this.logger.debug("results repo found and returning its id");
+    this.logger.debug('results repo found and returning its id');
     return resultsRepo.id;
   }
 
-  async uploadResult(singleExamResult: ExamResults): Promise<{ success: boolean, message: string; }> {
+  async uploadResult(singleExamResult: ExamResults): Promise<{ success: boolean; message: string }> {
     try {
       if (!singleExamResult?.protocol) {
-        throw new Error("Invalid exam result.");
+        throw new Error('Invalid exam result.');
       }
 
       const protocol = singleExamResult.protocol;
       if (!protocol.gitlabConfig?.host || !protocol.gitlabConfig?.token || !protocol.gitlabConfig?.group) {
-        throw new Error("Missing required GitLab configuration. Please specify a gitlab host, token, group and repository");
+        throw new Error('Missing required GitLab configuration. Please specify a gitlab host, token, group and repository');
       }
       const gitlabHost = protocol.gitlabConfig?.host;
       const gitlabToken = protocol.gitlabConfig?.token;
@@ -130,13 +133,13 @@ export class ResultsUploadService {
       const body = {
         branch: 'master', // or 'main', depending on your repo
         commit_message: commitMessage,
-        content: JSON.stringify(singleExamResult, null, 2) // pretty-print JSON
+        content: JSON.stringify(singleExamResult, null, 2), // pretty-print JSON
       };
       const createFileOptions = this.gitlabHttpOptions(gitlabToken, fileUrl, JSON.stringify(body));
       const createFileResp = await CapacitorHttp.post(createFileOptions);
       if (createFileResp.status < 200 || createFileResp.status >= 300) {
         if (createFileResp.status === 401) {
-          throw new Error("Unauthorized: Check your GitLab credentials.");
+          throw new Error('Unauthorized: Check your GitLab credentials.');
         }
         throw new Error(`Failed to create file in results repo: ${createFileResp.status}`);
       }
@@ -147,20 +150,20 @@ export class ResultsUploadService {
         nResponses: singleExamResult.responses ? Object.keys(singleExamResult.responses).length : 0,
         source: ProtocolServer.Gitlab,
         uploadedOn: new Date().toISOString(),
-        output: ProtocolServer.Gitlab
+        output: ProtocolServer.Gitlab,
       };
 
       this.disk.uploadSummary.push(uploadSummaryEntry);
-      this.diskModel.updateDiskModel("uploadSummary", this.disk.uploadSummary);
+      this.diskModel.updateDiskModel('uploadSummary', this.disk.uploadSummary);
       this.disk = this.diskModel.getDisk();
 
-      this.logger.debug("Successfully uploaded to upload summary in disk ");
+      this.logger.debug('Successfully uploaded to upload summary in disk ');
 
       this.logger.debug(`Successfully uploaded exam result to '${folderName}' as ${fileName}.`);
 
       return { success: true, message: `Successfully uploaded ${fileName} to GitLab at ${gitlabGroup}/results` };
     } catch (error: any) {
-      this.logger.error("Upload failed: " + error);
+      this.logger.error('Upload failed: ' + error);
       return { success: false, message: error.message };
     }
   }

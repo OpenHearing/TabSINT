@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
-import { PageModel } from "../../../../../models/page/page.service";
+import { PageModel } from '../../../../../models/page/page.service';
 import { FPLCalibrationExamInterface } from './fpl-calibration-exam.interface';
-import { PageInterface } from "../../../../../models/page/page.interface";
+import { PageInterface } from '../../../../../models/page/page.interface';
 import { DevicesService } from '../../../../../controllers/devices.service';
 import { DeviceUtil } from '../../../../../services/device-utility.service';
 import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
@@ -21,25 +21,25 @@ import { StateInterface } from '../../../../../models/state/state.interface';
 @Component({
   selector: 'app-fpl-calibration-exam',
   templateUrl: './fpl-calibration-exam.component.html',
-  styleUrls: ['./fpl-calibration-exam.component.css']
+  styleUrls: ['./fpl-calibration-exam.component.css'],
 })
 export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   currentStep: string = 'landing';
   device: ConnectedDevice | undefined;
   tabsintId: string = FPLcalibrationExamSchema.properties.tabsintId.default;
   results: ResultsInterface;
-  navigationHistory: { step: string; outputChannel: string; }[] = [];
+  navigationHistory: { step: string; outputChannel: string }[] = [];
   outputChannelIndex: number = 0;
   shouldAbort: boolean = false;
   isRequestingResults: boolean = false;
-  abortText: string = "";
+  abortText: string = '';
   state: StateInterface;
   inProgressResults: WAIResultsInterface = {
     State: 'READY',
-    PctComplete: 0
+    PctComplete: 0,
   };
   inProgressResultsSubject = new BehaviorSubject<WAIResultsInterface>(this.inProgressResults);
-  
+
   inProgressResultsSubscription: Subscription | undefined;
   pageSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
@@ -75,21 +75,31 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
     private readonly changeDetectorRef: ChangeDetectorRef,
     private readonly pageModel: PageModel,
     private readonly devicesService: DevicesService,
-    private readonly deviceUtil: DeviceUtil, 
-    private readonly logger: Logger, 
+    private readonly deviceUtil: DeviceUtil,
+    private readonly logger: Logger,
     private readonly resultsModel: ResultsModel,
-    private readonly examService: ExamService, 
+    private readonly examService: ExamService,
     private readonly buttonTextService: ButtonTextService,
     private readonly stateModel: StateModel
   ) {
     this.results = this.resultsModel.getResults();
-    this.examService.submit = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep(); };
-    this.examService.back = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.previousStep(); };
-    this.examService.reset = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault(); };
-    this.examService.submitPartial = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault(); };
-    this.examService.navigateToTarget = (subProtocolId) => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.navigateToTargetDefault(subProtocolId); };
+    this.examService.submit = () => {
+      !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep();
+    };
+    this.examService.back = () => {
+      !this.devicesService.isDeviceMessagePending(this.device) && this.previousStep();
+    };
+    this.examService.reset = () => {
+      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault();
+    };
+    this.examService.submitPartial = () => {
+      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault();
+    };
+    this.examService.navigateToTarget = subProtocolId => {
+      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.navigateToTargetDefault(subProtocolId);
+    };
     this.state = this.stateModel.getState();
-    this.stateModel.updateState({isSubmittable: true});
+    this.stateModel.updateState({ isSubmittable: true });
     this.inProgressResultsSubscription = this.inProgressResultsSubject.subscribe((updatedResults: WAIResultsInterface) => {
       this.inProgressResults = updatedResults;
       this.inProgressResults.PctComplete = Math.round(this.inProgressResults.PctComplete);
@@ -97,11 +107,11 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
-      if (updatedPage?.responseArea?.type === "fplCalibrationResponseArea") {
+      if (updatedPage?.responseArea?.type === 'fplCalibrationResponseArea') {
         const responseArea = updatedPage?.responseArea as FPLCalibrationExamInterface;
         this.tabsintId = responseArea.tabsintId ?? this.tabsintId;
         this.outputChannels = responseArea.outputChannels;
@@ -110,13 +120,13 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
         this.numFrequencies = responseArea.numFrequencies ?? this.numFrequencies;
         this.sweepDuration = responseArea.sweepDuration ?? this.sweepDuration;
         this.windowDuration = responseArea.windowDuration ?? this.windowDuration;
-        this.device = this.deviceUtil.getDeviceFromTabsintId(responseArea.tabsintId ?? "1");
+        this.device = this.deviceUtil.getDeviceFromTabsintId(responseArea.tabsintId ?? '1');
         if (!this.device) {
           await this.devicesService.deviceNotFound();
-          this.logger.error("Error setting up FPL Calibration exam, device not found.");
+          this.logger.error('Error setting up FPL Calibration exam, device not found.');
         }
         if (this.outputChannels.length < 1) {
-          this.logger.error("Error setting up FPL Calibration exam, no outputChannel(s) specified.");
+          this.logger.error('Error setting up FPL Calibration exam, no outputChannel(s) specified.');
         }
       }
     });
@@ -125,14 +135,14 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
 
   async ngOnDestroy(): Promise<void> {
     let resp = await this.devicesService.abortExams(this.device!);
-    this.logger.debug("resp from tympan after fpl calibration exam abort exams:" + resp);
+    this.logger.debug('resp from tympan after fpl calibration exam abort exams:' + resp);
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
     this.examService.reset = this.examService.resetDefault.bind(this.examService);
     this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);
     this.examService.navigateToTarget = this.examService.navigateToTargetDefault.bind(this.examService);
     this.examService.back = this.examService.back.bind(this.examService);
-    this.buttonTextService.updateButtonText("Submit");
-    this.stateModel.updateState({isSubmittable: true});
+    this.buttonTextService.updateButtonText('Submit');
+    this.stateModel.updateState({ isSubmittable: true });
     this.shouldAbort = true;
 
     this.pageSubscription?.unsubscribe();
@@ -145,7 +155,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
       const examProperties: any = {
         OutputChannel: this.outputChannel,
         FStart: this.fStart,
-        FEnd:  this.fEnd,
+        FEnd: this.fEnd,
         SweepDuration: this.sweepDuration,
         SweepType: this.sweepType,
         L: this.l,
@@ -162,14 +172,14 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
         WriteFPLCalibration: this.writeFPLCalibration,
         ReturnResultData: this.returnResultData,
       };
-      this.stateModel.updateState({isSubmittable: false});
-      let resp = await this.devicesService.queueExam(this.device, "WAI", examProperties);
-      if (resp![1] != "ERROR") {
+      this.stateModel.updateState({ isSubmittable: false });
+      let resp = await this.devicesService.queueExam(this.device, 'WAI', examProperties);
+      if (resp![1] != 'ERROR') {
         await this.waitForWAIExamCompletion();
       }
     } else {
       await this.devicesService.deviceNotFound();
-      this.logger.error("Error setting up WAI exam during FPL calibration");
+      this.logger.error('Error setting up WAI exam during FPL calibration');
     }
   }
 
@@ -182,21 +192,21 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
       this.isRequestingResults = false;
 
       if (this.shouldAbort) return;
-  
+
       if (this.doesRespContainResults(resp)) {
         this.inProgressResultsSubject.next(resp![1]);
         if (this.inProgressResults.State === 'DONE') {
-          this.stateModel.updateState({isSubmittable: true});
+          this.stateModel.updateState({ isSubmittable: true });
           this.changeDetectorRef.detectChanges();
           return;
         }
       } else {
         this.logger.debug('FPL calibration request results did not return expected results. It may be too early to receive results.');
       }
-  
+
       setTimeout(pollResults, 1000);
     };
-  
+
     pollResults();
   }
 
@@ -211,22 +221,17 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   }
 
   private doesRespContainResults(resp: any[] | undefined) {
-    return resp !== undefined && 
-           resp.length > 1 && 
-           resp[1] !== 'ERROR' && 
-           resp[2] !== 'timeout' &&
-           resp[2] !== 'byte timeout' &&
-           resp[1] !== 'OK';
+    return resp !== undefined && resp.length > 1 && resp[1] !== 'ERROR' && resp[2] !== 'timeout' && resp[2] !== 'byte timeout' && resp[1] !== 'OK';
   }
 
   private async waitForRequestResultsDone() {
     while (this.isRequestingResults) {
-      await new Promise((resolve) => setTimeout(resolve, 10));
-    }  
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
   }
 
   private updateStateOnAbort() {
-    this.stateModel.updateState({isSubmittable: true});
+    this.stateModel.updateState({ isSubmittable: true });
     this.inProgressResults.State = 'ABORTED';
   }
 
@@ -234,18 +239,20 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
     if (this.currentStep === 'landing') {
       this.buttonTextService.updateButtonText('Begin');
     } else if (this.currentStep === 'calibration') {
-      this.outputChannelIndex < this.outputChannels.length - 1 ? this.buttonTextService.updateButtonText('Next') : this.buttonTextService.updateButtonText('Submit');
+      this.outputChannelIndex < this.outputChannels.length - 1
+        ? this.buttonTextService.updateButtonText('Next')
+        : this.buttonTextService.updateButtonText('Submit');
     }
   }
 
   async nextStep(): Promise<void> {
     if (this.currentStep == 'landing') {
       this.currentStep = 'calibration';
-      this.stateModel.updateState({isSubmittable: false});
+      this.stateModel.updateState({ isSubmittable: false });
     } else {
       this.navigationHistory.push({
         step: this.currentStep,
-        outputChannel: this.outputChannel
+        outputChannel: this.outputChannel,
       });
       this.outputChannelIndex += 1;
     }
@@ -264,22 +271,30 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   }
 
   private resetCalibrationExam() {
-    this.examService.submit = this.outputChannelIndex < this.outputChannels.length - 1 ? () => { !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep(); } : () => { this.examService.submitDefault(); };
-    this.examService.back = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.previousStep(); };
+    this.examService.submit =
+      this.outputChannelIndex < this.outputChannels.length - 1
+        ? () => {
+            !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep();
+          }
+        : () => {
+            this.examService.submitDefault();
+          };
+    this.examService.back = () => {
+      !this.devicesService.isDeviceMessagePending(this.device) && this.previousStep();
+    };
     this.shouldAbort = false;
-    this.stateModel.updateState({isSubmittable: false});
+    this.stateModel.updateState({ isSubmittable: false });
     this.inProgressResults = {
       State: 'READY',
-      PctComplete: 0
+      PctComplete: 0,
     };
   }
 
   private updateTextAfterAbortButtonPressed() {
-    this.abortText = "Abort pressed, please wait while exam is aborted.";
+    this.abortText = 'Abort pressed, please wait while exam is aborted.';
   }
 
   private updateTextAfterAbortComplete() {
-    this.abortText = "";
+    this.abortText = '';
   }
-
 }

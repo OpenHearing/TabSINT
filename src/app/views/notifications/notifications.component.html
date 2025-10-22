@@ -1,11 +1,11 @@
-<h2 mat-dialog-title>{{data.title}}</h2>
+<h2 mat-dialog-title>{{ data.title }}</h2>
 
 <mat-dialog-content>
   <div [innerHTML]="data.content"></div>
 </mat-dialog-content>
 
 <mat-dialog-actions>
-  <div *ngIf="data.type===dialogTypeConfirm">
+  <div *ngIf="data.type === dialogTypeConfirm">
     <button mat-button mat-dialog-close>Cancel</button>
   </div>
   <button mat-button [mat-dialog-close]="'OK'" cdkFocusInitial>OK</button>

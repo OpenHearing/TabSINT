@@ -1,12 +1,12 @@
-import { JSONSchemaType } from "ajv";
-import { NormativeDataInterface } from "../../app/interfaces/normative-data-interface";
+import { JSONSchemaType } from 'ajv';
+import { NormativeDataInterface } from '../../app/interfaces/normative-data-interface';
 
 export const normativeDataSchema: JSONSchemaType<NormativeDataInterface> = {
-  type: "object",
+  type: 'object',
   properties: {
-    x: { type: "number" },
-    yMin: { type: "number" },
-    yMax: { type: "number" },
+    x: { type: 'number' },
+    yMin: { type: 'number' },
+    yMax: { type: 'number' },
   },
-  required: ["x", "yMin", "yMax"]
+  required: ['x', 'yMin', 'yMax'],
 };

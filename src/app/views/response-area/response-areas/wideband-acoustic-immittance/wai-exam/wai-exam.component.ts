@@ -18,7 +18,7 @@ import { handleOutputCalibration } from '../../../../../utilities/exam-helper-fu
 @Component({
   selector: 'wai-exam',
   templateUrl: './wai-exam.component.html',
-  styleUrl: './wai-exam.component.css'
+  styleUrl: './wai-exam.component.css',
 })
 export class WAIExamComponent implements OnInit, OnDestroy {
   tabsintId: string = waiSchema.properties.tabsintId.default;
@@ -50,7 +50,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
   device: ConnectedDevice | undefined;
   waiResults: WAIResultsInterface = {
     State: 'READY',
-    PctComplete: 0
+    PctComplete: 0,
   };
   inputParameterMap: Map<string, string> = new Map(); // Parameter map to display the user input parameters
 
@@ -63,21 +63,29 @@ export class WAIExamComponent implements OnInit, OnDestroy {
   constructor(
     private readonly pageModel: PageModel,
     private readonly devicesService: DevicesService,
-    private readonly deviceUtil: DeviceUtil, 
-    private readonly logger: Logger, 
+    private readonly deviceUtil: DeviceUtil,
+    private readonly logger: Logger,
     private readonly resultsModel: ResultsModel,
-    private readonly examService: ExamService, 
-    private readonly buttonTextService: ButtonTextService,
+    private readonly examService: ExamService,
+    private readonly buttonTextService: ButtonTextService
   ) {
     this.results = this.resultsModel.getResults();
-    this.examService.submit = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep(); };
-    this.examService.reset = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault(); };
-    this.examService.submitPartial = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault(); };
-    this.examService.navigateToTarget = (subProtocolId) => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.navigateToTargetDefault(subProtocolId); };
+    this.examService.submit = () => {
+      !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep();
+    };
+    this.examService.reset = () => {
+      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault();
+    };
+    this.examService.submitPartial = () => {
+      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault();
+    };
+    this.examService.navigateToTarget = subProtocolId => {
+      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.navigateToTargetDefault(subProtocolId);
+    };
   }
 
   ngOnInit(): void {
-    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe( (updatedResults) => {
+    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
       this.results = updatedResults;
     });
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
@@ -106,34 +114,34 @@ export class WAIExamComponent implements OnInit, OnDestroy {
         this.normativeAbsorbanceData = responseArea.normativeAbsorbanceData ?? this.normativeAbsorbanceData;
 
         this.inputParameterMap = new Map([
-          ["Start Frequency [Hz]", this.fStart.toString()],
-          ["End Frequency [Hz]", this.fEnd.toString()],
-          ["Sweep Duration [s]", this.sweepDuration.toString()],
-          ["Sweep Type", this.sweepType.toString()],
-          ["Level", this.l.toString()],
-          ["Number of Sweeps", this.numSweeps.toString()],
-          ["Window Duration [s]", this.windowDuration.toString()],
-          ["Number of Frequencies", this.numFrequencies.toString()],
-          ["Filename", this.filename.toString()],
-          ["OutputRawMeasurements", this.outputRawMeasurements.toString()],
+          ['Start Frequency [Hz]', this.fStart.toString()],
+          ['End Frequency [Hz]', this.fEnd.toString()],
+          ['Sweep Duration [s]', this.sweepDuration.toString()],
+          ['Sweep Type', this.sweepType.toString()],
+          ['Level', this.l.toString()],
+          ['Number of Sweeps', this.numSweeps.toString()],
+          ['Window Duration [s]', this.windowDuration.toString()],
+          ['Number of Frequencies', this.numFrequencies.toString()],
+          ['Filename', this.filename.toString()],
+          ['OutputRawMeasurements', this.outputRawMeasurements.toString()],
         ]);
 
         // Update xTicks and scales
         this.xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000].filter(tick => tick >= this.fStart && tick <= this.fEnd);
       }
-    })
+    });
   }
 
   async ngOnDestroy(): Promise<void> {
     let resp = await this.devicesService.abortExams(this.device!);
-    this.logger.debug("resp from tympan after WAI exam abort exams:" + resp);
+    this.logger.debug('resp from tympan after WAI exam abort exams:' + resp);
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
     this.examService.reset = this.examService.resetDefault.bind(this.examService);
     this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);
     this.examService.navigateToTarget = this.examService.navigateToTargetDefault.bind(this.examService);
     this.pageSubscription?.unsubscribe();
     this.resultsSubscription?.unsubscribe();
-    this.buttonTextService.updateButtonText("Submit");
+    this.buttonTextService.updateButtonText('Submit');
   }
 
   async nextStep(): Promise<void> {
@@ -158,8 +166,8 @@ export class WAIExamComponent implements OnInit, OnDestroy {
     // Generate absorbance from power reflectance data (Absorbance = 1 - Reflectance)
     this.waiResults.PowerReflectance = this.waiResults.Absorbance!.map(num => 1 - num);
     // Convert ImpedancePhase from radians to degrees (multiply by 180/pi)
-    this.waiResults.ImpedancePhase = this.waiResults.ImpedancePhase!.map(num => num*180/Math.PI);
-    this.resultsModel.updateCurrentPage({response: waiResults});
+    this.waiResults.ImpedancePhase = this.waiResults.ImpedancePhase!.map(num => (num * 180) / Math.PI);
+    this.resultsModel.updateCurrentPage({ response: waiResults });
   }
 
   private async beginExam() {
@@ -167,7 +175,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
     if (this.device) {
       const examProperties: any = {
         FStart: this.fStart,
-        FEnd:  this.fEnd,
+        FEnd: this.fEnd,
         SweepDuration: this.sweepDuration,
         SweepType: this.sweepType,
         L: this.l,
@@ -184,10 +192,10 @@ export class WAIExamComponent implements OnInit, OnDestroy {
         EarCanalLength: this.earCanalLength,
         WriteFPLCalibration: this.writeFPLCalibration,
       };
-      await this.devicesService.queueExam(this.device, "WAI", examProperties);
+      await this.devicesService.queueExam(this.device, 'WAI', examProperties);
     } else {
       await this.devicesService.deviceNotFound();
-      this.logger.error("Error setting up WAI exam");
+      this.logger.error('Error setting up WAI exam');
     }
   }
 }

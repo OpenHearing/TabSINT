@@ -6,15 +6,15 @@ import { Logger } from '../../services/logger.service';
 @Component({
   selector: 'build-details',
   templateUrl: './build-details.component.html',
-  styleUrl: './build-details.component.css'
+  styleUrl: './build-details.component.css',
 })
 export class BuildDetailsComponent implements OnInit {
   version: VersionInterface | undefined;
 
   constructor(
-    private readonly versionModel: VersionModel, 
+    private readonly versionModel: VersionModel,
     private readonly logger: Logger
-  ) {  }
+  ) {}
 
   ngOnInit(): void {
     this.initializeVersion();
@@ -24,8 +24,7 @@ export class BuildDetailsComponent implements OnInit {
     try {
       this.version = await this.versionModel.getVersion();
     } catch (error) {
-      this.logger.error("" + error);
+      this.logger.error('' + error);
     }
   }
-
 }

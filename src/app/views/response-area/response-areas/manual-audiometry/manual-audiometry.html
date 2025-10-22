@@ -1,20 +1,18 @@
 <div [ngSwitch]="currentStep">
-
   <!-- Exam Step -->
   <div *ngSwitchCase="'Exam'" class="audiometry-container">
     <div class="main-white-box">
       <div class="graphs-container">
-
         <!-- Right Audiogram -->
         <div class="audiogram-right" [ngClass]="{'red-border': selectedEar === 'Right'}">
-          <audiogram 
-            *ngIf="refreshGraph" 
-            [dataStruct]="getEarData('Right')" 
-            [selectedEar]="selectedEar === 'Right' ? 'Right' : null" 
+          <audiogram
+            *ngIf="refreshGraph"
+            [dataStruct]="getEarData('Right')"
+            [selectedEar]="selectedEar === 'Right' ? 'Right' : null"
             [isManualExam]="true"></audiogram>
         </div>
 
-        <!-- Response Buttons -->    
+        <!-- Response Buttons -->
         <div class="response-panel-vertical">
           <button class="response-btn no-response" [disabled]="!isNoResponseEnabled" (click)="noResponse()">No Response</button>
           <button class="response-btn delete-threshold" (click)="deleteThreshold()">Delete Threshold</button>
@@ -22,24 +20,23 @@
         </div>
 
         <!-- Left Audiogram -->
-        <div class="audiogram-left" [ngClass]="{'blue-border': selectedEar === 'Left'}" >
-          <audiogram 
-            *ngIf="refreshGraph" 
-            [dataStruct]="getEarData('Left')" 
-            [selectedEar]="selectedEar === 'Left' ? 'Left' : null" 
+        <div class="audiogram-left" [ngClass]="{'blue-border': selectedEar === 'Left'}">
+          <audiogram
+            *ngIf="refreshGraph"
+            [dataStruct]="getEarData('Left')"
+            [selectedEar]="selectedEar === 'Left' ? 'Left' : null"
             [isManualExam]="true"></audiogram>
         </div>
       </div>
-  
-      <div class="response-panel">
 
+      <div class="response-panel">
         <div class="ear-submit-container">
           <!-- Ear Selection Panel -->
           <div class="ear-buttons">
             <button
               class="ear-btn"
               [ngStyle]="{'background-color': selectedEar === 'Right' ? '#dc3545' : 'transparent', 'color': selectedEar === 'Right' ? 'white' : 'black'}"
-              (click)="selectEar('Right')" >
+              (click)="selectEar('Right')">
               Right
             </button>
             <button
@@ -50,37 +47,27 @@
             </button>
           </div>
 
-        
           <button class="response-btn submit-results" (click)="examService.submit()">Submit Results</button>
-
         </div>
       </div>
-  
+
       <!-- Control Boxes -->
       <div class="control-boxes-container">
-
         <!-- Tone -->
         <div class="control-box tone-box">
           <div class="box-label">Tone</div>
           <div class="adjustment-buttons">
-            <button
-              class="adjust-btn"
-              *ngFor="let adjustment of adjustments"
-              (click)="adjustTone(adjustment)">
+            <button class="adjust-btn" *ngFor="let adjustment of adjustments" (click)="adjustTone(adjustment)">
               {{ adjustment > 0 ? '+' + adjustment : adjustment }}
             </button>
           </div>
           <div class="tone-display">
             <div class="tone-value">
-              <ng-container *ngIf="currentDbSpl <= (minOutputLevel+adjustmentStepSize)">
-                ({{ currentDb }})
-              </ng-container>
-              <ng-container
-                *ngIf="currentDbSpl > (minOutputLevel+adjustmentStepSize) && currentDbSpl >= (maxOutputLevel-adjustmentStepSize)">
+              <ng-container *ngIf="currentDbSpl <= (minOutputLevel+adjustmentStepSize)"> ({{ currentDb }}) </ng-container>
+              <ng-container *ngIf="currentDbSpl > (minOutputLevel+adjustmentStepSize) && currentDbSpl >= (maxOutputLevel-adjustmentStepSize)">
                 ({{ currentDb }}+)
               </ng-container>
-              <ng-container
-                *ngIf="currentDbSpl > (minOutputLevel+adjustmentStepSize) && currentDbSpl < (maxOutputLevel-adjustmentStepSize)">
+              <ng-container *ngIf="currentDbSpl > (minOutputLevel+adjustmentStepSize) && currentDbSpl < (maxOutputLevel-adjustmentStepSize)">
                 {{ currentDb }}
               </ng-container>
             </div>
@@ -92,7 +79,7 @@
             </button>
           </div>
         </div>
-  
+
         <!-- Frequency -->
         <div class="control-box frequency-box">
           <div class="box-label">Frequency</div>
@@ -103,7 +90,7 @@
           </div>
           <button class="adjust-btn frequency-btn" (click)="adjustFrequency(1)">▶</button>
         </div>
-  
+
         <!-- Masking -->
         <div class="control-box masking-box disabled">
           <div class="box-label">Masking</div>
@@ -127,10 +114,6 @@
 
   <!-- Results Step -->
   <div *ngSwitchCase="'Results'">
-    <manual-audiometry-result-viewer
-      [audiogramData] = "audiogramData">
-    </manual-audiometry-result-viewer>
+    <manual-audiometry-result-viewer [audiogramData]="audiogramData"> </manual-audiometry-result-viewer>
   </div>
-  
 </div>
-  

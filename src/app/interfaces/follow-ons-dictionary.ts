@@ -1,5 +1,5 @@
-import { FollowOnInterface } from "./page-definition.interface";
+import { FollowOnInterface } from './page-definition.interface';
 
 export interface FollowOnsDictionary {
-    [Key: string]: FollowOnInterface
+  [Key: string]: FollowOnInterface;
 }

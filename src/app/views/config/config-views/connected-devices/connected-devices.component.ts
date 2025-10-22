@@ -13,7 +13,7 @@ import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
   selector: 'connected-devices',
-  templateUrl: './connected-devices.component.html'
+  templateUrl: './connected-devices.component.html',
 })
 export class ConnectedDevicesComponent implements OnInit, OnDestroy {
   devices: DevicesInterface;
@@ -41,25 +41,24 @@ export class ConnectedDevicesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.stateSubscription = this.stateModel.stateSubject.subscribe((updatedState) => {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
-  };
+  }
 
   reconnect(device: ConnectedDevice) {
-    this.logger.debug("attempting to reconnect to device: " + JSON.stringify(device));
+    this.logger.debug('attempting to reconnect to device: ' + JSON.stringify(device));
     this.devicesService.reconnect(device);
   }
 
   disconnect(device: ConnectedDevice) {
-    this.logger.debug("attempting to disconnect from device:" + JSON.stringify(device));
+    this.logger.debug('attempting to disconnect from device:' + JSON.stringify(device));
     this.devicesService.disconnect(device);
   }
 
   remove(device: ConnectedDevice) {
-    this.logger.debug("remove() button pressed, attempting to disconnect and remove: " + JSON.stringify(device));
+    this.logger.debug('remove() button pressed, attempting to disconnect and remove: ' + JSON.stringify(device));
     this.deviceUtil.removeSavedDevice(device);
     this.devicesService.removeDevice(device);
   }
-
 }

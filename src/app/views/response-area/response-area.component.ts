@@ -7,18 +7,18 @@ import { PageModel } from '../../models/page/page.service';
   selector: 'response-area',
   templateUrl: './response-area.component.html',
   template: 'response-area',
-  styleUrl: './response-area.component.css'
+  styleUrl: './response-area.component.css',
 })
 export class ResponseAreaComponent implements OnInit, OnDestroy {
   pageSubscription: Subscription | undefined;
   currentPage: PageInterface;
 
-  constructor (private readonly pageModel: PageModel) {
+  constructor(private readonly pageModel: PageModel) {
     this.currentPage = pageModel.getPage();
   }
 
   ngOnInit(): void {
-    this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
+    this.pageSubscription = this.pageModel.currentPageSubject.subscribe((updatedPage: PageInterface) => {
       this.currentPage = updatedPage;
     });
   }
