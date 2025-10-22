@@ -9,6 +9,8 @@ import { DiskModel } from '../../../../models/disk/disk.service';
 import { Logger } from '../../../../services/logger.service';
 import { VersionModel } from '../../../../models/version/version.service';
 import { DevicesModel } from '../../../../models/devices/devices-model.service';
+import { StateModel } from '../../../../models/state/state.service';
+import { StateInterface } from '../../../../models/state/state.interface';
 
 @Component({
   selector: 'software-config-view',
@@ -16,6 +18,7 @@ import { DevicesModel } from '../../../../models/devices/devices-model.service';
   styleUrl: './software-config.component.css'
 })
 export class SoftwareConfigComponent {
+  state: StateInterface;
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
   devices: DevicesInterface;
@@ -26,9 +29,11 @@ export class SoftwareConfigComponent {
     private readonly diskModel: DiskModel,
     private readonly logger: Logger,
     private readonly versionModel: VersionModel,
+    private readonly stateModel: StateModel
   ) {
     this.disk = this.diskModel.getDisk();
     this.devices = this.devicesModel.getDevices();
+    this.state = this.stateModel.getState();
     this.version = {
       tabsint: '',
       date: '',
@@ -63,11 +68,6 @@ export class SoftwareConfigComponent {
   }
 
   // TODO: VARIABLES - SHOULD BE MOVED TO THE RESPECTIVE MODEL WHEN IT EXISTS
-
-  networkModel: any = {
-    "status": false,
-    "type": "???"
-  };
 
   config = {
     build: "placeholder",

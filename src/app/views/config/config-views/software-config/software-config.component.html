@@ -71,13 +71,9 @@
     </li>
     <li>
         <b>{{'Network Status' | translate}}:</b>
-        <span *ngIf="networkModel.status">{{'Online' | translate}}</span>
-        <span *ngIf="!networkModel.status">{{'Offline' | translate}}</span>
+        <span *ngIf="state.wifiConnected">{{'Online' | translate}}</span>
+        <span *ngIf="!state.wifiConnected">{{'Offline' | translate}}</span>
     </li>
-    <!-- <li>
-        <b>{{'Network Type' | translate}}:</b>
-        <span>{{networkModel.type}}</span>
-    </li> -->
 </ul>
 
 <br />
