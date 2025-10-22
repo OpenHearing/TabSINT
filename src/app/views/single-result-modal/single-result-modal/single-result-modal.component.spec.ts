@@ -11,14 +11,13 @@ describe('SingleResultModalComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [SingleResultModalComponent],
-      imports:[MatDialogModule, NgxJsonViewerModule],
+      imports: [MatDialogModule, NgxJsonViewerModule],
       providers: [
         { provide: MAT_DIALOG_DATA, useValue: {} },
         { provide: MatDialogRef, useValue: {} },
-      ]
-    })
-    .compileComponents();
-    
+      ],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(SingleResultModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

@@ -20,15 +20,15 @@ describe('ProtocolsComponent', () => {
         BrowserAnimationsModule,
         FormsModule,
         TranslateModule.forRoot({
-                  loader: {
-                    provide: TranslateLoader,
-                    useClass: TranslateFakeLoader
-                  }
-                })],
-      providers: [TranslateService, TranslateStore]
-    })
-    .compileComponents();
-    
+          loader: {
+            provide: TranslateLoader,
+            useClass: TranslateFakeLoader,
+          },
+        }),
+      ],
+      providers: [TranslateService, TranslateStore],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(ProtocolsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

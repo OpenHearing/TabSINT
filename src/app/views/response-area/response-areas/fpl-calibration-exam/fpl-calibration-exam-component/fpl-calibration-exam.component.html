@@ -1,8 +1,5 @@
 <div [ngSwitch]="currentStep">
-
-  <div *ngSwitchCase="'landing'">
-    Press begin to start
-  </div>
+  <div *ngSwitchCase="'landing'">Press begin to start</div>
 
   <app-fpl-calibration-screen
     *ngSwitchCase="'calibration'"
@@ -14,6 +11,5 @@
     (abortCalibration)="abort()">
   </app-fpl-calibration-screen>
 
-  <div style="padding-top: 1em;"> {{abortText}} </div>
-
+  <div style="padding-top: 1em">{{ abortText }}</div>
 </div>

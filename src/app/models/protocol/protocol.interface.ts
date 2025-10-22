@@ -1,9 +1,9 @@
-import { FollowOnsDictionary } from "../../interfaces/follow-ons-dictionary";
-import { ProtocolDictionary } from "../../interfaces/protocol-dictionary";
-import { ProtocolErrorInterface } from "../../interfaces/protocol-error.interface";
-import { ProtocolSchemaInterface } from "../../interfaces/protocol-schema.interface";
-import { ProtocolServer } from "../../utilities/constants";
-import { GitlabConfigInterface } from "../disk/disk.interface";
+import { FollowOnsDictionary } from '../../interfaces/follow-ons-dictionary';
+import { ProtocolDictionary } from '../../interfaces/protocol-dictionary';
+import { ProtocolErrorInterface } from '../../interfaces/protocol-error.interface';
+import { ProtocolSchemaInterface } from '../../interfaces/protocol-schema.interface';
+import { ProtocolServer } from '../../utilities/constants';
+import { GitlabConfigInterface } from '../disk/disk.interface';
 
 export interface ProtocolMetaInterface {
   group?: string;
@@ -19,35 +19,35 @@ export interface ProtocolMetaInterface {
 }
 
 export interface ProtocolModelInterface {
-  activeProtocol?: ProtocolInterface, 
-  activeProtocolDictionary?: ProtocolDictionary,
-  activeProtocolFollowOnsDictionary?: FollowOnsDictionary
+  activeProtocol?: ProtocolInterface;
+  activeProtocolDictionary?: ProtocolDictionary;
+  activeProtocolFollowOnsDictionary?: FollowOnsDictionary;
 }
 export interface ProtocolInterface extends ProtocolSchemaInterface, ProtocolMetaInterface {
-    cCommon?: any;
-    key?: string;
-    commonRepo?: any;
-    protocolTabsintOutdated?: boolean;
-    protocolUsbCMissing?: boolean;
-    currentCalibration?: "None" | "VicFirth" | "VicFirthS2" | "HDA200" | "WAHTS" | "Audiometer" | "EPHD1";
-    _audioProfileVersion?: string;
-    _calibrationPySVNRevision?: string;
-    _calibrationPyManualReleaseDate?: string;
-    _exportCSV?: boolean;
-    _protocolIdDict?: any;
-    _preProcessFunctionList?: Array<string>;
-    _missingWavCalList?: Array<string>;
-    _missingCommonWavCalList?: Array<string>;
-    _missingPreProcessFunctionList?: Array<string>;
-    _missingControllerList?: Array<string>;
-    _missingHtmlList?: Array<string>; 
-    _missingCommonMediaRepo?: boolean;
-    _hasSubjectIdResponseArea?: boolean;
-    _customHtmlList?: Array<{
-        name: string,
-        path: string,
-        id: string
-      }>;
-    _requiresCha?: boolean;
-    errors?: Array<ProtocolErrorInterface>
+  cCommon?: any;
+  key?: string;
+  commonRepo?: any;
+  protocolTabsintOutdated?: boolean;
+  protocolUsbCMissing?: boolean;
+  currentCalibration?: 'None' | 'VicFirth' | 'VicFirthS2' | 'HDA200' | 'WAHTS' | 'Audiometer' | 'EPHD1';
+  _audioProfileVersion?: string;
+  _calibrationPySVNRevision?: string;
+  _calibrationPyManualReleaseDate?: string;
+  _exportCSV?: boolean;
+  _protocolIdDict?: any;
+  _preProcessFunctionList?: Array<string>;
+  _missingWavCalList?: Array<string>;
+  _missingCommonWavCalList?: Array<string>;
+  _missingPreProcessFunctionList?: Array<string>;
+  _missingControllerList?: Array<string>;
+  _missingHtmlList?: Array<string>;
+  _missingCommonMediaRepo?: boolean;
+  _hasSubjectIdResponseArea?: boolean;
+  _customHtmlList?: Array<{
+    name: string;
+    path: string;
+    id: string;
+  }>;
+  _requiresCha?: boolean;
+  errors?: Array<ProtocolErrorInterface>;
 }

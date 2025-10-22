@@ -15,10 +15,9 @@ import { ButtonTextService } from '../../controllers/button-text.service';
 @Component({
   selector: 'exam-view',
   templateUrl: './exam.component.html',
-  styleUrl: './exam.component.css'
+  styleUrl: './exam.component.css',
 })
-
-export class ExamComponent implements OnInit, OnDestroy  {
+export class ExamComponent implements OnInit, OnDestroy {
   // Controller varialbles
   buttonText: string = 'Submit';
   isKeyboardVisible = false;
@@ -37,7 +36,7 @@ export class ExamComponent implements OnInit, OnDestroy  {
   private keyboardShowListener?: PluginListenerHandle;
   private keyboardHideListener?: PluginListenerHandle;
 
-  constructor (
+  constructor(
     private readonly cdr: ChangeDetectorRef,
     private readonly examService: ExamService,
     private readonly diskModel: DiskModel,
@@ -52,24 +51,24 @@ export class ExamComponent implements OnInit, OnDestroy  {
 
   ngOnInit(): void {
     this.initializeKeyboardListeners();
-    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
     });
-    this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
+    this.pageSubscription = this.pageModel.currentPageSubject.subscribe((updatedPage: PageInterface) => {
       this.currentPage = updatedPage;
     });
-    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
     this.examService.switchToExamView();
-    this.stateModel.updateState({appState: AppState.Exam});
+    this.stateModel.updateState({ appState: AppState.Exam });
     this.buttonTextSubscription = this.buttonTextService.buttonText$.subscribe((newText: string) => {
       this.buttonText = newText;
     });
   }
 
   ngOnDestroy(): void {
-    this.stateModel.updateState({appState: AppState.null});
+    this.stateModel.updateState({ appState: AppState.null });
     this.removeKeyboardListeners();
     this.diskSubscription?.unsubscribe();
     this.pageSubscription?.unsubscribe();
@@ -104,12 +103,12 @@ export class ExamComponent implements OnInit, OnDestroy  {
   private async initializeKeyboardListeners() {
     this.keyboardShowListener = await Keyboard.addListener('keyboardWillShow', () => {
       this.isKeyboardVisible = true;
-      this.cdr.detectChanges(); 
+      this.cdr.detectChanges();
     });
 
     this.keyboardHideListener = await Keyboard.addListener('keyboardWillHide', () => {
       this.isKeyboardVisible = false;
-      this.cdr.detectChanges(); 
+      this.cdr.detectChanges();
     });
   }
 

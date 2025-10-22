@@ -2,20 +2,22 @@ import { TabsintFs } from 'tabsintfs';
 import { ProtocolMetaInterface } from '../models/protocol/protocol.interface';
 import { NormativeDataInterface } from '../interfaces/normative-data-interface';
 import { ProtocolServer } from './constants';
-import { Buffer } from "buffer";
+import { Buffer } from 'buffer';
 import * as XLSX from 'xlsx';
 import { WAIInterface } from '../views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.interface';
 import { SweptDpoaeInterface } from '../views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/swept-dpoae-exam.interface';
 
 /**
- * Validate that the file headers align with the expected headers/properties for the data 
+ * Validate that the file headers align with the expected headers/properties for the data
  * @param actualHeaders The headers read from the file
  * @param expectedPositions The expected headers which align with data properties
  */
-function validateHeaders(actualHeaders: string[], expectedPositions: { [key: string]: number; }) {
+function validateHeaders(actualHeaders: string[], expectedPositions: { [key: string]: number }) {
   for (const [expectedHeader, expectedIndex] of Object.entries(expectedPositions)) {
     if (actualHeaders[expectedIndex] !== expectedHeader) {
-      throw new Error(`Header validation failed: Expected "${expectedHeader}" at index ${expectedIndex}, but found "${actualHeaders[expectedIndex]}"`);
+      throw new Error(
+        `Header validation failed: Expected "${expectedHeader}" at index ${expectedIndex}, but found "${actualHeaders[expectedIndex]}"`
+      );
     }
   }
 }
@@ -36,12 +38,12 @@ async function parseXlsxBuffer(xlsxFileContent: ArrayBuffer): Promise<NormativeD
   const workSheet: XLSX.WorkSheet = workbook.Sheets[worksheetName];
   // Convert to data array
   const lines: any[][] = XLSX.utils.sheet_to_json(workSheet, { header: 1 });
-  const headerIndex = lines.findIndex((line) => line[0].startsWith('X'));
+  const headerIndex = lines.findIndex(line => line[0].startsWith('X'));
   const header = lines[headerIndex];
-  const expectedHeaderPositions: { [key: string]: number; } = {
-    'X': 0,
-    'Y_MIN': 1,
-    'Y_MAX': 2,
+  const expectedHeaderPositions: { [key: string]: number } = {
+    X: 0,
+    Y_MIN: 1,
+    Y_MAX: 2,
   };
   validateHeaders(header, expectedHeaderPositions);
 
@@ -88,7 +90,7 @@ export async function loadWAINormativeData(responseArea: WAIInterface, meta: Pro
 
 /**
  * Get normative data from the provided XLSX file
- * @param normativeDataFilePath The file name of the normative data 
+ * @param normativeDataFilePath The file name of the normative data
  * @param meta The metadata associated with the protocol to determine the full file path information
  * @returns A promise that resolves to an array of normative data
  */

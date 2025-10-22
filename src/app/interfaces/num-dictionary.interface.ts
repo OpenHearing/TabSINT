@@ -1,3 +1,3 @@
 export interface NumDictionary {
-    [Key: string]: number
+  [Key: string]: number;
 }

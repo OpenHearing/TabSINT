@@ -1,36 +1,35 @@
 <p class="instructions">
-  <span> 
-    Press Play to start the tone. Only press pause if needed. 
-    Use the +/- buttons to adjust the output level until the flat plate reads [TargetLevel] dB SPL (+/- 3 dB). 
-    Make sure to use Linear Weighting in your signal path during calibration and ensure no clipping in your signal path. 
-    Enter the level reported by the flat plate. Press Submit when done.
+  <span>
+    Press Play to start the tone. Only press pause if needed. Use the +/- buttons to adjust the output level until the flat plate reads [TargetLevel]
+    dB SPL (+/- 3 dB). Make sure to use Linear Weighting in your signal path during calibration and ensure no clipping in your signal path. Enter the
+    level reported by the flat plate. Press Submit when done.
   </span>
 </p>
 
 <div class="calibration-container">
   <h1 class="calibration-title">Calibration for {{ currentFrequency }} Hz</h1>
-  
+
   <div class="calibration-info">
     <p class="info-item">Target Level: {{ targetLevel }} dB</p>
     <p class="info-item">Ear Cup: {{ earCup }}</p>
   </div>
-  
+
   <div class="calibration-box">
     <div class="cal-factor-container">
       <p class="cal-factor-label">Cal Factor:</p>
       <p class="cal-factor-value">{{ calFactor }} dB FS</p>
     </div>
-    
+
     <div class="button-container">
       <button class="adjust-button" [disabled]="device?.isMsgPending" (click)="adjustCalFactor(3)">+3 dB</button>
       <button class="adjust-button" [disabled]="device?.isMsgPending" (click)="adjustCalFactor(-3)">-3 dB</button>
     </div>
     <button class="play-pause-button" [disabled]="device?.isMsgPending" (click)="onTogglePlay()">
       <svg *ngIf="!isPlaying" viewBox="0 0 24 24" class="play-icon">
-        <path d="M8 5v14l11-7z"/>
+        <path d="M8 5v14l11-7z" />
       </svg>
       <svg *ngIf="isPlaying" viewBox="0 0 24 24" class="pause-icon">
-        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
       </svg>
     </button>
   </div>
@@ -41,11 +40,18 @@
   <div class="calibration-box">
     <label for="measurementInput" class="measured-value-label">Flat Plate Measured Value:</label>
     <div class="input-group">
-      <input id="measurementInput" type="number" [(ngModel)]="userInput" (keydown.enter)="onEnterPressed()"
-        [ngClass]="{'input-error': showValidationError}" class="measured-value-input" step="0.1">
+      <input
+        id="measurementInput"
+        type="number"
+        [(ngModel)]="userInput"
+        (keydown.enter)="onEnterPressed()"
+        [ngClass]="{ 'input-error': showValidationError }"
+        class="measured-value-input"
+        step="0.1" />
       <span class="unit">dB SPL</span>
     </div>
     <div *ngIf="showValidationError" class="error-message">
       {{ validationMessage }}
     </div>
+  </div>
 </div>

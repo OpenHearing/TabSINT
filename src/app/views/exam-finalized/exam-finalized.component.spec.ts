@@ -10,16 +10,17 @@ describe('ExamFinalizedComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ExamFinalizedComponent],
-      imports: [TranslateModule.forRoot({
-                  loader: {
-                    provide: TranslateLoader,
-                    useClass: TranslateFakeLoader
-                  }
-                })],
-      providers: [TranslateService, TranslateStore]
-    })
-    .compileComponents();
-    
+      imports: [
+        TranslateModule.forRoot({
+          loader: {
+            provide: TranslateLoader,
+            useClass: TranslateFakeLoader,
+          },
+        }),
+      ],
+      providers: [TranslateService, TranslateStore],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(ExamFinalizedComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

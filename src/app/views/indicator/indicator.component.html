@@ -1,34 +1,33 @@
 <!-- plugin indicators -->
 <!-- <a href="javascript:" class="header-text" *ngFor="let navbar of plugins.elems.navbar" title="Plugin indicator"> -->
-    <!-- <ng-include src="navbar.templateUrl"/> -->
-    <!-- navbar -->
+<!-- <ng-include src="navbar.templateUrl"/> -->
+<!-- navbar -->
 <!-- </a> -->
-  
 
 <!-- tympan status -->
-<a href="javascript:" class="header-text" *ngIf="devices?.connectedDevices?.tympan?.[0]?.state==DeviceState.Connected" title="Tympan Connected">
-    <span>
-        <i [matMenuTriggerFor]= "TympanConnectedMenu" class="tympan-logo"></i>
-    </span>
-    <mat-menu #TympanConnectedMenu="matMenu">
-        <button mat-menu-item>
-            <div [innerHTML]="TympanConnectedPopover"></div>
-        </button>
-    </mat-menu>
+<a href="javascript:" class="header-text" *ngIf="devices?.connectedDevices?.tympan?.[0]?.state == DeviceState.Connected" title="Tympan Connected">
+  <span>
+    <i [matMenuTriggerFor]="TympanConnectedMenu" class="tympan-logo"></i>
+  </span>
+  <mat-menu #TympanConnectedMenu="matMenu">
+    <button mat-menu-item>
+      <div [innerHTML]="TympanConnectedPopover"></div>
+    </button>
+  </mat-menu>
 </a>
 
 <!-- Streaming Status -->
 <a href="javascript:" class="header-text" *ngIf="!disk.disableAudioStreaming" title="Streaming status">
-    <span>
-        <i [matMenuTriggerFor]= "StreamingConnectionMenu" class="ion-radio-waves"></i>
-    </span>
-    <mat-menu #StreamingConnectionMenu="matMenu">
-        <button mat-menu-item>
-            <div [innerHTML]="StreamingConnectionPopover"></div>
-        </button>
-    </mat-menu>
+  <span>
+    <i [matMenuTriggerFor]="StreamingConnectionMenu" class="ion-radio-waves"></i>
+  </span>
+  <mat-menu #StreamingConnectionMenu="matMenu">
+    <button mat-menu-item>
+      <div [innerHTML]="StreamingConnectionPopover"></div>
+    </button>
+  </mat-menu>
 </a>
-  
+
 <!-- Svantek status -->
 <!-- <a href="javascript:" class="header-text svantek-indicator-height" title="Svantek status">
     <span *ngIf="state.svantek === SvantekState.Connected || state.svantek === SvantekState.Recording">
@@ -40,40 +39,38 @@
         </button>
     </mat-menu>
 </a> -->
-  
-  
+
 <!-- bluetooth status -->
 <a href="javascript:" class="header-text" *ngIf="state.bluetoothConnected" title="Bluetooth status">
-    <span>
-        <i [matMenuTriggerFor]= "BluetoothConnectedMenu" class="ion-bluetooth"></i>
-    </span>
-    <mat-menu #BluetoothConnectedMenu="matMenu">
-        <button mat-menu-item>
-            <div [innerHTML]="BluetoothConnectedPopover"></div>
-        </button>
-    </mat-menu>
+  <span>
+    <i [matMenuTriggerFor]="BluetoothConnectedMenu" class="ion-bluetooth"></i>
+  </span>
+  <mat-menu #BluetoothConnectedMenu="matMenu">
+    <button mat-menu-item>
+      <div [innerHTML]="BluetoothConnectedPopover"></div>
+    </button>
+  </mat-menu>
 </a>
-  
+
 <!-- network status -->
 <a href="javascript:" class="header-text" *ngIf="state.wifiConnected" title="Network status: Connected">
-    <span>
-        <i [matMenuTriggerFor]= "WiFiConnectedMenu" class="ion-wifi"></i>
-    </span>
-    <mat-menu #WiFiConnectedMenu="matMenu">
-        <button mat-menu-item>
-            <div [innerHTML]="WiFiConnectedPopover"></div>
-        </button>
-    </mat-menu>
+  <span>
+    <i [matMenuTriggerFor]="WiFiConnectedMenu" class="ion-wifi"></i>
+  </span>
+  <mat-menu #WiFiConnectedMenu="matMenu">
+    <button mat-menu-item>
+      <div [innerHTML]="WiFiConnectedPopover"></div>
+    </button>
+  </mat-menu>
 </a>
-  
+
 <a href="javascript:" class="header-text header-icon" *ngIf="!state.wifiConnected" title="Network status: Not connected">
-    <span>
-        <mat-icon [matMenuTriggerFor]= "WiFiNotConnectedMenu" aria-hidden="false" aria-label="Example home icon" fontIcon="signal_wifi_off"></mat-icon>
-    </span>
-    <mat-menu #WiFiNotConnectedMenu="matMenu">
-        <button mat-menu-item>
-            <div [innerHTML]="WiFiNotConnectedPopover"></div>
-        </button>
-    </mat-menu>
+  <span>
+    <mat-icon [matMenuTriggerFor]="WiFiNotConnectedMenu" aria-hidden="false" aria-label="Example home icon" fontIcon="signal_wifi_off"></mat-icon>
+  </span>
+  <mat-menu #WiFiNotConnectedMenu="matMenu">
+    <button mat-menu-item>
+      <div [innerHTML]="WiFiNotConnectedPopover"></div>
+    </button>
+  </mat-menu>
 </a>
-  

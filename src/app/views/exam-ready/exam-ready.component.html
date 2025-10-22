@@ -2,13 +2,12 @@
   <h1 [innerHtml]="title"></h1>
   <div class="spacer"></div>
 </div>
-  
+
 <div *ngIf="subtitle">
   <h2 [innerHtml]="subtitle"></h2>
   <div class="spacer"></div>
 </div>
-  
+
 <p class="instructions" *ngIf="instructionText">
   <span [innerHtml]="instructionText" id="instructions-ready"></span>
 </p>
-  

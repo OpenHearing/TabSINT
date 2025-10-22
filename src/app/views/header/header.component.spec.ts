@@ -12,17 +12,18 @@ describe('HeaderComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [HeaderComponent, IndicatorComponent],
-      imports: [MatMenuModule,
+      imports: [
+        MatMenuModule,
         TranslateModule.forRoot({
-                  loader: {
-                    provide: TranslateLoader,
-                    useClass: TranslateFakeLoader
-                  }
-                })],
-      providers: [TranslateService, TranslateStore]
-    })
-    .compileComponents();
-    
+          loader: {
+            provide: TranslateLoader,
+            useClass: TranslateFakeLoader,
+          },
+        }),
+      ],
+      providers: [TranslateService, TranslateStore],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(HeaderComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

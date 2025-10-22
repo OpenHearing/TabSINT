@@ -14,14 +14,13 @@ describe('NewConnectionComponent', () => {
         TranslateModule.forRoot({
           loader: {
             provide: TranslateLoader,
-            useClass: TranslateFakeLoader
-          }
-        })
+            useClass: TranslateFakeLoader,
+          },
+        }),
       ],
-      providers: [TranslateService, TranslateStore]
-    })
-    .compileComponents();
-    
+      providers: [TranslateService, TranslateStore],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(NewConnectionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

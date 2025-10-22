@@ -15,16 +15,15 @@ describe('DeviceInfoComponent', () => {
         MatExpansionModule,
         MatMenuModule,
         TranslateModule.forRoot({
-                    loader: {
-                      provide: TranslateLoader,
-                      useClass: TranslateFakeLoader
-                    }
-                  })
+          loader: {
+            provide: TranslateLoader,
+            useClass: TranslateFakeLoader,
+          },
+        }),
       ],
-      providers: [TranslateService, TranslateStore]
-    })
-    .compileComponents();
-    
+      providers: [TranslateService, TranslateStore],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(DeviceInfoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

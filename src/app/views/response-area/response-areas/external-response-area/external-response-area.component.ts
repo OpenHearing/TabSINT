@@ -15,38 +15,38 @@ import { WINDOW } from '../../../../utilities/window';
 @Component({
   selector: 'external-response-area-view',
   templateUrl: './external-response-area.component.html',
-  styleUrl: './external-response-area.component.css'
+  styleUrl: './external-response-area.component.css',
 })
 export class ExternalResponseAreaComponent implements OnInit, OnDestroy {
   results: ResultsInterface;
   protocol: ProtocolModelInterface;
-  state: StateInterface
+  state: StateInterface;
   testHTML: string;
   testJS: string;
-  subscription: Subscription|undefined;
+  subscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
 
-  constructor (
-    public pageModel: PageModel, 
-    public protocolModel: ProtocolModel, 
-    public resultsModel: ResultsModel, 
+  constructor(
+    public pageModel: PageModel,
+    public protocolModel: ProtocolModel,
+    public resultsModel: ResultsModel,
     public stateModel: StateModel,
     @Inject(WINDOW) private readonly window: Window
   ) {
     this.results = this.resultsModel.getResults();
     this.protocol = this.protocolModel.getProtocolModel();
     this.state = this.stateModel.getState();
-    this.testHTML = "";
-    this.testJS = "";
+    this.testHTML = '';
+    this.testJS = '';
   }
 
   ngOnInit(): void {
-    this.subscription = this.pageModel.currentPageSubject.subscribe( (updatedPage:any) => {
+    this.subscription = this.pageModel.currentPageSubject.subscribe((updatedPage: any) => {
       this.testHTML = updatedPage?.responseArea?.externalHTML;
       this.testJS = updatedPage?.responseArea?.externalJS;
       this.waitForHTMLToLoad();
     });
-    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
   }
@@ -57,10 +57,10 @@ export class ExternalResponseAreaComponent implements OnInit, OnDestroy {
   }
 
   async waitForHTMLToLoad() {
-    let htmlEle = <HTMLElement>document.getElementById("external-div-id");
-    while (htmlEle==null) {
+    let htmlEle = <HTMLElement>document.getElementById('external-div-id');
+    while (htmlEle == null) {
       await this.delay(50);
-      htmlEle = <HTMLElement>document.getElementById("external-div-id");
+      htmlEle = <HTMLElement>document.getElementById('external-div-id');
     }
     htmlEle.innerHTML = this.testHTML;
     eval(this.testJS); //NOSONAR
@@ -92,7 +92,6 @@ export class ExternalResponseAreaComponent implements OnInit, OnDestroy {
   }
 
   delay(ms: number) {
-    return new Promise( resolve => setTimeout(resolve, ms) );
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
-
 }

@@ -12,9 +12,9 @@ import { multipleInputSchema } from '../../../../../schema/response-areas/multip
 @Component({
   selector: 'multiple-input-view',
   templateUrl: './multiple-input.component.html',
-  styleUrl: './multiple-input.component.css'
+  styleUrl: './multiple-input.component.css',
 })
-export class MultipleInputComponent  implements OnInit {
+export class MultipleInputComponent implements OnInit {
   results: ResultsInterface;
   state: StateInterface;
 
@@ -26,15 +26,17 @@ export class MultipleInputComponent  implements OnInit {
   verticalSpacing: number = multipleInputSchema.properties.verticalSpacing.default;
   textAlign: string = multipleInputSchema.properties.textAlign.default;
   review: boolean = multipleInputSchema.properties.review.default;
-  inputList: InputListItem[] = [{
-    text: 'default text'
-  }];
+  inputList: InputListItem[] = [
+    {
+      text: 'default text',
+    },
+  ];
 
   pageSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
 
-  constructor (
+  constructor(
     private readonly pageModel: PageModel,
     private readonly resultsModel: ResultsModel,
     private readonly stateModel: StateModel
@@ -44,13 +46,13 @@ export class MultipleInputComponent  implements OnInit {
   }
 
   ngOnInit(): void {
-    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
-    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe( (updatedResults) => {
+    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
       this.results = updatedResults;
     });
-    this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
+    this.pageSubscription = this.pageModel.currentPageSubject.subscribe((updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type == 'multipleInputResponseArea') {
         let updatedMultipleInputResponseArea = updatedPage.responseArea as MultipleInputInterface;
         if (updatedMultipleInputResponseArea) {
@@ -87,10 +89,9 @@ export class MultipleInputComponent  implements OnInit {
 
   updateSubmittableLogic(): void {
     const isSubmittable = this.inputList.every(
-      (item: any, idx: number) =>
-        !item.required || this.isDefined(item, this.results.currentPage.response[idx])
+      (item: any, idx: number) => !item.required || this.isDefined(item, this.results.currentPage.response[idx])
     );
-    this.stateModel.updateState({isSubmittable: isSubmittable});
+    this.stateModel.updateState({ isSubmittable: isSubmittable });
   }
 
   isDefined(item: any, val: any): boolean {
@@ -102,23 +103,23 @@ export class MultipleInputComponent  implements OnInit {
 
   isWideDropdown(options: any[]): boolean {
     return options.some(option => option.length > 20);
-  }  
+  }
 
   isWideMultiDropdown(options: any[]): boolean {
     return options.some(option => option.label.length > 20);
-  }  
+  }
 
-  private initializeConfigurationVariables(updatedMultipleInputResponseArea: MultipleInputInterface) {    
+  private initializeConfigurationVariables(updatedMultipleInputResponseArea: MultipleInputInterface) {
     this.verticalSpacing = updatedMultipleInputResponseArea.verticalSpacing ?? multipleInputSchema.properties.verticalSpacing.default;
     this.textAlign = updatedMultipleInputResponseArea.textAlign ?? multipleInputSchema.properties.textAlign.default;
     this.review = updatedMultipleInputResponseArea.review ?? multipleInputSchema.properties.review.default;
     this.inputList = updatedMultipleInputResponseArea.inputList.map((item: any) => {
       return {
-        ...item, 
-        required: item.required ?? multipleInputSchema.properties.inputList.items.properties.required.default
+        ...item,
+        required: item.required ?? multipleInputSchema.properties.inputList.items.properties.required.default,
       };
     });
-    
+
     // Initialize multi-dropdown data
     updatedMultipleInputResponseArea.inputList.forEach((item: any, index: number) => {
       if (item.inputType === 'multi-dropdown') {
@@ -132,15 +133,14 @@ export class MultipleInputComponent  implements OnInit {
   }
 
   private initializeReponses(updatedMultipleInputResponseArea: MultipleInputInterface) {
-    this.resultsModel.updateCurrentPage({response: updatedMultipleInputResponseArea.inputList.map(
-      (item: any) => {
+    this.resultsModel.updateCurrentPage({
+      response: updatedMultipleInputResponseArea.inputList.map((item: any) => {
         if (item.inputType === 'date' && item.dateProperties.default === 'today') {
           return this.today;
         } else {
           return item.value;
         }
-      }
-    )});
+      }),
+    });
   }
-
 }

@@ -9,13 +9,13 @@ import { ResultsService } from '../../../controllers/results.service';
 import { SqLite } from '../../../services/sqLite.service';
 import { Notifications } from '../../../services/notifications.service';
 import { Logger } from '../../../services/logger.service';
-import { DialogType} from '../../../utilities/constants';
+import { DialogType } from '../../../utilities/constants';
 import { ResultsUploadService } from '../../../controllers/results-upload.service';
 
 @Component({
   selector: 'app-single-result-modal',
   templateUrl: './single-result-modal.component.html',
-  styleUrl: './single-result-modal.component.css'
+  styleUrl: './single-result-modal.component.css',
 })
 export class SingleResultModalComponent {
   singleExamResult?: ExamResults;
@@ -23,22 +23,22 @@ export class SingleResultModalComponent {
   diskSubscription: Subscription | undefined;
 
   constructor(
-    public dialog: MatDialog, 
+    public dialog: MatDialog,
     public diskModel: DiskModel,
     public resultsService: ResultsService,
     public sqLite: SqLite,
     private readonly resultsUploadService: ResultsUploadService,
     private readonly notifications: Notifications,
     private readonly logger: Logger,
-    @Inject(MAT_DIALOG_DATA) public index: number,
-  ) { 
+    @Inject(MAT_DIALOG_DATA) public index: number
+  ) {
     this.disk = diskModel.getDisk();
   }
 
-  async ngOnInit(): Promise<void> {    
-    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
-        this.disk = updatedDisk;
-    })    
+  async ngOnInit(): Promise<void> {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+    });
     this.singleExamResult = JSON.parse(await this.sqLite.getSingleResult(this.index));
   }
 
@@ -53,23 +53,23 @@ export class SingleResultModalComponent {
       this.logger.debug(result.message);
       this.delete();
       this.notifications.alert({
-        title: "Success",
-        content: result.message || "Result uploaded to GitLab.",
-        type: DialogType.Confirm
+        title: 'Success',
+        content: result.message || 'Result uploaded to GitLab.',
+        type: DialogType.Confirm,
       });
     } else {
-        if (result.message.includes("Unauthorized")) {
-          this.notifications.alert({
-              title: "Unauthorized",
-              content: "Check your GitLab credentials.",
-              type: DialogType.Alert
-          });
+      if (result.message.includes('Unauthorized')) {
+        this.notifications.alert({
+          title: 'Unauthorized',
+          content: 'Check your GitLab credentials.',
+          type: DialogType.Alert,
+        });
       } else {
-          this.notifications.alert({
-              title: "Upload Error",
-              content: result.message || "Something went wrong uploading the result.",
-              type: DialogType.Alert
-          });
+        this.notifications.alert({
+          title: 'Upload Error',
+          content: result.message || 'Something went wrong uploading the result.',
+          type: DialogType.Alert,
+        });
       }
       this.logger.error(result.message);
     }
@@ -98,6 +98,4 @@ export class SingleResultModalComponent {
   close() {
     this.dialog.closeAll();
   }
-
-
 }

@@ -8,10 +8,9 @@ describe('ExternalResponseAreaComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ExternalResponseAreaComponent]
-    })
-    .compileComponents();
-    
+      declarations: [ExternalResponseAreaComponent],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(ExternalResponseAreaComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

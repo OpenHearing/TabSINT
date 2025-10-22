@@ -14,19 +14,19 @@ describe('TabsintConfigComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [TabsintConfigComponent],
       imports: [
-        MatMenuModule, 
+        MatMenuModule,
         NgbModule,
         FormsModule,
         TranslateModule.forRoot({
-                  loader: {
-                    provide: TranslateLoader,
-                    useClass: TranslateFakeLoader
-                  }
-                })],
-      providers: [TranslateService, TranslateStore]
-    })
-    .compileComponents();
-    
+          loader: {
+            provide: TranslateLoader,
+            useClass: TranslateFakeLoader,
+          },
+        }),
+      ],
+      providers: [TranslateService, TranslateStore],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(TabsintConfigComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

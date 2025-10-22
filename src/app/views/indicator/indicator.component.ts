@@ -15,10 +15,10 @@ import { DeviceState, SvantekState } from '../../utilities/constants';
 @Component({
   selector: 'indicator-view',
   templateUrl: './indicator.component.html',
-  styleUrl: './indicator.component.css'
+  styleUrl: './indicator.component.css',
 })
 export class IndicatorComponent implements OnInit, OnDestroy {
-  disk: DiskInterface;  
+  disk: DiskInterface;
   diskSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
   state: StateInterface;
@@ -28,10 +28,10 @@ export class IndicatorComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly deviceModel: DevicesModel,
-    private readonly diskModel: DiskModel, 
+    private readonly diskModel: DiskModel,
     private readonly stateModel: StateModel,
-    private readonly translate: TranslateService,
-  ) { 
+    private readonly translate: TranslateService
+  ) {
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();
     this.devices = this.deviceModel.getDevices();
@@ -41,7 +41,7 @@ export class IndicatorComponent implements OnInit, OnDestroy {
     this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
     });
-    this.stateSubscription = this.stateModel.stateSubject.subscribe((updatedState) => {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
   }
@@ -51,27 +51,15 @@ export class IndicatorComponent implements OnInit, OnDestroy {
     this.stateSubscription?.unsubscribe();
   }
 
-  WiFiNotConnectedPopover = this.translate.instant(
-    "WiFi Not Connected"
-  );
+  WiFiNotConnectedPopover = this.translate.instant('WiFi Not Connected');
 
-  WiFiConnectedPopover = this.translate.instant(
-    "WiFi Connected"
-  );
+  WiFiConnectedPopover = this.translate.instant('WiFi Connected');
 
-  BluetoothConnectedPopover = this.translate.instant(
-    "Bluetooth Connected"
-  );
+  BluetoothConnectedPopover = this.translate.instant('Bluetooth Connected');
 
-  TympanConnectedPopover = this.translate.instant(
-    "Tympan Connected"
-  );
+  TympanConnectedPopover = this.translate.instant('Tympan Connected');
 
-  DosimeterConnectedPopover = this.translate.instant(
-    "Dosimeter Connected"
-  );
+  DosimeterConnectedPopover = this.translate.instant('Dosimeter Connected');
 
-  StreamingConnectionPopover = this.translate.instant(
-    "Streaming Connection Established"
-  );
+  StreamingConnectionPopover = this.translate.instant('Streaming Connection Established');
 }

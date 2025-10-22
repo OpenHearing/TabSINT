@@ -8,10 +8,9 @@ describe('ExamNotReadyComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ExamNotReadyComponent]
-    })
-    .compileComponents();
-    
+      declarations: [ExamNotReadyComponent],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(ExamNotReadyComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

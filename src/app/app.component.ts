@@ -1,9 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { TranslateService } from "@ngx-translate/core";
+import { TranslateService } from '@ngx-translate/core';
 import _ from 'lodash';
 import { Subscription, firstValueFrom } from 'rxjs';
-import { MatDialog } from '@angular/material/dialog'; 
+import { MatDialog } from '@angular/material/dialog';
 
 import { TabsintFs } from 'tabsintfs';
 
@@ -27,20 +27,20 @@ import { DialogType } from './utilities/constants';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html'
+  templateUrl: './app.component.html',
 })
 export class AppComponent implements OnInit, OnDestroy {
   title = 'tabsint';
   app: AppInterface;
   disk: DiskInterface;
-  diskSubscription: Subscription |undefined;
+  diskSubscription: Subscription | undefined;
   protocol: ProtocolModelInterface;
 
-  constructor(    
+  constructor(
     private readonly appModel: AppModel,
     private readonly deviceUtil: DeviceUtil,
     private readonly diskModel: DiskModel,
-    private readonly fileService:FileService,
+    private readonly fileService: FileService,
     private readonly logger: Logger,
     private readonly protocolM: ProtocolModel,
     private readonly protocolService: ProtocolService,
@@ -57,13 +57,13 @@ export class AppComponent implements OnInit, OnDestroy {
     this.app = this.appModel.getApp();
     this.protocol = this.protocolM.getProtocolModel();
     this.disk = this.diskModel.getDisk();
-    this.diskModel.updateDiskModel('numLogRows',1);
+    this.diskModel.updateDiskModel('numLogRows', 1);
   }
 
   async ngOnInit(): Promise<void> {
-    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
-    })
+    });
 
     await this.sqLite.init();
     this.router.navigate(['']);
@@ -71,27 +71,28 @@ export class AppComponent implements OnInit, OnDestroy {
     if (!this.disk.contentURI) {
       await firstValueFrom(
         this.notifications.alert({
-          title: "Select Documents Folder",
+          title: 'Select Documents Folder',
           content: `Please use the Android File Chooser to select the docuements folder.`,
-          type: DialogType.Alert
+          type: DialogType.Alert,
         })
       );
       try {
         const result = await TabsintFs.chooseFolder();
         this.diskModel.updateDiskModel('contentURI', result.uri);
       } catch (error) {
-        this.logger.error('Error selecting folder: '+JSON.stringify(error));
+        this.logger.error('Error selecting folder: ' + JSON.stringify(error));
       }
     }
 
     this.fileService.rootUri = this.disk.contentURI;
-    
+
     this.fileService.createTabsintDirectoriesIfDontExist();
 
-    if (!_.isUndefined(this.disk.activeProtocolMeta) && (this.disk.activeProtocolMeta.name != '')) await this.protocolService.load(this.disk.activeProtocolMeta);
-    if (this.disk.showDisclaimer || this.disk.showDisclaimer == undefined){
+    if (!_.isUndefined(this.disk.activeProtocolMeta) && this.disk.activeProtocolMeta.name != '')
+      await this.protocolService.load(this.disk.activeProtocolMeta);
+    if (this.disk.showDisclaimer || this.disk.showDisclaimer == undefined) {
       this.openDisclaimer();
-      this.diskModel.updateDiskModel('showDisclaimer',false);
+      this.diskModel.updateDiskModel('showDisclaimer', false);
     }
     this.deviceUtil.addSavedDevices();
     this.setupNetworkListener();
@@ -104,18 +105,16 @@ export class AppComponent implements OnInit, OnDestroy {
   openDisclaimer() {
     this.dialog.open(DisclaimerComponent, {
       width: '500px',
-      disableClose: true
+      disableClose: true,
     });
   }
 
-  
   /**
    * Setup a network listener to update wifi status.
    */
   private setupNetworkListener() {
-    this.networkService.addListener(true, (status: { connectionType: string; }) => {
+    this.networkService.addListener(true, (status: { connectionType: string }) => {
       this.stateModel.updateWifiStatus(status.connectionType === 'wifi');
     });
-  };
+  }
 }
-

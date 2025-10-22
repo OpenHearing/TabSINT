@@ -10,11 +10,10 @@ import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
   selector: 'new-connection',
-  templateUrl: './new-connection.component.html'
+  templateUrl: './new-connection.component.html',
 })
-
 export class NewConnectionComponent implements OnInit, OnDestroy {
-  state: StateInterface
+  state: StateInterface;
   devices: DevicesInterface;
   newConnectedDevice: NewConnectedDevice;
   deviceTypes = AvailableConnectableDevices;
@@ -22,17 +21,17 @@ export class NewConnectionComponent implements OnInit, OnDestroy {
   stateSubscription: Subscription | undefined;
 
   constructor(
-    private readonly deviceModel: DevicesModel, 
-    private readonly devicesService: DevicesService, 
+    private readonly deviceModel: DevicesModel,
+    private readonly devicesService: DevicesService,
     private readonly stateModel: StateModel
   ) {
     this.devices = this.deviceModel.getDevices();
     this.state = this.stateModel.getState();
-    this.newConnectedDevice = {"type":"Select One"};
+    this.newConnectedDevice = { type: 'Select One' };
   }
 
   ngOnInit(): void {
-    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
   }
@@ -41,23 +40,22 @@ export class NewConnectionComponent implements OnInit, OnDestroy {
     this.stateSubscription?.unsubscribe();
   }
 
-  changeDeviceType(type:string) {
+  changeDeviceType(type: string) {
     this.newConnectedDevice.type = type;
   }
 
   addNewConnection(): void {
-    this.stateModel.updateState({newDeviceConnection: true});
+    this.stateModel.updateState({ newDeviceConnection: true });
   }
 
   async scanAndConnect() {
     await this.devicesService.scan(this.newConnectedDevice);
-    this.stateModel.updateState({newDeviceConnection: false});
-    this.newConnectedDevice = {"type":"Select One"};
+    this.stateModel.updateState({ newDeviceConnection: false });
+    this.newConnectedDevice = { type: 'Select One' };
   }
 
   cancel() {
-    this.stateModel.updateState({newDeviceConnection: false});
-    this.newConnectedDevice = {"type":"Select One"};
+    this.stateModel.updateState({ newDeviceConnection: false });
+    this.newConnectedDevice = { type: 'Select One' };
   }
-
 }

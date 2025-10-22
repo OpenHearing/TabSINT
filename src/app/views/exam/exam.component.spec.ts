@@ -16,33 +16,21 @@ describe('ExamComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        ExamComponent, 
-        HeaderComponent, 
-        DebugComponent, 
-        IndicatorComponent, 
-        ExamNotReadyComponent,
-        NotificationsComponent
-      ],
+      declarations: [ExamComponent, HeaderComponent, DebugComponent, IndicatorComponent, ExamNotReadyComponent, NotificationsComponent],
       imports: [
         MatMenuModule,
         MatDialogModule,
         MatDialogContent,
         TranslateModule.forRoot({
-                  loader: {
-                    provide: TranslateLoader,
-                    useClass: TranslateFakeLoader
-                  }
-                })],
-      providers: [
-        { provide: MAT_DIALOG_DATA, useValue: {} },
-        { provide: MatDialogRef, useValue: {} },
-        TranslateService, 
-        TranslateStore
-      ]
-    })
-    .compileComponents();
-    
+          loader: {
+            provide: TranslateLoader,
+            useClass: TranslateFakeLoader,
+          },
+        }),
+      ],
+      providers: [{ provide: MAT_DIALOG_DATA, useValue: {} }, { provide: MatDialogRef, useValue: {} }, TranslateService, TranslateStore],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(ExamComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

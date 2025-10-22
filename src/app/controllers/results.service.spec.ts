@@ -13,68 +13,66 @@ import { DeveloperProtocols } from '../utilities/constants';
 import { VersionModel } from '../models/version/version.service';
 
 describe('ResultsService', () => {
-    let resultsService: ResultsService;
-    let appModel = new AppModel;
-    let diskModel = new DiskModel(new Document);
-    let sqLite = new SqLite(appModel, diskModel);
-    let logger = new Logger(diskModel, sqLite);
-    let version = new VersionModel(logger);
+  let resultsService: ResultsService;
+  let appModel = new AppModel();
+  let diskModel = new DiskModel(new Document());
+  let sqLite = new SqLite(appModel, diskModel);
+  let logger = new Logger(diskModel, sqLite);
+  let version = new VersionModel(logger);
 
-    beforeEach(async () => {
-        TestBed.configureTestingModule({})
+  beforeEach(async () => {
+    TestBed.configureTestingModule({});
 
-        resultsService = new ResultsService(
-            new DevicesModel(logger),
-            diskModel,
-            new FileService(appModel, logger,diskModel),
-            logger,
-            new ProtocolModel,
-            new ResultsModel(new DevicesModel(logger), version),
-            sqLite,
-            version
-        );
-    })
+    resultsService = new ResultsService(
+      new DevicesModel(logger),
+      diskModel,
+      new FileService(appModel, logger, diskModel),
+      logger,
+      new ProtocolModel(),
+      new ResultsModel(new DevicesModel(logger), version),
+      sqLite,
+      version
+    );
+  });
 
-    it('initializes exam results', () => {
-        let returnedResults: ResultsInterface = resultsService.results;
-        expect(returnedResults.currentExam.testDateTime).toBeUndefined();
-        expect(returnedResults.currentExam.protocol.name).toBe('');
-        resultsService.protocol.activeProtocol = {
-            ...resultsService.disk.availableProtocolsMeta['develop'],
-            ...DeveloperProtocols['develop']
-        };
-        resultsService.initializeExamResults();
-        expect(returnedResults.currentExam.testDateTime).toBeDefined();
-        expect(returnedResults.currentExam.protocol.name).toBe('develop');
+  it('initializes exam results', () => {
+    let returnedResults: ResultsInterface = resultsService.results;
+    expect(returnedResults.currentExam.testDateTime).toBeUndefined();
+    expect(returnedResults.currentExam.protocol.name).toBe('');
+    resultsService.protocol.activeProtocol = {
+      ...resultsService.disk.availableProtocolsMeta['develop'],
+      ...DeveloperProtocols['develop'],
+    };
+    resultsService.initializeExamResults();
+    expect(returnedResults.currentExam.testDateTime).toBeDefined();
+    expect(returnedResults.currentExam.protocol.name).toBe('develop');
+  });
+
+  it('initializes page results', () => {
+    let returnedResults: ResultsInterface = resultsService.results;
+    expect(returnedResults.currentPage.pageId).toBe('');
+    expect(returnedResults.currentPage.responseArea).toBeUndefined();
+    let testCurrentPage = {
+      id: '001',
+      title: 'Test',
+      instructionText: 'Test Case',
+      responseArea: {
+        type: 'test',
+      },
+    };
+    resultsService.initializePageResults(testCurrentPage);
+    expect(returnedResults.currentPage.pageId).toBe('001');
+    expect(returnedResults.currentPage.responseArea).toBe('test');
+  });
+
+  it('pushes current exam results', () => {
+    let returnedResults: ResultsInterface = resultsService.results;
+    expect(returnedResults.currentExam.responses.length).toEqual(0);
+    resultsService.pushResults({
+      pageId: '01',
+      response: 'test',
+      page: {},
     });
-
-    it('initializes page results', () => {
-        let returnedResults: ResultsInterface = resultsService.results;
-        expect(returnedResults.currentPage.pageId).toBe('');
-        expect(returnedResults.currentPage.responseArea).toBeUndefined();
-        let testCurrentPage =
-        {
-         "id": "001",
-         "title": "Test",
-         "instructionText": "Test Case",
-         "responseArea": {
-           "type": "test"
-           }
-        };
-        resultsService.initializePageResults(testCurrentPage);
-        expect(returnedResults.currentPage.pageId).toBe('001');
-        expect(returnedResults.currentPage.responseArea).toBe('test');
-    });
-
-    it('pushes current exam results', () => {
-        let returnedResults: ResultsInterface = resultsService.results;
-        expect(returnedResults.currentExam.responses.length).toEqual(0);
-        resultsService.pushResults({
-            pageId: '01',
-            response: 'test',
-            page: {}
-        });
-        expect(returnedResults.currentExam.responses.length).toEqual(1);
-    });
-
-})
+    expect(returnedResults.currentExam.responses.length).toEqual(1);
+  });
+});

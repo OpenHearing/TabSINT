@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   templateUrl: './change-pin.component.html',
   styleUrl: './change-pin.component.css',
-  imports: [CommonModule,FormsModule, TranslateModule]
+  imports: [CommonModule, FormsModule, TranslateModule],
 })
 export class ChangePinComponent {
   disk: DiskInterface;
@@ -23,17 +23,17 @@ export class ChangePinComponent {
   @Output() pinValidated = new EventEmitter<boolean>();
 
   constructor(
-    private readonly logger: Logger, 
-    private readonly dialog: MatDialog, 
+    private readonly logger: Logger,
+    private readonly dialog: MatDialog,
     private readonly diskModel: DiskModel
   ) {
     this.disk = this.diskModel.getDisk();
   }
 
   ngOnInit(): void {
-    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
-        this.disk = updatedDisk;
-    })    
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+    });
   }
 
   ngOnDestroy(): void {
@@ -44,9 +44,9 @@ export class ChangePinComponent {
     this.isValidationMode = validationMode;
   }
 
-  save(pin:number | undefined) {
-    if (pin!=undefined) {
-      this.logger.debug("Admin pin changed to: "+pin.toString());
+  save(pin: number | undefined) {
+    if (pin != undefined) {
+      this.logger.debug('Admin pin changed to: ' + pin.toString());
       this.disk.pin = pin.toString();
       this.diskModel.updateDiskModel('pin', this.disk.pin);
     }
@@ -60,12 +60,11 @@ export class ChangePinComponent {
   validatePin() {
     if (this.isValidationMode && this.pin?.toString() === this.diskModel.getDisk().pin) {
       this.logger.debug('Admin PIN validated successfully');
-      this.pinValidated.emit(true); 
+      this.pinValidated.emit(true);
       this.dialog.closeAll();
     } else {
       alert('Incorrect PIN');
-      this.pinValidated.emit(false); 
+      this.pinValidated.emit(false);
     }
   }
-
 }

@@ -17,7 +17,7 @@ import { ExamService } from '../../../../controllers/exam.service';
 @Component({
   selector: 'multiple-choice-view',
   templateUrl: './multiple-choice.component.html',
-  styleUrl: './multiple-choice.component.css'
+  styleUrl: './multiple-choice.component.css',
 })
 export class MultipleChoiceComponent implements OnInit, OnDestroy {
   results: ResultsInterface;
@@ -28,9 +28,9 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
   stateSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
 
-  constructor (
+  constructor(
     private readonly logger: Logger,
-    private readonly resultsModel: ResultsModel, 
+    private readonly resultsModel: ResultsModel,
     private readonly stateModel: StateModel,
     private readonly pageModel: PageModel,
     private readonly protocolModel: ProtocolModel,
@@ -49,35 +49,35 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
   showCorrect = true;
   yesNo = [
     {
-      id: "yes",
-      text: "Yes"
+      id: 'yes',
+      text: 'Yes',
     },
     {
-      id: "no",
-      text: "No"
-    }
+      id: 'no',
+      text: 'No',
+    },
   ];
 
   ngOnInit(): void {
-    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
-    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe( (updatedResults) => {
+    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
       this.results = updatedResults;
     });
-    this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage:PageInterface) => {
-      if (updatedPage?.responseArea?.type == "multipleChoiceResponseArea") {
+    this.pageSubscription = this.pageModel.currentPageSubject.subscribe((updatedPage: PageInterface) => {
+      if (updatedPage?.responseArea?.type == 'multipleChoiceResponseArea') {
         const updatedMultipleChoiceResponseArea = updatedPage.responseArea as MultipleChoiceInterface;
         if (updatedMultipleChoiceResponseArea) {
           this.choices = _.cloneDeep(updatedMultipleChoiceResponseArea.choices || this.yesNo);
           if (updatedMultipleChoiceResponseArea.other) {
             this.enableOther = true;
             this.choices.push({
-              id: "Other",
-              text: updatedMultipleChoiceResponseArea.other
+              id: 'Other',
+              text: updatedMultipleChoiceResponseArea.other,
             });
           }
-          this.logger.debug("choices for multiple-choice responseArea" + JSON.stringify(this.choices));
+          this.logger.debug('choices for multiple-choice responseArea' + JSON.stringify(this.choices));
         }
       }
     });
@@ -90,13 +90,12 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
   }
 
   choose(id: string) {
-    this.resultsModel.updateCurrentPage({response: id});
-    this.stateModel.updateState({doesResponseExist: true});
+    this.resultsModel.updateCurrentPage({ response: id });
+    this.stateModel.updateState({ doesResponseExist: true });
     this.stateModel.setPageSubmittable();
-    if (this.state.isSubmittable && this.results.currentPage.response !== "Other") {
+    if (this.state.isSubmittable && this.results.currentPage.response !== 'Other') {
       this.examService.submit = this.examService.submitDefault;
       this.examService.submit();
     }
-  };
-
+  }
 }

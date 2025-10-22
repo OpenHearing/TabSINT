@@ -1,5 +1,5 @@
-import { NormativeDataInterface } from "../../../../../interfaces/normative-data-interface";
-import { CommonResponseAreaInterface } from "../../../../../interfaces/page-definition.interface";
+import { NormativeDataInterface } from '../../../../../interfaces/normative-data-interface';
+import { CommonResponseAreaInterface } from '../../../../../interfaces/page-definition.interface';
 
 export interface SweptDpoaeInterface extends CommonResponseAreaInterface {
   exportToCSV?: boolean;
@@ -14,7 +14,7 @@ export interface SweptDpoaeInterface extends CommonResponseAreaInterface {
   sweepDuration?: number;
   sweepType?: 'log' | 'linear';
   l1?: number;
-  l2?:  number;
+  l2?: number;
   minSweeps?: number;
   maxSweeps?: number;
   noiseFloorThreshold?: number;
@@ -28,22 +28,22 @@ export interface SweptDpoaeInterface extends CommonResponseAreaInterface {
   normativeData?: NormativeDataInterface[];
 }
 
-export interface SweptDpoaeResultsInterface { 
-  State: string; 
+export interface SweptDpoaeResultsInterface {
+  State: string;
   PctComplete: number;
   NumSweeps?: number;
-  DpLow?: DPOAEDataInterface,
-  DpHigh?: DPOAEDataInterface,
-  F1?: DPOAEDataInterface,
-  F2?: DPOAEDataInterface,
+  DpLow?: DPOAEDataInterface;
+  DpHigh?: DPOAEDataInterface;
+  F1?: DPOAEDataInterface;
+  F2?: DPOAEDataInterface;
   Raw?: {
-    DpLow?: DPOAEDataInterface,
-    DpHigh?: DPOAEDataInterface,
-    F1?: DPOAEDataInterface,
-    F2?: DPOAEDataInterface,
-  }
+    DpLow?: DPOAEDataInterface;
+    DpHigh?: DPOAEDataInterface;
+    F1?: DPOAEDataInterface;
+    F2?: DPOAEDataInterface;
+  };
 }
-  
+
 export interface DPOAEDataInterface {
   Frequency: number[];
   Amplitude: number[];

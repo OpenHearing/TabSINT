@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { DiskModel } from '../../models/disk/disk.service';
 import { PageInterface } from '../../models/page/page.interface';
@@ -13,7 +12,7 @@ import { StateInterface } from '../../models/state/state.interface';
 @Component({
   selector: 'debug-view',
   templateUrl: './debug.component.html',
-  styleUrl: './debug.component.css'
+  styleUrl: './debug.component.css',
 })
 export class DebugComponent implements OnInit, OnDestroy {
   disk: DiskInterface;
@@ -27,7 +26,7 @@ export class DebugComponent implements OnInit, OnDestroy {
     page: false,
     pageResults: false,
     examResults: false,
-    state: false
+    state: false,
   };
 
   // Subscriptions
@@ -49,18 +48,18 @@ export class DebugComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
-    }) 
-    this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
+    });
+    this.pageSubscription = this.pageModel.currentPageSubject.subscribe((updatedPage: PageInterface) => {
       this.currentPage = updatedPage;
-    })
-    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe( (updatedResults: ResultsInterface) => {
+    });
+    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe((updatedResults: ResultsInterface) => {
       this.results = updatedResults;
-    }) 
-    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState: StateInterface) => {
+    });
+    this.stateSubscription = this.stateModel.stateSubject.subscribe((updatedState: StateInterface) => {
       this.state = updatedState;
-    })
+    });
   }
 
   ngOnDestroy(): void {
@@ -78,7 +77,7 @@ export class DebugComponent implements OnInit, OnDestroy {
     this.sectionExpanded[section] = !this.sectionExpanded[section];
   }
 
-  formatNumber(i:number) {
+  formatNumber(i: number) {
     return Math.round(i * 10) / 10;
-  };
+  }
 }

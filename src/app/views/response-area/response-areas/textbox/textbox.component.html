@@ -1,10 +1,10 @@
 <div>
-    <textarea 
-        [(ngModel)]="results.currentPage.response"
-        (ngModelChange)="onResponseChange()"
-        (keydown.enter)="onEnter()"
-        rows="{{rows}}" 
-        autofocus="true" 
-        maxlength="5000">
-    </textarea>
+  <textarea
+    [(ngModel)]="results.currentPage.response"
+    (ngModelChange)="onResponseChange()"
+    (keydown.enter)="onEnter()"
+    rows="{{ rows }}"
+    autofocus="true"
+    maxlength="5000">
+  </textarea>
 </div>

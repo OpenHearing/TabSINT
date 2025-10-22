@@ -1,4 +1,4 @@
 export interface PendingMsgInfo {
-    tabsintId: number;
-    msgId: string;
+  tabsintId: number;
+  msgId: string;
 }

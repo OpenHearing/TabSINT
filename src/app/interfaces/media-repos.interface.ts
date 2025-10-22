@@ -1,5 +1,5 @@
 export interface MediaReposInterface {
-    name: string;
-    version: string;
-    date: string;
+  name: string;
+  version: string;
+  date: string;
 }

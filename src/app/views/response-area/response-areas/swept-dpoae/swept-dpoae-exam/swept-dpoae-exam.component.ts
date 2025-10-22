@@ -20,9 +20,9 @@ import { handleOutputCalibration } from '../../../../../utilities/exam-helper-fu
 @Component({
   selector: 'swept-dpoae-exam',
   templateUrl: './swept-dpoae-exam.component.html',
-  styleUrl: './swept-dpoae-exam.component.css'
+  styleUrl: './swept-dpoae-exam.component.css',
 })
-export class SweptDpoaeExamComponent implements OnInit, OnDestroy {  
+export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
   tabsintId: string = sweptDpoaeSchema.properties.tabsintId.default;
   outputCalibrationType: string = sweptDpoaeSchema.properties.outputCalibrationType.default;
   outputChannel1: string = sweptDpoaeSchema.properties.outputChannel1.default;
@@ -34,7 +34,7 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
   sweepDuration: number = sweptDpoaeSchema.properties.sweepDuration.default;
   sweepType: 'log' | 'linear' = sweptDpoaeSchema.properties.sweepType.default;
   l1: number = sweptDpoaeSchema.properties.l1.default;
-  l2:  number = sweptDpoaeSchema.properties.l2.default;
+  l2: number = sweptDpoaeSchema.properties.l2.default;
   minSweeps: number = sweptDpoaeSchema.properties.minSweeps.default;
   maxSweeps: number = sweptDpoaeSchema.properties.maxSweeps.default;
   noiseFloorThreshold: number = sweptDpoaeSchema.properties.noiseFloorThreshold.default;
@@ -53,7 +53,7 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
   device: ConnectedDevice | undefined;
   sweptDPOAEResults: SweptDpoaeResultsInterface = {
     State: 'READY',
-    PctComplete: 0
+    PctComplete: 0,
   };
   inputParameterMap: Map<string, string> = new Map(); // Parameter map to display the user input parameters
 
@@ -68,21 +68,29 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
   constructor(
     private readonly pageModel: PageModel,
     private readonly devicesService: DevicesService,
-    private readonly deviceUtil: DeviceUtil, 
-    private readonly logger: Logger, 
+    private readonly deviceUtil: DeviceUtil,
+    private readonly logger: Logger,
     private readonly resultsModel: ResultsModel,
-    private readonly examService: ExamService, 
-    private readonly buttonTextService: ButtonTextService,
+    private readonly examService: ExamService,
+    private readonly buttonTextService: ButtonTextService
   ) {
     this.results = this.resultsModel.getResults();
-    this.examService.submit = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep(); };
-    this.examService.reset = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault(); };
-    this.examService.submitPartial = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault(); };
-    this.examService.navigateToTarget = (subProtocolId) => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.navigateToTargetDefault(subProtocolId); };
+    this.examService.submit = () => {
+      !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep();
+    };
+    this.examService.reset = () => {
+      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault();
+    };
+    this.examService.submitPartial = () => {
+      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault();
+    };
+    this.examService.navigateToTarget = subProtocolId => {
+      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.navigateToTargetDefault(subProtocolId);
+    };
   }
 
   ngOnInit(): void {
-    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe( (updatedResults) => {
+    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
       this.results = updatedResults;
     });
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
@@ -112,40 +120,36 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
         this.normativeData = responseArea.normativeData ?? this.normativeData;
 
         this.inputParameterMap = new Map([
-          ["Start Frequency [Hz]", this.f2Start.toString()],
-          ["End Frequency [Hz]", this.f2End.toString()],
-          ["Ratio", this.ratio.toString()],
-          ["Sweep Duration [s]", this.sweepDuration.toString()],
-          ["Window Duration [s]", this.windowDuration.toString()],
-          ["Sweep Type", this.sweepType.toString()],
-          ["Minimum Num Sweeps", this.minSweeps.toString()],
-          ["Maximum Num Sweeps", this.maxSweeps.toString()],
-          ["Noise Floor Threshold", this.noiseFloorThreshold.toString()],
+          ['Start Frequency [Hz]', this.f2Start.toString()],
+          ['End Frequency [Hz]', this.f2End.toString()],
+          ['Ratio', this.ratio.toString()],
+          ['Sweep Duration [s]', this.sweepDuration.toString()],
+          ['Window Duration [s]', this.windowDuration.toString()],
+          ['Sweep Type', this.sweepType.toString()],
+          ['Minimum Num Sweeps', this.minSweeps.toString()],
+          ['Maximum Num Sweeps', this.maxSweeps.toString()],
+          ['Noise Floor Threshold', this.noiseFloorThreshold.toString()],
         ]);
 
         // Update xTicks and scales
         this.xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000].filter(tick => tick >= this.f2Start && tick <= this.f2End);
-        this.xScale = d3.scaleLog()
-          .domain([this.f2Start, this.f2End])
-          .range([0, this.width]);
+        this.xScale = d3.scaleLog().domain([this.f2Start, this.f2End]).range([0, this.width]);
 
-        this.yScale = d3.scaleLinear()
-          .domain([-20, 70])
-          .range([this.height, 0]);
+        this.yScale = d3.scaleLinear().domain([-20, 70]).range([this.height, 0]);
       }
-    })
+    });
   }
 
   async ngOnDestroy(): Promise<void> {
     let resp = await this.devicesService.abortExams(this.device!);
-    this.logger.debug("resp from tympan after swept DPOAE exam abort exams:" + resp);
+    this.logger.debug('resp from tympan after swept DPOAE exam abort exams:' + resp);
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
     this.examService.reset = this.examService.resetDefault.bind(this.examService);
     this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);
     this.examService.navigateToTarget = this.examService.navigateToTargetDefault.bind(this.examService);
     this.pageSubscription?.unsubscribe();
     this.resultsSubscription?.unsubscribe();
-    this.buttonTextService.updateButtonText("Submit");
+    this.buttonTextService.updateButtonText('Submit');
   }
 
   async nextStep(): Promise<void> {
@@ -167,36 +171,36 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
 
   saveResults(sweptDPOAEResults: SweptDpoaeResultsInterface) {
     this.sweptDPOAEResults = sweptDPOAEResults;
-    this.resultsModel.updateCurrentPage({response: sweptDPOAEResults});
+    this.resultsModel.updateCurrentPage({ response: sweptDPOAEResults });
   }
 
   private async beginExam() {
     this.device = this.deviceUtil.getDeviceFromTabsintId(this.tabsintId);
     if (this.device) {
-        const examProperties = {
-          OutputChannel1: handleOutputCalibration(this.outputChannel1, this.outputCalibrationType), 
-          OutputChannel2: handleOutputCalibration(this.outputChannel2, this.outputCalibrationType),
-          InputChannel: this.inputChannel,
-          F2Start: this.f2Start,
-          F2End: this.f2End,
-          Ratio: this.ratio,
-          SweepDuration: this.sweepDuration,
-          SweepType: this.sweepType,
-          L1: this.l1,
-          L2: this.l2,
-          MinSweeps: this.minSweeps,
-          MaxSweeps: this.maxSweeps,
-          NoiseFloorThreshold: this.noiseFloorThreshold,
-          SNRThreshold: this.SNRThreshold,
-          WindowDuration: this.windowDuration,
-          NumFrequencies: this.numFrequencies,
-          Filename: this.filename,
-          OutputRawMeasurements: this.outputRawMeasurements
-        };
-        await this.devicesService.queueExam(this.device, "SweptDPOAE", examProperties);
+      const examProperties = {
+        OutputChannel1: handleOutputCalibration(this.outputChannel1, this.outputCalibrationType),
+        OutputChannel2: handleOutputCalibration(this.outputChannel2, this.outputCalibrationType),
+        InputChannel: this.inputChannel,
+        F2Start: this.f2Start,
+        F2End: this.f2End,
+        Ratio: this.ratio,
+        SweepDuration: this.sweepDuration,
+        SweepType: this.sweepType,
+        L1: this.l1,
+        L2: this.l2,
+        MinSweeps: this.minSweeps,
+        MaxSweeps: this.maxSweeps,
+        NoiseFloorThreshold: this.noiseFloorThreshold,
+        SNRThreshold: this.SNRThreshold,
+        WindowDuration: this.windowDuration,
+        NumFrequencies: this.numFrequencies,
+        Filename: this.filename,
+        OutputRawMeasurements: this.outputRawMeasurements,
+      };
+      await this.devicesService.queueExam(this.device, 'SweptDPOAE', examProperties);
     } else {
-        await this.devicesService.deviceNotFound();
-        this.logger.error("Error setting up Swept DPOAE exam");
+      await this.devicesService.deviceNotFound();
+      this.logger.error('Error setting up Swept DPOAE exam');
     }
   }
 }

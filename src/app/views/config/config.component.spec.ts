@@ -19,13 +19,14 @@ describe('ConfigComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ConfigComponent,
+      declarations: [
+        ConfigComponent,
         TabsintConfigComponent,
         SoftwareConfigComponent,
         LogConfigComponent,
         DeviceConfigComponent,
         NewConnectionComponent,
-        ConnectedDevicesComponent
+        ConnectedDevicesComponent,
       ],
       imports: [
         FormsModule,
@@ -34,16 +35,15 @@ describe('ConfigComponent', () => {
         MatMenuModule,
         NgbModule,
         TranslateModule.forRoot({
-                  loader: {
-                    provide: TranslateLoader,
-                    useClass: TranslateFakeLoader
-                  }
-                })
+          loader: {
+            provide: TranslateLoader,
+            useClass: TranslateFakeLoader,
+          },
+        }),
       ],
-      providers: [TranslateService, TranslateStore]
-    })
-    .compileComponents();
-    
+      providers: [TranslateService, TranslateStore],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(ConfigComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

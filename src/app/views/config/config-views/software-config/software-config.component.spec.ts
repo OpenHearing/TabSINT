@@ -10,16 +10,17 @@ describe('SoftwareConfigComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [SoftwareConfigComponent],
-      imports: [TranslateModule.forRoot({
-                  loader: {
-                    provide: TranslateLoader,
-                    useClass: TranslateFakeLoader
-                  }
-                })],
-      providers: [TranslateService, TranslateStore]
-      })
-      .compileComponents();
-    
+      imports: [
+        TranslateModule.forRoot({
+          loader: {
+            provide: TranslateLoader,
+            useClass: TranslateFakeLoader,
+          },
+        }),
+      ],
+      providers: [TranslateService, TranslateStore],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(SoftwareConfigComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

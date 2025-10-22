@@ -8,10 +8,9 @@ describe('ExamDeviceErrorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ExamDeviceErrorComponent]
-    })
-    .compileComponents();
-    
+      declarations: [ExamDeviceErrorComponent],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(ExamDeviceErrorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

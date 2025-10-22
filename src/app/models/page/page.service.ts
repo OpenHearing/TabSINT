@@ -5,19 +5,16 @@ import { PageDefinition } from '../../interfaces/page-definition.interface';
 import { pageInterfaceDefaults } from '../../utilities/defaults';
 
 @Injectable({
-    providedIn: 'root',
+  providedIn: 'root',
 })
-
 export class PageModel {
+  currentPage: PageInterface = pageInterfaceDefaults;
 
-    currentPage: PageInterface = pageInterfaceDefaults;
+  currentPageSubject = new BehaviorSubject<PageInterface>(this.currentPage);
 
-    currentPageSubject = new BehaviorSubject<PageInterface>(this.currentPage);
+  stack: PageDefinition[] = [];
 
-    stack: PageDefinition[] = [];
-    
-    getPage(): PageInterface {
-        return this.currentPage;
-    }
-
+  getPage(): PageInterface {
+    return this.currentPage;
+  }
 }

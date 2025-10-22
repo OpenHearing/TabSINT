@@ -1,72 +1,75 @@
 .input-parameters-container {
-    margin: 20px;
-    overflow-x: auto;
+  margin: 20px;
+  overflow-x: auto;
 }
-  
+
 .input-parameters-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-    font-size: 18px;
-    text-align: left;
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 18px;
+  text-align: left;
 }
 
 .input-parameters-table th,
 .input-parameters-table td {
-    padding: 12px 15px;
-    border-bottom: 1px solid #ddd;
-    vertical-align: top;
+  padding: 12px 15px;
+  border-bottom: 1px solid #ddd;
+  vertical-align: top;
 }
 
 .input-parameters-table th {
-    background-color: #f5f5f5;
-    font-weight: bold;
+  background-color: #f5f5f5;
+  font-weight: bold;
 }
 
 /* Parameter column (keys) */
 .input-parameters-table th:first-child,
 .input-parameters-table td:first-child {
-    width: clamp(150px, 25%, 300px); /* Responsive width with min/max */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  width: clamp(150px, 25%, 300px); /* Responsive width with min/max */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Value column */
 .input-parameters-table th:last-child,
 .input-parameters-table td:last-child {
-    word-wrap: break-word;
-    word-break: break-word;
-    overflow-wrap: anywhere;
-    hyphens: auto; /* Add hyphens for better readability */
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  hyphens: auto; /* Add hyphens for better readability */
 }
 
-th, td {
-    padding: 6px 15px;
-    border-bottom: 1px solid #ddd;
+th,
+td {
+  padding: 6px 15px;
+  border-bottom: 1px solid #ddd;
 }
 
 thead th {
-    background-color: #f4f4f4;
-    color: #333;
-    font-weight: bold;
+  background-color: #f4f4f4;
+  color: #333;
+  font-weight: bold;
 }
 
 tbody tr:hover {
-    background-color: #f1f1f1;
+  background-color: #f1f1f1;
 }
 
 tbody tr:nth-child(even) {
-    background-color: #fafafa;
+  background-color: #fafafa;
 }
 
 td {
-    text-align: left;
+  text-align: left;
 }
-  
+
 @media screen and (max-width: 600px) {
-    .input-parameters-table, th, td {
-        font-size: 16px;
-        padding: 8px;
-    }
+  .input-parameters-table,
+  th,
+  td {
+    font-size: 16px;
+    padding: 8px;
+  }
 }

@@ -1,65 +1,58 @@
 <div id="config">
-    
-    <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.general">
-        <mat-expansion-panel-header>
-            <mat-panel-title>
-                {{'TabSINT' | translate}}
-            </mat-panel-title>
-        </mat-expansion-panel-header>
-           
-        <div class="panel-body text-left">
-            <tabsint-config-view></tabsint-config-view>
-        </div>
+  <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.general">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        {{ "TabSINT" | translate }}
+      </mat-panel-title>
+    </mat-expansion-panel-header>
 
-    </mat-expansion-panel>
+    <div class="panel-body text-left">
+      <tabsint-config-view></tabsint-config-view>
+    </div>
+  </mat-expansion-panel>
 
-    <br />
+  <br />
 
-    <!-- Tympan -->
-    <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.devices">
-        <mat-expansion-panel-header>
-            <mat-panel-title>
-                {{'Connected Devices'| translate}}
-            </mat-panel-title>
-        </mat-expansion-panel-header>
-           
-        <div class="panel-body text-left">
-            <device-config-view></device-config-view>
-        </div>
+  <!-- Tympan -->
+  <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.devices">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        {{ "Connected Devices" | translate }}
+      </mat-panel-title>
+    </mat-expansion-panel-header>
 
-    </mat-expansion-panel>
+    <div class="panel-body text-left">
+      <device-config-view></device-config-view>
+    </div>
+  </mat-expansion-panel>
 
-    <br />
+  <br />
 
-    <!-- Software and Hardware Status -->
-    <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.softwareHardware">
-        <mat-expansion-panel-header>
-            <mat-panel-title>
-                {{'Software and Hardware'| translate}}
-            </mat-panel-title>
-        </mat-expansion-panel-header>
-           
-        <div class="panel-body text-left">
-            <software-config-view></software-config-view>
-        </div>
+  <!-- Software and Hardware Status -->
+  <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.softwareHardware">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        {{ "Software and Hardware" | translate }}
+      </mat-panel-title>
+    </mat-expansion-panel-header>
 
-    </mat-expansion-panel>
+    <div class="panel-body text-left">
+      <software-config-view></software-config-view>
+    </div>
+  </mat-expansion-panel>
 
-    <br />
+  <br />
 
-    <!-- Log view -->
-    <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.appLog">
-        <mat-expansion-panel-header>
-            <mat-panel-title>
-                {{'Application Log'| translate}}
-            </mat-panel-title>
-        </mat-expansion-panel-header>
-           
-        <div class="panel-body text-left">
-            <log-config-view></log-config-view>
-        </div>
+  <!-- Log view -->
+  <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.appLog">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        {{ "Application Log" | translate }}
+      </mat-panel-title>
+    </mat-expansion-panel-header>
 
-    </mat-expansion-panel>
-
-
+    <div class="panel-body text-left">
+      <log-config-view></log-config-view>
+    </div>
+  </mat-expansion-panel>
 </div>

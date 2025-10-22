@@ -3,7 +3,7 @@
   "subtitle": "ARDC Survey, Manual Audiometry, Calibration, Swept DPOAE, WAI, MRT.",
   "instructionText": "Choose the exams to perform, then view results.",
   "hideProgressBar": true,
-  "navMenu":[
+  "navMenu": [
     {
       "text": "Back to Main Menu",
       "target": {
@@ -14,18 +14,18 @@
   ],
   "pages": [
     {
-      "protocolId":"MainMenu",
-      "title":"Main Menu",
-      "pages":[
+      "protocolId": "MainMenu",
+      "title": "Main Menu",
+      "pages": [
         {
-          "id":"main_menu",
-          "title":"Purdue Protocol",
-          "questionMainText":"Please select a protocol to perform:",
-          "responseArea":{
-            "type":"multipleChoiceResponseArea",
-            "choices":[
+          "id": "main_menu",
+          "title": "Purdue Protocol",
+          "questionMainText": "Please select a protocol to perform:",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "choices": [
               {
-                "id":"Subject Information Sheet"
+                "id": "Subject Information Sheet"
               },
               {
                 "id": "ARDC Main Survey"
@@ -37,10 +37,10 @@
                 "id": "ARDC Noise Exposure History Survey"
               },
               {
-                "id":"Manual Audiometry"
+                "id": "Manual Audiometry"
               },
               {
-                "id": "Calibration Exam" 
+                "id": "Calibration Exam"
               },
               {
                 "id": "Swept DPOAE Exam (SPL)"
@@ -61,40 +61,40 @@
                 "id": "MEMR Exam (Between Blocks)"
               },
               {
-                "id":"End All"
+                "id": "End All"
               }
             ]
-          }, 
-          "followOns":[
+          },
+          "followOns": [
             {
-              "conditional":"result.response=='Subject Information Sheet'",
-              "target":{
-                "reference":"Subject_Information_Sheet"
-              } 
+              "conditional": "result.response=='Subject Information Sheet'",
+              "target": {
+                "reference": "Subject_Information_Sheet"
+              }
             },
             {
-              "conditional":"result.response=='ARDC Main Survey'",
-              "target":{
-                "reference":"ARDC_Main_Survey"
-              } 
+              "conditional": "result.response=='ARDC Main Survey'",
+              "target": {
+                "reference": "ARDC_Main_Survey"
+              }
             },
             {
-              "conditional":"result.response=='ARDC Loudness and Annoyance Survey'",
-              "target":{
-                "reference":"ARDC_Loudness_and_Annoyance_Survey"
-              } 
+              "conditional": "result.response=='ARDC Loudness and Annoyance Survey'",
+              "target": {
+                "reference": "ARDC_Loudness_and_Annoyance_Survey"
+              }
             },
             {
-              "conditional":"result.response=='ARDC Noise Exposure History Survey'",
-              "target":{
-                "reference":"ARDC_Noise_History_Survey"
-              } 
+              "conditional": "result.response=='ARDC Noise Exposure History Survey'",
+              "target": {
+                "reference": "ARDC_Noise_History_Survey"
+              }
             },
             {
-              "conditional":"result.response=='Manual Audiometry'",
-              "target":{
-                "reference":"ManualAudiometry"
-              } 
+              "conditional": "result.response=='Manual Audiometry'",
+              "target": {
+                "reference": "ManualAudiometry"
+              }
             },
             {
               "conditional": "result.response=='Calibration Exam'",
@@ -139,20 +139,20 @@
               }
             },
             {
-              "conditional":"result.response=='End All'",
-              "target":{
-                "reference":"@END_ALL"
-              } 
+              "conditional": "result.response=='End All'",
+              "target": {
+                "reference": "@END_ALL"
+              }
             }
           ]
         }
       ]
     }
   ],
-  "subProtocols":[
+  "subProtocols": [
     {
       "protocolId": "Subject_Information_Sheet",
-      "pages":[
+      "pages": [
         {
           "id": "Subject_Information_Sheet_1/3",
           "instructionText": "To be completed by researcher:",
@@ -204,28 +204,17 @@
               {
                 "text": "Gender",
                 "inputType": "dropdown",
-                "options": [
-                  "Male",
-                  "Female",
-                  "Non-binary",
-                  "Not reported"
-                ]
+                "options": ["Male", "Female", "Non-binary", "Not reported"]
               },
               {
                 "text": "Are you a native speaker of American English?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "Do you speak other languages other than English?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "If yes, what languages?",
@@ -234,10 +223,7 @@
               {
                 "text": "Are you on an F1 or J1 Visa?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ],
+                "options": ["Yes", "No"],
                 "notes": "**If yes, in order to be paid you will need to provide a copy of: I-94/ I/94W card, Visa, Passport, Tax Summary Report (from Glacier System), Form I- 20 (F1 visa only), For DS2019 (J1 Visa only)"
               },
               {
@@ -252,18 +238,12 @@
               {
                 "text": "Do you consider yourself regularly exposed to noise (e.g., play in a band, have a job with noisy tools/machines)?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "Do you have frequent ringing in your hears (tinnitus)?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "Where did you learn about our study?",
@@ -282,11 +262,7 @@
               {
                 "text": "Part A: Check the category that describes you best:",
                 "inputType": "dropdown",
-                "options": [
-                  "Hispanic or Latino",
-                  "Not Hispanic or Latino",
-                  "Not Reported"
-                ]
+                "options": ["Hispanic or Latino", "Not Hispanic or Latino", "Not Reported"]
               },
               {
                 "text": "Part B: Please check all the categories that apply:",
@@ -306,7 +282,7 @@
         },
         {
           "id": "backtomain",
-          "reference":"MainMenu"
+          "reference": "MainMenu"
         }
       ]
     },
@@ -323,19 +299,12 @@
               {
                 "text": "Have you ever had tubes put in your eardrum(s)?",
                 "inputType": "dropdown",
-                "options": [
-                  "Right",
-                  "Left",
-                  "Both"
-                ]
+                "options": ["Right", "Left", "Both"]
               },
               {
                 "text": "Have you ever had a ruptured eardrum?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "If yes, at what age?",
@@ -344,18 +313,12 @@
               {
                 "text": "If yes, which ear was affected?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "Have you ever had a job where you were routinely exposed to very loud sounds, such as military experience with artillery, construction or factory work?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "If yes, at what age(s) and for how long?",
@@ -372,10 +335,7 @@
               {
                 "text": "Have you ever had any hobbies that involved loud sounds, such as hunting, riding motorcycles, carpentry, frequently attending concerts?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "If yes, at what age(s) and for how long?",
@@ -392,10 +352,7 @@
               {
                 "text": "Have you ever experienced temporary noises (ringing, buzzing, hiss, swishing, etc...) in your ears after exposure to loud sounds?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "If yes, how often do you experience these noises (occasionally, constantly)?",
@@ -404,10 +361,7 @@
               {
                 "text": "Have you ever temporarily lost your hearing?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "If yes, at what age(s) and for how long?",
@@ -429,10 +383,7 @@
               {
                 "text": "Do sounds ever seem distorted to you?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "If yes, please explain.",
@@ -441,10 +392,7 @@
               {
                 "text": "When you are having a conversation in a noisy place, such as a restaurant or bar, can you understand what is being said as well as everyone else can?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "If no, please explain.",
@@ -453,10 +401,7 @@
               {
                 "text": "Have you had sinus problems or sinus surgery?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "If yes, please explain.",
@@ -474,10 +419,7 @@
               {
                 "text": "Have you had a major blow to the head or any other head trauma?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ],
+                "options": ["Yes", "No"],
                 "notes": "If yes, please answer the following. If you've had more than one instance of head trauma, please answer for each time it occurred."
               },
               {
@@ -520,10 +462,7 @@
               {
                 "text": "Have you ever had a whiplash injury, as might happen in a car collision?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "If yes, please explain.",
@@ -532,36 +471,22 @@
               {
                 "text": "Do places on or near your ear hurt when you press on them? ",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "If yes, on which side?",
                 "inputType": "dropdown",
-                "options": [
-                  "Right",
-                  "Left",
-                  "Both"
-                ]
+                "options": ["Right", "Left", "Both"]
               },
               {
                 "text": "Have you ever experienced a sharp pain in the ear or an aching ear that was not from an ear infection? ",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "If yes, on which side?",
                 "inputType": "dropdown",
-                "options": [
-                  "Right",
-                  "Left",
-                  "Both"
-                ]
+                "options": ["Right", "Left", "Both"]
               },
               {
                 "text": "If yes, when and for how long?",
@@ -583,19 +508,12 @@
               {
                 "text": "Have you ever experienced a sensation of 'ear fullness' or 'blockage' and or muffled hearing that lasted for more than a few minutes and was not due to a pressure change (such as during a plane flight, for instance)?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "If yes, on which side?",
                 "inputType": "dropdown",
-                "options": [
-                  "Right",
-                  "Left",
-                  "Both"
-                ]
+                "options": ["Right", "Left", "Both"]
               },
               {
                 "text": "If yes, when and for how long?",
@@ -617,10 +535,7 @@
               {
                 "text": "Have you been told you grind your teeth when you sleep?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "Have you ever been diagnosed with any of the following? Select all that apply:",
@@ -668,7 +583,8 @@
               }
             ]
           }
-        },{
+        },
+        {
           "id": "ARDC_7/12",
           "responseArea": {
             "type": "multipleInputResponseArea",
@@ -677,12 +593,7 @@
               {
                 "text": "How often do you experience balance problems? Please select \"Never\", \"Sometimes\", \"Often\", or \"Always\".",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Sometimes",
-                  "Often",
-                  "Always"
-                ]
+                "options": ["Never", "Sometimes", "Often", "Always"]
               },
               {
                 "text": "If \"Often\" or \"Always\", please explain:",
@@ -691,10 +602,7 @@
               {
                 "text": "Do certain sounds irritate you more than they would other people?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "If yes, (a) list the sounds and (b) rate how irritating each sound is on a 0 (not at all) to 100 (extremely) scale:",
@@ -703,18 +611,12 @@
               {
                 "text": "Are you bothered by bright lights?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "Are you bothered by certain colors?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "If yes, rate how much on a 0 (not at all) to 100 (extremely bothersome) scale:",
@@ -723,10 +625,7 @@
               {
                 "text": "Are you bothered by strong smells?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "If yes, rate how much on a 0 (not at all) to 100 (extremely bothersome) scale:",
@@ -735,10 +634,7 @@
               {
                 "text": "Are you bothered by certain tastes?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "If yes, rate how much on a 0 (not at all) to 100 (extremely bothersome) scale:",
@@ -747,10 +643,7 @@
               {
                 "text": "Are you bothered by certain types of touch?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "If yes, rate how much on a 0 (not at all) to 100 (extremely bothersome) scale:",
@@ -768,14 +661,7 @@
               {
                 "text": "How many years of education have you completed (beyond kindergarten)?",
                 "inputType": "dropdown",
-                "options": [
-                  "less than 6 years",
-                  "6-8 years",
-                  "9-12 years",
-                  "13-14 years",
-                  "15-16 years",
-                  "more than 16 years"
-                ]
+                "options": ["less than 6 years", "6-8 years", "9-12 years", "13-14 years", "15-16 years", "more than 16 years"]
               },
               {
                 "text": "What is the nature of your current job? Select all that apply:",
@@ -816,10 +702,7 @@
               {
                 "text": "Is your hearing particularly important for your job or for activities you do often? Or for any other research studies you may have participated in recently? (Some examples: birding, sound engineer, other research studies on hearing, playing a musical instrument.)",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "If yes, please describe the activities and the role hearing plays (for example, \"I have to listen for faint sounds.\"):",
@@ -854,10 +737,7 @@
               {
                 "text": "Have you ever had any of the following ear problems:",
                 "inputType": "multi-dropdown",
-                "options": [
-                  "Ear surgery(ies)",
-                  "Excessive ear wax"
-                ]
+                "options": ["Ear surgery(ies)", "Excessive ear wax"]
               },
               {
                 "text": "If you or a family member have experienced ANY hearing or ear problems not covered in the survey so far, please describe and briefly explain:",
@@ -948,7 +828,7 @@
               }
             ]
           }
-        },        
+        },
         {
           "id": "ARDC_12/12",
           "instructionText": "The following questions ask about your ability and experiences hearing and listening in different situations. For each question, select a number from 0 through 10 on the scale below the question. Selecting 10 means you would be perfectly able to do or experience what is described in the question. Selecting 0 means you would be unable to do or experience what is described.  We expect that all the questions are relevant to your everyday experience, but if a question describes a situation that does not apply to you, put a cross in the 'not applicable' box. ",
@@ -976,7 +856,7 @@
         },
         {
           "id": "backtomain",
-          "reference":"MainMenu"
+          "reference": "MainMenu"
         }
       ]
     },
@@ -1026,7 +906,8 @@
               }
             ]
           }
-        },{
+        },
+        {
           "id": "Loudness_4/15",
           "instructionText": "Music on the radio in a car when the volume is adjusted for normal-hearing listeners",
           "responseArea": {
@@ -1224,7 +1105,8 @@
               {
                 "text": "You do not go out with your friends (0-100)",
                 "inputType": "number"
-              },{
+              },
+              {
                 "text": "You have given up some hobbies (0-100)",
                 "inputType": "number"
               },
@@ -1255,7 +1137,7 @@
               {
                 "text": "You are not able to perform tasks or jobs as well (0-100)",
                 "inputType": "number"
-              }              
+              }
             ]
           }
         },
@@ -1265,7 +1147,7 @@
         },
         {
           "id": "backtomain",
-          "reference":"MainMenu"
+          "reference": "MainMenu"
         }
       ]
     },
@@ -1286,68 +1168,32 @@
               {
                 "text": "How often were you around or did you shoot firearms such as rifles, pistols, shotguns, etc.? ",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Every few months",
-                  "Monthly",
-                  "Weekly",
-                  "Daily"
-                ]
+                "options": ["Never", "Every few months", "Monthly", "Weekly", "Daily"]
               },
               {
                 "text": "How often were you exposed to loud sounds while working on a paid job? By loud sounds, we mean sounds so loud that you had to speak in a raised voice or shout to be heard at arm's length.",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Every few months",
-                  "Monthly",
-                  "Weekly",
-                  "Daily"
-                ]
+                "options": ["Never", "Every few months", "Monthly", "Weekly", "Daily"]
               },
               {
                 "text": "How often were you exposed to any other types of loud sounds, such as power tools, lawn equipment, or loud personal/concert music? By loud sounds, we mean sounds so loud that you had to speak in a raised voice or shout to be heard at arm's length.",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Every few months",
-                  "Monthly",
-                  "Weekly",
-                  "Daily"
-                ]
+                "options": ["Never", "Every few months", "Monthly", "Weekly", "Daily"]
               },
               {
                 "text": "How often were you exposed to loud sound that made your ears 'ring' or 'buzz'?",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Every few months",
-                  "Monthly",
-                  "Weekly",
-                  "Daily"
-                ]
+                "options": ["Never", "Every few months", "Monthly", "Weekly", "Daily"]
               },
               {
                 "text": "How often were you exposed to loud sound that made your hearing seem muffled for a while?",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Every few months",
-                  "Monthly",
-                  "Weekly",
-                  "Daily"
-                ]
+                "options": ["Never", "Every few months", "Monthly", "Weekly", "Daily"]
               },
               {
                 "text": "How often were you exposed to loud sound that made your ears hurt, feel 'full', or bother you in any other way?",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Every few months",
-                  "Monthly",
-                  "Weekly",
-                  "Daily"
-                ]
+                "options": ["Never", "Every few months", "Monthly", "Weekly", "Daily"]
               }
             ]
           }
@@ -1362,32 +1208,17 @@
               {
                 "text": "Outside of a paid job, how often did you use power tools, chainsaws, or other shop tools?",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Every few months",
-                  "Monthly",
-                  "Weekly",
-                  "Daily"
-                ]
+                "options": ["Never", "Every few months", "Monthly", "Weekly", "Daily"]
               },
               {
                 "text": "If you used power tools, on average, how many hours did each time/session last?",
                 "inputType": "dropdown",
-                "options": [
-                  "8 hours or more",
-                  "4 hours up to 8 hours",
-                  "1 hour up to 4 hours",
-                  "Less than 1 hour"
-                ]
+                "options": ["8 hours or more", "4 hours up to 8 hours", "1 hour up to 4 hours", "Less than 1 hour"]
               },
               {
                 "text": "If you used power tools, how often did you wear earplugs or earmuffs during this activity?",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Sometimes",
-                  "Always"
-                ]
+                "options": ["Never", "Sometimes", "Always"]
               },
               {
                 "text": "What kind of earplugs?",
@@ -1396,32 +1227,17 @@
               {
                 "text": "Outside of a paid job, how often did you drive heavy equipment or use loud machinery (such as tractors, trucks, or farming or lawn equipment like mowers/leaf blowers)?",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Every few months",
-                  "Monthly",
-                  "Weekly",
-                  "Daily"
-                ]
+                "options": ["Never", "Every few months", "Monthly", "Weekly", "Daily"]
               },
               {
                 "text": "If you drove/used loud machinery, on average, how many hours did each time/session last?",
                 "inputType": "dropdown",
-                "options": [
-                  "8 hours or more",
-                  "4 hours up to 8 hours",
-                  "1 hour up to 4 hours",
-                  "Less than 1 hour"
-                ]
+                "options": ["8 hours or more", "4 hours up to 8 hours", "1 hour up to 4 hours", "Less than 1 hour"]
               },
               {
                 "text": "If you drove/used machinery, how often did you wear earplugs or earmuffs during this activity?",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Sometimes",
-                  "Always"
-                ]
+                "options": ["Never", "Sometimes", "Always"]
               },
               {
                 "text": "Please indicate what kind of earplugs you wore in the field provided:",
@@ -1430,32 +1246,17 @@
               {
                 "text": "How often did you attend car/truck races, commercial/high school sporting events, music concerts/dances or any other events with amplified public announcement (PA)/music systems?",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Every few months",
-                  "Monthly",
-                  "Weekly",
-                  "Daily"
-                ]
+                "options": ["Never", "Every few months", "Monthly", "Weekly", "Daily"]
               },
               {
                 "text": "If you attended these events, on average, how many hours did each time/session last?",
                 "inputType": "dropdown",
-                "options": [
-                  "8 hours or more",
-                  "4 hours up to 8 hours",
-                  "1 hour up to 4 hours",
-                  "Less than 1 hour"
-                ]
+                "options": ["8 hours or more", "4 hours up to 8 hours", "1 hour up to 4 hours", "Less than 1 hour"]
               },
               {
                 "text": "If you attended these events, how often did you wear earplugs or earmuffs during this activity?",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Sometimes",
-                  "Always"
-                ]
+                "options": ["Never", "Sometimes", "Always"]
               },
               {
                 "text": "Please indicate what kind of earplugs you wore in the field provided:",
@@ -1473,32 +1274,17 @@
               {
                 "text": "How often did you ride or operate motorized vehicles such as motorcycles, jet skis, speed boats, snowmobiles, or four-wheelers?",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Every few months",
-                  "Monthly",
-                  "Most of the time",
-                  "Always"
-                ]
+                "options": ["Never", "Every few months", "Monthly", "Most of the time", "Always"]
               },
               {
                 "text": "If you rode motorized vehicles, on average, how many hours did each time/session last?",
                 "inputType": "dropdown",
-                "options": [
-                  "8 hours or more",
-                  "4 hours up to 8 hours",
-                  "1 hour up to 4 hours",
-                  "Less than 1 hour"
-                ]
+                "options": ["8 hours or more", "4 hours up to 8 hours", "1 hour up to 4 hours", "Less than 1 hour"]
               },
               {
                 "text": "If you rode motorized vehicles, how often did you wear earplugs or earmuffs during this activity?",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Sometimes",
-                  "Always"
-                ]
+                "options": ["Never", "Sometimes", "Always"]
               },
               {
                 "text": "Please indicate what kind of earplugs you wore in the field provided:",
@@ -1511,32 +1297,17 @@
               {
                 "text": "How often did you ride in or pilot small aircraft/private airplanes?",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Every few months",
-                  "Monthly",
-                  "Weekly",
-                  "Daily"
-                ]
+                "options": ["Never", "Every few months", "Monthly", "Weekly", "Daily"]
               },
               {
                 "text": "If you flew aircrafts, on average, how many hours did each time/session last?",
                 "inputType": "dropdown",
-                "options": [
-                  "8 hours or more",
-                  "4 hours up to 8 hours",
-                  "1 hour up to 4 hours",
-                  "Less than 1 hour"
-                ]
+                "options": ["8 hours or more", "4 hours up to 8 hours", "1 hour up to 4 hours", "Less than 1 hour"]
               },
               {
                 "text": "If you flew aircrafts, how often did you wear earplugs or earmuffs during this activity?",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Sometimes",
-                  "Always"
-                ]
+                "options": ["Never", "Sometimes", "Always"]
               },
               {
                 "text": "Please indicate what kind of earplugs you wore in the field provided:",
@@ -1545,13 +1316,7 @@
               {
                 "text": "How often were you around or did you shoot firearms such as rifles, pistols, shotguns, etc.?",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Every few months",
-                  "Monthly",
-                  "Weekly",
-                  "Daily"
-                ]
+                "options": ["Never", "Every few months", "Monthly", "Weekly", "Daily"]
               },
               {
                 "text": "If you were around/shot firearms, on average, how many shots did you fire each time/session?",
@@ -1566,11 +1331,7 @@
               {
                 "text": "If you were around/shot firearms, how often did you wear earplugs or earmuffs while shooting?",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Sometimes",
-                  "Always"
-                ]
+                "options": ["Never", "Sometimes", "Always"]
               },
               {
                 "text": "Please indicate what kind of earplugs you wore in the field provided:",
@@ -1579,13 +1340,7 @@
               {
                 "text": "How often were you around firecrackers or other fireworks?",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Every few months",
-                  "Monthly",
-                  "Weekly",
-                  "Daily"
-                ]
+                "options": ["Never", "Every few months", "Monthly", "Weekly", "Daily"]
               },
               {
                 "text": "If you were around fireworks, on average, how many fireworks did you shoot each time/session?",
@@ -1594,11 +1349,7 @@
               {
                 "text": "If you were around fireworks, how often did you wear earplugs or earmuffs during this activity?",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Sometimes",
-                  "Always"
-                ]
+                "options": ["Never", "Sometimes", "Always"]
               },
               {
                 "text": "Please indicate what kind of earplugs you wore in the field provided:",
@@ -1616,13 +1367,7 @@
               {
                 "text": "How often did you play a musical instrument?",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Every few months",
-                  "Monthly",
-                  "Weekly",
-                  "Daily"
-                ]
+                "options": ["Never", "Every few months", "Monthly", "Weekly", "Daily"]
               },
               {
                 "text": "If you played, please tell us what musical instrument:",
@@ -1631,11 +1376,7 @@
               {
                 "text": "If you played a musical instrument, how often did you wear earplugs or earmuffs while playing?",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Sometimes",
-                  "Always"
-                ]
+                "options": ["Never", "Sometimes", "Always"]
               },
               {
                 "text": "Please indicate what kind of earplugs you wore in the field provided:",
@@ -1644,100 +1385,53 @@
               {
                 "text": "How often did you listen to music, radio programs, etc. using personal headsets or earphones?",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Every few months",
-                  "Monthly",
-                  "Weekly",
-                  "Daily"
-                ]
+                "options": ["Never", "Every few months", "Monthly", "Weekly", "Daily"]
               },
               {
                 "text": "If you listened through earphones, on average, how many hours did each time/session last?",
                 "inputType": "dropdown",
-                "options": [
-                  "8 hours or more",
-                  "4 hours up to 8 hours",
-                  "1 hour up to 4 hours",
-                  "Less than 1 hour"
-                ]
+                "options": ["8 hours or more", "4 hours up to 8 hours", "1 hour up to 4 hours", "Less than 1 hour"]
               },
               {
                 "text": "If you listened through earphones, what was the typical volume setting (control knob rotation) when listening?",
                 "inputType": "dropdown",
-                "options": [
-                  "Full/maximum volume",
-                  "3/4 maximum volume",
-                  "1/2 maximum volume",
-                  "1/4 maximum volume"
-                ]
+                "options": ["Full/maximum volume", "3/4 maximum volume", "1/2 maximum volume", "1/4 maximum volume"]
               },
               {
                 "text": "Other than music concerts and headset use, how often did you listen to music, radio programs, etc. from audio speakers in a car or at home?",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Every few months",
-                  "Monthly",
-                  "Weekly",
-                  "Daily"
-                ]
+                "options": ["Never", "Every few months", "Monthly", "Weekly", "Daily"]
               },
               {
                 "text": "If you listened via speakers, on average, how many hours did each time/session last?",
                 "inputType": "dropdown",
-                "options": [
-                  "8 hours or more",
-                  "4 hours up to 8 hours",
-                  "1 hour up to 4 hours",
-                  "Less than 1 hour"
-                ]
+                "options": ["8 hours or more", "4 hours up to 8 hours", "1 hour up to 4 hours", "Less than 1 hour"]
               },
               {
                 "text": "If you listened via speakers, what was the typical volume setting (control knob rotation)?",
                 "inputType": "dropdown",
-                "options": [
-                  "Full/maximum volume",
-                  "3/4 maximum volume",
-                  "1/2 maximum volume",
-                  "1/4 maximum volume"
-                ]
+                "options": ["Full/maximum volume", "3/4 maximum volume", "1/2 maximum volume", "1/4 maximum volume"]
               },
               {
                 "text": "How often did you go to a dance club or nightclub?",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Every few months",
-                  "Monthly",
-                  "Weekly",
-                  "Daily"
-                ]
+                "options": ["Never", "Every few months", "Monthly", "Weekly", "Daily"]
               },
               {
                 "text": "On average, how many hours did each time/session last?",
                 "inputType": "dropdown",
-                "options": [
-                  "8 hours or more",
-                  "4 hours up to 8 hours",
-                  "1 hour up to 4 hours",
-                  "Less than 1 hour"
-                ]
+                "options": ["8 hours or more", "4 hours up to 8 hours", "1 hour up to 4 hours", "Less than 1 hour"]
               },
               {
                 "text": "How often did you wear earplugs or earmuffs during this activity?",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Sometimes",
-                  "Always"
-                ]
+                "options": ["Never", "Sometimes", "Always"]
               },
               {
                 "text": "Please indicate what kind of earplugs you wore in the field provided:",
                 "inputType": "text"
               }
-            ] 
+            ]
           }
         },
         {
@@ -1750,10 +1444,7 @@
               {
                 "text": "Now think back to this past summer. Over the summer months, did you work a noisy paid job, such as in construction, farming, a factory, lawn service, carwash, or other indoor or outdoor job working around loud equipment or machinery? By noisy job, we mean sounds so loud that you had to speak in a raised voice or shout to be heard at arm's length.",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "If yes, please describe the noisy job:",
@@ -1766,11 +1457,7 @@
               {
                 "text": "How often did you wear earplugs or earmuffs when around loud noises at this summer job?",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Sometimes",
-                  "Always"
-                ]
+                "options": ["Never", "Sometimes", "Always"]
               },
               {
                 "text": "What kind of earplugs did you use?",
@@ -1779,10 +1466,7 @@
               {
                 "text": "Other than during the summer, over the past year, did you work one or more noisy paid jobs, such as in construction, farming, a factory, lawn service, carwash, or other indoor or outdoor job working around loud equipment or machinery? By noisy job, we mean sounds so loud that you had to speak in a raised voice or shout to be heard at arm's length.",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ],
+                "options": ["Yes", "No"],
                 "notes": "(if no, you're done with this page of the survey)"
               },
               {
@@ -1796,16 +1480,12 @@
               {
                 "text": "How often did you wear earplugs or earmuffs when around loud noises at this job?",
                 "inputType": "dropdown",
-                "options": [
-                  "Never",
-                  "Sometimes",
-                  "Always"
-                ]
+                "options": ["Never", "Sometimes", "Always"]
               },
               {
                 "text": "Please indicate what kind of earplugs you wore in the field provided:",
                 "inputType": "text"
-              }            
+              }
             ]
           }
         },
@@ -1832,10 +1512,7 @@
               {
                 "text": "Did you wear hearing protection while participating in this activity?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "How long did such visits last? (hours)",
@@ -1866,10 +1543,7 @@
               {
                 "text": "Did you wear hearing protection while participating in this activity?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "How long did such visits last? (hours)",
@@ -1900,10 +1574,7 @@
               {
                 "text": "Did you wear hearing protection while participating in this activity?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "How long did such visits last? (hours)",
@@ -1934,10 +1605,7 @@
               {
                 "text": "Did you wear hearing protection while participating in this activity?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "How long did such visits last? (hours)",
@@ -1968,10 +1636,7 @@
               {
                 "text": "Did you wear hearing protection while participating in this activity?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "How long did such visits last? (hours)",
@@ -2002,10 +1667,7 @@
               {
                 "text": "Did you wear hearing protection while participating in this activity?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "How long did such visits last? (hours)",
@@ -2036,10 +1698,7 @@
               {
                 "text": "Did you wear hearing protection while participating in this activity?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "How long did such visits last? (hours)",
@@ -2070,10 +1729,7 @@
               {
                 "text": "Did you wear hearing protection while participating in this activity?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "How long did such visits last? (hours)",
@@ -2104,10 +1760,7 @@
               {
                 "text": "Did you wear hearing protection while participating in this activity?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "How long did such visits last? (hours)",
@@ -2138,10 +1791,7 @@
               {
                 "text": "Did you wear hearing protection while participating in this activity?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "How long did such visits last? (hours)",
@@ -2172,10 +1822,7 @@
               {
                 "text": "Did you wear hearing protection while participating in this activity?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "How long did such visits last? (hours)",
@@ -2207,10 +1854,7 @@
               {
                 "text": "Did you wear hearing protection while participating in this activity?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "How long did such visits last? (hours)",
@@ -2241,10 +1885,7 @@
               {
                 "text": "Did you wear hearing protection while participating in this activity?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "How long did such visits last? (hours)",
@@ -2276,10 +1917,7 @@
               {
                 "text": "Did you wear hearing protection while participating in this activity?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "How long did such visits last? (hours)",
@@ -2311,10 +1949,7 @@
               {
                 "text": "Did you wear hearing protection while participating in this activity?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "How long did such visits last? (hours)",
@@ -2346,10 +1981,7 @@
               {
                 "text": "Did you wear hearing protection while participating in this activity?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "How long did such visits last? (hours)",
@@ -2381,10 +2013,7 @@
               {
                 "text": "Did you wear hearing protection while participating in this activity?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "How long did such visits last? (hours)",
@@ -2416,10 +2045,7 @@
               {
                 "text": "Did you wear hearing protection while participating in this activity?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "How long did such visits last? (hours)",
@@ -2451,10 +2077,7 @@
               {
                 "text": "Did you wear hearing protection while participating in this activity?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "How long did such visits last? (hours)",
@@ -2486,10 +2109,7 @@
               {
                 "text": "Did you wear hearing protection while participating in this activity?",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "How long did such visits last? (hours)",
@@ -2507,10 +2127,7 @@
               {
                 "text": "Are you regularly exposed to loud noise at work in your current job/s? By loud noise, we mean noise loud enough that you have to raise your voice to be heard by someone at arm's length. This may include power tools or machinery, or loud music or crowds of people.",
                 "inputType": "dropdown",
-                "options": [
-                  "Yes",
-                  "No"
-                ]
+                "options": ["Yes", "No"]
               },
               {
                 "text": "If yes, please describe what the sources of noise are, and how long you are exposed to them per day:",
@@ -2525,13 +2142,13 @@
         },
         {
           "id": "backtomain",
-          "reference":"MainMenu"
+          "reference": "MainMenu"
         }
       ]
     },
     {
       "protocolId": "ManualAudiometry",
-      "pages":[
+      "pages": [
         {
           "id": "audiometry_001",
           "title": "Manual Audiometry Test",
@@ -2551,17 +2168,17 @@
         },
         {
           "id": "backtomain",
-          "reference":"MainMenu"
+          "reference": "MainMenu"
         }
       ]
-    }, 
+    },
     {
       "protocolId": "CalibrationExam",
       "pages": [
         {
           "id": "calibration_001",
           "title": "Calibration Exam",
-          "enableBackButton" :true,
+          "enableBackButton": true,
           "instructionText": "Test calibration response area",
           "responseArea": {
             "type": "calibrationResponseArea",
@@ -2659,7 +2276,7 @@
             "numFrequencies": 128,
             "numSweeps": 5,
             "windowDuration": 0.05,
-            "inputChannels": ["EPSHIELD_RIGHT_PDM_MIC1","EPSHIELD_LEFT_PDM_MIC2","EPSHIELD_LEFT_PDM_MIC1"]
+            "inputChannels": ["EPSHIELD_RIGHT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2", "EPSHIELD_LEFT_PDM_MIC1"]
           }
         },
         {
@@ -2701,25 +2318,12 @@
             "nRepeats": 2,
             "useMetaRMS": false,
             "elicitorLevelChange": "Within Block",
-            "elicitorLevelArray": [
-              70.0,
-              71.0,
-              72.0
-            ],
+            "elicitorLevelArray": [70.0, 71.0, 72.0],
             "probeStimulusLevel": 10,
             "submissionIntervalMs": 500,
-            "probeOutputChannel": [
-              "HPR1"
-            ],
-            "elicitorOutputChannel": [
-              "HPL1"
-            ],
-            "recordChannels": [
-              "EPSHIELD_RIGHT_PDM_MIC1", 
-              "EPSHIELD_RIGHT_PDM_MIC2", 
-              "EPSHIELD_LEFT_PDM_MIC1", 
-              "EPSHIELD_LEFT_PDM_MIC2"
-            ]
+            "probeOutputChannel": ["HPR1"],
+            "elicitorOutputChannel": ["HPL1"],
+            "recordChannels": ["EPSHIELD_RIGHT_PDM_MIC1", "EPSHIELD_RIGHT_PDM_MIC2", "EPSHIELD_LEFT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2"]
           }
         },
         {
@@ -2743,25 +2347,12 @@
             "nRepeats": 2,
             "useMetaRMS": false,
             "elicitorLevelChange": "Between Blocks",
-            "elicitorLevelArray": [
-              70.0,
-              71.0,
-              72.0
-            ],
+            "elicitorLevelArray": [70.0, 71.0, 72.0],
             "probeStimulusLevel": 10,
             "submissionIntervalMs": 500,
-            "probeOutputChannel": [
-              "HPR1"
-            ],
-            "elicitorOutputChannel": [
-              "HPL1"
-            ],
-            "recordChannels": [
-              "EPSHIELD_RIGHT_PDM_MIC1", 
-              "EPSHIELD_RIGHT_PDM_MIC2", 
-              "EPSHIELD_LEFT_PDM_MIC1", 
-              "EPSHIELD_LEFT_PDM_MIC2"
-            ]
+            "probeOutputChannel": ["HPR1"],
+            "elicitorOutputChannel": ["HPL1"],
+            "recordChannels": ["EPSHIELD_RIGHT_PDM_MIC1", "EPSHIELD_RIGHT_PDM_MIC2", "EPSHIELD_LEFT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2"]
           }
         },
         {

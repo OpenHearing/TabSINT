@@ -5,20 +5,16 @@ import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs/internal/Observable';
 
 @Injectable({
-    providedIn: 'root',
+  providedIn: 'root',
 })
-
 export class Notifications {
+  constructor(private readonly dialog: MatDialog) {}
 
-    constructor(private readonly dialog: MatDialog) {}
-    
-    alert(dialogData: DialogDataInterface): Observable<string> {
-      
-        const dialogRef = this.dialog.open(NotificationsComponent, {
-          data: dialogData
-        });
-  
-        return dialogRef.afterClosed();
-      }
-      
+  alert(dialogData: DialogDataInterface): Observable<string> {
+    const dialogRef = this.dialog.open(NotificationsComponent, {
+      data: dialogData,
+    });
+
+    return dialogRef.afterClosed();
+  }
 }

@@ -14,7 +14,7 @@ import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-
 @Component({
   selector: 'swept-dpoae-in-progress',
   templateUrl: './swept-dpoae-in-progress.component.html',
-  styleUrl: './swept-dpoae-in-progress.component.css'
+  styleUrl: './swept-dpoae-in-progress.component.css',
 })
 export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() device: ConnectedDevice | undefined;
@@ -25,36 +25,36 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
   @Input() width!: number;
   @Input() height!: number;
   @Input() xTicks!: number[];
-  @Input() margin!: { top: number, right: number, bottom: number, left: number };
+  @Input() margin!: { top: number; right: number; bottom: number; left: number };
   @Output() sweptDPOAEResultsEvent = new EventEmitter<SweptDpoaeResultsInterface>();
 
   state: StateInterface;
   inProgressResults: SweptDpoaeResultsInterface = {
     State: 'READY',
-    PctComplete: 0
+    PctComplete: 0,
   };
   inProgressResultsSubject = new BehaviorSubject<SweptDpoaeResultsInterface>(this.inProgressResults);
   inProgressResultsSubscription: Subscription | undefined;
   svg!: d3.Selection<SVGGElement, unknown, HTMLElement, any>;
   shouldAbort: boolean = false;
   isRequestingResults: boolean = false;
-  instructions: string = "Exam in progress please wait.";
+  instructions: string = 'Exam in progress please wait.';
 
   stateSubscription: Subscription | undefined;
 
   constructor(
     private readonly changeDetectorRef: ChangeDetectorRef,
     private readonly devicesService: DevicesService,
-    private readonly logger: Logger, 
-    private readonly stateModel: StateModel,
+    private readonly logger: Logger,
+    private readonly stateModel: StateModel
   ) {
     this.state = this.stateModel.getState();
-    this.stateModel.updateState({isSubmittable: false});
+    this.stateModel.updateState({ isSubmittable: false });
   }
 
   ngOnInit(): void {
     this.requestResults();
-    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
     this.inProgressResultsSubscription = this.inProgressResultsSubject.subscribe((updatedResults: SweptDpoaeResultsInterface) => {
@@ -71,7 +71,7 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
   }
 
   ngOnDestroy(): void {
-    this.stateModel.updateState({isSubmittable: true});
+    this.stateModel.updateState({ isSubmittable: true });
     this.shouldAbort = true;
     this.inProgressResultsSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();
@@ -96,48 +96,46 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
       this.isRequestingResults = false;
 
       if (this.shouldAbort) return;
-  
+
       if (this.doesRespContainResults(resp)) {
         this.inProgressResultsSubject.next(resp![1]);
         if (this.inProgressResults.State === 'DONE') {
-          this.stateModel.updateState({isSubmittable: true});
+          this.stateModel.updateState({ isSubmittable: true });
           this.sweptDPOAEResultsEvent.emit(resp![1]);
-          this.instructions = "Exam complete, press 'Next' to continue."
+          this.instructions = "Exam complete, press 'Next' to continue.";
           this.changeDetectorRef.detectChanges();
           return;
         }
       } else {
-        this.logger.debug('Swept DPOAE in-progress component. Request results did not return expected results. It may be too early to receive results.');
+        this.logger.debug(
+          'Swept DPOAE in-progress component. Request results did not return expected results. It may be too early to receive results.'
+        );
       }
-  
+
       setTimeout(pollResults, 1000);
     };
-  
+
     pollResults();
   }
 
   private doesRespContainResults(resp: any[] | undefined) {
-    return resp !== undefined && 
-           resp.length > 1 && 
-           resp[1] !== 'ERROR' && 
-           resp[2] !== 'timeout' &&
-           resp[2] !== 'byte timeout' &&
-           resp[1] !== 'OK';
+    return resp !== undefined && resp.length > 1 && resp[1] !== 'ERROR' && resp[2] !== 'timeout' && resp[2] !== 'byte timeout' && resp[1] !== 'OK';
   }
 
   private createProgressPlot() {
-    let svg = d3.select('#dpoae-in-progress-plot')
+    let svg = d3
+      .select('#dpoae-in-progress-plot')
       .append('svg')
       .attr('width', this.width + this.margin.left + this.margin.right)
       .attr('height', this.height + this.margin.top + this.margin.bottom)
       .append('g')
-      .attr('transform', `translate(${this.margin.left},${this.margin.top})`);;
-    
+      .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
+
     svg = createOAEResultsChartSvg(svg, this.width, this.height, this.xTicks, this.xScale, this.yScale);
 
     const legendData = [
       { label: 'DPOAE', color: 'blue', symbol: 'circle' },
-      { label: 'NF', color: 'red', symbol: 'X' }
+      { label: 'NF', color: 'red', symbol: 'X' },
     ];
 
     createLegend(svg, legendData, this.width, 85);
@@ -149,7 +147,8 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
     const filteredData = this.filterData(dpLowData, f2Data);
 
     // Plot DpLow Amplitude / DPOAE (blue open circles)
-    this.svg.selectAll('.dot')
+    this.svg
+      .selectAll('.dot')
       .data(filteredData['F2Frequency'])
       .enter()
       .append('circle')
@@ -161,7 +160,8 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
       .style('stroke-width', 2);
 
     // Plot DpLow NoiseFloor (red X)
-    this.svg.selectAll('.cross')
+    this.svg
+      .selectAll('.cross')
       .data(filteredData['F2Frequency'])
       .enter()
       .append('text')
@@ -173,7 +173,6 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
       .style('font-size', '10px')
       .style('font-weight', 'bold')
       .text('X');
-
   }
 
   private filterData(dpLowData: DPOAEDataInterface, f2Data: DPOAEDataInterface) {
@@ -192,17 +191,18 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
         filteredData['NoiseFloor'].push(dpLowData.NoiseFloor[i]);
       }
     }
-    return filteredData
+    return filteredData;
   }
 
   private async waitForRequestResultsDone() {
     while (this.isRequestingResults) {
-      await new Promise((resolve) => setTimeout(resolve, 10));
-    }  
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
   }
 
   private updateInstructionsAfterAbortButtonPressed() {
-    this.instructions = "Abort pressed, please wait while exam is aborted. This may take several minutes, but the data collected so far will be saved.";
+    this.instructions =
+      'Abort pressed, please wait while exam is aborted. This may take several minutes, but the data collected so far will be saved.';
     this.changeDetectorRef.detectChanges();
   }
 
@@ -212,9 +212,8 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
   }
 
   private updateStateOnAbort() {
-    this.stateModel.updateState({isSubmittable: true});
+    this.stateModel.updateState({ isSubmittable: true });
     this.inProgressResults.State = 'ABORTED';
     this.shouldAbort = false;
   }
-
 }

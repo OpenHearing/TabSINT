@@ -1,10 +1,10 @@
-import { CommonResponseAreaInterface } from "../../../../../interfaces/page-definition.interface";
+import { CommonResponseAreaInterface } from '../../../../../interfaces/page-definition.interface';
 
 /**
  * MEMR Exam Interface
- * 
+ *
  * @extends {CommonResponseAreaInterface}
- * 
+ *
  * @field tabsintId Id of the device for the exam to be queued to.
  * @field exportToCSV If true, export the results to a CSV.
  * @field soundFileName Path of the wav file to play on the Tympan, including a directory.
@@ -13,7 +13,7 @@ import { CommonResponseAreaInterface } from "../../../../../interfaces/page-defi
  * @field nRepeats Number of repeats at the trial or block level.
  * @field useMetaRMS If true, read the metadata scalar from the wav file and apply the gain.
  * @field elicitorLevelChange String determining if the change should be within block or between blocks (Enum: "Within Block" or "Between Blocks").
- * @field elicitorLevelArray Elicitor level changes for each trial or block (also determines the number of trials or blocks). 
+ * @field elicitorLevelArray Elicitor level changes for each trial or block (also determines the number of trials or blocks).
  * @field probeStimulusLevel The probe stimulus level.
  * @field submissionIntervalMs The wait period after completing all trials, in milliseconds.
  * @field probeOutputChannel The output channels for the exam.
@@ -38,7 +38,7 @@ export interface MemrExamInterface extends CommonResponseAreaInterface {
 
 /**
  * MEMR Queue Exam Interface
- * 
+ *
  * @field RecordChannels The probe channels for the exam.
  * @field PlaybackChannels The elicitor channels for the exam.
  */
@@ -49,14 +49,14 @@ export interface MemrQueueExamInterface {
 
 /**
  * MEMR Exam Submission Interface
- * 
+ *
  * @field SoundFileName Path of the wav file to play on the Tympan, including a directory.
  * @field RecordFileName Path of the WAV file to record, including a directory.
  * @field NumTrials Number of trials in a block.
  * @field UseMetaRMS If true, read the metadata scalar from the wav file and apply the gain.
  * @field Level_dBSpl Elicitor level changes for the block.
  * @field SubmissionInterval_ms The wait period after completing all trials, in milliseconds.
- * 
+ *
  */
 export interface MemrExamSubmissionInterface {
   SoundFileName?: string;
@@ -65,7 +65,7 @@ export interface MemrExamSubmissionInterface {
   UseMetaRMS?: boolean;
   Level_dBSpl?: number[][];
   SubmissionInterval_ms?: number;
-  NumOutputChans?: number
+  NumOutputChans?: number;
 }
 
 /**

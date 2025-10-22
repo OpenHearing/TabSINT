@@ -1,11 +1,10 @@
-
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
 
 @Component({
   selector: 'app-max-output-screen',
   templateUrl: './max-output-screen.component.html',
-  styleUrls: ['./max-output-screen.component.css']
+  styleUrls: ['./max-output-screen.component.css'],
 })
 export class MaxOutputScreenComponent implements OnChanges {
   @Input() isPlaying: boolean = false;
@@ -17,10 +16,9 @@ export class MaxOutputScreenComponent implements OnChanges {
   @Output() togglePlay = new EventEmitter<void>();
   @Output() maxOutputUpdated = new EventEmitter<number>();
   @Input() userInput: number | null = null;
-  
+
   maxOutputValue: number | null = null;
   showValidationError: boolean = false;
-
 
   validationMessage: string = '';
 
@@ -31,13 +29,13 @@ export class MaxOutputScreenComponent implements OnChanges {
       this.validationMessage = '';
     }
   }
-  
+
   validateAndProceed(): boolean {
     if (this.userInput !== null) {
       this.showValidationError = false;
-      this.validationMessage = ''; 
+      this.validationMessage = '';
       this.maxOutputUpdated.emit(this.userInput);
-      this.userInput = null
+      this.userInput = null;
       return true;
     } else {
       this.showValidationError = true;
@@ -45,13 +43,12 @@ export class MaxOutputScreenComponent implements OnChanges {
       return false;
     }
   }
-  
+
   onTogglePlay(): void {
     this.togglePlay.emit();
   }
 
-  onEnterPressed(){
+  onEnterPressed() {
     this.nextStep.emit();
   }
-  
 }

@@ -16,68 +16,70 @@
 
 .mat-mdc-progress-bar {
   --mdc-linear-progress-active-indicator-color: #337ab7;
-  --mdc-linear-progress-track-color: rgba(0, 0, 0, .1);
+  --mdc-linear-progress-track-color: rgba(0, 0, 0, 0.1);
   --mdc-linear-progress-track-height: 24px;
   --mdc-linear-progress-active-indicator-height: 24px;
   border-radius: 10px;
-  margin-bottom: 3vh; 
+  margin-bottom: 3vh;
 }
 .results-container {
-    margin: 20px;
-    overflow-x: auto;
+  margin: 20px;
+  overflow-x: auto;
 }
-  
+
 .results-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-    font-size: 18px;
-    text-align: left;
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 18px;
+  text-align: left;
 }
 
 .results-table th,
 .results-table td {
-    padding: 12px 15px;
-    border-bottom: 1px solid #ddd;
-    vertical-align: top;
+  padding: 12px 15px;
+  border-bottom: 1px solid #ddd;
+  vertical-align: top;
 }
 
 .results-table th {
-    background-color: #f5f5f5;
-    font-weight: bold;
+  background-color: #f5f5f5;
+  font-weight: bold;
 }
 
 .results-table th:first-child,
 .results-table td:first-child {
-    width: clamp(150px, 25%, 300px);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  width: clamp(150px, 25%, 300px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .results-table th:last-child,
 .results-table td:last-child {
-    word-wrap: break-word;
-    word-break: break-word;
-    overflow-wrap: anywhere;
-    hyphens: auto;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  hyphens: auto;
 }
 
 .results-table tbody tr:hover {
-    background-color: #f1f1f1;
+  background-color: #f1f1f1;
 }
 
 .results-table tbody tr:nth-child(even) {
-    background-color: #fafafa;
+  background-color: #fafafa;
 }
 
 .results-table td {
-    text-align: left;
+  text-align: left;
 }
 
 @media screen and (max-width: 600px) {
-    .results-table, .results-table th, .results-table td {
-        font-size: 16px;
-        padding: 8px;
-    }
+  .results-table,
+  .results-table th,
+  .results-table td {
+    font-size: 16px;
+    padding: 8px;
+  }
 }

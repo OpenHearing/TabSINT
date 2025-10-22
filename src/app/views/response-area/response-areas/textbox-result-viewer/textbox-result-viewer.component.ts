@@ -11,31 +11,29 @@ import { ResultViewResponsesInterface } from '../../../../interfaces/result-view
 
 @Component({
   selector: 'textbox-result-viewer-view',
-  templateUrl: './textbox-result-viewer.component.html'
+  templateUrl: './textbox-result-viewer.component.html',
 })
-
 export class TextboxResultViewerComponent implements OnInit, OnDestroy {
   currentPage: PageInterface;
   results: ResultsInterface;
   responses?: ResultViewResponsesInterface[];
   pageSubscription: Subscription | undefined;
 
-  constructor (
-    private readonly resultsModel: ResultsModel, 
+  constructor(
+    private readonly resultsModel: ResultsModel,
     private readonly pageModel: PageModel
   ) {
     this.results = this.resultsModel.getResults();
     this.currentPage = this.pageModel.getPage();
-    
   }
-  
+
   ngOnInit(): void {
-    this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
-      if (updatedPage.responseArea?.type === "textboxResponseAreaResultViewer") {
+    this.pageSubscription = this.pageModel.currentPageSubject.subscribe((updatedPage: PageInterface) => {
+      if (updatedPage.responseArea?.type === 'textboxResponseAreaResultViewer') {
         const textboxResponseAreaResultViewer = updatedPage.responseArea as TextBoxResultViewerInterface;
         this.responses = this.results.currentExam.responses
-          .filter((response: { pageId: string; }) => textboxResponseAreaResultViewer.pageIdsToDisplay.includes(response.pageId))
-          .map( (response: any) => ({
+          .filter((response: { pageId: string }) => textboxResponseAreaResultViewer.pageIdsToDisplay.includes(response.pageId))
+          .map((response: any) => ({
             title: response.page.title,
             questionMainText: response.page.questionMainText,
             questionSubText: response.page.questionSubText,
@@ -49,5 +47,4 @@ export class TextboxResultViewerComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.pageSubscription?.unsubscribe();
   }
-
 }

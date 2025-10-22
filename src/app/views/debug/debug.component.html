@@ -1,74 +1,58 @@
 <div *ngIf="disk.debugMode" class="debug-view">
+  <button type="button" class="btn btn-xs btn-link" (click)="isCollapsed = !isCollapsed">
+    <span *ngIf="!isCollapsed"
+      ><small>{{ "Hide Debug Info" | translate }} <i class="ion-chevron-up"></i></small
+    ></span>
+    <span *ngIf="isCollapsed"
+      ><small>{{ "Show Debug Info" | translate }} <i class="ion-chevron-down"></i></small
+    ></span>
+  </button>
 
-    <button type="button" class="btn btn-xs btn-link" (click)="isCollapsed = !isCollapsed">
-        <span *ngIf="!isCollapsed" ><small>{{'Hide Debug Info'|translate}} <i class="ion-chevron-up"></i></small></span>
-        <span *ngIf="isCollapsed" ><small>{{'Show Debug Info'|translate}} <i class="ion-chevron-down"></i></small></span>
-    </button>
-  
-    <div [ngClass]="{'collapsed': isCollapsed}" class="small text-left" id="showDebugInfoCollapseId">
-  
-      <div class="well">
-        
-        <!-- Page Section -->
-        <div class="debug-section">
-          <button type="button" class="debug-section-header" (click)="toggleSection('page')">
-            <b id="page">Page</b>
-            <i class="section-icon" [ngClass]="sectionExpanded.page ? 'ion-chevron-up' : 'ion-chevron-down'"></i>
-          </button>
-          <div [ngClass]="{'section-collapsed': !sectionExpanded.page}" class="debug-section-content">
-            <ngx-json-viewer 
-              [json]="currentPage" 
-              [expanded]="false"
-              aria-labelledby="page">
-            </ngx-json-viewer>
-          </div>
+  <div [ngClass]="{ collapsed: isCollapsed }" class="small text-left" id="showDebugInfoCollapseId">
+    <div class="well">
+      <!-- Page Section -->
+      <div class="debug-section">
+        <button type="button" class="debug-section-header" (click)="toggleSection('page')">
+          <b id="page">Page</b>
+          <i class="section-icon" [ngClass]="sectionExpanded.page ? 'ion-chevron-up' : 'ion-chevron-down'"></i>
+        </button>
+        <div [ngClass]="{ 'section-collapsed': !sectionExpanded.page }" class="debug-section-content">
+          <ngx-json-viewer [json]="currentPage" [expanded]="false" aria-labelledby="page"> </ngx-json-viewer>
         </div>
-        
-        <!-- Page Results Section -->
-        <div class="debug-section">
-          <button type="button" class="debug-section-header" (click)="toggleSection('pageResults')">
-            <b id="pageResults">Page Results</b>
-            <i class="section-icon" [ngClass]="sectionExpanded.pageResults ? 'ion-chevron-up' : 'ion-chevron-down'"></i>
-          </button>
-          <div [ngClass]="{'section-collapsed': !sectionExpanded.pageResults}" class="debug-section-content">
-            <ngx-json-viewer 
-              [json]="results.currentPage" 
-              [expanded]="false"
-              aria-labelledby="pageResults">
-            </ngx-json-viewer>
-          </div>
+      </div>
+
+      <!-- Page Results Section -->
+      <div class="debug-section">
+        <button type="button" class="debug-section-header" (click)="toggleSection('pageResults')">
+          <b id="pageResults">Page Results</b>
+          <i class="section-icon" [ngClass]="sectionExpanded.pageResults ? 'ion-chevron-up' : 'ion-chevron-down'"></i>
+        </button>
+        <div [ngClass]="{ 'section-collapsed': !sectionExpanded.pageResults }" class="debug-section-content">
+          <ngx-json-viewer [json]="results.currentPage" [expanded]="false" aria-labelledby="pageResults"> </ngx-json-viewer>
         </div>
-        
-        <!-- Exam Results Section -->
-        <div class="debug-section">
-          <button type="button" class="debug-section-header" (click)="toggleSection('examResults')">
-            <b id="examResults">Exam Results</b>
-            <i class="section-icon" [ngClass]="sectionExpanded.examResults ? 'ion-chevron-up' : 'ion-chevron-down'"></i>
-          </button>
-          <div [ngClass]="{'section-collapsed': !sectionExpanded.examResults}" class="debug-section-content">
-            <ngx-json-viewer 
-              [json]="results.currentExam" 
-              [expanded]="false"
-              aria-labelledby="examResults">
-            </ngx-json-viewer>
-          </div>
+      </div>
+
+      <!-- Exam Results Section -->
+      <div class="debug-section">
+        <button type="button" class="debug-section-header" (click)="toggleSection('examResults')">
+          <b id="examResults">Exam Results</b>
+          <i class="section-icon" [ngClass]="sectionExpanded.examResults ? 'ion-chevron-up' : 'ion-chevron-down'"></i>
+        </button>
+        <div [ngClass]="{ 'section-collapsed': !sectionExpanded.examResults }" class="debug-section-content">
+          <ngx-json-viewer [json]="results.currentExam" [expanded]="false" aria-labelledby="examResults"> </ngx-json-viewer>
         </div>
-        
-        <!-- State Section -->
-        <div class="debug-section">
-          <button type="button" class="debug-section-header" (click)="toggleSection('state')">
-            <b id="state">State</b>
-            <i class="section-icon" [ngClass]="sectionExpanded.state ? 'ion-chevron-up' : 'ion-chevron-down'"></i>
-          </button>
-          <div [ngClass]="{'section-collapsed': !sectionExpanded.state}" class="debug-section-content">
-            <ngx-json-viewer 
-              [json]="state" 
-              [expanded]="false"
-              aria-labelledby="state">
-            </ngx-json-viewer>
-          </div>
+      </div>
+
+      <!-- State Section -->
+      <div class="debug-section">
+        <button type="button" class="debug-section-header" (click)="toggleSection('state')">
+          <b id="state">State</b>
+          <i class="section-icon" [ngClass]="sectionExpanded.state ? 'ion-chevron-up' : 'ion-chevron-down'"></i>
+        </button>
+        <div [ngClass]="{ 'section-collapsed': !sectionExpanded.state }" class="debug-section-content">
+          <ngx-json-viewer [json]="state" [expanded]="false" aria-labelledby="state"> </ngx-json-viewer>
         </div>
-                
-      </div>  
+      </div>
     </div>
   </div>
+</div>

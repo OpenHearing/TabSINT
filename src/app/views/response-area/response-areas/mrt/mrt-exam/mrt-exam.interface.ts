@@ -1,13 +1,13 @@
-import { CommonResponseAreaInterface } from "../../../../../interfaces/page-definition.interface";
+import { CommonResponseAreaInterface } from '../../../../../interfaces/page-definition.interface';
 
 export interface MrtExamInterface extends CommonResponseAreaInterface {
-    exportToCSV?: boolean;
-    tabsintId?: string;
-    examDefinitionFilename: string;
-    outputChannel?: string[] | string;
-    randomizeTrials?: boolean;
-    trialList?: MrtTrialInterface[];
-    showResults?: boolean;
+  exportToCSV?: boolean;
+  tabsintId?: string;
+  examDefinitionFilename: string;
+  outputChannel?: string[] | string;
+  randomizeTrials?: boolean;
+  trialList?: MrtTrialInterface[];
+  showResults?: boolean;
 }
 
 export interface MrtTrialInterface {
@@ -19,8 +19,8 @@ export interface MrtTrialInterface {
   SNR: number;
 }
 
-export interface MrtTrialResultInterface  {
-  filename: string,
+export interface MrtTrialResultInterface {
+  filename: string;
   leveldBSpl: number[];
   useMeta: boolean;
   choices: string[];
@@ -34,5 +34,5 @@ export interface MrtResultsInterface {
   nbTrials: number;
   nbTrialsCorrect: number;
   pctCorrect: number;
-  trialList: MrtTrialResultInterface[]
+  trialList: MrtTrialResultInterface[];
 }

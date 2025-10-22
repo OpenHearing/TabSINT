@@ -11,24 +11,18 @@ describe('DeviceChooseComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [],
       imports: [
-        DeviceChooseComponent, 
-        MatDialogModule, 
+        DeviceChooseComponent,
+        MatDialogModule,
         TranslateModule.forRoot({
-                  loader: {
-                    provide: TranslateLoader,
-                    useClass: TranslateFakeLoader
-                  }
-                })
+          loader: {
+            provide: TranslateLoader,
+            useClass: TranslateFakeLoader,
+          },
+        }),
       ],
-      providers: [
-        TranslateService, 
-        TranslateStore,
-        { provide: MatDialogRef, useValue: {} },
-        { provide: MAT_DIALOG_DATA, useValue: {} },
-     ],
-    })
-    .compileComponents();
-    
+      providers: [TranslateService, TranslateStore, { provide: MatDialogRef, useValue: {} }, { provide: MAT_DIALOG_DATA, useValue: {} }],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(DeviceChooseComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
