@@ -474,7 +474,7 @@
       ]
     },
     {
-      "protocolId": "MEMRExamWithinBlock",
+      "protocolId": "MEMRExamWithinBlockLR",
       "pages": [
         {
           "id": "MEMR",
@@ -482,18 +482,18 @@
           "isAutoSubmit": false,
           "responseArea": {
             "type": "memrResponseArea",
-            "soundFileName": "/MEMR_TEST/Tones_900Hz_1000Hz_Level_-15dBrms_-15dBrms_MetaScaler_120dB_120dB.wav",
-            "recordFileName": "REC.WAV",
-            "recordFileFolder": "MEMR_TEST",
-            "nRepeats": 2,
+            "soundFileName": "/PurdueMEMR/MEMR_Sinc16_2ch.wav",
+            "recordFileName": "REC_B000_T.WAV",
+            "recordFileFolder": "MEMR_REC",
+            "nRepeats": 5,
             "useMetaRMS": true,
             "elicitorLevelChange": "Within Block",
-            "elicitorLevelArray": [70.0, 71.0, 72.0],
-            "probeStimulusLevel": 10,
+            "elicitorLevelArray": [70.0, 74.0, 78.0, 82.0, 86.0],
+            "probeStimulusLevel": 80,
             "submissionIntervalMs": 500,
             "probeOutputChannel": ["HPR1"],
             "elicitorOutputChannel": ["HPL1"],
-            "recordChannels": ["EPSHIELD_LEFT_PDM_MIC1", "EPSHIELD_RIGHT_PDM_MIC1"]
+            "recordChannels": ["HPR1", "EPSHIELD_LEFT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2", "EPSHIELD_RIGHT_PDM_MIC1"]
           }
         },
         {
@@ -511,18 +511,18 @@
           "isAutoSubmit": false,
           "responseArea": {
             "type": "memrResponseArea",
-            "soundFileName": "900Hz_1000Hz_Tones_Level_-3dBrms.wav",
-            "recordFileName": "REC.WAV",
-            "recordFileFolder": "MEMR",
-            "nRepeats": 2,
-            "useMetaRMS": false,
+            "soundFileName": "/PurdueMEMR/MEMR_Sinc16_2ch.wav",
+            "recordFileName": "REC_B001_T.WAV",
+            "recordFileFolder": "MEMR_REC",
+            "nRepeats": 5,
+            "useMetaRMS": true,
             "elicitorLevelChange": "Between Blocks",
-            "elicitorLevelArray": [70.0, 71.0, 72.0],
-            "probeStimulusLevel": 10,
+            "elicitorLevelArray": [70.0, 74.0, 78.0, 82.0, 86.0],
+            "probeStimulusLevel": 80,
             "submissionIntervalMs": 500,
             "probeOutputChannel": ["HPR1"],
             "elicitorOutputChannel": ["HPL1"],
-            "recordChannels": ["EPSHIELD_LEFT_PDM_MIC1", "EPSHIELD_RIGHT_PDM_MIC1"]
+            "recordChannels": ["HPR1", "EPSHIELD_LEFT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2", "EPSHIELD_RIGHT_PDM_MIC1"]
           }
         },
         {
