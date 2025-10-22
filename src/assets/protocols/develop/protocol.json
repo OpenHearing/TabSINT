@@ -474,7 +474,7 @@
       ]
     },
     {
-      "protocolId": "MEMRExamWithinBlockLR",
+      "protocolId": "MEMRExamWithinBlock",
       "pages": [
         {
           "id": "MEMR",
