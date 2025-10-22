@@ -29,7 +29,7 @@ describe('ResultsService', () => {
             new FileService(appModel, logger,diskModel),
             logger,
             new ProtocolModel,
-            new ResultsModel(new DevicesModel(logger), version),
+            new ResultsModel(new DevicesModel(logger), version, logger),
             sqLite,
             version
         );

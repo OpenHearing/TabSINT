@@ -26,10 +26,7 @@ describe('LikertComponent', () => {
 
   beforeEach(async () => {
     devices = new DevicesModel(logger);
-    mockResultsModel = new ResultsModel(
-      devices,
-      version
-    );
+    mockResultsModel = new ResultsModel(devices, version, logger);
 
     mockPageModel = new PageModel();
     mockPageModel.currentPage = {
