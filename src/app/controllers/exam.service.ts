@@ -17,8 +17,8 @@ import { ProtocolModel } from '../models/protocol/protocol-model.service';
 import { PageModel } from '../models/page/page.service';
 
 import { DialogType, ExamState } from '../utilities/constants';
-import { Notifications } from '../utilities/notifications.service';
-import { Logger } from '../utilities/logger.service';
+import { Notifications } from '../services/notifications.service';
+import { Logger } from '../services/logger.service';
 import { calculateElapsedTime, checkForSpecialReference, getDefaultResponseRequired } from '../utilities/exam-helper-functions';
 import { AppState } from '../utilities/constants';
 

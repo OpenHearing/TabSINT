@@ -48,7 +48,7 @@ export class DebugComponent implements OnInit, OnDestroy {
     this.state = this.stateModel.getState();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
     }) 
@@ -63,7 +63,7 @@ export class DebugComponent implements OnInit, OnDestroy {
     })
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
     this.pageSubscription?.unsubscribe();
     this.resultsSubscription?.unsubscribe();

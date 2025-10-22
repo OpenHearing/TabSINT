@@ -10,7 +10,7 @@ export class NetworkService {
     constructor(private readonly ngZone: NgZone) { }
 
     /** Clean up the network listeners. */
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         Network.removeAllListeners();
     }
 

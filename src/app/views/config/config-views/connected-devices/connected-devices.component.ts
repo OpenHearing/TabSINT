@@ -6,8 +6,8 @@ import { StateInterface } from '../../../../models/state/state.interface';
 import { StateModel } from '../../../../models/state/state.service';
 import { ConnectedDevice } from '../../../../interfaces/connected-device.interface';
 import { DevicesService } from '../../../../controllers/devices.service';
-import { Logger } from '../../../../utilities/logger.service';
-import { DeviceUtil } from '../../../../utilities/device-utility';
+import { Logger } from '../../../../services/logger.service';
+import { DeviceUtil } from '../../../../services/device-utility.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs/internal/Subscription';
 

@@ -1,14 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Tasks } from '../../../../utilities/tasks.service';
-import { SqLite } from '../../../../utilities/sqLite.service';
+import { SqLite } from '../../../../services/sqLite.service';
 import { StateModel } from '../../../../models/state/state.service';
 import { StateInterface } from '../../../../models/state/state.interface';
-import { FileService } from '../../../../utilities/file.service';
+import { FileService } from '../../../../services/file.service';
 import { DialogDataInterface } from '../../../../interfaces/dialog-data.interface';
 import { DialogType } from '../../../../utilities/constants';
-import { Notifications } from '../../../../utilities/notifications.service';
-import { Logger } from '../../../../utilities/logger.service';
+import { Notifications } from '../../../../services/notifications.service';
+import { Logger } from '../../../../services/logger.service';
 import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
@@ -39,7 +38,7 @@ export class LogConfigComponent implements OnInit, OnDestroy {
     this.showLogs = this.state.isPaneOpen.appLog;
   }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.logsCountSubscription = this.sqLite.countSubject.subscribe( async (updatedLogsCount) => {
       this.logsCount = updatedLogsCount['logs'];
       this.logs = await this.sqLite.getAllLogs();
@@ -49,7 +48,7 @@ export class LogConfigComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.logsCountSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();
   }

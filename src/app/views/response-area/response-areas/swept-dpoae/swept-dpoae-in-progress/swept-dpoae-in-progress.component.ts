@@ -7,7 +7,7 @@ import { ConnectedDevice } from '../../../../../interfaces/connected-device.inte
 import { StateModel } from '../../../../../models/state/state.service';
 import { StateInterface } from '../../../../../models/state/state.interface';
 import { DPOAEDataInterface, SweptDpoaeResultsInterface } from '../swept-dpoae-exam/swept-dpoae-exam.interface';
-import { Logger } from '../../../../../utilities/logger.service';
+import { Logger } from '../../../../../services/logger.service';
 import { createLegend, createOAEResultsChartSvg } from '../../../../../utilities/d3-plot-functions';
 import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-dpoae.schema';
 
@@ -52,7 +52,7 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
     this.stateModel.updateState({isSubmittable: false});
   }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.requestResults();
     this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
       this.state = updatedState;

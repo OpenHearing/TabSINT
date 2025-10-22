@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CapacitorHttp, HttpOptions } from '@capacitor/core';
 import { DiskModel } from '../models/disk/disk.service';
-import { Logger } from '../utilities/logger.service';
+import { Logger } from '../services/logger.service';
 import { ProtocolServer } from '../utilities/constants';
 import { ExamResults } from '../models/results/results.interface';
 import { Device } from '@capacitor/device';

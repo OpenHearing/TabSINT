@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DevicesInterface, TympanResponse } from './devices.interface';
 import { Device } from '@capacitor/device';
-import { Logger } from '../../utilities/logger.service';
+import { Logger } from '../../services/logger.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { BleDevice } from '../../interfaces/bluetooth.interface';
 

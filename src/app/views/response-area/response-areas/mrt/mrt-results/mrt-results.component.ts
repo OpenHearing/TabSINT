@@ -21,13 +21,13 @@ export class MrtResultsComponent implements OnInit, OnDestroy {
     this.stateModel.updateState({isSubmittable: true});
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
       this.state = updatedState;
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.stateSubscription?.unsubscribe();
   }
 

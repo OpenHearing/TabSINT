@@ -12,10 +12,10 @@ import { ProtocolModel } from '../../models/protocol/protocol-model.service';
 import { StateModel } from '../../models/state/state.service';
 import { ProtocolService } from '../../controllers/protocol.service';
 import { ExamService } from '../../controllers/exam.service';
-import { Logger } from '../../utilities/logger.service';
-import { Notifications } from '../../utilities/notifications.service';
-import { Tasks } from '../../utilities/tasks.service';
-import { FileService } from '../../utilities/file.service';
+import { Logger } from '../../services/logger.service';
+import { Notifications } from '../../services/notifications.service';
+import { Tasks } from '../../services/tasks.service';
+import { FileService } from '../../services/file.service';
 import { DialogType, ProtocolServer } from '../../utilities/constants';
 import { getProtocolMetaData } from '../../utilities/protocol-helper-functions';
 import { partialMetaDefaults } from '../../utilities/defaults';
@@ -64,7 +64,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
     // sort protocols by name here
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();
   }

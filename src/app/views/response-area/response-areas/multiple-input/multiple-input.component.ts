@@ -43,7 +43,7 @@ export class MultipleInputComponent  implements OnInit {
     this.state = this.stateModel.getState();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
       this.state = updatedState;
     });
@@ -64,7 +64,7 @@ export class MultipleInputComponent  implements OnInit {
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.pageSubscription?.unsubscribe();
     this.resultsSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();

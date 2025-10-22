@@ -27,7 +27,7 @@ export class ConfigComponent {
     this.examService.switchToAdminView();
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.stateSubscription?.unsubscribe();
   }
 

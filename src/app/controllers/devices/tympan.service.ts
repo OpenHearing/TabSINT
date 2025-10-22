@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Logger } from '../../utilities/logger.service';
-import { TympanWrap } from '../../utilities/tympan-wrap.service';
+import { Logger } from '../../services/logger.service';
+import { TympanWrap } from '../../services/tympan-wrap.service';
 import { BleDevice } from '../../interfaces/bluetooth.interface';
 import { DevicesModel } from '../../models/devices/devices-model.service';
 import { DevicesInterface, TympanResponse } from '../../models/devices/devices.interface';
@@ -8,7 +8,7 @@ import { DeviceState, ExamState } from '../../utilities/constants';
 import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
 import { NewConnectedDevice, ConnectedDevice } from '../../interfaces/connected-device.interface';
-import { DeviceUtil } from '../../utilities/device-utility';
+import { DeviceUtil } from '../../services/device-utility.service';
 import { Subscription } from "rxjs";
 import { PendingMsgInfo } from '../../interfaces/pending-msg-info.interface';
 import { Command } from '../../types/custom-types';
