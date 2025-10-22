@@ -67,15 +67,6 @@ export class SoftwareConfigComponent {
     }
   }
 
-  // TODO: VARIABLES - SHOULD BE MOVED TO THE RESPECTIVE MODEL WHEN IT EXISTS
-
-  config = {
-    build: "placeholder",
-    tabsintPlugins: {
-      "???": {version:"???"}
-    }
-  }
-
   toggleAppDeveloperMode() {
     console.log("toggleAppDeveloperMode");
   }
