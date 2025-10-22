@@ -55,18 +55,18 @@ export function initializeLoadingProtocol(
   function checkTabsintVersion() {
     loading.protocol.protocolTabsintOutdated = false;
     if (loading.protocol.minTabsintVersion) {
-      // const mtv = _.map(loading.protocol.minTabsintVersion.split("."), function(s) {
-      //     return parseInt(s);
-      // }); //
-      // const ctv = _.map(version.dm.tabsint.split("-")[0].split("."), function(s) {
-      //     return parseInt(s);
-      // });
+      /*
+       const mtv = _.map(loading.protocol.minTabsintVersion.split("."), function(s) {
+           return parseInt(s);
+       }); 
+       const ctv = _.map(version.dm.tabsint.split("-")[0].split("."), function(s) {
+           return parseInt(s);
+       });
 
       if (
-        false
-        // mtv[0] < ctv[0] ||
-        // (mtv[0] === ctv[0] && mtv[1] < ctv[1]) ||
-        // (mtv[0] === ctv[0] && mtv[1] === ctv[1] && mtv[2] <= ctv[2])
+        mtv[0] < ctv[0] ||
+        (mtv[0] === ctv[0] && mtv[1] < ctv[1]) ||
+        (mtv[0] === ctv[0] && mtv[1] === ctv[1] && mtv[2] <= ctv[2])
       ) {
         logger.debug(
           'Tabsint version ' +
@@ -74,19 +74,19 @@ export function initializeLoadingProtocol(
             ', Protocol requires tabsint version ' +
             loading.protocol.minTabsintVersion
         );
-      } else {
-        msg =
-          translate.instant('Protocol requires tabsint version ') +
-          loading.protocol.minTabsintVersion +
-          translate.instant(', but current Tabsint version is ');
-        // version.dm.tabsint;
-        logger.error(msg);
-        loading.protocol.errors!.push({
-          type: translate.instant('TabSINT Version'),
-          error: msg,
-        });
-        loading.protocol.protocolTabsintOutdated = true;
-      }
+      */
+
+      msg =
+        translate.instant('Protocol requires tabsint version ') +
+        loading.protocol.minTabsintVersion +
+        translate.instant(', but current Tabsint version is ');
+      // version.dm.tabsint;
+      logger.error(msg);
+      loading.protocol.errors!.push({
+        type: translate.instant('TabSINT Version'),
+        error: msg,
+      });
+      loading.protocol.protocolTabsintOutdated = true;
     }
   }
 

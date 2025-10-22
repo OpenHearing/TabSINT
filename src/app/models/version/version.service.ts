@@ -18,11 +18,10 @@ export class VersionModel {
     },
     plugins: [],
   };
-  private versionLoaded: Promise<void>;
+  private versionLoaded: Promise<void> | undefined = undefined;
 
-  constructor(private logger: Logger) {
-    this.versionLoaded = this.loadVersion();
-  }
+  constructor(private readonly logger: Logger) {}
+
   /**
    * Load tabsint version information from version.js
    * @summary Imports version.json, loads it into the version model.
@@ -47,6 +46,7 @@ export class VersionModel {
    * @returns version model:  VersionInterface
    */
   async getVersion(): Promise<VersionInterface> {
+    this.versionLoaded ??= this.loadVersion();
     await this.versionLoaded;
     return this.version;
   }
