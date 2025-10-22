@@ -14,9 +14,9 @@ import { ResultsModel } from '../models/results/results-model.service';
 import { DiskModel } from '../models/disk/disk.service';
 import { ProtocolModel } from '../models/protocol/protocol-model.service';
 import { constructFilename } from '../utilities/results-helper-functions';
-import { FileService } from '../utilities/file.service';
-import { Logger } from '../utilities/logger.service';
-import { SqLite } from '../utilities/sqLite.service';
+import { FileService } from '../services/file.service';
+import { Logger } from '../services/logger.service';
+import { SqLite } from '../services/sqLite.service';
 import { DevicesModel } from '../models/devices/devices-model.service';
 import { VersionModel } from '../models/version/version.service';
 

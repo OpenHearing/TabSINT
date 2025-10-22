@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
-import { Logger } from '../../utilities/logger.service';
+import { Logger } from '../../services/logger.service';
 import { ExamState } from '../../utilities/constants';
 import { Subscription } from 'rxjs/internal/Subscription';
 
@@ -11,7 +11,7 @@ import { Subscription } from 'rxjs/internal/Subscription';
   styleUrl: '../../../styles.scss'
 })
 
-export class ExamDeviceErrorComponent {
+export class ExamDeviceErrorComponent implements OnInit, OnDestroy {
   state: StateInterface;
   deviceErrors: Array<any> = [];
   stateSubscription: Subscription | undefined;
@@ -32,13 +32,13 @@ export class ExamDeviceErrorComponent {
     
   }
   
-  ngOnInit() {
+  ngOnInit(): void {
     this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
       this.state = updatedState;
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.stateSubscription?.unsubscribe();
   }
   

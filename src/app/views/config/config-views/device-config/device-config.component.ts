@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AppState } from '../../../../utilities/constants';
 import { StateModel } from '../../../../models/state/state.service';
@@ -11,7 +11,7 @@ import { Subscription } from 'rxjs/internal/Subscription';
   templateUrl: './device-config.component.html',
   styleUrl: './device-config.component.css'
 })
-export class DeviceConfigComponent {
+export class DeviceConfigComponent implements OnInit, OnDestroy {
   state: StateInterface
     stateSubscription: Subscription | undefined;
 
@@ -29,7 +29,7 @@ export class DeviceConfigComponent {
     this.stateModel.updateState({appState: AppState.Admin});
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.stateSubscription?.unsubscribe();
   }
 

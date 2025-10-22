@@ -5,7 +5,7 @@ import { DiskInterface } from '../models/disk/disk.interface';
 import { ConnectedDevice, NewConnectedDevice } from '../interfaces/connected-device.interface';
 import { DevicesModel } from '../models/devices/devices-model.service';
 import { DiskModel } from '../models/disk/disk.service';
-import { DeviceState } from './constants';
+import { DeviceState } from '../utilities/constants';
 import { PendingMsgInfo } from '../interfaces/pending-msg-info.interface';
 
 @Injectable({
@@ -17,7 +17,7 @@ export class DeviceUtil {
     disk: DiskInterface;
     diskSubscription: Subscription | undefined;
 
-    constructor(private readonly devicesModel: DevicesModel, private readonly diskModel: DiskModel) {
+    constructor( private readonly devicesModel: DevicesModel,  private readonly diskModel: DiskModel ) {
         this.devices = this.devicesModel.getDevices();
         this.disk = this.diskModel.getDisk();
         this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
@@ -60,7 +60,8 @@ export class DeviceUtil {
             "name": newConnection.name!,
             "state": DeviceState.Connected,
             "msgId": 0,
-            "maxByteLength": newConnection.maxByteLength!
+            "maxByteLength": newConnection.maxByteLength!,
+            "isMsgPending": false,
         };
         return connection
     }
@@ -196,7 +197,8 @@ export class DeviceUtil {
                 "name": device.name,
                 "state": DeviceState.Disconnected,
                 "msgId": 0,
-                "maxByteLength": device.maxByteLength
+                "maxByteLength": device.maxByteLength,
+                "isMsgPending": false
             };
             this.devices.connectedDevices.tympan.push(savedConnection);
         }

@@ -5,9 +5,9 @@ import { PageModel } from "../../../../../models/page/page.service";
 import { FPLCalibrationExamInterface } from './fpl-calibration-exam.interface';
 import { PageInterface } from "../../../../../models/page/page.interface";
 import { DevicesService } from '../../../../../controllers/devices.service';
-import { DeviceUtil } from '../../../../../utilities/device-utility';
+import { DeviceUtil } from '../../../../../services/device-utility.service';
 import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
-import { Logger } from '../../../../../utilities/logger.service';
+import { Logger } from '../../../../../services/logger.service';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { ResultsInterface } from '../../../../../models/results/results.interface';
 import { ExamService } from '../../../../../controllers/exam.service';
@@ -52,6 +52,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   fStart: number = FPLcalibrationExamSchema.properties.fStart.default;
   fEnd: number = FPLcalibrationExamSchema.properties.fEnd.default;
   sweepDuration: number = FPLcalibrationExamSchema.properties.sweepDuration.default;
+  windowDuration: number = FPLcalibrationExamSchema.properties.windowDuration.default;
   numFrequencies: number = FPLcalibrationExamSchema.properties.numFrequencies.default;
 
   // WAI parameters not specified from FPL calibration response area
@@ -67,8 +68,6 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   outputRawMeasurements: boolean = waiSchema.properties.outputRawMeasurements.default;
 
   // WAI parameters for FPL calibration different from WAI defaults
-  // windowDuration: number = (2*this.sweepDuration/(this.numFrequencies - 1)); // out of date as of 09_18_2025
-  windowDuration: number = 0.057;
   writeFPLCalibration: boolean = true;
   returnResultData: boolean = false;
 
@@ -84,8 +83,11 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
     private readonly stateModel: StateModel
   ) {
     this.results = this.resultsModel.getResults();
-    this.examService.submit = () => { this.nextStep(); };
-    this.examService.back = () => { this.previousStep(); };
+    this.examService.submit = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep(); };
+    this.examService.back = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.previousStep(); };
+    this.examService.reset = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault(); };
+    this.examService.submitPartial = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault(); };
+    this.examService.navigateToTarget = (subProtocolId) => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.navigateToTargetDefault(subProtocolId); };
     this.state = this.stateModel.getState();
     this.stateModel.updateState({isSubmittable: true});
     this.inProgressResultsSubscription = this.inProgressResultsSubject.subscribe((updatedResults: WAIResultsInterface) => {
@@ -107,6 +109,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
         this.fEnd = responseArea.fEnd ?? this.fEnd;
         this.numFrequencies = responseArea.numFrequencies ?? this.numFrequencies;
         this.sweepDuration = responseArea.sweepDuration ?? this.sweepDuration;
+        this.windowDuration = responseArea.windowDuration ?? this.windowDuration;
         this.device = this.deviceUtil.getDeviceFromTabsintId(responseArea.tabsintId ?? "1");
         if (!this.device) {
           await this.devicesService.deviceNotFound();
@@ -124,6 +127,9 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
     let resp = await this.devicesService.abortExams(this.device!);
     this.logger.debug("resp from tympan after fpl calibration exam abort exams:" + resp);
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
+    this.examService.reset = this.examService.resetDefault.bind(this.examService);
+    this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);
+    this.examService.navigateToTarget = this.examService.navigateToTargetDefault.bind(this.examService);
     this.examService.back = this.examService.back.bind(this.examService);
     this.buttonTextService.updateButtonText("Submit");
     this.stateModel.updateState({isSubmittable: true});
@@ -172,7 +178,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
       if (this.shouldAbort) return;
 
       this.isRequestingResults = true;
-      let resp = await this.devicesService.requestResults(this.device!, 300000);
+      let resp = await this.devicesService.requestResults(this.device!);
       this.isRequestingResults = false;
 
       if (this.shouldAbort) return;
@@ -258,8 +264,8 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   }
 
   private resetCalibrationExam() {
-    this.examService.submit = this.outputChannelIndex < this.outputChannels.length - 1 ? () => { this.nextStep(); } : () => { this.examService.submitDefault(); };
-    this.examService.back = () => { this.previousStep(); };
+    this.examService.submit = this.outputChannelIndex < this.outputChannels.length - 1 ? () => { !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep(); } : () => { this.examService.submitDefault(); };
+    this.examService.back = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.previousStep(); };
     this.shouldAbort = false;
     this.stateModel.updateState({isSubmittable: false});
     this.inProgressResults = {

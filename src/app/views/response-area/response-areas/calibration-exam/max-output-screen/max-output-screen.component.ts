@@ -1,16 +1,18 @@
 
-import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
 
 @Component({
   selector: 'app-max-output-screen',
   templateUrl: './max-output-screen.component.html',
   styleUrls: ['./max-output-screen.component.css']
 })
-export class MaxOutputScreenComponent {
+export class MaxOutputScreenComponent implements OnChanges {
   @Input() isPlaying: boolean = false;
   @Input() currentFrequency: number = 0;
   @Input() targetLevel: number = 0;
   @Input() earCup: string = '';
+  @Input() device: ConnectedDevice | undefined;
   @Output() nextStep = new EventEmitter<void>();
   @Output() togglePlay = new EventEmitter<void>();
   @Output() maxOutputUpdated = new EventEmitter<number>();
@@ -23,7 +25,7 @@ export class MaxOutputScreenComponent {
   validationMessage: string = '';
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['userInput'] && changes['userInput'].currentValue !== undefined) {
+    if (changes['userInput'] && changes['userInput'].currentValue !== null) {
       // Reset validation state when userInput changes
       this.showValidationError = false;
       this.validationMessage = '';
@@ -48,4 +50,8 @@ export class MaxOutputScreenComponent {
     this.togglePlay.emit();
   }
 
+  onEnterPressed(){
+    this.nextStep.emit();
+  }
+  
 }

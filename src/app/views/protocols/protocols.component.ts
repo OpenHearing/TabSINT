@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import _ from 'lodash';
@@ -12,10 +12,10 @@ import { ProtocolModel } from '../../models/protocol/protocol-model.service';
 import { StateModel } from '../../models/state/state.service';
 import { ProtocolService } from '../../controllers/protocol.service';
 import { ExamService } from '../../controllers/exam.service';
-import { Logger } from '../../utilities/logger.service';
-import { Notifications } from '../../utilities/notifications.service';
-import { Tasks } from '../../utilities/tasks.service';
-import { FileService } from '../../utilities/file.service';
+import { Logger } from '../../services/logger.service';
+import { Notifications } from '../../services/notifications.service';
+import { Tasks } from '../../services/tasks.service';
+import { FileService } from '../../services/file.service';
 import { DialogType, ProtocolServer } from '../../utilities/constants';
 import { getProtocolMetaData } from '../../utilities/protocol-helper-functions';
 import { partialMetaDefaults } from '../../utilities/defaults';
@@ -26,10 +26,11 @@ import { CapacitorHttp } from '@capacitor/core';
   templateUrl: './protocols.component.html',
   styleUrl: './protocols.component.css'
 })
-export class ProtocolsComponent {
+export class ProtocolsComponent implements OnInit, OnDestroy {
   selected?: ProtocolMetaInterface;
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
   protocolModel: ProtocolModelInterface;
   state: StateInterface;
   selectedSource = 'device';
@@ -56,12 +57,16 @@ export class ProtocolsComponent {
   ngOnInit(): void {
     this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
-    })    
+    })  
+    this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
+      this.state = updatedState;
+    });  
     // sort protocols by name here
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
   }
 
   setSource(source: string) {
@@ -118,23 +123,32 @@ export class ProtocolsComponent {
       let protocolsFolderUri = result?.uri;
       let protocolName = result?.name;
       const resultFromListFiles = await this.fileService.listDirectory(protocolsFolderUri);
-      const fileList = resultFromListFiles?.files;
-      for (const file of fileList!) {
-        if (file.name == "protocol.json") {
-          const protocolContent: ProtocolSchemaInterface = JSON.parse(file.content);
-          const protocol: ProtocolInterface = {
-            ...partialMetaDefaults,
-            name: protocolName!,
-            contentURI: protocolsFolderUri!,
-            server: ProtocolServer.LocalServer,
-            admin: false,
-            ...protocolContent
-          };
-          await this.updateDiskModel(protocol);
+      if (!resultFromListFiles) {
+        throw new Error("Unable to load protocol directory.");
+      } else {
+        const fileList = resultFromListFiles?.files;
+        for (const file of fileList) {
+          if (file.name == "protocol.json") {
+            const protocolContent: ProtocolSchemaInterface = JSON.parse(file.content);
+            const protocol: ProtocolInterface = {
+              ...partialMetaDefaults,
+              name: protocolName!,
+              contentURI: protocolsFolderUri!,
+              server: ProtocolServer.LocalServer,
+              admin: false,
+              ...protocolContent
+            };
+            await this.updateDiskModel(protocol);
+          }
         }
       }
-    } catch (error) {
-      this.logger.error(""+ error);
+    } catch (error: any) {
+      this.logger.error("" + error);
+      this.notifications.alert({
+        title: "Alert",
+        content: "Error Loading Protocol: Unable to properly load the protocol file, see logs for more information.",
+        type: DialogType.Alert
+      }).subscribe();
     } finally {
       this.tasks.deregister("Add Local Protocol");
     }

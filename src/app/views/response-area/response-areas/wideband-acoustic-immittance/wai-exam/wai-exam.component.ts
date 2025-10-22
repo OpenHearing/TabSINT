@@ -2,8 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { PageModel } from '../../../../../models/page/page.service';
 import { DevicesService } from '../../../../../controllers/devices.service';
-import { DeviceUtil } from '../../../../../utilities/device-utility';
-import { Logger } from '../../../../../utilities/logger.service';
+import { DeviceUtil } from '../../../../../services/device-utility.service';
+import { Logger } from '../../../../../services/logger.service';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { ExamService } from '../../../../../controllers/exam.service';
 import { ResultsInterface } from '../../../../../models/results/results.interface';
@@ -13,8 +13,6 @@ import { NormativeDataInterface } from '../../../../../interfaces/normative-data
 import { ButtonTextService } from '../../../../../controllers/button-text.service';
 import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
 import { waiSchema } from '../../../../../../schema/response-areas/wai.schema';
-import { loadNormativeDataXlsx } from '../../../../../utilities/load-normative-data-xlsx';
-import { ProtocolMetaInterface } from '../../../../../models/protocol/protocol.interface';
 import { handleOutputCalibration } from '../../../../../utilities/exam-helper-functions';
 
 @Component({
@@ -45,7 +43,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
   results: ResultsInterface;
   showResults: boolean = waiSchema.properties.showResults.default;
   normativeAbsorbanceDataPath: string = waiSchema.properties.normativeAbsorbanceDataPath.default;
-  normativeAbsorbanceData: NormativeDataInterface[] = [];
+  normativeAbsorbanceData: NormativeDataInterface[] = waiSchema.properties.normativeAbsorbanceData.default;
   pageSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
   currentStep: string = 'input-parameters';
@@ -72,7 +70,10 @@ export class WAIExamComponent implements OnInit, OnDestroy {
     private readonly buttonTextService: ButtonTextService,
   ) {
     this.results = this.resultsModel.getResults();
-    this.examService.submit = this.nextStep.bind(this);
+    this.examService.submit = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep(); };
+    this.examService.reset = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault(); };
+    this.examService.submitPartial = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault(); };
+    this.examService.navigateToTarget = (subProtocolId) => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.navigateToTargetDefault(subProtocolId); };
   }
 
   ngOnInit(): void {
@@ -102,6 +103,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
         this.earCanalLength = responseArea.earCanalLength ?? this.earCanalLength;
         this.writeFPLCalibration = responseArea.writeFPLCalibration ?? this.writeFPLCalibration;
         this.normativeAbsorbanceDataPath = responseArea.normativeAbsorbanceDataPath ?? this.normativeAbsorbanceDataPath;
+        this.normativeAbsorbanceData = responseArea.normativeAbsorbanceData ?? this.normativeAbsorbanceData;
 
         this.inputParameterMap = new Map([
           ["Start Frequency [Hz]", this.fStart.toString()],
@@ -126,6 +128,9 @@ export class WAIExamComponent implements OnInit, OnDestroy {
     let resp = await this.devicesService.abortExams(this.device!);
     this.logger.debug("resp from tympan after WAI exam abort exams:" + resp);
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
+    this.examService.reset = this.examService.resetDefault.bind(this.examService);
+    this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);
+    this.examService.navigateToTarget = this.examService.navigateToTargetDefault.bind(this.examService);
     this.pageSubscription?.unsubscribe();
     this.resultsSubscription?.unsubscribe();
     this.buttonTextService.updateButtonText("Submit");
@@ -139,7 +144,6 @@ export class WAIExamComponent implements OnInit, OnDestroy {
         this.buttonTextService.updateButtonText('Next');
         break;
       case 'in-progress':
-        await this.loadNormativeData();
         this.currentStep = 'results';
         this.buttonTextService.updateButtonText('Finish');
         break;
@@ -184,15 +188,6 @@ export class WAIExamComponent implements OnInit, OnDestroy {
     } else {
       await this.devicesService.deviceNotFound();
       this.logger.error("Error setting up WAI exam");
-    }
-  }
-
-  /**
-   * Load the normative data which will be displayed in the results
-   */
-  private async loadNormativeData() {
-    if (this.examService.protocol.activeProtocol && this.normativeAbsorbanceDataPath) {
-      this.normativeAbsorbanceData = await loadNormativeDataXlsx(this.normativeAbsorbanceDataPath, this.examService.protocol.activeProtocol as ProtocolMetaInterface);
     }
   }
 }

@@ -1,18 +1,20 @@
 import { Injectable } from '@angular/core';
-import { Logger } from '../utilities/logger.service';
+import { Logger } from '../services/logger.service';
 import { DevicesModel } from '../models/devices/devices-model.service';
 import { DevicesInterface } from '../models/devices/devices.interface';
 import { StateModel } from '../models/state/state.service';
 import { StateInterface } from '../models/state/state.interface';
 import { TympanService } from './devices/tympan.service';
 import { ConnectedDevice, NewConnectedDevice } from '../interfaces/connected-device.interface';
-import { DeviceUtil } from '../utilities/device-utility';
+import { DeviceUtil } from '../services/device-utility.service';
 import { isTympanDevice } from '../guards/type.guard';
 import { BleDevice } from '../interfaces/bluetooth.interface';
 import { DeviceChooseComponent } from '../views/config/config-views/device-choose/device-choose.component';
 import { MatDialog } from '@angular/material/dialog';
-import { DeviceState, ExamState } from '../utilities/constants';
+import { DeviceState, ExamState, DialogType } from '../utilities/constants';
 import { Subscription } from 'rxjs/internal/Subscription';
+import { Tasks } from '../services/tasks.service';
+import { Notifications } from '../services/notifications.service';
 
 @Injectable({
     providedIn: 'root',
@@ -29,12 +31,14 @@ export class DevicesService {
         private readonly tympanService: TympanService,
         private readonly deviceUtil: DeviceUtil,
         private readonly logger: Logger,
-        private readonly dialog: MatDialog
+        private readonly dialog: MatDialog,
+        private readonly tasks: Tasks,
+        private readonly notifications: Notifications,
     ) {
         this.devices = this.devicesModel.getDevices();
         this.state = this.stateModel.getState();
         this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
-        this.state = updatedState;
+            this.state = updatedState;
         });
     }
 
@@ -48,6 +52,7 @@ export class DevicesService {
             this.dialog.open(DeviceChooseComponent).afterClosed().subscribe(
             async (tympan: BleDevice|undefined) => {
                 if (tympan!=undefined) {
+                    this.tasks.register("Connect Device", `Connecting to Device... `);
                     let connection = await this.tympanService.connect(tympan, newConnectedDevice);
                     if (connection) {
                         this.deviceUtil.addNewSavedDevice(connection);
@@ -56,6 +61,7 @@ export class DevicesService {
                         await this.requestId(connection);
                         this.deviceUtil.updateDeviceState(connection.deviceId, DeviceState.Connected);
                         this.stateModel.updatePaneOpen({tympans: true});
+                        this.tasks.deregister("Connect Device");
                     }
                 } else {
                     await this.tympanService.stopScan();
@@ -82,11 +88,14 @@ export class DevicesService {
     */
     async reconnect(device: ConnectedDevice) {
         if (isTympanDevice(device)) {
+            this.tasks.register("Reconnect Device", "Reconnect Device");
             let connection = await this.tympanService.reconnect(device.deviceId);
             if (connection) {
                 await this.abortExams(connection);
                 await this.requestId(connection);
                 this.deviceUtil.updateDeviceState(device.deviceId, DeviceState.Connected);
+                this.stateModel.updatePaneOpen({tympans: true});
+                this.tasks.deregister("Reconnect Device");
             }
         } else {
             this.logger.error("Unsupported device type: "+JSON.stringify(device.type));
@@ -120,6 +129,13 @@ export class DevicesService {
         await this.deviceErrorHandler(resp);
     }
 
+    /**
+     * Produce an error for when the device is handling previous messages.
+     */
+    async deviceMessagePendingError() {
+        const resp = [0, "ERROR", "Device is currently handling previous messages, wait until completion to try again."];
+        await this.deviceErrorHandler(resp);
+    }
 
     /** Requests device ID.
      * @summary Requests deviceID
@@ -203,4 +219,21 @@ export class DevicesService {
         return resp
     }
 
+    /**
+     * Check if a device message is pending and alert the user if necessary.
+     * @param device Connected device to check for a pending message.
+     * @param alert Whether to push an alert to the user.
+     * @returns Whether a message is pending or not.
+     */
+    public isDeviceMessagePending(device: ConnectedDevice | undefined, alert: boolean = true): boolean {
+        const pendingMsg = device?.isMsgPending ?? false;
+        if (pendingMsg && alert) {
+            this.notifications.alert({
+                title: "Alert",
+                content: "Device is currently handling previous messages, wait until completion to continue.",
+                type: DialogType.Alert
+            }).subscribe();
+        }
+        return pendingMsg;
+    }
 }

@@ -20,10 +20,10 @@ import { ProtocolModel } from "../../../../models/protocol/protocol-model.servic
 import { ResultsModel } from "../../../../models/results/results-model.service";
 import { DevicesModel } from "../../../../models/devices/devices-model.service";
 
-import { DeviceUtil } from "../../../../utilities/device-utility";
-import { Logger } from "../../../../utilities/logger.service";;
+import { DeviceUtil } from "../../../../services/device-utility.service";
+import { Logger } from "../../../../services/logger.service";;
 import { DialogType, LevelUnits, ResultType } from "../../../../utilities/constants";
-import { Notifications } from "../../../../utilities/notifications.service";
+import { Notifications } from "../../../../services/notifications.service";
 import { manualAudiometrySchema } from "../../../../../schema/response-areas/manual-audiometry.schema";
 
 @Component({
@@ -70,6 +70,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     deviceSubscription: Subscription|undefined;
     device: ConnectedDevice|undefined;
     resultsSubscription: Subscription | undefined;
+    stateSubscription: Subscription | undefined;
 
     constructor(
         readonly examService: ExamService, 
@@ -87,33 +88,45 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         this.results = this.resultsModel.getResults();
         this.protocol = this.protocolModel.getProtocolModel();
         this.state = this.stateModel.getState();
+        this.examService.submit = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitDefault(); };
+        this.examService.reset = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault(); };
+        this.examService.submitPartial = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault(); };
+        this.examService.navigateToTarget = (subProtocolId) => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.navigateToTargetDefault(subProtocolId); };
     }
 
-    async ngOnInit() {
-        this.resultsSubscription = this.resultsModel.resultsSubject.subscribe( (updatedResults) => {
+    async ngOnInit(): Promise<void> {
+        this.resultsSubscription = this.resultsModel.resultsSubject.subscribe((updatedResults) => {
             this.results = updatedResults;
-        });        
+        });
         this.pageSubscription = this.pageModel.currentPageSubject.subscribe(this.handlePageUpdate.bind(this));
         this.deviceSubscription = this.devicesModel.tympanResponseSubject.subscribe(this.logDeviceResponse.bind(this));
+        this.stateSubscription = this.stateModel.stateSubject.subscribe((updatedState) => {
+            this.state = updatedState;
+        });
         try {
             await ScreenOrientation.lock({ orientation: "landscape" });
-          } catch (error) {
+        } catch (error) {
             this.logger.error("Failed to lock screen orientation:" + error);
         }
     }
 
-    async ngOnDestroy() {
+    async ngOnDestroy(): Promise<void> {
         if (this.device) {
             this.devicesService.abortExams(this.device);
         }
         this.pageSubscription?.unsubscribe();
         this.deviceSubscription?.unsubscribe();
         this.resultsSubscription?.unsubscribe();
+        this.stateSubscription?.unsubscribe();
         try {
             await ScreenOrientation.unlock();
-          } catch (error) {
+        } catch (error) {
             this.logger.error("Failed to unlock screen orientation:" + error);
-          }
+        }
+        this.examService.submit = this.examService.submitDefault.bind(this.examService);
+        this.examService.reset = this.examService.resetDefault.bind(this.examService);
+        this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);
+        this.examService.navigateToTarget = this.examService.navigateToTargetDefault.bind(this.examService);
     }
 
     // ======= Audiometry Controls =======    
@@ -122,8 +135,11 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     }
     
     async adjustTone(amount: number): Promise<void> {
-        this.currentDbSpl = Math.max( this.minOutputLevel, Math.min(this.currentDbSpl + amount, this.maxOutputLevel));
-        this.updateCurrentDb();
+        this.currentDb = Math.max( 
+            this.minOutputLevel - this.getRetsplAtFrequency(this.selectedFrequency), 
+            Math.min(this.currentDb + amount, this.maxOutputLevel - this.getRetsplAtFrequency(this.selectedFrequency))
+        );
+        this.updateCurrentDbSpl();
     }
 
     async adjustFrequency(direction: number): Promise<void> {
@@ -135,6 +151,8 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
                 (currentIndex - 1 + this.frequencies.length) % this.frequencies.length
             ];
         }
+
+        this.updateCurrentDbSpl();
     }
     
     async adjustMasking(amount: number): Promise<void> {
@@ -224,11 +242,8 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         this.logger.debug("device msg:" + JSON.stringify(msg));
     }
 
-    private updateCurrentDb() {
-        const tempDb = 
-            this.retspls && this.levelUnits === LevelUnits.dB_HL
-                ? this.currentDbSpl - this.getRetsplAtFrequency(this.selectedFrequency)
-                : this.currentDbSpl;
+    private updateCurrentDbSpl() {
+        const tempDb = this.currentDb;
 
         const steps = tempDb / this.adjustmentStepSize;
         // Round closest to 0
@@ -238,9 +253,8 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
             ? Math.floor(steps) 
             : Math.ceil(steps);
         const snappedDb = roundedSteps * this.adjustmentStepSize;
-        const adjustment = snappedDb - tempDb;
         this.currentDb = snappedDb;
-        this.currentDbSpl += adjustment;
+        this.currentDbSpl = this.currentDb + this.getRetsplAtFrequency(this.selectedFrequency);
     }
 
     private getRetsplAtFrequency(frequency: number): number {
@@ -338,10 +352,10 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         ];
         this.selectedFrequency = this.frequencies[1];
         this.retspls = updatedAudiometryResponseArea.retspls;
-        this.currentDbSpl = this.levelUnits === LevelUnits.dB_SPL
+        this.currentDb = this.levelUnits === LevelUnits.dB_HL
             ? updatedAudiometryResponseArea.targetLevelInLevelUnits ?? manualAudiometrySchema.properties.targetLevelInLevelUnits.default
-            :  (updatedAudiometryResponseArea.targetLevelInLevelUnits ?? manualAudiometrySchema.properties.targetLevelInLevelUnits.default) + this.getRetsplAtFrequency(this.selectedFrequency);
-        this.updateCurrentDb();
+            :  (updatedAudiometryResponseArea.targetLevelInLevelUnits ?? manualAudiometrySchema.properties.targetLevelInLevelUnits.default) - this.getRetsplAtFrequency(this.selectedFrequency);
+        this.updateCurrentDbSpl();
 
         if (this.retspls && this.levelUnits === LevelUnits.dB_HL) {
             this.verifyEachFrequencyHasRetspl();
@@ -354,12 +368,15 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
 
     private async setupDevice(updatedAudiometryResponseArea: ManualAudiometryInterface) {
         this.device = this.deviceUtil.getDeviceFromTabsintId(updatedAudiometryResponseArea.tabsintId ?? "1");
-        if (this.device) {
-            const examProperties = {};
-            await this.devicesService.queueExam(this.device, "ManualAudiometry", examProperties);
-        } else {
+        if (!this.device) {
             await this.devicesService.deviceNotFound();
             this.logger.error("Error setting up Manual Audiometry exam");
+        } else if (this.devicesService.isDeviceMessagePending(this.device, false)) {
+            await this.devicesService.deviceMessagePendingError();
+            this.logger.error("Error setting up Manual Audiometry exam: Device message pending");
+        } else {
+            const examProperties = {};
+            await this.devicesService.queueExam(this.device, "ManualAudiometry", examProperties);
         }
     }
  

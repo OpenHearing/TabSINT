@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AvailableConnectableDevices } from '../../../../utilities/constants';
 import { DevicesInterface } from '../../../../models/devices/devices.interface';
 import { DevicesModel } from '../../../../models/devices/devices-model.service';
@@ -13,7 +13,7 @@ import { Subscription } from 'rxjs/internal/Subscription';
   templateUrl: './new-connection.component.html'
 })
 
-export class NewConnectionComponent {
+export class NewConnectionComponent implements OnInit, OnDestroy {
   state: StateInterface
   devices: DevicesInterface;
   newConnectedDevice: NewConnectedDevice;
@@ -31,13 +31,13 @@ export class NewConnectionComponent {
     this.newConnectedDevice = {"type":"Select One"};
   }
 
-  ngOnInit(){
+  ngOnInit(): void {
     this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
       this.state = updatedState;
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.stateSubscription?.unsubscribe();
   }
 

@@ -4,8 +4,8 @@ import { Subscription } from 'rxjs/internal/Subscription';
 
 import { PageModel } from '../../../../../models/page/page.service';
 import { DevicesService } from '../../../../../controllers/devices.service';
-import { DeviceUtil } from '../../../../../utilities/device-utility';
-import { Logger } from '../../../../../utilities/logger.service';
+import { DeviceUtil } from '../../../../../services/device-utility.service';
+import { Logger } from '../../../../../services/logger.service';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { ExamService } from '../../../../../controllers/exam.service';
 import { ResultsInterface } from '../../../../../models/results/results.interface';
@@ -15,8 +15,6 @@ import { ButtonTextService } from '../../../../../controllers/button-text.servic
 import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
 import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-dpoae.schema';
 import { NormativeDataInterface } from '../../../../../interfaces/normative-data-interface';
-import { loadNormativeDataXlsx } from '../../../../../utilities/load-normative-data-xlsx';
-import { ProtocolMetaInterface } from '../../../../../models/protocol/protocol.interface';
 import { handleOutputCalibration } from '../../../../../utilities/exam-helper-functions';
 
 @Component({
@@ -46,7 +44,7 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
   filename: string = sweptDpoaeSchema.properties.filename.default;
   outputRawMeasurements: boolean = sweptDpoaeSchema.properties.outputRawMeasurements.default;
   normativeDataPath: string = sweptDpoaeSchema.properties.normativeDataPath.default;
-  normativeData: NormativeDataInterface[] = [];
+  normativeData: NormativeDataInterface[] = sweptDpoaeSchema.properties.normativeData.default;
   results: ResultsInterface;
   showResults: boolean = sweptDpoaeSchema.properties.showResults.default;
   pageSubscription: Subscription | undefined;
@@ -77,7 +75,10 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
     private readonly buttonTextService: ButtonTextService,
   ) {
     this.results = this.resultsModel.getResults();
-    this.examService.submit = this.nextStep.bind(this);
+    this.examService.submit = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep(); };
+    this.examService.reset = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault(); };
+    this.examService.submitPartial = () => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault(); };
+    this.examService.navigateToTarget = (subProtocolId) => { !this.devicesService.isDeviceMessagePending(this.device) && this.examService.navigateToTargetDefault(subProtocolId); };
   }
 
   ngOnInit(): void {
@@ -108,6 +109,7 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
         this.filename = responseArea.filename ?? this.filename;
         this.outputRawMeasurements = responseArea.outputRawMeasurements ?? this.outputRawMeasurements;
         this.normativeDataPath = responseArea.normativeDataPath ?? this.normativeDataPath;
+        this.normativeData = responseArea.normativeData ?? this.normativeData;
 
         this.inputParameterMap = new Map([
           ["Start Frequency [Hz]", this.f2Start.toString()],
@@ -138,6 +140,9 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
     let resp = await this.devicesService.abortExams(this.device!);
     this.logger.debug("resp from tympan after swept DPOAE exam abort exams:" + resp);
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
+    this.examService.reset = this.examService.resetDefault.bind(this.examService);
+    this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);
+    this.examService.navigateToTarget = this.examService.navigateToTargetDefault.bind(this.examService);
     this.pageSubscription?.unsubscribe();
     this.resultsSubscription?.unsubscribe();
     this.buttonTextService.updateButtonText("Submit");
@@ -151,7 +156,6 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
         this.buttonTextService.updateButtonText('Next');
         break;
       case 'in-progress':
-        await this.loadNormativeData();
         this.currentStep = 'results';
         this.buttonTextService.updateButtonText('Finish');
         break;
@@ -193,15 +197,6 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
     } else {
         await this.devicesService.deviceNotFound();
         this.logger.error("Error setting up Swept DPOAE exam");
-    }
-  }
-
-  /**
-   * Load the normative data which will be displayed in the results
-   */
-  private async loadNormativeData() {
-    if (this.examService.protocol.activeProtocol && this.normativeDataPath) {
-      this.normativeData = await loadNormativeDataXlsx(this.normativeDataPath, this.examService.protocol.activeProtocol as ProtocolMetaInterface);
     }
   }
 }

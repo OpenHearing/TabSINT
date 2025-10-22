@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Logger } from '../../utilities/logger.service';
-import { TympanWrap } from '../../utilities/tympan-wrap.service';
+import { Logger } from '../../services/logger.service';
+import { TympanWrap } from '../../services/tympan-wrap.service';
 import { BleDevice } from '../../interfaces/bluetooth.interface';
 import { DevicesModel } from '../../models/devices/devices-model.service';
 import { DevicesInterface, TympanResponse } from '../../models/devices/devices.interface';
@@ -8,7 +8,7 @@ import { DeviceState, ExamState } from '../../utilities/constants';
 import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
 import { NewConnectedDevice, ConnectedDevice } from '../../interfaces/connected-device.interface';
-import { DeviceUtil } from '../../utilities/device-utility';
+import { DeviceUtil } from '../../services/device-utility.service';
 import { Subscription } from "rxjs";
 import { PendingMsgInfo } from '../../interfaces/pending-msg-info.interface';
 import { Command } from '../../types/custom-types';
@@ -21,14 +21,16 @@ export class TympanService {
     devices: DevicesInterface;
     state: StateInterface;
     pendingMsgInfo: PendingMsgInfo|null = null;
-    pendingMsg: boolean = false;
+    firstByteReceived: boolean = false;
     response: Array<any> = [];
     currentTimeoutTimeMs: number = 0;
     currentCommand: Command<Array<any>> | null = null;
     defaultErrorMsg = ["ERROR", "Failed to write message to tympan. Make sure Tympan is connected and try again."];
-    defaultTimeoutTimeMs = 10000;
+    defaultTimeoutTimeMs = 3000;
+    trackedDeviceId: string | undefined;
 
     tympanSubscription: Subscription|undefined;
+    firstByteSubscription: Subscription|undefined;
     stateSubscription: Subscription | undefined; 
 
     constructor(
@@ -49,9 +51,13 @@ export class TympanService {
             if (this.deviceUtil.isResponseInvalidChecksum(response)) {
                 this.retryTympanCommand();            
             } else if (this.deviceUtil.doTympanResponseMsgIdsMatch(this.pendingMsgInfo, response)) {
-                this.pendingMsg = false;
                 this.response = JSON.parse(response.msg);
+                this.stopTracking();
             }
+        });
+        this.firstByteSubscription = this.devicesModel.firstByteHandlerSubject.subscribe((response: any) => {
+            // Eventually should check the msg ID to extend to multiple tympans
+            this.firstByteReceived = true;
         });
     }
 
@@ -61,18 +67,50 @@ export class TympanService {
             tabsintId: Number(tabsintId!),
             msgId: msgId
         };
-        this.pendingMsg = true;
+        this.trackedDeviceId = deviceId;
+        this.setMessagePending(this.trackedDeviceId, true);
+        this.firstByteReceived = false;
         this.response = [];
         this.currentTimeoutTimeMs = 0;
         this.currentCommand = command;
     }
 
+    /**
+     * Stop the current pending message from being tracked.
+     */
+    private stopTracking() {
+        this.setMessagePending(this.trackedDeviceId, false);
+        this.trackedDeviceId = undefined;
+    }
+
+    /**
+     * Set the state of message pending for a specific device.
+     * @param deviceId The device to set the state for.
+     * @param isPending Whether a message is pending or not.
+     */
+    private setMessagePending(deviceId: string | undefined, isPending: boolean) {
+        const device = this.devices.connectedDevices.tympan.find(value => value.deviceId === deviceId);
+        if (device) {
+            device.isMsgPending = isPending;
+        }
+    }
+
+    /**
+     * Get whether a message is pending for a specific device
+     * @param deviceId The device to get the state for.
+     * @returns isPending Whether a message is pending or not.
+     */
+    private getMessagePending(deviceId: string | undefined): boolean {
+        const device = this.devices.connectedDevices.tympan.find(value => value.deviceId === deviceId);
+        return device?.isMsgPending ?? false;
+    }
+
     async waitForResponse(timeoutTimeMs: number = this.defaultTimeoutTimeMs, timeoutPollingDelayMs: number = 100) {
-        while (this.pendingMsg) {
+        while (this.getMessagePending(this.trackedDeviceId)) {
             await this.delay(timeoutPollingDelayMs);
             this.currentTimeoutTimeMs += timeoutPollingDelayMs;
-            if (this.currentTimeoutTimeMs >= timeoutTimeMs) {
-                this.pendingMsg = false;
+            if (this.firstByteReceived === false && this.currentTimeoutTimeMs >= timeoutTimeMs) {
+                this.stopTracking();
             }
         }
     }
@@ -116,7 +154,7 @@ export class TympanService {
         } catch {
             this.logger.error("failed to connect to tympan: "+JSON.stringify(tympan));
             return undefined;
-        }      
+        } 
     }
 
     async reconnect(tympanId: string): Promise<ConnectedDevice|undefined> {
@@ -125,8 +163,8 @@ export class TympanService {
             return this.deviceUtil.getDeviceFromDeviceId(tympanId);
         } catch {
             this.logger.error("failed to reconnect to tympan: "+JSON.stringify(tympanId));
-            return undefined
-        }
+            return undefined;
+        } 
     }
 
     async disconnect(tympanId: string) {
@@ -153,6 +191,7 @@ export class TympanService {
                 deviceError: resp
             });
             this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));
+            this.stopTracking();
         }
         return resp
     }
@@ -174,6 +213,7 @@ export class TympanService {
         } catch (e) {
             this.stateModel.updateState({examState: ExamState.DeviceError});
             this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));
+            this.stopTracking();
         }
         return resp
     }
@@ -199,6 +239,7 @@ export class TympanService {
             } else {
                 this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(error));
             }
+            this.stopTracking();
         }
         return resp
     }
@@ -219,6 +260,7 @@ export class TympanService {
         } catch (e) {
             this.stateModel.updateState({examState: ExamState.DeviceError});
             this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));
+            this.stopTracking();
         }
         return resp
     }
@@ -240,6 +282,7 @@ export class TympanService {
         } catch (e) {
             this.stateModel.updateState({examState: ExamState.DeviceError});
             this.logger.error("failed to write to tympan with msg: "+JSON.stringify(msg)+" , error: "+JSON.stringify(e));
+            this.stopTracking();
         }
         return resp
     }

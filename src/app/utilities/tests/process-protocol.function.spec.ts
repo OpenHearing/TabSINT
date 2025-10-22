@@ -3,6 +3,8 @@ import { processProtocol } from '../process-protocol.function';
 import { LoadingProtocolInterface } from '../../interfaces/loading-protocol-object.interface';
 import { ProtocolServer } from '../constants';
 import { ProtocolInterface } from '../../models/protocol/protocol.interface';
+import { ProtocolDictionary } from '../../interfaces/protocol-dictionary';
+import { FollowOnsDictionary } from '../../interfaces/follow-ons-dictionary';
 
 const followOn1 = {
     conditional: "result.response=='Text Box'",
@@ -170,15 +172,20 @@ const loadingProtocol: LoadingProtocolInterface = {
     overwrite: false,
     notify: false
 }
+
 describe('processProtocol', () => {
-    let [activeProtocol, 
-        activeProtocolDictionary,
-        activeProtocolFollowOnsDictionary
-    ]  = processProtocol(loadingProtocol);
+    let activeProtocol: ProtocolInterface;
+    let activeProtocolDictionary: ProtocolDictionary;
+    let activeProtocolFollowOnsDictionary: FollowOnsDictionary;
 
     beforeEach(async () => {
-        TestBed.configureTestingModule({})
+        TestBed.configureTestingModule({});
+        [activeProtocol, 
+        activeProtocolDictionary,
+        activeProtocolFollowOnsDictionary
+        ]  = await processProtocol(loadingProtocol);
     })
+
 
     it('returns active protocol', () => {
         expect(activeProtocol.title).toBe('Test Protocol');

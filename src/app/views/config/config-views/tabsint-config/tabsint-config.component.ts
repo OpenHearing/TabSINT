@@ -1,4 +1,4 @@
-import { Component,ChangeDetectorRef  } from '@angular/core';
+import { Component,ChangeDetectorRef, OnInit, OnDestroy  } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
@@ -10,9 +10,8 @@ import { StateInterface } from '../../../../models/state/state.interface';
 import { VersionInterface } from '../../../../models/version/version.interface';
 
 import { DiskModel } from '../../../../models/disk/disk.service';
-import { Logger } from '../../../../utilities/logger.service';
+import { Logger } from '../../../../services/logger.service';
 import { VersionModel } from '../../../../models/version/version.service';
-import { ConfigService } from '../../../../controllers/config.service';
 import { StateModel } from '../../../../models/state/state.service';
 
 import { AppState } from '../../../../utilities/constants';
@@ -24,7 +23,7 @@ import { ChangeMaxLogLengthComponent } from '../../../change-max-log-length/chan
   templateUrl: './tabsint-config.component.html',
   styleUrl: './tabsint-config.component.css'
 })
-export class TabsintConfigComponent {
+export class TabsintConfigComponent implements OnInit, OnDestroy {
   disk: DiskInterface;
   state: StateInterface;
   version!: VersionInterface;
@@ -33,7 +32,6 @@ export class TabsintConfigComponent {
   stateSubscription: Subscription | undefined;
 
   constructor(
-    public configService: ConfigService,
     private readonly cdr: ChangeDetectorRef,
     private readonly diskModel: DiskModel,
     private readonly logger: Logger,
@@ -57,7 +55,7 @@ export class TabsintConfigComponent {
     this.stateModel.updateState({appState: AppState.Admin});
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();
   }

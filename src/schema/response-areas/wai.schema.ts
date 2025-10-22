@@ -1,5 +1,6 @@
 import { JSONSchemaType } from "ajv";
 import { WAIInterface } from "../../app/views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.interface";
+import { normativeDataSchema } from "../definitions/normative-data.schema";
 
 export const waiSchema: JSONSchemaType<WAIInterface> = {
   type: "object",
@@ -23,13 +24,14 @@ export const waiSchema: JSONSchemaType<WAIInterface> = {
     outputChannel: { type: "string", nullable: true, default: "HPL0" },
     inputChannels: { type: "array", "items": {"type":"string"}, nullable: true, default: ["EPSHIELD_LEFT_PDM_MIC1","EPSHIELD_LEFT_PDM_MIC2","EPSHIELD_RIGHT_PDM_MIC1","EPSHIELD_RIGHT_PDM_MIC2"] },
     aurenInsideDiameter: { type: "number", nullable: true, default: 3.4 },
-    aurenLength: { type: "number", nullable: true, default: 31.7 },
+    aurenLength: { type: "number", nullable: true, default: 39.2 },
     earCanalDiameter: { type: "number", nullable: true, default: 7.5 },
     earCanalLength: { type: "number", nullable: true, default: 20 },
     writeFPLCalibration: { type: "boolean", nullable: true, default: false },
     returnResultData: { type: "boolean", nullable: true, default: true },
     showResults: { type: "boolean", nullable: true, default: true },
     normativeAbsorbanceDataPath: { type: "string", nullable: true, default: "" },
+    normativeAbsorbanceData: { type: "array", items: normativeDataSchema, nullable: true, default: [] },
   },
   required: ["type"]
 };

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { MrtResultsInterface } from '../mrt-exam/mrt-exam.interface';
 import { StateModel } from '../../../../../models/state/state.service';
 import { StateInterface } from '../../../../../models/state/state.interface';
@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs/internal/Subscription';
   templateUrl: './mrt-results.component.html',
   styleUrl: './mrt-results.component.css'
 })
-export class MrtResultsComponent {
+export class MrtResultsComponent implements OnInit, OnDestroy {
   @Input() mrtResults!: MrtResultsInterface[];
   state: StateInterface;
   stateSubscription: Subscription | undefined;
@@ -21,13 +21,13 @@ export class MrtResultsComponent {
     this.stateModel.updateState({isSubmittable: true});
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
       this.state = updatedState;
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.stateSubscription?.unsubscribe();
   }
 

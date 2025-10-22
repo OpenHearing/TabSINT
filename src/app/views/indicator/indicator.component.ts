@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -17,9 +17,10 @@ import { DeviceState, SvantekState } from '../../utilities/constants';
   templateUrl: './indicator.component.html',
   styleUrl: './indicator.component.css'
 })
-export class IndicatorComponent {
+export class IndicatorComponent implements OnInit, OnDestroy {
   disk: DiskInterface;  
   diskSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
   state: StateInterface;
   devices: DevicesInterface;
   SvantekState = SvantekState;
@@ -36,14 +37,18 @@ export class IndicatorComponent {
     this.devices = this.deviceModel.getDevices();
   }
 
-  ngOnInit() {
-    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
-        this.disk = updatedDisk;
-    })    
+  ngOnInit(): void {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+    });
+    this.stateSubscription = this.stateModel.stateSubject.subscribe((updatedState) => {
+      this.state = updatedState;
+    });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
   }
 
   WiFiNotConnectedPopover = this.translate.instant(

@@ -364,10 +364,11 @@
           "responseArea": {
             "type": "fplCalibrationResponseArea",
             "outputChannels": ["HPL1","HPR1"],
-            "fStart": 100,
-            "fEnd": 18000,
-            "sweepDuration": 18,
-            "numFrequencies": 64
+            "fStart": 390,
+            "fEnd": 16500,
+            "sweepDuration": 10.806,
+            "numFrequencies": 64,
+            "windowDuration": 0.0427
           }
         },
         {
@@ -393,8 +394,8 @@
             "f2Start": 500,
             "f2End": 16000,
             "frequencyRatio": 1.22,
-            "sweepDuration": 5,
-            "windowDuration": 0.125,
+            "sweepDuration": 10.0,
+            "windowDuration": 0.100,
             "sweepType": "log",
             "minSweeps": 16,
             "maxSweeps": 24,
@@ -427,8 +428,8 @@
             "f2Start": 500,
             "f2End": 16000,
             "frequencyRatio": 1.22,
-            "sweepDuration": 5.25,
-            "windowDuration": 0.25,
+            "sweepDuration": 10.0,
+            "windowDuration": 0.100,
             "sweepType": "log",
             "minSweeps": 16,
             "maxSweeps": 50,
@@ -459,7 +460,8 @@
             "outputChannel": "HPL1",
             "numFrequencies": 128,
             "numSweeps": 5,
-            "windowDuration": 0.05,
+            "windowDuration": 0.100,
+            "sweepDuration": 6.0,
             "inputChannels": ["EPSHIELD_RIGHT_PDM_MIC1","EPSHIELD_LEFT_PDM_MIC2","EPSHIELD_LEFT_PDM_MIC1"]
           }
         },
@@ -509,15 +511,14 @@
             "probeStimulusLevel": 10,
             "submissionIntervalMs": 500,
             "probeOutputChannel": [
-              "HPR0"
+              "HPR1"
             ],
             "elicitorOutputChannel": [
-              "HPL0"
+              "HPL1"
             ],
             "recordChannels": [
-              "LEFT:BOARD_MIC", 
-              "HPL0", 
-              "HPR0"
+              "EPSHIELD_LEFT_PDM_MIC1", 
+              "EPSHIELD_RIGHT_PDM_MIC1"
             ]
           }
         },
@@ -550,15 +551,14 @@
             "probeStimulusLevel": 10,
             "submissionIntervalMs": 500,
             "probeOutputChannel": [
-              "HPR0"
+              "HPR1"
             ],
             "elicitorOutputChannel": [
-              "HPL0"
+              "HPL1"
             ],
             "recordChannels": [
-              "LEFT:BOARD_MIC", 
-              "HPL0", 
-              "HPR0"
+              "EPSHIELD_LEFT_PDM_MIC1", 
+              "EPSHIELD_RIGHT_PDM_MIC1"
             ]
           }
         },

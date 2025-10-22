@@ -8,7 +8,10 @@ import { FollowOnsDictionary } from "../interfaces/follow-ons-dictionary";
 import { isPageDefinition, isProtocolReferenceInterface, isProtocolSchemaInterface } from "../guards/type.guard";
 import { PageTypes } from "../types/custom-types";
 import { loadMrtExamCsv } from "./load-mrt-exam-csv";
+import { loadSweptDPOAENormativeData, loadWAINormativeData } from "./load-normative-data-xlsx";
 import { MrtExamInterface } from "../views/response-area/response-areas/mrt/mrt-exam/mrt-exam.interface";
+import { WAIInterface } from "../views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.interface";
+import { SweptDpoaeInterface } from "../views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/swept-dpoae-exam.interface";
 
 /**
  * Adds variables to the active protocol and generates a stack of pages.
@@ -20,67 +23,60 @@ import { MrtExamInterface } from "../views/response-area/response-areas/mrt/mrt-
  * @returns the active protocol, the stack of pages, a dictionary of all subprotocols,
  * a dictionary of all pages, and a dictionary of all followOns
  */
-export function processProtocol(loading: LoadingProtocolInterface):
-  [ProtocolInterface, ProtocolDictionary, FollowOnsDictionary]
-{
+export async function processProtocol(loading: LoadingProtocolInterface): Promise<[ProtocolInterface, ProtocolDictionary, FollowOnsDictionary]> {
   let rootProtocol = loading.protocol;
   let calibration = loading.calibration;
   let protocolDict: ProtocolDictionary = {};
   let followOnsDict: FollowOnsDictionary = {};
   let prefix = loading.meta.path!;
 
-  iterateThroughPages(rootProtocol.pages);
+  await iterateThroughPages(rootProtocol.pages);
 
   if (_.has(rootProtocol, "subProtocols")) {
-    _.forEach(rootProtocol.subProtocols, (obj) => {
-      processSubProtocol(obj);
-    });
+    for (const obj of rootProtocol.subProtocols!) {
+      await processSubProtocol(obj);
+    }
   }
   
   return [rootProtocol, protocolDict, followOnsDict];
 
-  function processSubProtocol(
-    subProtocol: ProtocolSchemaInterface
-  ) {
-
-    iterateThroughPages(subProtocol.pages);
+  async function processSubProtocol(subProtocol: ProtocolSchemaInterface) {
+    await iterateThroughPages(subProtocol.pages);
 
     if (_.has(subProtocol, "protocolId")) {
       protocolDict[subProtocol.protocolId!] = subProtocol;
     }
 
     if (_.has(subProtocol, "subProtocols")) {
-      _.forEach(subProtocol.subProtocols, (obj) => {
-        processSubProtocol(obj);
-      });
+      for (const obj of subProtocol.subProtocols!) {
+        await processSubProtocol(obj);
+      }
     }
   }
 
-  function iterateThroughPages(pages: PageTypes | (PageTypes)[]) {
-    _.forEach(pages, (page) => {
+  async function iterateThroughPages(pages: PageTypes | (PageTypes)[]) {
+    pages = !Array.isArray(pages) ? [pages] : pages;
+    for (const page of pages) {
       if (isProtocolSchemaInterface(page)) {
-        processSubProtocol(page as ProtocolSchemaInterface);
+        await processSubProtocol(page);
       // } else if (isProtocolReferenceInterface(page)) {
-      //   processPage(page as ProtocolReferenceInterface);
+        // processPage(page as ProtocolReferenceInterface);
       } else if (isPageDefinition(page)) {
-        processPage(page as PageDefinition);
+        await processPage(page);
       }
-    });  
+    }
   }
 
-  async function processPage(
-      page: PageDefinition
-    ) {
-
+  async function processPage(page: PageDefinition) {
     if (page.preProcessFunction) {
       rootProtocol._preProcessFunctionList!.push(page.preProcessFunction);
     }
 
-    if (page.wavfiles) {
-      _.forEach(page.wavfiles, (wavfile) => {
+    // if (page.wavfiles) {
+      // for (const wavfile of page.wavfiles) {
         //TODO: deal with calibration and common repo
-      });
-    }
+      // }
+    // }
 
     if (isPageDefinition(page) && page.image) {
       page.image.path = prefix + page.image.path;
@@ -92,28 +88,43 @@ export function processProtocol(loading: LoadingProtocolInterface):
 
     if (page.responseArea) {
       // TODO: deal with specific response area processing here
-      if (page.responseArea.type === "mrtResponseArea") {
-        const responseArea = page.responseArea as MrtExamInterface;
-        page.responseArea = await loadMrtExamCsv(responseArea, loading.meta);
+      switch (page.responseArea.type) {
+        case "mrtResponseArea": {
+          const responseArea = page.responseArea as MrtExamInterface;
+          page.responseArea = await loadMrtExamCsv(responseArea, loading.meta);
+          break;
+        }
+        case "WAIResponseArea": {
+          const responseArea = page.responseArea as WAIInterface;
+          page.responseArea = await loadWAINormativeData(responseArea, loading.meta);
+          break;
+        }
+        case "sweptDPOAEResponseArea": {
+          const responseArea = page.responseArea as SweptDpoaeInterface;
+          page.responseArea = await loadSweptDPOAENormativeData(responseArea, loading.meta);
+          break;
+        }
+        default:
+          break;
       }
     }
 
     if (_.has(page, "followOns")) {
-      processFollowOns(page.followOns!);
+      await processFollowOns(page.followOns!);
     }
 
 
     if (isProtocolSchemaInterface(page)) {
-      processSubProtocol(page);
+      await processSubProtocol(page);
     }
   }
 
-  function processFollowOns(followOns: FollowOnInterface[]) {
-    _.forEach(followOns, (followOn) => {
+  async function processFollowOns(followOns: FollowOnInterface[]) {
+    for (const followOn of followOns) {
       let id = getId(followOn.target);
       followOnsDict[id] = followOn;
-      iterateThroughPages(followOn.target);
-    });
+      await iterateThroughPages(followOn.target);
+    }
   }
 
   function getId(target: PageTypes): string {

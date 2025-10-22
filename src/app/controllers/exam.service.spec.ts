@@ -5,8 +5,8 @@ import { ResultsModel } from '../models/results/results-model.service';
 import { ProtocolModel } from '../models/protocol/protocol-model.service';
 import { PageModel } from '../models/page/page.service';
 import { StateModel } from '../models/state/state.service';
-import { Notifications } from '../utilities/notifications.service';
-import { Logger } from '../utilities/logger.service';
+import { Notifications } from '../services/notifications.service';
+import { Logger } from '../services/logger.service';
 import { AppState, DeviceState, ExamState, ProtocolServer, ProtocolState } from '../utilities/constants';
 import { BehaviorSubject, of } from 'rxjs';
 import { PageInterface } from '../models/page/page.interface';
@@ -204,7 +204,8 @@ describe('ExamService', () => {
                                 name: 'Tympan Device',
                                 state: DeviceState.Connected,
                                 msgId: 123,
-                                maxByteLength: 244
+                                maxByteLength: 244,
+                                isMsgPending: false,
                             }
                         ],
                         cha: [{}], 
@@ -273,7 +274,8 @@ describe('ExamService', () => {
                                 name: 'Tympan Device',
                                 state: DeviceState.Connected,
                                 msgId: 123,
-                                "maxByteLength": 244
+                                "maxByteLength": 244,
+                                isMsgPending: false,
                             }
                         ],
                         cha: [{}], 

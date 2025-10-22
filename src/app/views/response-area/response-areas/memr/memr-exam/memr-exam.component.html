@@ -61,7 +61,7 @@
     <div class="row pad-top progress-container">
       <div class="col-12 progress-column">
         <mat-progress-bar class="progress-bar" mode="determinate" [value]="pctComplete"></mat-progress-bar>
-        <button class="btn btn-danger btn-block" [disabled]="state.isSubmittable" (click)="showCancelExamDialog()">
+        <button class="btn btn-danger btn-block" [disabled]="state.isSubmittable || device?.isMsgPending" (click)="showCancelExamDialog()">
           {{ 'Abort' | translate }}
         </button>
       </div>

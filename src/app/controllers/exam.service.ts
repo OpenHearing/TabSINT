@@ -17,8 +17,8 @@ import { ProtocolModel } from '../models/protocol/protocol-model.service';
 import { PageModel } from '../models/page/page.service';
 
 import { DialogType, ExamState } from '../utilities/constants';
-import { Notifications } from '../utilities/notifications.service';
-import { Logger } from '../utilities/logger.service';
+import { Notifications } from '../services/notifications.service';
+import { Logger } from '../services/logger.service';
 import { calculateElapsedTime, checkForSpecialReference, getDefaultResponseRequired } from '../utilities/exam-helper-functions';
 
 @Injectable({
@@ -118,17 +118,35 @@ export class ExamService {
         console.log("ExamService back() called");
     }
 
-    reset() {
+    /**
+     * Default reset function for exam pages.
+     */
+    resetDefault() {
         this.stateModel.updateState({examState: ExamState.Ready});
     }
 
-    submitPartial() {
+    reset() {
+        this.resetDefault();
+    }
+
+    /**
+     * Default submit partial function for exam pages.
+     */
+    submitPartialDefault() {
         this.resultsService.pushResults(this.results.currentPage);
         this.submit = this.submitDefault;
         this.endExam();
     }
 
-    navigateToTarget(subProtocolID: string) {
+    submitPartial() {
+        this.submitPartialDefault();
+    }
+
+    /**
+     * Default navigate to target function, which navigates to the specified subprotocol.
+     * @param subProtocolID The sub protocol page identifier.
+     */
+    navigateToTargetDefault(subProtocolID: string) {
         // TODO: returnHereAfterward NOT IMPLEMENTED
         this.currentPage.followOns = [{
             conditional: "true",
@@ -136,6 +154,14 @@ export class ExamService {
         }];
         this.stateModel.updateState({examState: ExamState.Testing});
         this.submitDefault();
+    }
+
+    /**
+     * Navigate to target function. Can be overwritten by exams.
+     * @param subProtocolID The sub protocol page identifier.
+     */
+    navigateToTarget(subProtocolID: string) {
+        this.navigateToTargetDefault(subProtocolID);
     }
 
     /** Checks if a page response is required.

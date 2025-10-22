@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DevicesInterface, TympanResponse } from './devices.interface';
 import { Device } from '@capacitor/device';
-import { Logger } from '../../utilities/logger.service';
+import { Logger } from '../../services/logger.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { BleDevice } from '../../interfaces/bluetooth.interface';
 
@@ -30,6 +30,7 @@ export class DevicesModel {
 
     availableDevicesSubject = new BehaviorSubject<BleDevice[]>([]);
     tympanResponseSubject = new Subject<TympanResponse>();
+    firstByteHandlerSubject = new Subject<string>();
 
     constructor(private readonly logger: Logger) {
         // TODO: Move this to generic utility for running async functions in constructor

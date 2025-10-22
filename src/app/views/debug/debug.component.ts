@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 
@@ -15,7 +15,7 @@ import { StateInterface } from '../../models/state/state.interface';
   templateUrl: './debug.component.html',
   styleUrl: './debug.component.css'
 })
-export class DebugComponent {
+export class DebugComponent implements OnInit, OnDestroy {
   disk: DiskInterface;
   currentPage: PageInterface;
   results: ResultsInterface;
@@ -48,7 +48,7 @@ export class DebugComponent {
     this.state = this.stateModel.getState();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
     }) 
@@ -63,7 +63,7 @@ export class DebugComponent {
     })
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
     this.pageSubscription?.unsubscribe();
     this.resultsSubscription?.unsubscribe();
