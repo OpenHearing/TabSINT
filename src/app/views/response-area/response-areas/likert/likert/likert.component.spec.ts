@@ -5,9 +5,9 @@ import { LikertComponent } from './likert.component';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { PageModel } from '../../../../../models/page/page.service';
 import { DiskModel } from '../../../../../models/disk/disk.service';
-import { SqLite } from '../../../../../utilities/sqLite.service';
+import { SqLite } from '../../../../../services/sqLite.service';
 import { AppModel } from '../../../../../models/app/app.service';
-import { Logger } from '../../../../../utilities/logger.service';
+import { Logger } from '../../../../../services/logger.service';
 import { DevicesModel } from '../../../../../models/devices/devices-model.service';
 import { VersionModel } from '../../../../../models/version/version.service';
 

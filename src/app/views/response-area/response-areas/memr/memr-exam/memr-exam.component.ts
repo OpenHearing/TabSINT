@@ -3,10 +3,10 @@ import { Subscription } from 'rxjs/internal/Subscription';
 import { PageModel } from '../../../../../models/page/page.service';
 import { DevicesService } from '../../../../../controllers/devices.service';
 import { DialogType } from '../../../../../utilities/constants';
-import { DeviceUtil } from '../../../../../utilities/device-utility';
-import { Paths } from '../../../../../utilities/paths.service';
-import { Logger } from '../../../../../utilities/logger.service';
-import { Notifications } from '../../../../../utilities/notifications.service';
+import { DeviceUtil } from '../../../../../services/device-utility.service';
+import { Paths } from '../../../../../services/paths.service';
+import { Logger } from '../../../../../services/logger.service';
+import { Notifications } from '../../../../../services/notifications.service';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { ExamService } from '../../../../../controllers/exam.service';
 import { ResultsInterface } from '../../../../../models/results/results.interface';
@@ -108,18 +108,15 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {
-    // Wrap in IIFE to avoid mismatching return types
-    (async () => {
-      await this.abortExam();
-      this.examService.submit = this.examService.submitDefault.bind(this.examService);
-      this.examService.reset = this.examService.resetDefault.bind(this.examService);
-      this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);
-      this.examService.navigateToTarget = this.examService.navigateToTargetDefault.bind(this.examService);
-      this.pageSubscription?.unsubscribe();
-      this.resultsSubscription?.unsubscribe();
-      this.stateSubscription?.unsubscribe();
-    })();
+  async ngOnDestroy(): Promise<void> {
+    await this.abortExam();
+    this.examService.submit = this.examService.submitDefault.bind(this.examService);
+    this.examService.reset = this.examService.resetDefault.bind(this.examService);
+    this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);
+    this.examService.navigateToTarget = this.examService.navigateToTargetDefault.bind(this.examService);
+    this.pageSubscription?.unsubscribe();
+    this.resultsSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
   }
 
   /**

@@ -9,8 +9,8 @@ import { AppModel } from '../../models/app/app.service';
 import { SqLite } from '../sqLite.service';
 import { Logger } from '../logger.service';
 import { DevicesModel } from '../../models/devices/devices-model.service';
-import { DeviceUtil } from '../device-utility';
-import { Notifications } from '../../utilities/notifications.service';
+import { DeviceUtil } from '../device-utility.service';
+import { Notifications } from '../notifications.service';
 
 const msg: string = '[1,"requestId"]';
 const DataView1: DataView = new DataView((new Uint8Array([5,91,49,44,34,114,101,113,117,101,115,116,73,100,34,93,3,143,2])).buffer);

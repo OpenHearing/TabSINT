@@ -1,20 +1,20 @@
 import { Injectable } from '@angular/core';
-import { Logger } from '../utilities/logger.service';
+import { Logger } from '../services/logger.service';
 import { DevicesModel } from '../models/devices/devices-model.service';
 import { DevicesInterface } from '../models/devices/devices.interface';
 import { StateModel } from '../models/state/state.service';
 import { StateInterface } from '../models/state/state.interface';
 import { TympanService } from './devices/tympan.service';
 import { ConnectedDevice, NewConnectedDevice } from '../interfaces/connected-device.interface';
-import { DeviceUtil } from '../utilities/device-utility';
+import { DeviceUtil } from '../services/device-utility.service';
 import { isTympanDevice } from '../guards/type.guard';
 import { BleDevice } from '../interfaces/bluetooth.interface';
 import { DeviceChooseComponent } from '../views/config/config-views/device-choose/device-choose.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DeviceState, ExamState, DialogType } from '../utilities/constants';
 import { Subscription } from 'rxjs/internal/Subscription';
-import { Tasks } from '../utilities/tasks.service';
-import { Notifications } from '../utilities/notifications.service';
+import { Tasks } from '../services/tasks.service';
+import { Notifications } from '../services/notifications.service';
 
 @Injectable({
     providedIn: 'root',

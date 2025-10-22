@@ -37,7 +37,7 @@ export class IndicatorComponent implements OnInit, OnDestroy {
     this.devices = this.deviceModel.getDevices();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
     });
@@ -46,7 +46,7 @@ export class IndicatorComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();
   }

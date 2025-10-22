@@ -6,9 +6,9 @@ import { DiskInterface } from '../../../models/disk/disk.interface';
 import { ExamResults } from '../../../models/results/results.interface';
 import { DiskModel } from '../../../models/disk/disk.service';
 import { ResultsService } from '../../../controllers/results.service';
-import { SqLite } from '../../../utilities/sqLite.service';
-import { Notifications } from '../../../utilities/notifications.service';
-import { Logger } from '../../../utilities/logger.service';
+import { SqLite } from '../../../services/sqLite.service';
+import { Notifications } from '../../../services/notifications.service';
+import { Logger } from '../../../services/logger.service';
 import { DialogType} from '../../../utilities/constants';
 import { ResultsUploadService } from '../../../controllers/results-upload.service';
 
@@ -35,14 +35,14 @@ export class SingleResultModalComponent {
     this.disk = diskModel.getDisk();
   }
 
-  async ngOnInit() {    
+  async ngOnInit(): Promise<void> {    
     this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
         this.disk = updatedDisk;
     })    
     this.singleExamResult = JSON.parse(await this.sqLite.getSingleResult(this.index));
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
   }
 

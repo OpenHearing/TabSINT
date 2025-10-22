@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { VersionModel } from '../../models/version/version.service';
 import { VersionInterface } from '../../models/version/version.interface';
-import { Logger } from '../../utilities/logger.service';
+import { Logger } from '../../services/logger.service';
 
 @Component({
   selector: 'build-details',

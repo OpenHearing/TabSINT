@@ -29,7 +29,7 @@ export class TextboxResultViewerComponent implements OnInit, OnDestroy {
     
   }
   
-  ngOnInit() {
+  ngOnInit(): void {
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
       if (updatedPage.responseArea?.type === "textboxResponseAreaResultViewer") {
         const textboxResponseAreaResultViewer = updatedPage.responseArea as TextBoxResultViewerInterface;
@@ -46,7 +46,7 @@ export class TextboxResultViewerComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.pageSubscription?.unsubscribe();
   }
 

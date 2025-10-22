@@ -12,7 +12,7 @@ import { StateModel } from '../../models/state/state.service';
 import { AppState } from '../../utilities/constants';
 import { StateInterface } from '../../models/state/state.interface';
 import { AdminService } from '../../controllers/admin.service';
-import { Tasks } from '../../utilities/tasks.service';
+import { Tasks } from '../../services/tasks.service';
 
 @Component({
   selector: 'app-welcome',
@@ -41,7 +41,7 @@ export class WelcomeComponent implements OnInit, OnDestroy {
     this.state = this.stateModel.getState();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
         this.disk = updatedDisk;
     })    
@@ -52,7 +52,7 @@ export class WelcomeComponent implements OnInit, OnDestroy {
     this.tasks.hide();
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.stateModel.updateState({appState: AppState.null});
     this.tasks.unhide();
     this.diskSubscription?.unsubscribe();

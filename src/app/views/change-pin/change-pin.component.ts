@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { DiskInterface } from '../../models/disk/disk.interface';
-import { Logger } from '../../utilities/logger.service';
+import { Logger } from '../../services/logger.service';
 import { DiskModel } from '../../models/disk/disk.service';
 import { CommonModule } from '@angular/common';
 
@@ -30,13 +30,13 @@ export class ChangePinComponent {
     this.disk = this.diskModel.getDisk();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
         this.disk = updatedDisk;
     })    
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
   }
 

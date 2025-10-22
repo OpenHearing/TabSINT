@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Filesystem, Directory} from '@capacitor/filesystem';
 import { TabsintFs } from 'tabsintfs';
 
 import { AppInterface } from '../models/app/app.interface';
@@ -10,7 +9,7 @@ import { AppModel } from '../models/app/app.service';
 import { Logger } from './logger.service';
 import { DiskModel } from '../models/disk/disk.service';
 
-import { listOfTabsintDirectories } from './constants';
+import { listOfTabsintDirectories } from '../utilities/constants';
 
 @Injectable({
     providedIn: 'root',

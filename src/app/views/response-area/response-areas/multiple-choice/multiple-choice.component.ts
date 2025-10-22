@@ -56,7 +56,7 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
     }
   ];
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.stateSubscription = this.stateModel.stateSubject.subscribe( (updatedState) => {
       this.state = updatedState;
     });
@@ -80,7 +80,7 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.pageSubscription?.unsubscribe();
     this.resultsSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();
