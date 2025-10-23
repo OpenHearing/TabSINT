@@ -44,8 +44,8 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
     this.disk = this.diskModel.getDisk();
   }
 
-  async ngOnInit(): Promise<void> {
-    this.version = await this.versionModel.getVersion();
+  ngOnInit(): void {
+    this.asyncNgOnInit();
     this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
     });
@@ -58,6 +58,13 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();
+  }
+
+  /**
+   * Function to be called by ngOnIit to handle any asynchronous operations.
+   */
+  private async asyncNgOnInit(): Promise<void> {
+    this.version = await this.versionModel.getVersion();
   }
 
   // VARIABLES - SHOULD BE MOVED?

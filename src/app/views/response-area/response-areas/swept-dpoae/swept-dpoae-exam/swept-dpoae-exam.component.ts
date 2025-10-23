@@ -140,9 +140,8 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
     });
   }
 
-  async ngOnDestroy(): Promise<void> {
-    let resp = await this.devicesService.abortExams(this.device!);
-    this.logger.debug('resp from tympan after swept DPOAE exam abort exams:' + resp);
+  ngOnDestroy(): void {
+    this.asyncNgOnDestroy();
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
     this.examService.reset = this.examService.resetDefault.bind(this.examService);
     this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);
@@ -150,6 +149,14 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
     this.pageSubscription?.unsubscribe();
     this.resultsSubscription?.unsubscribe();
     this.buttonTextService.updateButtonText('Submit');
+  }
+
+  /**
+   * Function to be called by ngOnDestroy to handle any asynchronous operations.
+   */
+  private async asyncNgOnDestroy(): Promise<void> {
+    const resp = await this.devicesService.abortExams(this.device!);
+    this.logger.debug('resp from tympan after fpl calibration exam abort exams:' + resp);
   }
 
   async nextStep(): Promise<void> {

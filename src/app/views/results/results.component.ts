@@ -47,19 +47,26 @@ export class ResultsComponent implements OnInit, OnDestroy {
     this.state = this.stateModel.getState();
   }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
+    this.asyncNgOnInit();
     this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
     });
     this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
-    this.results = await this.sqLite.getAllResults();
   }
 
   ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();
+  }
+
+  /**
+   * Function to be called by ngOnIit to handle any asynchronous operations.
+   */
+  private async asyncNgOnInit(): Promise<void> {
+    this.results = await this.sqLite.getAllResults();
   }
 
   trackByIndex(index: number, item: any): number {
