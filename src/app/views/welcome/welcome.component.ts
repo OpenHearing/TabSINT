@@ -59,10 +59,6 @@ export class WelcomeComponent implements OnInit, OnDestroy {
     this.stateSubscription?.unsubscribe();
   }
 
-  // TODO: Replace this variable with a model?
-  config:any = {};
-
-
   scanQrCodeandAutoConfig() {
     // TODO: Implement QR
   }

@@ -105,14 +105,6 @@ export class ExamService {
     */
     submit() {
         this.submitDefault();
-    }    
-
-    skip() {
-        // TODO: Implement this?
-    }
-
-    back() {
-        // TODO: Implement this?
     }
 
     /**
@@ -348,11 +340,11 @@ export class ExamService {
     // Ignore the below functions for now
 
     finishActivateMedia() {
-        // TODO: Implement this?
+        // TODO: We may want to implement this when we add streaming, playSound, and/or video.
     }
 
     help() {
-        // TODO: Implement this?
+        // TODO: Implement this!
     }
 
 }

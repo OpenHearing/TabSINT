@@ -121,10 +121,6 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
       this.diskModel.updateDiskModel('disableLogs', !this.disk.disableLogs);
   }
 
-  gainReset() {
-    // TODO: Should this be here?
-  }
-
   async changeLocalResultsDir(){
 
     try {
