@@ -107,6 +107,9 @@ export class ExamService {
         this.submitDefault();
     }
 
+    back() {
+        // used/overwritten by calibration-exam
+    }
     /**
      * Default reset function for exam pages.
      */
