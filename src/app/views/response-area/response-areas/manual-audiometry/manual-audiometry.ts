@@ -101,7 +101,8 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     };
   }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
+    this.asyncNgOnInit();
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
       this.results = updatedResults;
     });
@@ -110,6 +111,27 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
+  }
+
+  ngOnDestroy(): void {
+    if (this.device) {
+      this.devicesService.abortExams(this.device);
+    }
+    this.asyncNgOnDestroy();
+    this.pageSubscription?.unsubscribe();
+    this.deviceSubscription?.unsubscribe();
+    this.resultsSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
+    this.examService.submit = this.examService.submitDefault.bind(this.examService);
+    this.examService.reset = this.examService.resetDefault.bind(this.examService);
+    this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);
+    this.examService.navigateToTarget = this.examService.navigateToTargetDefault.bind(this.examService);
+  }
+
+  /**
+   * Function to be called by ngOnDestroy to handle any asynchronous operations.
+   */
+  private async asyncNgOnInit(): Promise<void> {
     try {
       await ScreenOrientation.lock({ orientation: 'landscape' });
     } catch (error) {
@@ -117,23 +139,15 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     }
   }
 
-  async ngOnDestroy(): Promise<void> {
-    if (this.device) {
-      this.devicesService.abortExams(this.device);
-    }
-    this.pageSubscription?.unsubscribe();
-    this.deviceSubscription?.unsubscribe();
-    this.resultsSubscription?.unsubscribe();
-    this.stateSubscription?.unsubscribe();
+  /**
+   * Function to be called by ngOnDestroy to handle any asynchronous operations.
+   */
+  private async asyncNgOnDestroy(): Promise<void> {
     try {
       await ScreenOrientation.unlock();
     } catch (error) {
       this.logger.error('Failed to unlock screen orientation:' + error);
     }
-    this.examService.submit = this.examService.submitDefault.bind(this.examService);
-    this.examService.reset = this.examService.resetDefault.bind(this.examService);
-    this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);
-    this.examService.navigateToTarget = this.examService.navigateToTargetDefault.bind(this.examService);
   }
 
   // ======= Audiometry Controls =======

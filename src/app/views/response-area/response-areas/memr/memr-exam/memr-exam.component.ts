@@ -116,8 +116,8 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     });
   }
 
-  async ngOnDestroy(): Promise<void> {
-    await this.abortExam();
+  ngOnDestroy(): void {
+    this.abortExam();
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
     this.examService.reset = this.examService.resetDefault.bind(this.examService);
     this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);

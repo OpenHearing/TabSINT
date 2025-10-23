@@ -60,11 +60,21 @@ export class AppComponent implements OnInit, OnDestroy {
     this.diskModel.updateDiskModel('numLogRows', 1);
   }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
+    this.asyncNgOnInit();
     this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
     });
+  }
 
+  ngOnDestroy(): void {
+    this.diskSubscription?.unsubscribe();
+  }
+
+  /**
+   * Function to be called by ngOnIit to handle any asynchronous operations.
+   */
+  private async asyncNgOnInit(): Promise<void> {
     await this.sqLite.init();
     this.router.navigate(['']);
 
@@ -96,10 +106,6 @@ export class AppComponent implements OnInit, OnDestroy {
     }
     this.deviceUtil.addSavedDevices();
     this.setupNetworkListener();
-  }
-
-  ngOnDestroy(): void {
-    this.diskSubscription?.unsubscribe();
   }
 
   openDisclaimer() {

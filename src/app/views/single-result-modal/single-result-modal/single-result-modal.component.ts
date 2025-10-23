@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 
@@ -17,7 +17,7 @@ import { ResultsUploadService } from '../../../controllers/results-upload.servic
   templateUrl: './single-result-modal.component.html',
   styleUrl: './single-result-modal.component.css',
 })
-export class SingleResultModalComponent {
+export class SingleResultModalComponent implements OnInit, OnDestroy {
   singleExamResult?: ExamResults;
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
@@ -35,15 +35,22 @@ export class SingleResultModalComponent {
     this.disk = diskModel.getDisk();
   }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
+    this.asyncNgOnInit();
     this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
     });
-    this.singleExamResult = JSON.parse(await this.sqLite.getSingleResult(this.index));
   }
 
   ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
+  }
+
+  /**
+   * Function to be called by ngOnIit to handle any asynchronous operations.
+   */
+  private async asyncNgOnInit(): Promise<void> {
+    this.singleExamResult = JSON.parse(await this.sqLite.getSingleResult(this.index));
   }
 
   async upload() {

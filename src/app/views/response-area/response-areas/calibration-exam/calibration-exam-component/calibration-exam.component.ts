@@ -97,11 +97,8 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     this.updateButtonLabel();
   }
 
-  async ngOnDestroy(): Promise<void> {
-    this.isPlaying = false;
-    await this.stopTone();
-    let resp = await this.devicesService.abortExams(this.device!);
-    this.logger.debug('resp from tympan after calibration exam abort exams:' + resp);
+  ngOnDestroy(): void {
+    this.asyncNgOnDestroy();
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
     this.examService.reset = this.examService.resetDefault.bind(this.examService);
     this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);
@@ -111,6 +108,16 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
 
     this.pageSubscription?.unsubscribe();
     this.resultsSubscription?.unsubscribe();
+  }
+
+  /**
+   * Function to be called by ngOnDestroy to handle any asynchronous operations.
+   */
+  private async asyncNgOnDestroy(): Promise<void> {
+    this.isPlaying = false;
+    await this.stopTone();
+    const resp = await this.devicesService.abortExams(this.device!);
+    this.logger.debug('resp from tympan after calibration exam abort exams:' + resp);
   }
 
   private async setupDevice(updatedResponseArea: CalibrationExamInterface) {
