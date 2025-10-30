@@ -59,9 +59,13 @@ export class DevicesService {
               this.deviceUtil.addNewSavedDevice(connection);
               this.devices.connectedDevices.tympan.push(connection);
               await this.abortExams(connection);
-              await this.requestId(connection);
-              this.deviceUtil.updateDeviceState(connection.deviceId, DeviceState.Connected);
-              this.stateModel.updatePaneOpen({ tympans: true });
+              const resp = await this.requestId(connection);
+              if (resp && !resp.includes('ERROR')) {
+                this.deviceUtil.updateDeviceState(connection.deviceId, DeviceState.Connected);
+                this.stateModel.updatePaneOpen({ tympans: true });
+              } else {
+                await this.disconnect(connection);
+              }
               this.tasks.deregister('Connect Device');
             }
           } else {
@@ -93,9 +97,13 @@ export class DevicesService {
       let connection = await this.tympanService.reconnect(device.deviceId);
       if (connection) {
         await this.abortExams(connection);
-        await this.requestId(connection);
-        this.deviceUtil.updateDeviceState(device.deviceId, DeviceState.Connected);
-        this.stateModel.updatePaneOpen({ tympans: true });
+        const resp = await this.requestId(connection);
+        if (resp && !resp.includes('ERROR')) {
+          this.deviceUtil.updateDeviceState(connection.deviceId, DeviceState.Connected);
+          this.stateModel.updatePaneOpen({ tympans: true });
+        } else {
+          await this.disconnect(device);
+        }
         this.tasks.deregister('Reconnect Device');
       }
     } else {
@@ -142,7 +150,7 @@ export class DevicesService {
    * @summary Requests deviceID
    */
   async requestId(device: ConnectedDevice) {
-    let resp;
+    let resp: string[] | undefined;
     if (isTympanDevice(device)) {
       let msgId = device.msgId.toString();
       this.deviceUtil.incrementDeviceMsgId(device.deviceId);
@@ -205,7 +213,7 @@ export class DevicesService {
     return resp;
   }
 
-  async requestResults(device: ConnectedDevice, timeoutTimeMs: number = 5000) {
+  async requestResults(device: ConnectedDevice, timeoutTimeMs: number = 3000) {
     let resp: Array<any> | undefined;
     if (isTympanDevice(device)) {
       let msgId = device.msgId.toString();
