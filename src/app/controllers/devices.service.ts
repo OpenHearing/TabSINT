@@ -96,8 +96,8 @@ export class DevicesService {
         await this.requestId(connection);
         this.deviceUtil.updateDeviceState(device.deviceId, DeviceState.Connected);
         this.stateModel.updatePaneOpen({ tympans: true });
-        this.tasks.deregister('Reconnect Device');
       }
+      this.tasks.deregister('Reconnect Device');
     } else {
       this.logger.error('Unsupported device type: ' + JSON.stringify(device.type));
     }
