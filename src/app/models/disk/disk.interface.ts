@@ -11,6 +11,7 @@ export interface GitlabConfigInterface {
 }
 
 export interface DiskInterface {
+  versionCode: string;
   activeProtocolMeta?: ProtocolMetaInterface;
   adminSkipMode: boolean;
   appDeveloperMode: boolean;

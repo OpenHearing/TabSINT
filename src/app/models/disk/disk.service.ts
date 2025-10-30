@@ -7,6 +7,7 @@ import { DiskInterface, GitlabConfigInterface } from './disk.interface';
 import { ExamResults } from '../results/results.interface';
 import { ProtocolServer, ResultsMode } from '../../utilities/constants';
 import { metaDefaults, partialMetaDefaults } from '../../utilities/defaults';
+import { VersionInterface } from '../version/version.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -22,7 +23,14 @@ export class DiskModel {
 
   window: (Window & typeof globalThis) | null;
 
+  /**
+   * Whether the model has been initially loaded from storage or not.
+   * Blocks pushing changes to storage unless the model has been properly initialized.
+   */
+  private modelInitialized = false;
+
   disk: DiskInterface = {
+    versionCode: '',
     activeProtocolMeta: metaDefaults,
     adminSkipMode: false,
     appDeveloperMode: false,
@@ -108,19 +116,64 @@ export class DiskModel {
   }
 
   /**
-   * Get the disk model from local storage
-   * @summary When window and local storage are defined, grab diskModel if available, otherwise set diskModel to local storage
-   * @returns  DiskInterface: disk model saved on local storage
+   * Get a structured clone of the disk model.
+   * @returns  A structured clone of the disk model.
    */
   getDisk(): DiskInterface {
+    return structuredClone(this.disk);
+  }
+
+  /**
+   * Load tabsint version information from version.js
+   * Note: This is separate from the version model to avoid circular logging dependencies.
+   *
+   * @summary Imports version.json, returns the version code.
+   * @returns The version code of the application or undefined if not found.
+   */
+  private async getVersionCode(): Promise<string | undefined> {
+    let versionCode = undefined;
+    try {
+      const versionData = await import('../../../version.json');
+      if (versionData.default) {
+        const version = versionData.default as VersionInterface;
+        versionCode = version.version_code;
+      }
+    } catch (error) {
+      console.log('Error retrieving the version code' + error);
+    }
+    return versionCode;
+  }
+
+  /**
+   * Initialize the disk model for the application and load from storage if possible.
+   * In the event that the version of the model does not align with the current app version, reset the disk model on storage.
+   */
+  async initializeDiskModel(): Promise<void> {
+    // Setup the versioning for the disk model and set the model as initialized
+    this.modelInitialized = true;
+    this.disk.versionCode = (await this.getVersionCode()) ?? this.disk.versionCode;
     if (this.window !== null && !_.isUndefined(this.window.localStorage)) {
-      if (this.window.localStorage.getItem('diskModel') !== null) {
-        this.disk = JSON.parse(this.window.localStorage.getItem('diskModel')!);
-      } else {
+      const diskModelString = this.window.localStorage.getItem('diskModel');
+      if (diskModelString === null) {
+        // Set the disk model in local storage if not available
+        console.log('No disk model available, restoring defaults.');
         this.storeDisk();
+      } else {
+        let newDiskModel = undefined;
+        try {
+          newDiskModel = JSON.parse(diskModelString);
+        } catch (error) {
+          console.log('Error parsing disk model' + error);
+        }
+        if (newDiskModel?.versionCode && newDiskModel?.versionCode === this.disk.versionCode) {
+          this.disk = newDiskModel;
+        } else {
+          // Reset the local storage if parsing fails or version codes do not align
+          console.log('Stored disk version did not match latest disk, restoring defaults.');
+          this.storeDisk();
+        }
       }
     }
-    return this.disk;
   }
 
   /**
@@ -128,10 +181,10 @@ export class DiskModel {
    * @summary When window and local storage are defined, store disk model on local storage\
    */
   storeDisk(): void {
-    if (this.window !== null && !_.isUndefined(this.window.localStorage)) {
+    if (this.modelInitialized && this.window !== null && !_.isUndefined(this.window.localStorage)) {
       this.window.localStorage.setItem('diskModel', JSON.stringify(this.disk));
     }
-    this.diskSubject.next(this.getDisk());
+    this.diskSubject.next(this.disk);
   }
 
   /**

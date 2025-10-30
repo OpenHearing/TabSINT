@@ -57,7 +57,6 @@ export class AppComponent implements OnInit, OnDestroy {
     this.app = this.appModel.getApp();
     this.protocol = this.protocolM.getProtocolModel();
     this.disk = this.diskModel.getDisk();
-    this.diskModel.updateDiskModel('numLogRows', 1);
   }
 
   ngOnInit(): void {
@@ -76,6 +75,8 @@ export class AppComponent implements OnInit, OnDestroy {
    */
   private async asyncNgOnInit(): Promise<void> {
     await this.sqLite.init();
+    await this.diskModel.initializeDiskModel();
+    this.diskModel.updateDiskModel('numLogRows', 1);
     this.router.navigate(['']);
 
     if (!this.disk.contentURI) {

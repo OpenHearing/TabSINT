@@ -58,7 +58,7 @@ export class ChangePinComponent {
   }
 
   validatePin() {
-    if (this.isValidationMode && this.pin?.toString() === this.diskModel.getDisk().pin) {
+    if (this.isValidationMode && this.pin?.toString() === this.disk.pin) {
       this.logger.debug('Admin PIN validated successfully');
       this.pinValidated.emit(true);
       this.dialog.closeAll();
