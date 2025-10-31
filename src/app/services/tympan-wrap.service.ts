@@ -159,7 +159,6 @@ export class TympanWrap {
     // Loop through every byte
     for (let i = 0; i < byteArrayLength; i++) {
       const byteArr = byteArray.slice(i, i + 1);
-      console.log('byteArr', byteArr);
       // check for a start character to begin accumulating bytes
       if (byteArr[0] == 5) {
         if (this.ACCUMULATE_BYTES[deviceId] === true) {
@@ -200,8 +199,6 @@ export class TympanWrap {
   private addBytesToBuffer(deviceId: string, dv: DataView) {
     this.TMP_BUFFER[deviceId] = this.appendDataView(this.TMP_BUFFER[deviceId], dv);
     this.lastByteReceived[deviceId] = new Date().getTime();
-    console.log('this.TMP_BUFFER[deviceId]', this.TMP_BUFFER[deviceId]);
-    console.log('this.lastByteReceived[deviceId]', this.lastByteReceived[deviceId]);
   }
 
   private innerByteChecker(deviceId: string) {
