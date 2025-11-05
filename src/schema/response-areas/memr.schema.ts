@@ -55,6 +55,7 @@ export const memrSchema: JSONSchemaType<MemrExamInterface> = {
       description:
         'Channels recorded to a wavefile, typically these can are input channels but can also be output channels. Defaults are designed for Auren probe, for testing without a Tympan Shield, use: ["LEFT:BOARD_MIC", "LEFT:JACK_AS_LINEIN", "HPL0", "HPR0"]',
     },
+    bleDelayPerTrial: { type: 'number', nullable: true, default: 4000 },
   },
   required: ['type'],
 };

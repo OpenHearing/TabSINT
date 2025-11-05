@@ -46,6 +46,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     submissionIntervalMs: memrSchema.properties.submissionIntervalMs.default,
     probeOutputChannel: memrSchema.properties.probeOutputChannel.default,
     elicitorOutputChannel: memrSchema.properties.elicitorOutputChannel.default,
+    bleDelayPerTrial: memrSchema.properties.bleDelayPerTrial.default,
   };
   inputParameterMap: Map<string, string> = new Map(); // Parameter map to display to the user in ready state
   trialsPerBlock: number = 0;
@@ -234,6 +235,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
    * Abort the exam and cancel any ongoing tasks.
    */
   private async abortExam(): Promise<void> {
+    // TODO: Fix below line
     this.currentStep = 'Complete';
     let resp = this.device ? await this.devicesService.abortExams(this.device) : undefined;
     this.logger.debug('resp from tympan after MEMR exam abort exams:' + resp);
@@ -339,6 +341,9 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     };
     if (this.device) {
       await this.devicesService.examSubmission(this.device, examProperties);
+      // HACK for MEMR debugging 11_04_2025
+      // await this.delay(3500);
+      await this.delay(this.memrExamProperties.elicitorLevelArray!.length * this.memrExamProperties.bleDelayPerTrial!);
     } else {
       await this.finishExam();
       this.logger.error('Error in the examSubmission, finishing exam.');
@@ -375,7 +380,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   private startPollingResults(): void {
     const pollResults = async () => {
       try {
-        let resp = this.device ? await this.devicesService.requestResults(this.device) : undefined;
+        let resp = this.device ? await this.devicesService.requestResults(this.device, 30000) : undefined;
         if (typeof resp![1] === 'object' && 'State' in resp![1] && this.knownStates.includes(resp![1].State)) {
           if (resp![1].State === 'READY') {
             await this.handleReadyState(resp![1]);
@@ -387,6 +392,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
             setTimeout(pollResults, 500);
           }
         } else {
+          // This get logged after the timeout
           this.logger.debug('In memr-exam.component.ts runExamSubmissions, unknown result: ' + resp![1]);
           await this.finishExam();
         }
@@ -395,7 +401,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
         await this.finishExam();
       }
     };
-    pollResults();
+    setTimeout(pollResults, 500);
   }
 
   /**
