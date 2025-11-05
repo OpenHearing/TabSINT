@@ -92,7 +92,7 @@ export interface DiskInterface {
   savedDevices: SavedDevices;
 }
 
-interface UploadSummary {
+export interface UploadSummary {
   protocolId?: string;
   protocolName: string;
   testDateTime: string;
@@ -102,13 +102,13 @@ interface UploadSummary {
   output: ProtocolServer;
 }
 
-interface SavedDevices {
+export interface SavedDevices {
   tympan: Array<SavedDevice>;
   cha: Array<SavedDevice>;
   svantek: Array<SavedDevice>;
 }
 
-interface SavedDevice {
+export interface SavedDevice {
   tabsintId: string;
   name: string;
   deviceId: string;
