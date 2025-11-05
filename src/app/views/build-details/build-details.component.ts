@@ -24,7 +24,7 @@ export class BuildDetailsComponent implements OnInit {
     try {
       this.version = await this.versionModel.getVersion();
     } catch (error) {
-      this.logger.error('' + error);
+      this.logger.error(JSON.stringify(error));
     }
   }
 }

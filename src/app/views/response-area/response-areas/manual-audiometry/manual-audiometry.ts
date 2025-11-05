@@ -310,15 +310,15 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
   }
 
   private async manualAudiometryExamSubmission() {
-    let examProperties = {
+    const examProperties = {
       F: this.selectedFrequency,
       Level: this.currentDbSpl,
       OutputChannel: this.selectedEar === 'Left' ? 'HPL0' : 'HPR0',
       // "PlayStimulus": this.isPlaying, --> only needed with masking
       // "MaskerLevel": this.maskingLevel
     };
-    let ignore_error_msg = 'Error executing examSubmission: Requested frequency outside calibration';
-    let resp = await this.devicesService.examSubmission(this.device!, examProperties, [ignore_error_msg]);
+    const ignore_error_msg = 'Error executing examSubmission: Requested frequency outside calibration';
+    const resp = await this.devicesService.examSubmission(this.device!, examProperties, [ignore_error_msg]);
     if (resp && resp[1] == 'ERROR' && resp[2] == ignore_error_msg) {
       this.notifications
         .alert({
@@ -328,7 +328,6 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
         })
         .subscribe();
     }
-    this.logger.debug('resp from tympan after manual audiometry exam submission:' + resp);
   }
 
   private async handlePageUpdate(updatedPage: PageInterface) {

@@ -14,11 +14,11 @@ import { VersionModel } from '../models/version/version.service';
 
 describe('ResultsService', () => {
   let resultsService: ResultsService;
-  let appModel = new AppModel();
-  let diskModel = new DiskModel(new Document());
-  let sqLite = new SqLite(appModel, diskModel);
-  let logger = new Logger(diskModel, sqLite);
-  let version = new VersionModel(logger);
+  const appModel = new AppModel();
+  const diskModel = new DiskModel(new Document());
+  const sqLite = new SqLite(appModel, diskModel);
+  const logger = new Logger(diskModel, sqLite);
+  const version = new VersionModel(logger);
 
   beforeEach(async () => {
     TestBed.configureTestingModule({});
@@ -29,14 +29,14 @@ describe('ResultsService', () => {
       new FileService(appModel, logger, diskModel),
       logger,
       new ProtocolModel(),
-      new ResultsModel(new DevicesModel(logger), version),
+      new ResultsModel(new DevicesModel(logger), version, logger),
       sqLite,
       version
     );
   });
 
   it('initializes exam results', () => {
-    let returnedResults: ResultsInterface = resultsService.results;
+    const returnedResults: ResultsInterface = resultsService.results;
     expect(returnedResults.currentExam.testDateTime).toBeUndefined();
     expect(returnedResults.currentExam.protocol.name).toBe('');
     resultsService.protocol.activeProtocol = {
@@ -49,10 +49,10 @@ describe('ResultsService', () => {
   });
 
   it('initializes page results', () => {
-    let returnedResults: ResultsInterface = resultsService.results;
+    const returnedResults: ResultsInterface = resultsService.results;
     expect(returnedResults.currentPage.pageId).toBe('');
     expect(returnedResults.currentPage.responseArea).toBeUndefined();
-    let testCurrentPage = {
+    const testCurrentPage = {
       id: '001',
       title: 'Test',
       instructionText: 'Test Case',
@@ -66,7 +66,7 @@ describe('ResultsService', () => {
   });
 
   it('pushes current exam results', () => {
-    let returnedResults: ResultsInterface = resultsService.results;
+    const returnedResults: ResultsInterface = resultsService.results;
     expect(returnedResults.currentExam.responses.length).toEqual(0);
     resultsService.pushResults({
       pageId: '01',

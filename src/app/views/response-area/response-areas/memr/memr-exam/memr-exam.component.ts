@@ -218,7 +218,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
    * Dialog to abort the currently running exam and save results.
    */
   public showCancelExamDialog(): void {
-    let msg: DialogDataInterface = {
+    const msg: DialogDataInterface = {
       title: 'Confirm',
       content: 'Cancel the MEMR exam',
       type: DialogType.Confirm,
@@ -235,8 +235,9 @@ export class MemrExamComponent implements OnInit, OnDestroy {
    */
   private async abortExam(): Promise<void> {
     this.currentStep = 'Complete';
-    let resp = this.device ? await this.devicesService.abortExams(this.device) : undefined;
-    this.logger.debug('resp from tympan after MEMR exam abort exams:' + resp);
+    if (this.device) {
+      await this.devicesService.abortExams(this.device)
+    }
   }
 
   /**

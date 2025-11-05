@@ -155,8 +155,7 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
    * Function to be called by ngOnDestroy to handle any asynchronous operations.
    */
   private async asyncNgOnDestroy(): Promise<void> {
-    const resp = await this.devicesService.abortExams(this.device!);
-    this.logger.debug('resp from tympan after fpl calibration exam abort exams:' + resp);
+    await this.devicesService.abortExams(this.device!);
   }
 
   async nextStep(): Promise<void> {

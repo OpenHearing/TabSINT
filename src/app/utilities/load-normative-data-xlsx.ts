@@ -97,17 +97,12 @@ export async function loadWAINormativeData(responseArea: WAIInterface, meta: Pro
 export async function loadNormativeDataXlsx(normativeDataFilePath: string, meta: ProtocolMetaInterface): Promise<NormativeDataInterface[]> {
   let xlsxArrayBuffer;
   if (meta.server == ProtocolServer.Developer) {
-    try {
-      const xlsxFilePath = 'assets/' + meta.path + '/' + normativeDataFilePath;
-      const resp = await fetch(xlsxFilePath);
-      if (!resp.ok) {
-        throw new Error(`Failed to fetch the file: ${resp.statusText}`);
-      }
-      xlsxArrayBuffer = await resp.arrayBuffer();
-    } catch (error) {
-      console.error('Error fetching or parsing XLSX file:', error);
-      throw error;
+    const xlsxFilePath = 'assets/' + meta.path + '/' + normativeDataFilePath;
+    const resp = await fetch(xlsxFilePath);
+    if (!resp.ok) {
+      throw new Error(`Failed to fetch the file: ${resp.statusText}`);
     }
+    xlsxArrayBuffer = await resp.arrayBuffer();
   } else if (meta.server === ProtocolServer.LocalServer || meta.server === ProtocolServer.Gitlab) {
     const resp = await TabsintFs.readFile({ rootUri: meta.contentURI, filePath: normativeDataFilePath, asBase64: true });
     const xlsxBuffer = Buffer.from(resp?.content, 'base64');
@@ -115,13 +110,8 @@ export async function loadNormativeDataXlsx(normativeDataFilePath: string, meta:
   }
 
   if (xlsxArrayBuffer) {
-    try {
-      const normativeData: NormativeDataInterface[] = await parseXlsxBuffer(xlsxArrayBuffer);
-      return normativeData;
-    } catch (error) {
-      console.log('Error parsing normative data XLSX: ', error);
-      throw error;
-    }
+    const normativeData: NormativeDataInterface[] = await parseXlsxBuffer(xlsxArrayBuffer);
+    return normativeData;
   } else {
     throw new Error('Error processing normative data: No XLSX content found.');
   }
