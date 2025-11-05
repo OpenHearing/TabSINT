@@ -108,6 +108,10 @@ export class ExamService {
     this.submitDefault();
   }
 
+  skip() {
+    
+  }
+
   back() {
     // used/overwritten by calibration-exam
   }

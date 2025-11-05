@@ -84,6 +84,14 @@ export class ExamComponent implements OnInit, OnDestroy {
     this.examService.submit();
   }
 
+  back() {
+    this.examService.back();
+  }
+
+  skip() {
+    this.examService.skip();
+  }
+
   reset() {
     this.examService.reset();
   }
