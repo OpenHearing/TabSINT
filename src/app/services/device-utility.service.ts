@@ -154,13 +154,13 @@ export class DeviceUtil {
     return device?.maxByteLength!;
   }
 
-  updateDeviceInfo(tabsintId: string, info: { [key: string]: string }): boolean {
+  updateDeviceInfo(tabsintId: string, info: { [key: string]: string | number | number[] }): boolean {
     let wasDeviceInfoUpdated = false;
     for (const device of this.devices.connectedDevices.tympan) {
       if (device.tabsintId === tabsintId) {
-        device.description = info?.['description'];
-        device.buildDateTime = info?.['buildDateTime'];
-        device.serialNumber = info?.['serialNumber'];
+        device.description = info?.['description'] as string;
+        device.buildDateTime = info?.['buildDateTime'] as string;
+        device.serialNumber = info?.['serialNumber'] as string;
         wasDeviceInfoUpdated = true;
       }
     }

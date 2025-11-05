@@ -26,7 +26,7 @@ export class TympanWrap {
   CRC8_TABLE = this.genCRC8Table();
   ACCUMULATE_BYTES: { [key: string]: boolean } = {};
   lastByteReceived: { [key: string]: number } = {};
-  inner_byte_timeout: number = 2000;
+  inner_byte_timeout: number = 1000;
   TMP_BUFFER: { [key: string]: DataView } = {};
 
   constructor(
@@ -147,32 +147,32 @@ export class TympanWrap {
   }
 
   handleIncomingBytes(deviceId: string, dv: DataView) {
-    // TODO: Update this to be more robust to multiple characters sent from tympan
     const byteArray = new Uint8Array(dv.buffer.slice(dv.byteOffset, dv.byteOffset + dv.byteLength));
+    const byteArrayLength = byteArray.length;
 
-    // check for a start character to begin accumulating bytes
-    if (byteArray.length == 1 && byteArray[0] == 5) {
+    // Loop through every byte
+    for (let i = 0; i < byteArrayLength; i++) {
+      const byteArr = byteArray.slice(i, i + 1);
+      // check for a start character to begin accumulating bytes
+      if (byteArr[0] == 5) {
+        if (this.ACCUMULATE_BYTES[deviceId] === true) {
+          this.clearTMPBuffer(deviceId);
+        }
+        this.startAccumulatingBytes(deviceId);
+        this.devicesModel.firstByteHandlerSubject.next(deviceId);
+      }
+
+      // accumulate bytes
       if (this.ACCUMULATE_BYTES[deviceId] === true) {
-        this.clearTMPBuffer(deviceId);
-      }
-      this.startAccumulatingBytes(deviceId);
-      this.devicesModel.firstByteHandlerSubject.next(deviceId);
-    }
+        this.addBytesToBuffer(deviceId, new DataView(byteArr.buffer));
 
-    // accumulate bytes
-    if (this.ACCUMULATE_BYTES[deviceId] === true) {
-      if (!this.isUnhandledByteMessage(byteArray)) {
-        this.addBytesToBuffer(deviceId, dv);
-      } else {
-        this.logger.debug(`Unhandled byte sequence detected and ignored: ${this.formatHexArray(byteArray)}`);
-      }
-
-      // check for a completed msg (last byte in buffer is a 2)
-      if (this.TMP_BUFFER[deviceId].getUint8(this.TMP_BUFFER[deviceId].buffer.byteLength - 1) == 2) {
-        const tabsintId: string | undefined = this.deviceUtil.getTabsintIdFromDeviceId(deviceId);
-        const msg = this.parseCompletedMsg(deviceId);
-        this.devicesModel.tympanResponseSubject.next({ tabsintId: tabsintId!, msg: msg });
-        this.stopAccumulatingBytes(deviceId);
+        // check for a completed msg (last byte in buffer is a 2)
+        if (this.TMP_BUFFER[deviceId].getUint8(this.TMP_BUFFER[deviceId].buffer.byteLength - 1) == 2) {
+          const tabsintId: string | undefined = this.deviceUtil.getTabsintIdFromDeviceId(deviceId);
+          const msg = this.parseCompletedMsg(deviceId);
+          this.devicesModel.tympanResponseSubject.next({ tabsintId: tabsintId!, msg: msg });
+          this.stopAccumulatingBytes(deviceId);
+        }
       }
     }
   }

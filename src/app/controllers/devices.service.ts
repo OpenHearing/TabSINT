@@ -54,14 +54,18 @@ export class DevicesService {
         .subscribe(async (tympan: BleDevice | undefined) => {
           if (tympan != undefined) {
             this.tasks.register('Connect Device', `Connecting to Device... `);
-            let connection = await this.tympanService.connect(tympan, newConnectedDevice);
+            const connection = await this.tympanService.connect(tympan, newConnectedDevice);
             if (connection) {
               this.deviceUtil.addNewSavedDevice(connection);
               this.devices.connectedDevices.tympan.push(connection);
               await this.abortExams(connection);
-              await this.requestId(connection);
-              this.deviceUtil.updateDeviceState(connection.deviceId, DeviceState.Connected);
-              this.stateModel.updatePaneOpen({ tympans: true });
+              const resp = await this.requestId(connection);
+              if (resp && !resp.includes('ERROR')) {
+                this.deviceUtil.updateDeviceState(connection.deviceId, DeviceState.Connected);
+                this.stateModel.updatePaneOpen({ tympans: true });
+              } else {
+                await this.disconnect(connection);
+              }
               this.tasks.deregister('Connect Device');
             }
           } else {
@@ -90,12 +94,16 @@ export class DevicesService {
   async reconnect(device: ConnectedDevice) {
     if (isTympanDevice(device)) {
       this.tasks.register('Reconnect Device', 'Reconnect Device');
-      let connection = await this.tympanService.reconnect(device.deviceId);
+      const connection = await this.tympanService.reconnect(device.deviceId);
       if (connection) {
         await this.abortExams(connection);
-        await this.requestId(connection);
-        this.deviceUtil.updateDeviceState(device.deviceId, DeviceState.Connected);
-        this.stateModel.updatePaneOpen({ tympans: true });
+        const resp = await this.requestId(connection);
+        if (resp && !resp.includes('ERROR')) {
+          this.deviceUtil.updateDeviceState(connection.deviceId, DeviceState.Connected);
+          this.stateModel.updatePaneOpen({ tympans: true });
+        } else {
+          await this.disconnect(device);
+        }
       }
       this.tasks.deregister('Reconnect Device');
     } else {
@@ -111,7 +119,7 @@ export class DevicesService {
     this.deviceUtil.removeDevice(device);
   }
 
-  async deviceErrorHandler(resp: Array<any> | undefined, ignoreErrors: Array<string> = []) {
+  async deviceErrorHandler(resp: any[] | undefined, ignoreErrors: string[] = []) {
     if (resp && resp[1] === 'ERROR') {
       if (ignoreErrors?.includes(resp[2])) {
         // ignore the error
@@ -142,13 +150,13 @@ export class DevicesService {
    * @summary Requests deviceID
    */
   async requestId(device: ConnectedDevice) {
-    let resp;
+    let resp: any[] | undefined;
     if (isTympanDevice(device)) {
-      let msgId = device.msgId.toString();
+      const msgId = device.msgId.toString();
       this.deviceUtil.incrementDeviceMsgId(device.deviceId);
-      let resp = await this.tympanService.requestId(device.deviceId, msgId);
+      resp = await this.tympanService.requestId(device.deviceId, msgId);
       this.logger.debug('requestId response: ' + JSON.stringify(resp));
-      let tabsintId = this.deviceUtil.getTabsintIdFromDeviceId(device.deviceId);
+      const tabsintId = this.deviceUtil.getTabsintIdFromDeviceId(device.deviceId);
       this.deviceUtil.updateDeviceInfo(tabsintId!, resp[1]);
     }
     return resp;
@@ -160,9 +168,9 @@ export class DevicesService {
    */
   async queueExam(device: ConnectedDevice, examType: string, examProperties: object) {
     // these functions dont need responses (remove if not needed)
-    let resp: Array<any> | undefined;
+    let resp: any[] | undefined;
     if (isTympanDevice(device)) {
-      let msgId = device.msgId.toString();
+      const msgId = device.msgId.toString();
       this.deviceUtil.incrementDeviceMsgId(device.deviceId);
       resp = await this.tympanService.queueExam(device.deviceId, msgId, examType, examProperties);
       this.logger.debug('queueExam response: ' + JSON.stringify(resp));
@@ -175,9 +183,9 @@ export class DevicesService {
   }
 
   async examSubmission(device: ConnectedDevice, examProperties: object, ignoreErrors: Array<string> = []) {
-    let resp: Array<any> | undefined;
+    let resp: any[] | undefined;
     if (isTympanDevice(device)) {
-      let msgId = device.msgId.toString();
+      const msgId = device.msgId.toString();
       this.deviceUtil.incrementDeviceMsgId(device.deviceId);
       resp = await this.tympanService.examSubmission(device.deviceId, msgId, examProperties);
       this.logger.debug('examSubmission response: ' + JSON.stringify(resp));
@@ -191,9 +199,9 @@ export class DevicesService {
   }
 
   async abortExams(device: ConnectedDevice) {
-    let resp: Array<any> | undefined;
+    let resp: any[] | undefined;
     if (isTympanDevice(device)) {
-      let msgId = device.msgId.toString();
+      const msgId = device.msgId.toString();
       this.deviceUtil.incrementDeviceMsgId(device.deviceId);
       resp = await this.tympanService.abortExams(device.deviceId, msgId);
       this.logger.debug('abortExams response: ' + JSON.stringify(resp));
@@ -205,10 +213,10 @@ export class DevicesService {
     return resp;
   }
 
-  async requestResults(device: ConnectedDevice, timeoutTimeMs: number = 5000) {
-    let resp: Array<any> | undefined;
+  async requestResults(device: ConnectedDevice, timeoutTimeMs: number = 3000) {
+    let resp: any[] | undefined;
     if (isTympanDevice(device)) {
-      let msgId = device.msgId.toString();
+      const msgId = device.msgId.toString();
       this.deviceUtil.incrementDeviceMsgId(device.deviceId);
       resp = await this.tympanService.requestResults(device.deviceId, msgId, timeoutTimeMs);
       this.logger.debug('requestResults response: ' + JSON.stringify(resp));
