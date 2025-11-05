@@ -6,17 +6,22 @@ import { ProtocolServer } from '../utilities/constants';
 import { ExamResults } from '../models/results/results.interface';
 import { Device } from '@capacitor/device';
 import { DiskInterface } from '../models/disk/disk.interface';
+import { Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ResultsUploadService {
   disk: DiskInterface;
+  diskSubscription: Subscription | undefined;
   constructor(
     private readonly diskModel: DiskModel,
     private readonly logger: Logger
   ) {
     this.disk = diskModel.getDisk();
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+    });
   }
 
   /**
@@ -56,7 +61,7 @@ export class ResultsUploadService {
     return originalString.replace(/\/+$/, '');
   }
 
-  async ensureResultsRepo(gitlabHost: string, gitlabToken: string, gitlabGroup: string): Promise<number> {
+  async ensureResultsRepo(gitlabHost: string, gitlabToken: string, gitlabGroup: string): Promise<{ id: number; default_branch: string }> {
     const groupUrl = `${this.removeTrailingSlashes(gitlabHost)}/api/v4/groups?search=${gitlabGroup}`;
     const groupOptions = this.gitlabHttpOptions(gitlabToken, groupUrl);
     const groupResp = await CapacitorHttp.get(groupOptions);
@@ -102,8 +107,8 @@ export class ResultsUploadService {
       }
       resultsRepo = await createProjResp.data;
     }
-    this.logger.debug('results repo found and returning its id');
-    return resultsRepo.id;
+    this.logger.debug('results repo found and returning its id and default branch');
+    return resultsRepo;
   }
 
   async uploadResult(singleExamResult: ExamResults): Promise<{ success: boolean; message: string }> {
@@ -121,7 +126,10 @@ export class ResultsUploadService {
       const gitlabGroup = protocol.gitlabConfig?.group;
       this.logger.debug(`${gitlabHost} ${gitlabToken} ${gitlabGroup}`);
 
-      const resultsRepoId = await this.ensureResultsRepo(gitlabHost, gitlabToken, gitlabGroup);
+      const resultsRepoResponse = await this.ensureResultsRepo(gitlabHost, gitlabToken, gitlabGroup);
+      const resultsRepoId = resultsRepoResponse.id;
+      const resultsRepoDefaultBranch = resultsRepoResponse.default_branch;
+
       const folderName = protocol.gitlabConfig?.repository;
       const info = await Device.getId();
       const fileUuid = info.identifier;
@@ -131,7 +139,7 @@ export class ResultsUploadService {
       const fileUrl = `${this.removeTrailingSlashes(gitlabHost)}/api/v4/projects/${resultsRepoId}/repository/files/${fullPath}`;
       const commitMessage = `Add result for exam: ${singleExamResult.protocol.name}`;
       const body = {
-        branch: 'master', // or 'main', depending on your repo
+        branch: resultsRepoDefaultBranch,
         commit_message: commitMessage,
         content: JSON.stringify(singleExamResult, null, 2), // pretty-print JSON
       };
@@ -155,7 +163,6 @@ export class ResultsUploadService {
 
       this.disk.uploadSummary.push(uploadSummaryEntry);
       this.diskModel.updateDiskModel('uploadSummary', this.disk.uploadSummary);
-      this.disk = this.diskModel.getDisk();
 
       this.logger.debug('Successfully uploaded to upload summary in disk ');
 

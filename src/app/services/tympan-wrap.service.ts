@@ -50,11 +50,12 @@ export class TympanWrap {
   }
 
   async initialize() {
-    this.logger.debug('Initializing BLE...');
     try {
       await BleClient.initialize();
+      this.logger.debug('BLE Initialized');
       this.stateModel.updateState({ bluetoothConnected: true });
     } catch {
+      this.logger.debug('Failed to initialize BLE');
       this.stateModel.updateState({ bluetoothConnected: false });
     }
   }
@@ -71,7 +72,6 @@ export class TympanWrap {
     }
 
     try {
-      this.logger.debug('starting BLE scan');
       await this.scan(subject, timeout);
     } catch (error) {
       this.logger.error('Error starting BLE scan: ' + JSON.stringify(error));
@@ -83,9 +83,8 @@ export class TympanWrap {
   async scan(subject: BehaviorSubject<BleDevice[]>, timeout: number = 5000) {
     subject.next([]);
     this.scanning = true;
-    let results: BleDevice[] = [];
+    const results: BleDevice[] = [];
     await BleClient.requestLEScan({ services: [this.ADAFRUIT_SERVICE_UUID] }, (result: any) => {
-      this.logger.debug('found device: ' + JSON.stringify(result.device));
       if (!results.includes(result.device)) {
         results.push(result.device);
       }
@@ -102,18 +101,14 @@ export class TympanWrap {
   }
 
   async write(deviceId: string, msg: string, chunkSize: number) {
-    let msg_to_write = this.msgToDataView(msg);
-
-    this.logger.debug('TIME - about to write bytes to tympan: ' + String(Date.now()));
-    this.logger.debug('Writing ' + JSON.stringify(msg) + ' to tympan with ID: ' + deviceId);
-
+    const msg_to_write = this.msgToDataView(msg);
     const original_msg_buffer: ArrayBufferLike = msg_to_write.buffer;
     const byteOffset: number = msg_to_write.byteOffset;
     const byteLength: number = msg_to_write.byteLength;
     let currentOffset: number = byteOffset;
     while (currentOffset < byteOffset + byteLength) {
-      let currChunkLength = Math.min(chunkSize, byteOffset + byteLength - currentOffset);
-      let chunkDataView = new DataView(original_msg_buffer, currentOffset, currChunkLength);
+      const currChunkLength = Math.min(chunkSize, byteOffset + byteLength - currentOffset);
+      const chunkDataView = new DataView(original_msg_buffer, currentOffset, currChunkLength);
       await BleClient.write(deviceId, this.ADAFRUIT_SERVICE_UUID, this.ADAFRUIT_CHARACTERISTIC_UUID, chunkDataView);
       currentOffset += currChunkLength;
     }
@@ -204,8 +199,8 @@ export class TympanWrap {
   private innerByteChecker(deviceId: string) {
     if (this.ACCUMULATE_BYTES[deviceId] === true) {
       if (new Date().getTime() - this.lastByteReceived[deviceId] > this.inner_byte_timeout) {
-        let tabsintId: string | undefined = this.deviceUtil.getTabsintIdFromDeviceId(deviceId);
-        let msg = '["byte timeout"]';
+        const tabsintId: string | undefined = this.deviceUtil.getTabsintIdFromDeviceId(deviceId);
+        const msg = '["byte timeout"]';
         this.devicesModel.tympanResponseSubject.next({ tabsintId: tabsintId!, msg: msg });
         this.stopAccumulatingBytes(deviceId);
       } else {
@@ -224,11 +219,11 @@ export class TympanWrap {
   }
 
   private msgToDataView(str: string): DataView {
-    let start_byte = new Uint8Array([5]);
-    let end_byte = new Uint8Array([2]);
-    let buf = new TextEncoder().encode(str); // this is a uint8array!
-    let crc = this.genCRC8Checksum(buf);
-    let msgToSend = new Uint8Array([...start_byte, ...this.handleEscaping(buf), ...this.handleEscaping(crc), ...end_byte]);
+    const start_byte = new Uint8Array([5]);
+    const end_byte = new Uint8Array([2]);
+    const buf = new TextEncoder().encode(str); // this is a uint8array!
+    const crc = this.genCRC8Checksum(buf);
+    const msgToSend = new Uint8Array([...start_byte, ...this.handleEscaping(buf), ...this.handleEscaping(crc), ...end_byte]);
     return new DataView(msgToSend.buffer);
   }
 
@@ -261,20 +256,19 @@ export class TympanWrap {
   }
 
   private parseCompletedMsg(deviceId: string): string {
-    let dv = this.TMP_BUFFER[deviceId];
+    const dv = this.TMP_BUFFER[deviceId];
     let msg: string;
 
-    let tmp = new Uint8Array(dv.buffer.slice(0));
-    let unescapedArray = this.handleUnescaping(tmp.slice(1, tmp.byteLength - 1));
-    let crc = unescapedArray.slice(unescapedArray.byteLength - 1);
-    let expectedChecksum = this.genCRC8Checksum(unescapedArray.slice(0, unescapedArray.byteLength - 1));
+    const tmp = new Uint8Array(dv.buffer.slice(0));
+    const unescapedArray = this.handleUnescaping(tmp.slice(1, tmp.byteLength - 1));
+    const crc = unescapedArray.slice(unescapedArray.byteLength - 1);
+    const expectedChecksum = this.genCRC8Checksum(unescapedArray.slice(0, unescapedArray.byteLength - 1));
     if (crc[0] == expectedChecksum[0]) {
-      let tmpDV = new DataView(unescapedArray.slice(0, unescapedArray.byteLength - 1).buffer);
+      const tmpDV = new DataView(unescapedArray.slice(0, unescapedArray.byteLength - 1).buffer);
       msg = this.dataViewToString(tmpDV);
     } else {
       msg = 'invalid checksum';
     }
-    this.logger.debug('TIME - msg parsed and checksum verified: ' + String(Date.now()));
 
     return msg;
   }
@@ -288,7 +282,7 @@ export class TympanWrap {
   }
 
   private appendDataView(dv1: DataView, dv2: DataView): DataView {
-    let tmp = new Uint8Array(dv1.buffer.byteLength + dv2.buffer.byteLength);
+    const tmp = new Uint8Array(dv1.buffer.byteLength + dv2.buffer.byteLength);
     tmp.set(new Uint8Array(dv1.buffer), 0);
     tmp.set(new Uint8Array(dv2.buffer), dv1.buffer.byteLength);
     return new DataView(tmp.buffer);
@@ -333,7 +327,7 @@ export class TympanWrap {
   }
 
   private genCRC8Table() {
-    let csTable = []; // 256 max len byte array
+    const csTable = []; // 256 max len byte array
     for (let i = 0; i < 256; ++i) {
       let curr = i;
       for (let j = 0; j < 8; ++j) {

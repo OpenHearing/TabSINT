@@ -116,19 +116,15 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   }
 
   toggleAutoUpload() {
-    this.diskModel.updateDiskModel('autoUpload', this.diskModel.disk.autoUpload == undefined || !this.diskModel.disk.autoUpload);
+    this.diskModel.updateDiskModel('autoUpload', this.disk.autoUpload == undefined || !this.disk.autoUpload);
   }
 
   toggleDebugMode() {
-    this.diskModel.updateDiskModel('debugMode', !this.diskModel.disk.debugMode);
+    this.diskModel.updateDiskModel('debugMode', !this.disk.debugMode);
   }
 
   toggleDisableLogs() {
     this.diskModel.updateDiskModel('disableLogs', !this.disk.disableLogs);
-  }
-
-  gainReset() {
-    console.log('gainReset pressed');
   }
 
   async changeLocalResultsDir() {

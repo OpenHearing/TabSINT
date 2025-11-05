@@ -5,8 +5,8 @@ import { BehaviorSubject } from 'rxjs';
 
 import { DiskInterface, GitlabConfigInterface } from './disk.interface';
 import { ExamResults } from '../results/results.interface';
-import { ProtocolServer, ResultsMode } from '../../utilities/constants';
-import { metaDefaults, partialMetaDefaults } from '../../utilities/defaults';
+import { diskSchema } from '../../../schema/definitions/disk.schema';
+import { safeParse } from '../../utilities/safe-parsing';
 
 @Injectable({
   providedIn: 'root',
@@ -23,104 +23,76 @@ export class DiskModel {
   window: (Window & typeof globalThis) | null;
 
   disk: DiskInterface = {
-    activeProtocolMeta: metaDefaults,
-    adminSkipMode: false,
-    appDeveloperMode: false,
-    appDeveloperModeCount: 0,
-    audhere: '',
-    autoUpload: true,
-    availableProtocolsMeta: {
-      // Commenting out purdue shakedown while we develop
-      // PurdueShakedown: {
-      //     ...partialMetaDefaults,
-      //     creator: "Creare",
-      //     name: "Purdue Shakedown",
-      //     path: "protocols/purdue-shakedown"
-      // },
-      develop: {
-        ...partialMetaDefaults,
-        creator: 'Creare',
-        name: 'develop',
-        path: 'protocols/develop',
-      },
-    },
-    cha: {
-      bluetoothType: '',
-      embeddedFirmwareBuildDate: '',
-      embeddedFirmwareTag: '',
-      myCha: '',
-    },
-    contentURI: null,
-    debugMode: false,
-    disableAudioStreaming: true,
-    disableLogs: false,
-    downloadInProgress: false,
-    externalMode: false,
-    gitlab: {
-      repos: [],
-      useSeperateResultsRepo: false,
-      useTagsOnly: true,
-    },
-    gitlabConfig: this.gitlabConfigModel,
-    headset: 'None',
-    interApp: {
-      appName: '',
-      dataIn: '',
-      dataOut: '',
-    },
-    language: 'English',
-    lastReleaseCheck: '',
-    mediaRepos: [],
-    maxLogRows: 1000,
-    numLogRows: 0,
-    pin: '7114',
-    preventExports: false,
-    preventUploads: true,
-    reloadingBrowser: false,
-    requireEncryptedResults: false,
-    resultsMode: ResultsMode.ExportOnly,
-    server: ProtocolServer.LocalServer,
-    servers: {
-      gitlab: {
-        resultsRepo: 'results',
-      },
-      localServer: {
-        protocolDir: 'tabsint-protocols',
-        resultsDir: 'tabsint-results',
-        resultsDirUri: '',
-      },
-    },
-    showUploadSummary: true,
-    showDisclaimer: true,
-    suppressAlerts: false,
-    tabletGain: 12.34,
-    tabletLocation: {},
-    uploadSummary: [],
-    validateProtocols: true,
-    versionCheck: false,
-    savedDevices: { tympan: [], cha: [], svantek: [] },
+    activeProtocolMeta: diskSchema.properties.activeProtocolMeta.default,
+    adminSkipMode: diskSchema.properties.adminSkipMode.default,
+    appDeveloperMode: diskSchema.properties.appDeveloperMode.default,
+    appDeveloperModeCount: diskSchema.properties.appDeveloperModeCount.default,
+    audhere: diskSchema.properties.audhere.default,
+    autoUpload: diskSchema.properties.autoUpload.default,
+    availableProtocolsMeta: diskSchema.properties.availableProtocolsMeta.default,
+    cha: diskSchema.properties.cha.default,
+    contentURI: diskSchema.properties.contentURI.default,
+    debugMode: diskSchema.properties.debugMode.default,
+    disableAudioStreaming: diskSchema.properties.disableAudioStreaming.default,
+    disableLogs: diskSchema.properties.disableLogs.default,
+    downloadInProgress: diskSchema.properties.downloadInProgress.default,
+    externalMode: diskSchema.properties.externalMode.default,
+    gitlab: diskSchema.properties.gitlab.default,
+    gitlabConfig: diskSchema.properties.gitlabConfig.default,
+    headset: diskSchema.properties.headset.default,
+    interApp: diskSchema.properties.interApp.default,
+    language: diskSchema.properties.language.default,
+    lastReleaseCheck: diskSchema.properties.lastReleaseCheck.default,
+    mediaRepos: diskSchema.properties.mediaRepos.default,
+    maxLogRows: diskSchema.properties.maxLogRows.default,
+    numLogRows: diskSchema.properties.numLogRows.default,
+    pin: diskSchema.properties.pin.default,
+    preventExports: diskSchema.properties.preventExports.default,
+    preventUploads: diskSchema.properties.preventUploads.default,
+    reloadingBrowser: diskSchema.properties.reloadingBrowser.default,
+    requireEncryptedResults: diskSchema.properties.requireEncryptedResults.default,
+    resultsMode: diskSchema.properties.resultsMode.default,
+    server: diskSchema.properties.server.default,
+    servers: diskSchema.properties.servers.default,
+    showUploadSummary: diskSchema.properties.showUploadSummary.default,
+    showDisclaimer: diskSchema.properties.showDisclaimer.default,
+    suppressAlerts: diskSchema.properties.suppressAlerts.default,
+    tabletGain: diskSchema.properties.tabletGain.default,
+    tabletLocation: diskSchema.properties.tabletLocation.default,
+    uploadSummary: diskSchema.properties.uploadSummary.default,
+    validateProtocols: diskSchema.properties.validateProtocols.default,
+    versionCheck: diskSchema.properties.versionCheck.default,
+    savedDevices: diskSchema.properties.savedDevices.default,
   };
 
   diskSubject = new BehaviorSubject<DiskInterface>(this.disk);
 
   constructor(@Inject(DOCUMENT) private readonly document: Document) {
     this.window = document.defaultView;
+    this.initializeDiskModel();
   }
 
   /**
-   * Get the disk model from local storage
-   * @summary When window and local storage are defined, grab diskModel if available, otherwise set diskModel to local storage
-   * @returns  DiskInterface: disk model saved on local storage
+   * Get a structured clone of the disk model.
+   * @returns A structured clone of the disk model.
    */
   getDisk(): DiskInterface {
+    return structuredClone(this.disk);
+  }
+
+  /**
+   * Initialize the disk model for the application.
+   */
+  initializeDiskModel(): void {
     if (this.window !== null && !_.isUndefined(this.window.localStorage)) {
-      if (this.window.localStorage.getItem('diskModel') !== null) {
-        this.disk = JSON.parse(this.window.localStorage.getItem('diskModel')!);
-      } else {
-        this.storeDisk();
+      const storedModel = this.window.localStorage.getItem('diskModel');
+      if (storedModel !== null) {
+        const parsedModel = safeParse(storedModel, diskSchema);
+        this.disk = parsedModel ?? this.disk;
       }
+      // Store the new model in case it was updated during parsing or was invalid
+      this.storeDisk();
     }
-    return this.disk;
   }
 
   /**
@@ -131,7 +103,7 @@ export class DiskModel {
     if (this.window !== null && !_.isUndefined(this.window.localStorage)) {
       this.window.localStorage.setItem('diskModel', JSON.stringify(this.disk));
     }
-    this.diskSubject.next(this.getDisk());
+    this.diskSubject.next(this.disk);
   }
 
   /**

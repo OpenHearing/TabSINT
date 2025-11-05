@@ -106,6 +106,7 @@ export class DevicesService {
         }
         this.tasks.deregister('Reconnect Device');
       }
+      this.tasks.deregister('Reconnect Device');
     } else {
       this.logger.error('Unsupported device type: ' + JSON.stringify(device.type));
     }

@@ -93,7 +93,7 @@ export const listOfTabsintDirectories: Array<string> = [
 
 export const createResultsTableSql = 'CREATE TABLE IF NOT EXISTS results (msgID INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT)';
 export const createLogsTableSql = 'CREATE TABLE IF NOT EXISTS logs (msgID INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT)';
-export const deleteSql = 'DELETE FROM logs WHERE logs.msgID IN (SELECT msgID FROM logs ORDER BY date LIMIT ?);';
+export const deleteOldLogsSql = 'DELETE FROM logs WHERE logs.msgID IN (SELECT msgID FROM logs ORDER BY msgID LIMIT ?);';
 
 export const ResultType_Threshold = 'Threshold';
 export const ResultType_Outside = 'Hearing Potentially Outside Measurable Range';
