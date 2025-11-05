@@ -6,17 +6,22 @@ import { ProtocolServer } from '../utilities/constants';
 import { ExamResults } from '../models/results/results.interface';
 import { Device } from '@capacitor/device';
 import { DiskInterface } from '../models/disk/disk.interface';
+import { Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ResultsUploadService {
   disk: DiskInterface;
+  diskSubscription: Subscription | undefined;
   constructor(
     private readonly diskModel: DiskModel,
     private readonly logger: Logger
   ) {
     this.disk = diskModel.getDisk();
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+    });
   }
 
   /**
@@ -158,7 +163,6 @@ export class ResultsUploadService {
 
       this.disk.uploadSummary.push(uploadSummaryEntry);
       this.diskModel.updateDiskModel('uploadSummary', this.disk.uploadSummary);
-      this.disk = this.diskModel.getDisk();
 
       this.logger.debug('Successfully uploaded to upload summary in disk ');
 
