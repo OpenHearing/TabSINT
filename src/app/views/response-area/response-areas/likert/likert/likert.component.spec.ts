@@ -16,16 +16,16 @@ describe('LikertComponent', () => {
   let fixture: ComponentFixture<LikertComponent>;
   let mockResultsModel: ResultsModel;
   let mockPageModel: PageModel;
-  let appModel = new AppModel();
-  let diskModel = new DiskModel(new Document());
-  let sqLite = new SqLite(appModel, diskModel);
-  let logger = new Logger(diskModel, sqLite);
+  const appModel = new AppModel();
+  const diskModel = new DiskModel(new Document());
+  const sqLite = new SqLite(appModel, diskModel);
+  const logger = new Logger(diskModel, sqLite);
   let devices: DevicesModel;
-  let version = new VersionModel(logger);
+  const version = new VersionModel(logger);
 
   beforeEach(async () => {
     devices = new DevicesModel(logger);
-    mockResultsModel = new ResultsModel(devices, version);
+    mockResultsModel = new ResultsModel(devices, version, logger);
 
     mockPageModel = new PageModel();
     mockPageModel.currentPage = {

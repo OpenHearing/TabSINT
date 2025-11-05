@@ -63,11 +63,11 @@ export class SoftwareConfigComponent {
     try {
       this.version = await this.versionModel.getVersion();
     } catch (error) {
-      this.logger.error('' + error);
+      this.logger.error(JSON.stringify(error));
     }
   }
 
   toggleAppDeveloperMode() {
-    console.log('toggleAppDeveloperMode');
+    this.logger.debug('toggleAppDeveloperMode');
   }
 }

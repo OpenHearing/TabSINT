@@ -153,8 +153,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
    * Function to be called by ngOnDestroy to handle any asynchronous operations.
    */
   private async asyncNgOnDestroy(): Promise<void> {
-    const resp = await this.devicesService.abortExams(this.device!);
-    this.logger.debug('resp from tympan after fpl calibration exam abort exams:' + resp);
+    await this.devicesService.abortExams(this.device!);
   }
 
   async startWAIExam() {
@@ -180,7 +179,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
         ReturnResultData: this.returnResultData,
       };
       this.stateModel.updateState({ isSubmittable: false });
-      let resp = await this.devicesService.queueExam(this.device, 'WAI', examProperties);
+      const resp = await this.devicesService.queueExam(this.device, 'WAI', examProperties);
       if (resp![1] != 'ERROR') {
         await this.waitForWAIExamCompletion();
       }
@@ -195,7 +194,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
       if (this.shouldAbort) return;
 
       this.isRequestingResults = true;
-      let resp = await this.devicesService.requestResults(this.device!);
+      const resp = await this.devicesService.requestResults(this.device!);
       this.isRequestingResults = false;
 
       if (this.shouldAbort) return;

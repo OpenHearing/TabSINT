@@ -121,8 +121,8 @@ export class ResultsService {
    * @param result Partial or completed current exam result
    */
   async backup(result: ExamResults) {
-    let filename = constructFilename(this.devices.uuid.slice(-6), this.protocol.activeProtocol?.resultFilename, result.testDateTime, 'json');
-    let dir = '.tabsint-results-backup/' + this.protocol.activeProtocol?.name + '/';
+    const filename = constructFilename(this.devices.uuid.slice(-6), this.protocol.activeProtocol?.resultFilename, result.testDateTime, 'json');
+    const dir = '.tabsint-results-backup/' + this.protocol.activeProtocol?.name + '/';
 
     try {
       await this.fileService.writeFile(dir + filename, JSON.stringify(result));
@@ -145,7 +145,7 @@ export class ResultsService {
    * @param index number: index of the result
    */
   async exportSingleResult(index: number) {
-    let result = await this.sqLite.getSingleResult(index);
+    const result = await this.sqLite.getSingleResult(index);
     await this.writeResultToFile(JSON.parse(result[0]));
     await this.sqLite.deleteSingleResult(index);
   }
@@ -157,7 +157,7 @@ export class ResultsService {
    * @param result exam result
    */
   async writeResultToFile(result: ExamResults) {
-    let filename = constructFilename(this.devices.uuid.slice(-6), this.protocol.activeProtocol?.resultFilename, result.testDateTime, '.json');
+    const filename = constructFilename(this.devices.uuid.slice(-6), this.protocol.activeProtocol?.resultFilename, result.testDateTime, '.json');
     let dir = this.disk.servers.localServer.resultsDir ? this.disk.servers.localServer.resultsDir : 'tabsint-results';
     dir = dir + '/' + this.protocol.activeProtocol?.name + '/';
     await this.fileService.writeFile(dir + filename, JSON.stringify(result));

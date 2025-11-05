@@ -8,7 +8,6 @@ import { StateInterface } from '../../../../models/state/state.interface';
 import { StateModel } from '../../../../models/state/state.service';
 import { ProtocolModel } from '../../../../models/protocol/protocol-model.service';
 import { ChoiceInterface, MultipleChoiceInterface } from './multiple-choice.interface';
-import { Logger } from '../../../../services/logger.service';
 import { Subscription } from 'rxjs';
 import { PageInterface } from '../../../../models/page/page.interface';
 import { PageModel } from '../../../../models/page/page.service';
@@ -29,7 +28,6 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
   resultsSubscription: Subscription | undefined;
 
   constructor(
-    private readonly logger: Logger,
     private readonly resultsModel: ResultsModel,
     private readonly stateModel: StateModel,
     private readonly pageModel: PageModel,
@@ -77,7 +75,6 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
               text: updatedMultipleChoiceResponseArea.other,
             });
           }
-          this.logger.debug('choices for multiple-choice responseArea' + JSON.stringify(this.choices));
         }
       }
     });

@@ -57,7 +57,6 @@ export class SingleResultModalComponent implements OnInit, OnDestroy {
     const result = await this.resultsUploadService.uploadResult(this.singleExamResult!);
 
     if (result.success) {
-      this.logger.debug(result.message);
       this.delete();
       this.notifications.alert({
         title: 'Success',
@@ -78,7 +77,7 @@ export class SingleResultModalComponent implements OnInit, OnDestroy {
           type: DialogType.Alert,
         });
       }
-      this.logger.error(result.message);
+      this.logger.error('Error uploading to Gitlab: ' + result.message);
     }
   }
 

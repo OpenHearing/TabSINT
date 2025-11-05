@@ -16,7 +16,7 @@ import { StateModel } from '../models/state/state.service';
 import { ProtocolModel } from '../models/protocol/protocol-model.service';
 import { PageModel } from '../models/page/page.service';
 
-import { DialogType, ExamState } from '../utilities/constants';
+import { DialogType, ExamState, AppState } from '../utilities/constants';
 import { Notifications } from '../services/notifications.service';
 import { Logger } from '../services/logger.service';
 import { calculateElapsedTime, checkForSpecialReference, getDefaultResponseRequired } from '../utilities/exam-helper-functions';
@@ -98,10 +98,7 @@ export class ExamService {
   submitDefault() {
     this.resultsService.pushResults(this.results.currentPage);
     this.advancePage();
-
     this.submit = this.submitDefault;
-
-    this.logger.debug('this.results.currentExam: ' + JSON.stringify(this.results.currentExam));
   }
 
   /** Submit function for exam pages. Can be overwritten by exams.
@@ -111,12 +108,8 @@ export class ExamService {
     this.submitDefault();
   }
 
-  skip() {
-    console.log('ExamService skip() called');
-  }
-
   back() {
-    console.log('ExamService back() called');
+    // used/overwritten by calibration-exam
   }
 
   /**
@@ -189,9 +182,9 @@ export class ExamService {
    * @models state
    */
   private advancePage() {
-    let nextExamIndex = this.state.examIndex + 1;
+    const nextExamIndex = this.state.examIndex + 1;
     this.setFlags();
-    let pageList = this.getPagesFromAdvancedLogic();
+    const pageList = this.getPagesFromAdvancedLogic();
     if (pageList != undefined) {
       if (pageList.length > 0) {
         this.addPagesToStack(pageList, nextExamIndex);
@@ -211,7 +204,7 @@ export class ExamService {
    * @models page
    */
   private getPagesFromAdvancedLogic() {
-    let pageList: PageTypes[] = [];
+    const pageList: PageTypes[] = [];
     if (this.currentPage.skipIf) {
       this.logger.debug('skipIf is not yet supported');
       // push pages to list if needed
@@ -221,7 +214,7 @@ export class ExamService {
       // push pages to list if needed
     }
     if (this.currentPage.followOns) {
-      let nextID = this.findFollowOn();
+      const nextID = this.findFollowOn();
       if (nextID != undefined) {
         if (checkForSpecialReference(nextID)) {
           this.handleSpecialReferences(nextID);
@@ -342,17 +335,17 @@ export class ExamService {
     window.scrollTo(0, 0);
   }
 
-  // Ignore the below functions for now
-
   switchToAdminView() {
-    console.log('ExamService switchToAdminView() called');
+    this.stateModel.updateState({ appState: AppState.Admin });
   }
 
+  // Ignore the below functions for now
+
   finishActivateMedia() {
-    console.log('ExamService finishActivateMedia() called');
+    // TODO: We may want to implement this when we add streaming, playSound, and/or video.
   }
 
   help() {
-    console.log('ExamService help() called');
+    // TODO: Implement this!
   }
 }

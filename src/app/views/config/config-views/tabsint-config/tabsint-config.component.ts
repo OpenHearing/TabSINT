@@ -127,10 +127,6 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
     this.diskModel.updateDiskModel('disableLogs', !this.disk.disableLogs);
   }
 
-  gainReset() {
-    console.log('gainReset pressed');
-  }
-
   async changeLocalResultsDir() {
     try {
       const result = await TabsintFs.chooseFolder();
