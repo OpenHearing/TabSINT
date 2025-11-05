@@ -104,7 +104,6 @@ export class DevicesService {
         } else {
           await this.disconnect(device);
         }
-        this.tasks.deregister('Reconnect Device');
       }
       this.tasks.deregister('Reconnect Device');
     } else {
@@ -159,7 +158,6 @@ export class DevicesService {
       this.logger.debug('requestId response: ' + JSON.stringify(resp));
       const tabsintId = this.deviceUtil.getTabsintIdFromDeviceId(device.deviceId);
       this.deviceUtil.updateDeviceInfo(tabsintId!, resp[1]);
-      // resp = structuredClone(resp);
     }
     return resp;
   }

@@ -149,7 +149,6 @@ export class TympanWrap {
   handleIncomingBytes(deviceId: string, dv: DataView) {
     const byteArray = new Uint8Array(dv.buffer.slice(dv.byteOffset, dv.byteOffset + dv.byteLength));
     const byteArrayLength = byteArray.length;
-    console.log('Bytes recieved:', dv);
 
     // Loop through every byte
     for (let i = 0; i < byteArrayLength; i++) {
@@ -157,7 +156,6 @@ export class TympanWrap {
       // check for a start character to begin accumulating bytes
       if (byteArr[0] == 5) {
         if (this.ACCUMULATE_BYTES[deviceId] === true) {
-          this.logger.debug('Bytes in ble buffer reset');
           this.clearTMPBuffer(deviceId);
         }
         this.startAccumulatingBytes(deviceId);
