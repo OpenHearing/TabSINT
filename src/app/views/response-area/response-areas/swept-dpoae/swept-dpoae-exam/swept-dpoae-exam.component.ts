@@ -15,7 +15,7 @@ import { ButtonTextService } from '../../../../../controllers/button-text.servic
 import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
 import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-dpoae.schema';
 import { NormativeDataInterface } from '../../../../../interfaces/normative-data-interface';
-import { handleOutputCalibration } from '../../../../../utilities/exam-helper-functions';
+import { handleOutputCalibration, getCurrentDatetime } from '../../../../../utilities/exam-helper-functions';
 
 @Component({
   selector: 'swept-dpoae-exam',
@@ -41,7 +41,7 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
   SNRThreshold: number = sweptDpoaeSchema.properties.SNRThreshold.default;
   windowDuration: number = sweptDpoaeSchema.properties.windowDuration.default;
   numFrequencies: number = sweptDpoaeSchema.properties.numFrequencies.default;
-  filename: string = sweptDpoaeSchema.properties.filename.default;
+  recordFileFolder: string = sweptDpoaeSchema.properties.recordFileFolder.default;
   outputRawMeasurements: boolean = sweptDpoaeSchema.properties.outputRawMeasurements.default;
   normativeDataPath: string = sweptDpoaeSchema.properties.normativeDataPath.default;
   normativeData: NormativeDataInterface[] = sweptDpoaeSchema.properties.normativeData.default;
@@ -114,7 +114,7 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
         this.SNRThreshold = responseArea.SNRThreshold ?? this.SNRThreshold;
         this.windowDuration = responseArea.windowDuration ?? this.windowDuration;
         this.numFrequencies = responseArea.numFrequencies ?? this.numFrequencies;
-        this.filename = responseArea.filename ?? this.filename;
+        this.recordFileFolder = responseArea.recordFileFolder ?? this.recordFileFolder;
         this.outputRawMeasurements = responseArea.outputRawMeasurements ?? this.outputRawMeasurements;
         this.normativeDataPath = responseArea.normativeDataPath ?? this.normativeDataPath;
         this.normativeData = responseArea.normativeData ?? this.normativeData;
@@ -200,7 +200,8 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
         SNRThreshold: this.SNRThreshold,
         WindowDuration: this.windowDuration,
         NumFrequencies: this.numFrequencies,
-        Filename: this.filename,
+        // TODO: put below line back in
+        // Filename: this.recordFileFolder + '/' + getCurrentDatetime() + '.WAV',
         OutputRawMeasurements: this.outputRawMeasurements,
       };
       await this.devicesService.queueExam(this.device, 'SweptDPOAE', examProperties);

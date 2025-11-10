@@ -13,10 +13,10 @@ export interface WAIInterface extends CommonResponseAreaInterface {
   numSweeps?: number;
   windowDuration?: number;
   numFrequencies?: number;
-  filename?: string;
+  recordFileFolder?: string;
   outputRawMeasurements?: boolean;
   outputChannel?: string;
-  inputChannels?: Array<string>;
+  inputChannels?: string[];
   aurenInsideDiameter?: number;
   aurenLength?: number;
   earCanalDiameter?: number;
@@ -31,11 +31,11 @@ export interface WAIResultsInterface {
   State: string;
   PctComplete: number;
   NumSweeps?: number;
-  Frequency?: Array<number>;
-  ImpedanceAmp?: Array<number>;
-  ImpedancePhase?: Array<number>;
-  Absorbance?: Array<number>;
-  PowerReflectance?: Array<number>; // not provided by firmware, calculated in tabsint (1-Absorbance)
+  Frequency?: number[];
+  ImpedanceAmp?: number[];
+  ImpedancePhase?: number[];
+  Absorbance?: number[];
+  PowerReflectance?: number[]; // not provided by firmware, calculated in tabsint (1-Absorbance)
   Raw?: any;
   // below are likely temporary
   A0_real?: any;

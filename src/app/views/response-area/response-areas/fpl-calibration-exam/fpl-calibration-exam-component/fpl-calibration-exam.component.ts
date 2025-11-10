@@ -17,6 +17,7 @@ import { waiSchema } from '../../../../../../schema/response-areas/wai.schema';
 import { WAIResultsInterface } from '../../wideband-acoustic-immittance/wai-exam/wai-exam.interface';
 import { StateModel } from '../../../../../models/state/state.service';
 import { StateInterface } from '../../../../../models/state/state.interface';
+import { getCurrentDatetime } from '../../../../../utilities/exam-helper-functions';
 
 @Component({
   selector: 'app-fpl-calibration-exam',
@@ -54,17 +55,17 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   sweepDuration: number = FPLcalibrationExamSchema.properties.sweepDuration.default;
   windowDuration: number = FPLcalibrationExamSchema.properties.windowDuration.default;
   numFrequencies: number = FPLcalibrationExamSchema.properties.numFrequencies.default;
+  recordFileFolder: string = FPLcalibrationExamSchema.properties.recordFileFolder.default;
 
   // WAI parameters not specified from FPL calibration response area
   sweepType: string = waiSchema.properties.sweepType.default;
   l: number = waiSchema.properties.l.default;
   numSweeps: number = waiSchema.properties.numSweeps.default;
-  inputChannels: Array<string> = waiSchema.properties.inputChannels.default;
+  inputChannels: string[] = waiSchema.properties.inputChannels.default;
   aurenInsideDiameter: number = waiSchema.properties.aurenInsideDiameter.default;
   aurenLength: number = waiSchema.properties.aurenLength.default;
   earCanalDiameter: number = waiSchema.properties.earCanalDiameter.default;
   earCanalLength: number = waiSchema.properties.earCanalLength.default;
-  filename: string = waiSchema.properties.filename.default;
   outputRawMeasurements: boolean = waiSchema.properties.outputRawMeasurements.default;
 
   // WAI parameters for FPL calibration different from WAI defaults
@@ -168,7 +169,8 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
         NumSweeps: this.numSweeps,
         WindowDuration: this.windowDuration,
         NumFrequencies: this.numFrequencies,
-        Filename: this.filename,
+        // TODO: put below line back in
+        // Filename: this.recordFileFolder + '/' + getCurrentDatetime() + '.WAV',
         OutputRawMeasurements: this.outputRawMeasurements,
         InputChannels: this.inputChannels,
         AurenInsideDiameter: this.aurenInsideDiameter,

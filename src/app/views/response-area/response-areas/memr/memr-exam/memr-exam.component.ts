@@ -18,6 +18,8 @@ import { StateInterface } from '../../../../../models/state/state.interface';
 import { StateModel } from '../../../../../models/state/state.service';
 import { pageSchema } from '../../../../../../schema/page.schema';
 import { memrSchema } from '../../../../../../schema/response-areas/memr.schema';
+import { getCurrentDatetime } from '../../../../../utilities/exam-helper-functions';
+
 
 @Component({
   selector: 'memr-exam',
@@ -303,24 +305,12 @@ export class MemrExamComponent implements OnInit, OnDestroy {
       };
       await this.devicesService.queueExam(this.device, 'PlayRecordExam', examProperties);
       this.examActive = true;
-      this.datestring = this.getCurrentDatetime();
+      this.datestring = getCurrentDatetime();
       this.startPollingResults();
     } else {
       await this.devicesService.deviceNotFound();
       this.logger.error('Error running the MEMR exam');
     }
-  }
-
-  private getCurrentDatetime() {
-    const now = new Date();
-    const ds =
-      now.getUTCFullYear() + '_' +
-      ('0' + (now.getUTCMonth() + 1)).slice(-2) + '_' +
-      ('0' + now.getUTCDate()).slice(-2) + '_' +
-      ('0' + now.getUTCHours()).slice(-2) + '_' +
-      ('0' + now.getUTCMinutes()).slice(-2) + '_' +
-      ('0' + now.getUTCSeconds()).slice(-2);
-    return ds;
   }
 
   /**
