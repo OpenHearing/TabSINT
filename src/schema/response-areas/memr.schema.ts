@@ -10,7 +10,6 @@ export const memrSchema: JSONSchemaType<MemrExamInterface> = {
     exportToCSV: { type: 'boolean', nullable: true, default: false },
     tabsintId: { type: 'string', nullable: true, default: '1' },
     soundFileName: { type: 'string', nullable: true },
-    recordFileName: { type: 'string', nullable: true },
     recordFileFolder: { type: 'string', nullable: true },
     nRepeats: { type: 'number', nullable: true },
     useMetaRMS: { type: 'boolean', nullable: true, default: false },

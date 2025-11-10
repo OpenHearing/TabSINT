@@ -483,7 +483,6 @@
           "responseArea": {
             "type": "memrResponseArea",
             "soundFileName": "/PurdueMEMR/MEMR_Sinc16_2ch.wav",
-            "recordFileName": "REC_T.WAV",
             "recordFileFolder": "MEMR_REC_WITHIN",
             "nRepeats": 5,
             "useMetaRMS": true,
@@ -513,7 +512,6 @@
           "responseArea": {
             "type": "memrResponseArea",
             "soundFileName": "/PurdueMEMR/MEMR_Sinc16_2ch.wav",
-            "recordFileName": "REC_T.WAV",
             "recordFileFolder": "MEMR_REC_BETWEEN",
             "nRepeats": 5,
             "useMetaRMS": true,

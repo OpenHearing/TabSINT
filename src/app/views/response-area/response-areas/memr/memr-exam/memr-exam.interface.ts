@@ -8,7 +8,6 @@ import { CommonResponseAreaInterface } from '../../../../../interfaces/page-defi
  * @field tabsintId Id of the device for the exam to be queued to.
  * @field exportToCSV If true, export the results to a CSV.
  * @field soundFileName Path of the wav file to play on the Tympan, including a directory.
- * @field recordFileName Name of the WAV file for recording.
  * @field recordFileFolder Folder name on the tympan where recorded sound files are stored.
  * @field nRepeats Number of repeats at the trial or block level.
  * @field useMetaRMS If true, read the metadata scalar from the wav file and apply the gain.
@@ -23,7 +22,6 @@ export interface MemrExamInterface extends CommonResponseAreaInterface {
   tabsintId?: string;
   exportToCSV?: boolean;
   soundFileName?: string;
-  recordFileName?: string;
   recordFileFolder?: string;
   nRepeats?: number;
   useMetaRMS?: boolean;
