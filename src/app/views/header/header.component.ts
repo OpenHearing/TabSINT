@@ -57,6 +57,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+    });
     this.pageSubscription = this.pageModel.currentPageSubject.subscribe((updatedPage: PageInterface) => {
       this.currentPage = updatedPage;
     });
@@ -66,6 +69,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.diskSubscription?.unsubscribe();
     this.pageSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();
   }

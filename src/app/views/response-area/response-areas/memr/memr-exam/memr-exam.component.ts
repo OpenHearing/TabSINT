@@ -239,8 +239,9 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   private async abortExam(): Promise<void> {
     // TODO: Fix below line?
     this.currentStep = 'Complete';
-    const resp = this.device ? await this.devicesService.abortExams(this.device) : undefined;
-    this.logger.debug('resp from tympan after MEMR exam abort exams:' + resp);
+    if (this.device) {
+      await this.devicesService.abortExams(this.device);
+    }
   }
 
   /**

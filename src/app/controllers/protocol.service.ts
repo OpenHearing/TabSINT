@@ -269,6 +269,7 @@ export class ProtocolService {
 
       this.diskModel.updateDiskModel('headset', this.protocolModel.activeProtocol.headset ?? 'None');
 
+      // TODO: Implement this variable for tympan? Or remove it? We should implement for CHA and Tympan!
       if (this.loading.protocol._requiresCha) {
         this.logger.debug('This exam requires the CHA, attempting to connect...');
         // setTimeout(cha.connect, 1000);

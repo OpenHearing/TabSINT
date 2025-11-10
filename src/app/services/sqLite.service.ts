@@ -9,7 +9,7 @@ import { AppInterface } from '../models/app/app.interface';
 import { AppModel } from '../models/app/app.service';
 import { DiskModel } from '../models/disk/disk.service';
 
-import { createLogsTableSql, createResultsTableSql, deleteSql } from '../utilities/constants';
+import { createLogsTableSql, createResultsTableSql, deleteOldLogsSql } from '../utilities/constants';
 
 @Injectable({
   providedIn: 'root',
@@ -44,8 +44,8 @@ export class SqLite {
     await this.initializePlugin();
     await this.initializeWeb();
     await this.open();
-    let logs = await this.getAllLogs();
-    let results = await this.getAllResults();
+    const logs = await this.getAllLogs();
+    const results = await this.getAllResults();
     this.count = {
       logs: logs?.length ?? 0,
       results: results?.length ?? 0,
@@ -67,7 +67,7 @@ export class SqLite {
 
   async getSingleResult(index: number) {
     const sql = 'SELECT data FROM results LIMIT 1 OFFSET ?';
-    let res = (await this.db.query(sql, [index])).values!.map(res => res.data);
+    const res = (await this.db.query(sql, [index])).values!.map(res => res.data);
     return JSON.parse(JSON.stringify(res));
   }
 
@@ -111,12 +111,12 @@ export class SqLite {
     const delCount = this.count['logs'] - this.disk.maxLogRows + 1;
     if (delCount > 0) {
       try {
-        await this.db.executeSet([{ statement: deleteSql, values: [delCount] }]);
+        await this.db.executeSet([{ statement: deleteOldLogsSql, values: [delCount] }]);
+        this.count['logs'] -= delCount;
+        this.countSubject.next(this.count);
       } catch (e) {
         console.log('SQLITE Error deleting ' + delCount + ' logs with error ' + e);
       }
-      this.count['logs'] -= delCount;
-      this.countSubject.next(this.count);
     }
   }
 

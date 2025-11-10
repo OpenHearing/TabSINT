@@ -117,8 +117,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
    * Function to be called by ngOnDestroy to handle any asynchronous operations.
    */
   private async asyncNgOnDestroy(): Promise<void> {
-    const resp = await this.devicesService.abortExams(this.device!);
-    this.logger.debug('resp from tympan after fpl calibration exam abort exams:' + resp);
+    await this.devicesService.abortExams(this.device!);
   }
 
   async nextStep(): Promise<void> {
@@ -187,8 +186,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     } else {
       this.examService.submitDefault();
     }
-    let resp = await this.devicesService.abortExams(this.device!);
-    this.logger.debug('resp from tympan after MRT exam abort exams:' + resp);
+    await this.devicesService.abortExams(this.device!);
   }
 
   async pauseExam() {
@@ -260,7 +258,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   }
 
   private async playTrial(mrtTrial: MrtTrialInterface) {
-    let examProperties = {
+    const examProperties = {
       SoundFileName: mrtTrial.filename,
       LeveldBSpl: mrtTrial.leveldBSpl,
       UseMetaRMS: mrtTrial.useMeta,
@@ -272,7 +270,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     return new Promise<void>((resolve, reject) => {
       const pollResults = async () => {
         try {
-          let resp = await this.devicesService.requestResults(this.device!);
+          const resp = await this.devicesService.requestResults(this.device!);
           if (typeof resp![1] === 'object' && 'State' in resp![1]) {
             if (resp![1].State === 'PLAYING') {
               setTimeout(pollResults, 500);
