@@ -239,7 +239,6 @@ export class MemrExamComponent implements OnInit, OnDestroy {
    * Abort the exam and cancel any ongoing tasks.
    */
   private async abortExam(): Promise<void> {
-    // TODO: Fix below line?
     this.currentStep = 'Complete';
     if (this.device) {
       await this.devicesService.abortExams(this.device);
@@ -346,7 +345,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     };
     if (this.device) {
       await this.devicesService.examSubmission(this.device, examProperties);
-      // TODO: Remove this below band-aid
+      // TODO: Remove this below band-aid (eventually)
       await this.delay(this.memrExamProperties.elicitorLevelArray!.length * this.memrExamProperties.bleDelayPerTrial!);
     } else {
       await this.finishExam();
@@ -382,7 +381,6 @@ export class MemrExamComponent implements OnInit, OnDestroy {
    * Poll the device for results and update progress.
    */
   private startPollingResults(): void {
-    // TODO: cancel this when done
     const pollResults = async () => {
       if (this.examActive) {
         try {
