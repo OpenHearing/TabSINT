@@ -26,7 +26,7 @@ export class ExamTestingComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.pageSubscription = this.pageModel.currentPageSubject.subscribe((updatedPage: PageInterface) => {
+    this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       this.title = updatedPage?.title;
       this.examTestingTitleClass = this.shrinkTitleIfTooLong(updatedPage?.questionMainText);
       this.questionMainText = updatedPage?.questionMainText;

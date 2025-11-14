@@ -45,7 +45,7 @@ export class ExamService {
   ) {
     this.results = this.resultsModel.getResults();
     this.currentPage = this.pageModel.getPage();
-    this.pageSubscription = this.pageModel.currentPageSubject.subscribe((updatedPage: PageInterface) => {
+    this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       this.currentPage = updatedPage;
     });
     this.state = this.stateModel.getState();
@@ -108,8 +108,16 @@ export class ExamService {
     this.submitDefault();
   }
 
+  skipDefault() {
+    // noop
+  }
+
   skip() {
-    
+    // can be used/overwritten in exams
+  }
+
+  backDefault() {
+    // noop
   }
 
   back() {
@@ -263,7 +271,7 @@ export class ExamService {
    * @models state
    */
   private startPage() {
-    this.pageModel.currentPageSubject.next(this.pageModel.stack[this.state.examIndex]);
+    this.pageModel.updatePage(this.pageModel.stack[this.state.examIndex]);
     this.resultsService.initializePageResults(this.currentPage);
     this.stateModel.updateState({
       doesResponseExist: false,
