@@ -28,7 +28,7 @@ describe('LikertComponent', () => {
     mockResultsModel = new ResultsModel(devices, version, logger);
 
     mockPageModel = new PageModel();
-    mockPageModel.currentPage = {
+    mockPageModel.updatePage({
       responseArea: {
         type: 'likertResponseArea',
         questions: ['Question 1', 'Question 2'],
@@ -38,8 +38,7 @@ describe('LikertComponent', () => {
         useEmoticons: false,
       },
       id: 'page1',
-    };
-    mockPageModel.currentPageSubject = new BehaviorSubject(mockPageModel.currentPage);
+    });
 
     await TestBed.configureTestingModule({
       declarations: [LikertComponent],
@@ -71,7 +70,7 @@ describe('LikertComponent', () => {
     expect(component.responseChange.emit).toHaveBeenCalledWith(mockResultsModel.resultsModel.currentPage.response);
   });
 
-  it('should subscribe to pageModel currentPageSubject and update questions', fakeAsync(() => {
+  it('should subscribe to pageModel currentPageObservable and update questions', fakeAsync(() => {
     const updatedPage = {
       responseArea: {
         type: 'likertResponseArea',
@@ -84,7 +83,7 @@ describe('LikertComponent', () => {
       id: 'page2',
     };
 
-    mockPageModel.currentPageSubject.next(updatedPage);
+    mockPageModel.updatePage(updatedPage);
     tick();
     fixture.detectChanges();
 

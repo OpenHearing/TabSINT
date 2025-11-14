@@ -90,7 +90,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
       this.results = updatedResults;
     });
-    this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
+    this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'mrtResponseArea') {
         setTimeout(() => {
           this.initializeResponseArea(updatedPage.responseArea as MrtExamInterface);
@@ -102,6 +102,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.asyncNgOnDestroy();
+    this.stateModel.updateState({ isSubmittable: true });
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
     this.examService.reset = this.examService.resetDefault.bind(this.examService);
     this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);

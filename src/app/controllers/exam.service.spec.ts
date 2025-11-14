@@ -26,8 +26,8 @@ describe('ExamService', () => {
   beforeEach(() => {
     mockResultsService = jasmine.createSpyObj('ResultsService', ['initializeExamResults', 'pushResults', 'save', 'initializePageResults']);
     mockResultsModel = jasmine.createSpyObj('ResultsModel', ['getResults']);
-    mockPageModel = jasmine.createSpyObj('PageModel', ['getPage', 'stack']);
-    mockPageModel.currentPageSubject = new BehaviorSubject<PageInterface>({
+    mockPageModel = jasmine.createSpyObj('PageModel', ['getPage', 'stack', 'updatePage']);
+    mockPageModel.currentPageObservable = new BehaviorSubject<PageInterface>({
       id: 'test-page',
       responseArea: {
         responseRequired: false,
@@ -39,7 +39,7 @@ describe('ExamService', () => {
       instructionText: '',
       helpText: '',
       submitText: '',
-    } as PageInterface);
+    } as PageInterface).asObservable();
 
     mockProtocolModel = jasmine.createSpyObj('ProtocolModel', ['getProtocolModel']);
     mockProtocolModel.getProtocolModel.and.returnValue({ activeProtocol: undefined });
@@ -337,7 +337,9 @@ describe('ExamService', () => {
       responseArea: { responseRequired: false, type: 'text' },
     });
 
-    mockPageModel.currentPageSubject = new BehaviorSubject<PageInterface>({
+    mockPageModel.updatePage.and.stub();
+
+    mockPageModel.currentPageObservable = new BehaviorSubject<PageInterface>({
       id: 'test-page',
       responseArea: {
         responseRequired: false,
@@ -349,7 +351,7 @@ describe('ExamService', () => {
       instructionText: '',
       helpText: '',
       submitText: '',
-    } as PageInterface);
+    } as PageInterface).asObservable();
 
     mockPageModel.stack = [];
 

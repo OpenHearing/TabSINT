@@ -79,7 +79,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
       this.results = updatedResults;
     });
-    this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
+    this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'calibrationResponseArea') {
         const calibrationResponse = updatedPage?.responseArea as CalibrationExamInterface;
         if (calibrationResponse) {
@@ -103,7 +103,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     this.examService.reset = this.examService.resetDefault.bind(this.examService);
     this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);
     this.examService.navigateToTarget = this.examService.navigateToTargetDefault.bind(this.examService);
-    this.examService.back = this.examService.back.bind(this.examService);
+    this.examService.back = this.examService.backDefault.bind(this.examService);
     this.buttonTextService.updateButtonText('Submit');
 
     this.pageSubscription?.unsubscribe();

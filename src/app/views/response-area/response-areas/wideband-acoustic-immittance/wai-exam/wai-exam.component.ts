@@ -88,7 +88,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
       this.results = updatedResults;
     });
-    this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
+    this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'WAIResponseArea') {
         const responseArea = updatedPage.responseArea as WAIInterface;
         this.tabsintId = responseArea.tabsintId ?? this.tabsintId;

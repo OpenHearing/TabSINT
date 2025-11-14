@@ -103,13 +103,14 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.examActive = true;
     this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
       this.results = updatedResults;
     });
-    this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
+    this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'memrResponseArea') {
         setTimeout(() => {
           this.isAutoSubmit = updatedPage.isAutoSubmit ?? this.isAutoSubmit;
@@ -382,27 +383,25 @@ export class MemrExamComponent implements OnInit, OnDestroy {
    */
   private startPollingResults(): void {
     const pollResults = async () => {
-      if (this.examActive) {
-        try {
-          const resp = this.device ? await this.devicesService.requestResults(this.device, 30000) : undefined;
-          if (typeof resp![1] === 'object' && 'State' in resp![1] && this.knownStates.includes(resp![1].State)) {
-            if (resp![1].State === 'READY' && this.examActive) {
-              await this.handleReadyState(resp![1]);
-              if (this.currentBlockIndex < this.blockCount) {
-                setTimeout(pollResults, 500);
-              }
-            } else {
-              await this.updateExamProgress(resp![1]);
+      try {
+        let resp = this.device ? await this.devicesService.requestResults(this.device) : undefined;
+        if (typeof resp![1] === 'object' && 'State' in resp![1] && this.knownStates.includes(resp![1].State)) {
+          if (resp![1].State === 'READY') {
+            await this.handleReadyState(resp![1]);
+            if (this.currentBlockIndex < this.blockCount) {
               setTimeout(pollResults, 500);
             }
           } else {
-            this.logger.debug('In memr-exam.component.ts runExamSubmissions, unknown result: ' + resp![1]);
-            await this.finishExam();
+            await this.updateExamProgress(resp![1]);
+            setTimeout(pollResults, 500);
           }
-        } catch (error) {
-          this.logger.error('Error running exam submissions: ' + error);
+        } else {
+          this.logger.debug('In memr-exam.component.ts runExamSubmissions, unknown result: ' + resp![1]);
           await this.finishExam();
         }
+      } catch (error) {
+        this.logger.error('Error running exam submissions: ' + error);
+        await this.finishExam();
       }
     };
     setTimeout(pollResults, 500);

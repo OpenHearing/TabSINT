@@ -111,7 +111,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
     this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
-    this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
+    this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'fplCalibrationResponseArea') {
         const responseArea = updatedPage?.responseArea as FPLCalibrationExamInterface;
         this.tabsintId = responseArea.tabsintId ?? this.tabsintId;
@@ -140,7 +140,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
     this.examService.reset = this.examService.resetDefault.bind(this.examService);
     this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);
     this.examService.navigateToTarget = this.examService.navigateToTargetDefault.bind(this.examService);
-    this.examService.back = this.examService.back.bind(this.examService);
+    this.examService.back = this.examService.backDefault.bind(this.examService);
     this.buttonTextService.updateButtonText('Submit');
     this.stateModel.updateState({ isSubmittable: true });
     this.shouldAbort = true;
