@@ -18,7 +18,7 @@ export class ResponseAreaComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.pageSubscription = this.pageModel.currentPageSubject.subscribe((updatedPage: PageInterface) => {
+    this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       this.currentPage = updatedPage;
     });
   }

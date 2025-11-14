@@ -64,6 +64,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   instructions: string = 'Press submit to start the exam.';
   pctComplete: number = 0;
   blocksComplete: number = 0;
+  examActive: boolean = false;
 
   // Subscriptions
   pageSubscription: Subscription | undefined;
@@ -99,13 +100,14 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.examActive = true;
     this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
       this.results = updatedResults;
     });
-    this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
+    this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'memrResponseArea') {
         setTimeout(() => {
           this.isAutoSubmit = updatedPage.isAutoSubmit ?? this.isAutoSubmit;
@@ -118,6 +120,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.abortExam();
+    this.examActive = false;
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
     this.examService.reset = this.examService.resetDefault.bind(this.examService);
     this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);
@@ -375,6 +378,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
    */
   private startPollingResults(): void {
     const pollResults = async () => {
+      if (!this.examActive) return;
       try {
         let resp = this.device ? await this.devicesService.requestResults(this.device) : undefined;
         if (typeof resp![1] === 'object' && 'State' in resp![1] && this.knownStates.includes(resp![1].State)) {

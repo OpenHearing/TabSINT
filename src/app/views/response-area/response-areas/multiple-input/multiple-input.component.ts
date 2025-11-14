@@ -52,7 +52,7 @@ export class MultipleInputComponent implements OnInit {
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
       this.results = updatedResults;
     });
-    this.pageSubscription = this.pageModel.currentPageSubject.subscribe((updatedPage: PageInterface) => {
+    this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type == 'multipleInputResponseArea') {
         let updatedMultipleInputResponseArea = updatedPage.responseArea as MultipleInputInterface;
         if (updatedMultipleInputResponseArea) {

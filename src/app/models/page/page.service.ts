@@ -3,18 +3,28 @@ import { PageInterface } from './page.interface';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { PageDefinition } from '../../interfaces/page-definition.interface';
 import { pageInterfaceDefaults } from '../../utilities/defaults';
+import { Observable, map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PageModel {
-  currentPage: PageInterface = pageInterfaceDefaults;
+  private readonly currentPage: PageInterface = pageInterfaceDefaults;
+  private readonly currentPageSubject = new BehaviorSubject<PageInterface>(this.currentPage);
 
-  currentPageSubject = new BehaviorSubject<PageInterface>(this.currentPage);
+  currentPageObservable: Observable<PageInterface> = this.currentPageSubject.pipe(map(page => structuredClone(page)));
 
   stack: PageDefinition[] = [];
 
   getPage(): PageInterface {
-    return this.currentPage;
+    return structuredClone(this.currentPageSubject.value);
+  }
+
+  /**
+   * Update the current page subject.
+   * @param page The new page to update the current page subject with.
+   */
+  updatePage(page: PageInterface): void {
+    this.currentPageSubject.next(structuredClone(page));
   }
 }
