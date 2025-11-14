@@ -31,7 +31,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
   numSweeps: number = waiSchema.properties.numSweeps.default;
   windowDuration: number = waiSchema.properties.windowDuration.default;
   numFrequencies: number = waiSchema.properties.numFrequencies.default;
-  recordFileFolder: string = waiSchema.properties.recordFileFolder.default;
+  recordFileFolder: string | undefined = waiSchema.properties.recordFileFolder.default;
   outputRawMeasurements: boolean = waiSchema.properties.outputRawMeasurements.default;
   outputChannel: string = waiSchema.properties.outputChannel.default;
   inputChannels: string[] = waiSchema.properties.inputChannels.default;
@@ -122,7 +122,6 @@ export class WAIExamComponent implements OnInit, OnDestroy {
           ['Number of Sweeps', this.numSweeps.toString()],
           ['Window Duration [s]', this.windowDuration.toString()],
           ['Number of Frequencies', this.numFrequencies.toString()],
-          ['recordFileFolder', this.recordFileFolder.toString()],
           ['OutputRawMeasurements', this.outputRawMeasurements.toString()],
         ]);
 
@@ -188,8 +187,6 @@ export class WAIExamComponent implements OnInit, OnDestroy {
         NumSweeps: this.numSweeps,
         WindowDuration: this.windowDuration,
         NumFrequencies: this.numFrequencies,
-        // TODO: put below line back in
-        // Filename: this.recordFileFolder + '/' + getCurrentDatetime() + '.WAV',
         OutputRawMeasurements: this.outputRawMeasurements,
         OutputChannel: handleOutputCalibration(this.outputChannel, this.outputCalibrationType),
         InputChannels: this.inputChannels,
@@ -199,6 +196,9 @@ export class WAIExamComponent implements OnInit, OnDestroy {
         EarCanalLength: this.earCanalLength,
         WriteFPLCalibration: this.writeFPLCalibration,
       };
+      if (this.recordFileFolder != undefined) {
+        examProperties['Filename'] = this.recordFileFolder + '/' + getCurrentDatetime() + '.WAV';
+      }
       await this.devicesService.queueExam(this.device, 'WAI', examProperties);
     } else {
       await this.devicesService.deviceNotFound();

@@ -55,7 +55,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   sweepDuration: number = FPLcalibrationExamSchema.properties.sweepDuration.default;
   windowDuration: number = FPLcalibrationExamSchema.properties.windowDuration.default;
   numFrequencies: number = FPLcalibrationExamSchema.properties.numFrequencies.default;
-  recordFileFolder: string = FPLcalibrationExamSchema.properties.recordFileFolder.default;
+  recordFileFolder: string | undefined = FPLcalibrationExamSchema.properties.recordFileFolder.default;
 
   // WAI parameters not specified from FPL calibration response area
   sweepType: string = waiSchema.properties.sweepType.default;
@@ -169,8 +169,6 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
         NumSweeps: this.numSweeps,
         WindowDuration: this.windowDuration,
         NumFrequencies: this.numFrequencies,
-        // TODO: put below line back in
-        // Filename: this.recordFileFolder + '/' + getCurrentDatetime() + '.WAV',
         OutputRawMeasurements: this.outputRawMeasurements,
         InputChannels: this.inputChannels,
         AurenInsideDiameter: this.aurenInsideDiameter,
@@ -180,6 +178,9 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
         WriteFPLCalibration: this.writeFPLCalibration,
         ReturnResultData: this.returnResultData,
       };
+      if (this.recordFileFolder != undefined) {
+        examProperties['Filename'] = this.recordFileFolder + '/' + getCurrentDatetime() + '.WAV';
+      }
       this.stateModel.updateState({ isSubmittable: false });
       const resp = await this.devicesService.queueExam(this.device, 'WAI', examProperties);
       if (resp![1] != 'ERROR') {

@@ -19,7 +19,7 @@ export const waiSchema: JSONSchemaType<WAIInterface> = {
     numSweeps: { type: 'number', nullable: true, default: 10 },
     windowDuration: { type: 'number', nullable: true, default: 0.125, description: 'Span of analysis windows for least-squares fit. In seconds.' },
     numFrequencies: { type: 'number', nullable: true, default: 128 },
-    recordFileFolder: { type: 'string', nullable: true, default: 'wai', description: 'Directory to store full waveform' },
+    recordFileFolder: { type: 'string', nullable: true, default: undefined, description: 'Directory to store full waveform' },
     outputRawMeasurements: { type: 'boolean', nullable: true, default: false },
     outputChannel: { type: 'string', nullable: true, default: 'HPL0' },
     inputChannels: {

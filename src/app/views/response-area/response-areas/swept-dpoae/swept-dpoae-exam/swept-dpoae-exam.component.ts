@@ -41,7 +41,7 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
   SNRThreshold: number = sweptDpoaeSchema.properties.SNRThreshold.default;
   windowDuration: number = sweptDpoaeSchema.properties.windowDuration.default;
   numFrequencies: number = sweptDpoaeSchema.properties.numFrequencies.default;
-  recordFileFolder: string = sweptDpoaeSchema.properties.recordFileFolder.default;
+  recordFileFolder: string | undefined = sweptDpoaeSchema.properties.recordFileFolder.default;
   outputRawMeasurements: boolean = sweptDpoaeSchema.properties.outputRawMeasurements.default;
   normativeDataPath: string = sweptDpoaeSchema.properties.normativeDataPath.default;
   normativeData: NormativeDataInterface[] = sweptDpoaeSchema.properties.normativeData.default;
@@ -183,7 +183,7 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
   private async beginExam() {
     this.device = this.deviceUtil.getDeviceFromTabsintId(this.tabsintId);
     if (this.device) {
-      const examProperties = {
+      const examProperties: any = {
         OutputChannel1: handleOutputCalibration(this.outputChannel1, this.outputCalibrationType),
         OutputChannel2: handleOutputCalibration(this.outputChannel2, this.outputCalibrationType),
         InputChannel: this.inputChannel,
@@ -200,10 +200,11 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
         SNRThreshold: this.SNRThreshold,
         WindowDuration: this.windowDuration,
         NumFrequencies: this.numFrequencies,
-        // TODO: put below line back in
-        // Filename: this.recordFileFolder + '/' + getCurrentDatetime() + '.WAV',
         OutputRawMeasurements: this.outputRawMeasurements,
       };
+      if (this.recordFileFolder != undefined) {
+        examProperties['Filename'] = this.recordFileFolder + '/' + getCurrentDatetime() + '.WAV';
+      }
       await this.devicesService.queueExam(this.device, 'SweptDPOAE', examProperties);
     } else {
       await this.devicesService.deviceNotFound();

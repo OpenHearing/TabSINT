@@ -38,7 +38,7 @@ export const sweptDpoaeSchema: JSONSchemaType<SweptDpoaeInterface> = {
       description:
         'Number of frequencies in the returned data. Spaced across the range of F2, F1, and Fdp values in the sweep. Frequencies are spaced using the same function as the SweepType.',
     },
-    recordFileFolder: { type: 'string', nullable: true, default: 'swept-dpoae', description: 'Directory to store full waveform' },
+    recordFileFolder: { type: 'string', nullable: true, default: undefined, description: 'Directory to store full waveform' },
     outputRawMeasurements: { type: 'boolean', nullable: true, default: false },
     showResults: { type: 'boolean', nullable: true, default: true },
     normativeDataPath: { type: 'string', nullable: true, default: '' },
