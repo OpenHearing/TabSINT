@@ -66,7 +66,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   instructions: string = 'Press submit to start the exam.';
   pctComplete: number = 0;
   blocksComplete: number = 0;
-  examActive: boolean = true;
+  examActive: boolean = false;
   datestring: string | undefined;
 
   // Subscriptions
