@@ -102,6 +102,7 @@ export class TympanWrap {
 
   async write(deviceId: string, msg: string, chunkSize: number) {
     const msg_to_write = this.msgToDataView(msg);
+    this.logger.debug('Writing message to tympan: ' + msg);
     const original_msg_buffer: ArrayBufferLike = msg_to_write.buffer;
     const byteOffset: number = msg_to_write.byteOffset;
     const byteLength: number = msg_to_write.byteLength;

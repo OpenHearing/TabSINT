@@ -18,6 +18,8 @@ import { StateInterface } from '../../../../../models/state/state.interface';
 import { StateModel } from '../../../../../models/state/state.service';
 import { pageSchema } from '../../../../../../schema/page.schema';
 import { memrSchema } from '../../../../../../schema/response-areas/memr.schema';
+import { getCurrentDatetime } from '../../../../../utilities/exam-helper-functions';
+
 
 @Component({
   selector: 'memr-exam',
@@ -36,7 +38,6 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     tabsintId: memrSchema.properties.tabsintId.default,
     exportToCSV: memrSchema.properties.exportToCSV.default,
     soundFileName: memrSchema.properties.soundFileName.default,
-    recordFileName: memrSchema.properties.recordFileName.default,
     recordFileFolder: memrSchema.properties.recordFileFolder.default,
     nRepeats: memrSchema.properties.nRepeats.default,
     useMetaRMS: memrSchema.properties.useMetaRMS.default,
@@ -46,6 +47,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     submissionIntervalMs: memrSchema.properties.submissionIntervalMs.default,
     probeOutputChannel: memrSchema.properties.probeOutputChannel.default,
     elicitorOutputChannel: memrSchema.properties.elicitorOutputChannel.default,
+    bleDelayPerTrial: memrSchema.properties.bleDelayPerTrial.default,
   };
   inputParameterMap: Map<string, string> = new Map(); // Parameter map to display to the user in ready state
   trialsPerBlock: number = 0;
@@ -65,6 +67,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   pctComplete: number = 0;
   blocksComplete: number = 0;
   examActive: boolean = false;
+  datestring: string | undefined;
 
   // Subscriptions
   pageSubscription: Subscription | undefined;
@@ -200,7 +203,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
       Array.isArray(this.memrResults.RecordedLeq_dBSPL) &&
       index < this.memrResults.RecordedLeq_dBSPL.length
     ) {
-      return this.memrResults.RecordedLeq_dBSPL[index].toFixed(1);
+      return Math.max(this.memrResults.RecordedLeq_dBSPL[index], 0).toFixed(1);
     }
     return 'N/A';
   }
@@ -212,7 +215,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
    */
   getRecordedLevelPeak(index: number): string {
     if (this.memrResults?.RecordedPeak_dBP && Array.isArray(this.memrResults.RecordedPeak_dBP) && index < this.memrResults.RecordedPeak_dBP.length) {
-      return this.memrResults.RecordedPeak_dBP[index].toFixed(1);
+      return Math.max(this.memrResults.RecordedPeak_dBP[index], 0).toFixed(1);
     }
     return 'N/A';
   }
@@ -239,7 +242,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   private async abortExam(): Promise<void> {
     this.currentStep = 'Complete';
     if (this.device) {
-      await this.devicesService.abortExams(this.device)
+      await this.devicesService.abortExams(this.device);
     }
   }
 
@@ -279,7 +282,6 @@ export class MemrExamComponent implements OnInit, OnDestroy {
       ['Record Channels', JSON.stringify(this.memrExamProperties.recordChannels ?? memrSchema.properties.recordChannels.default)],
       ['Gain Scale', this.memrExamProperties.useMetaRMS?.toString() ?? ''],
       ['Sound File', this.memrExamProperties.soundFileName?.toString() ?? ''],
-      ['Results File', this.memrExamProperties.recordFileName?.toString() ?? ''],
       ['Results Folder', this.memrExamProperties.recordFileFolder?.toString() ?? ''],
     ]);
   }
@@ -302,6 +304,8 @@ export class MemrExamComponent implements OnInit, OnDestroy {
         RecordChannels: this.memrExamProperties.recordChannels,
       };
       await this.devicesService.queueExam(this.device, 'PlayRecordExam', examProperties);
+      this.examActive = true;
+      this.datestring = getCurrentDatetime();
       this.startPollingResults();
     } else {
       await this.devicesService.deviceNotFound();
@@ -327,22 +331,23 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     // Compute block data based on change type (2D Array Data: CH 0: Elicitor, CH 1: Probe)
     const blockData = this.isWithinBlock()
       ? this.memrExamProperties.elicitorLevelArray?.map(value => [value, this.memrExamProperties.probeStimulusLevel])
-      : Array(this.memrExamProperties.nRepeats).fill([
+      : new Array(this.memrExamProperties.nRepeats).fill([
           this.memrExamProperties.elicitorLevelArray?.at(this.currentBlockIndex),
           this.memrExamProperties.probeStimulusLevel,
         ]);
 
-    let examProperties: MemrExamSubmissionInterface = {
+    const examProperties: MemrExamSubmissionInterface = {
       SoundFileName: this.memrExamProperties.soundFileName,
       UseMetaRMS: this.memrExamProperties.useMetaRMS,
       NumTrials: this.trialsPerBlock,
       Level_dBSpl: blockData,
       RecordFileName: this.getRecordBlockPath(this.currentBlockIndex),
       SubmissionInterval_ms: this.memrExamProperties.submissionIntervalMs,
-      // NumOutputChans: this.memrExamProperties.probeOutputChannel?.length
     };
     if (this.device) {
       await this.devicesService.examSubmission(this.device, examProperties);
+      // TODO: Remove this below band-aid (eventually)
+      await this.delay(this.memrExamProperties.elicitorLevelArray!.length * this.memrExamProperties.bleDelayPerTrial!);
     } else {
       await this.finishExam();
       this.logger.error('Error in the examSubmission, finishing exam.');
@@ -378,7 +383,6 @@ export class MemrExamComponent implements OnInit, OnDestroy {
    */
   private startPollingResults(): void {
     const pollResults = async () => {
-      if (!this.examActive) return;
       try {
         let resp = this.device ? await this.devicesService.requestResults(this.device) : undefined;
         if (typeof resp![1] === 'object' && 'State' in resp![1] && this.knownStates.includes(resp![1].State)) {
@@ -400,7 +404,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
         await this.finishExam();
       }
     };
-    pollResults();
+    setTimeout(pollResults, 500);
   }
 
   /**
@@ -416,7 +420,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
    */
   private getRecordBlockPath(index: number): string {
     const recordFolder = this.memrExamProperties.recordFileFolder ?? '';
-    const recordFileName = this.memrExamProperties.recordFileName ?? '';
-    return this.paths.join(recordFolder, `blk${index.toString().padStart(3, '0')}`, recordFileName);
+    const recordFileName = this.datestring + '/' + 'REC_B' + `${index.toString().padStart(3, '0')}` + '_T.WAV';
+    return this.paths.join(recordFolder, recordFileName);
   }
 }

@@ -51,3 +51,15 @@ export function handleOutputCalibration(outputChannel: string, outputCalibration
   }
   return newOutputChannel;
 }
+
+export function getCurrentDatetime() {
+  const now = new Date();
+  const ds =
+    now.getUTCFullYear() + '_' +
+    ('0' + (now.getUTCMonth() + 1)).slice(-2) + '_' +
+    ('0' + now.getUTCDate()).slice(-2) + '_' +
+    ('0' + now.getUTCHours()).slice(-2) + '_' +
+    ('0' + now.getUTCMinutes()).slice(-2) + '_' +
+    ('0' + now.getUTCSeconds()).slice(-2);
+  return ds;
+}

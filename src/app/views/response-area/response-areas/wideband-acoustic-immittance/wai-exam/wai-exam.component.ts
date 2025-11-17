@@ -13,7 +13,7 @@ import { NormativeDataInterface } from '../../../../../interfaces/normative-data
 import { ButtonTextService } from '../../../../../controllers/button-text.service';
 import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
 import { waiSchema } from '../../../../../../schema/response-areas/wai.schema';
-import { handleOutputCalibration } from '../../../../../utilities/exam-helper-functions';
+import { handleOutputCalibration, getCurrentDatetime } from '../../../../../utilities/exam-helper-functions';
 
 @Component({
   selector: 'wai-exam',
@@ -31,10 +31,10 @@ export class WAIExamComponent implements OnInit, OnDestroy {
   numSweeps: number = waiSchema.properties.numSweeps.default;
   windowDuration: number = waiSchema.properties.windowDuration.default;
   numFrequencies: number = waiSchema.properties.numFrequencies.default;
-  filename: string = waiSchema.properties.filename.default;
+  recordFileFolder: string | undefined = waiSchema.properties.recordFileFolder.default;
   outputRawMeasurements: boolean = waiSchema.properties.outputRawMeasurements.default;
   outputChannel: string = waiSchema.properties.outputChannel.default;
-  inputChannels: Array<string> = waiSchema.properties.inputChannels.default;
+  inputChannels: string[] = waiSchema.properties.inputChannels.default;
   aurenInsideDiameter: number = waiSchema.properties.aurenInsideDiameter.default;
   aurenLength: number = waiSchema.properties.aurenLength.default;
   earCanalDiameter: number = waiSchema.properties.earCanalDiameter.default;
@@ -101,7 +101,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
         this.numSweeps = responseArea.numSweeps ?? this.numSweeps;
         this.windowDuration = responseArea.windowDuration ?? this.windowDuration;
         this.numFrequencies = responseArea.numFrequencies ?? this.numFrequencies;
-        this.filename = responseArea.filename ?? this.filename;
+        this.recordFileFolder = responseArea.recordFileFolder ?? this.recordFileFolder;
         this.outputRawMeasurements = responseArea.outputRawMeasurements ?? this.outputRawMeasurements;
         this.outputChannel = responseArea.outputChannel ?? this.outputChannel;
         this.inputChannels = responseArea.inputChannels ?? this.inputChannels;
@@ -122,7 +122,6 @@ export class WAIExamComponent implements OnInit, OnDestroy {
           ['Number of Sweeps', this.numSweeps.toString()],
           ['Window Duration [s]', this.windowDuration.toString()],
           ['Number of Frequencies', this.numFrequencies.toString()],
-          ['Filename', this.filename.toString()],
           ['OutputRawMeasurements', this.outputRawMeasurements.toString()],
         ]);
 
@@ -188,7 +187,6 @@ export class WAIExamComponent implements OnInit, OnDestroy {
         NumSweeps: this.numSweeps,
         WindowDuration: this.windowDuration,
         NumFrequencies: this.numFrequencies,
-        Filename: this.filename,
         OutputRawMeasurements: this.outputRawMeasurements,
         OutputChannel: handleOutputCalibration(this.outputChannel, this.outputCalibrationType),
         InputChannels: this.inputChannels,
@@ -198,6 +196,9 @@ export class WAIExamComponent implements OnInit, OnDestroy {
         EarCanalLength: this.earCanalLength,
         WriteFPLCalibration: this.writeFPLCalibration,
       };
+      if (this.recordFileFolder != undefined) {
+        examProperties['Filename'] = this.recordFileFolder + '/' + getCurrentDatetime() + '.WAV';
+      }
       await this.devicesService.queueExam(this.device, 'WAI', examProperties);
     } else {
       await this.devicesService.deviceNotFound();

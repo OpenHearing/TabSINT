@@ -21,7 +21,7 @@ export interface SweptDpoaeInterface extends CommonResponseAreaInterface {
   SNRThreshold?: number;
   windowDuration?: number;
   numFrequencies?: number;
-  filename?: string;
+  recordFileFolder?: string;
   outputRawMeasurements?: boolean;
   showResults?: boolean;
   normativeDataPath?: string;

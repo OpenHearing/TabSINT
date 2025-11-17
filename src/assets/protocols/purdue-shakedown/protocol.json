@@ -2313,7 +2313,6 @@
           "responseArea": {
             "type": "memrResponseArea",
             "soundFileName": "900Hz_1000Hz_Tones_Level_-3dBrms.wav",
-            "recordFileName": "REC.WAV",
             "recordFileFolder": "MEMR",
             "nRepeats": 2,
             "useMetaRMS": false,
@@ -2342,7 +2341,6 @@
           "responseArea": {
             "type": "memrResponseArea",
             "soundFileName": "900Hz_1000Hz_Tones_Level_-3dBrms.wav",
-            "recordFileName": "REC.WAV",
             "recordFileFolder": "MEMR",
             "nRepeats": 2,
             "useMetaRMS": false,

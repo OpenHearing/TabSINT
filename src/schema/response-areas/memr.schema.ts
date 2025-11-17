@@ -10,8 +10,7 @@ export const memrSchema: JSONSchemaType<MemrExamInterface> = {
     exportToCSV: { type: 'boolean', nullable: true, default: false },
     tabsintId: { type: 'string', nullable: true, default: '1' },
     soundFileName: { type: 'string', nullable: true },
-    recordFileName: { type: 'string', nullable: true },
-    recordFileFolder: { type: 'string', nullable: true },
+    recordFileFolder: { type: 'string', nullable: true, default: 'memr', description: 'Directory to store full waveform' },
     nRepeats: { type: 'number', nullable: true },
     useMetaRMS: { type: 'boolean', nullable: true, default: false },
     elicitorLevelChange: { type: 'string', nullable: true, enum: ['Within Block', 'Between Blocks'] },
@@ -55,6 +54,7 @@ export const memrSchema: JSONSchemaType<MemrExamInterface> = {
       description:
         'Channels recorded to a wavefile, typically these can are input channels but can also be output channels. Defaults are designed for Auren probe, for testing without a Tympan Shield, use: ["LEFT:BOARD_MIC", "LEFT:JACK_AS_LINEIN", "HPL0", "HPR0"]',
     },
+    bleDelayPerTrial: { type: 'number', nullable: true, default: 4000 },
   },
   required: ['type'],
 };

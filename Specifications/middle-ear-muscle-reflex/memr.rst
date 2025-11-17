@@ -124,8 +124,6 @@ GUI
      - [SoundFileName]
    * - Results File Folder
      - [RecordFileFolder]
-   * - Results File name
-     - [RecordFileName]
 
 * There should be a `Submit` button to initiate the exam. The `Submit` button becomes inactive after initating the exam.
 * After initiating the exam, a progress bar appears along with a reported numerical value for the number of blocks completed and a progress bar displaying the total (accumulated) number of trials played. The `Submit` button is replaced with an `Abort` button (See Figure 2 below) should early termination of the exam be required.

@@ -49,7 +49,10 @@
                 "id": "Swept DPOAE Exam (FPL)"
               },
               {
-                "id": "WAI Exam"
+                "id": "WAI Exam (SPL)"
+              },
+              {
+                "id": "WAI Exam (FPL)"
               },
               {
                 "id": "MRT Exam"
@@ -115,9 +118,15 @@
               }
             },
             {
-              "conditional": "result.response=='WAI Exam'",
+              "conditional": "result.response=='WAI Exam (SPL)'",
               "target": {
-                "reference": "WAIExam"
+                "reference": "WAIExamSPL"
+              }
+            },
+            {
+              "conditional": "result.response=='WAI Exam (FPL)'",
+              "target": {
+                "reference": "WAIExamFPL"
               }
             },
             {
@@ -431,11 +440,11 @@
       ]
     },
     {
-      "protocolId": "WAIExam",
+      "protocolId": "WAIExamSPL",
       "pages": [
         {
           "id": "wai_001",
-          "title": "Wideband Acoustic Immittance (WAI)",
+          "title": "Wideband Acoustic Immittance (WAI) - SPL",
           "responseArea": {
             "type": "WAIResponseArea",
             "fStart": 500,
@@ -443,6 +452,32 @@
             "normativeAbsorbanceDataPath": "wai-normative-absorbance-data-human.xlsx",
             "outputCalibrationType": "SPL",
             "outputChannel": "HPL1",
+            "numFrequencies": 128,
+            "numSweeps": 5,
+            "windowDuration": 0.1,
+            "sweepDuration": 6.0,
+            "inputChannels": ["EPSHIELD_RIGHT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2", "EPSHIELD_LEFT_PDM_MIC1"]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "WAIExamFPL",
+      "pages": [
+        {
+          "id": "wai_002",
+          "title": "Wideband Acoustic Immittance (WAI) - FPL",
+          "responseArea": {
+            "type": "WAIResponseArea",
+            "fStart": 500,
+            "fEnd": 4000,
+            "normativeAbsorbanceDataPath": "wai-normative-absorbance-data-human.xlsx",
+            "outputCalibrationType": "FPL",
+            "outputChannel": "FPL/HPL1",
             "numFrequencies": 128,
             "numSweeps": 5,
             "windowDuration": 0.1,
@@ -482,18 +517,18 @@
           "isAutoSubmit": false,
           "responseArea": {
             "type": "memrResponseArea",
-            "soundFileName": "/MEMR_TEST/Tones_900Hz_1000Hz_Level_-15dBrms_-15dBrms_MetaScaler_120dB_120dB.wav",
-            "recordFileName": "REC.WAV",
-            "recordFileFolder": "MEMR_TEST",
-            "nRepeats": 2,
+            "soundFileName": "/PurdueMEMR/MEMR_Sinc16_2ch.wav",
+            "recordFileFolder": "MEMR_REC_WITHIN",
+            "nRepeats": 5,
             "useMetaRMS": true,
             "elicitorLevelChange": "Within Block",
-            "elicitorLevelArray": [70.0, 71.0, 72.0],
-            "probeStimulusLevel": 10,
+            "elicitorLevelArray": [70.0, 74.0, 78.0, 82.0, 86.0],
+            "probeStimulusLevel": 70,
             "submissionIntervalMs": 500,
-            "probeOutputChannel": ["HPR1"],
-            "elicitorOutputChannel": ["HPL1"],
-            "recordChannels": ["EPSHIELD_LEFT_PDM_MIC1", "EPSHIELD_RIGHT_PDM_MIC1"]
+            "probeOutputChannel": ["FPL/HPR1"],
+            "elicitorOutputChannel": ["FPL/HPL1"],
+            "recordChannels": ["FPL/HPR1", "EPSHIELD_LEFT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2", "EPSHIELD_RIGHT_PDM_MIC1"],
+            "bleDelayPerTrial": 4000
           }
         },
         {
@@ -511,18 +546,18 @@
           "isAutoSubmit": false,
           "responseArea": {
             "type": "memrResponseArea",
-            "soundFileName": "900Hz_1000Hz_Tones_Level_-3dBrms.wav",
-            "recordFileName": "REC.WAV",
-            "recordFileFolder": "MEMR",
-            "nRepeats": 2,
-            "useMetaRMS": false,
+            "soundFileName": "/PurdueMEMR/MEMR_Sinc16_2ch.wav",
+            "recordFileFolder": "MEMR_REC_BETWEEN",
+            "nRepeats": 5,
+            "useMetaRMS": true,
             "elicitorLevelChange": "Between Blocks",
-            "elicitorLevelArray": [70.0, 71.0, 72.0],
-            "probeStimulusLevel": 10,
+            "elicitorLevelArray": [70.0, 74.0, 78.0, 82.0, 86.0],
+            "probeStimulusLevel": 70,
             "submissionIntervalMs": 500,
-            "probeOutputChannel": ["HPR1"],
-            "elicitorOutputChannel": ["HPL1"],
-            "recordChannels": ["EPSHIELD_LEFT_PDM_MIC1", "EPSHIELD_RIGHT_PDM_MIC1"]
+            "probeOutputChannel": ["FPL/HPR1"],
+            "elicitorOutputChannel": ["FPL/HPL1"],
+            "recordChannels": ["FPL/HPR1", "EPSHIELD_LEFT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2", "EPSHIELD_RIGHT_PDM_MIC1"],
+            "bleDelayPerTrial": 4000
           }
         },
         {
