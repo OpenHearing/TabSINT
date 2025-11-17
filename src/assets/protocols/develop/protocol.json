@@ -49,7 +49,10 @@
                 "id": "Swept DPOAE Exam (FPL)"
               },
               {
-                "id": "WAI Exam"
+                "id": "WAI Exam (SPL)"
+              },
+              {
+                "id": "WAI Exam (FPL)"
               },
               {
                 "id": "MRT Exam"
@@ -115,9 +118,15 @@
               }
             },
             {
-              "conditional": "result.response=='WAI Exam'",
+              "conditional": "result.response=='WAI Exam (SPL)'",
               "target": {
-                "reference": "WAIExam"
+                "reference": "WAIExamSPL"
+              }
+            },
+            {
+              "conditional": "result.response=='WAI Exam (FPL)'",
+              "target": {
+                "reference": "WAIExamFPL"
               }
             },
             {
@@ -431,11 +440,11 @@
       ]
     },
     {
-      "protocolId": "WAIExam",
+      "protocolId": "WAIExamSPL",
       "pages": [
         {
           "id": "wai_001",
-          "title": "Wideband Acoustic Immittance (WAI)",
+          "title": "Wideband Acoustic Immittance (WAI) - SPL",
           "responseArea": {
             "type": "WAIResponseArea",
             "fStart": 500,
@@ -443,6 +452,32 @@
             "normativeAbsorbanceDataPath": "wai-normative-absorbance-data-human.xlsx",
             "outputCalibrationType": "SPL",
             "outputChannel": "HPL1",
+            "numFrequencies": 128,
+            "numSweeps": 5,
+            "windowDuration": 0.1,
+            "sweepDuration": 6.0,
+            "inputChannels": ["EPSHIELD_RIGHT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2", "EPSHIELD_LEFT_PDM_MIC1"]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "WAIExamFPL",
+      "pages": [
+        {
+          "id": "wai_002",
+          "title": "Wideband Acoustic Immittance (WAI) - FPL",
+          "responseArea": {
+            "type": "WAIResponseArea",
+            "fStart": 500,
+            "fEnd": 4000,
+            "normativeAbsorbanceDataPath": "wai-normative-absorbance-data-human.xlsx",
+            "outputCalibrationType": "FPL",
+            "outputChannel": "FPL/HPL1",
             "numFrequencies": 128,
             "numSweeps": 5,
             "windowDuration": 0.1,
@@ -490,9 +525,9 @@
             "elicitorLevelArray": [70.0, 74.0, 78.0, 82.0, 86.0],
             "probeStimulusLevel": 70,
             "submissionIntervalMs": 500,
-            "probeOutputChannel": ["HPR1"],
-            "elicitorOutputChannel": ["HPL1"],
-            "recordChannels": ["HPR1", "EPSHIELD_LEFT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2", "EPSHIELD_RIGHT_PDM_MIC1"],
+            "probeOutputChannel": ["FPL/HPR1"],
+            "elicitorOutputChannel": ["FPL/HPL1"],
+            "recordChannels": ["FPL/HPR1", "EPSHIELD_LEFT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2", "EPSHIELD_RIGHT_PDM_MIC1"],
             "bleDelayPerTrial": 4000
           }
         },
@@ -519,9 +554,9 @@
             "elicitorLevelArray": [70.0, 74.0, 78.0, 82.0, 86.0],
             "probeStimulusLevel": 70,
             "submissionIntervalMs": 500,
-            "probeOutputChannel": ["HPR1"],
-            "elicitorOutputChannel": ["HPL1"],
-            "recordChannels": ["HPR1", "EPSHIELD_LEFT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2", "EPSHIELD_RIGHT_PDM_MIC1"],
+            "probeOutputChannel": ["FPL/HPR1"],
+            "elicitorOutputChannel": ["FPL/HPL1"],
+            "recordChannels": ["FPL/HPR1", "EPSHIELD_LEFT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2", "EPSHIELD_RIGHT_PDM_MIC1"],
             "bleDelayPerTrial": 4000
           }
         },
