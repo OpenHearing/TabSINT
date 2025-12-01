@@ -1,15 +1,15 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-
 import { ResultsInterface } from '../../../../models/results/results.interface';
 import { ProtocolModelInterface } from '../../../../models/protocol/protocol.interface';
 import { StateInterface } from '../../../../models/state/state.interface';
-
 import { ResultsModel } from '../../../../models/results/results-model.service';
 import { ProtocolModel } from '../../../../models/protocol/protocol-model.service';
 import { StateModel } from '../../../../models/state/state.service';
 import { PageModel } from '../../../../models/page/page.service';
 import { WINDOW } from '../../../../utilities/window';
+import { Logger } from '../../../../services/logger.service';
+import { ExamService } from '../../../../controllers/exam.service';
 
 @Component({
   selector: 'external-response-area-view',
@@ -27,11 +27,13 @@ export class ExternalResponseAreaComponent implements OnInit, OnDestroy {
   resultsSubscription: Subscription | undefined;
 
   constructor(
+    private readonly logger: Logger,
+    private readonly examService: ExamService,
     private readonly pageModel: PageModel,
     private readonly protocolModel: ProtocolModel,
     private readonly resultsModel: ResultsModel,
     private readonly stateModel: StateModel,
-    @Inject(WINDOW) private window: Window
+    @Inject(WINDOW) private readonly window: Window
   ) {
     this.results = this.resultsModel.getResults();
     this.protocol = this.protocolModel.getProtocolModel();
@@ -50,7 +52,11 @@ export class ExternalResponseAreaComponent implements OnInit, OnDestroy {
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
       this.results = updatedResults;
     });
-    (this.window as any).results = this.results;
+    // Expose models and services
+    (this.window as any).tabsint = {};
+    (this.window as any).tabsint.logger = this.logger;
+    (this.window as any).tabsint.examService = this.examService;
+    (this.window as any).tabsint.results = this.results;
   }
 
   ngOnDestroy(): void {
