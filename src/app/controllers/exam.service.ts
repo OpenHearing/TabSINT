@@ -317,6 +317,7 @@ export class ExamService {
       }
 
       if (eval(followOn.conditional)) {
+        //NOSONAR
         // TODO: handle if target is protocol or page
         if (isProtocolReferenceInterface(followOn.target)) {
           id = followOn.target.reference;

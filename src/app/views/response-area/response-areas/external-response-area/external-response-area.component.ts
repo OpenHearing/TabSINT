@@ -9,7 +9,6 @@ import { ResultsModel } from '../../../../models/results/results-model.service';
 import { ProtocolModel } from '../../../../models/protocol/protocol-model.service';
 import { StateModel } from '../../../../models/state/state.service';
 import { PageModel } from '../../../../models/page/page.service';
-
 import { WINDOW } from '../../../../utilities/window';
 
 @Component({
@@ -21,8 +20,8 @@ export class ExternalResponseAreaComponent implements OnInit, OnDestroy {
   results: ResultsInterface;
   protocol: ProtocolModelInterface;
   state: StateInterface;
-  testHTML: string;
-  testJS: string;
+  html: string | undefined;
+  js: string | undefined;
   subscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
 
@@ -36,15 +35,13 @@ export class ExternalResponseAreaComponent implements OnInit, OnDestroy {
     this.results = this.resultsModel.getResults();
     this.protocol = this.protocolModel.getProtocolModel();
     this.state = this.stateModel.getState();
-    this.testHTML = '';
-    this.testJS = '';
   }
 
   ngOnInit(): void {
-    this.subscription = this.pageModel.currentPageObservable.subscribe((updatedPage: any) => {
-      this.testHTML = updatedPage?.responseArea?.externalHTML;
-      this.testJS = updatedPage?.responseArea?.externalJS;
-      this.waitForHTMLToLoad();
+    this.subscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: any) => {
+      this.html = updatedPage?.responseArea?.html;
+      this.js = updatedPage?.responseArea?.js;
+      await this.waitForHTMLToLoad();
     });
     this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
@@ -62,8 +59,8 @@ export class ExternalResponseAreaComponent implements OnInit, OnDestroy {
       await this.delay(50);
       htmlEle = <HTMLElement>document.getElementById('external-div-id');
     }
-    htmlEle.innerHTML = this.testHTML;
-    eval(this.testJS); //NOSONAR
+    htmlEle.innerHTML = this.html!;
+    eval(this.js!); //NOSONAR
     /* For this to be fully functional we will need to put all of the exam, result, and any other relevent services 
       on the window variable. Additionally, those services will need to know to check the window when external or custom
       response areas are used to obtain results. 

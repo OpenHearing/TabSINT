@@ -64,6 +64,9 @@
                 "id": "MEMR Exam (Between Blocks)"
               },
               {
+                "id": "Custom JS"
+              },
+              {
                 "id": "End All"
               }
             ]
@@ -145,6 +148,12 @@
               "conditional": "result.response=='MEMR Exam (Between Blocks)'",
               "target": {
                 "reference": "MEMRExamBetweenBlocks"
+              }
+            },
+            {
+              "conditional": "result.response=='Custom JS'",
+              "target": {
+                "reference": "ExternalResponseArea"
               }
             },
             {
@@ -558,6 +567,25 @@
             "elicitorOutputChannel": ["FPL/HPL1"],
             "recordChannels": ["FPL/HPR1", "EPSHIELD_LEFT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2", "EPSHIELD_RIGHT_PDM_MIC1"],
             "bleDelayPerTrial": 4000
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "ExternalResponseArea",
+      "pages": [
+        {
+          "id": "ExternalResponseArea",
+          "title": "External Response Area",
+          "isAutoSubmit": false,
+          "responseArea": {
+            "type": "externalResponseArea",
+            "htmlFilePath": "html_example.html",
+            "jsFilePath": "js_example.js"
           }
         },
         {
