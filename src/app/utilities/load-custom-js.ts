@@ -8,8 +8,8 @@ export async function loadCustomJS(responseArea: ExternalResponseAreaInterface, 
   if (responseArea.jsFilePath === undefined || responseArea.htmlFilePath === undefined) {
     throw new Error('Error: A html and js file must be specified for externalResponseArea');
   }
-  const js = await loadFile(responseArea.jsFilePath!, meta);
-  const html = await loadFile(responseArea.htmlFilePath!, meta);
+  const js = await loadFile(responseArea.jsFilePath, meta);
+  const html = await loadFile(responseArea.htmlFilePath, meta);
   return { ...responseArea, js: js, html: html };
 }
 

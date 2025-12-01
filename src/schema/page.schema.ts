@@ -16,7 +16,7 @@ import { sweptDpoaeSchema } from './response-areas/swept-dpoae.schema';
 import { waiSchema } from './response-areas/wai.schema';
 import { mrtSchema } from './response-areas/mrt.schema';
 import { memrSchema } from './response-areas/memr.schema';
-import { externalResponseAreaSchema } from './response-areas/external-response-area';
+import { externalResponseAreaSchema } from './response-areas/external-response-area.schema';
 
 export const pageSchema: JSONSchemaType<PageDefinition> = {
   $id: 'page_base',

@@ -24,13 +24,14 @@ export class ExternalResponseAreaComponent implements OnInit, OnDestroy {
   js: string | undefined;
   subscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
+  resultsSubscription: Subscription | undefined;
 
   constructor(
-    public pageModel: PageModel,
-    public protocolModel: ProtocolModel,
-    public resultsModel: ResultsModel,
-    public stateModel: StateModel,
-    @Inject(WINDOW) private readonly window: Window
+    private readonly pageModel: PageModel,
+    private readonly protocolModel: ProtocolModel,
+    private readonly resultsModel: ResultsModel,
+    private readonly stateModel: StateModel,
+    @Inject(WINDOW) private window: Window
   ) {
     this.results = this.resultsModel.getResults();
     this.protocol = this.protocolModel.getProtocolModel();
@@ -46,6 +47,10 @@ export class ExternalResponseAreaComponent implements OnInit, OnDestroy {
     this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
+    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
+      this.results = updatedResults;
+    });
+    (this.window as any).results = this.results;
   }
 
   ngOnDestroy(): void {

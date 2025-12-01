@@ -64,7 +64,7 @@
                 "id": "MEMR Exam (Between Blocks)"
               },
               {
-                "id": "Custom JS"
+                "id": "External Response Area"
               },
               {
                 "id": "End All"
@@ -151,7 +151,7 @@
               }
             },
             {
-              "conditional": "result.response=='Custom JS'",
+              "conditional": "result.response=='External Response Area'",
               "target": {
                 "reference": "ExternalResponseArea"
               }
