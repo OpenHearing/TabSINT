@@ -580,12 +580,42 @@
       "pages": [
         {
           "id": "ExternalResponseArea",
-          "title": "External Response Area",
+          "title": "Basic Button Results Test",
           "isAutoSubmit": false,
           "responseArea": {
             "type": "externalResponseArea",
-            "htmlFilePath": "html_example.html",
-            "jsFilePath": "js_example.js"
+            "htmlFilePath": "external-response-areas/html_basic_example.html",
+            "jsFilePath": "external-response-areas/js_basic_example.js"
+          }
+        },
+        {
+          "id": "ExternalResponseArea",
+          "title": "Multi Page Example",
+          "isAutoSubmit": false,
+          "responseArea": {
+            "type": "externalResponseArea",
+            "htmlFilePath": "external-response-areas/html_multi_example.html",
+            "jsFilePath": "external-response-areas/js_multi_example.js"
+          }
+        },
+        {
+          "id": "ExternalResponseArea",
+          "title": "Reading and Writing Files Example",
+          "isAutoSubmit": false,
+          "responseArea": {
+            "type": "externalResponseArea",
+            "htmlFilePath": "external-response-areas/html_file_example.html",
+            "jsFilePath": "external-response-areas/js_file_example.js"
+          }
+        },
+        {
+          "id": "ExternalResponseArea",
+          "title": "Page and Disk Variables",
+          "isAutoSubmit": false,
+          "responseArea": {
+            "type": "externalResponseArea",
+            "htmlFilePath": "external-response-areas/html_disk_example.html",
+            "jsFilePath": "external-response-areas/js_disk_example.js"
           }
         },
         {

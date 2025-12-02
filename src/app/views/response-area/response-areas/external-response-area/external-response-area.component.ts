@@ -51,20 +51,6 @@ export class ExternalResponseAreaComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
-      if (updatedPage?.responseArea?.type === 'externalResponseArea') {
-        const responseArea = updatedPage.responseArea as ExternalResponseAreaInterface;
-        this.html = responseArea?.html;
-        this.js = responseArea?.js;
-        await this.waitForHTMLToLoad();
-      }
-    });
-    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
-      this.state = updatedState;
-    });
-    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
-      this.results = updatedResults;
-    });
     // Expose models and services
     this.window.tabsint = {};
     this.window.tabsint.logger = this.logger;
@@ -76,6 +62,21 @@ export class ExternalResponseAreaComponent implements OnInit, OnDestroy {
     this.window.tabsint.resultsModel = this.resultsModel;
     this.window.tabsint.pageModel = this.pageModel;
     this.window.tabsint.protocolModel = this.protocolModel;
+    // Subscribe to observables and load html/js
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
+      this.state = updatedState;
+    });
+    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
+      this.results = updatedResults;
+    });
+    this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
+      if (updatedPage?.responseArea?.type === 'externalResponseArea') {
+        const responseArea = updatedPage.responseArea as ExternalResponseAreaInterface;
+        this.html = responseArea?.html;
+        this.js = responseArea?.js;
+        await this.waitForHTMLToLoad();
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -94,7 +95,7 @@ export class ExternalResponseAreaComponent implements OnInit, OnDestroy {
   async waitForHTMLToLoad() {
     let htmlEle = <HTMLElement>document.getElementById('external-div-id');
     while (htmlEle == null) {
-      await this.delay(50);
+      await this.delay(100);
       htmlEle = <HTMLElement>document.getElementById('external-div-id');
     }
     htmlEle.innerHTML = this.html!;
