@@ -284,9 +284,7 @@ export class ExamService {
     }
     this.pageModel.updatePage(nextPage);
     this.resultsService.initializePageResults(this.currentPage);
-
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    console.log('startPage() done');
   }
 
   /** Parse page objects and add them to the pageModel.stack.

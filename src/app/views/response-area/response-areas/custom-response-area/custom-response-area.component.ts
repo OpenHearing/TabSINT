@@ -75,7 +75,6 @@ export class CustomResponseAreaComponent implements OnInit, OnDestroy {
         this.html = responseArea?.html;
         this.js = responseArea?.js;
         await this.waitForHTMLToLoad();
-        console.log('html and js loaded');
         eval(this.js!); //NOSONAR
       }
     });
