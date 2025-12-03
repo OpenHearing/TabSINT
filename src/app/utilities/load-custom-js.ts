@@ -1,12 +1,12 @@
 import { ProtocolMetaInterface } from "../models/protocol/protocol.interface";
-import { ExternalResponseAreaInterface } from "../views/response-area/response-areas/external-response-area/external-response-area.interface";
+import { CustomResponseAreaInterface } from "../views/response-area/response-areas/custom-response-area/custom-response-area.interface";
 import { TabsintFs } from 'tabsintfs';
 import { ProtocolServer } from "./constants";
 
 
-export async function loadCustomJS(responseArea: ExternalResponseAreaInterface, meta: ProtocolMetaInterface): Promise<ExternalResponseAreaInterface> {
+export async function loadCustomJS(responseArea: CustomResponseAreaInterface, meta: ProtocolMetaInterface): Promise<CustomResponseAreaInterface> {
   if (responseArea.jsFilePath === undefined || responseArea.htmlFilePath === undefined) {
-    throw new Error('Error: A html and js file must be specified for externalResponseArea');
+    throw new Error('Error: A html and js file must be specified for customResponseArea');
   }
   const js = await loadFile(responseArea.jsFilePath, meta);
   const html = await loadFile(responseArea.htmlFilePath, meta);

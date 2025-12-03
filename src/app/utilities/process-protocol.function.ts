@@ -12,7 +12,7 @@ import { loadSweptDPOAENormativeData, loadWAINormativeData } from './load-normat
 import { MrtExamInterface } from '../views/response-area/response-areas/mrt/mrt-exam/mrt-exam.interface';
 import { WAIInterface } from '../views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.interface';
 import { SweptDpoaeInterface } from '../views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/swept-dpoae-exam.interface';
-import { ExternalResponseAreaInterface } from '../views/response-area/response-areas/external-response-area/external-response-area.interface';
+import { CustomResponseAreaInterface } from '../views/response-area/response-areas/custom-response-area/custom-response-area.interface';
 import { loadCustomJS } from './load-custom-js';
 
 /**
@@ -105,8 +105,8 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
           page.responseArea = await loadSweptDPOAENormativeData(responseArea, loading.meta);
           break;
         }
-        case 'externalResponseArea': {
-          const responseArea = page.responseArea as ExternalResponseAreaInterface;
+        case 'customResponseArea': {
+          const responseArea = page.responseArea as CustomResponseAreaInterface;
           page.responseArea = await loadCustomJS(responseArea, loading.meta);
           break;
         }

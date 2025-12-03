@@ -15,14 +15,14 @@ import { DiskModel } from '../../../../models/disk/disk.service';
 import { FileService } from '../../../../services/file.service';
 import { ResultsService } from '../../../../controllers/results.service';
 import { ButtonTextService } from '../../../../controllers/button-text.service';
-import { ExternalResponseAreaInterface } from './external-response-area.interface';
+import { CustomResponseAreaInterface } from './custom-response-area.interface';
 
 @Component({
-  selector: 'external-response-area-view',
-  templateUrl: './external-response-area.component.html',
-  styleUrl: './external-response-area.component.css',
+  selector: 'custom-response-area-view',
+  templateUrl: './custom-response-area.component.html',
+  styleUrl: './custom-response-area.component.css',
 })
-export class ExternalResponseAreaComponent implements OnInit, OnDestroy {
+export class customResponseAreaComponent implements OnInit, OnDestroy {
   results: ResultsInterface;
   protocol: ProtocolModelInterface;
   state: StateInterface;
@@ -70,8 +70,8 @@ export class ExternalResponseAreaComponent implements OnInit, OnDestroy {
       this.results = updatedResults;
     });
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
-      if (updatedPage?.responseArea?.type === 'externalResponseArea') {
-        const responseArea = updatedPage.responseArea as ExternalResponseAreaInterface;
+      if (updatedPage?.responseArea?.type === 'customResponseArea') {
+        const responseArea = updatedPage.responseArea as CustomResponseAreaInterface;
         this.html = responseArea?.html;
         this.js = responseArea?.js;
         await this.waitForHTMLToLoad();
@@ -93,10 +93,10 @@ export class ExternalResponseAreaComponent implements OnInit, OnDestroy {
   }
 
   async waitForHTMLToLoad() {
-    let htmlEle = <HTMLElement>document.getElementById('external-div-id');
+    let htmlEle = <HTMLElement>document.getElementById('custom-div-id');
     while (htmlEle == null) {
       await this.delay(100);
-      htmlEle = <HTMLElement>document.getElementById('external-div-id');
+      htmlEle = <HTMLElement>document.getElementById('custom-div-id');
     }
     htmlEle.innerHTML = this.html!;
     eval(this.js!); //NOSONAR

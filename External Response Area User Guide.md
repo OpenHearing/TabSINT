@@ -3,7 +3,7 @@ This is a WIP guide for how to use external response areas, previously referred 
 
 Examples are outlined and provided after a brief explanation of the exposed TabSINT functionality. 
 
-When using the externalResponseArea, the `window` variable will be updated to contain the `tabsint` property. Note that this property will get overwritten each time you call an external response area so user defined variables inside the `tabsint` property may be deleted. Additionally, the following `window.tabsint` variables should never be set to avoid issues:
+When using the customResponseArea, the `window` variable will be updated to contain the `tabsint` property. Note that this property will get overwritten each time you call an external response area so user defined variables inside the `tabsint` property may be deleted. Additionally, the following `window.tabsint` variables should never be set to avoid issues:
 - logger
 - resultsService
 - examService
@@ -55,7 +55,7 @@ This allows control over the file service allowing read and write access. Note t
 
 
 ## Example Usage
-There are four different example html and js files that cover a range of useful functionality. The files can be found at: `src/assets/protocols/develop/external-response-areas/`
+There are four different example html and js files that cover a range of useful functionality. The files can be found at: `src/assets/protocols/develop/custom-response-areas/`
 1) Simple example with a button that uses the TabSINT logger and changes the TabSINT results object.
    - `html_basic_example.html` and `js_basic_example.js`
 2) Example showing how to change views within the same external response area as well as modifying the state variable to prevent submitting the exam until ready.
