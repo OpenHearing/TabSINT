@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { customResponseAreaComponent } from './custom-response-area.component';
+import { CustomResponseAreaComponent } from './custom-response-area.component';
 
-describe('customResponseAreaComponent', () => {
-  let component: customResponseAreaComponent;
-  let fixture: ComponentFixture<customResponseAreaComponent>;
+describe('CustomResponseAreaComponent', () => {
+  let component: CustomResponseAreaComponent;
+  let fixture: ComponentFixture<CustomResponseAreaComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [customResponseAreaComponent],
+      declarations: [CustomResponseAreaComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(customResponseAreaComponent);
+    fixture = TestBed.createComponent(CustomResponseAreaComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

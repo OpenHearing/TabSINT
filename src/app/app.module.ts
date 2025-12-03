@@ -71,7 +71,7 @@ import { TextboxComponent } from './views/response-area/response-areas/textbox/t
 import { TextboxResultViewerComponent } from './views/response-area/response-areas/textbox-result-viewer/textbox-result-viewer.component';
 import { MultipleChoiceComponent } from './views/response-area/response-areas/multiple-choice/multiple-choice.component';
 import { SingleResultModalComponent } from './views/single-result-modal/single-result-modal/single-result-modal.component';
-import { customResponseAreaComponent } from './views/response-area/response-areas/custom-response-area/custom-response-area.component';
+import { CustomResponseAreaComponent } from './views/response-area/response-areas/custom-response-area/custom-response-area.component';
 import { TasksBannerComponent } from './views/tasks-banner/tasks-banner.component';
 import { ManualAudiometryComponent } from './views/response-area/response-areas/manual-audiometry/manual-audiometry';
 import { DeviceConfigComponent } from './views/config/config-views/device-config/device-config.component';
@@ -134,7 +134,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     ManualAudiometryComponent,
     ManualAudiometryResultViewerComponent,
     SingleResultModalComponent,
-    customResponseAreaComponent,
+    CustomResponseAreaComponent,
     TasksBannerComponent,
     DeviceConfigComponent,
     DeviceInfoComponent,

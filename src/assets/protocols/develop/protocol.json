@@ -198,7 +198,8 @@
           "instructionText": "Page should only be submittable when there is a response",
           "responseArea": {
             "type": "textboxResponseArea",
-            "exportToCSV": true
+            "exportToCSV": true,
+            "responseRequired": true
           }
         },
         {
@@ -224,6 +225,7 @@
           "instructionText": "Page should only be submittable when there is a response",
           "responseArea": {
             "type": "likertResponseArea",
+            "responseRequired": true,
             "levels": 5,
             "useEmoticons": true,
             "labels": ["Not at all", "Perfectly"],
@@ -235,6 +237,7 @@
           "instructionText": "Page should only be submittable when there is a response",
           "responseArea": {
             "type": "likertResponseArea",
+            "responseRequired": true,
             "levels": 5,
             "useSlider": true,
             "naBox": true,
@@ -269,6 +272,7 @@
           "instructionText": "Page should only be submittable when there is a response for what you ate for breakfast.",
           "responseArea": {
             "type": "multipleInputResponseArea",
+            "responseRequired": true,
             "review": true,
             "inputList": [
               {

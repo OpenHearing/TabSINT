@@ -22,7 +22,7 @@ import { CustomResponseAreaInterface } from './custom-response-area.interface';
   templateUrl: './custom-response-area.component.html',
   styleUrl: './custom-response-area.component.css',
 })
-export class customResponseAreaComponent implements OnInit, OnDestroy {
+export class CustomResponseAreaComponent implements OnInit, OnDestroy {
   results: ResultsInterface;
   protocol: ProtocolModelInterface;
   state: StateInterface;
@@ -75,6 +75,8 @@ export class customResponseAreaComponent implements OnInit, OnDestroy {
         this.html = responseArea?.html;
         this.js = responseArea?.js;
         await this.waitForHTMLToLoad();
+        console.log('html and js loaded');
+        eval(this.js!); //NOSONAR
       }
     });
   }
@@ -99,7 +101,6 @@ export class customResponseAreaComponent implements OnInit, OnDestroy {
       htmlEle = <HTMLElement>document.getElementById('custom-div-id');
     }
     htmlEle.innerHTML = this.html!;
-    eval(this.js!); //NOSONAR
   }
 
   delay(ms: number) {

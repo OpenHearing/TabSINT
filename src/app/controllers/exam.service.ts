@@ -176,11 +176,11 @@ export class ExamService {
    * @summary Checks if a page response is required and returns a boolean
    * @returns boolean if page response is required
    */
-  isPageResponseRequired(): boolean {
-    if (this.currentPage.responseArea) {
-      let responseRequired = this.currentPage.responseArea.responseRequired;
+  isPageResponseRequired(page: PageInterface): boolean {
+    if (page.responseArea) {
+      let responseRequired = page.responseArea.responseRequired;
       if (responseRequired === undefined) {
-        const responseType = this.currentPage.responseArea.type;
+        const responseType = page.responseArea.type;
         responseRequired = getDefaultResponseRequired(responseType);
       }
       return responseRequired;
@@ -271,14 +271,22 @@ export class ExamService {
    * @models state
    */
   private startPage() {
-    this.pageModel.updatePage(this.pageModel.stack[this.state.examIndex]);
-    this.resultsService.initializePageResults(this.currentPage);
+    const nextPage: PageInterface = this.pageModel.stack[this.state.examIndex];
+    // Make sure isSubmittable gets set correctly
     this.stateModel.updateState({
       doesResponseExist: false,
-      isResponseRequired: this.isPageResponseRequired(),
+      isResponseRequired: this.isPageResponseRequired(nextPage),
     });
-    this.stateModel.setPageSubmittable();
+    if (nextPage?.isSubmittable === false) {
+      this.stateModel.updateState({ isSubmittable: false });
+    } else {
+      this.stateModel.setPageSubmittable();
+    }
+    this.pageModel.updatePage(nextPage);
+    this.resultsService.initializePageResults(this.currentPage);
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    console.log('startPage() done');
   }
 
   /** Parse page objects and add them to the pageModel.stack.

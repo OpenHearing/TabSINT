@@ -65,7 +65,3 @@ There are four different example html and js files that cover a range of useful 
    - `html_file_example.html` and `js_file_example.js`
 4) Example showing how to interact with the page and disk variables.
    - `html_disk_example.html` and `js_disk_example.js`
-
-
-# Known Issues
-- In the multi example, the first page is submittable when it should not be.
