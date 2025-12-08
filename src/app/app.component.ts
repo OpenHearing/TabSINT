@@ -82,7 +82,7 @@ export class AppComponent implements OnInit, OnDestroy {
       await firstValueFrom(
         this.notifications.alert({
           title: 'Select Documents Folder',
-          content: `Please use the Android File Chooser to select the docuements folder.`,
+          content: `Please use the Android File Chooser to select the "Documents" folder.`,
           type: DialogType.Alert,
         })
       );
