@@ -1,0 +1,1888 @@
+{
+  "api": {
+    "name": "TabsintChaPlugin",
+    "slug": "tabsintchaplugin",
+    "docs": "",
+    "tags": [],
+    "methods": [
+      {
+        "name": "addListener",
+        "signature": "(eventName: string, listenerFunc: ListenerCallback) => Promise<PluginListenerHandle>",
+        "parameters": [
+          {
+            "name": "eventName",
+            "docs": "The name of the event to listen for.",
+            "type": "string"
+          },
+          {
+            "name": "listenerFunc",
+            "docs": "The listener function for the event.",
+            "type": "ListenerCallback"
+          }
+        ],
+        "returns": "Promise<PluginListenerHandle>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "eventName The name of the event to listen for."
+          },
+          {
+            "name": "param",
+            "text": "listenerFunc The listener function for the event."
+          }
+        ],
+        "docs": "Add a listener for plugin events.",
+        "complexTypes": [
+          "PluginListenerHandle",
+          "ListenerCallback"
+        ],
+        "slug": "addlistenerstring-"
+      },
+      {
+        "name": "removeAllListeners",
+        "signature": "() => Promise<void>",
+        "parameters": [],
+        "returns": "Promise<void>",
+        "tags": [
+          {
+            "name": "returns",
+            "text": "A promise that resolves to void."
+          }
+        ],
+        "docs": "Remove all listeners for plugin events.",
+        "complexTypes": [],
+        "slug": "removealllisteners"
+      },
+      {
+        "name": "checkPermissions",
+        "signature": "(options: object) => Promise<PermissionStatus>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "Empty Object",
+            "type": "object"
+          }
+        ],
+        "returns": "Promise<PermissionStatus>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options Empty Object"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to the current permission status."
+          }
+        ],
+        "docs": "Get the current status of permissions in the plugin.",
+        "complexTypes": [
+          "PermissionStatus"
+        ],
+        "slug": "checkpermissions"
+      },
+      {
+        "name": "requestPermissions",
+        "signature": "(options: object) => Promise<PermissionStatus>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "Empty Object",
+            "type": "object"
+          }
+        ],
+        "returns": "Promise<PermissionStatus>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options Empty Object"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to the new state of permissions after prompting."
+          }
+        ],
+        "docs": "Prompts the end user for permission to use the platform APIs that the plugin requires.",
+        "complexTypes": [
+          "PermissionStatus"
+        ],
+        "slug": "requestpermissions"
+      },
+      {
+        "name": "getDeviceDiscoveryEventName",
+        "signature": "(options: object) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "Empty Object",
+            "type": "object"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options Empty Object"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to the device discovery event name."
+          }
+        ],
+        "docs": "Get the device discovery event name needed for creating listeners for device searches.",
+        "complexTypes": [],
+        "slug": "getdevicediscoveryeventname"
+      },
+      {
+        "name": "getDeviceResponseEventName",
+        "signature": "(options: object) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "Empty Object",
+            "type": "object"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options Empty Object"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to the device response event name."
+          }
+        ],
+        "docs": "Get the device response event name needed for creating listeners for device responses.",
+        "complexTypes": [],
+        "slug": "getdeviceresponseeventname"
+      },
+      {
+        "name": "getBluetoothAdapterState",
+        "signature": "(options: object) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "Empty Object",
+            "type": "object"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options Empty Object"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string representation of the bluetooth adapter state (\"Bluetooth On\" or \"Bluetooth Off\")."
+          }
+        ],
+        "docs": "Query state of the Bluetooth adapter.",
+        "complexTypes": [],
+        "slug": "getbluetoothadapterstate"
+      },
+      {
+        "name": "setBluetoothAdapterState",
+        "signature": "(options: SetBluetoothAdapterStateOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See SetBluetoothAdapterStateOptions",
+            "type": "SetBluetoothAdapterStateOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See SetBluetoothAdapterStateOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string representation of the bluetooth adapter state (\"Bluetooth Enabled\" or \"Bluetooth Disabled\")."
+          }
+        ],
+        "docs": "Enable/disable the Bluetooth adapter.",
+        "complexTypes": [
+          "SetBluetoothAdapterStateOptions"
+        ],
+        "slug": "setbluetoothadapterstate"
+      },
+      {
+        "name": "getBuildVersion",
+        "signature": "(options: object) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "Empty Object",
+            "type": "object"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options Empty Object"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string representation of the build version."
+          }
+        ],
+        "docs": "Get the build version of the CHA device.",
+        "complexTypes": [],
+        "slug": "getbuildversion"
+      },
+      {
+        "name": "startChaSearch",
+        "signature": "(options: StartChaSearchOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See StartChaSearchOptions",
+            "type": "StartChaSearchOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See StartChaSearchOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Begin discovery of available CHAs.  This will continue until cancelled.\r\nThe messages can be observed using PluginName.addListener('TabsintChaDiscovery', callback).\r\nThe discovery will first check if permissions are available before continuing with the search.",
+        "complexTypes": [
+          "StartChaSearchOptions"
+        ],
+        "slug": "startchasearch"
+      },
+      {
+        "name": "cancelChaSearch",
+        "signature": "(options: object) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "Empty Object",
+            "type": "object"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options Empty Object"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Abort discovery process.",
+        "complexTypes": [],
+        "slug": "cancelchasearch"
+      },
+      {
+        "name": "connect",
+        "signature": "(options: NameOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See NameOptions",
+            "type": "NameOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See NameOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Connect to the specified CHA device.",
+        "complexTypes": [
+          "NameOptions"
+        ],
+        "slug": "connect"
+      },
+      {
+        "name": "disconnect",
+        "signature": "(options: NameOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See NameOptions",
+            "type": "NameOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See NameOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Disconnect from the specified CHA device.",
+        "complexTypes": [
+          "NameOptions"
+        ],
+        "slug": "disconnect"
+      },
+      {
+        "name": "requestAssociatedA2DP",
+        "signature": "(options: NameOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See NameOptions",
+            "type": "NameOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See NameOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Request an A2DP interface to the CHA, that is associated with this CHA.",
+        "complexTypes": [
+          "NameOptions"
+        ],
+        "slug": "requestassociateda2dp"
+      },
+      {
+        "name": "startListener",
+        "signature": "(options: NameOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See NameOptions",
+            "type": "NameOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See NameOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to the CHA device name."
+          }
+        ],
+        "docs": "Add a listener to receive notifications when events occur for the specified CHA device.\r\nThe messages can be observed using PluginName.addListener('TabsintChaDevice', callback)",
+        "complexTypes": [
+          "NameOptions"
+        ],
+        "slug": "startlistener"
+      },
+      {
+        "name": "stopListener",
+        "signature": "(options: NameOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See NameOptions",
+            "type": "NameOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See NameOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to the CHA device name."
+          }
+        ],
+        "docs": "Remove the listener for the specified CHA device to stop receiving notifications for it.",
+        "complexTypes": [
+          "NameOptions"
+        ],
+        "slug": "stoplistener"
+      },
+      {
+        "name": "requestCalibrationList",
+        "signature": "(options: NameOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See NameOptions",
+            "type": "NameOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See NameOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Request the list of available calibrations from the specified CHA device.",
+        "complexTypes": [
+          "NameOptions"
+        ],
+        "slug": "requestcalibrationlist"
+      },
+      {
+        "name": "requestCalibrationEntry",
+        "signature": "(options: RequestCalibrationEntryOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See RequestCalibrationEntryOptions",
+            "type": "RequestCalibrationEntryOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See RequestCalibrationEntryOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Request the indexed section of the calibration entry from the specified CHA device.",
+        "complexTypes": [
+          "RequestCalibrationEntryOptions"
+        ],
+        "slug": "requestcalibrationentry"
+      },
+      {
+        "name": "startCalibrationWrite",
+        "signature": "(options: StartCalibrationWriteOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See StartCalibrationWriteOptions",
+            "type": "StartCalibrationWriteOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See StartCalibrationWriteOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Begin writing a calibration entry to a specified CHA device.",
+        "complexTypes": [
+          "StartCalibrationWriteOptions"
+        ],
+        "slug": "startcalibrationwrite"
+      },
+      {
+        "name": "requestId",
+        "signature": "(options: NameOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See NameOptions",
+            "type": "NameOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See NameOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Request the ID information of the specified CHA device.",
+        "complexTypes": [
+          "NameOptions"
+        ],
+        "slug": "requestid"
+      },
+      {
+        "name": "requestProbeId",
+        "signature": "(options: NameOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See NameOptions",
+            "type": "NameOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See NameOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Request the ID information of the attached probe for the specified CHA device.",
+        "complexTypes": [
+          "NameOptions"
+        ],
+        "slug": "requestprobeid"
+      },
+      {
+        "name": "requestStatus",
+        "signature": "(options: NameOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See NameOptions",
+            "type": "NameOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See NameOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Request the status information of the specified CHA device.",
+        "complexTypes": [
+          "NameOptions"
+        ],
+        "slug": "requeststatus"
+      },
+      {
+        "name": "queueExam",
+        "signature": "(options: QueueExamOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See QueueExamOptions",
+            "type": "QueueExamOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See QueueExamOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Add the exam object to a specified CHA device's queue.",
+        "complexTypes": [
+          "QueueExamOptions"
+        ],
+        "slug": "queueexam"
+      },
+      {
+        "name": "examSubmission",
+        "signature": "(options: ExamSubmissionOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See ExamSubmissionOptions",
+            "type": "ExamSubmissionOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See ExamSubmissionOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Send user input for the current exam to a specified CHA device.",
+        "complexTypes": [
+          "ExamSubmissionOptions"
+        ],
+        "slug": "examsubmission"
+      },
+      {
+        "name": "setSoftwareButtonState",
+        "signature": "(options: SetSoftwareButtonStateOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See SetSoftwareButtonStateOptions",
+            "type": "SetSoftwareButtonStateOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See SetSoftwareButtonStateOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Set the state of the software button for a specified CHA device.",
+        "complexTypes": [
+          "SetSoftwareButtonStateOptions"
+        ],
+        "slug": "setsoftwarebuttonstate"
+      },
+      {
+        "name": "abortExams",
+        "signature": "(options: NameOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See NameOptions",
+            "type": "NameOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See NameOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Cancel all exams queued for the specified CHA device.",
+        "complexTypes": [
+          "NameOptions"
+        ],
+        "slug": "abortexams"
+      },
+      {
+        "name": "requestResults",
+        "signature": "(options: NameOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See NameOptions",
+            "type": "NameOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See NameOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Request the results for an exam from the specified CHA device.",
+        "complexTypes": [
+          "NameOptions"
+        ],
+        "slug": "requestresults"
+      },
+      {
+        "name": "requestSdBytesFree",
+        "signature": "(options: NameOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See NameOptions",
+            "type": "NameOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See NameOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Request the available SD space in bytes from the specified CHA device.",
+        "complexTypes": [
+          "NameOptions"
+        ],
+        "slug": "requestsdbytesfree"
+      },
+      {
+        "name": "reprogram",
+        "signature": "(options: ReprogramOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See ReprogramOptions",
+            "type": "ReprogramOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See ReprogramOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Request the specified CHA device to reprogram its firmware based on file 'CHA_PROG.DAT', which should already be on its media.\r\nThe CRC32 value will be checked against the CHA computed CRC32 and reject the reprogram if they do not match.",
+        "complexTypes": [
+          "ReprogramOptions"
+        ],
+        "slug": "reprogram"
+      },
+      {
+        "name": "reboot",
+        "signature": "(options: NameOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See NameOptions",
+            "type": "NameOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See NameOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Reboot the specified CHA device.",
+        "complexTypes": [
+          "NameOptions"
+        ],
+        "slug": "reboot"
+      },
+      {
+        "name": "shutdown",
+        "signature": "(options: NameOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See NameOptions",
+            "type": "NameOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See NameOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Shutdown the specified CHA device.\r\nThe command is ignored for USB connected devices.",
+        "complexTypes": [
+          "NameOptions"
+        ],
+        "slug": "shutdown"
+      },
+      {
+        "name": "deleteFile",
+        "signature": "(options: DeleteFileOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See DeleteFileOptions",
+            "type": "DeleteFileOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See DeleteFileOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Delete a file from a specified CHA device.\r\nThe directory is relative to the USER directory.",
+        "complexTypes": [
+          "DeleteFileOptions"
+        ],
+        "slug": "deletefile"
+      },
+      {
+        "name": "startFileWrite",
+        "signature": "(options: StartFileWriteOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See StartFileWriteOptions",
+            "type": "StartFileWriteOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See StartFileWriteOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Begin writing a file to the specified CHA device.",
+        "complexTypes": [
+          "StartFileWriteOptions"
+        ],
+        "slug": "startfilewrite"
+      },
+      {
+        "name": "startFileRead",
+        "signature": "(options: StartFileReadOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See StartFileReadOptions",
+            "type": "StartFileReadOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See StartFileReadOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Begin reading a file from the specified CHA device.",
+        "complexTypes": [
+          "StartFileReadOptions"
+        ],
+        "slug": "startfileread"
+      },
+      {
+        "name": "requestDirectory",
+        "signature": "(options: RequestDirectoryOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See RequestDirectoryOptions",
+            "type": "RequestDirectoryOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See RequestDirectoryOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Request the specified CHA device transmits the contents of a directory.",
+        "complexTypes": [
+          "RequestDirectoryOptions"
+        ],
+        "slug": "requestdirectory"
+      },
+      {
+        "name": "getLfnFromSfn",
+        "signature": "(options: GetLfnFromSfnOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See GetLfnFromSfnOptions",
+            "type": "GetLfnFromSfnOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See GetLfnFromSfnOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to the long file name."
+          }
+        ],
+        "docs": "Convert the short file name returned by the directory function into a long file name for the specified CHA device.",
+        "complexTypes": [
+          "GetLfnFromSfnOptions"
+        ],
+        "slug": "getlfnfromsfn"
+      },
+      {
+        "name": "makeDirectory",
+        "signature": "(options: MakeDirectoryOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See MakeDirectoryOptions",
+            "type": "MakeDirectoryOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See MakeDirectoryOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Create a directory on the specified CHA device.",
+        "complexTypes": [
+          "MakeDirectoryOptions"
+        ],
+        "slug": "makedirectory"
+      },
+      {
+        "name": "cancelFileOperation",
+        "signature": "(options: NameOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See NameOptions",
+            "type": "NameOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See NameOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Cancel an ongoing streamable operations on the specified CHA device.",
+        "complexTypes": [
+          "NameOptions"
+        ],
+        "slug": "cancelfileoperation"
+      },
+      {
+        "name": "format",
+        "signature": "(options: NameOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See NameOptions",
+            "type": "NameOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See NameOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Command the specified CHA device to format its SD card.",
+        "complexTypes": [
+          "NameOptions"
+        ],
+        "slug": "format"
+      },
+      {
+        "name": "a2dpIsPaired",
+        "signature": "(options: NameOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See NameOptions",
+            "type": "NameOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See NameOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string representation of the isPaired response."
+          }
+        ],
+        "docs": "Whether the specified A2DP device is paired or not.",
+        "complexTypes": [
+          "NameOptions"
+        ],
+        "slug": "a2dpispaired"
+      },
+      {
+        "name": "a2dpIsConnected",
+        "signature": "(options: NameOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See NameOptions",
+            "type": "NameOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See NameOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string representation of the isConnected response."
+          }
+        ],
+        "docs": "Whether the specified A2DP device is connected or not.",
+        "complexTypes": [
+          "NameOptions"
+        ],
+        "slug": "a2dpisconnected"
+      },
+      {
+        "name": "a2dpBeginPairing",
+        "signature": "(options: NameOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See NameOptions",
+            "type": "NameOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See NameOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Begin pairing the specified A2DP device.",
+        "complexTypes": [
+          "NameOptions"
+        ],
+        "slug": "a2dpbeginpairing"
+      },
+      {
+        "name": "a2dpUnpair",
+        "signature": "(options: NameOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See NameOptions",
+            "type": "NameOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See NameOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Unpair the specified A2DP device.",
+        "complexTypes": [
+          "NameOptions"
+        ],
+        "slug": "a2dpunpair"
+      },
+      {
+        "name": "a2dpBeginConnection",
+        "signature": "(options: NameOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See NameOptions",
+            "type": "NameOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See NameOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Begin connection to the specified A2DP device.",
+        "complexTypes": [
+          "NameOptions"
+        ],
+        "slug": "a2dpbeginconnection"
+      },
+      {
+        "name": "a2dpDisconnect",
+        "signature": "(options: NameOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See NameOptions",
+            "type": "NameOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See NameOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Disconnect to the specified A2DP device.",
+        "complexTypes": [
+          "NameOptions"
+        ],
+        "slug": "a2dpdisconnect"
+      },
+      {
+        "name": "noiseFeatureStart",
+        "signature": "(options: NoiseFeatureStartOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See NoiseFeatureStartOptions",
+            "type": "NoiseFeatureStartOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See NoiseFeatureStartOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Start playback of noise for the specified CHA device.",
+        "complexTypes": [
+          "NoiseFeatureStartOptions"
+        ],
+        "slug": "noisefeaturestart"
+      },
+      {
+        "name": "noiseFeaturePause",
+        "signature": "(options: NameOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See NameOptions",
+            "type": "NameOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See NameOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Pause the playback of noise for the specified CHA device.",
+        "complexTypes": [
+          "NameOptions"
+        ],
+        "slug": "noisefeaturepause"
+      },
+      {
+        "name": "noiseFeatureResume",
+        "signature": "(options: NameOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See NameOptions",
+            "type": "NameOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See NameOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Resume the playback of noise for the specified CHA device.",
+        "complexTypes": [
+          "NameOptions"
+        ],
+        "slug": "noisefeatureresume"
+      },
+      {
+        "name": "noiseFeatureStop",
+        "signature": "(options: NameOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See NameOptions",
+            "type": "NameOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See NameOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Stop the playback of noise for the specified CHA device.",
+        "complexTypes": [
+          "NameOptions"
+        ],
+        "slug": "noisefeaturestop"
+      },
+      {
+        "name": "noiseFeatureChangeLevel",
+        "signature": "(options: NoiseFeatureChangeLevelOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See NoiseFeatureChangeLevelOptions",
+            "type": "NoiseFeatureChangeLevelOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See NoiseFeatureChangeLevelOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Change the volume of the background noise without interrupting playback for the specified CHA device.",
+        "complexTypes": [
+          "NoiseFeatureChangeLevelOptions"
+        ],
+        "slug": "noisefeaturechangelevel"
+      },
+      {
+        "name": "requestSetting",
+        "signature": "(options: RequestSettingOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See RequestSettingOptions",
+            "type": "RequestSettingOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See RequestSettingOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to the setting name."
+          }
+        ],
+        "docs": "Request a setting by its index in the setting table from the specified CHA device.",
+        "complexTypes": [
+          "RequestSettingOptions"
+        ],
+        "slug": "requestsetting"
+      },
+      {
+        "name": "writeSetting",
+        "signature": "(options: WriteSettingOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See WriteSettingOptions",
+            "type": "WriteSettingOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See WriteSettingOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Write a setting by its index in the setting table to the specified CHA device.",
+        "complexTypes": [
+          "WriteSettingOptions"
+        ],
+        "slug": "writesetting"
+      },
+      {
+        "name": "requestExamId",
+        "signature": "(options: NameOptions) => Promise<{ value: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "See NameOptions",
+            "type": "NameOptions"
+          }
+        ],
+        "returns": "Promise<{ value: string; }>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options See NameOptions"
+          },
+          {
+            "name": "returns",
+            "text": "A promise that resolves to a string status message."
+          }
+        ],
+        "docs": "Request the current exam id from the specified CHA device.",
+        "complexTypes": [
+          "NameOptions"
+        ],
+        "slug": "requestexamid"
+      }
+    ],
+    "properties": []
+  },
+  "interfaces": [
+    {
+      "name": "PluginListenerHandle",
+      "slug": "pluginlistenerhandle",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "remove",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "() => Promise<void>"
+        }
+      ]
+    },
+    {
+      "name": "PermissionStatus",
+      "slug": "permissionstatus",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "bluetooth",
+          "tags": [],
+          "docs": "Bluetooth permission status.",
+          "complexTypes": [
+            "PermissionState"
+          ],
+          "type": "PermissionState"
+        }
+      ]
+    },
+    {
+      "name": "SetBluetoothAdapterStateOptions",
+      "slug": "setbluetoothadapterstateoptions",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "newState",
+          "tags": [],
+          "docs": "The new state for the bluetooth adapter (\"on\" or \"off\").",
+          "complexTypes": [],
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "StartChaSearchOptions",
+      "slug": "startchasearchoptions",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "infStr",
+          "tags": [],
+          "docs": "The CHA interface argument for the search.\r\nThis indicates the type of connection to search for devices.",
+          "complexTypes": [],
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "NameOptions",
+      "slug": "nameoptions",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "name",
+          "tags": [],
+          "docs": "The CHA device name.",
+          "complexTypes": [],
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "RequestCalibrationEntryOptions",
+      "slug": "requestcalibrationentryoptions",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "index",
+          "tags": [],
+          "docs": "The index for the calibration entry to stream.",
+          "complexTypes": [],
+          "type": "number"
+        }
+      ]
+    },
+    {
+      "name": "StartCalibrationWriteOptions",
+      "slug": "startcalibrationwriteoptions",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "index",
+          "tags": [],
+          "docs": "The index of the calibration to write to.",
+          "complexTypes": [],
+          "type": "number"
+        },
+        {
+          "name": "entry",
+          "tags": [],
+          "docs": "The description used the calibration list.",
+          "complexTypes": [],
+          "type": "object"
+        },
+        {
+          "name": "dataArgs",
+          "tags": [],
+          "docs": "The calibration data arguments.",
+          "complexTypes": [],
+          "type": "object"
+        },
+        {
+          "name": "speakerArgs",
+          "tags": [],
+          "docs": "Speaker data arguments to be added to the calibration data.",
+          "complexTypes": [],
+          "type": "object | undefined"
+        }
+      ]
+    },
+    {
+      "name": "QueueExamOptions",
+      "slug": "queueexamoptions",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "examName",
+          "tags": [],
+          "docs": "The name of the exam to queue.",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "params",
+          "tags": [],
+          "docs": "The parameters for the exam.",
+          "complexTypes": [],
+          "type": "object | undefined"
+        }
+      ]
+    },
+    {
+      "name": "ExamSubmissionOptions",
+      "slug": "examsubmissionoptions",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "submissionName",
+          "tags": [],
+          "docs": "The name of the exam submission.",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "params",
+          "tags": [],
+          "docs": "The parameters for the exam submission.",
+          "complexTypes": [],
+          "type": "object | undefined"
+        }
+      ]
+    },
+    {
+      "name": "SetSoftwareButtonStateOptions",
+      "slug": "setsoftwarebuttonstateoptions",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "state",
+          "tags": [],
+          "docs": "The new state of the software button to be set (0 or 1).",
+          "complexTypes": [],
+          "type": "number"
+        }
+      ]
+    },
+    {
+      "name": "ReprogramOptions",
+      "slug": "reprogramoptions",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "crc32",
+          "tags": [],
+          "docs": "The CRC32 checksum value to be used for validation in a reprogram request.",
+          "complexTypes": [],
+          "type": "number"
+        }
+      ]
+    },
+    {
+      "name": "DeleteFileOptions",
+      "slug": "deletefileoptions",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "remoteFile",
+          "tags": [],
+          "docs": "The remote file on the device to be deleted.",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "flags",
+          "tags": [],
+          "docs": "Modification flags for request.",
+          "complexTypes": [],
+          "type": "number | undefined"
+        }
+      ]
+    },
+    {
+      "name": "StartFileWriteOptions",
+      "slug": "startfilewriteoptions",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "localFile",
+          "tags": [],
+          "docs": "The path to the file on the device to create.",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "remoteFile",
+          "tags": [],
+          "docs": "The path on the CHA to read.",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "flags",
+          "tags": [],
+          "docs": "Modification flags for request.",
+          "complexTypes": [],
+          "type": "number | undefined"
+        }
+      ]
+    },
+    {
+      "name": "StartFileReadOptions",
+      "slug": "startfilereadoptions",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "localFile",
+          "tags": [],
+          "docs": "The path to the file on the device to create.",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "remoteFile",
+          "tags": [],
+          "docs": "The path on the CHA to read.",
+          "complexTypes": [],
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "RequestDirectoryOptions",
+      "slug": "requestdirectoryoptions",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "remotePath",
+          "tags": [],
+          "docs": "The directory on the CHA to read.",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "flags",
+          "tags": [],
+          "docs": "Modification flags for request.",
+          "complexTypes": [],
+          "type": "number | undefined"
+        }
+      ]
+    },
+    {
+      "name": "GetLfnFromSfnOptions",
+      "slug": "getlfnfromsfnoptions",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "fullPath",
+          "tags": [],
+          "docs": "The full path to the short file.",
+          "complexTypes": [],
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "MakeDirectoryOptions",
+      "slug": "makedirectoryoptions",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "remotePath",
+          "tags": [],
+          "docs": "The directory on the CHA to create.",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "flags",
+          "tags": [],
+          "docs": "Modification flags for request.",
+          "complexTypes": [],
+          "type": "number"
+        }
+      ]
+    },
+    {
+      "name": "NoiseFeatureStartOptions",
+      "slug": "noisefeaturestartoptions",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "params",
+          "tags": [],
+          "docs": "The configuration parameters for the noise.",
+          "complexTypes": [],
+          "type": "object | undefined"
+        }
+      ]
+    },
+    {
+      "name": "NoiseFeatureChangeLevelOptions",
+      "slug": "noisefeaturechangeleveloptions",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "levels",
+          "tags": [],
+          "docs": "An array of length two of levels for left/right.",
+          "complexTypes": [],
+          "type": "number[]"
+        }
+      ]
+    },
+    {
+      "name": "RequestSettingOptions",
+      "slug": "requestsettingoptions",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "settingName",
+          "tags": [],
+          "docs": "The name of the setting to read.",
+          "complexTypes": [],
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "WriteSettingOptions",
+      "slug": "writesettingoptions",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "settingName",
+          "tags": [],
+          "docs": "The name of the setting to modify.",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "value",
+          "tags": [],
+          "docs": "The new value for the setting.",
+          "complexTypes": [],
+          "type": "number"
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "typeAliases": [
+    {
+      "name": "ListenerCallback",
+      "slug": "listenercallback",
+      "docs": "",
+      "types": [
+        {
+          "text": "(err: any, ...args: any[]): void",
+          "complexTypes": []
+        }
+      ]
+    },
+    {
+      "name": "PermissionState",
+      "slug": "permissionstate",
+      "docs": "",
+      "types": [
+        {
+          "text": "'prompt'",
+          "complexTypes": []
+        },
+        {
+          "text": "'prompt-with-rationale'",
+          "complexTypes": []
+        },
+        {
+          "text": "'granted'",
+          "complexTypes": []
+        },
+        {
+          "text": "'denied'",
+          "complexTypes": []
+        }
+      ]
+    }
+  ],
+  "pluginConfigs": []
+}

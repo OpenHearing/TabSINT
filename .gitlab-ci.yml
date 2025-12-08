@@ -8,7 +8,9 @@ variables:
   DOCKER_HOST: tcp://docker:2375
   DOCKER_TLS_CERTDIR: ""
   DOCKER_DRIVER: overlay2
+  DOCKER_BUILDKIT: 1
   IMAGE_TAG_BASE: $CI_REGISTRY_IMAGE
+  SVN_TAG: ""
 
 stages:
   - linters
@@ -32,7 +34,13 @@ build-docker-image:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - SAFE_COMMIT_REF_NAME=$(echo "$CI_COMMIT_REF_NAME" | tr '/' '-')
     - IMAGE_TAG="$IMAGE_TAG_BASE:$SAFE_COMMIT_REF_NAME"
-    - docker build -t $IMAGE_TAG .
+    - |
+      docker build \
+        --secret id=SVN_TAG_DIRECTORY,env=SVN_TAG_DIRECTORY \
+        --secret id=SVN_USERNAME,env=SVN_USERNAME \
+        --secret id=SVN_PASSWORD,env=SVN_PASSWORD \
+        --secret id=SVN_TAG,env=SVN_TAG \
+        -t $IMAGE_TAG .
     - docker push $IMAGE_TAG
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
