@@ -7,5 +7,8 @@
   "trailingComma": "es5",
   "bracketSameLine": true,
   "printWidth": 150,
-  "endOfLine": "auto"
+  "endOfLine": "auto",
+  "plugins": ["prettier-plugin-java"],
+  "pluginSearchDirs": ["./node_modules"],
+  "overrides": [{ "files": "**/*.java", "options": { "plugins": ["prettier-plugin-java"] } }]
 }

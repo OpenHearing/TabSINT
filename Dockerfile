@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential=12.10ubuntu1 \
     lib32z1=1:1.3.dfsg-3.1ubuntu2.1 \
     lib32stdc++6=14.2.0-4ubuntu2~24.04 \
+    subversion=1.14.3-1build4 \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Google Chrome
@@ -61,6 +62,13 @@ WORKDIR /usr/src/app
 
 # Copy project files
 COPY . .
+
+# Install SVN dependencies
+RUN --mount=type=secret,id=SVN_TAG_DIRECTORY \ 
+    --mount=type=secret,id=SVN_USERNAME \ 
+    --mount=type=secret,id=SVN_PASSWORD \ 
+    --mount=type=secret,id=SVN_TAG \ 
+    bash ./bin/svn_import.sh
 
 # Install npm dependencies
 RUN bash -c "source $NVM_DIR/nvm.sh && npm install"
