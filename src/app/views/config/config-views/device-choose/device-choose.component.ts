@@ -14,7 +14,7 @@ import { DevicesModel } from '../../../../models/devices/devices-model.service';
   selector: 'device-choose-view',
   standalone: true,
   templateUrl: './device-choose.component.html',
-  imports: [FormsModule, TranslateModule, NgFor, NgClass]
+  imports: [FormsModule, TranslateModule, NgFor, NgClass],
 })
 export class DeviceChooseComponent implements OnInit, OnDestroy {
   disk: DiskInterface;
@@ -26,30 +26,30 @@ export class DeviceChooseComponent implements OnInit, OnDestroy {
   constructor(
     private readonly changeDetection: ChangeDetectorRef,
     private readonly dialogRef: MatDialogRef<DeviceChooseComponent>,
-    private readonly diskModel: DiskModel, 
+    private readonly diskModel: DiskModel,
     private readonly devicesModel: DevicesModel
   ) {
     this.disk = this.diskModel.getDisk();
     this.availableDevices = [];
   }
 
-  ngOnInit() {
-    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+  ngOnInit(): void {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
     });
 
-    this.devicesSubscription = this.devicesModel.availableDevicesSubject.subscribe( (availableDevices:BleDevice[]) => {
+    this.devicesSubscription = this.devicesModel.availableDevicesSubject.subscribe((availableDevices: BleDevice[]) => {
       this.availableDevices = availableDevices;
       this.changeDetection.detectChanges();
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
     this.devicesSubscription?.unsubscribe();
   }
 
-  choose(device:BleDevice) {
+  choose(device: BleDevice) {
     this.selectedDevice = device;
     this.changeDetection.detectChanges();
   }
@@ -61,5 +61,4 @@ export class DeviceChooseComponent implements OnInit, OnDestroy {
   cancel() {
     this.dialogRef.close();
   }
-
 }

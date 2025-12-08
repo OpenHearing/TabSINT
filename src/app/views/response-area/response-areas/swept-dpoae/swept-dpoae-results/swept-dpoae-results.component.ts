@@ -1,13 +1,13 @@
 import { AfterViewInit, Component, Input } from '@angular/core';
 import * as d3 from 'd3';
-import { SweptDpoaeResultsInterface } from '../swept-dpoae-exam/sept-dpoae-exam.interface';
-import { createLegend, createOAEResultsChartSvg } from '../../../../../utilities/d3-plot-functions';
-import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-dpoae.schema';
+import { SweptDpoaeResultsInterface } from '../swept-dpoae-exam/swept-dpoae-exam.interface';
+import { createLegend, createOAEResultsChartSvg, createNormativeDataPath } from '../../../../../utilities/d3-plot-functions';
+import { NormativeDataInterface } from '../../../../../interfaces/normative-data-interface';
 
 @Component({
   selector: 'swept-dpoae-results',
   templateUrl: './swept-dpoae-results.component.html',
-  styleUrl: './swept-dpoae-results.component.css'
+  styleUrl: './swept-dpoae-results.component.css',
 })
 export class SweptDpoaeResultsComponent implements AfterViewInit {
   @Input() sweptDPOAEResults!: SweptDpoaeResultsInterface;
@@ -17,8 +17,9 @@ export class SweptDpoaeResultsComponent implements AfterViewInit {
   @Input() width!: number;
   @Input() height!: number;
   @Input() xTicks!: number[];
-  @Input() margin!: { top: number, right: number, bottom: number, left: number };
-  
+  @Input() margin!: { top: number; right: number; bottom: number; left: number };
+  @Input() normativeData!: NormativeDataInterface[];
+
   svg: d3.Selection<SVGGElement, unknown, HTMLElement, any> | undefined;
 
   ngAfterViewInit(): void {
@@ -29,29 +30,52 @@ export class SweptDpoaeResultsComponent implements AfterViewInit {
     // TODO: Do I need to filter data? Probably not after I get real firmware.
     const filteredData = this.filterSweptDpoaeResults(this.sweptDPOAEResults);
 
-    const yScale = d3.scaleLinear()
+    const yScale = d3
+      .scaleLinear()
       .domain([
-        d3.min(
-         [...filteredData.DpLow.Amplitude, ...filteredData.DpLow.NoiseFloor, ...filteredData.F1.Amplitude, ...filteredData.F2.Amplitude]) as number, 
-        d3.max(
-          [...filteredData.DpLow.Amplitude, ...filteredData.DpLow.NoiseFloor, ...filteredData.F1.Amplitude, ...filteredData.F2.Amplitude]) as number]
-      ).range([this.height, 0]);
+        d3.min([
+          ...filteredData.DpLow.Amplitude,
+          ...filteredData.DpLow.NoiseFloor,
+          ...filteredData.F1.Amplitude,
+          ...filteredData.F2.Amplitude,
+        ]) as number,
+        d3.max([
+          ...filteredData.DpLow.Amplitude,
+          ...filteredData.DpLow.NoiseFloor,
+          ...filteredData.F1.Amplitude,
+          ...filteredData.F2.Amplitude,
+        ]) as number,
+      ])
+      .range([this.height, 0]);
 
-    let svg = d3.select('#dpoae-results-plot')
+    let svg = d3
+      .select('#dpoae-results-plot')
       .append('svg')
-          .attr('width', this.width + this.margin.left + this.margin.right)
-          .attr('height', this.height + this.margin.top + this.margin.bottom)
-          .append('g')
-          .attr('transform', `translate(${this.margin.left},${this.margin.top})`);;
-    
+      .attr('width', this.width + this.margin.left + this.margin.right)
+      .attr('height', this.height + this.margin.top + this.margin.bottom)
+      .append('g')
+      .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
+
     svg = createOAEResultsChartSvg(svg, this.width, this.height, this.xTicks, this.xScale, yScale);
 
+    // Define definitions for the svg and add clip path
+    const defs = svg.append('defs');
+    defs.append('clipPath').attr('id', 'clipRect').append('rect').attr('x', 0).attr('y', 0).attr('height', this.height).attr('width', this.width);
+
+    // Apply clipping to the group for additional plotting steps
+    const clippedGroup = svg.append('g').attr('clip-path', `url(#clipRect)`);
+
+    // Plot normative data (grey area)
+    const normativePath = createNormativeDataPath(this.normativeData, this.xScale, yScale);
+    clippedGroup.append('path').attr('d', normativePath).attr('fill', 'gray').attr('stroke', 'gray').attr('stroke-width', 2);
+
     // Plot DpLow Amplitude (blue line)
-    svg.selectAll('.dot')
-      .data(filteredData.DpLow.Frequency)
+    svg
+      .selectAll('.dot')
+      .data(filteredData.DpLow.F2Frequency)
       .enter()
       .append('circle')
-      .attr('cx', (d, i) => this.xScale(filteredData.DpLow.Frequency[i]))
+      .attr('cx', (d, i) => this.xScale(filteredData.DpLow.F2Frequency[i]))
       .attr('cy', (d, i) => yScale(filteredData.DpLow.Amplitude[i]))
       .attr('r', 4)
       .style('fill', 'none')
@@ -59,20 +83,22 @@ export class SweptDpoaeResultsComponent implements AfterViewInit {
       .style('stroke-width', 2);
 
     // Plot Noise Floor (dashed red line)
-    svg.selectAll('.dot')
-      .data(filteredData.DpLow.Frequency)
+    svg
+      .selectAll('.dot')
+      .data(filteredData.DpLow.F2Frequency)
       .enter()
       .append('circle')
-      .attr('cx', (d, i) => this.xScale(filteredData.DpLow.Frequency[i]))
+      .attr('cx', (d, i) => this.xScale(filteredData.DpLow.F2Frequency[i]))
       .attr('cy', (d, i) => yScale(filteredData.DpLow.NoiseFloor[i]))
       .attr('r', 4)
       .style('fill', 'none')
       .style('stroke', 'red')
-      .style("stroke-dasharray", "1,3")
+      .style('stroke-dasharray', '1,3')
       .style('stroke-width', 2);
 
     // Plot F2 (violet line)
-    svg.selectAll('.dot')
+    svg
+      .selectAll('.dot')
       .data(filteredData.F2.Frequency)
       .enter()
       .append('circle')
@@ -84,7 +110,8 @@ export class SweptDpoaeResultsComponent implements AfterViewInit {
       .style('stroke-width', 2);
 
     // PlotF1 (yellow line)
-    svg.selectAll('.dot')
+    svg
+      .selectAll('.dot')
       .data(filteredData.F1.Frequency)
       .enter()
       .append('circle')
@@ -96,18 +123,20 @@ export class SweptDpoaeResultsComponent implements AfterViewInit {
       .style('stroke-width', 2);
 
     // Define the line generator
-    const line = d3.line<{ frequency: number; amplitude: number }>()
+    const line = d3
+      .line<{ frequency: number; amplitude: number }>()
       .x(d => this.xScale(d.frequency)) // Map x values
       .y(d => yScale(d.amplitude)) // Map y values
       .curve(d3.curveLinear); // smoothing
 
-    const lineData = filteredData.DpLow.Frequency.map((frequency, i) => ({
+    const lineData = filteredData.DpLow.F2Frequency.map((frequency, i) => ({
       frequency,
       amplitude: filteredData.DpLow.Amplitude[i],
     }));
 
     // Append the line path
-    svg.append('path')
+    svg
+      .append('path')
       .datum(lineData) // Bind data
       .attr('fill', 'none') // Ensure no area is filled
       .attr('stroke', 'blue') // Set line color
@@ -117,19 +146,17 @@ export class SweptDpoaeResultsComponent implements AfterViewInit {
     // Define the legend data
     const legendData = [
       { label: 'DPOAE', color: 'blue', line: 'solid' },
-      { label: 'NF', color: 'red', line:  'dashed' },
-      { label: 'F2', color: '#9400d3',line:  'solid' },
-      { label: 'F1', color: '#ffc107', line:  'solid' }
+      { label: 'NF', color: 'red', line: 'dashed' },
+      { label: 'F2', color: '#9400d3', line: 'solid' },
+      { label: 'F1', color: '#ffc107', line: 'solid' },
     ];
 
     createLegend(svg, legendData, this.width, 85);
     return svg;
   }
 
-  private filterSweptDpoaeResults(
-    data: SweptDpoaeResultsInterface
-  ): {
-    DpLow: { Frequency: number[]; Amplitude: number[]; NoiseFloor: number[] };
+  private filterSweptDpoaeResults(data: SweptDpoaeResultsInterface): {
+    DpLow: { Frequency: number[]; F2Frequency: number[]; Amplitude: number[]; NoiseFloor: number[] };
     F2: { Frequency: number[]; Amplitude: number[] };
     F1: { Frequency: number[]; Amplitude: number[] };
   } {
@@ -137,6 +164,7 @@ export class SweptDpoaeResultsComponent implements AfterViewInit {
     const filteredData = {
       DpLow: {
         Frequency: [],
+        F2Frequency: [],
         Amplitude: [],
         NoiseFloor: [],
       },
@@ -149,7 +177,7 @@ export class SweptDpoaeResultsComponent implements AfterViewInit {
         Amplitude: [],
       },
     };
-  
+
     // Helper function to filter and populate
     const filterAndPush = (
       source: { Frequency: number[]; Amplitude: number[]; NoiseFloor?: number[] },
@@ -157,28 +185,28 @@ export class SweptDpoaeResultsComponent implements AfterViewInit {
     ) => {
       for (let i = 0; i < source.Frequency.length; i++) {
         const freq = source.Frequency[i];
-        if (freq >= this.f2Start && freq <= this.f2End) {
-          target.Frequency.push(freq);
-          target.Amplitude.push(source.Amplitude[i]);
-          if (source.NoiseFloor && target.NoiseFloor) {
-            target.NoiseFloor.push(source.NoiseFloor[i]);
-          }
+        target.Frequency.push(freq);
+        target.Amplitude.push(source.Amplitude[i]);
+        if (source.NoiseFloor && target.NoiseFloor) {
+          target.NoiseFloor.push(source.NoiseFloor[i]);
         }
       }
-    }
-  
+    };
+
     if (data.DpLow) {
       filterAndPush(data.DpLow, filteredData.DpLow);
     }
-  
+
     if (data.F2) {
       filterAndPush(data.F2, filteredData.F2);
     }
-  
+
     if (data.F1) {
       filterAndPush(data.F1, filteredData.F1);
     }
-  
+
+    // Update the DpLow frequencies for plotting
+    filteredData.DpLow.F2Frequency = filteredData.F2.Frequency;
     return filteredData;
   }
 }

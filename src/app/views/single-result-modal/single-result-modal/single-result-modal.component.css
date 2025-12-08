@@ -52,7 +52,7 @@
 
 .left-buttons {
   display: flex;
-  gap: 15px;
+  gap: 6px;
   position: relative;
   z-index: 100002;
 }

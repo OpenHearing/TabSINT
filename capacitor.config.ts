@@ -5,16 +5,17 @@ const config: CapacitorConfig = {
   appName: 'tabsint',
   webDir: 'dist/tabsint/browser',
   server: {
-    androidScheme: 'https'
+    androidScheme: 'https',
   },
   plugins: {
     Permissions: {
-      android: ["android.permission.READ_EXTERNAL_STORAGE","android.permission.WRITE_EXTERNAL_STORAGE"]
+      android: ['android.permission.READ_EXTERNAL_STORAGE', 'android.permission.WRITE_EXTERNAL_STORAGE'],
     },
     TabsintFs: {
-      android: 'com.creare.tabsintfs.TabsintFsPlugin'
-    }
-  }
+      android: 'com.creare.tabsintfs.TabsintFsPlugin',
+    },
+  },
+  loggingBehavior: 'none',
 };
 
 export default config;

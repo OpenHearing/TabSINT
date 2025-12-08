@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
@@ -15,38 +15,41 @@ import { AppState } from '../../../../utilities/constants';
 @Component({
   selector: 'device-info-view',
   templateUrl: './device-info.component.html',
-  styleUrl: './device-info.component.css'
+  styleUrl: './device-info.component.css',
 })
-export class DeviceInfoComponent {
+export class DeviceInfoComponent implements OnInit, OnDestroy {
   disk: DiskInterface;
-  diskSubscription: Subscription | undefined;
   state: StateInterface;
   devices: DevicesInterface;
 
+  diskSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
+
   constructor(
     private readonly devicesModel: DevicesModel,
-    private readonly diskModel: DiskModel, 
+    private readonly diskModel: DiskModel,
     private readonly stateModel: StateModel,
-    private readonly translate: TranslateService,
-  ) { 
+    private readonly translate: TranslateService
+  ) {
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();
     this.devices = this.devicesModel.getDevices();
   }
 
   ngOnInit(): void {
-    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
-        this.disk = updatedDisk;
-    })    
-    this.state.appState = AppState.Admin;
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+    });
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
+      this.state = updatedState;
+    });
+    this.stateModel.updateState({ appState: AppState.Admin });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
   }
 
-  setShutdownTimerPopover = this.translate.instant(
-    "Auto shutdown time (in minutes) for the WAHTS headset."
-  );
-
+  setShutdownTimerPopover = this.translate.instant('Auto shutdown time (in minutes) for the WAHTS headset.');
 }

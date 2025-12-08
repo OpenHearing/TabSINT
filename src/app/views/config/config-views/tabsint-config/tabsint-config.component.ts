@@ -1,4 +1,4 @@
-import { Component,ChangeDetectorRef  } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
@@ -10,9 +10,8 @@ import { StateInterface } from '../../../../models/state/state.interface';
 import { VersionInterface } from '../../../../models/version/version.interface';
 
 import { DiskModel } from '../../../../models/disk/disk.service';
-import { Logger } from '../../../../utilities/logger.service';
+import { Logger } from '../../../../services/logger.service';
 import { VersionModel } from '../../../../models/version/version.service';
-import { ConfigService } from '../../../../controllers/config.service';
 import { StateModel } from '../../../../models/state/state.service';
 
 import { AppState } from '../../../../utilities/constants';
@@ -22,38 +21,50 @@ import { ChangeMaxLogLengthComponent } from '../../../change-max-log-length/chan
 @Component({
   selector: 'tabsint-config-view',
   templateUrl: './tabsint-config.component.html',
-  styleUrl: './tabsint-config.component.css'
+  styleUrl: './tabsint-config.component.css',
 })
-export class TabsintConfigComponent {
+export class TabsintConfigComponent implements OnInit, OnDestroy {
   disk: DiskInterface;
-  diskSubscription: Subscription | undefined;
   state: StateInterface;
   version!: VersionInterface;
 
+  diskSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
+
   constructor(
-    public configService: ConfigService,
     private readonly cdr: ChangeDetectorRef,
     private readonly diskModel: DiskModel,
     private readonly logger: Logger,
     private readonly dialog: MatDialog,
     private readonly stateModel: StateModel,
     private readonly translate: TranslateService,
-    private readonly versionModel: VersionModel,
+    private readonly versionModel: VersionModel
   ) {
     this.state = this.stateModel.getState();
     this.disk = this.diskModel.getDisk();
   }
 
-  async ngOnInit(): Promise<void> {
-    this.version = await this.versionModel.getVersion();
-    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
-        this.disk = updatedDisk;
-    })
-    this.state.appState  = AppState.Admin;
+  ngOnInit(): void {
+    this.asyncNgOnInit();
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+    });
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
+      this.state = updatedState;
+    });
+    this.stateModel.updateState({ appState: AppState.Admin });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
+  }
+
+  /**
+   * Function to be called by ngOnIit to handle any asynchronous operations.
+   */
+  private async asyncNgOnInit(): Promise<void> {
+    this.version = await this.versionModel.getVersion();
   }
 
   // VARIABLES - SHOULD BE MOVED?
@@ -76,7 +87,6 @@ export class TabsintConfigComponent {
   // ];
 
   // resultsModeOptions = ResultsMode;
-
 
   // Functions
 
@@ -106,23 +116,18 @@ export class TabsintConfigComponent {
   }
 
   toggleAutoUpload() {
-    this.diskModel.updateDiskModel('autoUpload', this.diskModel.disk.autoUpload == undefined || !this.diskModel.disk.autoUpload);
+    this.diskModel.updateDiskModel('autoUpload', this.disk.autoUpload == undefined || !this.disk.autoUpload);
   }
 
   toggleDebugMode() {
-    this.diskModel.updateDiskModel('debugMode',!this.diskModel.disk.debugMode);
+    this.diskModel.updateDiskModel('debugMode', !this.disk.debugMode);
   }
 
   toggleDisableLogs() {
-      this.diskModel.updateDiskModel('disableLogs', !this.disk.disableLogs);
+    this.diskModel.updateDiskModel('disableLogs', !this.disk.disableLogs);
   }
 
-  gainReset() {
-    console.log("gainReset pressed");
-  }
-
-  async changeLocalResultsDir(){
-
+  async changeLocalResultsDir() {
     try {
       const result = await TabsintFs.chooseFolder();
       let servers = this.disk.servers;
@@ -139,9 +144,9 @@ export class TabsintConfigComponent {
   // Popovers
 
   headsetPopover = this.translate.instant(
-    "Select the default headset used to administer hearing tests. " +
-    "This selection is overridden by the <code>headset</code> parameter in protocols. <br /><br /> If the protocol does not specify a <code>headset</code>, " +
-    "this value must match the value in the protocol's <code>calibration.json</code> file."
+    'Select the default headset used to administer hearing tests. ' +
+      'This selection is overridden by the <code>headset</code> parameter in protocols. <br /><br /> If the protocol does not specify a <code>headset</code>, ' +
+      "this value must match the value in the protocol's <code>calibration.json</code> file."
   );
 
   // languagePopover = this.translate.instant(
@@ -149,19 +154,19 @@ export class TabsintConfigComponent {
   // );
 
   adminPopover = this.translate.instant(
-    "Includes additional configuration options, displays expandable <b>debug</b> menus showing program state at the bottom of exam pages, and suppresses Admin Password prompts"
+    'Includes additional configuration options, displays expandable <b>debug</b> menus showing program state at the bottom of exam pages, and suppresses Admin Password prompts.'
   );
 
   adminPinPopover = this.translate.instant(
-    "Change the Admin PIN to any numerical value.  This PIN is required to switch to Admin View and to reset exams when Admin Mode is off."
+    'Change the Admin PIN to any numerical value.  This PIN is required to switch to Admin View and to reset exams when Admin Mode is off.'
   );
 
   disableLogsPopover = this.translate.instant(
-    "Disable log messages from being stored and uploaded. <br /><br />Logs are useful for investigating software bugs, but may introduce privacy concerns. Disable logging anytime sensitive data is being collected."
+    'Disable log messages from being stored and uploaded. <br /><br />Logs are useful for investigating software bugs, but may introduce privacy concerns. Disable logging anytime sensitive data is being collected.'
   );
 
   setMaxLogRowsPopover = this.translate.instant(
-    "Set the maximum number of log records to be saved. This will prevent the logs from consuming too much memory."
+    'Set the maximum number of log records to be saved. This will prevent the logs from consuming too much memory.'
   );
 
   // disableVolumePopover = this.translate.instant(
@@ -191,12 +196,11 @@ export class TabsintConfigComponent {
   // );
 
   automaticallyOutputResultsPopover = this.translate.instant(
-    "Automatically upload or export the result when a test is finished. The result will be uploaded or exported on the <b>Exam Complete</b> page. <br /><br /> Once the result is uploaded to a server or exported to a local file, it will be removed from TabSINT."
+    'Automatically upload or export the result when a test is finished. The result will be uploaded or exported on the <b>Exam Complete</b> page. <br /><br /> Once the result is uploaded to a server or exported to a local file, it will be removed from TabSINT.'
   );
 
   // gainPopover = this.translate.instant(
   //   "Apply a special gain in dB to the audio level output through TabSINT. " +
   //   "This can be used to calibrate the audio jack output to a specified level for all audio played through the tablet."
   // );
-
 }

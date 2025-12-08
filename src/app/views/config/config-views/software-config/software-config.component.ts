@@ -6,16 +6,19 @@ import { DevicesInterface } from '../../../../models/devices/devices.interface';
 import { VersionInterface } from '../../../../models/version/version.interface';
 
 import { DiskModel } from '../../../../models/disk/disk.service';
-import { Logger } from '../../../../utilities/logger.service';
+import { Logger } from '../../../../services/logger.service';
 import { VersionModel } from '../../../../models/version/version.service';
 import { DevicesModel } from '../../../../models/devices/devices-model.service';
+import { StateModel } from '../../../../models/state/state.service';
+import { StateInterface } from '../../../../models/state/state.interface';
 
 @Component({
   selector: 'software-config-view',
   templateUrl: './software-config.component.html',
-  styleUrl: './software-config.component.css'
+  styleUrl: './software-config.component.css',
 })
 export class SoftwareConfigComponent {
+  state: StateInterface;
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
   devices: DevicesInterface;
@@ -25,32 +28,34 @@ export class SoftwareConfigComponent {
     private readonly devicesModel: DevicesModel,
     private readonly diskModel: DiskModel,
     private readonly logger: Logger,
-    private versionModel: VersionModel,
+    private readonly versionModel: VersionModel,
+    private readonly stateModel: StateModel
   ) {
     this.disk = this.diskModel.getDisk();
     this.devices = this.devicesModel.getDevices();
+    this.state = this.stateModel.getState();
     this.version = {
       tabsint: '',
       date: '',
       rev: '',
       version_code: '',
       deps: {
-          user_agent: '',
-          node: '',
-          capacitor: ''
+        user_agent: '',
+        node: '',
+        capacitor: '',
       },
-      plugins: []
-  };
+      plugins: [],
+    };
   }
 
   ngOnInit(): void {
-    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
-        this.disk = updatedDisk;
-    })
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+    });
     this.initializeVersion();
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
   }
 
@@ -58,26 +63,11 @@ export class SoftwareConfigComponent {
     try {
       this.version = await this.versionModel.getVersion();
     } catch (error) {
-      this.logger.error("" + error);
-    }
-  }
-
-  // TODO: VARIABLES - SHOULD BE MOVED TO THE RESPECTIVE MODEL WHEN IT EXISTS
-
-  networkModel: any = {
-    "status": false,
-    "type": "???"
-  };
-
-  config = {
-    build: "placeholder",
-    tabsintPlugins: {
-      "???": {version:"???"}
+      this.logger.error(JSON.stringify(error));
     }
   }
 
   toggleAppDeveloperMode() {
-    console.log("toggleAppDeveloperMode");
+    this.logger.debug('toggleAppDeveloperMode');
   }
-
 }

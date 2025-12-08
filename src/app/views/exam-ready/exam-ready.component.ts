@@ -5,9 +5,8 @@ import { ProtocolModelInterface } from '../../models/protocol/protocol.interface
 @Component({
   selector: 'exam-ready-view',
   templateUrl: './exam-ready.component.html',
-  styleUrl: './exam-ready.component.css'
+  styleUrl: './exam-ready.component.css',
 })
-
 export class ExamReadyComponent {
   protocol: ProtocolModelInterface;
   title?: string;
@@ -21,5 +20,4 @@ export class ExamReadyComponent {
     this.subtitle = this.protocol.activeProtocol?.subtitle;
     this.instructionText = this.protocol.activeProtocol?.instructionText;
   }
-
 }

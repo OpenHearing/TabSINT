@@ -1,0 +1,570 @@
+{
+  "title": "Development Protocol",
+  "subtitle": "Developer testing of open-tabsint responseArea's.",
+  "instructionText": "instructionText goes here",
+  "hideProgressBar": true,
+  "navMenu": [
+    {
+      "text": "Back to Main Menu",
+      "target": {
+        "reference": "MainMenu"
+      },
+      "returnHereAfterward": false
+    }
+  ],
+  "pages": [
+    {
+      "protocolId": "MainMenu",
+      "title": "Main Menu",
+      "pages": [
+        {
+          "id": "choose",
+          "title": "Response Area Testing",
+          "questionMainText": "Please select a response area to test:",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "choices": [
+              {
+                "id": "Text Box"
+              },
+              {
+                "id": "LikeRT"
+              },
+              {
+                "id": "Multiple Input"
+              },
+              {
+                "id": "Manual Audiometry"
+              },
+              {
+                "id": "Calibration Exam"
+              },
+              {
+                "id": "FPL Calibration Exam"
+              },
+              {
+                "id": "Swept DPOAE Exam (SPL)"
+              },
+              {
+                "id": "Swept DPOAE Exam (FPL)"
+              },
+              {
+                "id": "WAI Exam (SPL)"
+              },
+              {
+                "id": "WAI Exam (FPL)"
+              },
+              {
+                "id": "MRT Exam"
+              },
+              {
+                "id": "MEMR Exam (Within Block)"
+              },
+              {
+                "id": "MEMR Exam (Between Blocks)"
+              },
+              {
+                "id": "End All"
+              }
+            ]
+          },
+          "followOns": [
+            {
+              "conditional": "result.response=='Text Box'",
+              "target": {
+                "reference": "TextBox"
+              }
+            },
+            {
+              "conditional": "result.response=='LikeRT'",
+              "target": {
+                "reference": "LikeRT"
+              }
+            },
+            {
+              "conditional": "result.response=='Multiple Input'",
+              "target": {
+                "reference": "MultipleInput"
+              }
+            },
+            {
+              "conditional": "result.response=='Manual Audiometry'",
+              "target": {
+                "reference": "ManualAudiometry"
+              }
+            },
+            {
+              "conditional": "result.response=='Calibration Exam'",
+              "target": {
+                "reference": "CalibrationExam"
+              }
+            },
+            {
+              "conditional": "result.response=='FPL Calibration Exam'",
+              "target": {
+                "reference": "FPLCalibrationExam"
+              }
+            },
+            {
+              "conditional": "result.response=='Swept DPOAE Exam (SPL)'",
+              "target": {
+                "reference": "SweptDpoaeExamSPL"
+              }
+            },
+            {
+              "conditional": "result.response=='Swept DPOAE Exam (FPL)'",
+              "target": {
+                "reference": "SweptDpoaeExamFPL"
+              }
+            },
+            {
+              "conditional": "result.response=='WAI Exam (SPL)'",
+              "target": {
+                "reference": "WAIExamSPL"
+              }
+            },
+            {
+              "conditional": "result.response=='WAI Exam (FPL)'",
+              "target": {
+                "reference": "WAIExamFPL"
+              }
+            },
+            {
+              "conditional": "result.response=='MRT Exam'",
+              "target": {
+                "reference": "MRTExam"
+              }
+            },
+            {
+              "conditional": "result.response=='MEMR Exam (Within Block)'",
+              "target": {
+                "reference": "MEMRExamWithinBlock"
+              }
+            },
+            {
+              "conditional": "result.response=='MEMR Exam (Between Blocks)'",
+              "target": {
+                "reference": "MEMRExamBetweenBlocks"
+              }
+            },
+            {
+              "conditional": "result.response=='End All'",
+              "target": {
+                "reference": "@END_ALL"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "subProtocols": [
+    {
+      "protocolId": "TextBox",
+      "pages": [
+        {
+          "id": "textbox_001",
+          "title": "Text Box",
+          "instructionText": "Page should always be submittable",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 5,
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "textbox_002",
+          "title": "Text Box",
+          "instructionText": "Page should only be submittable when there is a response",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "exportToCSV": true,
+            "rows": 3,
+            "responseRequired": true
+          }
+        },
+        {
+          "id": "textbox_003",
+          "title": "Text Box",
+          "instructionText": "Page should only be submittable when there is a response",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "exportToCSV": true
+          }
+        },
+        {
+          "id": "textbox_001_result_viewer",
+          "title": "Text Box Result Viewer",
+          "instructionText": "Page should always be submittable",
+          "responseArea": {
+            "type": "textboxResponseAreaResultViewer",
+            "pageIdsToDisplay": ["textbox_001", "textbox_002", "textbox_003"]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "LikeRT",
+      "pages": [
+        {
+          "id": "default",
+          "instructionText": "Page should only be submittable when there is a response",
+          "responseArea": {
+            "type": "likertResponseArea",
+            "levels": 5,
+            "useEmoticons": true,
+            "labels": ["Not at all", "Perfectly"],
+            "questions": ["Question 1", "Question 2", "Question 3", "Question 4"]
+          }
+        },
+        {
+          "id": "default",
+          "instructionText": "Page should only be submittable when there is a response",
+          "responseArea": {
+            "type": "likertResponseArea",
+            "levels": 5,
+            "useSlider": true,
+            "naBox": true,
+            "labels": ["Not at all", "Perfectly"],
+            "questions": ["Question 1", "Question 2"]
+          }
+        },
+        {
+          "id": "default",
+          "instructionText": "Page should always be submittable",
+          "responseArea": {
+            "type": "likertResponseArea",
+            "responseRequired": false,
+            "levels": 5,
+            "naBox": true,
+            "labels": ["Not at all", "Perfectly"],
+            "questions": ["Question 1", "Question 2", "Question 3"]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "MultipleInput",
+      "pages": [
+        {
+          "id": "ARDC_Survey_1",
+          "title": "ARDC Surveys",
+          "instructionText": "Page should only be submittable when there is a response for what you ate for breakfast.",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "review": true,
+            "inputList": [
+              {
+                "text": "What did you eat for breakfast today?",
+                "inputType": "text",
+                "required": true
+              },
+              {
+                "text": "How many ear tubes?",
+                "inputType": "number"
+              },
+              {
+                "text": "Have you ever had a ruptured eardrum? ",
+                "inputType": "dropdown",
+                "options": ["yes", "no"]
+              },
+              {
+                "text": "Patient Date of Birth",
+                "inputType": "date",
+                "required": false,
+                "dateProperties": {
+                  "maxDate": "today"
+                }
+              },
+              {
+                "inputType": "multi-dropdown",
+                "options": ["a", "b", "c"],
+                "text": "Multi-dropdown Input"
+              }
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "ManualAudiometry",
+      "pages": [
+        {
+          "id": "audiometry_001",
+          "title": "Manual Audiometry Test",
+          "instructionText": "Test manual audiometry response area",
+          "responseArea": {
+            "type": "manualAudiometryResponseArea",
+            "tabsintId": "1",
+            "frequencies": [500, 1000, 2000, 3000, 4000, 6000, 8000],
+            "adjustmentStepSize": 2,
+            "incrementRatioMultiplier": 2,
+            "retspls": {
+              "500": 11.0,
+              "1000": 5.5,
+              "2000": 4.5,
+              "3000": 2.5,
+              "4000": 9.5,
+              "6000": 17.0,
+              "8000": 17.5
+            }
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "CalibrationExam",
+      "pages": [
+        {
+          "id": "calibration_001",
+          "title": "Calibration Exam",
+          "enableBackButton": true,
+          "responseArea": {
+            "type": "calibrationResponseArea",
+            "frequencies": [500, 1000],
+            "targetLevels": [60, 70],
+            "showResults": true
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "FPLCalibrationExam",
+      "pages": [
+        {
+          "id": "fpl_calibration_001",
+          "title": "FPL Calibration Exam",
+          "enableBackButton": true,
+          "responseArea": {
+            "type": "fplCalibrationResponseArea",
+            "outputChannels": ["HPL1", "HPR1"],
+            "fStart": 390,
+            "fEnd": 16500,
+            "sweepDuration": 10.806,
+            "numFrequencies": 64,
+            "windowDuration": 0.0427
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "SweptDpoaeExamSPL",
+      "pages": [
+        {
+          "id": "swept_oae_001",
+          "title": "Swept DPOAE (SPL)",
+          "responseArea": {
+            "type": "sweptDPOAEResponseArea",
+            "normativeDataPath": "swept-dpoae-normative-data-human.xlsx",
+            "outputChannel1": "HPL1",
+            "outputChannel2": "HPR1",
+            "inputChannel": "EPSHIELD_LEFT_PDM_MIC1",
+            "l1": 75,
+            "l2": 65,
+            "f2Start": 500,
+            "f2End": 16000,
+            "frequencyRatio": 1.22,
+            "sweepDuration": 10.0,
+            "windowDuration": 0.1,
+            "sweepType": "log",
+            "minSweeps": 16,
+            "maxSweeps": 24,
+            "numFrequencies": 64,
+            "noiseFloorThreshold": -10,
+            "outputRawMeasurements": false,
+            "outputCalibrationType": "SPL"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "SweptDpoaeExamFPL",
+      "pages": [
+        {
+          "id": "swept_oae_002",
+          "title": "Swept DPOAE (FPL)",
+          "responseArea": {
+            "type": "sweptDPOAEResponseArea",
+            "normativeDataPath": "swept-dpoae-normative-data-human.xlsx",
+            "outputChannel1": "HPL1",
+            "outputChannel2": "HPR1",
+            "inputChannel": "EPSHIELD_LEFT_PDM_MIC1",
+            "l1": 75,
+            "l2": 65,
+            "f2Start": 500,
+            "f2End": 16000,
+            "frequencyRatio": 1.22,
+            "sweepDuration": 10.0,
+            "windowDuration": 0.1,
+            "sweepType": "log",
+            "minSweeps": 16,
+            "maxSweeps": 50,
+            "numFrequencies": 64,
+            "noiseFloorThreshold": -10,
+            "outputRawMeasurements": false,
+            "outputCalibrationType": "FPL"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "WAIExamSPL",
+      "pages": [
+        {
+          "id": "wai_001",
+          "title": "Wideband Acoustic Immittance (WAI) - SPL",
+          "responseArea": {
+            "type": "WAIResponseArea",
+            "fStart": 500,
+            "fEnd": 4000,
+            "normativeAbsorbanceDataPath": "wai-normative-absorbance-data-human.xlsx",
+            "outputCalibrationType": "SPL",
+            "outputChannel": "HPL1",
+            "numFrequencies": 128,
+            "numSweeps": 5,
+            "windowDuration": 0.1,
+            "sweepDuration": 6.0,
+            "inputChannels": ["EPSHIELD_RIGHT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2", "EPSHIELD_LEFT_PDM_MIC1"]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "WAIExamFPL",
+      "pages": [
+        {
+          "id": "wai_002",
+          "title": "Wideband Acoustic Immittance (WAI) - FPL",
+          "responseArea": {
+            "type": "WAIResponseArea",
+            "fStart": 500,
+            "fEnd": 4000,
+            "normativeAbsorbanceDataPath": "wai-normative-absorbance-data-human.xlsx",
+            "outputCalibrationType": "FPL",
+            "outputChannel": "FPL/HPL1",
+            "numFrequencies": 128,
+            "numSweeps": 5,
+            "windowDuration": 0.1,
+            "sweepDuration": 6.0,
+            "inputChannels": ["EPSHIELD_RIGHT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2", "EPSHIELD_LEFT_PDM_MIC1"]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "MRTExam",
+      "pages": [
+        {
+          "id": "MRT",
+          "title": "Modified Rhyme Test",
+          "responseArea": {
+            "type": "mrtResponseArea",
+            "examDefinitionFilename": "mrt-exam-definition.csv"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "MEMRExamWithinBlock",
+      "pages": [
+        {
+          "id": "MEMR",
+          "title": "MEMR Exam (Within Block)",
+          "isAutoSubmit": false,
+          "responseArea": {
+            "type": "memrResponseArea",
+            "soundFileName": "/PurdueMEMR/MEMR_Sinc16_2ch.wav",
+            "recordFileFolder": "MEMR_REC_WITHIN",
+            "nRepeats": 5,
+            "useMetaRMS": true,
+            "elicitorLevelChange": "Within Block",
+            "elicitorLevelArray": [70.0, 74.0, 78.0, 82.0, 86.0],
+            "probeStimulusLevel": 70,
+            "submissionIntervalMs": 500,
+            "probeOutputChannel": ["FPL/HPR1"],
+            "elicitorOutputChannel": ["FPL/HPL1"],
+            "recordChannels": ["FPL/HPR1", "EPSHIELD_LEFT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2", "EPSHIELD_RIGHT_PDM_MIC1"],
+            "bleDelayPerTrial": 4000
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "MEMRExamBetweenBlocks",
+      "pages": [
+        {
+          "id": "MEMR",
+          "title": "MEMR Exam (Between Blocks)",
+          "isAutoSubmit": false,
+          "responseArea": {
+            "type": "memrResponseArea",
+            "soundFileName": "/PurdueMEMR/MEMR_Sinc16_2ch.wav",
+            "recordFileFolder": "MEMR_REC_BETWEEN",
+            "nRepeats": 5,
+            "useMetaRMS": true,
+            "elicitorLevelChange": "Between Blocks",
+            "elicitorLevelArray": [70.0, 74.0, 78.0, 82.0, 86.0],
+            "probeStimulusLevel": 70,
+            "submissionIntervalMs": 500,
+            "probeOutputChannel": ["FPL/HPR1"],
+            "elicitorOutputChannel": ["FPL/HPL1"],
+            "recordChannels": ["FPL/HPR1", "EPSHIELD_LEFT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2", "EPSHIELD_RIGHT_PDM_MIC1"],
+            "bleDelayPerTrial": 4000
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    }
+  ]
+}

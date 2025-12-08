@@ -1,96 +1,110 @@
 export enum AppState {
-    Welcome,
-    Admin,
-    Exam,
-    null
+  Welcome,
+  Admin,
+  Exam,
+  null,
 }
 
 export enum ProtocolState {
-    null,
-    Ready,
-    InProgress
+  null,
+  Ready,
+  InProgress,
 }
 
 export enum ExamState {
-    NotReady,
-    Finalized,
-    Ready,
-    Testing,
-    DeviceError
+  NotReady,
+  Finalized,
+  Ready,
+  Testing,
+  DeviceError,
 }
 
 export enum DeviceState {
-    Connected,
-    Disconnected,
-    Discovery,
-    Reprogram
+  Connected,
+  Disconnected,
+  Discovery,
+  Reprogram,
 }
 
 export const AvailableConnectableDevices: Array<string> = [
-    "Tympan",
-    // "CHA",
-    // "Svantek"
-]
+  'Tympan',
+  // "CHA",
+  // "Svantek"
+];
 
 export enum ResultsMode {
-    UploadOnly = "Upload Only",
-    ExportOnly = "Export Only",
-    UploadAndExport = "Upload and Export"
+  UploadOnly = 'Upload Only',
+  ExportOnly = 'Export Only',
+  UploadAndExport = 'Upload and Export',
 }
 
 export enum ProtocolServer {
-    LocalServer = "Local Server",
-    Gitlab = "Gitlab",
-    Developer = "Developer"
+  LocalServer = 'Local Server',
+  Gitlab = 'Gitlab',
+  Developer = 'Developer',
 }
 
 export enum DialogType {
-    Confirm,
-    Alert
+  Confirm,
+  Alert,
 }
 
 export enum SvantekState {
-    Connected,
-    Disconnected,
-    Recording
+  Connected,
+  Disconnected,
+  Recording,
 }
 
 export const BluetoothType = {
-  "BLUETOOTH": "Bluetooth 2.0",
-  "BLUETOOTH_LE": "Bluetooth 3.0",
-  "USB": "USB Host"
+  BLUETOOTH: 'Bluetooth 2.0',
+  BLUETOOTH_LE: 'Bluetooth 3.0',
+  USB: 'USB Host',
 };
 
 export const LevelUnits = {
-    "dB_SPL": "dB SPL",
-    "dB_HL": "dB HL"
-}
+  dB_SPL: 'dB SPL',
+  dB_HL: 'dB HL',
+};
 
+// import PurdueShakedown from '../../assets/protocols/purdue-shakedown/protocol.json';
+import develop from '../../assets/protocols/develop/protocol.json';
+import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
+export const DeveloperProtocols: { [key: string]: ProtocolSchemaInterface } = {
+  // "Purdue Shakedown": PurdueShakedown,
+  develop: develop,
+};
 
-import PurdueShakedown from '../../protocols/purdue-shakedown/protocol.json';
-import develop from '../../protocols/develop/protocol.json';
-export const DeveloperProtocols: any = {
-    "PurdueShakedown": PurdueShakedown,
-    "develop" : develop
-}
-
-import WahtsDeviceTestCalibration from '../../protocols/wahts-device-test/calibration.json';
+import WahtsDeviceTestCalibration from '../../assets/protocols/wahts-device-test/calibration.json';
 export const DeveloperProtocolsCalibration: any = {
-    "wahts-device-test": WahtsDeviceTestCalibration
-}
+  'wahts-device-test': WahtsDeviceTestCalibration,
+};
 
 export const bluetoothTimeout: number = 5000;
 
 export const listOfTabsintDirectories: Array<string> = [
-    ".tabsint-results-backup",
-    // ".tabsint-uuid",
-    "tabsint-configuration",
-    "tabsint-logs",
-    "tabsint-pdfs",
-    "tabsint-protocols",
-    "tabsint-results"
-]
+  '.tabsint-results-backup',
+  // ".tabsint-uuid",
+  'tabsint-configuration',
+  'tabsint-logs',
+  'tabsint-pdfs',
+  'tabsint-protocols',
+  'tabsint-results',
+];
 
-export const createResultsTableSql =  "CREATE TABLE IF NOT EXISTS results (msgID INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT)";
-export const createLogsTableSql =  "CREATE TABLE IF NOT EXISTS logs (msgID INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT)";
-export const deleteSql = "DELETE FROM logs WHERE logs.msgID IN (SELECT msgID FROM logs ORDER BY date LIMIT ?);";
+export const createResultsTableSql = 'CREATE TABLE IF NOT EXISTS results (msgID INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT)';
+export const createLogsTableSql = 'CREATE TABLE IF NOT EXISTS logs (msgID INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT)';
+export const deleteOldLogsSql = 'DELETE FROM logs WHERE logs.msgID IN (SELECT msgID FROM logs ORDER BY msgID LIMIT ?);';
+
+export const ResultType_Threshold = 'Threshold';
+export const ResultType_Outside = 'Hearing Potentially Outside Measurable Range';
+export const ResultType_DNC = 'Failed to Converge'; // DNC: Did Not Converge
+export const ResultType_Better = 'Hearing Potentially Better the Calibrated Range';
+export const ResultType_Beyond = 'Hearing Potentially Beyond the Calibrated Range';
+export const ResultType_MaximumMaskingLevel = 'Maximum Masking Level Reached. Could Not Determine Threshold';
+export const ResultType_MaskinDilemma = 'Could Not Mask Due To Masking Dilemma';
+
+export enum ResultType {
+  Threshold = 'Threshold',
+  Better = 'Hearing Potentially Better the Calibrated Range',
+  Beyond = 'Hearing Potentially Beyond the Calibrated Range',
+}

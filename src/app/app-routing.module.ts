@@ -5,14 +5,14 @@ import { AdminComponent } from './views/admin/admin.component';
 import { ExamComponent } from './views/exam/exam.component';
 
 const routes: Routes = [
-  { path: '',   redirectTo: 'welcome', pathMatch: 'full' },
-  { path: 'welcome', component: WelcomeComponent},
-  { path: 'exam', component: ExamComponent},
-  { path: 'admin', component: AdminComponent},
+  { path: '', redirectTo: 'welcome', pathMatch: 'full' },
+  { path: 'welcome', component: WelcomeComponent },
+  { path: 'exam', component: ExamComponent },
+  { path: 'admin', component: AdminComponent },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

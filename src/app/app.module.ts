@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms'
+import { FormsModule } from '@angular/forms';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatIconModule } from '@angular/material/icon';
@@ -42,21 +42,20 @@ import { ResultsModel } from './models/results/results-model.service';
 import { StateModel } from './models/state/state.service';
 
 // Utilities
-import { Notifications } from './utilities/notifications.service';
-import { SqLite } from './utilities/sqLite.service';
-import { Logger } from './utilities/logger.service';
-import { Paths } from './utilities/paths.service';
-import { DeviceUtil } from './utilities/device-utility';
+import { Notifications } from './services/notifications.service';
+import { SqLite } from './services/sqLite.service';
+import { Logger } from './services/logger.service';
+import { Paths } from './services/paths.service';
+import { DeviceUtil } from './services/device-utility.service';
 
 // Controllers
-import { FileService } from './utilities/file.service';
-import { ConfigService } from './controllers/config.service';
+import { FileService } from './services/file.service';
 import { VersionModel } from './models/version/version.service';
 import { ProtocolService } from './controllers/protocol.service';
 import { LocalServerService } from './controllers/local-server.service';
 import { ResultsService } from './controllers/results.service';
 import { ExamService } from './controllers/exam.service';
-import { TympanWrap } from './utilities/tympan-wrap.service';
+import { TympanWrap } from './services/tympan-wrap.service';
 import { TympanService } from './controllers/devices/tympan.service';
 import { AdminService } from './controllers/admin.service';
 import { TabsintConfigComponent } from './views/config/config-views/tabsint-config/tabsint-config.component';
@@ -81,8 +80,9 @@ import { ConnectedDevicesComponent } from './views/config/config-views/connected
 import { NewConnectionComponent } from './views/config/config-views/new-connection/new-connection.component';
 import { CalibrationExamComponent } from './views/response-area/response-areas/calibration-exam/calibration-exam-component/calibration-exam.component';
 import { CalibrationScreenComponent } from './views/response-area/response-areas/calibration-exam/calibration-screen/calibration-screen.component';
-import { MeasurementScreenComponent } from './views/response-area/response-areas/calibration-exam/measurement-screen/measurement-screen.component';
 import { MaxOutputScreenComponent } from './views/response-area/response-areas/calibration-exam/max-output-screen/max-output-screen.component';
+import { FPLCalibrationExamComponent } from './views/response-area/response-areas/fpl-calibration-exam/fpl-calibration-exam-component/fpl-calibration-exam.component';
+import { FPLCalibrationScreenComponent } from './views/response-area/response-areas/fpl-calibration-exam/fpl-calibration-screen/fpl-calibration-screen.component';
 import { DevicesService } from './controllers/devices.service';
 import { CalibrationResultsViewerComponent } from './views/response-area/response-areas/calibration-exam/calibration-results-viewer/calibration-results-viewer.component';
 import { ManualAudiometryResultViewerComponent } from './views/response-area/response-areas/manual-audiometry/manual-audiometry-result-viewer/manual-audiometry-result-viewer';
@@ -91,9 +91,17 @@ import { ExamDeviceErrorComponent } from './views/exam-device-error/exam-device-
 import { MultipleInputComponent } from './views/response-area/response-areas/multiple-input/multiple-input.component';
 import { LikertComponent } from './views/response-area/response-areas/likert/likert/likert.component';
 import { SweptDpoaeExamComponent } from './views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/swept-dpoae-exam.component';
-import { SweptDpoaeInputParametersComponent } from './views/response-area/response-areas/swept-dpoae/swept-dpoae-input-parameters/swept-dpoae-input-parameters.component';
 import { SweptDpoaeInProgressComponent } from './views/response-area/response-areas/swept-dpoae/swept-dpoae-in-progress/swept-dpoae-in-progress.component';
 import { SweptDpoaeResultsComponent } from './views/response-area/response-areas/swept-dpoae/swept-dpoae-results/swept-dpoae-results.component';
+import { WAIExamComponent } from './views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.component';
+import { WAIInProgressComponent } from './views/response-area/response-areas/wideband-acoustic-immittance/wai-in-progress/wai-in-progress.component';
+import { WAIResultsComponent } from './views/response-area/response-areas/wideband-acoustic-immittance/wai-results/wai-results.component';
+import { BuildDetailsComponent } from './views/build-details/build-details.component';
+import { MrtExamComponent } from './views/response-area/response-areas/mrt/mrt-exam/mrt-exam.component';
+import { MrtResultsComponent } from './views/response-area/response-areas/mrt/mrt-results/mrt-results.component';
+import { MemrExamComponent } from './views/response-area/response-areas/memr/memr-exam/memr-exam.component';
+import { InputParametersComponent } from './views/response-area/response-areas/shared/input-parameters/input-parameters.component';
+import { NetworkService } from './controllers/network.service';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -111,7 +119,6 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     ExamComponent,
     IndicatorComponent,
     NotificationsComponent,
-    TabsintConfigComponent,
     SoftwareConfigComponent,
     LogConfigComponent,
     DebugComponent,
@@ -136,16 +143,25 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     AudiogramComponent,
     CalibrationExamComponent,
     CalibrationScreenComponent,
-    MeasurementScreenComponent,
     MaxOutputScreenComponent,
+    FPLCalibrationExamComponent,
+    FPLCalibrationScreenComponent,
     CalibrationResultsViewerComponent,
     ExamDeviceErrorComponent,
     MultipleInputComponent,
     LikertComponent,
     SweptDpoaeExamComponent,
-    SweptDpoaeInputParametersComponent,
     SweptDpoaeInProgressComponent,
     SweptDpoaeResultsComponent,
+    WAIExamComponent,
+    WAIInProgressComponent,
+    WAIResultsComponent,
+    BuildDetailsComponent,
+    MrtExamComponent,
+    MrtResultsComponent,
+    MemrExamComponent,
+    InputParametersComponent,
+    TabsintConfigComponent,
   ],
   imports: [
     BrowserModule,
@@ -171,9 +187,9 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
       loader: {
         provide: TranslateLoader,
         useFactory: HttpLoaderFactory,
-        deps: [HttpClient]
-      }
-    })
+        deps: [HttpClient],
+      },
+    }),
   ],
   providers: [
     provideClientHydration(),
@@ -190,7 +206,6 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     Paths,
     DeviceUtil,
     FileService,
-    ConfigService,
     VersionModel,
     ProtocolService,
     LocalServerService,
@@ -200,9 +215,10 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     TranslateService,
     TympanWrap,
     TympanService,
-    DevicesService
+    DevicesService,
+    NetworkService,
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class AppModule { }
+export class AppModule {}

@@ -1,30 +1,30 @@
-import { Component, OnInit, OnDestroy, ViewChild, EventEmitter, Output} from '@angular/core';
-import { PageModel } from "../../../../../models/page/page.service";
+import { Component, OnInit, OnDestroy, ViewChild, EventEmitter, Output } from '@angular/core';
+import { PageModel } from '../../../../../models/page/page.service';
 import { Subscription } from 'rxjs';
 import { CalibrationExamInterface, EarData, ExamResponse } from './calibration-exam.interface';
-import { PageInterface } from "../../../../../models/page/page.interface";
+import { PageInterface } from '../../../../../models/page/page.interface';
 import { DevicesService } from '../../../../../controllers/devices.service';
-import { DeviceUtil } from '../../../../../utilities/device-utility';
+import { DeviceUtil } from '../../../../../services/device-utility.service';
 import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
-import { Logger } from '../../../../../utilities/logger.service';
+import { Logger } from '../../../../../services/logger.service';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { ResultsInterface } from '../../../../../models/results/results.interface';
 import { ExamService } from '../../../../../controllers/exam.service';
-import { MeasurementScreenComponent } from '../measurement-screen/measurement-screen.component';
 import { MaxOutputScreenComponent } from '../max-output-screen/max-output-screen.component';
 import { ButtonTextService } from '../../../../../controllers/button-text.service';
 import { CalibrationResultsViewerComponent } from '../calibration-results-viewer/calibration-results-viewer.component';
-
+import { CalibrationScreenComponent } from '../calibration-screen/calibration-screen.component';
+import { calibrationExamSchema } from '../../../../../../schema/response-areas/calibration-exam.schema';
 
 @Component({
   selector: 'app-calibration-exam',
   templateUrl: './calibration-exam.component.html',
-  styleUrls: ['./calibration-exam.component.css']
+  styleUrls: ['./calibration-exam.component.css'],
 })
 export class CalibrationExamComponent implements OnInit, OnDestroy {
   @ViewChild(CalibrationResultsViewerComponent) resultsViewer!: CalibrationResultsViewerComponent;
-  @ViewChild(MeasurementScreenComponent) measurementScreen!: MeasurementScreenComponent
-  @ViewChild(MaxOutputScreenComponent) maxOutputScreen!: MaxOutputScreenComponent
+  @ViewChild(MaxOutputScreenComponent) maxOutputScreen!: MaxOutputScreenComponent;
+  @ViewChild(CalibrationScreenComponent) calibrationScreen!: CalibrationScreenComponent;
   @Output() buttonTextChange = new EventEmitter<string>();
   showSkipButton: boolean = false;
   frequencies: number[] = [];
@@ -35,7 +35,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   targetLevel: number = 0;
   calFactor: number = -40;
   pageSubscription: Subscription | undefined;
-  tympanSubscription: Subscription | undefined;
+  resultsSubscription: Subscription | undefined;
   device: ConnectedDevice | undefined;
   earCup: string = 'Left';
   isPlaying: boolean = false;
@@ -46,58 +46,91 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   navigationHistory: { step: string; frequencyIndex: number; earCup: string }[] = [];
   userInput: number | null = null;
   poppedHistory: { step: string; frequencyIndex: number; earCup: string }[] = [];
+  batchFrequencies: boolean = calibrationExamSchema.properties.batchFrequencies.default;
 
-  constructor(private readonly pageModel: PageModel,
+  constructor(
+    private readonly pageModel: PageModel,
     private readonly devicesService: DevicesService,
-    private readonly deviceUtil: DeviceUtil, 
-    private readonly logger: Logger, 
+    private readonly deviceUtil: DeviceUtil,
+    private readonly logger: Logger,
     private readonly resultsModel: ResultsModel,
-    private readonly examService: ExamService, 
+    private readonly examService: ExamService,
     private readonly buttonTextService: ButtonTextService
   ) {
-    this.results = this.resultsModel.getResults()
+    this.results = this.resultsModel.getResults();
     this.examService.submit = () => {
-      this.nextStep();
-    };;
+      !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep();
+    };
     this.examService.back = () => {
-      this.previousStep();
-    };;
+      !this.devicesService.isDeviceMessagePending(this.device) && this.previousStep();
+    };
+    this.examService.reset = () => {
+      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault();
+    };
+    this.examService.submitPartial = () => {
+      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault();
+    };
+    this.examService.navigateToTarget = subProtocolId => {
+      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.navigateToTargetDefault(subProtocolId);
+    };
   }
 
   ngOnInit(): void {
-    this.pageSubscription = this.pageModel.currentPageSubject.subscribe(async (updatedPage: PageInterface) => {
-      if (updatedPage?.responseArea?.type === "calibrationResponseArea") {
+    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
+      this.results = updatedResults;
+    });
+    this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
+      if (updatedPage?.responseArea?.type === 'calibrationResponseArea') {
         const calibrationResponse = updatedPage?.responseArea as CalibrationExamInterface;
         if (calibrationResponse) {
           this.frequencies = calibrationResponse.frequencies ?? [500, 1000, 2000];
           this.targetLevels = calibrationResponse.targetLevels ?? [60, 70, 80];
+          this.batchFrequencies = calibrationResponse.batchFrequencies ?? this.batchFrequencies;
           this.initializeEarData();
           this.updateFrequencyAndTargetLevel();
           this.showResults = calibrationResponse.showResults ?? true;
-          this.device = this.deviceUtil.getDeviceFromTabsintId(calibrationResponse.tabsintId ?? "1");
-          if (this.device) {
-            let resp = await this.devicesService.queueExam(this.device, "HNCalibration", { "OutputChannel": this.earCup == "Left" ? "HPL0" : "HPR0" });
-            this.logger.debug("resp from tympan after calibration exam queue exams:" + resp);
-          } else {
-            this.logger.error("Error setting up HNCalibration exam");
-          }
+          await this.setupDevice(calibrationResponse);
         }
       }
     });
-    this.results.currentExam.responses = [];
+    this.resultsModel.updateCurrentExam({ responses: [] });
     this.updateButtonLabel();
   }
 
-  async ngOnDestroy(): Promise<void> {
+  ngOnDestroy(): void {
+    this.asyncNgOnDestroy();
+    this.examService.submit = this.examService.submitDefault.bind(this.examService);
+    this.examService.reset = this.examService.resetDefault.bind(this.examService);
+    this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);
+    this.examService.navigateToTarget = this.examService.navigateToTargetDefault.bind(this.examService);
+    this.examService.back = this.examService.backDefault.bind(this.examService);
+    this.buttonTextService.updateButtonText('Submit');
+
+    this.pageSubscription?.unsubscribe();
+    this.resultsSubscription?.unsubscribe();
+  }
+
+  /**
+   * Function to be called by ngOnDestroy to handle any asynchronous operations.
+   */
+  private async asyncNgOnDestroy(): Promise<void> {
     this.isPlaying = false;
     await this.stopTone();
-    let resp = await this.devicesService.abortExams(this.device!);
-    this.logger.debug("resp from tympan after calibration exam abort exams:" + resp);
-    this.examService.submit = this.examService.submitDefault.bind(this.examService);
-    this.examService.back = this.examService.back.bind(this.examService);
-    this.pageSubscription?.unsubscribe();
-    this.tympanSubscription?.unsubscribe();
-    this.buttonTextService.updateButtonText("Submit");
+    await this.devicesService.abortExams(this.device!);
+  }
+
+  private async setupDevice(updatedResponseArea: CalibrationExamInterface) {
+    this.device = this.deviceUtil.getDeviceFromTabsintId(updatedResponseArea.tabsintId ?? '1');
+
+    if (!this.device) {
+      await this.devicesService.deviceNotFound();
+      this.logger.error('Error setting up HNCalibration exam');
+    } else if (this.devicesService.isDeviceMessagePending(this.device, false)) {
+      await this.devicesService.deviceMessagePendingError();
+      this.logger.error('Error setting up HNCalibration exam: Device message pending');
+    } else {
+      await this.devicesService.queueExam(this.device, 'HNCalibration', { OutputChannel: this.earCup == 'Left' ? 'HPL0' : 'HPR0' });
+    }
   }
 
   async adjustCalFactor(amount: number): Promise<void> {
@@ -105,13 +138,14 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     if (this.isPlaying) {
       await this.playTone(this.calFactor);
     }
+    this.updateCalibrationData(this.currentFrequency, this.calFactor, null, null);
   }
 
   async togglePlay(): Promise<void> {
     this.isPlaying = !this.isPlaying;
     if (this.isPlaying) {
       if (this.currentStep === 'max-output') {
-        await this.playTone(0)
+        await this.playTone(0);
       } else {
         await this.playTone(this.calFactor);
       }
@@ -121,13 +155,10 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   }
 
   updateButtonLabel(): void {
-    if (this.currentStep === 'calibration') {
-      this.buttonTextService.updateButtonText('Next');
-    } else if (this.currentStep === 'measurement' || this.currentStep === 'max-output') {
-      this.buttonTextService.updateButtonText('Submit');
-    }
-    else if (this.currentStep === 'finished') {
+    if (this.currentStep === 'finished') {
       this.buttonTextService.updateButtonText('Finish Calibration');
+    } else {
+      this.buttonTextService.updateButtonText('Submit');
     }
   }
 
@@ -142,49 +173,48 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       case 'calibration':
         await this.handleCalibrationStep();
         break;
-      case 'measurement':
-        await this.handleMeasurementStep();
-        break;
       case 'max-output':
         await this.handleMaxOutputStep();
         break;
       default:
-        console.error(`Unknown step: ${this.currentStep}`);
+        this.logger.error(`Unknown step: ${this.currentStep}`);
         return;
     }
 
     this.updateFrequencyAndTargetLevel();
-    this.updateUserInput();
+    this.updateUserInputBasedOnStep();
     this.updateButtonLabel();
+
+    // The current step has now been updated, adjust tone as needed
+    if (this.isPlaying) {
+      if (this.currentStep === 'calibration') {
+        await this.playTone(this.calFactor);
+      } else if (this.currentStep === 'max-output') {
+        await this.playTone(0);
+      } else {
+        await this.stopTone();
+      }
+    }
   }
 
   private async handleCalibrationStep(): Promise<void> {
-    await this.playTone(this.calFactor);
-    this.currentStep = 'measurement';
-  }
-
-  private async handleMeasurementStep(): Promise<void> {
-    const isValid = this.measurementScreen?.validateAndProceed();
+    const isValid = this.calibrationScreen?.validateAndProceed();
     if (!isValid) {
-      this.navigationHistory.pop();
       return;
     }
+    await this.sendExamSubmission('CalibrationFactor');
 
-    if (this.currentFrequencyIndex < this.frequencies.length - 1) {
-      this.currentFrequencyIndex++;
-      await this.sendExamSubmission("CalibrationFactor");
-      this.currentStep = 'calibration';
+    if (this.batchFrequencies) {
+      if (this.currentFrequencyIndex < this.frequencies.length - 1) {
+        this.currentFrequencyIndex++;
+        this.currentStep = 'calibration';
+      } else {
+        this.currentFrequencyIndex = 0;
+        this.currentStep = 'max-output';
+      }
     } else {
-      await this.finalizeMeasurementStep();
+      this.currentStep = 'max-output';
     }
-  }
-
-  private async finalizeMeasurementStep(): Promise<void> {
-    this.currentStep = 'max-output';
-    this.isPlaying = false;
-    await this.sendExamSubmission("CalibrationFactor");
-    await this.stopTone();
-    this.currentFrequencyIndex = 0;
   }
 
   private async handleMaxOutputStep(): Promise<void> {
@@ -193,53 +223,35 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       this.navigationHistory.pop();
       return;
     }
-    await this.sendExamSubmission("MaximumOutputLevel");
-    this.handleNextEarOrFinish();
-  }
+    await this.sendExamSubmission('MaximumOutputLevel');
 
-  private async updateUserInput(): Promise<void> {
-    const currentEarData = this.earCup === 'Left' ? this.leftEarData : this.rightEarData;
-
-    switch (this.currentStep) {
-      case 'calibration':
-        this.userInput = Number(currentEarData[this.currentFrequency].measurement) || null;
-        if (this.isPlaying) {
-          await this.playTone(this.calFactor);
-        }
-        break;
-      case 'max-output':
-        this.userInput = Number(currentEarData[this.currentFrequency].maxOutput) || null;
-        if (this.isPlaying) {
-          await this.playTone(0);
-        }
-        break;
+    const nextStep = this.batchFrequencies ? 'max-output' : 'calibration';
+    if (this.currentFrequencyIndex < this.frequencies.length - 1) {
+      this.currentFrequencyIndex++;
+      this.currentStep = nextStep;
+    } else {
+      await this.handleNextEarOrFinish();
     }
   }
 
-
-  async handleEntryClicked(entry: { frequency: string, ear: string }): Promise<void> {
+  async handleEntryClicked(entry: { frequency: string; ear: string; step: string }): Promise<void> {
     this.showSkipButton = true;
     const frequencyIndex = this.frequencies.indexOf(+entry.frequency);
     if (frequencyIndex === -1) {
-      console.error(`Frequency ${entry.frequency} not found in frequencies array.`);
+      this.logger.error(`Frequency ${entry.frequency} not found in frequencies array.`);
       return;
     }
-    this.currentStep = 'calibration';
+    this.currentStep = entry.step;
     this.currentFrequency = +entry.frequency;
     this.earCup = entry.ear;
     this.currentFrequencyIndex = frequencyIndex;
-    const currentEarData = this.earCup === 'Left' ? this.leftEarData : this.rightEarData;
-    let resp = await this.devicesService.abortExams(this.device!);
-    this.logger.debug("resp from tympan after calibration exam abort exams:" + resp);
-    resp = await this.devicesService.queueExam(this.device!, "HNCalibration", { "OutputChannel": this.earCup == "Left" ? "HPL0" : "HPR0" });
-    this.logger.debug("resp from tympan after calibration exam queue exam:" + resp);
-    this.userInput = Number(currentEarData[this.currentFrequency].measurement) || null;
+    await this.devicesService.abortExams(this.device!);
+    await this.devicesService.queueExam(this.device!, 'HNCalibration', { OutputChannel: this.earCup == 'Left' ? 'HPL0' : 'HPR0' });
+    this.updateUserInputBasedOnStep();
+    this.updateButtonLabel();
     while (this.navigationHistory.length > 0) {
       const lastEntry = this.navigationHistory[this.navigationHistory.length - 1];
-      if (
-        lastEntry.frequencyIndex === this.currentFrequencyIndex &&
-        lastEntry.earCup === this.earCup && lastEntry.step==="calibration"
-      ) {
+      if (lastEntry.frequencyIndex === this.currentFrequencyIndex && lastEntry.earCup === this.earCup && lastEntry.step === entry.step) {
         const element = this.navigationHistory.pop()!;
         this.poppedHistory.push(element);
         break;
@@ -247,24 +259,22 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       this.poppedHistory.push(this.navigationHistory.pop()!); // Store popped entries
     }
     this.examService.submit = () => {
-      this.nextStep();
-    };;
-    this.updateButtonLabel();
+      !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep();
+    };
   }
-  
 
   async previousStep(): Promise<void> {
     if (this.navigationHistory.length === 0) return;
 
     const previousState = this.navigationHistory.pop()!;
     if (this.currentStep === 'finished') {
-        await this.handleFinishedStep();
+      await this.handleFinishedStep();
     }
 
     this.restorePreviousState(previousState);
 
     if (this.isStepOrEarCupChanged(previousState)) {
-        await this.handleStepOrEarCupChange();
+      await this.handleStepOrEarCupChange();
     }
 
     this.updateFrequencyAndTargetLevel();
@@ -272,60 +282,52 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     this.updateButtonLabel();
 
     if (this.isPlaying) {
-        this.togglePlay();
+      this.togglePlay();
     }
-}
+  }
 
-private async handleFinishedStep(): Promise<void> {
+  private async handleFinishedStep(): Promise<void> {
     this.examService.submit = () => {
-        this.nextStep();
+      !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep();
     };
 
-    let resp = await this.devicesService.abortExams(this.device!);
-    this.logger.debug("resp from tympan after calibration exam abort exams:" + resp);
+    await this.devicesService.abortExams(this.device!);
 
-    resp = await this.devicesService.queueExam(this.device!, "HNCalibration", {
-        "OutputChannel": this.earCup === "Left" ? "HPL0" : "HPR0",
+    await this.devicesService.queueExam(this.device!, 'HNCalibration', {
+      OutputChannel: this.earCup === 'Left' ? 'HPL0' : 'HPR0',
     });
-    this.logger.debug("resp from tympan after calibration exam queue exam:" + resp);
-}
+  }
 
-private restorePreviousState(previousState: any): void {
+  private restorePreviousState(previousState: any): void {
     this.currentStep = previousState.step;
     this.currentFrequencyIndex = previousState.frequencyIndex;
     this.earCup = previousState.earCup;
-}
+  }
 
-private isStepOrEarCupChanged(previousState: any): boolean {
+  private isStepOrEarCupChanged(previousState: any): boolean {
     return previousState.earCup !== this.earCup || this.currentStep === 'finished';
-}
+  }
 
-private async handleStepOrEarCupChange(): Promise<void> {
-    let resp = await this.devicesService.abortExams(this.device!);
-    this.logger.debug("resp from tympan after calibration exam abort exams:" + resp);
-
-    resp = await this.devicesService.queueExam(this.device!, "HNCalibration", {
-        "OutputChannel": this.earCup === "Left" ? "HPL0" : "HPR0",
+  private async handleStepOrEarCupChange(): Promise<void> {
+    await this.devicesService.abortExams(this.device!);
+    await this.devicesService.queueExam(this.device!, 'HNCalibration', {
+      OutputChannel: this.earCup === 'Left' ? 'HPL0' : 'HPR0',
     });
-    this.logger.debug("resp from tympan after calibration exam queue exam:" + resp);
-}
+  }
 
-private updateUserInputBasedOnStep(): void {
+  private updateUserInputBasedOnStep(): void {
     const currentEarData = this.earCup === 'Left' ? this.leftEarData : this.rightEarData;
 
     switch (this.currentStep) {
-        case 'calibration':
-            this.calFactor = currentEarData[this.currentFrequency]?.calFactor ?? this.calFactor;
-            break;
-        case 'measurement':
-            this.userInput = Number(currentEarData[this.currentFrequency]?.measurement) || null;
-            break;
-        case 'max-output':
-            this.userInput = Number(currentEarData[this.currentFrequency]?.maxOutput) || null;
-            break;
+      case 'calibration':
+        this.calFactor = currentEarData[this.currentFrequency]?.calFactor ?? this.calFactor;
+        this.userInput = Number(currentEarData[this.currentFrequency]?.measurement) || null;
+        break;
+      case 'max-output':
+        this.userInput = Number(currentEarData[this.currentFrequency]?.maxOutput) || null;
+        break;
     }
-}
-
+  }
 
   async skip(): Promise<void> {
     this.showSkipButton = false;
@@ -334,19 +336,17 @@ private updateUserInputBasedOnStep(): void {
       poppedEntry =>
         !this.navigationHistory.some(
           navEntry =>
-            navEntry.frequencyIndex === poppedEntry.frequencyIndex &&
-            navEntry.earCup === poppedEntry.earCup &&
-            navEntry.step === poppedEntry.step
+            navEntry.frequencyIndex === poppedEntry.frequencyIndex && navEntry.earCup === poppedEntry.earCup && navEntry.step === poppedEntry.step
         )
     );
-    restoredEntries = restoredEntries.reverse()
+    restoredEntries = restoredEntries.reverse();
     this.navigationHistory.push(...restoredEntries);
     this.poppedHistory = [];
     this.currentStep = 'finished';
-    this.examService.submit = this.examService.submitDefault.bind(this.examService); 
+    this.examService.submit = this.examService.submitDefault.bind(this.examService);
     this.updateButtonLabel();
     if (this.isPlaying) {
-      this.togglePlay()
+      this.togglePlay();
     }
     // let resp = await this.devicesService.abortExams(this.device!);
     await this.writeCalibrationResults();
@@ -367,14 +367,14 @@ private updateUserInputBasedOnStep(): void {
       this.earCup = 'Right';
       this.currentFrequencyIndex = 0;
       this.currentStep = 'calibration';
-      await this.writeCalibrationResults();
       this.isPlaying = false;
       await this.stopTone();
-      let resp = await this.devicesService.abortExams(this.device!);
-      this.logger.debug("resp from tympan after calibration exam abort exams:" + resp);
-      resp = await this.devicesService.queueExam(this.device!, "HNCalibration", { "OutputChannel": this.earCup == "Left" ? "HPL0" : "HPR0" });
-      this.logger.debug("resp from tympan after calibration exam queue exam:" + resp);
+      await this.writeCalibrationResults();
+      await this.devicesService.abortExams(this.device!);
+      await this.devicesService.queueExam(this.device!, 'HNCalibration', { OutputChannel: this.earCup == 'Left' ? 'HPL0' : 'HPR0' });
     } else {
+      this.isPlaying = false;
+      await this.stopTone();
       this.currentStep = 'finished';
       this.examService.submit = this.examService.submitDefault.bind(this.examService);
       this.saveResults();
@@ -394,7 +394,12 @@ private updateUserInputBasedOnStep(): void {
     });
   }
 
-  private updateCalibrationData(frequency: number, calFactor: number | null, measurement: number | null = null, maxOutput: number | null = null): void {
+  private updateCalibrationData(
+    frequency: number,
+    calFactor: number | null,
+    measurement: number | null = null,
+    maxOutput: number | null = null
+  ): void {
     const currentEarData = this.earCup === 'Left' ? this.leftEarData : this.rightEarData;
     if (calFactor !== null) {
       currentEarData[frequency].calFactor = calFactor;
@@ -409,62 +414,58 @@ private updateUserInputBasedOnStep(): void {
     }
   }
 
-  private async playTone(requestedLevel:number) {
+  private async playTone(requestedLevel: number) {
     const enableOutput = this.isPlaying;
-    let examProperties = {
-      "F": this.currentFrequency,
-      "RequestedLevel": requestedLevel,
-      EnableOutput: enableOutput
+    const examProperties = {
+      F: this.currentFrequency,
+      RequestedLevel: requestedLevel,
+      EnableOutput: enableOutput,
     };
-    let resp = await this.devicesService.examSubmission(this.device!, examProperties);
-    this.logger.debug("resp from tympan after calibration exam exam submission:" + resp);
+    await this.devicesService.examSubmission(this.device!, examProperties);
   }
 
-  
-  private async sendExamSubmission(mode: "MaximumOutputLevel" | "CalibrationFactor"): Promise<void> {
-    const level = mode === "MaximumOutputLevel"
-      ? this.getMaxOutputLevelForFrequency(this.currentFrequency)
-      : this.getMeasuredLevelForFrequency(this.currentFrequency);
-    const requestedLevel = mode === "CalibrationFactor" ? this.calFactor : 0;
+  private async sendExamSubmission(mode: 'MaximumOutputLevel' | 'CalibrationFactor'): Promise<void> {
+    const level =
+      mode === 'MaximumOutputLevel'
+        ? this.getMaxOutputLevelForFrequency(this.currentFrequency)
+        : this.getMeasuredLevelForFrequency(this.currentFrequency);
+    const requestedLevel = mode === 'CalibrationFactor' ? this.calFactor : 0;
     const enableOutput = this.isPlaying;
-  
+
     const examProperties = {
-      "F": this.currentFrequency,
-      "RequestedLevel": requestedLevel,
-      "EnableOutput": enableOutput,
-      "MeasuredLevel": level,
-      "Mode": mode
+      F: this.currentFrequency,
+      RequestedLevel: requestedLevel,
+      EnableOutput: enableOutput,
+      MeasuredLevel: level,
+      Mode: mode,
     };
-  
-    const resp = await this.devicesService.examSubmission(this.device!, examProperties);
-    this.logger.debug(`resp from tympan after calibration exam exam submission (${mode}): ${resp}`);
+
+    await this.devicesService.examSubmission(this.device!, examProperties);
   }
 
   private getMeasuredLevelForFrequency(currentFrequency: number) {
     const currentEarData = this.earCup === 'Left' ? this.leftEarData : this.rightEarData;
-    return currentEarData[currentFrequency].measurement
+    return currentEarData[currentFrequency].measurement;
   }
 
-  private getMaxOutputLevelForFrequency(currentFrequency:number){
+  private getMaxOutputLevelForFrequency(currentFrequency: number) {
     const currentEarData = this.earCup === 'Left' ? this.leftEarData : this.rightEarData;
-    return currentEarData[currentFrequency].maxOutput
+    return currentEarData[currentFrequency].maxOutput;
   }
-
 
   private async stopTone() {
-    let resp = await this.devicesService.examSubmission(this.device!, { "EnableOutput": false });
-    this.logger.debug("resp from tympan after calibration exam submission exams:" + resp);
+    await this.devicesService.examSubmission(this.device!, { EnableOutput: false });
   }
 
   private saveResults(): void {
     const calibrationResults = {
       leftEar: this.leftEarData,
-      rightEar: this.rightEarData
+      rightEar: this.rightEarData,
     };
     const newResponse: ExamResponse = {
       pageId: 'calibration-results',
       response: JSON.stringify(calibrationResults),
-      responseArea: 'calibrationExam'
+      responseArea: 'calibrationExam',
     };
 
     this.results.currentExam.responses.push(newResponse);
@@ -472,9 +473,8 @@ private updateUserInputBasedOnStep(): void {
 
   private async writeCalibrationResults(): Promise<void> {
     const calibrationData = {
-      "WriteCalibration": true
+      WriteCalibration: true,
     };
-    let resp = await this.devicesService.examSubmission(this.device!, calibrationData);
-    this.logger.debug("resp from tympan after calibration exam submission exams:" + resp);
+    await this.devicesService.examSubmission(this.device!, calibrationData);
   }
 }

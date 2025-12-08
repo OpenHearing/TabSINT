@@ -1,36 +1,50 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
-import { Logger } from '../../utilities/logger.service';
+import { Logger } from '../../services/logger.service';
 import { ExamState } from '../../utilities/constants';
+import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
   selector: 'exam-device-error-view',
   templateUrl: './exam-device-error.component.html',
-  styleUrl: '../../../styles.scss'
+  styleUrl: '../../../styles.scss',
 })
-
-export class ExamDeviceErrorComponent {
+export class ExamDeviceErrorComponent implements OnInit, OnDestroy {
   state: StateInterface;
   deviceErrors: Array<any> = [];
+  stateSubscription: Subscription | undefined;
 
   constructor(
     private readonly stateModel: StateModel,
-    private readonly logger: Logger,
+    private readonly logger: Logger
   ) {
     this.state = this.stateModel.getState();
-    this.state.deviceError?.slice(2).forEach((err: string|number) => {
-      if (typeof err === "string") {
-        this.deviceErrors.push(err);
-      } 
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
+      this.state = updatedState;
     });
-    
+    this.state.deviceError?.slice(2).forEach((err: string | number) => {
+      if (typeof err === 'string') {
+        this.deviceErrors.push(err);
+      }
+    });
+  }
+
+  ngOnInit(): void {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
+      this.state = updatedState;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.stateSubscription?.unsubscribe();
   }
 
   retry() {
-    console.log("retry button pressed, setting state to TESTING and clearing deviceError(s)");
-    this.state.examState = ExamState.Testing;
-    this.state.deviceError = [];
+    this.logger.debug('retry button pressed, setting state to TESTING and clearing deviceError(s)');
+    this.stateModel.updateState({
+      examState: ExamState.Testing,
+      deviceError: [],
+    });
   }
-
 }

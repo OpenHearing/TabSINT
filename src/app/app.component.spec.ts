@@ -7,15 +7,17 @@ import { TasksBannerComponent } from './views/tasks-banner/tasks-banner.componen
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AppComponent,TasksBannerComponent],
-      imports: [RouterOutlet,
+      declarations: [AppComponent, TasksBannerComponent],
+      imports: [
+        RouterOutlet,
         TranslateModule.forRoot({
-                  loader: {
-                    provide: TranslateLoader,
-                    useClass: TranslateFakeLoader
-                  }
-                })],
-      providers: [TranslateService, TranslateStore]
+          loader: {
+            provide: TranslateLoader,
+            useClass: TranslateFakeLoader,
+          },
+        }),
+      ],
+      providers: [TranslateService, TranslateStore],
     }).compileComponents();
   });
 
@@ -30,5 +32,4 @@ describe('AppComponent', () => {
     const app = fixture.componentInstance;
     expect(app.title).toEqual('tabsint');
   });
-
 });

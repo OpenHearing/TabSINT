@@ -1,17 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AppState } from '../../../../utilities/constants';
 import { StateModel } from '../../../../models/state/state.service';
 import { StateInterface } from '../../../../models/state/state.interface';
-
+import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
   selector: 'device-config-view',
   templateUrl: './device-config.component.html',
-  styleUrl: './device-config.component.css'
+  styleUrl: './device-config.component.css',
 })
-export class DeviceConfigComponent {
-  state: StateInterface
+export class DeviceConfigComponent implements OnInit, OnDestroy {
+  state: StateInterface;
+  stateSubscription: Subscription | undefined;
 
   constructor(
     private readonly stateModel: StateModel,
@@ -21,7 +22,13 @@ export class DeviceConfigComponent {
   }
 
   ngOnInit(): void {
-    this.state.appState = AppState.Admin;
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
+      this.state = updatedState;
+    });
+    this.stateModel.updateState({ appState: AppState.Admin });
   }
 
+  ngOnDestroy(): void {
+    this.stateSubscription?.unsubscribe();
+  }
 }

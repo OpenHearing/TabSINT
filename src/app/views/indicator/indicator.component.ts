@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -15,11 +15,12 @@ import { DeviceState, SvantekState } from '../../utilities/constants';
 @Component({
   selector: 'indicator-view',
   templateUrl: './indicator.component.html',
-  styleUrl: './indicator.component.css'
+  styleUrl: './indicator.component.css',
 })
-export class IndicatorComponent {
-  disk: DiskInterface;  
+export class IndicatorComponent implements OnInit, OnDestroy {
+  disk: DiskInterface;
   diskSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
   state: StateInterface;
   devices: DevicesInterface;
   SvantekState = SvantekState;
@@ -27,46 +28,38 @@ export class IndicatorComponent {
 
   constructor(
     private readonly deviceModel: DevicesModel,
-    private readonly diskModel: DiskModel, 
+    private readonly diskModel: DiskModel,
     private readonly stateModel: StateModel,
-    private readonly translate: TranslateService,
-  ) { 
+    private readonly translate: TranslateService
+  ) {
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();
     this.devices = this.deviceModel.getDevices();
   }
 
-  ngOnInit() {
-    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
-        this.disk = updatedDisk;
-    })    
+  ngOnInit(): void {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+    });
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
+      this.state = updatedState;
+    });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
   }
 
-  WiFiNotConnectedPopover = this.translate.instant(
-    "WiFi Not Connected"
-  );
+  WiFiNotConnectedPopover = this.translate.instant('WiFi Not Connected');
 
-  WiFiConnectedPopover = this.translate.instant(
-    "WiFi Connected"
-  );
+  WiFiConnectedPopover = this.translate.instant('WiFi Connected');
 
-  BluetoothConnectedPopover = this.translate.instant(
-    "Bluetooth Connected"
-  );
+  BluetoothConnectedPopover = this.translate.instant('Bluetooth Connected');
 
-  TympanConnectedPopover = this.translate.instant(
-    "Tympan Connected"
-  );
+  TympanConnectedPopover = this.translate.instant('Tympan Connected');
 
-  DosimeterConnectedPopover = this.translate.instant(
-    "Dosimeter Connected"
-  );
+  DosimeterConnectedPopover = this.translate.instant('Dosimeter Connected');
 
-  StreamingConnectionPopover = this.translate.instant(
-    "Streaming Connection Established"
-  );
+  StreamingConnectionPopover = this.translate.instant('Streaming Connection Established');
 }

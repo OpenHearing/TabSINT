@@ -1,12 +1,12 @@
 import { CommonResponseAreaInterface } from '../../../../interfaces/page-definition.interface';
 
 export interface MultipleInputInterface extends CommonResponseAreaInterface {
-    verticalSpacing?: number; // in pixels
-    textAlign?: 'left' | 'right' | 'center';
-    review?: boolean;
-    inputList: InputListItem[];
-  }
-  
+  verticalSpacing?: number; // in pixels
+  textAlign?: 'left' | 'right' | 'center';
+  review?: boolean;
+  inputList: InputListItem[];
+}
+
 export interface InputListItem {
   inputType?: 'text' | 'number' | 'dropdown' | 'date' | 'multi-dropdown';
   text: string;
@@ -17,6 +17,5 @@ export interface InputListItem {
     maxDate?: string; // ISO formatted string YYYY-MM-DD or 'today'
     minDate?: string; // ISO formatted string YYYY-MM-DD or 'today'
   };
-  notes?: string
+  notes?: string;
 }
-  

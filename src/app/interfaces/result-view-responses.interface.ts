@@ -1,13 +1,13 @@
-import { CommonResponseAreaInterface } from "../interfaces/page-definition.interface";
+import { CommonResponseAreaInterface } from '../interfaces/page-definition.interface';
 
 export interface ResultViewerResponseAreaInterface extends CommonResponseAreaInterface {
-    pageIdsToDisplay: string[];
+  pageIdsToDisplay: string[];
 }
 
 export interface ResultViewResponsesInterface {
-    title?: string;
-    questionMainText?: string;
-    questionSubText?: string;
-    instructionText?: string;
-    response?: string;
+  title?: string;
+  questionMainText?: string;
+  questionSubText?: string;
+  instructionText?: string;
+  response?: string;
 }

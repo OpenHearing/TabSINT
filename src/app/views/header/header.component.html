@@ -2,62 +2,63 @@
 
 <!-- Header -->
 <nav class="navbar navbar-default navbar-fixed-top sticky-top tablet-interface">
-    <div class="container-fluid">
-      <!-- <div class="row"> -->
-  
-        <!-- Exam Header -->
-        <div *ngIf="state.appState === AppState.Exam">
-          <h1 *ngIf="currentPage.id && state.examState !== ExamState.Ready" class="surveytitle truncate">
-            {{currentPage.id}}
-          </h1>
-        </div>
-  
-        <!-- Admin Header -->
-        <div *ngIf="state.appState !== AppState.Exam">
-          <h1 class="surveytitle truncate">
-            <!-- <ng-transclude></ng-transclude> -->
-            Admin View
-          </h1>
-        </div>
-  
-        <div class="text-right text-nowrap icons-right">
-  
-          <!-- resource indicators -->
-          <indicator-view></indicator-view>
-  
-          <!-- task list -->
-          <!-- <a href="#" class="surveytitle task-toggle" *ngIf="tasks.numOngoing() > 0 && tasks.hidden">
+  <div class="container-fluid">
+    <!-- <div class="row"> -->
+
+    <!-- Exam Header -->
+    <div *ngIf="state.appState === AppState.Exam">
+      <h1 *ngIf="currentPage.id && state.examState !== ExamState.Ready" class="surveytitle truncate">
+        {{ currentPage.id }}
+      </h1>
+    </div>
+
+    <!-- Admin Header -->
+    <div *ngIf="state.appState !== AppState.Exam">
+      <h1 class="surveytitle truncate">
+        <!-- <ng-transclude></ng-transclude> -->
+        Admin View
+      </h1>
+    </div>
+
+    <div class="text-right text-nowrap icons-right">
+      <!-- resource indicators -->
+      <indicator-view></indicator-view>
+
+      <!-- task list -->
+      <!-- <a href="#" class="surveytitle task-toggle" *ngIf="tasks.numOngoing() > 0 && tasks.hidden">
             <span (click)="tasks.unhide()"><i class="ion-clipboard"></i></span>
           </a> -->
 
-
-          <div class="col">
-            <div ngbDropdown display="dynamic" class="d-inline-block">
-              <button type="button" class="btn btn-outline-primary" id="header-dropdown-menu" ngbDropdownToggle>
-                <i class="bi bi-justify"></i>
+      <div class="col">
+        <div ngbDropdown display="dynamic" class="d-inline-block">
+          <button type="button" class="btn btn-outline-primary" id="header-dropdown-menu" ngbDropdownToggle>
+            <i class="bi bi-justify"></i>
+          </button>
+          <div ngbDropdownMenu aria-labelledby="header-dropdown-menu">
+            <!--  NOT YET IMPLEMENTED, DO NOT DELETE    <button ngbDropdownItem>Scan Configuration</button> -->
+            <button routerLink="/exam" ngbDropdownItem>Exam View</button>
+            <button (click)="adminService.onAdminViewClick()" ngbDropdownItem>Admin View</button>
+            <a href="https://tabsint.org/"><button ngbDropdownItem>Documentation</button></a>
+            <div *ngIf="(state.examState === ExamState.Testing || state.examState === ExamState.DeviceError) && state.appState === AppState.Exam">
+              <div class="dropdown-divider"></div>
+              <button (click)="resetExam()" ngbDropdownItem><i class="ion-close"></i> {{ "Reset Exam and Discard Results" | translate }}</button>
+              <button (click)="submitPartialExam()" ngbDropdownItem>
+                <i class="ion-refresh"></i> {{ "Reset Exam and Submit Partial Results" | translate }}
               </button>
-              <div ngbDropdownMenu aria-labelledby="header-dropdown-menu">
-                <!--  NOT YET IMPLEMENTED, DO NOT DELETE    <button ngbDropdownItem>Scan Configuration</button> -->
-                <button routerLink="/exam" ngbDropdownItem>Exam View</button>
-                <button (click)="adminService.onAdminViewClick()" ngbDropdownItem>Admin View</button>
-                <a href="https://tabsint.org/"><button ngbDropdownItem>Documentation</button></a> 
-                <div *ngIf="(state.examState === ExamState.Testing || state.examState === ExamState.DeviceError) && state.appState === AppState.Exam">
-                  <div class="dropdown-divider"></div>
-                  <button (click)="resetExam()" ngbDropdownItem><i class="ion-close"></i> {{'Reset Exam and Discard Results'|translate}}</button>
-                  <button (click)="submitPartialExam()" ngbDropdownItem><i class="ion-refresh"></i> {{'Reset Exam and Submit Partial Results'|translate}}</button>
-                  <div  *ngIf="protocol.activeProtocol?.navMenu ?? false">
-                    <div class="dropdown-divider"></div>
-                    <div *ngFor="let navMenuItem of protocol.activeProtocol!.navMenu; let i = index">
-                      <button (click)="navigateToNavMenuItem(navMenuItem)" ngbDropdownItem><i class="ion-menu">{{navMenuItem.text}}</i></button>
-                    </div>
-                  </div>
+              <div *ngIf="protocol.activeProtocol?.navMenu ?? false">
+                <div class="dropdown-divider"></div>
+                <div *ngFor="let navMenuItem of protocol.activeProtocol!.navMenu; let i = index">
+                  <button (click)="navigateToNavMenuItem(navMenuItem)" ngbDropdownItem>
+                    <i class="ion-menu">{{ navMenuItem.text }}</i>
+                  </button>
                 </div>
               </div>
             </div>
           </div>
-
-        <!-- </div> -->
+        </div>
       </div>
+
+      <!-- </div> -->
     </div>
-  </nav>
-  
+  </div>
+</nav>

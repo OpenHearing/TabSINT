@@ -1,8 +1,10 @@
-import { DeviceState } from "../utilities/constants";
+import { DeviceState } from '../utilities/constants';
 
 export interface ConnectedTympan {
-    deviceId: string;
-    name: string;
-    state: DeviceState;
-    msgId: number;
+  deviceId: string;
+  name: string;
+  state: DeviceState;
+  msgId: number;
+  maxByteLength: number;
+  isMsgPending: boolean;
 }

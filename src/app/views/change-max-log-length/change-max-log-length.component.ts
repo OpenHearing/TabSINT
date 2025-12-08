@@ -5,7 +5,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
 import { DiskInterface } from '../../models/disk/disk.interface';
-import { Logger } from '../../utilities/logger.service';
+import { Logger } from '../../services/logger.service';
 import { DiskModel } from '../../models/disk/disk.service';
 
 @Component({
@@ -13,7 +13,7 @@ import { DiskModel } from '../../models/disk/disk.service';
   standalone: true,
   templateUrl: './change-max-log-length.component.html',
   styleUrl: './change-max-log-length.component.css',
-  imports: [FormsModule, TranslateModule]
+  imports: [FormsModule, TranslateModule],
 })
 export class ChangeMaxLogLengthComponent {
   disk: DiskInterface;
@@ -21,27 +21,27 @@ export class ChangeMaxLogLengthComponent {
   maxLogLength: number | undefined;
 
   constructor(
-    private readonly logger: Logger, 
-    private readonly dialog: MatDialog, 
+    private readonly logger: Logger,
+    private readonly dialog: MatDialog,
     private readonly diskModel: DiskModel
   ) {
     this.disk = this.diskModel.getDisk();
     this.maxLogLength = this.disk.maxLogRows; // Initialize with the current max log length
   }
 
-  ngOnInit() {
-    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
-        this.disk = updatedDisk;
-    })    
+  ngOnInit(): void {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+    });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
   }
 
   save(maxLogLength: number | undefined) {
     if (maxLogLength != undefined) {
-      this.logger.debug("Max log length changed to: " + maxLogLength);
+      this.logger.debug('Max log length changed to: ' + maxLogLength);
       this.disk.maxLogRows = maxLogLength;
       this.diskModel.updateDiskModel('maxLogRows', maxLogLength);
     }
@@ -51,5 +51,4 @@ export class ChangeMaxLogLengthComponent {
   cancel() {
     this.dialog.closeAll();
   }
-  
 }

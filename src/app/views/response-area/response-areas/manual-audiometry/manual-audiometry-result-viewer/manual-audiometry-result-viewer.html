@@ -1,6 +1,6 @@
 <div class="audiometry-container">
-  <audiogram [dataStruct]="audiogramData"></audiogram>
-  
+  <audiogram [dataStruct]="audiogramData" [isManualExam]="false"></audiogram>
+
   <!-- Results Table Section -->
   <!-- Left Ear Table -->
   <div class="ear-table left-ear">
@@ -10,18 +10,20 @@
         <tr>
           <th>Frequency (Hz)</th>
           <ng-container *ngFor="let freq of audiogramData.frequencies; let k=index">
-            <th *ngIf="audiogramData.channels[k]==='left'">
-              {{ freq }}
-            </th>
+            <th *ngIf="audiogramData.channels[k]==='left'">{{ freq }}</th>
           </ng-container>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td>Threshold ({{audiogramData.levelUnits}})</td>
-          <ng-container  *ngFor="let threshold of audiogramData.thresholds; let k=index">
+          <ng-container *ngFor="let threshold of audiogramData.thresholds; let k=index">
             <td *ngIf="audiogramData.channels[k]==='left'">
-              {{ threshold || '' }}
+              <ng-container [ngSwitch]="audiogramData.resultTypes[k]">
+                <ng-container *ngSwitchCase="ResultType.Better"> ({{threshold}}) </ng-container>
+                <ng-container *ngSwitchCase="ResultType.Beyond"> ({{threshold}}+) </ng-container>
+                <ng-container *ngSwitchDefault> {{ threshold }} </ng-container>
+              </ng-container>
             </td>
           </ng-container>
         </tr>
@@ -37,19 +39,21 @@
         <tr>
           <th>Frequency (Hz)</th>
           <ng-container *ngFor="let freq of audiogramData.frequencies; let k=index">
-            <th *ngIf="audiogramData.channels[k]==='right'">
-              {{ freq }}
-            </th>
+            <th *ngIf="audiogramData.channels[k]==='right'">{{ freq }}</th>
           </ng-container>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td>Threshold ({{audiogramData.levelUnits}})</td>
-          
-          <ng-container  *ngFor="let threshold of audiogramData.thresholds; let k=index"> 
+
+          <ng-container *ngFor="let threshold of audiogramData.thresholds; let k=index">
             <td *ngIf="audiogramData.channels[k]==='right'">
-              {{ threshold || '' }}
+              <ng-container [ngSwitch]="audiogramData.resultTypes[k]">
+                <ng-container *ngSwitchCase="ResultType.Better"> ({{threshold}}) </ng-container>
+                <ng-container *ngSwitchCase="ResultType.Beyond"> ({{threshold}}+) </ng-container>
+                <ng-container *ngSwitchDefault> {{ threshold }} </ng-container>
+              </ng-container>
             </td>
           </ng-container>
         </tr>
@@ -63,5 +67,9 @@
     <p>DNC = Did not converge</p>
     <p>(x+) = Hearing potentially beyond the calibrated range</p>
     <p>(-x) = Hearing potentially better than the calibrated range</p>
+  </div>
+
+  <div class="submit-container">
+    <button class="submit-btn" (click)="submitResults()">Submit</button>
   </div>
 </div>

@@ -1,73 +1,88 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Tasks } from '../../../../utilities/tasks.service';
-import { SqLite } from '../../../../utilities/sqLite.service';
+import { SqLite } from '../../../../services/sqLite.service';
 import { StateModel } from '../../../../models/state/state.service';
 import { StateInterface } from '../../../../models/state/state.interface';
-import { FileService } from '../../../../utilities/file.service';
+import { FileService } from '../../../../services/file.service';
 import { DialogDataInterface } from '../../../../interfaces/dialog-data.interface';
 import { DialogType } from '../../../../utilities/constants';
-import { Notifications } from '../../../../utilities/notifications.service';
-import { Logger } from '../../../../utilities/logger.service';
+import { Notifications } from '../../../../services/notifications.service';
+import { Logger } from '../../../../services/logger.service';
+import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
   selector: 'log-config-view',
   templateUrl: './log-config.component.html',
-  styleUrl: './log-config.component.css'
+  styleUrl: './log-config.component.css',
 })
-export class LogConfigComponent {
-
+export class LogConfigComponent implements OnInit, OnDestroy {
   state: StateInterface;
   showLogs: boolean;
   logs?: string[] = [];
+  logsCount: number = 0;
+
+  // Subscriptions
+  logsCountSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
 
   constructor(
     public translate: TranslateService,
     public stateModel: StateModel,
     public logger: Logger,
     private readonly sqLite: SqLite,
-    private readonly fileService:FileService,
+    private readonly fileService: FileService,
     private readonly notifications: Notifications
-  ) { 
+  ) {
     this.state = this.stateModel.getState();
     this.showLogs = this.state.isPaneOpen.appLog;
   }
 
-  logsCount = this.sqLite.count['logs'];
+  ngOnInit(): void {
+    this.logsCountSubscription = this.sqLite.countSubject.subscribe(async updatedLogsCount => {
+      this.logsCount = updatedLogsCount['logs'];
+      this.logs = await this.sqLite.getAllLogs();
+    });
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
+      this.state = updatedState;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.logsCountSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
+  }
 
   async displayLogs() {
     this.showLogs = !this.showLogs;
-    this.logs = await this.sqLite.getAllLogs();
-    this.logsCount = this.sqLite.count['logs']
   }
 
   // async logExportUpload() {
-      
-  // } 
+
+  // }
 
   async logExportSave() {
-      this.logs = await this.sqLite.getAllLogs();
-      if (!this.logs || this.logs.length==0){
-        return;
+    this.logs = await this.sqLite.getAllLogs();
+    if (!this.logs || this.logs.length == 0) {
+      return;
+    }
+    let msg: DialogDataInterface = {
+      title: 'Confirm Export',
+      content: 'Are you sure you want to export the logs to tabsint-logs?',
+      type: DialogType.Confirm,
+    };
+    this.notifications.alert(msg).subscribe(async (result: string) => {
+      if (result === 'OK') {
+        this.exportLogs();
+        await this.sqLite.deleteAll('logs');
+        this.displayLogs();
+        this.logsCount = this.sqLite.count['logs'];
+      } else {
+        this.logger.debug('Export canceled.');
       }
-      let msg: DialogDataInterface = {
-        title: "Confirm Export",
-        content: "Are you sure you want to export the logs to tabsint-logs?",
-        type: DialogType.Confirm
-      };
-      this.notifications.alert(msg).subscribe(async (result: string) => {
-        if (result === "OK") {
-          this.exportLogs();
-          await this.sqLite.deleteAll("logs")
-          this.displayLogs()
-          this.logsCount = this.sqLite.count['logs']
-        } else {
-          this.logger.debug('Export canceled.');
-        }
-      });
+    });
   }
 
-  private async exportLogs(){
+  private async exportLogs() {
     try {
       const currentTimeStamp = new Date().toISOString();
       const formattedLogs = this.logs!.map((log, index) => ({
@@ -78,9 +93,8 @@ export class LogConfigComponent {
       const logData = JSON.stringify({ logs: formattedLogs }, null, 2);
       const filename = `tabsint-logs/${currentTimeStamp}.json`;
       await this.fileService.writeFile(filename, logData);
-  } catch (error){
-    console.error('Error exporting logs:', error);
+    } catch (error) {
+      this.logger.error('Error exporting logs: ' + JSON.stringify(error));
+    }
   }
-  }
-
 }

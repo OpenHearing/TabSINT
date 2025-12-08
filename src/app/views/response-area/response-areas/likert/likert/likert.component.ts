@@ -13,7 +13,7 @@ import { StateInterface } from '../../../../../models/state/state.interface';
 @Component({
   selector: 'likert-view',
   templateUrl: './likert.component.html',
-  styleUrl: './likert.component.css'
+  styleUrl: './likert.component.css',
 })
 export class LikertComponent implements OnInit, OnDestroy {
   @Output() responseChange = new EventEmitter<number>();
@@ -26,7 +26,7 @@ export class LikertComponent implements OnInit, OnDestroy {
 
   // Configuration variables
   levels: number = 10;
-  position: "above" | "below" = "above";
+  position: 'above' | 'below' = 'above';
   labels: string[] = [];
   useEmoticons: boolean = false;
   useSlider: boolean = true;
@@ -36,9 +36,11 @@ export class LikertComponent implements OnInit, OnDestroy {
   state: StateInterface;
 
   private pageSubscription?: Subscription;
+  stateSubscription: Subscription | undefined;
+  resultsSubscription: Subscription | undefined;
 
-  constructor (
-    private readonly examService: ExamService, 
+  constructor(
+    private readonly examService: ExamService,
     private readonly resultsModel: ResultsModel,
     private readonly pageModel: PageModel,
     private readonly stateModel: StateModel
@@ -47,9 +49,15 @@ export class LikertComponent implements OnInit, OnDestroy {
     this.state = this.stateModel.getState();
   }
 
-  ngOnInit() {
-    this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
-      if (updatedPage?.responseArea?.type == "likertResponseArea") {
+  ngOnInit(): void {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
+      this.state = updatedState;
+    });
+    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
+      this.results = updatedResults;
+    });
+    this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
+      if (updatedPage?.responseArea?.type == 'likertResponseArea') {
         setTimeout(() => {
           this.initializeResponseArea(updatedPage.responseArea as LikertInterface);
         });
@@ -57,13 +65,17 @@ export class LikertComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.pageSubscription?.unsubscribe();
+    this.resultsSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
   }
 
   onResponseChange(questionIndex: number, levelIndex: number | string | null): void {
-    this.results.currentPage.response[questionIndex] = levelIndex;
-    this.state.doesResponseExist = this.results.currentPage.response !== Array.from({ length: this.questions.length }, () => null);
+    this.resultsModel.updateCurrentPageResponseElement(questionIndex, levelIndex);
+    this.stateModel.updateState({
+      doesResponseExist: this.results.currentPage.response !== Array.from({ length: this.questions.length }, () => null),
+    });
     this.stateModel.setPageSubmittable();
     this.responseChange.emit(this.results.currentPage.response);
   }
@@ -81,7 +93,7 @@ export class LikertComponent implements OnInit, OnDestroy {
 
     if (isChecked) {
       res = null;
-      res = "NA";
+      res = 'NA';
     } else {
       res = this.sliderValue[questionIndex];
     }
@@ -103,7 +115,6 @@ export class LikertComponent implements OnInit, OnDestroy {
     this.useEmoticons = responseArea.useEmoticons ?? likertSchema.properties.useEmoticons.default;
     this.useSlider = responseArea.useSlider ?? likertSchema.properties.useSlider.default;
     this.naBox = responseArea.naBox ?? likertSchema.properties.naBox.default;
-    this.results.currentPage.response = Array.from({ length: this.questions.length }, () => null);
+    this.resultsModel.updateCurrentPage({ response: Array.from({ length: this.questions.length }, () => []) });
   }
-
 }

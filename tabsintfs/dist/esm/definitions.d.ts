@@ -7,6 +7,7 @@ export interface TabsintFsPlugin {
         rootUri: string | null;
         path: string;
         content?: string;
+        asBase64?: boolean;
     }): Promise<{
         uri: string;
     }>;
@@ -28,6 +29,7 @@ export interface TabsintFsPlugin {
         rootUri?: string | null;
         filePath?: string | undefined;
         fileUri?: string | undefined;
+        asBase64?: boolean | undefined;
     }): Promise<{
         contentUri: string;
         mimeType: string;

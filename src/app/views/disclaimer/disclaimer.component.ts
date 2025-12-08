@@ -12,7 +12,7 @@ import { DiskModel } from '../../models/disk/disk.service';
   standalone: true,
   templateUrl: './disclaimer.component.html',
   styleUrl: './disclaimer.component.css',
-  imports: [FormsModule, TranslateModule]
+  imports: [FormsModule, TranslateModule],
 })
 export class DisclaimerComponent {
   disk: DiskInterface;
@@ -20,24 +20,23 @@ export class DisclaimerComponent {
   pin: number | undefined;
 
   constructor(
-    private readonly dialog: MatDialog, 
+    private readonly dialog: MatDialog,
     private readonly diskModel: DiskModel
   ) {
     this.disk = this.diskModel.getDisk();
   }
 
-  ngOnInit() {
-    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
-        this.disk = updatedDisk;
-    })    
+  ngOnInit(): void {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+    });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
   }
 
   cancel() {
     this.dialog.closeAll();
   }
-
 }

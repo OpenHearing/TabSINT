@@ -8,10 +8,9 @@ describe('MultipleInputComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [MultipleInputComponent]
-    })
-    .compileComponents();
-    
+      declarations: [MultipleInputComponent],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(MultipleInputComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

@@ -15,16 +15,15 @@ describe('ConnectedDevicesComponent', () => {
         MatExpansionModule,
         BrowserAnimationsModule,
         TranslateModule.forRoot({
-                    loader: {
-                      provide: TranslateLoader,
-                      useClass: TranslateFakeLoader
-                    }
-                  })
+          loader: {
+            provide: TranslateLoader,
+            useClass: TranslateFakeLoader,
+          },
+        }),
       ],
-      providers: [TranslateService, TranslateStore]
-    })
-    .compileComponents();
-    
+      providers: [TranslateService, TranslateStore],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(ConnectedDevicesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

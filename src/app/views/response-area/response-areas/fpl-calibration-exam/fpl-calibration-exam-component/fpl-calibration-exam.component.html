@@ -1,0 +1,15 @@
+<div [ngSwitch]="currentStep">
+  <div *ngSwitchCase="'landing'">Press begin to start</div>
+
+  <app-fpl-calibration-screen
+    *ngSwitchCase="'calibration'"
+    [outputChannel]="outputChannel"
+    [PctComplete]="inProgressResults.PctComplete"
+    [shouldAbort]="shouldAbort"
+    [device]="device"
+    (runCalibration)="startWAIExam()"
+    (abortCalibration)="abort()">
+  </app-fpl-calibration-screen>
+
+  <div style="padding-top: 1em">{{ abortText }}</div>
+</div>

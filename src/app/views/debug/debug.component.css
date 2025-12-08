@@ -1,0 +1,104 @@
+.debug-view .collapsed {
+  display: none;
+}
+
+.debug-view .well {
+  padding: 15px;
+  margin-bottom: 20px;
+  background-color: #f5f5f5;
+  border: 1px solid #e3e3e3;
+  border-radius: 4px;
+}
+
+/* Debug section styling */
+.debug-section {
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+.debug-section-header {
+  width: 100%;
+  padding: 10px 15px;
+  background-color: #f8f9fa;
+  border: none;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s ease;
+}
+
+.debug-section-header:hover {
+  background-color: #e9ecef;
+}
+
+.debug-section-header:focus {
+  outline: 2px solid #007bff;
+  outline-offset: -2px;
+}
+
+.debug-section-header b {
+  margin: 0;
+  font-weight: bold;
+  color: #333;
+}
+
+.section-icon {
+  font-size: 14px;
+  color: #666;
+  transition: transform 0.2s ease;
+}
+
+.debug-section-content {
+  padding: 15px;
+  border-top: 1px solid #eee;
+  transition: all 0.3s ease;
+  max-height: 1000px;
+  overflow: hidden;
+}
+
+.debug-section-content.section-collapsed {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-top: none;
+}
+
+/* JSON viewer styling within sections */
+.debug-section-content ngx-json-viewer {
+  font-size: 12px;
+}
+
+/* Override default margins for better spacing */
+.debug-view b {
+  display: block;
+  margin: 0;
+}
+
+.debug-view b:first-child {
+  margin-top: 0;
+}
+
+/* Add some spacing between sections */
+.debug-section:not(:last-child) {
+  margin-bottom: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .debug-section-header {
+    padding: 8px 12px;
+  }
+
+  .debug-section-content {
+    padding: 12px;
+  }
+
+  .section-icon {
+    font-size: 12px;
+  }
+}

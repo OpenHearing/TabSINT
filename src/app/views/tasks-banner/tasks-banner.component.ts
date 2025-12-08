@@ -1,23 +1,23 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Tasks } from '../../utilities/tasks.service';
+import { Tasks } from '../../services/tasks.service';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-tasks-banner',
   templateUrl: './tasks-banner.component.html',
-  styleUrl: './tasks-banner.component.css'
+  styleUrl: './tasks-banner.component.css',
 })
-export class TasksBannerComponent implements OnInit, OnDestroy{
+export class TasksBannerComponent implements OnInit, OnDestroy {
   isVisible = false;
   taskSubscription!: Subscription;
   taskList: { [key: string]: string } = {};
 
-  constructor(private tasks: Tasks) {}
+  constructor(private readonly tasks: Tasks) {}
 
   ngOnInit(): void {
     this.taskSubscription = this.tasks.tasks$.subscribe(tasks => {
       this.taskList = tasks;
-      this.isVisible = Object.keys(this.taskList).length > 0;
+      this.isVisible = !this.tasks.hidden && Object.keys(this.taskList).length > 0;
     });
   }
 
@@ -29,9 +29,6 @@ export class TasksBannerComponent implements OnInit, OnDestroy{
 
   getOngoingTasksMessage(): string[] {
     const taskMessages = Object.values(this.taskList);
-    if (taskMessages){
-      return taskMessages
-    }
-    return []
+    return taskMessages || [];
   }
 }

@@ -40,12 +40,12 @@ chooseFolder() => Promise<{ uri: string; name: string; }>
 ### createPath(...)
 
 ```typescript
-createPath(options: { rootUri: string | undefined; path: string; content?: string; }) => Promise<{ uri: string; }>
+createPath(options: { rootUri: string | undefined; path: string; content?: string; asBase64?: boolean; }) => Promise<{ uri: string; }>
 ```
 
-| Param         | Type                                                              |
-| ------------- | ----------------------------------------------------------------- |
-| **`options`** | <code>{ rootUri: string; path: string; content?: string; }</code> |
+| Param         | Type                                                                                  |
+| ------------- | ------------------------------------------------------------------------------------- |
+| **`options`** | <code>{ rootUri: string; path: string; content?: string; asBase64?: boolean; }</code> |
 
 **Returns:** <code>Promise&lt;{ uri: string; }&gt;</code>
 
@@ -85,12 +85,12 @@ copyFileOrFolder(options: { rootUri: string | undefined; sourcePath: string; des
 ### readFile(...)
 
 ```typescript
-readFile(options: { rootUri?: string | undefined; filePath?: string | undefined; fileUri?: string | undefined; }) => Promise<{ contentUri: string; mimeType: string; name: string; size: number; content: string; }>
+readFile(options: { rootUri?: string | undefined; filePath?: string | undefined; fileUri?: string | undefined; asBase64?: boolean | undefined; }) => Promise<{ contentUri: string; mimeType: string; name: string; size: number; content: string; }>
 ```
 
-| Param         | Type                                                                    |
-| ------------- | ----------------------------------------------------------------------- |
-| **`options`** | <code>{ rootUri?: string; filePath?: string; fileUri?: string; }</code> |
+| Param         | Type                                                                                        |
+| ------------- | ------------------------------------------------------------------------------------------- |
+| **`options`** | <code>{ rootUri?: string; filePath?: string; fileUri?: string; asBase64?: boolean; }</code> |
 
 **Returns:** <code>Promise&lt;{ contentUri: string; mimeType: string; name: string; size: number; content: string; }&gt;</code>
 

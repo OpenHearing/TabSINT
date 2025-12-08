@@ -24,34 +24,33 @@ describe('AdminComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [
-        AdminComponent, 
-        HeaderComponent, 
-        IndicatorComponent, 
-        ConfigComponent, 
+        AdminComponent,
+        HeaderComponent,
+        IndicatorComponent,
+        ConfigComponent,
         TabsintConfigComponent,
         SoftwareConfigComponent,
         LogConfigComponent,
         DeviceConfigComponent,
         NewConnectionComponent,
-        ConnectedDevicesComponent
+        ConnectedDevicesComponent,
       ],
       imports: [
         FormsModule,
-        NgbModule, 
-        MatMenuModule, 
+        NgbModule,
+        MatMenuModule,
         MatExpansionModule,
         BrowserAnimationsModule,
         TranslateModule.forRoot({
-                  loader: {
-                    provide: TranslateLoader,
-                    useClass: TranslateFakeLoader
-                  }
-                })
+          loader: {
+            provide: TranslateLoader,
+            useClass: TranslateFakeLoader,
+          },
+        }),
       ],
-      providers: [TranslateService, TranslateStore]
-    })
-    .compileComponents();
-    
+      providers: [TranslateService, TranslateStore],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(AdminComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

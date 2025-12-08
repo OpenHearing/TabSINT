@@ -8,7 +8,7 @@ import { PageModel } from '../../models/page/page.service';
 @Component({
   selector: 'exam-testing-view',
   templateUrl: './exam-testing.component.html',
-  styleUrl: './exam-testing.component.css'
+  styleUrl: './exam-testing.component.css',
 })
 export class ExamTestingComponent implements OnInit, OnDestroy {
   pageSubscription: Subscription | undefined;
@@ -17,20 +17,22 @@ export class ExamTestingComponent implements OnInit, OnDestroy {
   questionMainText?: string;
   questionSubText?: string;
   instructionText?: string;
+  examType?: string;
 
   constructor(
     private readonly examService: ExamService,
     private readonly pageModel: PageModel,
     @Inject(WINDOW) private readonly window: Window
-  ) {  }
+  ) {}
 
   ngOnInit(): void {
-    this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
+    this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       this.title = updatedPage?.title;
       this.examTestingTitleClass = this.shrinkTitleIfTooLong(updatedPage?.questionMainText);
       this.questionMainText = updatedPage?.questionMainText;
       this.questionSubText = updatedPage?.questionSubText;
       this.instructionText = updatedPage?.instructionText;
+      this.examType = updatedPage?.responseArea?.type;
     });
   }
 
@@ -39,20 +41,18 @@ export class ExamTestingComponent implements OnInit, OnDestroy {
   }
 
   shrinkTitleIfTooLong(questionMainText: string | undefined) {
-    let styleObject = {"medium":false,"long":false};
+    let styleObject = { medium: false, long: false };
     if (!questionMainText) {
       // will use default styling, no additions necessary
-    } 
-    else if ( ((questionMainText.length >= 38) && (questionMainText.length < 48)) ) {
+    } else if (questionMainText.length >= 38 && questionMainText.length < 48) {
       styleObject.medium = true;
     } else if (questionMainText.length > 42) {
-      styleObject["long"] = true;
+      styleObject['long'] = true;
     }
-    return styleObject
+    return styleObject;
   }
 
   startExam() {
     this.examService.finishActivateMedia();
   }
-
 }
