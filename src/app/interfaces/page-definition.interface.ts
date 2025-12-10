@@ -11,6 +11,7 @@ import { WAIInterface } from '../views/response-area/response-areas/wideband-aco
 import { MrtExamInterface } from '../views/response-area/response-areas/mrt/mrt-exam/mrt-exam.interface';
 import { MemrExamInterface } from '../views/response-area/response-areas/memr/memr-exam/memr-exam.interface';
 import { FPLCalibrationExamInterface } from '../views/response-area/response-areas/fpl-calibration-exam/fpl-calibration-exam-component/fpl-calibration-exam.interface';
+import { CustomResponseAreaInterface } from '../views/response-area/response-areas/custom-response-area/custom-response-area.interface';
 
 export interface PageDefinition {
   id: string;
@@ -115,4 +116,5 @@ export type ResponseArea =
   | SweptDpoaeInterface
   | WAIInterface
   | MrtExamInterface
-  | MemrExamInterface;
+  | MemrExamInterface
+  | CustomResponseAreaInterface;

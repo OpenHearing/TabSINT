@@ -12,6 +12,8 @@ import { loadSweptDPOAENormativeData, loadWAINormativeData } from './load-normat
 import { MrtExamInterface } from '../views/response-area/response-areas/mrt/mrt-exam/mrt-exam.interface';
 import { WAIInterface } from '../views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.interface';
 import { SweptDpoaeInterface } from '../views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/swept-dpoae-exam.interface';
+import { CustomResponseAreaInterface } from '../views/response-area/response-areas/custom-response-area/custom-response-area.interface';
+import { loadCustomJS } from './load-custom-js';
 
 /**
  * Adds variables to the active protocol and generates a stack of pages.
@@ -24,11 +26,10 @@ import { SweptDpoaeInterface } from '../views/response-area/response-areas/swept
  * a dictionary of all pages, and a dictionary of all followOns
  */
 export async function processProtocol(loading: LoadingProtocolInterface): Promise<[ProtocolInterface, ProtocolDictionary, FollowOnsDictionary]> {
-  let rootProtocol = loading.protocol;
-  let calibration = loading.calibration;
-  let protocolDict: ProtocolDictionary = {};
-  let followOnsDict: FollowOnsDictionary = {};
-  let prefix = loading.meta.path!;
+  const rootProtocol = loading.protocol;
+  const protocolDict: ProtocolDictionary = {};
+  const followOnsDict: FollowOnsDictionary = {};
+  const prefix = loading.meta.path!;
 
   await iterateThroughPages(rootProtocol.pages);
 
@@ -104,6 +105,11 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
           page.responseArea = await loadSweptDPOAENormativeData(responseArea, loading.meta);
           break;
         }
+        case 'customResponseArea': {
+          const responseArea = page.responseArea as CustomResponseAreaInterface;
+          page.responseArea = await loadCustomJS(responseArea, loading.meta);
+          break;
+        }
         default:
           break;
       }
@@ -120,7 +126,7 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
 
   async function processFollowOns(followOns: FollowOnInterface[]) {
     for (const followOn of followOns) {
-      let id = getId(followOn.target);
+      const id = getId(followOn.target);
       followOnsDict[id] = followOn;
       await iterateThroughPages(followOn.target);
     }

@@ -31,7 +31,7 @@ describe('ExamService', () => {
       id: 'test-page',
       responseArea: {
         responseRequired: false,
-        type: 'text',
+        type: 'textboxResponseArea',
       },
       title: 'Mock Page',
       questionMainText: '',
@@ -141,7 +141,7 @@ describe('ExamService', () => {
           id: 'test-page',
           responseArea: {
             responseRequired: false,
-            type: 'text',
+            type: 'textboxResponseArea',
           },
           title: 'Mock Page',
           questionMainText: '',
@@ -334,7 +334,7 @@ describe('ExamService', () => {
 
     mockPageModel.getPage.and.returnValue({
       id: 'test-page',
-      responseArea: { responseRequired: false, type: 'text' },
+      responseArea: { responseRequired: false, type: 'textboxResponseArea' },
     });
 
     mockPageModel.updatePage.and.stub();
@@ -343,7 +343,7 @@ describe('ExamService', () => {
       id: 'test-page',
       responseArea: {
         responseRequired: false,
-        type: 'text',
+        type: 'textboxResponseArea',
       },
       title: 'Mock Page',
       questionMainText: '',
@@ -390,11 +390,11 @@ describe('ExamService', () => {
 
   it('should determine if a page response is required', () => {
     const mockPage = {
-      responseArea: { responseRequired: undefined, type: 'text' },
+      responseArea: { responseRequired: undefined, type: 'textboxResponseArea' },
     } as any;
     mockPageModel.getPage.and.returnValue(mockPage);
     spyOn<any>(examService, 'isPageResponseRequired').and.callThrough();
 
-    expect(examService.isPageResponseRequired()).toBeDefined();
+    expect(examService.isPageResponseRequired(mockPage)).toBeDefined();
   });
 });
