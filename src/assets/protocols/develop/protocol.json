@@ -490,7 +490,7 @@
             "fEnd": 4000,
             "normativeAbsorbanceDataPath": "wai-normative-absorbance-data-human.xlsx",
             "outputCalibrationType": "FPL",
-            "outputChannel": "FPL/HPL1",
+            "outputChannel": "HPL1",
             "numFrequencies": 128,
             "numSweeps": 5,
             "windowDuration": 0.1,
