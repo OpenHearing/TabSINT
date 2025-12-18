@@ -1,6 +1,6 @@
 # Notice
 
-Code and documentation Copyright (C) 2015-2025 Creare. Code released under the Apache v2 License, for educational or research purposes (and under a commercial license for other purposes) as provided under TabSINT Licenses. 
+Code and documentation Copyright (C) 2015-2026 Creare. Code released under the Apache v2 License, for educational or research purposes (and under a commercial license for other purposes) as provided under TabSINT Licenses.
 
 Creare has used commercially reasonable efforts in preparing the
 TabSINT Software but makes no guarantee or warranty of any nature
@@ -9,7 +9,7 @@ with regard to its use, performance, or operation.
 Creare makes no representations or warranties, and Creare shall
 incur no liability or other obligation of any nature whatsoever to
 any person from any and all actions arising from the use of this
-software.  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+software. THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
 FOR A PARTICULAR PURPOSE ARE HEREBY EXPRESSLY EXCLUDED. The final
 responsibility for the proper use and functioning of the TabSINT
 Software shall rest solely with the USAMRAA.
@@ -24,10 +24,9 @@ TabSINT is a platform for configuring and administering hearing-related exams, a
 
 ### Logging
 
-The TabSINT application includes a setting to upload application loags to private server to help debug remote issues. By default, this setting is disabled.  If this setting is enabled, the application may record device state, location, network status, or test results in the application log and upload this data to our server. Please ensure logging is set to the desired state before using the application. 
+The TabSINT application includes a setting to upload application loags to private server to help debug remote issues. By default, this setting is disabled. If this setting is enabled, the application may record device state, location, network status, or test results in the application log and upload this data to our server. Please ensure logging is set to the desired state before using the application.
 
 If you have questions regarding these policies, please contact tabsint@creare.com.
-
 
 ## Third-Party Licenses
 
@@ -36,4 +35,4 @@ We recommend you read their licenses, as their terms may differ from the terms d
 
 // TODO: Update third party licences
 
-Additional files included in the `/node_modules` directory are externally maintained libraries used by this software, which have their own licenses. 
+Additional files included in the `/node_modules` directory are externally maintained libraries used by this software, which have their own licenses.
