@@ -197,7 +197,7 @@ export class ExamService {
     const nextExamIndex = this.state.examIndex + 1;
     this.setFlags();
     const pageList = this.getPagesFromAdvancedLogic();
-    if (pageList!.length > 0) {
+    if (pageList !== undefined && pageList!.length > 0) {
       this.addPagesToStack(pageList!, nextExamIndex);
     }
     // make sure there are more pages, if not end the exam
