@@ -85,7 +85,7 @@ export class ExamService {
    */
   async begin() {
     this.resetProtocolStack();
-    this.addPagesToStack(this.protocol.activeProtocol?.pages!, 0);
+    this.addPagesToStack(this.protocol.activeProtocol!.pages!, 0);
     this.resultsService.initializeExamResults();
     this.startPage();
     this.stateModel.updateState({ examState: ExamState.Testing });
@@ -197,17 +197,15 @@ export class ExamService {
     const nextExamIndex = this.state.examIndex + 1;
     this.setFlags();
     const pageList = this.getPagesFromAdvancedLogic();
-    if (pageList != undefined) {
-      if (pageList.length > 0) {
-        this.addPagesToStack(pageList, nextExamIndex);
-      }
-      // make sure there are more pages, if not end the exam
-      if (this.pageModel.stack.length > nextExamIndex) {
-        this.stateModel.updateState({ examIndex: nextExamIndex });
-        this.startPage();
-      } else {
-        this.endExam();
-      }
+    if (pageList!.length > 0) {
+      this.addPagesToStack(pageList!, nextExamIndex);
+    }
+    // make sure there are more pages, if not end the exam
+    if (this.pageModel.stack.length > nextExamIndex) {
+      this.stateModel.updateState({ examIndex: nextExamIndex });
+      this.startPage();
+    } else {
+      this.endExam();
     }
   }
 
@@ -216,11 +214,8 @@ export class ExamService {
    * @models page
    */
   private getPagesFromAdvancedLogic() {
+    // TODO: Add repeats, and preProcess
     const pageList: PageTypes[] = [];
-    if (this.currentPage.skipIf) {
-      this.logger.debug('skipIf is not yet supported');
-      // push pages to list if needed
-    }
     if (this.currentPage.repeatPage) {
       this.logger.debug('repeatPage is not yet supported');
       // push pages to list if needed
@@ -249,7 +244,7 @@ export class ExamService {
    * @summary TBD.
    */
   private setFlags() {
-    // This function will check if flags need to be set and then set them accordingly.
+    // TODO: set flags
   }
 
   /** Handles special references
@@ -272,19 +267,29 @@ export class ExamService {
    */
   private startPage() {
     const nextPage: PageInterface = this.pageModel.stack[this.state.examIndex];
-    // Make sure isSubmittable gets set correctly
-    this.stateModel.updateState({
-      doesResponseExist: false,
-      isResponseRequired: this.isPageResponseRequired(nextPage),
-    });
-    if (nextPage?.isSubmittable === false) {
-      this.stateModel.updateState({ isSubmittable: false });
+
+    if (nextPage.skipIf && this.conditionalEvaluator(nextPage.skipIf)) {
+      this.advancePage();
+      /* Note that with this approach we skip over nexting the nextPage
+        I think that should be okay as the state.examIndex is being updated in advancePage
+        So what should happen here is we completely skip a page
+        There would be no record of it in the results and should never get rendered or anything
+      */
     } else {
-      this.stateModel.setPageSubmittable();
+      // Make sure isSubmittable gets set correctly
+      this.stateModel.updateState({
+        doesResponseExist: false,
+        isResponseRequired: this.isPageResponseRequired(nextPage),
+      });
+      if (nextPage?.isSubmittable === false) {
+        this.stateModel.updateState({ isSubmittable: false });
+      } else {
+        this.stateModel.setPageSubmittable();
+      }
+      this.pageModel.updatePage(nextPage);
+      this.resultsService.initializePageResults(this.currentPage);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-    this.pageModel.updatePage(nextPage);
-    this.resultsService.initializePageResults(this.currentPage);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   /** Parse page objects and add them to the pageModel.stack.
@@ -318,11 +323,7 @@ export class ExamService {
     let id: string | undefined = undefined;
     this.currentPage.followOns?.forEach((followOn: FollowOnInterface) => {
       // backward compatibility
-      if (followOn.conditional.split('==')[0] == 'result.response') {
-        followOn.conditional = followOn.conditional.replace('result.response', 'this.results.currentPage.response');
-      }
-
-      if (eval(followOn.conditional)) {
+      if (followOn.conditional && this.conditionalEvaluator(followOn.conditional)) {
         // TODO: handle if target is protocol or page
         if (isProtocolReferenceInterface(followOn.target)) {
           id = followOn.target.reference;
@@ -330,6 +331,16 @@ export class ExamService {
       }
     });
     return id;
+  }
+
+  /** Handles and evaluates the logic from a protocol conditional.
+   * @summary Handles and evaluates the logic from a protocol conditional.
+   */
+  private conditionalEvaluator(conditional: string) {
+    if (conditional.includes('result.response')) {
+      conditional = conditional.replace('result.response', 'this.results.currentPage.response');
+    }
+    return eval(conditional);
   }
 
   /** Resets the protocol stack and exam index.
