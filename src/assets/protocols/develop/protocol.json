@@ -667,7 +667,7 @@
         {
           "id": "advancedProtocolLogic_006",
           "title": "Page 3",
-          "instructionText": "If flags were set on the last page, something will happen",
+          "instructionText": "If flags were set on the last page, something should be logged",
           "responseArea": {
             "type": "textboxResponseArea",
             "rows": 3,
