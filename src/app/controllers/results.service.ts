@@ -72,6 +72,7 @@ export class ResultsService {
         calibrationPySVNRevision: this.protocol.activeProtocol!._calibrationPySVNRevision,
         calibrationPyManualReleaseDate: this.protocol.activeProtocol!._calibrationPyManualReleaseDate,
       },
+      flags: {},
     };
 
     this.resultsModel.updateCurrentExam(currentExam);

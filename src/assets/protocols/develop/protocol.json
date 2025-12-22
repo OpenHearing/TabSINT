@@ -643,6 +643,42 @@
           }
         },
         {
+          "id": "advancedProtocolLogic_005",
+          "title": "Page 5",
+          "instructionText": "This page can set testFlag",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "choices": [
+              {
+                "id": "Set testFlag"
+              },
+              {
+                "id": "Do not set testFlag"
+              }
+            ]
+          },
+          "setFlags": [
+            {
+              "id": "testFlag",
+              "conditional":"result.response==='Set testFlag'"
+            }
+          ]
+        },
+        {
+          "id": "advancedProtocolLogic_006",
+          "title": "Page 3",
+          "instructionText": "If flags were set on the last page, something will happen",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": false
+          },
+          "preProcessFunction": {
+            "filepath":"customPreprocess.js", 
+            "function":"testPreprocess"
+          }
+        },
+        {
           "id": "backtomain",
           "reference": "MainMenu"
         }

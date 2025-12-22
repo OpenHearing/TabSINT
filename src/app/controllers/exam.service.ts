@@ -1,21 +1,20 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { Subscription } from 'rxjs';
-
 import { isPageDefinition, isProtocolReferenceInterface, isProtocolSchemaInterface } from '../guards/type.guard';
 import { PageTypes } from '../types/custom-types';
-
 import { FollowOnInterface } from '../interfaces/page-definition.interface';
 import { ResultsInterface } from '../models/results/results.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
 import { PageInterface } from '../models/page/page.interface';
-
 import { ResultsService } from './results.service';
 import { ResultsModel } from '../models/results/results-model.service';
 import { StateModel } from '../models/state/state.service';
 import { ProtocolModel } from '../models/protocol/protocol-model.service';
 import { PageModel } from '../models/page/page.service';
-
+import { WINDOW } from '../utilities/window';
+import { FileService } from '../services/file.service';
+import { DiskModel } from '../models/disk/disk.service';
 import { DialogType, ExamState, AppState } from '../utilities/constants';
 import { Notifications } from '../services/notifications.service';
 import { Logger } from '../services/logger.service';
@@ -39,9 +38,12 @@ export class ExamService {
     private readonly resultsService: ResultsService,
     private readonly resultsModel: ResultsModel,
     private readonly pageModel: PageModel,
-    private readonly protocolM: ProtocolModel,
+    private readonly protocolModel: ProtocolModel,
     private readonly stateModel: StateModel,
-    private readonly notifications: Notifications
+    private readonly notifications: Notifications,
+    @Inject(WINDOW) private readonly window: any,
+    private readonly fileService: FileService,
+    private readonly diskModel: DiskModel
   ) {
     this.results = this.resultsModel.getResults();
     this.currentPage = this.pageModel.getPage();
@@ -49,7 +51,7 @@ export class ExamService {
       this.currentPage = updatedPage;
     });
     this.state = this.stateModel.getState();
-    this.protocol = this.protocolM.getProtocolModel();
+    this.protocol = this.protocolModel.getProtocolModel();
     this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
@@ -214,8 +216,6 @@ export class ExamService {
    * @models page
    */
   private getPagesFromAdvancedLogic() {
-    // TODO: Add preProcess
-
     const pageList: PageTypes[] = [];
     if (this.currentPage.repeatPage) {
       const repeatedPages = this.handleRepeats();
@@ -232,15 +232,11 @@ export class ExamService {
           this.handleSpecialReferences(nextID);
           return undefined;
         } else {
-          this.protocolM.protocolModel.activeProtocolDictionary![nextID].pages.forEach((page: PageTypes) => {
+          this.protocolModel.protocolModel.activeProtocolDictionary![nextID].pages.forEach((page: PageTypes) => {
             pageList.push(page);
           });
         }
       }
-    }
-    if (this.currentPage.preProcessFunction) {
-      this.logger.debug('preProcessFunction is not yet supported');
-      // push pages to list if needed and/or run preprocess function
     }
     return pageList;
   }
@@ -249,7 +245,31 @@ export class ExamService {
    * @summary TBD.
    */
   private setFlags() {
-    // TODO: set flags here
+    if (this.currentPage.setFlags) {
+      this.currentPage.setFlags.forEach(flags => {
+        if (this.conditionalEvaluator(flags.conditional)) {
+          this.results.currentExam.flags[flags.id] = true;
+          this.logger.debug('Flag set: ' + flags.id);
+        }
+      });
+    }
+  }
+
+  private async handlePreProcessFunctions(page: PageInterface) {
+    if (page.preProcessFunction) {
+      this.window.tabsint = {};
+      this.window.tabsint.logger = this.logger;
+      this.window.tabsint.examService = this;
+      this.window.tabsint.fileService = this.fileService;
+      this.window.tabsint.resultsService = this.resultsService;
+      this.window.tabsint.stateModel = this.stateModel;
+      this.window.tabsint.diskModel = this.diskModel;
+      this.window.tabsint.resultsModel = this.resultsModel;
+      this.window.tabsint.pageModel = this.pageModel;
+      this.window.tabsint.protocolModel = this.protocolModel;
+
+      eval(page.preProcessFunction.js! + '\n' + page.preProcessFunction.function + '()');
+    }
   }
 
   /** Handles special references
@@ -281,6 +301,7 @@ export class ExamService {
         There would be no record of it in the results and should never get rendered or anything
       */
     } else {
+      this.handlePreProcessFunctions(nextPage);
       // Make sure isSubmittable gets set correctly
       this.stateModel.updateState({
         doesResponseExist: false,
@@ -307,7 +328,7 @@ export class ExamService {
     let extraPages: PageTypes[];
     pages.forEach((page: PageTypes) => {
       if (isProtocolReferenceInterface(page)) {
-        extraPages = this.protocolM.protocolModel.activeProtocolDictionary![page?.reference].pages;
+        extraPages = this.protocolModel.protocolModel.activeProtocolDictionary![page?.reference].pages;
         this.addPagesToStack(extraPages, index + 1);
       } else if (isProtocolSchemaInterface(page)) {
         extraPages = page.pages;

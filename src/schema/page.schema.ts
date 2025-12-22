@@ -16,7 +16,7 @@ import { sweptDpoaeSchema } from './response-areas/swept-dpoae.schema';
 import { waiSchema } from './response-areas/wai.schema';
 import { mrtSchema } from './response-areas/mrt.schema';
 import { memrSchema } from './response-areas/memr.schema';
-import { CustomResponseAreaSchema } from './response-areas/external-response-area.schema';
+import { CustomResponseAreaSchema } from './response-areas/custom-response-area.schema';
 
 export const pageSchema: JSONSchemaType<PageDefinition> = {
   $id: 'page_base',
@@ -52,7 +52,16 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
       required: ['nRepeats'],
       nullable: true,
     },
-    preProcessFunction: { type: 'string', nullable: true },
+    preProcessFunction: {
+      type: 'object',
+      properties: {
+        filepath: { type: 'string', nullable: false },
+        function: { type: 'string', nullable: false },
+        js: { type: 'string', nullable: true },
+      },
+      required: ['filepath', 'function'],
+      nullable: true,
+    },
     wavfileStartDelayTime: { type: 'number', nullable: true, minimum: 0, default: 1000 },
     wavfiles: { type: 'array', items: wavfileSchema, nullable: true },
     chaWavFiles: {

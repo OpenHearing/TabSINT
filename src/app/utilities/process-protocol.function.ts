@@ -13,7 +13,7 @@ import { MrtExamInterface } from '../views/response-area/response-areas/mrt/mrt-
 import { WAIInterface } from '../views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.interface';
 import { SweptDpoaeInterface } from '../views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/swept-dpoae-exam.interface';
 import { CustomResponseAreaInterface } from '../views/response-area/response-areas/custom-response-area/custom-response-area.interface';
-import { loadCustomJS } from './load-custom-js';
+import { loadCustomJS, loadFile } from './load-custom-js';
 
 /**
  * Adds variables to the active protocol and generates a stack of pages.
@@ -70,7 +70,7 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
 
   async function processPage(page: PageDefinition) {
     if (page.preProcessFunction) {
-      rootProtocol._preProcessFunctionList!.push(page.preProcessFunction);
+      page.preProcessFunction.js = await loadFile(page.preProcessFunction.filepath, loading.meta);
     }
 
     // if (page.wavfiles) {

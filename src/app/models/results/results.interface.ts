@@ -3,6 +3,7 @@ import { ProtocolServer } from '../../utilities/constants';
 import { DevicesInterface } from '../devices/devices.interface';
 import { ProtocolInterface } from '../protocol/protocol.interface';
 import { VersionInterface } from '../version/version.interface';
+import { FlagsInterface } from './flags.interface';
 
 export interface ResultsInterface {
   currentPage: CurrentResults;
@@ -38,4 +39,5 @@ export interface ExamResults {
   };
   calibrationVersion: any; // TODO: define calibrationVersion interface
   devices: DevicesInterface;
+  flags: FlagsInterface;
 }

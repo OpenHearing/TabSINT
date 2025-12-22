@@ -40,35 +40,6 @@ function areThereMissingCommonWavCal(missingCommonWavCalList: number): boolean {
   return missingCommonWavCalList > 0;
 }
 
-export function checkPreProcessFunctions(activeProtocol: ProtocolInterface): Array<ProtocolErrorInterface> {
-  let errors = [];
-  let msg;
-  if (
-    (activeProtocol._missingPreProcessFunctionList!.length > 0 || activeProtocol._missingControllerList!.length > 0) &&
-    true // !activeProtocol!.js
-  ) {
-    msg =
-      'The protocol uses custom functions that should be found in a customJs.js file, but the protocol does not have a "js" field pointing to this file.  Please make sure the file exists and is referenced properly.';
-    errors.push({
-      type: 'Protocol',
-      error: msg,
-    });
-  }
-
-  if (activeProtocol._missingPreProcessFunctionList!.length > 0) {
-    msg =
-      'The protocol references the following undefined pre-process functions: ' +
-      activeProtocol._missingPreProcessFunctionList +
-      '.  Please make sure each function is defined properly in the customJs.js file.';
-    activeProtocol.errors!.push({
-      type: 'Protocol',
-      error: msg,
-    });
-  }
-
-  return errors;
-}
-
 export function checkControllers(activeProtocol: ProtocolInterface): Array<ProtocolErrorInterface> {
   let errors = [];
   let msg;

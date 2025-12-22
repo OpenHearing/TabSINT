@@ -27,8 +27,6 @@ export function initializeLoadingProtocol(
   function initializeVariables() {
     loading.protocol._exportCSV = false;
     loading.protocol._protocolIdDict = {};
-    loading.protocol._preProcessFunctionList = [];
-    loading.protocol._missingPreProcessFunctionList = [];
     loading.protocol._missingControllerList = [];
     loading.protocol._customHtmlList = [];
     loading.protocol._missingHtmlList = [];
