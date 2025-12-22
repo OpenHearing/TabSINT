@@ -615,11 +615,31 @@
         {
           "id": "advancedProtocolLogic_003",
           "title": "Page 3",
-          "instructionText": "Coming soon to a responseArea near you",
+          "instructionText": "You are now on page 3",
           "responseArea": {
             "type": "textboxResponseArea",
             "rows": 3,
             "responseRequired": false
+          }
+        },
+        {
+          "id": "advancedProtocolLogic_004",
+          "title": "Page 4",
+          "instructionText": "This page is repeatable up to a maximum of three times",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "choices": [
+              {
+                "id": "Repeat"
+              },
+              {
+                "id": "Do not repeat"
+              }
+            ]
+          },
+          "repeatPage": {
+            "nRepeats": 1,
+            "repeatIf": "result.response==='Repeat'"
           }
         },
         {

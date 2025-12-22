@@ -46,7 +46,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
     repeatPage: {
       type: 'object',
       properties: {
-        nRepeats: { type: 'number', default: 2 },
+        nRepeats: { type: 'number', default: 1 },
         repeatIf: { type: 'string', nullable: true },
       },
       required: ['nRepeats'],

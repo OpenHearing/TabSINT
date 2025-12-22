@@ -85,7 +85,7 @@ export class ExamService {
    */
   async begin() {
     this.resetProtocolStack();
-    this.addPagesToStack(this.protocol.activeProtocol!.pages!, 0);
+    this.addPagesToStack(this.protocol.activeProtocol!.pages, 0);
     this.resultsService.initializeExamResults();
     this.startPage();
     this.stateModel.updateState({ examState: ExamState.Testing });
@@ -197,8 +197,8 @@ export class ExamService {
     const nextExamIndex = this.state.examIndex + 1;
     this.setFlags();
     const pageList = this.getPagesFromAdvancedLogic();
-    if (pageList !== undefined && pageList!.length > 0) {
-      this.addPagesToStack(pageList!, nextExamIndex);
+    if (pageList !== undefined && pageList.length > 0) {
+      this.addPagesToStack(pageList, nextExamIndex);
     }
     // make sure there are more pages, if not end the exam
     if (this.pageModel.stack.length > nextExamIndex) {
@@ -214,11 +214,16 @@ export class ExamService {
    * @models page
    */
   private getPagesFromAdvancedLogic() {
-    // TODO: Add repeats, and preProcess
+    // TODO: Add preProcess
+
     const pageList: PageTypes[] = [];
     if (this.currentPage.repeatPage) {
-      this.logger.debug('repeatPage is not yet supported');
-      // push pages to list if needed
+      const repeatedPages = this.handleRepeats();
+      if (repeatedPages !== undefined) {
+        repeatedPages.forEach(repeatedPage => {
+          pageList.push(repeatedPage);
+        });
+      }
     }
     if (this.currentPage.followOns) {
       const nextID = this.findFollowOn();
@@ -244,7 +249,7 @@ export class ExamService {
    * @summary TBD.
    */
   private setFlags() {
-    // TODO: set flags
+    // TODO: set flags here
   }
 
   /** Handles special references
@@ -331,6 +336,35 @@ export class ExamService {
       }
     });
     return id;
+  }
+
+  private handleRepeats() {
+    let repeatedPages: PageTypes[] | undefined;
+    // repeat if repeatIf not present or it evaluates to true
+    if (
+      this.currentPage.repeatPage!.repeatIf === undefined ||
+      (this.currentPage.repeatPage!.repeatIf && this.conditionalEvaluator(this.currentPage.repeatPage!.repeatIf!))
+    ) {
+      // determine number of times page has been repeated
+      repeatedPages = [];
+      let currentRepeatCount = 0;
+      if (this.currentPage.id.includes('_repeated_')) {
+        currentRepeatCount = Number(this.currentPage.id.split('_repeated_')[this.currentPage.id.split('_repeated_').length - 1]);
+      }
+      // determine number of repititions
+      const numRepititions = Number(this.currentPage.repeatPage!.nRepeats);
+      // create desired number of repeated pages
+      for (let i = currentRepeatCount + 1; i < (numRepititions + currentRepeatCount + 1 < 4 ? numRepititions + currentRepeatCount + 1 : 4); i++) {
+        const repeatedPage: PageInterface = JSON.parse(JSON.stringify(this.currentPage));
+        if (i > 1) {
+          repeatedPage!.id = repeatedPage!.id.replace('_repeated_' + String(i - 1), '_repeated_' + String(i));
+        } else {
+          repeatedPage!.id = repeatedPage!.id + '_repeated_' + String(i);
+        }
+        repeatedPages?.push(repeatedPage);
+      }
+    }
+    return repeatedPages;
   }
 
   /** Handles and evaluates the logic from a protocol conditional.
