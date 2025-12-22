@@ -364,7 +364,7 @@ export class ExamService {
     // repeat if repeatIf not present or it evaluates to true
     if (
       this.currentPage.repeatPage!.repeatIf === undefined ||
-      (this.currentPage.repeatPage!.repeatIf && this.conditionalEvaluator(this.currentPage.repeatPage!.repeatIf!))
+      (this.currentPage.repeatPage!.repeatIf && this.conditionalEvaluator(this.currentPage.repeatPage!.repeatIf))
     ) {
       // determine number of times page has been repeated
       repeatedPages = [];
@@ -378,9 +378,9 @@ export class ExamService {
       for (let i = currentRepeatCount + 1; i < (numRepititions + currentRepeatCount + 1 < 4 ? numRepititions + currentRepeatCount + 1 : 4); i++) {
         const repeatedPage: PageInterface = JSON.parse(JSON.stringify(this.currentPage));
         if (i > 1) {
-          repeatedPage!.id = repeatedPage!.id.replace('_repeated_' + String(i - 1), '_repeated_' + String(i));
+          repeatedPage.id = repeatedPage.id.replace('_repeated_' + String(i - 1), '_repeated_' + String(i));
         } else {
-          repeatedPage!.id = repeatedPage!.id + '_repeated_' + String(i);
+          repeatedPage.id = repeatedPage.id + '_repeated_' + String(i);
         }
         repeatedPages?.push(repeatedPage);
       }
