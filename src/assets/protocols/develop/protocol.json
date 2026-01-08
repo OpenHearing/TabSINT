@@ -590,8 +590,6 @@
           "questionSubText": "Example of questionSubText",
           "instructionText": "Example of instructionText",
           "helpText": "Example of helpText",
-          "resultMainText": "Example of resultMainText",
-          "resultSubText": "Example of resultSubText",
           "isAutoSubmit": false,
           "responseArea": {
             "type": "customResponseArea",
