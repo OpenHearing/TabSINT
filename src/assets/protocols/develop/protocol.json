@@ -585,6 +585,13 @@
         {
           "id": "customResponseArea",
           "title": "Basic Button Results Test",
+          "questionPreMainText": "Example of questionPreMainText",
+          "questionMainText": "Example of questionMainText",
+          "questionSubText": "Example of questionSubText",
+          "instructionText": "Example of instructionText",
+          "helpText": "Example of helpText",
+          "resultMainText": "Example of resultMainText",
+          "resultSubText": "Example of resultSubText",
           "isAutoSubmit": false,
           "responseArea": {
             "type": "customResponseArea",
