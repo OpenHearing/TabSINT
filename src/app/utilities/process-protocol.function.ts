@@ -14,6 +14,7 @@ import { WAIInterface } from '../views/response-area/response-areas/wideband-aco
 import { SweptDpoaeInterface } from '../views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/swept-dpoae-exam.interface';
 import { CustomResponseAreaInterface } from '../views/response-area/response-areas/custom-response-area/custom-response-area.interface';
 import { loadCustomJS } from './load-custom-js';
+import { ProtocolServer } from './constants';
 
 /**
  * Adds variables to the active protocol and generates a stack of pages.
@@ -29,7 +30,7 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
   const rootProtocol = loading.protocol;
   const protocolDict: ProtocolDictionary = {};
   const followOnsDict: FollowOnsDictionary = {};
-  const prefix = loading.meta.path!;
+  const prefix = loading.meta.server == ProtocolServer.Developer ? 'assets/' + loading.meta.path! + '/' : loading.meta.contentURI + '/';
 
   await iterateThroughPages(rootProtocol.pages);
 
@@ -80,6 +81,10 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
     // }
 
     if (isPageDefinition(page) && page.image) {
+      /* TODO: prefix probably wont work for non-developer protocols
+      We probably just want to load the image as bytes and then jam that into the html
+      Maybe we can pass a contentURI + filepath but I doubt it
+       */
       page.image.path = prefix + page.image.path;
     }
 

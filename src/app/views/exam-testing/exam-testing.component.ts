@@ -1,4 +1,4 @@
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, Inject, OnDestroy, OnInit } from '@angular/core';
 import { ExamService } from '../../controllers/exam.service';
 import { WINDOW } from '../../utilities/window';
 import { Subscription } from 'rxjs';
@@ -6,11 +6,14 @@ import { PageInterface } from '../../models/page/page.interface';
 import { PageModel } from '../../models/page/page.service';
 
 @Component({
-  selector: 'exam-testing-view',
+  selector: 'app-exam-testing-view',
   templateUrl: './exam-testing.component.html',
   styleUrl: './exam-testing.component.css',
 })
 export class ExamTestingComponent implements OnInit, OnDestroy {
+  private readonly examService = inject(ExamService);
+  private readonly pageModel = inject(PageModel);
+
   pageSubscription: Subscription | undefined;
   examTestingTitleClass?: object;
   title?: string;
@@ -18,12 +21,10 @@ export class ExamTestingComponent implements OnInit, OnDestroy {
   questionSubText?: string;
   instructionText?: string;
   examType?: string;
+  imagePath: string = '';
+  imageWidth: string = '100%';
 
-  constructor(
-    private readonly examService: ExamService,
-    private readonly pageModel: PageModel,
-    @Inject(WINDOW) private readonly window: Window
-  ) {}
+  constructor(@Inject(WINDOW) private readonly window: Window) {} // eslint-disable-line
 
   ngOnInit(): void {
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
@@ -33,6 +34,10 @@ export class ExamTestingComponent implements OnInit, OnDestroy {
       this.questionSubText = updatedPage?.questionSubText;
       this.instructionText = updatedPage?.instructionText;
       this.examType = updatedPage?.responseArea?.type;
+      if (updatedPage?.image) {
+        this.imagePath = updatedPage.image.path;
+        this.imageWidth = updatedPage.image?.width ?? this.imageWidth;
+      }
     });
   }
 
@@ -41,7 +46,7 @@ export class ExamTestingComponent implements OnInit, OnDestroy {
   }
 
   shrinkTitleIfTooLong(questionMainText: string | undefined) {
-    let styleObject = { medium: false, long: false };
+    const styleObject = { medium: false, long: false };
     if (!questionMainText) {
       // will use default styling, no additions necessary
     } else if (questionMainText.length >= 38 && questionMainText.length < 48) {

@@ -1,8 +1,7 @@
-import { ProtocolMetaInterface } from "../models/protocol/protocol.interface";
-import { CustomResponseAreaInterface } from "../views/response-area/response-areas/custom-response-area/custom-response-area.interface";
+import { ProtocolMetaInterface } from '../models/protocol/protocol.interface';
+import { CustomResponseAreaInterface } from '../views/response-area/response-areas/custom-response-area/custom-response-area.interface';
 import { TabsintFs } from 'tabsintfs';
-import { ProtocolServer } from "./constants";
-
+import { ProtocolServer } from './constants';
 
 export async function loadCustomJS(responseArea: CustomResponseAreaInterface, meta: ProtocolMetaInterface): Promise<CustomResponseAreaInterface> {
   if (responseArea.jsFilePath === undefined || responseArea.htmlFilePath === undefined) {

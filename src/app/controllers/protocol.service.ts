@@ -84,15 +84,13 @@ export class ProtocolService {
       if (loadError === undefined) {
         await this.setCalibration();
         await this.initializeProtocol();
-        let validationError = await this.validateIfCalledFor();
-        // .then(loadCustomJs)
-        // .then(validateCustomJsIfCalledFor)
+        const validationError = await this.validateIfCalledFor();
         this.handleLoadErrors([validationError]);
       } else {
         this.notifyProtocolDidntLoadProperly();
       }
     } catch (error: unknown) {
-      let err = error instanceof Error ? error.message : error;
+      const err = error instanceof Error ? error.message : error;
       this.logger.error(`Could not load protocol. ${err}`);
       this.notifications
         .alert({
@@ -120,9 +118,9 @@ export class ProtocolService {
     }
 
     try {
-      let availProtocols = this.disk.availableProtocolsMeta;
+      const availProtocols = this.disk.availableProtocolsMeta;
       delete availProtocols[p.name];
-      let updatedAvailableProtocolsMeta = availProtocols;
+      const updatedAvailableProtocolsMeta = availProtocols;
       this.diskModel.updateDiskModel('availableProtocolsMeta', updatedAvailableProtocolsMeta);
     } catch (error) {
       this.logger.error('Error trying to delete files: ' + error);
@@ -171,7 +169,7 @@ export class ProtocolService {
     const isValid = validate(this.loading.protocol);
     this.logger.debug('AJV isValid? ' + isValid);
     this.logger.debug('AJV ERRORS: ' + validate.errors);
-    let ret: ProtocolValidationResultInterface = {
+    const ret: ProtocolValidationResultInterface = {
       valid: isValid,
       error: validate.errors,
     };
@@ -183,12 +181,12 @@ export class ProtocolService {
       if (this.loading.notify) {
         this.tasks.register('Validate Protocol', 'Validating Protocol... This process could take several minutes');
       }
-      let validationResult = await this.validate();
+      const validationResult = await this.validate();
       this.tasks.deregister('Validate Protocol');
       if (validationResult.valid) {
         return;
       } else {
-        let error: ProtocolErrorInterface = {
+        const error: ProtocolErrorInterface = {
           type: 'Protocol Schema',
           error: JSON.stringify(validationResult.error),
         };
@@ -200,10 +198,12 @@ export class ProtocolService {
     }
   }
 
-  private handleLoadErrors(errors: Array<ProtocolErrorInterface | undefined>) {
-    errors.forEach(error => {
-      if (!_.isUndefined(error)) this.protocolModel.activeProtocol!.errors!.push(error);
-    });
+  private handleLoadErrors(errors: (ProtocolErrorInterface | undefined)[]) {
+    if (errors) {
+      errors.forEach(error => {
+        if (!_.isUndefined(error)) this.protocolModel.activeProtocol!.errors!.push(error);
+      });
+    }
 
     this.tasks.register('Handle Load Errors', 'Checking Protocol Files...');
     let msg = checkCalibrationFiles(this.protocolModel.activeProtocol!);
@@ -227,7 +227,7 @@ export class ProtocolService {
 
     if (this.protocolModel.activeProtocol!.errors!.length > 0) {
       msg = 'The protocol contains the following errors and may not function properly.' + ' \n\n';
-      for (let err of this.protocolModel.activeProtocol!.errors!) {
+      for (const err of this.protocolModel.activeProtocol!.errors!) {
         msg += err.type + ':\n';
         msg += ' - ' + err.error + '\n';
       }

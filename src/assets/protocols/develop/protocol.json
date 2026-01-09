@@ -64,6 +64,15 @@
                 "id": "MEMR Exam (Between Blocks)"
               },
               {
+                "id": "Subject ID"
+              },
+              {
+                "id": "Checkbox"
+              },
+              {
+                "id": "Image"
+              },
+              {
                 "id": "External Response Area"
               },
               {
@@ -148,6 +157,24 @@
               "conditional": "result.response=='MEMR Exam (Between Blocks)'",
               "target": {
                 "reference": "MEMRExamBetweenBlocks"
+              }
+            },
+            {
+              "conditional": "result.response=='Subject ID'",
+              "target": {
+                "reference": "subjectId"
+              }
+            },
+            {
+              "conditional": "result.response=='Checkbox'",
+              "target": {
+                "reference": "checkbox"
+              }
+            },
+            {
+              "conditional": "result.response=='Image'",
+              "target": {
+                "reference": "image"
               }
             },
             {
@@ -571,6 +598,66 @@
             "elicitorOutputChannel": ["FPL/HPL1"],
             "recordChannels": ["FPL/HPR1", "EPSHIELD_LEFT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2", "EPSHIELD_RIGHT_PDM_MIC1"],
             "bleDelayPerTrial": 4000
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "subjectId",
+      "pages": [
+        {
+          "id": "subjectId",
+          "title": "Subject ID",
+          "responseArea": {
+            "type": "subjectIdResponseArea"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "checkbox",
+      "pages": [
+        {
+          "id": "checkbox",
+          "title": "Checkbox",
+          "responseArea": {
+            "type": "checkboxResponseArea",
+            "choices": [
+              {
+                "id": "Red"
+              },
+              {
+                "id": "Blue"
+              },
+              {
+                "id": "Green"
+              }
+            ],
+            "other" : "Some other color"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "image",
+      "pages": [
+        {
+          "id": "image",
+          "title": "Image",
+          "image": {
+            "path": "tabsint.svg"
           }
         },
         {

@@ -12,5 +12,10 @@
     <span [textContent]="instructionText" id="instructions-testing"></span>
   </p>
 
+  <!-- Images -->
+  <div class="multimedia" *ngIf="imagePath" [style.width]="imageWidth">
+    <img [src]="imagePath" class="img-responsive img-rounded" alt="" style="margin:0 auto;max-height:40vh;" />
+  </div>
+
   <response-area></response-area>
 </div>

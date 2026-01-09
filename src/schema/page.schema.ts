@@ -17,6 +17,8 @@ import { waiSchema } from './response-areas/wai.schema';
 import { mrtSchema } from './response-areas/mrt.schema';
 import { memrSchema } from './response-areas/memr.schema';
 import { CustomResponseAreaSchema } from './response-areas/external-response-area.schema';
+import { subjectIdSchema } from './response-areas/subject-id.schema';
+import { checkboxSchema } from './response-areas/checkbox.schema';
 
 export const pageSchema: JSONSchemaType<PageDefinition> = {
   $id: 'page_base',
@@ -88,6 +90,8 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
       oneOf: [
         textBoxSchema,
         textBoxResultViewerSchema,
+        subjectIdSchema,
+        checkboxSchema,
         multipleChoiceSchema,
         multipleInputSchema,
         manualAudiometrySchema,
