@@ -1,12 +1,13 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
-import { DevicesService } from '../../../../../controllers/devices.service';
-import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
+import { DevicesService } from '../../../../../services/devices/devices.service';
 import { StateModel } from '../../../../../models/state/state.service';
 import { StateInterface } from '../../../../../models/state/state.interface';
 import { WAIResultsInterface } from '../wai-exam/wai-exam.interface';
 import { Logger } from '../../../../../services/logger.service';
+import { IDevice } from '../../../../../interfaces/devices/device.interface';
+import { IDeviceResponse } from '../../../../../interfaces/devices/device-response.interface';
 
 @Component({
   selector: 'wai-in-progress',
@@ -14,7 +15,7 @@ import { Logger } from '../../../../../services/logger.service';
   styleUrl: './wai-in-progress.component.css',
 })
 export class WAIInProgressComponent implements OnInit, OnDestroy {
-  @Input() device: ConnectedDevice | undefined;
+  @Input() device: IDevice | undefined;
   @Input() parameterMap!: Map<string, string>;
   @Output() WAIResultsEvent = new EventEmitter<WAIResultsInterface>();
 
@@ -74,16 +75,16 @@ export class WAIInProgressComponent implements OnInit, OnDestroy {
       if (this.shouldAbort) return;
 
       this.isRequestingResults = true;
-      let resp = await this.devicesService.requestResults(this.device!);
+      const resp = await this.devicesService.requestResults(this.device!);
       this.isRequestingResults = false;
 
       if (this.shouldAbort) return;
 
       if (this.doesRespContainResults(resp)) {
-        this.inProgressResultsSubject.next(resp![1]);
+        this.inProgressResultsSubject.next(resp?.msg[1] as WAIResultsInterface);
         if (this.inProgressResults.State === 'DONE') {
           this.stateModel.updateState({ isSubmittable: true });
-          this.WAIResultsEvent.emit(resp![1]);
+          this.WAIResultsEvent.emit(resp?.msg[1] as WAIResultsInterface);
           this.instructions = "Exam complete, press 'Next' to continue.";
           this.changeDetectorRef.detectChanges();
           return;
@@ -98,8 +99,15 @@ export class WAIInProgressComponent implements OnInit, OnDestroy {
     pollResults();
   }
 
-  private doesRespContainResults(resp: any[] | undefined) {
-    return resp !== undefined && resp.length > 1 && resp[1] !== 'ERROR' && resp[2] !== 'timeout' && resp[2] !== 'byte timeout' && resp[1] !== 'OK';
+  private doesRespContainResults(resp: IDeviceResponse | undefined) {
+    return (
+      resp?.msg !== undefined &&
+      resp.msg.length > 1 &&
+      resp.msg[1] !== 'ERROR' &&
+      resp.msg[2] !== 'timeout' &&
+      resp.msg[2] !== 'byte timeout' &&
+      resp.msg[1] !== 'OK'
+    );
   }
 
   private async waitForRequestResultsDone() {

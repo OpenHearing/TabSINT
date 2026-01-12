@@ -1,17 +1,19 @@
-import { Component, Input, Output, SimpleChanges, EventEmitter } from '@angular/core';
-import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
+import { Component, Input, Output, SimpleChanges, EventEmitter, OnChanges } from '@angular/core';
+import { IDevice } from '../../../../../interfaces/devices/device.interface';
+import { DeviceStatus } from '../../../../../utilities/constants';
 
 @Component({
   selector: 'app-fpl-calibration-screen',
   templateUrl: './fpl-calibration-screen.component.html',
   styleUrls: ['./fpl-calibration-screen.component.css'],
 })
-export class FPLCalibrationScreenComponent {
+export class FPLCalibrationScreenComponent implements OnChanges {
+  DeviceStatus = DeviceStatus;
   calibrationRunning: boolean = false;
   @Input() outputChannel: string = '';
   @Input() PctComplete: number = 0;
   @Input() shouldAbort: boolean = false;
-  @Input() device: ConnectedDevice | undefined;
+  @Input() device: IDevice | undefined;
   @Output() runCalibration = new EventEmitter<void>();
   @Output() abortCalibration = new EventEmitter<void>();
 

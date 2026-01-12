@@ -30,7 +30,6 @@ export class DiskModel {
     audhere: diskSchema.properties.audhere.default,
     autoUpload: diskSchema.properties.autoUpload.default,
     availableProtocolsMeta: diskSchema.properties.availableProtocolsMeta.default,
-    cha: diskSchema.properties.cha.default,
     contentURI: diskSchema.properties.contentURI.default,
     debugMode: diskSchema.properties.debugMode.default,
     disableAudioStreaming: diskSchema.properties.disableAudioStreaming.default,
@@ -63,6 +62,7 @@ export class DiskModel {
     validateProtocols: diskSchema.properties.validateProtocols.default,
     versionCheck: diskSchema.properties.versionCheck.default,
     savedDevices: diskSchema.properties.savedDevices.default,
+    wahtsConnectionType: diskSchema.properties.wahtsConnectionType.default,
   };
 
   diskSubject = new BehaviorSubject<DiskInterface>(this.disk);

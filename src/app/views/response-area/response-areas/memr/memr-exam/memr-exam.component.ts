@@ -1,9 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { PageModel } from '../../../../../models/page/page.service';
-import { DevicesService } from '../../../../../controllers/devices.service';
-import { DialogType } from '../../../../../utilities/constants';
-import { DeviceUtil } from '../../../../../services/device-utility.service';
+import { DevicesService } from '../../../../../services/devices/devices.service';
+import { DeviceStatus, DeviceType, DialogType } from '../../../../../utilities/constants';
 import { Paths } from '../../../../../services/paths.service';
 import { Logger } from '../../../../../services/logger.service';
 import { Notifications } from '../../../../../services/notifications.service';
@@ -11,7 +10,7 @@ import { ResultsModel } from '../../../../../models/results/results-model.servic
 import { ExamService } from '../../../../../controllers/exam.service';
 import { ResultsInterface } from '../../../../../models/results/results.interface';
 import { PageInterface } from '../../../../../models/page/page.interface';
-import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
+import { IDevice } from '../../../../../interfaces/devices/device.interface';
 import { DialogDataInterface } from '../../../../../interfaces/dialog-data.interface';
 import { MemrExamInterface, MemrQueueExamInterface, MemrExamSubmissionInterface, MemrResultsInterface } from './memr-exam.interface';
 import { StateInterface } from '../../../../../models/state/state.interface';
@@ -20,7 +19,6 @@ import { pageSchema } from '../../../../../../schema/page.schema';
 import { memrSchema } from '../../../../../../schema/response-areas/memr.schema';
 import { getCurrentDatetime } from '../../../../../utilities/exam-helper-functions';
 
-
 @Component({
   selector: 'memr-exam',
   templateUrl: './memr-exam.component.html',
@@ -28,6 +26,7 @@ import { getCurrentDatetime } from '../../../../../utilities/exam-helper-functio
 })
 export class MemrExamComponent implements OnInit, OnDestroy {
   // Core Data
+  DeviceStatus = DeviceStatus;
   results: ResultsInterface;
   state: StateInterface;
   memrResults?: MemrResultsInterface;
@@ -53,9 +52,10 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   trialsPerBlock: number = 0;
   blockCount: number = 0;
   currentBlockIndex: number = -1;
-  device: ConnectedDevice | undefined;
+  device: IDevice | undefined;
 
   // Configuration Variables
+  allowableDevices = [DeviceType.Tympan];
   isAutoSubmit: boolean = pageSchema.properties.isAutoSubmit.default;
   currentStep: string = 'Ready';
   chinchillaType = 'Chinchilla';
@@ -76,7 +76,6 @@ export class MemrExamComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly devicesService: DevicesService,
-    private readonly deviceUtil: DeviceUtil,
     private readonly examService: ExamService,
     private readonly logger: Logger,
     private readonly notifications: Notifications,
@@ -290,8 +289,8 @@ export class MemrExamComponent implements OnInit, OnDestroy {
    * Set up the device id for the exam.
    * @param updatedResponseArea The response area used to determine the device id.
    */
-  private setupDevice(updatedResponseArea: MemrExamInterface): void {
-    this.device = this.deviceUtil.getDeviceFromTabsintId(updatedResponseArea.tabsintId ?? '1');
+  private async setupDevice(updatedResponseArea: MemrExamInterface): Promise<void> {
+    this.device = await this.devicesService.getDeviceOrDefault(updatedResponseArea.tabsintId, this.allowableDevices);
   }
 
   /**
@@ -384,19 +383,25 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   private startPollingResults(): void {
     const pollResults = async () => {
       try {
-        let resp = this.device ? await this.devicesService.requestResults(this.device) : undefined;
-        if (typeof resp![1] === 'object' && 'State' in resp![1] && this.knownStates.includes(resp![1].State)) {
-          if (resp![1].State === 'READY') {
-            await this.handleReadyState(resp![1]);
+        const resp = this.device ? await this.devicesService.requestResults(this.device) : undefined;
+        if (
+          resp?.msg &&
+          typeof resp.msg[1] === 'object' &&
+          resp.msg[1] !== null &&
+          'State' in resp.msg[1] &&
+          this.knownStates.includes(String(resp.msg[1].State))
+        ) {
+          if (resp.msg[1].State === 'READY') {
+            await this.handleReadyState(resp.msg[1] as MemrResultsInterface);
             if (this.currentBlockIndex < this.blockCount) {
               setTimeout(pollResults, 500);
             }
           } else {
-            await this.updateExamProgress(resp![1]);
+            await this.updateExamProgress(resp.msg[1] as MemrResultsInterface);
             setTimeout(pollResults, 500);
           }
         } else {
-          this.logger.debug('In memr-exam.component.ts runExamSubmissions, unknown result: ' + resp![1]);
+          this.logger.debug('In memr-exam.component.ts runExamSubmissions, unknown result: ' + resp?.msg[1]);
           await this.finishExam();
         }
       } catch (error) {

@@ -18,12 +18,12 @@ import { ProtocolModel } from './models/protocol/protocol-model.service';
 import { SqLite } from './services/sqLite.service';
 import { Logger } from './services/logger.service';
 import { FileService } from './services/file.service';
-import { DeviceUtil } from './services/device-utility.service';
 import { DisclaimerComponent } from './views/disclaimer/disclaimer.component';
 import { StateModel } from './models/state/state.service';
 import { NetworkService } from './controllers/network.service';
 import { Notifications } from './services/notifications.service';
 import { DialogType } from './utilities/constants';
+import { DevicesService } from './services/devices/devices.service';
 
 @Component({
   selector: 'app-root',
@@ -38,7 +38,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly appModel: AppModel,
-    private readonly deviceUtil: DeviceUtil,
+    private readonly devicesService: DevicesService,
     private readonly diskModel: DiskModel,
     private readonly fileService: FileService,
     private readonly logger: Logger,
@@ -104,7 +104,7 @@ export class AppComponent implements OnInit, OnDestroy {
       this.openDisclaimer();
       this.diskModel.updateDiskModel('showDisclaimer', false);
     }
-    this.deviceUtil.addSavedDevices();
+    await this.devicesService.initialize();
     this.setupNetworkListener();
   }
 

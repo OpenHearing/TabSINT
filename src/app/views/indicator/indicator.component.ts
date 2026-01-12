@@ -1,16 +1,15 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { map, Observable, Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { StateInterface } from '../../models/state/state.interface';
-import { DevicesInterface } from '../../models/devices/devices.interface';
 
 import { DiskModel } from '../../models/disk/disk.service';
 import { StateModel } from '../../models/state/state.service';
-import { DevicesModel } from '../../models/devices/devices-model.service';
 
-import { DeviceState, SvantekState } from '../../utilities/constants';
+import { DeviceState, DeviceType, SvantekState } from '../../utilities/constants';
+import { DevicesService } from '../../services/devices/devices.service';
 
 @Component({
   selector: 'indicator-view',
@@ -21,20 +20,26 @@ export class IndicatorComponent implements OnInit, OnDestroy {
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
+  devicesSubscription: Subscription | undefined;
   state: StateInterface;
-  devices: DevicesInterface;
   SvantekState = SvantekState;
-  DeviceState = DeviceState;
+  hasConnectedTympan: Observable<boolean>;
+  hasConnectedWahts: Observable<boolean>;
 
   constructor(
-    private readonly deviceModel: DevicesModel,
+    private readonly devicesService: DevicesService,
     private readonly diskModel: DiskModel,
     private readonly stateModel: StateModel,
     private readonly translate: TranslateService
   ) {
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();
-    this.devices = this.deviceModel.getDevices();
+    this.hasConnectedTympan = this.devicesService.devices.pipe(
+      map(devices => devices.some(device => device.type === DeviceType.Tympan && device.state === DeviceState.Connected))
+    );
+    this.hasConnectedWahts = this.devicesService.devices.pipe(
+      map(devices => devices.some(device => device.type === DeviceType.Wahts && device.state === DeviceState.Connected))
+    );
   }
 
   ngOnInit(): void {
@@ -58,6 +63,8 @@ export class IndicatorComponent implements OnInit, OnDestroy {
   BluetoothConnectedPopover = this.translate.instant('Bluetooth Connected');
 
   TympanConnectedPopover = this.translate.instant('Tympan Connected');
+
+  WahtsConnectedPopover = this.translate.instant('WAHTS Connected');
 
   DosimeterConnectedPopover = this.translate.instant('Dosimeter Connected');
 

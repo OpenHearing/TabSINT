@@ -1,8 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { PageModel } from '../../../../../models/page/page.service';
-import { DevicesService } from '../../../../../controllers/devices.service';
-import { DeviceUtil } from '../../../../../services/device-utility.service';
+import { DevicesService } from '../../../../../services/devices/devices.service';
 import { Logger } from '../../../../../services/logger.service';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { ExamService } from '../../../../../controllers/exam.service';
@@ -11,9 +10,10 @@ import { PageInterface } from '../../../../../models/page/page.interface';
 import { WAIInterface, WAIResultsInterface } from './wai-exam.interface';
 import { NormativeDataInterface } from '../../../../../interfaces/normative-data-interface';
 import { ButtonTextService } from '../../../../../controllers/button-text.service';
-import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
+import { IDevice } from '../../../../../interfaces/devices/device.interface';
 import { waiSchema } from '../../../../../../schema/response-areas/wai.schema';
 import { handleOutputCalibration, getCurrentDatetime } from '../../../../../utilities/exam-helper-functions';
+import { DeviceType } from '../../../../../utilities/constants';
 
 @Component({
   selector: 'wai-exam',
@@ -47,12 +47,13 @@ export class WAIExamComponent implements OnInit, OnDestroy {
   pageSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
   currentStep: string = 'input-parameters';
-  device: ConnectedDevice | undefined;
+  device: IDevice | undefined;
   waiResults: WAIResultsInterface = {
     State: 'READY',
     PctComplete: 0,
   };
   inputParameterMap: Map<string, string> = new Map(); // Parameter map to display the user input parameters
+  allowableDevices = [DeviceType.Tympan];
 
   // Set default dimensions and margins
   margin = { top: 20, right: 30, bottom: 60, left: 70, spacerW: 80, spacerH: 70 };
@@ -63,7 +64,6 @@ export class WAIExamComponent implements OnInit, OnDestroy {
   constructor(
     private readonly pageModel: PageModel,
     private readonly devicesService: DevicesService,
-    private readonly deviceUtil: DeviceUtil,
     private readonly logger: Logger,
     private readonly resultsModel: ResultsModel,
     private readonly examService: ExamService,
@@ -176,7 +176,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
   }
 
   private async beginExam() {
-    this.device = this.deviceUtil.getDeviceFromTabsintId(this.tabsintId);
+    this.device = await this.devicesService.getDeviceOrDefault(this.tabsintId, this.allowableDevices);
     if (this.device) {
       const examProperties: any = {
         FStart: this.fStart,

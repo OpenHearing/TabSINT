@@ -32,6 +32,30 @@
   <div class="row pad-top">
     <div class="col-12">
       <h5>Preferences</h5>
+
+      <!-- WAHTS Connection Type -->
+      <div class="row pad-top">
+        <div class="col-6"><label translate for="wahtsConnectionType">WAHTS Connection Type:</label></div>
+        <div ngbDropdown class="col-2 dropdown-width" display="dynamic">
+          <button type="button" class="btn btn-default btn-block dropdown-toggle" id="wahtsConnectionType" ngbDropdownToggle>
+            {{ (disk | async)?.wahtsConnectionType ?? "Select One" }}
+          </button>
+          <div ngbDropdownMenu aria-labelledby="wahtsConnectionType">
+            <button *ngFor="let bluetoothType of BluetoothType | keyvalue" ngbDropdownItem (click)="changeWahtsConnectionType(bluetoothType.value)">
+              {{ bluetoothType.value }}
+            </button>
+          </div>
+        </div>
+        <div class="col-2"></div>
+        <div class="col-1" title="{{ 'WAHTS Communication Help' | translate }}">
+          <i [matMenuTriggerFor]="wahtsCommunicationHelpMenu" class="ion-help-circled"></i>
+        </div>
+        <mat-menu #wahtsCommunicationHelpMenu="matMenu">
+          <button mat-menu-item>
+            <div [innerHTML]="wahtsCommunicationPopover"></div>
+          </button>
+        </mat-menu>
+      </div>
     </div>
   </div>
 </div>

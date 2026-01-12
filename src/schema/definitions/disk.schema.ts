@@ -2,11 +2,11 @@ import { JSONSchemaType } from 'ajv';
 import { DiskInterface } from '../../app/models/disk/disk.interface';
 import { protocolMetaSchema } from './protocol-meta.schema';
 import { gitlabConfigSchema } from './gitlab-config.schema';
-import { ProtocolServer, ResultsMode } from '../../app/utilities/constants';
+import { BluetoothType, ProtocolServer, ResultsMode } from '../../app/utilities/constants';
 import { uploadSummarySchema } from './upload-summary.schema';
 import { mediaReposSchema } from './media-repos.schema';
-import { savedDevicesSchema } from './saved-devices.schema';
 import { nullable } from '../../app/utilities/safe-parsing';
+import { savedDeviceSchema } from './saved-device.schema';
 
 export const diskSchema: JSONSchemaType<DiskInterface> = {
   type: 'object',
@@ -45,17 +45,6 @@ export const diskSchema: JSONSchemaType<DiskInterface> = {
         },
       },
       required: ['develop'],
-    },
-    cha: {
-      type: 'object',
-      properties: {
-        bluetoothType: { type: 'string', default: '' },
-        embeddedFirmwareBuildDate: { type: 'string', default: '' },
-        embeddedFirmwareTag: { type: 'string', default: '' },
-        myCha: { type: 'string', default: '' },
-      },
-      default: { bluetoothType: '', embeddedFirmwareBuildDate: '', embeddedFirmwareTag: '', myCha: '' },
-      required: ['bluetoothType', 'embeddedFirmwareBuildDate', 'embeddedFirmwareTag', 'myCha'],
     },
     contentURI: { type: 'string', default: null },
     debugMode: { type: 'boolean', default: false },
@@ -162,14 +151,8 @@ export const diskSchema: JSONSchemaType<DiskInterface> = {
     uploadSummary: { type: 'array', items: uploadSummarySchema, default: [] },
     validateProtocols: { type: 'boolean', default: true },
     versionCheck: { type: 'boolean', default: false },
-    savedDevices: {
-      ...savedDevicesSchema,
-      default: {
-        tympan: savedDevicesSchema.properties.tympan.default,
-        cha: savedDevicesSchema.properties.cha.default,
-        svantek: savedDevicesSchema.properties.svantek.default,
-      },
-    },
+    savedDevices: { type: 'array', items: savedDeviceSchema, default: [] },
+    wahtsConnectionType: { type: 'string', enum: Object.values(BluetoothType), default: BluetoothType.BLUETOOTH_LE },
   },
   required: [
     'adminSkipMode',
@@ -178,7 +161,6 @@ export const diskSchema: JSONSchemaType<DiskInterface> = {
     'audhere',
     'autoUpload',
     'availableProtocolsMeta',
-    'cha',
     'contentURI',
     'debugMode',
     'disableLogs',
@@ -210,5 +192,6 @@ export const diskSchema: JSONSchemaType<DiskInterface> = {
     'validateProtocols',
     'versionCheck',
     'savedDevices',
+    'wahtsConnectionType',
   ],
 };

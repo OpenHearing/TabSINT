@@ -3,9 +3,7 @@ import { PageModel } from '../../../../../models/page/page.service';
 import { Subscription } from 'rxjs';
 import { CalibrationExamInterface, EarData, ExamResponse } from './calibration-exam.interface';
 import { PageInterface } from '../../../../../models/page/page.interface';
-import { DevicesService } from '../../../../../controllers/devices.service';
-import { DeviceUtil } from '../../../../../services/device-utility.service';
-import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
+import { DevicesService } from '../../../../../services/devices/devices.service';
 import { Logger } from '../../../../../services/logger.service';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { ResultsInterface } from '../../../../../models/results/results.interface';
@@ -15,6 +13,8 @@ import { ButtonTextService } from '../../../../../controllers/button-text.servic
 import { CalibrationResultsViewerComponent } from '../calibration-results-viewer/calibration-results-viewer.component';
 import { CalibrationScreenComponent } from '../calibration-screen/calibration-screen.component';
 import { calibrationExamSchema } from '../../../../../../schema/response-areas/calibration-exam.schema';
+import { IDevice } from '../../../../../interfaces/devices/device.interface';
+import { DeviceType } from '../../../../../utilities/constants';
 
 @Component({
   selector: 'app-calibration-exam',
@@ -26,6 +26,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   @ViewChild(MaxOutputScreenComponent) maxOutputScreen!: MaxOutputScreenComponent;
   @ViewChild(CalibrationScreenComponent) calibrationScreen!: CalibrationScreenComponent;
   @Output() buttonTextChange = new EventEmitter<string>();
+  allowableDevices = [DeviceType.Tympan];
   showSkipButton: boolean = false;
   frequencies: number[] = [];
   targetLevels: number[] = [];
@@ -36,7 +37,8 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   calFactor: number = -40;
   pageSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
-  device: ConnectedDevice | undefined;
+  devicesSubscription: Subscription | undefined;
+  device: IDevice | undefined;
   earCup: string = 'Left';
   isPlaying: boolean = false;
   leftEarData: Record<number, EarData> = {};
@@ -51,7 +53,6 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   constructor(
     private readonly pageModel: PageModel,
     private readonly devicesService: DevicesService,
-    private readonly deviceUtil: DeviceUtil,
     private readonly logger: Logger,
     private readonly resultsModel: ResultsModel,
     private readonly examService: ExamService,
@@ -120,7 +121,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   }
 
   private async setupDevice(updatedResponseArea: CalibrationExamInterface) {
-    this.device = this.deviceUtil.getDeviceFromTabsintId(updatedResponseArea.tabsintId ?? '1');
+    this.device = await this.devicesService.getDeviceOrDefault(updatedResponseArea.tabsintId, this.allowableDevices);
 
     if (!this.device) {
       await this.devicesService.deviceNotFound();

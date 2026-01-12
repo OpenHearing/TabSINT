@@ -1,6 +1,6 @@
+import { IDeviceMetadata } from '../../interfaces/devices/device-metadata.interface';
 import { ChaWavfileInterface, ImageInterface, VideoInterface, WavfileInterface } from '../../interfaces/page-definition.interface';
 import { ProtocolServer } from '../../utilities/constants';
-import { DevicesInterface } from '../devices/devices.interface';
 import { ProtocolInterface } from '../protocol/protocol.interface';
 import { VersionInterface } from '../version/version.interface';
 import { FlagsInterface } from './flags.interface';
@@ -38,6 +38,7 @@ export interface ExamResults {
     accuracy?: number;
   };
   calibrationVersion: any; // TODO: define calibrationVersion interface
-  devices: DevicesInterface;
+  hostMetadata: IDeviceMetadata;
+  devices: string[];
   flags: FlagsInterface;
 }
