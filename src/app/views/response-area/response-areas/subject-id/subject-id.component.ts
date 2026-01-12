@@ -16,7 +16,6 @@ import { ExamService } from '../../../../controllers/exam.service';
 @Component({
   selector: 'app-subject-id',
   templateUrl: './subject-id.component.html',
-  styleUrl: './subject-id.component.css',
 })
 export class SubjectIdComponent implements OnInit, OnDestroy {
   private readonly examService = inject(ExamService);

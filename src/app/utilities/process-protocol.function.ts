@@ -15,6 +15,7 @@ import { SweptDpoaeInterface } from '../views/response-area/response-areas/swept
 import { CustomResponseAreaInterface } from '../views/response-area/response-areas/custom-response-area/custom-response-area.interface';
 import { loadCustomJS } from './load-custom-js';
 import { ProtocolServer } from './constants';
+import { TabsintFs } from 'tabsintfs';
 
 /**
  * Adds variables to the active protocol and generates a stack of pages.
@@ -81,11 +82,7 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
     // }
 
     if (isPageDefinition(page) && page.image) {
-      /* TODO: prefix probably wont work for non-developer protocols
-      We probably just want to load the image as bytes and then jam that into the html
-      Maybe we can pass a contentURI + filepath but I doubt it
-       */
-      page.image.path = prefix + page.image.path;
+      page.image.b64 = await readImageFileAsBytes(loading, page.image.path);
     }
 
     if (page.video) {
@@ -147,5 +144,34 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
     } else {
       return 'Should not get here';
     }
+  }
+
+  async function readImageFileAsBytes(loading: LoadingProtocolInterface, imagePath: string): Promise<string | undefined> {
+    let imageBytes: string | undefined;
+    if (loading.meta.server == ProtocolServer.Developer) {
+      const resp = await fetch('assets/' + loading.meta.path + '/' + imagePath);
+      if (!resp.ok) {
+        throw new Error(`Failed to fetch the file: ${resp.statusText}`);
+      }
+      const blob = await resp.blob();
+      imageBytes = await blobToBase64DataURL(blob);
+    } else if (loading.meta.server === ProtocolServer.LocalServer || loading.meta.server === ProtocolServer.Gitlab) {
+      const resp = await TabsintFs.readFile({ rootUri: loading.meta.contentURI, filePath: imagePath, asBase64: true });
+      imageBytes = 'data:' + resp.mimeType + ';base64,' + resp.content;
+    }
+    return imageBytes;
+  }
+
+  async function blobToBase64DataURL(blob: Blob): Promise<string | undefined> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        resolve(reader.result as string);
+      };
+      reader.onerror = () => {
+        reject(reader.error);
+      };
+      reader.readAsDataURL(blob);
+    });
   }
 }

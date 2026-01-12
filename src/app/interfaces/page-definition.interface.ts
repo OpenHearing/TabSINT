@@ -75,6 +75,7 @@ export interface ChaWavfileInterface {
 export interface ImageInterface {
   path: string;
   width?: string;
+  b64?: string;
 }
 
 export interface VideoInterface {

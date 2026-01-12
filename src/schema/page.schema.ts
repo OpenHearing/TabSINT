@@ -70,6 +70,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
       properties: {
         path: { type: 'string' },
         width: { type: 'string', nullable: true, default: '100%' },
+        b64: { type: 'string', nullable: true },
       },
       required: ['path'],
       nullable: true,

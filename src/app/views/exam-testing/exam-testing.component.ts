@@ -21,7 +21,7 @@ export class ExamTestingComponent implements OnInit, OnDestroy {
   questionSubText?: string;
   instructionText?: string;
   examType?: string;
-  imagePath: string = '';
+  imageBytes: string = '';
   imageWidth: string = '100%';
 
   constructor(@Inject(WINDOW) private readonly window: Window) {} // eslint-disable-line
@@ -35,8 +35,11 @@ export class ExamTestingComponent implements OnInit, OnDestroy {
       this.instructionText = updatedPage?.instructionText;
       this.examType = updatedPage?.responseArea?.type;
       if (updatedPage?.image) {
-        this.imagePath = updatedPage.image.path;
+        this.imageBytes = updatedPage.image.b64!;
         this.imageWidth = updatedPage.image?.width ?? this.imageWidth;
+      } else {
+        this.imageBytes = '';
+        this.imageWidth = '100%';
       }
     });
   }

@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import Ajv from 'ajv';
@@ -34,6 +34,16 @@ import { protocolSchema } from '../../schema/protocol.schema';
   providedIn: 'root',
 })
 export class ProtocolService {
+  private readonly appModel = inject(AppModel);
+  private readonly diskModel = inject(DiskModel);
+  private readonly fileService = inject(FileService);
+  private readonly logger = inject(Logger);
+  private readonly notifications = inject(Notifications);
+  private readonly protocolM = inject(ProtocolModel);
+  private readonly stateModel = inject(StateModel);
+  private readonly translate = inject(TranslateService);
+  private readonly tasks = inject(Tasks);
+
   app: AppInterface;
   disk: DiskInterface;
   loading: LoadingProtocolInterface;
@@ -43,17 +53,7 @@ export class ProtocolService {
   diskSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
 
-  constructor(
-    private readonly appModel: AppModel,
-    private readonly diskModel: DiskModel,
-    private readonly fileService: FileService,
-    private readonly logger: Logger,
-    private readonly notifications: Notifications,
-    private readonly protocolM: ProtocolModel,
-    private readonly stateModel: StateModel,
-    private readonly translate: TranslateService,
-    private readonly tasks: Tasks
-  ) {
+  constructor() {
     this.app = this.appModel.getApp();
     this.protocolModel = this.protocolM.getProtocolModel();
     this.state = this.stateModel.getState();
@@ -139,8 +139,8 @@ export class ProtocolService {
         finalProtocol = protocol;
       } else {
         const response = await this.fileService.readFile('protocol.json', this.loading.meta.contentURI);
-        protocol = response?.content!;
-        finalProtocol = JSON.parse(protocol);
+        protocol = response?.content;
+        finalProtocol = JSON.parse(protocol!);
       }
 
       if (!_.isUndefined(protocol)) {
