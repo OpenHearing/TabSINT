@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import _ from 'lodash';
 import { Subscription } from 'rxjs';
 
@@ -23,6 +23,15 @@ import { VersionModel } from '../models/version/version.service';
   providedIn: 'root',
 })
 export class ResultsService {
+  private readonly devicesModel = inject(DevicesModel);
+  private readonly diskModel = inject(DiskModel);
+  private readonly fileService = inject(FileService);
+  private readonly logger = inject(Logger);
+  private readonly protocolM = inject(ProtocolModel);
+  private readonly resultsModel = inject(ResultsModel);
+  private readonly sqLite = inject(SqLite);
+  private readonly versionModel = inject(VersionModel);
+
   results: ResultsInterface;
   protocol: ProtocolModelInterface;
   devices: DevicesInterface;
@@ -31,16 +40,7 @@ export class ResultsService {
   diskSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
 
-  constructor(
-    private readonly devicesModel: DevicesModel,
-    private readonly diskModel: DiskModel,
-    private readonly fileService: FileService,
-    private readonly logger: Logger,
-    private readonly protocolM: ProtocolModel,
-    private readonly resultsModel: ResultsModel,
-    private readonly sqLite: SqLite,
-    private readonly versionModel: VersionModel
-  ) {
+  constructor() {
     this.results = this.resultsModel.getResults();
     this.protocol = this.protocolM.getProtocolModel();
     this.devices = this.devicesModel.getDevices();
