@@ -16,9 +16,9 @@ import { sweptDpoaeSchema } from './response-areas/swept-dpoae.schema';
 import { waiSchema } from './response-areas/wai.schema';
 import { mrtSchema } from './response-areas/mrt.schema';
 import { memrSchema } from './response-areas/memr.schema';
-import { CustomResponseAreaSchema } from './response-areas/external-response-area.schema';
 import { subjectIdSchema } from './response-areas/subject-id.schema';
 import { checkboxSchema } from './response-areas/checkbox.schema';
+import { CustomResponseAreaSchema } from './response-areas/custom-response-area.schema';
 
 export const pageSchema: JSONSchemaType<PageDefinition> = {
   $id: 'page_base',
@@ -39,22 +39,30 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
     title: { type: 'string', nullable: true },
     subtitle: { type: 'string', nullable: true },
     spacing: { type: 'string', nullable: true },
+    questionPreMainText: { type: 'string', nullable: true },
     questionMainText: { type: 'string', nullable: true },
     questionSubText: { type: 'string', nullable: true },
     instructionText: { type: 'string', nullable: true },
     helpText: { type: 'string', nullable: true },
-    resultMainText: { type: 'string', nullable: true },
-    resultSubText: { type: 'string', nullable: true },
     repeatPage: {
       type: 'object',
       properties: {
-        nRepeats: { type: 'number', default: 2 },
+        nRepeats: { type: 'number', default: 1 },
         repeatIf: { type: 'string', nullable: true },
       },
       required: ['nRepeats'],
       nullable: true,
     },
-    preProcessFunction: { type: 'string', nullable: true },
+    preProcessFunction: {
+      type: 'object',
+      properties: {
+        filepath: { type: 'string', nullable: false },
+        function: { type: 'string', nullable: false },
+        js: { type: 'string', nullable: true },
+      },
+      required: ['filepath', 'function'],
+      nullable: true,
+    },
     wavfileStartDelayTime: { type: 'number', nullable: true, minimum: 0, default: 1000 },
     wavfiles: { type: 'array', items: wavfileSchema, nullable: true },
     chaWavFiles: {

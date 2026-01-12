@@ -15,8 +15,10 @@ export class ExamTestingComponent implements OnInit, OnDestroy {
   private readonly pageModel = inject(PageModel);
 
   pageSubscription: Subscription | undefined;
-  examTestingTitleClass?: object;
+  questionPreMainTextClass?: object;
+  questionMainTextClass?: object;
   title?: string;
+  questionPreMainText?: string;
   questionMainText?: string;
   questionSubText?: string;
   instructionText?: string;
@@ -29,7 +31,9 @@ export class ExamTestingComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       this.title = updatedPage?.title;
-      this.examTestingTitleClass = this.shrinkTitleIfTooLong(updatedPage?.questionMainText);
+      this.questionPreMainTextClass = this.shrinkTitleIfTooLong(updatedPage?.questionPreMainText);
+      this.questionMainTextClass = this.shrinkTitleIfTooLong(updatedPage?.questionMainText);
+      this.questionPreMainText = updatedPage?.questionPreMainText;
       this.questionMainText = updatedPage?.questionMainText;
       this.questionSubText = updatedPage?.questionSubText;
       this.instructionText = updatedPage?.instructionText;
@@ -48,13 +52,13 @@ export class ExamTestingComponent implements OnInit, OnDestroy {
     this.pageSubscription?.unsubscribe();
   }
 
-  shrinkTitleIfTooLong(questionMainText: string | undefined) {
+  shrinkTitleIfTooLong(text: string | undefined) {
     const styleObject = { medium: false, long: false };
-    if (!questionMainText) {
+    if (!text) {
       // will use default styling, no additions necessary
-    } else if (questionMainText.length >= 38 && questionMainText.length < 48) {
+    } else if (text.length >= 38 && text.length < 48) {
       styleObject.medium = true;
-    } else if (questionMainText.length > 42) {
+    } else if (text.length > 42) {
       styleObject['long'] = true;
     }
     return styleObject;

@@ -14,6 +14,7 @@ import { FPLCalibrationExamInterface } from '../views/response-area/response-are
 import { CustomResponseAreaInterface } from '../views/response-area/response-areas/custom-response-area/custom-response-area.interface';
 import { SubjectIdInterface } from '../views/response-area/response-areas/subject-id/subject-id.interface';
 import { CheckboxInterface } from '../views/response-area/response-areas/checkbox/checkbox.interface';
+import { PreProcessFunctionInterface } from './preProcessFunction.interface';
 
 export interface PageDefinition {
   id: string;
@@ -24,12 +25,13 @@ export interface PageDefinition {
   enableBackButton?: boolean;
   navMenu?: NavMenuInterface[];
   title?: string;
+  questionPreMainText?: string;
   questionMainText?: string;
   questionSubText?: string;
   instructionText?: string;
   helpText?: string;
   repeatPage?: RepeatPageInterface;
-  preProcessFunction?: string;
+  preProcessFunction?: PreProcessFunctionInterface;
   wavfileStartDelayTime?: number;
   wavfiles?: WavfileInterface[];
   chaWavFiles?: ChaWavfileInterface[];

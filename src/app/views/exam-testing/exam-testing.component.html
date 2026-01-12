@@ -2,7 +2,10 @@
   <h1 *ngIf="examType !== 'manualAudiometryResponseArea'">
     {{ title }}
   </h1>
-  <h2 *ngIf="questionMainText" [ngClass]="examTestingTitleClass">
+  <h2 style="font-size: 1.0em;" *ngIf="questionPreMainText" [ngClass]="questionPreMainTextClass">
+    {{ questionPreMainText }}
+  </h2>
+  <h2 *ngIf="questionMainText" [ngClass]="questionMainTextClass">
     {{ questionMainText }}
   </h2>
   <p class="subtext pad-top" *ngIf="questionSubText && examType !== 'manualAudiometryResponseArea'">

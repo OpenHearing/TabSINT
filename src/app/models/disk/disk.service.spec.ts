@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { DiskModel } from './disk.service';
-import { DOCUMENT } from '@angular/common';
 import { DiskInterface } from './disk.interface';
 import { ExamResults } from '../results/results.interface';
 import { ProtocolServer } from '../../utilities/constants';
@@ -30,7 +29,7 @@ describe('DiskModel', () => {
   });
 
   it('gets disk model from local storage', () => {
-    let returnedDisk: DiskInterface = diskModel.getDisk();
+    const returnedDisk: DiskInterface = diskModel.getDisk();
     expect(returnedDisk).toBeDefined();
   });
 
@@ -70,7 +69,7 @@ describe('DiskModel', () => {
   });
 
   it('updates upload summary', () => {
-    let page: PageDefinition = {
+    const page: PageDefinition = {
       id: 't',
       title: 'test',
       questionMainText: 'questionMainText',
@@ -84,7 +83,7 @@ describe('DiskModel', () => {
       enableBackButton: false,
       instructionText: 'instructionText',
     };
-    let examResult: ExamResults = {
+    const examResult: ExamResults = {
       protocol: {
         pages: [page],
         protocolId: '',
@@ -103,6 +102,7 @@ describe('DiskModel', () => {
       devices: devicesModel.getDevices(),
       tabletLocation: {},
       calibrationVersion: 0,
+      flags: {},
     };
     let returnedDisk: DiskInterface = diskModel.getDisk();
     expect(returnedDisk.uploadSummary.length).toBe(0);

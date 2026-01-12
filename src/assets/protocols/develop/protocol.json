@@ -73,7 +73,10 @@
                 "id": "Image"
               },
               {
-                "id": "External Response Area"
+                "id": "Advanced Protocol Logic"
+              },
+              {
+                "id": "Custom Response Area"
               },
               {
                 "id": "End All"
@@ -178,7 +181,13 @@
               }
             },
             {
-              "conditional": "result.response=='External Response Area'",
+              "conditional": "result.response=='Advanced Protocol Logic'",
+              "target": {
+                "reference": "advancedProtocolLogic"
+              }
+            },
+            {
+              "conditional": "result.response=='Custom Response Area'",
               "target": {
                 "reference": "customResponseArea"
               }
@@ -672,6 +681,11 @@
         {
           "id": "customResponseArea",
           "title": "Basic Button Results Test",
+          "questionPreMainText": "Example of questionPreMainText",
+          "questionMainText": "Example of questionMainText",
+          "questionSubText": "Example of questionSubText",
+          "instructionText": "Example of instructionText",
+          "helpText": "Example of helpText",
           "isAutoSubmit": false,
           "responseArea": {
             "type": "customResponseArea",

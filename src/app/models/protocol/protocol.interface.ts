@@ -35,10 +35,8 @@ export interface ProtocolInterface extends ProtocolSchemaInterface, ProtocolMeta
   _calibrationPyManualReleaseDate?: string;
   _exportCSV?: boolean;
   _protocolIdDict?: any;
-  _preProcessFunctionList?: Array<string>;
   _missingWavCalList?: Array<string>;
   _missingCommonWavCalList?: Array<string>;
-  _missingPreProcessFunctionList?: Array<string>;
   _missingControllerList?: Array<string>;
   _missingHtmlList?: Array<string>;
   _missingCommonMediaRepo?: boolean;
