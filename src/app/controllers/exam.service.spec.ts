@@ -183,6 +183,7 @@ describe('ExamService', () => {
           accuracy: 5,
         },
         calibrationVersion: 'v1.2',
+        flags: {},
         devices: {
           build: '2024.01',
           uuid: 'device-uuid-123',
@@ -253,6 +254,7 @@ describe('ExamService', () => {
           accuracy: 5,
         },
         calibrationVersion: 'v1.2',
+        flags: {},
         devices: {
           build: '2024.01',
           uuid: 'device-uuid-123',
@@ -292,7 +294,34 @@ describe('ExamService', () => {
         version: '1.0',
         server: ProtocolServer.LocalServer,
         admin: true,
-        pages: [],
+        pages: [
+          {
+            id: 'test-page',
+            responseArea: {
+              responseRequired: false,
+              type: 'textboxResponseArea',
+            },
+            title: 'Mock Page',
+            questionMainText: '',
+            questionSubText: '',
+            instructionText: '',
+            helpText: '',
+            submitText: '',
+          },
+          {
+            id: 'test-page',
+            responseArea: {
+              responseRequired: false,
+              type: 'textboxResponseArea',
+            },
+            title: 'Mock Page',
+            questionMainText: '',
+            questionSubText: '',
+            instructionText: '',
+            helpText: '',
+            submitText: '',
+          },
+        ],
       },
     });
 

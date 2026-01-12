@@ -24,7 +24,7 @@ import { Logger } from '../services/logger.service';
 import { Tasks } from '../services/tasks.service';
 import { Notifications } from '../services/notifications.service';
 import { loadingProtocolDefaults } from '../utilities/defaults';
-import { checkCalibrationFiles, checkControllers, checkPreProcessFunctions } from '../utilities/protocol-checks.function';
+import { checkCalibrationFiles, checkControllers } from '../utilities/protocol-checks.function';
 import { processProtocol } from '../utilities/process-protocol.function';
 import { initializeLoadingProtocol } from '../utilities/initialize-loading-protocol';
 
@@ -216,10 +216,6 @@ export class ProtocolService {
     } else {
       this.logger.debug('All calibration files found.');
     }
-
-    checkPreProcessFunctions(this.protocolModel.activeProtocol!).forEach((e: ProtocolErrorInterface) => {
-      this.protocolModel.activeProtocol!.errors!.push(e);
-    });
 
     checkControllers(this.protocolModel.activeProtocol!).forEach((e: ProtocolErrorInterface) => {
       this.protocolModel.activeProtocol!.errors!.push(e);

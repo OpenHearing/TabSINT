@@ -32,6 +32,7 @@ export class ResultsModel {
         },
         devices: this.devicesModel.getDevices(),
         calibrationVersion: '0.0',
+        flags: {},
       },
     };
     this.resultsSubject = new BehaviorSubject<ResultsInterface>(this.resultsModel);
