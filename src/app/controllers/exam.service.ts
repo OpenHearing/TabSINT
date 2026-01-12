@@ -1,21 +1,20 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { Subscription } from 'rxjs';
-
 import { isPageDefinition, isProtocolReferenceInterface, isProtocolSchemaInterface } from '../guards/type.guard';
 import { PageTypes } from '../types/custom-types';
-
 import { FollowOnInterface } from '../interfaces/page-definition.interface';
 import { ResultsInterface } from '../models/results/results.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
 import { PageInterface } from '../models/page/page.interface';
-
 import { ResultsService } from './results.service';
 import { ResultsModel } from '../models/results/results-model.service';
 import { StateModel } from '../models/state/state.service';
 import { ProtocolModel } from '../models/protocol/protocol-model.service';
 import { PageModel } from '../models/page/page.service';
-
+import { WINDOW } from '../utilities/window';
+import { FileService } from '../services/file.service';
+import { DiskModel } from '../models/disk/disk.service';
 import { DialogType, ExamState, AppState } from '../utilities/constants';
 import { Notifications } from '../services/notifications.service';
 import { Logger } from '../services/logger.service';
@@ -39,9 +38,12 @@ export class ExamService {
     private readonly resultsService: ResultsService,
     private readonly resultsModel: ResultsModel,
     private readonly pageModel: PageModel,
-    private readonly protocolM: ProtocolModel,
+    private readonly protocolModel: ProtocolModel,
     private readonly stateModel: StateModel,
-    private readonly notifications: Notifications
+    private readonly notifications: Notifications,
+    @Inject(WINDOW) private readonly window: any,
+    private readonly fileService: FileService,
+    private readonly diskModel: DiskModel
   ) {
     this.results = this.resultsModel.getResults();
     this.currentPage = this.pageModel.getPage();
@@ -49,7 +51,7 @@ export class ExamService {
       this.currentPage = updatedPage;
     });
     this.state = this.stateModel.getState();
-    this.protocol = this.protocolM.getProtocolModel();
+    this.protocol = this.protocolModel.getProtocolModel();
     this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
@@ -85,7 +87,7 @@ export class ExamService {
    */
   async begin() {
     this.resetProtocolStack();
-    this.addPagesToStack(this.protocol.activeProtocol?.pages!, 0);
+    this.addPagesToStack(this.protocol.activeProtocol!.pages, 0);
     this.resultsService.initializeExamResults();
     this.startPage();
     this.stateModel.updateState({ examState: ExamState.Testing });
@@ -197,17 +199,15 @@ export class ExamService {
     const nextExamIndex = this.state.examIndex + 1;
     this.setFlags();
     const pageList = this.getPagesFromAdvancedLogic();
-    if (pageList != undefined) {
-      if (pageList.length > 0) {
-        this.addPagesToStack(pageList, nextExamIndex);
-      }
-      // make sure there are more pages, if not end the exam
-      if (this.pageModel.stack.length > nextExamIndex) {
-        this.stateModel.updateState({ examIndex: nextExamIndex });
-        this.startPage();
-      } else {
-        this.endExam();
-      }
+    if (pageList !== undefined && pageList.length > 0) {
+      this.addPagesToStack(pageList, nextExamIndex);
+    }
+    // make sure there are more pages, if not end the exam
+    if (this.pageModel.stack.length > nextExamIndex) {
+      this.stateModel.updateState({ examIndex: nextExamIndex });
+      this.startPage();
+    } else {
+      this.endExam();
     }
   }
 
@@ -217,13 +217,13 @@ export class ExamService {
    */
   private getPagesFromAdvancedLogic() {
     const pageList: PageTypes[] = [];
-    if (this.currentPage.skipIf) {
-      this.logger.debug('skipIf is not yet supported');
-      // push pages to list if needed
-    }
     if (this.currentPage.repeatPage) {
-      this.logger.debug('repeatPage is not yet supported');
-      // push pages to list if needed
+      const repeatedPages = this.handleRepeats();
+      if (repeatedPages !== undefined) {
+        repeatedPages.forEach(repeatedPage => {
+          pageList.push(repeatedPage);
+        });
+      }
     }
     if (this.currentPage.followOns) {
       const nextID = this.findFollowOn();
@@ -232,15 +232,11 @@ export class ExamService {
           this.handleSpecialReferences(nextID);
           return undefined;
         } else {
-          this.protocolM.protocolModel.activeProtocolDictionary![nextID].pages.forEach((page: PageTypes) => {
+          this.protocolModel.protocolModel.activeProtocolDictionary![nextID].pages.forEach((page: PageTypes) => {
             pageList.push(page);
           });
         }
       }
-    }
-    if (this.currentPage.preProcessFunction) {
-      this.logger.debug('preProcessFunction is not yet supported');
-      // push pages to list if needed and/or run preprocess function
     }
     return pageList;
   }
@@ -249,7 +245,31 @@ export class ExamService {
    * @summary TBD.
    */
   private setFlags() {
-    // This function will check if flags need to be set and then set them accordingly.
+    if (this.currentPage.setFlags) {
+      this.currentPage.setFlags.forEach(flags => {
+        if (this.conditionalEvaluator(flags.conditional)) {
+          this.results.currentExam.flags[flags.id] = true;
+          this.logger.debug('Flag set: ' + flags.id);
+        }
+      });
+    }
+  }
+
+  private async handlePreProcessFunctions(page: PageInterface) {
+    if (page.preProcessFunction) {
+      this.window.tabsint = {};
+      this.window.tabsint.logger = this.logger;
+      this.window.tabsint.examService = this;
+      this.window.tabsint.fileService = this.fileService;
+      this.window.tabsint.resultsService = this.resultsService;
+      this.window.tabsint.stateModel = this.stateModel;
+      this.window.tabsint.diskModel = this.diskModel;
+      this.window.tabsint.resultsModel = this.resultsModel;
+      this.window.tabsint.pageModel = this.pageModel;
+      this.window.tabsint.protocolModel = this.protocolModel;
+
+      eval(page.preProcessFunction.js! + '\n' + page.preProcessFunction.function + '()');
+    }
   }
 
   /** Handles special references
@@ -272,19 +292,30 @@ export class ExamService {
    */
   private startPage() {
     const nextPage: PageInterface = this.pageModel.stack[this.state.examIndex];
-    // Make sure isSubmittable gets set correctly
-    this.stateModel.updateState({
-      doesResponseExist: false,
-      isResponseRequired: this.isPageResponseRequired(nextPage),
-    });
-    if (nextPage?.isSubmittable === false) {
-      this.stateModel.updateState({ isSubmittable: false });
+
+    if (nextPage.skipIf && this.conditionalEvaluator(nextPage.skipIf)) {
+      this.advancePage();
+      /* Note that with this approach we skip over nexting the nextPage
+        I think that should be okay as the state.examIndex is being updated in advancePage
+        So what should happen here is we completely skip a page
+        There would be no record of it in the results and should never get rendered or anything
+      */
     } else {
-      this.stateModel.setPageSubmittable();
+      this.handlePreProcessFunctions(nextPage);
+      // Make sure isSubmittable gets set correctly
+      this.stateModel.updateState({
+        doesResponseExist: false,
+        isResponseRequired: this.isPageResponseRequired(nextPage),
+      });
+      if (nextPage?.isSubmittable === false) {
+        this.stateModel.updateState({ isSubmittable: false });
+      } else {
+        this.stateModel.setPageSubmittable();
+      }
+      this.pageModel.updatePage(nextPage);
+      this.resultsService.initializePageResults(this.currentPage);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-    this.pageModel.updatePage(nextPage);
-    this.resultsService.initializePageResults(this.currentPage);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   /** Parse page objects and add them to the pageModel.stack.
@@ -297,7 +328,7 @@ export class ExamService {
     let extraPages: PageTypes[];
     pages.forEach((page: PageTypes) => {
       if (isProtocolReferenceInterface(page)) {
-        extraPages = this.protocolM.protocolModel.activeProtocolDictionary![page?.reference].pages;
+        extraPages = this.protocolModel.protocolModel.activeProtocolDictionary![page?.reference].pages;
         this.addPagesToStack(extraPages, index + 1);
       } else if (isProtocolSchemaInterface(page)) {
         extraPages = page.pages;
@@ -318,11 +349,7 @@ export class ExamService {
     let id: string | undefined = undefined;
     this.currentPage.followOns?.forEach((followOn: FollowOnInterface) => {
       // backward compatibility
-      if (followOn.conditional.split('==')[0] == 'result.response') {
-        followOn.conditional = followOn.conditional.replace('result.response', 'this.results.currentPage.response');
-      }
-
-      if (eval(followOn.conditional)) {
+      if (followOn.conditional && this.conditionalEvaluator(followOn.conditional)) {
         // TODO: handle if target is protocol or page
         if (isProtocolReferenceInterface(followOn.target)) {
           id = followOn.target.reference;
@@ -330,6 +357,45 @@ export class ExamService {
       }
     });
     return id;
+  }
+
+  private handleRepeats() {
+    let repeatedPages: PageTypes[] | undefined;
+    // repeat if repeatIf not present or it evaluates to true
+    if (
+      this.currentPage.repeatPage!.repeatIf === undefined ||
+      (this.currentPage.repeatPage!.repeatIf && this.conditionalEvaluator(this.currentPage.repeatPage!.repeatIf))
+    ) {
+      // determine number of times page has been repeated
+      repeatedPages = [];
+      let currentRepeatCount = 0;
+      if (this.currentPage.id.includes('_repeated_')) {
+        currentRepeatCount = Number(this.currentPage.id.split('_repeated_')[this.currentPage.id.split('_repeated_').length - 1]);
+      }
+      // determine number of repititions
+      const numRepititions = Number(this.currentPage.repeatPage!.nRepeats);
+      // create desired number of repeated pages
+      for (let i = currentRepeatCount + 1; i < (numRepititions + currentRepeatCount + 1 < 4 ? numRepititions + currentRepeatCount + 1 : 4); i++) {
+        const repeatedPage: PageInterface = JSON.parse(JSON.stringify(this.currentPage));
+        if (i > 1) {
+          repeatedPage.id = repeatedPage.id.replace('_repeated_' + String(i - 1), '_repeated_' + String(i));
+        } else {
+          repeatedPage.id = repeatedPage.id + '_repeated_' + String(i);
+        }
+        repeatedPages?.push(repeatedPage);
+      }
+    }
+    return repeatedPages;
+  }
+
+  /** Handles and evaluates the logic from a protocol conditional.
+   * @summary Handles and evaluates the logic from a protocol conditional.
+   */
+  private conditionalEvaluator(conditional: string) {
+    if (conditional.includes('result.response')) {
+      conditional = conditional.replace('result.response', 'this.results.currentPage.response');
+    }
+    return eval(conditional);
   }
 
   /** Resets the protocol stack and exam index.
