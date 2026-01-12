@@ -6,7 +6,7 @@ export interface PageInterface extends PageDefinition {
   filename?: string;
   units?: string;
   example?: number;
-  other?: Array<string>;
+  other?: string[];
   dict?: object;
   isSubmittable?: boolean;
   isAutoSubmit?: boolean;

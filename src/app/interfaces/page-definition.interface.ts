@@ -23,6 +23,7 @@ export interface PageDefinition {
   enableBackButton?: boolean;
   navMenu?: NavMenuInterface[];
   title?: string;
+  questionPreMainText?: string;
   questionMainText?: string;
   questionSubText?: string;
   instructionText?: string;
