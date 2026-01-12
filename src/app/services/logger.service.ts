@@ -23,22 +23,24 @@ export class Logger {
     });
   }
 
-  debug(msg: string) {
-    this.log(msg, 'Debug: ');
+  debug(msg: string, error?: unknown) {
+    this.log(msg, 'Debug: ', error);
   }
 
-  warning(msg: string) {
-    this.log(msg, 'WARNING: ');
+  warning(msg: string, error?: unknown) {
+    this.log(msg, 'WARNING: ', error);
   }
 
-  error(msg: string) {
-    this.log(msg, 'ERROR: ');
+  error(msg: string, error?: unknown) {
+    this.log(msg, 'ERROR: ', error);
   }
 
-  log(msg: string, prefix: string) {
+  log(msg: string, prefix: string, error?: unknown) {
     if (!this.disk.disableLogs && this.disk.numLogRows <= this.disk.maxLogRows) {
+      const err = error instanceof Error ? error.message : error;
+      const logMsg = error ? `${msg}: ${err}` : msg;
       const timestamp = new Date().toISOString();
-      const logMessage = `[${timestamp}]: ${msg}`;
+      const logMessage = `[${timestamp}]: ${logMsg}`;
       console.log(prefix + msg);
       this.sqLite.deleteOlderLogsIfThereAreTooMany();
       this.sqLite.store('logs', logMessage);

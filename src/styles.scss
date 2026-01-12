@@ -1974,6 +1974,12 @@ table.fixed .row-Server.results {
   font-size: min(2vw, 16px);
 }
 
+.text-line-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .col-2 {
   display: flex;
   justify-content: center;
@@ -2547,10 +2553,6 @@ button.btn.cha-selected {
   border: 4px outset black;
   border-radius: 3px;
   vertical-align: text-bottom;
-}
-
-.myCha {
-  word-wrap: break-word;
 }
 
 /*------------

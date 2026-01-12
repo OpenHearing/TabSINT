@@ -12,7 +12,7 @@
           [class.correct]="getButtonClass(i * 3 + idx) === 'correct'"
           [class.incorrect]="getButtonClass(i * 3 + idx) === 'incorrect'"
           (click)="choose(i * 3 + idx)"
-          [disabled]="selectedResponseIndex !== null || isPaused || device?.isMsgPending">
+          [disabled]="selectedResponseIndex !== null || isPaused || device?.status !== DeviceStatus.Ready">
           {{ choice }}
         </button>
       </div>
@@ -29,7 +29,7 @@
       </button>
       <button
         class="btn btn-danger btn-block"
-        [disabled]="!isPaused || device?.isMsgPending"
+        [disabled]="!isPaused || device?.status !== DeviceStatus.Ready"
         [ngStyle]="{ visibility: getVisibilityStyle() }"
         (click)="finishExam()">
         {{ "End Early" }}

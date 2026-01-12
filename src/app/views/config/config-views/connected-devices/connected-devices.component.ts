@@ -1,22 +1,21 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { DevicesModel } from '../../../../models/devices/devices-model.service';
-import { DevicesInterface } from '../../../../models/devices/devices.interface';
-import { DeviceState } from '../../../../utilities/constants';
 import { StateInterface } from '../../../../models/state/state.interface';
 import { StateModel } from '../../../../models/state/state.service';
-import { ConnectedDevice } from '../../../../interfaces/connected-device.interface';
-import { DevicesService } from '../../../../controllers/devices.service';
+import { IDevice } from '../../../../interfaces/devices/device.interface';
+import { DeviceState, DeviceType } from '../../../../utilities/constants';
+import { DevicesService } from '../../../../services/devices/devices.service';
 import { Logger } from '../../../../services/logger.service';
-import { DeviceUtil } from '../../../../services/device-utility.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs/internal/Subscription';
+import { map, Observable } from 'rxjs';
 
 @Component({
   selector: 'connected-devices',
   templateUrl: './connected-devices.component.html',
 })
 export class ConnectedDevicesComponent implements OnInit, OnDestroy {
-  devices: DevicesInterface;
+  DeviceType = DeviceType;
+  connectedDevicesMap: Observable<Map<DeviceType, IDevice[]>>;
   state: StateInterface;
   DeviceState = DeviceState;
   expanded: boolean = false;
@@ -25,15 +24,27 @@ export class ConnectedDevicesComponent implements OnInit, OnDestroy {
   stateSubscription: Subscription | undefined;
 
   constructor(
-    private readonly deviceModel: DevicesModel,
     private readonly stateModel: StateModel,
     private readonly devicesService: DevicesService,
     private readonly logger: Logger,
-    private readonly deviceUtil: DeviceUtil,
     private readonly translate: TranslateService
   ) {
-    this.devices = this.deviceModel.getDevices();
     this.state = this.stateModel.getState();
+    this.connectedDevicesMap = this.devicesService.devices.pipe(
+      map(devices => {
+        const devicesMap = new Map<DeviceType, IDevice[]>();
+        devices.forEach(device => {
+          if (device.state !== DeviceState.Discovery) {
+            if (devicesMap.has(device.type)) {
+              devicesMap.get(device.type)?.push(device);
+            } else {
+              devicesMap.set(device.type, [device]);
+            }
+          }
+        });
+        return devicesMap;
+      })
+    );
   }
 
   ngOnDestroy(): void {
@@ -46,19 +57,21 @@ export class ConnectedDevicesComponent implements OnInit, OnDestroy {
     });
   }
 
-  reconnect(device: ConnectedDevice) {
+  async reconnect(device: IDevice) {
     this.logger.debug('attempting to reconnect to device: ' + JSON.stringify(device));
-    this.devicesService.reconnect(device);
+    await this.devicesService.connect(device);
   }
 
-  disconnect(device: ConnectedDevice) {
+  async disconnect(device: IDevice) {
     this.logger.debug('attempting to disconnect from device:' + JSON.stringify(device));
-    this.devicesService.disconnect(device);
+    await this.devicesService.disconnect(device);
   }
 
-  remove(device: ConnectedDevice) {
+  async remove(device: IDevice) {
     this.logger.debug('attempting to disconnect and remove: ' + JSON.stringify(device));
-    this.deviceUtil.removeSavedDevice(device);
-    this.devicesService.removeDevice(device);
+    if (device.state !== DeviceState.Disconnected) {
+      await this.devicesService.disconnect(device);
+    }
+    await this.devicesService.removeSavedDevice(device);
   }
 }

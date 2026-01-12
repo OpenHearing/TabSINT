@@ -7,3 +7,13 @@
   background-position: center;
   background-size: cover;
 }
+
+.wahts-logo {
+  content: "";
+  background-image: url("/assets/img/WAHTS-indicator.png");
+  height: 1em;
+  width: 1em;
+  display: inline-block;
+  background-position: center;
+  background-size: cover;
+}

@@ -1,38 +1,39 @@
-import { Component } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Observable, Subscription } from 'rxjs';
 
 import { DiskInterface } from '../../../../models/disk/disk.interface';
-import { DevicesInterface } from '../../../../models/devices/devices.interface';
 import { VersionInterface } from '../../../../models/version/version.interface';
 
 import { DiskModel } from '../../../../models/disk/disk.service';
 import { Logger } from '../../../../services/logger.service';
 import { VersionModel } from '../../../../models/version/version.service';
-import { DevicesModel } from '../../../../models/devices/devices-model.service';
 import { StateModel } from '../../../../models/state/state.service';
 import { StateInterface } from '../../../../models/state/state.interface';
+import { DevicesService } from '../../../../services/devices/devices.service';
+import { IDeviceMetadata } from '../../../../interfaces/devices/device-metadata.interface';
 
 @Component({
   selector: 'software-config-view',
   templateUrl: './software-config.component.html',
   styleUrl: './software-config.component.css',
 })
-export class SoftwareConfigComponent {
+export class SoftwareConfigComponent implements OnInit, OnDestroy {
   state: StateInterface;
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
-  devices: DevicesInterface;
+  stateSubscription: Subscription | undefined;
+  hostMetadata: Observable<IDeviceMetadata>;
   version: VersionInterface;
 
   constructor(
-    private readonly devicesModel: DevicesModel,
     private readonly diskModel: DiskModel,
     private readonly logger: Logger,
     private readonly versionModel: VersionModel,
-    private readonly stateModel: StateModel
+    private readonly stateModel: StateModel,
+    private readonly devicesService: DevicesService
   ) {
     this.disk = this.diskModel.getDisk();
-    this.devices = this.devicesModel.getDevices();
+    this.hostMetadata = this.devicesService.hostMetadata;
     this.state = this.stateModel.getState();
     this.version = {
       tabsint: '',
@@ -52,11 +53,15 @@ export class SoftwareConfigComponent {
     this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
     });
+    this.stateSubscription = this.stateModel.stateSubject.subscribe((state: StateInterface) => {
+      this.state = state;
+    });
     this.initializeVersion();
   }
 
   ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
   }
 
   private async initializeVersion(): Promise<void> {

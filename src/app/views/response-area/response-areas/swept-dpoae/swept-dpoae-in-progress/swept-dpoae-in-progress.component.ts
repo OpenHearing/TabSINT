@@ -2,14 +2,15 @@ import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnDes
 import * as d3 from 'd3';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
-import { DevicesService } from '../../../../../controllers/devices.service';
-import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
+import { DevicesService } from '../../../../../services/devices/devices.service';
 import { StateModel } from '../../../../../models/state/state.service';
 import { StateInterface } from '../../../../../models/state/state.interface';
 import { DPOAEDataInterface, SweptDpoaeResultsInterface } from '../swept-dpoae-exam/swept-dpoae-exam.interface';
 import { Logger } from '../../../../../services/logger.service';
 import { createLegend, createOAEResultsChartSvg } from '../../../../../utilities/d3-plot-functions';
 import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-dpoae.schema';
+import { IDevice } from '../../../../../interfaces/devices/device.interface';
+import { IDeviceResponse } from '../../../../../interfaces/devices/device-response.interface';
 
 @Component({
   selector: 'swept-dpoae-in-progress',
@@ -17,7 +18,7 @@ import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-
   styleUrl: './swept-dpoae-in-progress.component.css',
 })
 export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterViewInit {
-  @Input() device: ConnectedDevice | undefined;
+  @Input() device: IDevice | undefined;
   @Input() f2Start: number = sweptDpoaeSchema.properties.f2Start.default;
   @Input() f2End: number = sweptDpoaeSchema.properties.f2End.default;
   @Input() xScale!: d3.ScaleLogarithmic<number, number, never>;
@@ -92,16 +93,16 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
       if (this.shouldAbort) return;
 
       this.isRequestingResults = true;
-      let resp = await this.devicesService.requestResults(this.device!);
+      const resp = await this.devicesService.requestResults(this.device!);
       this.isRequestingResults = false;
 
       if (this.shouldAbort) return;
 
       if (this.doesRespContainResults(resp)) {
-        this.inProgressResultsSubject.next(resp![1]);
+        this.inProgressResultsSubject.next(resp?.msg[1] as SweptDpoaeResultsInterface);
         if (this.inProgressResults.State === 'DONE') {
           this.stateModel.updateState({ isSubmittable: true });
-          this.sweptDPOAEResultsEvent.emit(resp![1]);
+          this.sweptDPOAEResultsEvent.emit(resp?.msg[1] as SweptDpoaeResultsInterface);
           this.instructions = "Exam complete, press 'Next' to continue.";
           this.changeDetectorRef.detectChanges();
           return;
@@ -118,8 +119,15 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
     pollResults();
   }
 
-  private doesRespContainResults(resp: any[] | undefined) {
-    return resp !== undefined && resp.length > 1 && resp[1] !== 'ERROR' && resp[2] !== 'timeout' && resp[2] !== 'byte timeout' && resp[1] !== 'OK';
+  private doesRespContainResults(resp: IDeviceResponse | undefined) {
+    return (
+      resp?.msg !== undefined &&
+      resp.msg.length > 1 &&
+      resp.msg[1] !== 'ERROR' &&
+      resp.msg[2] !== 'timeout' &&
+      resp.msg[2] !== 'byte timeout' &&
+      resp.msg[1] !== 'OK'
+    );
   }
 
   private createProgressPlot() {

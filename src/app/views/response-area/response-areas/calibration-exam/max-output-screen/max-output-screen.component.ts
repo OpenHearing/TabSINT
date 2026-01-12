@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
+import { IDevice } from '../../../../../interfaces/devices/device.interface';
+import { DeviceStatus } from '../../../../../utilities/constants';
 
 @Component({
   selector: 'app-max-output-screen',
@@ -11,15 +12,15 @@ export class MaxOutputScreenComponent implements OnChanges {
   @Input() currentFrequency: number = 0;
   @Input() targetLevel: number = 0;
   @Input() earCup: string = '';
-  @Input() device: ConnectedDevice | undefined;
+  @Input() device: IDevice | undefined;
   @Output() nextStep = new EventEmitter<void>();
   @Output() togglePlay = new EventEmitter<void>();
   @Output() maxOutputUpdated = new EventEmitter<number>();
   @Input() userInput: number | null = null;
 
+  DeviceStatus = DeviceStatus;
   maxOutputValue: number | null = null;
   showValidationError: boolean = false;
-
   validationMessage: string = '';
 
   ngOnChanges(changes: SimpleChanges): void {

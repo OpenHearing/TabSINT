@@ -2,21 +2,21 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs/internal/Subscription';
 
 import { PageModel } from '../../../../../models/page/page.service';
-import { DevicesService } from '../../../../../controllers/devices.service';
-import { DeviceUtil } from '../../../../../services/device-utility.service';
+import { DevicesService } from '../../../../../services/devices/devices.service';
 import { Logger } from '../../../../../services/logger.service';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { ExamService } from '../../../../../controllers/exam.service';
 import { ResultsInterface } from '../../../../../models/results/results.interface';
 import { PageInterface } from '../../../../../models/page/page.interface';
 import { ButtonTextService } from '../../../../../controllers/button-text.service';
-import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
 import { mrtSchema } from '../../../../../../schema/response-areas/mrt.schema';
 import { MrtExamInterface, MrtResultsInterface, MrtTrialInterface, MrtTrialResultInterface } from './mrt-exam.interface';
 import { StateInterface } from '../../../../../models/state/state.interface';
 import { StateModel } from '../../../../../models/state/state.service';
 import { shuffleArray } from '../../../../../utilities/shuffle-array';
 import { pageSchema } from '../../../../../../schema/page.schema';
+import { IDevice } from '../../../../../interfaces/devices/device.interface';
+import { DeviceStatus, DeviceType } from '../../../../../utilities/constants';
 
 @Component({
   selector: 'mrt-exam',
@@ -25,12 +25,14 @@ import { pageSchema } from '../../../../../../schema/page.schema';
 })
 export class MrtExamComponent implements OnInit, OnDestroy {
   // Core Data
+  DeviceStatus = DeviceStatus;
   results: ResultsInterface;
   state: StateInterface;
   mrtResults: MrtResultsInterface[] = [];
   trialListResults: MrtTrialResultInterface[] = [];
 
   // Configuration Variables
+  allowableDevices = [DeviceType.Tympan];
   tabsintId: string = mrtSchema.properties.tabsintId.default;
   showResults: boolean = mrtSchema.properties.showResults.default;
   isAutoSubmit: boolean = pageSchema.properties.isAutoSubmit.default;
@@ -49,18 +51,17 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   pctComplete: number = 0;
   nbTrials: number = 0;
   waitingMs: number = 2000;
+  device: IDevice | undefined;
 
   // Subscriptions
   selectedResponseIndex: number | null = null;
   pageSubscription: Subscription | undefined;
-  device: ConnectedDevice | undefined;
   stateSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
 
   constructor(
     private readonly buttonTextService: ButtonTextService,
     private readonly devicesService: DevicesService,
-    private readonly deviceUtil: DeviceUtil,
     private readonly examService: ExamService,
     private readonly logger: Logger,
     private readonly pageModel: PageModel,
@@ -234,7 +235,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   }
 
   private async setupDevice(updatedResponseArea: MrtExamInterface) {
-    this.device = this.deviceUtil.getDeviceFromTabsintId(updatedResponseArea.tabsintId ?? '1');
+    this.device = await this.devicesService.getDeviceOrDefault(updatedResponseArea.tabsintId, this.allowableDevices);
     if (!this.device) {
       await this.devicesService.deviceNotFound();
       this.logger.error('Error setting up MRT exam');
@@ -272,14 +273,14 @@ export class MrtExamComponent implements OnInit, OnDestroy {
       const pollResults = async () => {
         try {
           const resp = await this.devicesService.requestResults(this.device!);
-          if (typeof resp![1] === 'object' && 'State' in resp![1]) {
-            if (resp![1].State === 'PLAYING') {
+          if (resp?.msg && typeof resp.msg[1] === 'object' && resp.msg[1] !== null && 'State' in resp.msg[1]) {
+            if (resp.msg[1].State === 'PLAYING') {
               setTimeout(pollResults, 500);
-            } else if (resp![1].State === 'READY') {
+            } else if (resp.msg[1].State === 'READY') {
               resolve();
             } else {
-              this.logger.debug('In mrt-exam.component.ts waitForReadyState, unknown result state: ' + resp![1]);
-              reject(new Error('Unknown result state: ' + resp![1].State));
+              this.logger.debug('In mrt-exam.component.ts waitForReadyState, unknown result state: ' + JSON.stringify(resp?.msg[1]));
+              reject(new Error('Unknown result state: ' + resp.msg[1].State));
             }
           }
         } catch (error) {

@@ -1,5 +1,4 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { BehaviorSubject } from 'rxjs';
 
 import { LikertComponent } from './likert.component';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
@@ -8,24 +7,24 @@ import { DiskModel } from '../../../../../models/disk/disk.service';
 import { SqLite } from '../../../../../services/sqLite.service';
 import { AppModel } from '../../../../../models/app/app.service';
 import { Logger } from '../../../../../services/logger.service';
-import { DevicesModel } from '../../../../../models/devices/devices-model.service';
 import { VersionModel } from '../../../../../models/version/version.service';
+import { ExamService } from '../../../../../controllers/exam.service';
 
 describe('LikertComponent', () => {
   let component: LikertComponent;
   let fixture: ComponentFixture<LikertComponent>;
   let mockResultsModel: ResultsModel;
+  let mockExamService: jasmine.SpyObj<ExamService>;
   let mockPageModel: PageModel;
   const appModel = new AppModel();
   const diskModel = new DiskModel(new Document());
   const sqLite = new SqLite(appModel, diskModel);
   const logger = new Logger(diskModel, sqLite);
-  let devices: DevicesModel;
   const version = new VersionModel(logger);
 
   beforeEach(async () => {
-    devices = new DevicesModel(logger);
-    mockResultsModel = new ResultsModel(devices, version, logger);
+    mockResultsModel = new ResultsModel(version, logger);
+    mockExamService = jasmine.createSpyObj('ExamService', ['_dummyMethod']);
 
     mockPageModel = new PageModel();
     mockPageModel.updatePage({
@@ -45,6 +44,7 @@ describe('LikertComponent', () => {
       providers: [
         { provide: ResultsModel, useValue: mockResultsModel },
         { provide: PageModel, useValue: mockPageModel },
+        { provide: ExamService, useValue: mockExamService },
       ],
     }).compileComponents();
 
