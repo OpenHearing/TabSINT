@@ -38,6 +38,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   outputChannel!: string[];
   trialList!: MrtTrialInterface[];
   randomizeTrials!: boolean;
+  randomizeChoices!: boolean;
 
   // Controller variables
   currentTrial!: MrtTrialInterface;
@@ -200,6 +201,11 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     }
   }
 
+  replayTrial() {
+    this.currentStep = 'Ready';
+    this.nextStep();
+  }
+
   getButtonClass(index: number): string {
     if (this.selectedResponseIndex === null) {
       return '';
@@ -226,9 +232,11 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     this.showResults = responseArea.showResults ?? this.showResults;
     this.outputChannel = responseArea.outputChannel ?? mrtSchema.properties.outputChannel.default;
     this.randomizeTrials = responseArea.randomizeTrials ?? mrtSchema.properties.randomizeTrials.default;
+    this.randomizeChoices = responseArea.randomizeChoices ?? mrtSchema.properties.randomizeChoices.default;
     this.nbTrials = responseArea.trialList!.length;
     this.trialList = responseArea.trialList!.slice();
     if (this.randomizeTrials) shuffleArray(this.trialList);
+    if (this.randomizeChoices) this.randomizeChoicesWithAnswer(this.trialList);
     this.currentTrial = this.trialList.shift()!;
     this.resultsModel.updateCurrentPage({ response: [] });
   }
@@ -303,32 +311,42 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   private gradeExam() {
     // Group the trial list results by their SNR values
     return Object.values(
-      this.trialListResults.reduce(
-        (acc, trial) => {
-          const snr = trial.SNR;
-          if (!acc[snr]) {
-            // Initialize the group if it doesn't exist
-            acc[snr] = {
-              snr: snr,
-              nbTrials: 0,
-              nbTrialsCorrect: 0,
-              pctCorrect: 0,
-              trialList: [],
-            };
-          }
+      this.trialListResults.reduce((acc, trial) => {
+        const snr = trial.SNR;
+        if (!acc[snr]) {
+          // Initialize the group if it doesn't exist
+          acc[snr] = {
+            snr: snr,
+            nbTrials: 0,
+            nbTrialsCorrect: 0,
+            pctCorrect: 0,
+            trialList: [],
+          };
+        }
 
-          // Update the group's statistics
-          acc[snr].trialList.push(trial);
-          acc[snr].nbTrials++;
-          if (trial.isCorrect) {
-            acc[snr].nbTrialsCorrect++;
-          }
-          acc[snr].pctCorrect = parseFloat(((acc[snr].nbTrialsCorrect / acc[snr].nbTrials) * 100).toFixed(1));
+        // Update the group's statistics
+        acc[snr].trialList.push(trial);
+        acc[snr].nbTrials++;
+        if (trial.isCorrect) {
+          acc[snr].nbTrialsCorrect++;
+        }
+        acc[snr].pctCorrect = parseFloat(((acc[snr].nbTrialsCorrect / acc[snr].nbTrials) * 100).toFixed(1));
 
-          return acc;
-        },
-        {} as Record<number, MrtResultsInterface>
-      )
+        return acc;
+      }, {} as Record<number, MrtResultsInterface>)
     );
+  }
+
+  private randomizeChoicesWithAnswer(trials: MrtTrialInterface[]): MrtTrialInterface[] {
+    trials.forEach(trial => {
+      // Get the correct answer before shuffling
+      const correctChoice = trial.choices[trial.answer];
+
+      shuffleArray(trial.choices);
+
+      // Find where the correct answer ended up and update the answer index
+      trial.answer = trial.choices.indexOf(correctChoice);
+    });
+    return trials;
   }
 }
