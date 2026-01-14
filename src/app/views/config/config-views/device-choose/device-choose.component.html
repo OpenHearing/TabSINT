@@ -4,7 +4,7 @@
 
 <div class="modal-body">
   <button
-    *ngFor="let device of availableDevices"
+    *ngFor="let device of discoveredDevices | async"
     (click)="choose(device)"
     [ngClass]="selectedDevice?.name === device.name ? 'btn device-btn selected' : 'btn device-btn'">
     {{ device.name }}

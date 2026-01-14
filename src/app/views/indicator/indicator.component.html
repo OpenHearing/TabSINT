@@ -5,13 +5,25 @@
 <!-- </a> -->
 
 <!-- tympan status -->
-<a href="javascript:" class="header-text" *ngIf="devices?.connectedDevices?.tympan?.[0]?.state == DeviceState.Connected" title="Tympan Connected">
+<a href="javascript:" class="header-text" *ngIf="hasConnectedTympan | async" title="Tympan Connected">
   <span>
     <i [matMenuTriggerFor]="TympanConnectedMenu" class="tympan-logo"></i>
   </span>
   <mat-menu #TympanConnectedMenu="matMenu">
     <button mat-menu-item>
       <div [innerHTML]="TympanConnectedPopover"></div>
+    </button>
+  </mat-menu>
+</a>
+
+<!-- wahts status -->
+<a href="javascript:" class="header-text" *ngIf="hasConnectedWahts | async" title="WAHTS Connected">
+  <span>
+    <i [matMenuTriggerFor]="WahtsConnectedMenu" class="wahts-logo"></i>
+  </span>
+  <mat-menu #WahtsConnectedMenu="matMenu">
+    <button mat-menu-item>
+      <div [innerHTML]="WahtsConnectedPopover"></div>
     </button>
   </mat-menu>
 </a>

@@ -20,17 +20,23 @@ export enum ExamState {
 }
 
 export enum DeviceState {
-  Connected,
-  Disconnected,
-  Discovery,
-  Reprogram,
+  Connected = 'Connected',
+  Disconnected = 'Disconnected',
+  Discovery = 'Discovery',
+  Reprogram = 'Reprogram',
 }
 
-export const AvailableConnectableDevices: Array<string> = [
-  'Tympan',
-  // "CHA",
-  // "Svantek"
-];
+export enum DeviceStatus {
+  Ready = 'Ready',
+  Busy = 'Busy',
+  Error = 'Error',
+}
+
+export enum DeviceType {
+  Tympan = 'Tympan',
+  Wahts = 'WAHTS',
+  // Svantek,
+}
 
 export enum ResultsMode {
   UploadOnly = 'Upload Only',
@@ -55,11 +61,11 @@ export enum SvantekState {
   Recording,
 }
 
-export const BluetoothType = {
-  BLUETOOTH: 'Bluetooth 2.0',
-  BLUETOOTH_LE: 'Bluetooth 3.0',
-  USB: 'USB Host',
-};
+export enum BluetoothType {
+  BLUETOOTH = 'Bluetooth 2.0',
+  BLUETOOTH_LE = 'Bluetooth 3.0',
+  USB = 'USB Host',
+}
 
 export const LevelUnits = {
   dB_SPL: 'dB SPL',

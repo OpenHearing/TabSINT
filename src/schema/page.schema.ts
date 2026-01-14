@@ -37,12 +37,11 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
     title: { type: 'string', nullable: true },
     subtitle: { type: 'string', nullable: true },
     spacing: { type: 'string', nullable: true },
+    questionPreMainText: { type: 'string', nullable: true },
     questionMainText: { type: 'string', nullable: true },
     questionSubText: { type: 'string', nullable: true },
     instructionText: { type: 'string', nullable: true },
     helpText: { type: 'string', nullable: true },
-    resultMainText: { type: 'string', nullable: true },
-    resultSubText: { type: 'string', nullable: true },
     repeatPage: {
       type: 'object',
       properties: {

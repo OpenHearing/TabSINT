@@ -21,10 +21,10 @@
     </div>
 
     <div class="button-container">
-      <button class="adjust-button" [disabled]="device?.isMsgPending" (click)="adjustCalFactor(3)">+3 dB</button>
-      <button class="adjust-button" [disabled]="device?.isMsgPending" (click)="adjustCalFactor(-3)">-3 dB</button>
+      <button class="adjust-button" [disabled]="device?.status !== DeviceStatus.Ready" (click)="adjustCalFactor(3)">+3 dB</button>
+      <button class="adjust-button" [disabled]="device?.status !== DeviceStatus.Ready" (click)="adjustCalFactor(-3)">-3 dB</button>
     </div>
-    <button class="play-pause-button" [disabled]="device?.isMsgPending" (click)="onTogglePlay()">
+    <button class="play-pause-button" [disabled]="device?.status !== DeviceStatus.Ready" (click)="onTogglePlay()">
       <svg *ngIf="!isPlaying" viewBox="0 0 24 24" class="play-icon">
         <path d="M8 5v14l11-7z" />
       </svg>

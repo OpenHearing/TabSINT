@@ -4,7 +4,10 @@
 
 <div class="calibration-box" style="padding-top: 5em">
   <div class="button-container">
-    <button class="btn btn-block btn-lg btn-primary btn-centered" (click)="calibrate()" [disabled]="calibrationRunning || device?.isMsgPending">
+    <button
+      class="btn btn-block btn-lg btn-primary btn-centered"
+      (click)="calibrate()"
+      [disabled]="calibrationRunning || device?.status !== DeviceStatus.Ready">
       Run Calibration
     </button>
   </div>

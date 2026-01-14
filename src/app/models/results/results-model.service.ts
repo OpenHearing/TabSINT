@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CurrentResults, ExamResults, ResultsInterface } from './results.interface';
 import { pageInterfaceDefaults, protocolDefaults } from '../../utilities/defaults';
-import { DevicesModel } from '../devices/devices-model.service';
 import { VersionModel } from '../version/version.service';
 import { BehaviorSubject } from 'rxjs';
 import { Logger } from '../../services/logger.service';
@@ -14,7 +13,6 @@ export class ResultsModel {
   resultsSubject: BehaviorSubject<ResultsInterface>;
 
   constructor(
-    private readonly devicesModel: DevicesModel,
     private readonly versionModel: VersionModel,
     private readonly logger: Logger
   ) {
@@ -30,7 +28,8 @@ export class ResultsModel {
         tabletLocation: {
           //unimplemented
         },
-        devices: this.devicesModel.getDevices(),
+        hostMetadata: {},
+        devices: [],
         calibrationVersion: '0.0',
         flags: {},
       },

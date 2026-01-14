@@ -4,7 +4,6 @@ import { Subscription } from 'rxjs';
 
 import { ResultsInterface, ExamResults, CurrentResults } from '../models/results/results.interface';
 import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
-import { DevicesInterface } from '../models/devices/devices.interface';
 import { PageInterface } from '../models/page/page.interface';
 import { DiskInterface } from '../models/disk/disk.interface';
 import { VersionInterface } from '../models/version/version.interface';
@@ -16,8 +15,10 @@ import { constructFilename } from '../utilities/results-helper-functions';
 import { FileService } from '../services/file.service';
 import { Logger } from '../services/logger.service';
 import { SqLite } from '../services/sqLite.service';
-import { DevicesModel } from '../models/devices/devices-model.service';
 import { VersionModel } from '../models/version/version.service';
+import { DevicesService } from '../services/devices/devices.service';
+import { IDeviceMetadata } from '../interfaces/devices/device-metadata.interface';
+import { IDevice } from '../interfaces/devices/device.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -25,27 +26,39 @@ import { VersionModel } from '../models/version/version.service';
 export class ResultsService {
   results: ResultsInterface;
   protocol: ProtocolModelInterface;
-  devices: DevicesInterface;
+  hostMetadata: IDeviceMetadata;
   version: VersionInterface;
   disk: DiskInterface;
+  deviceNames: string[];
   diskSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
+  hostMetadataSubscription: Subscription | undefined;
+  devicesSubscription: Subscription | undefined;
 
   constructor(
-    private readonly devicesModel: DevicesModel,
     private readonly diskModel: DiskModel,
     private readonly fileService: FileService,
     private readonly logger: Logger,
     private readonly protocolM: ProtocolModel,
     private readonly resultsModel: ResultsModel,
     private readonly sqLite: SqLite,
-    private readonly versionModel: VersionModel
+    private readonly versionModel: VersionModel,
+    private readonly devicesService: DevicesService
   ) {
     this.results = this.resultsModel.getResults();
     this.protocol = this.protocolM.getProtocolModel();
-    this.devices = this.devicesModel.getDevices();
+    this.hostMetadata = {};
+    this.deviceNames = [];
     this.version = this.versionModel.version;
     this.disk = this.diskModel.getDisk();
+    this.hostMetadataSubscription = this.devicesService.hostMetadata.subscribe((hostMetadata: IDeviceMetadata) => {
+      this.hostMetadata = hostMetadata;
+      this.resultsModel.updateCurrentExam({ hostMetadata: this.hostMetadata });
+    });
+    this.devicesSubscription = this.devicesService.devices.subscribe((devices: IDevice[]) => {
+      this.deviceNames = devices.map(device => device.name);
+      this.resultsModel.updateCurrentExam({ devices: this.deviceNames });
+    });
     this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
     });
@@ -65,7 +78,7 @@ export class ResultsService {
       protocol: _.cloneDeep(this.protocol.activeProtocol!),
       responses: [],
       softwareVersion: this.version,
-      devices: this.devices,
+      hostMetadata: this.hostMetadata,
       tabletLocation: this.disk.tabletLocation,
       calibrationVersion: {
         audioProfileVersion: this.protocol.activeProtocol!._audioProfileVersion,
@@ -122,7 +135,12 @@ export class ResultsService {
    * @param result Partial or completed current exam result
    */
   async backup(result: ExamResults) {
-    const filename = constructFilename(this.devices.uuid.slice(-6), this.protocol.activeProtocol?.resultFilename, result.testDateTime, 'json');
+    const filename = constructFilename(
+      this.hostMetadata?.uuid?.slice(-6) ?? '',
+      this.protocol.activeProtocol?.resultFilename,
+      result.testDateTime,
+      'json'
+    );
     const dir = '.tabsint-results-backup/' + this.protocol.activeProtocol?.name + '/';
 
     try {
@@ -158,7 +176,12 @@ export class ResultsService {
    * @param result exam result
    */
   async writeResultToFile(result: ExamResults) {
-    const filename = constructFilename(this.devices.uuid.slice(-6), this.protocol.activeProtocol?.resultFilename, result.testDateTime, '.json');
+    const filename = constructFilename(
+      this.hostMetadata?.uuid?.slice(-6) ?? '',
+      this.protocol.activeProtocol?.resultFilename,
+      result.testDateTime,
+      '.json'
+    );
     let dir = this.disk.servers.localServer.resultsDir ? this.disk.servers.localServer.resultsDir : 'tabsint-results';
     dir = dir + '/' + this.protocol.activeProtocol?.name + '/';
     await this.fileService.writeFile(dir + filename, JSON.stringify(result));

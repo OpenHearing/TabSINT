@@ -48,26 +48,28 @@
   </div>
 </div>
 <ul class="admin-info">
-  <li>
-    <b>{{ "Device UUID" | translate }}:</b>
-    <span>{{ devices.uuid }}</span>
-  </li>
-  <!-- <li>
+  <ng-container *ngIf="hostMetadata | async as metadata">
+    <li>
+      <b>{{ "Device UUID" | translate }}:</b>
+      <span>{{ metadata.uuid }}</span>
+    </li>
+    <!-- <li>
         <b>{{'TabSINT UUID' | translate}}:</b>
         <span>{{devices.tabsintUUID}}</span>
     </li> -->
-  <li>
-    <b>{{ "Device Model" | translate }}:</b>
-    <span>{{ devices.model }}</span>
-  </li>
-  <li>
-    <b>{{ "Operating System" | translate }}:</b>
-    <span>{{ devices.platform }} {{ devices.version }}</span>
-  </li>
-  <li>
-    <b>{{ "Free Disk Space" | translate }}:</b>
-    <span>{{ devices.diskspace }} MB</span>
-  </li>
+    <li>
+      <b>{{ "Device Model" | translate }}:</b>
+      <span>{{ metadata.model }}</span>
+    </li>
+    <li>
+      <b>{{ "Operating System" | translate }}:</b>
+      <span>{{ metadata.platform }} {{ metadata.version }}</span>
+    </li>
+    <li>
+      <b>{{ "Free Disk Space" | translate }}:</b>
+      <span>{{ metadata.diskSpace }} MB</span>
+    </li>
+  </ng-container>
   <li>
     <b>{{ "Network Status" | translate }}:</b>
     <span *ngIf="state.wifiConnected">{{ "Online" | translate }}</span>

@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
-import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
+import { IDevice } from '../../../../../interfaces/devices/device.interface';
+import { DeviceStatus } from '../../../../../utilities/constants';
 
 @Component({
   selector: 'app-calibration-screen',
@@ -12,12 +13,13 @@ export class CalibrationScreenComponent implements OnChanges {
   @Input() targetLevel: number = 0;
   @Input() calFactor: number = 0;
   @Input() earCup: string = '';
-  @Input() device: ConnectedDevice | undefined;
+  @Input() device: IDevice | undefined;
   @Input() userInput: number | null = null;
   @Output() calFactorAdjusted = new EventEmitter<number>();
   @Output() nextStep = new EventEmitter<void>();
   @Output() togglePlay = new EventEmitter<void>();
   @Output() measurementUpdated = new EventEmitter<number>();
+  DeviceStatus = DeviceStatus;
   showValidationError: boolean = false;
   validationMessage: string = '';
 

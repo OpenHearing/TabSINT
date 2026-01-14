@@ -7,24 +7,21 @@ import { ManualAudiometryInterface } from './manual-audiometry.interface';
 import { PageInterface } from '../../../../models/page/page.interface';
 import { ResultsInterface } from '../../../../models/results/results.interface';
 import { ProtocolModelInterface } from '../../../../models/protocol/protocol.interface';
-import { ConnectedDevice } from '../../../../interfaces/connected-device.interface';
 import { AudiometryResultsInterface, RetsplsInterface } from '../../../../interfaces/audiometry-results.interface';
-import { TympanResponse } from '../../../../models/devices/devices.interface';
 
 import { isManualAudiometryResponseArea } from '../../../../guards/type.guard';
-import { DevicesService } from '../../../../controllers/devices.service';
+import { DevicesService } from '../../../../services/devices/devices.service';
 import { ExamService } from '../../../../controllers/exam.service';
 import { PageModel } from '../../../../models/page/page.service';
 import { StateModel } from '../../../../models/state/state.service';
 import { ProtocolModel } from '../../../../models/protocol/protocol-model.service';
 import { ResultsModel } from '../../../../models/results/results-model.service';
-import { DevicesModel } from '../../../../models/devices/devices-model.service';
 
-import { DeviceUtil } from '../../../../services/device-utility.service';
 import { Logger } from '../../../../services/logger.service';
-import { DialogType, LevelUnits, ResultType } from '../../../../utilities/constants';
+import { DeviceStatus, DeviceType, DialogType, LevelUnits, ResultType } from '../../../../utilities/constants';
 import { Notifications } from '../../../../services/notifications.service';
 import { manualAudiometrySchema } from '../../../../../schema/response-areas/manual-audiometry.schema';
+import { IDevice } from '../../../../interfaces/devices/device.interface';
 
 @Component({
   selector: 'manual-audiometry-view',
@@ -33,6 +30,7 @@ import { manualAudiometrySchema } from '../../../../../schema/response-areas/man
 })
 export class ManualAudiometryComponent implements OnInit, OnDestroy {
   // Configuration Variables
+  allowableDevices = [DeviceType.Tympan];
   retspls?: RetsplsInterface;
   levelUnits: string = manualAudiometrySchema.properties.levelUnits.default;
   frequencies: number[] = manualAudiometrySchema.properties.frequencies.default;
@@ -42,6 +40,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
   minOutputLevel: number = manualAudiometrySchema.properties.minOutputLevel.default;
 
   // Core Data
+  DeviceStatus = DeviceStatus;
   results: ResultsInterface;
   protocol: ProtocolModelInterface;
   state: StateInterface;
@@ -63,11 +62,11 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
   isPlaying: boolean = false;
   refreshGraph: boolean = true;
   selectedFrequency: number = this.frequencies[1];
+  device: IDevice | undefined;
 
   // Subscriptions
   pageSubscription: Subscription | undefined;
   deviceSubscription: Subscription | undefined;
-  device: ConnectedDevice | undefined;
   resultsSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
 
@@ -79,8 +78,6 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     private readonly protocolModel: ProtocolModel,
     private readonly stateModel: StateModel,
     private readonly devicesService: DevicesService,
-    private readonly devicesModel: DevicesModel,
-    private readonly deviceUtil: DeviceUtil,
     private readonly logger: Logger,
     private readonly notifications: Notifications
   ) {
@@ -107,7 +104,6 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
       this.results = updatedResults;
     });
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe(this.handlePageUpdate.bind(this));
-    this.deviceSubscription = this.devicesModel.tympanResponseSubject.subscribe(this.logDeviceResponse.bind(this));
     this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
@@ -249,10 +245,6 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
   }
 
   // ======= Private Utility Functions =======
-  private logDeviceResponse(msg: TympanResponse) {
-    this.logger.debug('device msg:' + JSON.stringify(msg));
-  }
-
   private updateCurrentDbSpl() {
     const tempDb = this.currentDb;
 
@@ -319,7 +311,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     };
     const ignore_error_msg = 'Error executing examSubmission: Requested frequency outside calibration';
     const resp = await this.devicesService.examSubmission(this.device!, examProperties, [ignore_error_msg]);
-    if (resp && resp[1] == 'ERROR' && resp[2] == ignore_error_msg) {
+    if (resp?.msg[1] == 'ERROR' && resp?.msg[2] == ignore_error_msg) {
       this.notifications
         .alert({
           title: 'Alert',
@@ -368,7 +360,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
   }
 
   private async setupDevice(updatedAudiometryResponseArea: ManualAudiometryInterface) {
-    this.device = this.deviceUtil.getDeviceFromTabsintId(updatedAudiometryResponseArea.tabsintId ?? '1');
+    this.device = await this.devicesService.getDeviceOrDefault(updatedAudiometryResponseArea.tabsintId, this.allowableDevices);
     if (!this.device) {
       await this.devicesService.deviceNotFound();
       this.logger.error('Error setting up Manual Audiometry exam');
