@@ -53,6 +53,7 @@ async function parseCsvString(csvFileContent: string): Promise<any> {
     ? processOutputChannelValue(getValueByKey(lines, 'OUTPUT CHANNELS'))
     : mrtSchema.properties.outputChannel.default;
   const randomizeTrials = getValueByKey(lines, 'RANDOMIZE TRIALS') ?? mrtSchema.properties.randomizeTrials.default;
+  const randomizeChoices = getValueByKey(lines, 'RANDOMIZE CHOICES') ?? mrtSchema.properties.randomizeChoices.default;
 
   const trialsIndex = lines.findIndex(line => line[0].startsWith('{TRIALS')) + 1;
   const header = lines[trialsIndex];
@@ -81,7 +82,7 @@ async function parseCsvString(csvFileContent: string): Promise<any> {
     }
   }
 
-  return { trialList, outputChannel, randomizeTrials };
+  return { trialList, outputChannel, randomizeTrials, randomizeChoices };
 }
 
 async function parseLeveldBSpl(line: any[]) {

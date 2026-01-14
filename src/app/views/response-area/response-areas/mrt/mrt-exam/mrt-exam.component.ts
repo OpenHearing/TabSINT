@@ -201,7 +201,8 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     }
   }
 
-  replayTrial() {
+  async replayTrial() {
+    await this.waitForReadyState();
     this.currentStep = 'Ready';
     this.nextStep();
   }
@@ -302,7 +303,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   private saveResponse() {
     this.trialListResults.push({
       ...this.currentTrial,
-      userResponseIndex: this.selectedResponseIndex!,
+      userResponseIndex: this.selectedResponseIndex! + 1,
       isCorrect: this.isCorrect!,
     });
     this.resultsModel.updateCurrentPage({ response: this.trialListResults });
@@ -340,12 +341,12 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   private randomizeChoicesWithAnswer(trials: MrtTrialInterface[]): MrtTrialInterface[] {
     trials.forEach(trial => {
       // Get the correct answer before shuffling
-      const correctChoice = trial.choices[trial.answer];
+      const correctChoice = trial.choices[trial.answer - 1];
 
       shuffleArray(trial.choices);
 
       // Find where the correct answer ended up and update the answer index
-      trial.answer = trial.choices.indexOf(correctChoice);
+      trial.answer = trial.choices.indexOf(correctChoice) + 1;
     });
     return trials;
   }
