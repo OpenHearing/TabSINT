@@ -276,6 +276,7 @@ export class TympanAdapter implements IDeviceAdapter {
 
   /**
    * Function to wait for a response from the device.
+   * This function skips existing response values before awaiting new responses.
    * A timeout occurs if a first byte is not received within the expected timeframe,
    * or if the response is not valid. In the case of failure a retry command is run.
    * @param device The device to wait for a response from.
@@ -289,21 +290,23 @@ export class TympanAdapter implements IDeviceAdapter {
     timeoutTimeMs: number = this.defaultTimeoutTimeMs
   ): Promise<IDeviceResponse | undefined> {
     try {
-      // Await for a first byte or until the a timeout error is thrown
-      await firstValueFrom(
+      const firstByteReceivedPromise = firstValueFrom(
         this.firstByteReceivedSubject.pipe(
           skip(1),
           filter(response => response[device.deviceId]),
           timeout(this.firstByteTimeout)
         )
       );
-      const response = await firstValueFrom(
+      const responsePromise = firstValueFrom(
         this.tympanResponseSubject.pipe(
           skip(1),
           filter(response => response?.deviceId === device.deviceId),
           timeout(timeoutTimeMs)
         )
       );
+      // Await for a first byte or until the a timeout error is thrown
+      await firstByteReceivedPromise;
+      const response = await responsePromise;
       if (response && this.isResponseInvalidChecksum(response)) {
         return await retryCommand.func();
       } else if (response && this.doTympanResponseMsgIdsMatch({ deviceId: device.deviceId, msgId: String(device.msgId) }, response)) {
