@@ -38,6 +38,7 @@ export const mrtSchema: JSONSchemaType<MrtExamInterface> = {
       nullable: true,
     },
     showResults: { type: 'boolean', nullable: true, default: true },
+    showFeedback: { type: 'boolean', nullable: true, default: true },
   },
   required: ['type'],
 };
