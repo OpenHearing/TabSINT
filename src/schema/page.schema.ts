@@ -1,6 +1,6 @@
 import { JSONSchemaType } from 'ajv';
 import { navMenuSchema } from './definitions/navMenu.schema';
-import { wavfileSchema } from './definitions/wavfile.schema';
+import { pageWavfileSchema } from './definitions/page-wavfile.schema';
 import { followOnSchema } from './definitions/follow-on.schema';
 import { setFlagSchema } from './definitions/set-flag.schema';
 import { PageDefinition } from '../app/interfaces/page-definition.interface';
@@ -17,17 +17,14 @@ import { waiSchema } from './response-areas/wai.schema';
 import { mrtSchema } from './response-areas/mrt.schema';
 import { memrSchema } from './response-areas/memr.schema';
 import { CustomResponseAreaSchema } from './response-areas/custom-response-area.schema';
+import { Headset } from '../app/utilities/constants';
 
 export const pageSchema: JSONSchemaType<PageDefinition> = {
   $id: 'page_base',
   type: 'object',
   properties: {
     id: { type: 'string' },
-    headset: {
-      type: 'string',
-      enum: ['None', 'VicFirth', 'Vic Firth S2', 'HDA200', 'WAHTS', 'Audiometer', 'EPHD1'],
-      nullable: true,
-    },
+    headset: { type: 'string', enum: Object.values(Headset), nullable: true },
     skipIf: { type: 'string', nullable: true },
     hideProgressBar: { type: 'boolean', nullable: true, default: false },
     autoSubmitDelay: { type: 'number', nullable: true, minimum: 50 },
@@ -62,7 +59,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
       nullable: true,
     },
     wavfileStartDelayTime: { type: 'number', nullable: true, minimum: 0, default: 1000 },
-    wavfiles: { type: 'array', items: wavfileSchema, nullable: true },
+    wavfiles: { type: 'array', items: pageWavfileSchema, nullable: true },
     chaWavFiles: {
       type: 'array',
       items: chaWavFileSchema,

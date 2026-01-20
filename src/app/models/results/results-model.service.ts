@@ -30,7 +30,7 @@ export class ResultsModel {
         },
         hostMetadata: {},
         devices: [],
-        calibrationVersion: '0.0',
+        calibrationVersion: {},
         flags: {},
       },
     };
