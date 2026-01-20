@@ -98,7 +98,7 @@ describe('DiskModel', () => {
       hostMetadata: {},
       devices: [],
       tabletLocation: {},
-      calibrationVersion: 0,
+      calibrationVersion: {},
       flags: {},
     };
     let returnedDisk: DiskInterface = diskModel.getDisk();

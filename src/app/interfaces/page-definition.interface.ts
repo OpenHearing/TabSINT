@@ -13,10 +13,11 @@ import { MemrExamInterface } from '../views/response-area/response-areas/memr/me
 import { FPLCalibrationExamInterface } from '../views/response-area/response-areas/fpl-calibration-exam/fpl-calibration-exam-component/fpl-calibration-exam.interface';
 import { CustomResponseAreaInterface } from '../views/response-area/response-areas/custom-response-area/custom-response-area.interface';
 import { PreProcessFunctionInterface } from './preProcessFunction.interface';
+import { Headset, PlaybackMethod, WavfileWeighting } from '../utilities/constants';
 
 export interface PageDefinition {
   id: string;
-  headset?: 'None' | 'VicFirth' | 'Vic Firth S2' | 'HDA200' | 'WAHTS' | 'Audiometer' | 'EPHD1';
+  headset?: Headset;
   skipIf?: string;
   hideProgressBar?: boolean;
   autoSubmitDelay?: number;
@@ -31,7 +32,7 @@ export interface PageDefinition {
   repeatPage?: RepeatPageInterface;
   preProcessFunction?: PreProcessFunctionInterface;
   wavfileStartDelayTime?: number;
-  wavfiles?: WavfileInterface[];
+  wavfiles?: PageWavfileInterface[];
   chaWavFiles?: ChaWavfileInterface[];
   chaStream?: boolean;
   image?: ImageInterface;
@@ -53,13 +54,13 @@ export interface RepeatPageInterface {
   repeatIf?: string;
 }
 
-export interface WavfileInterface {
-  cal: object;
-  useCommonRepo?: boolean;
+export interface PageWavfileInterface {
   path: string;
-  playbackMethod?: 'arbitrary' | 'as-recorded';
+  cal?: object;
+  useCommonRepo?: boolean;
+  playbackMethod?: PlaybackMethod;
   targetSPL?: number | string;
-  weighting?: 'A' | 'C' | 'Z';
+  weighting?: WavfileWeighting;
   startTime?: number;
   endTime?: number;
 }

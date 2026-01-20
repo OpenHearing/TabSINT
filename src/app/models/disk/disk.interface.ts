@@ -2,7 +2,7 @@ import { IDevice } from '../../interfaces/devices/device.interface';
 import { ITympanDevice } from '../../interfaces/devices/tympan-device.interface';
 import { IWahtsDevice } from '../../interfaces/devices/wahts-device.interface';
 import { MediaReposInterface } from '../../interfaces/media-repos.interface';
-import { ProtocolServer, ResultsMode, BluetoothType } from '../../utilities/constants';
+import { ProtocolServer, ResultsMode, BluetoothType, Headset } from '../../utilities/constants';
 import { ProtocolMetaInterface } from '../protocol/protocol.interface';
 
 export interface GitlabConfigInterface {
@@ -38,7 +38,7 @@ export interface DiskInterface {
     useTagsOnly: boolean;
   };
   gitlabConfig: GitlabConfigInterface;
-  headset: string;
+  headset: Headset;
   interApp: {
     appName: string;
     dataIn: string;

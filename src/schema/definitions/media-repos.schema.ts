@@ -7,6 +7,7 @@ export const mediaReposSchema: JSONSchemaType<MediaReposInterface> = {
     name: { type: 'string' },
     date: { type: 'string' },
     version: { type: 'string' },
+    path: { type: 'string' },
   },
-  required: ['name', 'date', 'version'],
+  required: ['name', 'date', 'version', 'path'],
 };

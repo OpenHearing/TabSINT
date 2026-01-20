@@ -1,26 +1,28 @@
-<!-- <div class="row pad-top">
-    <div class="col-5">
-        <label translate for="defaultHeadset">Default Headset:</label>
-    </div>
-    <div ngbDropdown class="col-5 dropdown-width" display="dynamic">                            
-        <button type="button" class="btn btn-default btn-block dropdown-toggle" id="defaultHeadset" ngbDropdownToggle>
-            {{disk.headset}}
-        </button>
-        <div ngbDropdownMenu aria-labelledby="defaultHeadset">
-            <button *ngFor="let headset of headsets" ngbDropdownItem (click)="changeHeadset(headset)">{{headset}}</button>
-        </div>
-    </div>
+<!-- Top Space -->
+<br />
 
-    <div class="col-1" href="javascript:" title="{{'Default Headset Help' | translate}}">
-        <i [matMenuTriggerFor]= "headsetMenu" class="ion-help-circled"></i>
+<!-- Default Headset -->
+<div class="row pad-top">
+  <div class="col-6">
+    <label translate for="defaultHeadset">{{ "Default Headset:" | translate }}</label>
+  </div>
+  <div ngbDropdown class="col-4 dropdown-width" display="dynamic">
+    <button type="button" class="btn btn-default btn-block dropdown-toggle" id="defaultHeadset" ngbDropdownToggle>
+      {{ disk.headset }}
+    </button>
+    <div ngbDropdownMenu aria-labelledby="defaultHeadset">
+      <button *ngFor="let headset of headsets" ngbDropdownItem (click)="changeHeadset(headset)">{{ headset }}</button>
     </div>
-    <mat-menu #headsetMenu="matMenu">
-        <button mat-menu-item>
-            <div [innerHTML]="headsetPopover"></div>
-        </button>
-    </mat-menu>
-
-</div> -->
+  </div>
+  <div class="col-1" href="javascript:" title="{{ 'Default Headset Help' | translate }}">
+    <i [matMenuTriggerFor]="headsetMenu" class="ion-help-circled"></i>
+  </div>
+  <mat-menu #headsetMenu="matMenu">
+    <button mat-menu-item>
+      <div [innerHTML]="headsetPopover"></div>
+    </button>
+  </mat-menu>
+</div>
 
 <!-- Select Language -->
 <!-- <div class="row pad-top">
@@ -71,7 +73,6 @@ Show Advanced
         </div>
     </div> -->
 
-<br />
 <!-- Admin Mode -->
 <div class="row pad-top">
   <div class="col-6"><label translate for="adminMode">Admin Mode:</label></div>

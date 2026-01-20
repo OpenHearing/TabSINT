@@ -2,7 +2,7 @@ import { JSONSchemaType } from 'ajv';
 import { DiskInterface } from '../../app/models/disk/disk.interface';
 import { protocolMetaSchema } from './protocol-meta.schema';
 import { gitlabConfigSchema } from './gitlab-config.schema';
-import { BluetoothType, ProtocolServer, ResultsMode } from '../../app/utilities/constants';
+import { BluetoothType, Headset, ProtocolServer, ResultsMode } from '../../app/utilities/constants';
 import { uploadSummarySchema } from './upload-summary.schema';
 import { mediaReposSchema } from './media-repos.schema';
 import { nullable } from '../../app/utilities/safe-parsing';
@@ -75,7 +75,7 @@ export const diskSchema: JSONSchemaType<DiskInterface> = {
         group: gitlabConfigSchema.properties.group.default,
       },
     },
-    headset: { type: 'string', default: 'None' },
+    headset: { type: 'string', enum: Object.values(Headset), default: Headset.None },
     interApp: {
       type: 'object',
       properties: {

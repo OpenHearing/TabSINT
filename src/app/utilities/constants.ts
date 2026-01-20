@@ -38,6 +38,16 @@ export enum DeviceType {
   // Svantek,
 }
 
+export enum Headset {
+  None = 'None',
+  Audiometer = 'Audiometer',
+  EPHD1 = 'EPHD1',
+  HDA200 = 'HDA200',
+  VicFirth = 'VicFirth',
+  VicFirthS2 = 'VicFirthS2',
+  WAHTS = 'WAHTS',
+}
+
 export enum ResultsMode {
   UploadOnly = 'Upload Only',
   ExportOnly = 'Export Only',
@@ -67,6 +77,22 @@ export enum BluetoothType {
   USB = 'USB Host',
 }
 
+export enum CalibrationFilter {
+  Full = 'full',
+  Flat = 'flat',
+}
+
+export enum PlaybackMethod {
+  AsRecorded = 'as-recorded',
+  Arbitrary = 'arbitrary',
+}
+
+export enum WavfileWeighting {
+  A = 'A',
+  C = 'C',
+  Z = 'Z',
+}
+
 export const LevelUnits = {
   dB_SPL: 'dB SPL',
   dB_HL: 'dB HL',
@@ -75,14 +101,15 @@ export const LevelUnits = {
 // import PurdueShakedown from '../../assets/protocols/purdue-shakedown/protocol.json';
 import develop from '../../assets/protocols/develop/protocol.json';
 import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
-export const DeveloperProtocols: { [key: string]: ProtocolSchemaInterface } = {
+export const DeveloperProtocols: Record<string, ProtocolSchemaInterface> = {
   // "Purdue Shakedown": PurdueShakedown,
-  develop: develop,
+  develop: develop as unknown as ProtocolSchemaInterface,
 };
 
 import WahtsDeviceTestCalibration from '../../assets/protocols/wahts-device-test/calibration.json';
-export const DeveloperProtocolsCalibration: any = {
-  'wahts-device-test': WahtsDeviceTestCalibration,
+import { CalibrationFileInterface } from '../interfaces/calibration-file.interface';
+export const DeveloperProtocolsCalibration: Record<string, CalibrationFileInterface> = {
+  'wahts-device-test': WahtsDeviceTestCalibration as unknown as CalibrationFileInterface,
 };
 
 export const bluetoothTimeout: number = 5000;
