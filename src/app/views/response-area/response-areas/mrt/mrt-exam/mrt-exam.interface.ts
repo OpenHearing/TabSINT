@@ -6,6 +6,7 @@ export interface MrtExamInterface extends CommonResponseAreaInterface {
   examDefinitionFilename: string;
   outputChannel?: string[] | string;
   randomizeTrials?: boolean;
+  randomizeChoices?: boolean;
   trialList?: MrtTrialInterface[];
   showResults?: boolean;
 }
