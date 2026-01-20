@@ -5,22 +5,23 @@ import { LoadingProtocolInterface } from '../interfaces/loading-protocol-object.
 import { Logger } from '../services/logger.service';
 import { FileService } from '../services/file.service';
 import { DiskInterface } from '../models/disk/disk.interface';
+import { CalibrationFileInterface } from '../interfaces/calibration-file.interface';
 
-export function initializeLoadingProtocol(
+export async function initializeLoadingProtocol(
   loading: LoadingProtocolInterface,
   logger: Logger,
   translate: TranslateService,
   disk: DiskInterface,
   fileService: FileService
-) {
+): Promise<LoadingProtocolInterface> {
   let msg: string = '';
 
   initializeVariables();
   checkPublicKeyError();
   checkTabsintVersion();
   confirmEPHD1IsConnectedWhenHeadsetIsEPHD1();
-  checkCalibration();
-  setMediaRepo();
+  setProtocolCalibrationData();
+  await setMediaRepo();
 
   return loading;
 
@@ -34,7 +35,7 @@ export function initializeLoadingProtocol(
     loading.protocol._missingCommonWavCalList = [];
     loading.protocol._requiresCha = false;
     loading.protocol.errors = [];
-    loading.protocol.cCommon = [];
+    loading.protocol.cCommon = undefined;
   }
 
   function checkPublicKeyError() {
@@ -98,37 +99,30 @@ export function initializeLoadingProtocol(
     // }
   }
 
-  function checkCalibration() {
-    const reqCalProperties = ['headset', 'tablet', 'audioProfileVersion', 'calibrationPySVNRevision', 'calibrationPyManualReleaseDate'];
-    if (_.difference(_.keys(loading.calibration), reqCalProperties).length > 0) {
-      // if (_.intersection(_.keys(loading.calibration), reqCalProperties).length === reqCalProperties.length) {
-      //     loading.protocol.headset = loading.calibration.headset;
-      //     loading.protocol._audioProfileVersion = loading.calibration.audioProfileVersion;
-      //     loading.protocol._calibrationPySVNRevision = loading.calibration.calibrationPySVNRevision;
-      //     loading.protocol._calibrationPyManualReleaseDate = loading.calibration.calibrationPyManualReleaseDate;
-      // } else {
-      //     loading.protocol._audioProfileVersion = "none";
-      //     loading.protocol._calibrationPySVNRevision = "none";
-      //     loading.protocol._calibrationPyManualReleaseDate = "none";
-      //     msg = "The loaded protocol calibration file is missing version fields.";
-      //     logger.error(msg);
-      //     loading.protocol.errors!.push({
-      //     type: "Calibration",
-      //     error: msg
-      //     });
-      // }
+  /**
+   * Set the calibration information at the protocol level based on the calibration.json file.
+   */
+  function setProtocolCalibrationData() {
+    const calibration = structuredClone(loading.calibration);
+    if (calibration) {
+      loading.protocol.headset = calibration.headset;
+      loading.protocol._audioProfileVersion = calibration.audioProfileVersion;
+      loading.protocol._calibrationPySVNRevision = calibration.calibrationPySVNRevision;
+      loading.protocol._calibrationPyManualReleaseDate = String(calibration.calibrationPyManualReleaseDate);
     }
-    loading.protocol.currentCalibration = loading.protocol.headset ?? 'None';
+    loading.protocol.currentCalibration = loading.protocol.headset;
   }
 
-  function setMediaRepo() {
+  async function setMediaRepo(): Promise<void> {
     if (loading.protocol.commonMediaRepository) {
       const midx = _.findIndex(disk.mediaRepos, {
         name: loading.protocol.commonMediaRepository,
       });
       if (midx !== -1) {
         loading.protocol.commonRepo = disk.mediaRepos[midx];
-        loading.protocol.cCommon = fileService.readFile(loading.protocol.commonRepo.path + 'calibration.json');
+        const cCommonFile = await fileService.readFile(loading.protocol.commonRepo.path + 'calibration.json');
+        const cCommon = cCommonFile ? JSON.parse(cCommonFile.content) : undefined;
+        loading.protocol.cCommon = cCommon as CalibrationFileInterface | undefined;
       } else {
         msg =
           'The media repository referenced by this protocol is not available (' +

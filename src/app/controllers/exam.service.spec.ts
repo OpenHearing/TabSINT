@@ -180,7 +180,7 @@ describe('ExamService', () => {
           longitude: -122.4194,
           accuracy: 5,
         },
-        calibrationVersion: 'v1.2',
+        calibrationVersion: {},
         flags: {},
         hostMetadata: {
           build: '2024.01',
@@ -233,7 +233,7 @@ describe('ExamService', () => {
           longitude: -122.4194,
           accuracy: 5,
         },
-        calibrationVersion: 'v1.2',
+        calibrationVersion: {},
         flags: {},
         hostMetadata: {
           build: '2024.01',

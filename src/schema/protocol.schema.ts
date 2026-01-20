@@ -1,10 +1,11 @@
 import Ajv, { JSONSchemaType } from 'ajv';
 const ajv = new Ajv();
 import { ProtocolSchemaInterface } from '../app/interfaces/protocol-schema.interface';
-import { calibrationSchema } from './definitions/calibration.schema';
+import { protocolCalibrationSchema } from './definitions/protocol-calibration.schema';
 import { navMenuSchema } from './definitions/navMenu.schema';
 import { pageSchema } from './page.schema';
 import { protocolReferenceSchema } from './definitions/protocol-reference.schema';
+import { Headset } from '../app/utilities/constants';
 
 const protocolSchemaBase: JSONSchemaType<ProtocolSchemaInterface> = {
   $id: 'schema_base',
@@ -20,12 +21,12 @@ const protocolSchemaBase: JSONSchemaType<ProtocolSchemaInterface> = {
     helpText: { type: 'string', nullable: true },
     submitText: { type: 'string', nullable: true },
     tablet: { type: 'string', nullable: true },
-    headset: { type: 'string', enum: ['None', 'VicFirth', 'VicFirthS2', 'HDA200', 'WAHTS', 'Audiometer', 'EPHD1'], nullable: true, default: 'None' },
+    headset: { type: 'string', enum: Object.values(Headset), nullable: true },
     chaStream: { type: 'boolean', default: false, nullable: true },
     randomization: { type: 'string', enum: ['WithoutReplacement'], nullable: true },
     minTabsintVersion: { type: 'string', nullable: true },
     commonMediaRepository: { type: 'string', nullable: true },
-    calibration: { type: 'array', items: calibrationSchema, nullable: true },
+    calibration: { type: 'array', items: protocolCalibrationSchema, nullable: true },
     timeout: {
       type: 'object',
       properties: {

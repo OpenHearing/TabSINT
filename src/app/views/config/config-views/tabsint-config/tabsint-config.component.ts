@@ -14,7 +14,7 @@ import { Logger } from '../../../../services/logger.service';
 import { VersionModel } from '../../../../models/version/version.service';
 import { StateModel } from '../../../../models/state/state.service';
 
-import { AppState } from '../../../../utilities/constants';
+import { AppState, Headset } from '../../../../utilities/constants';
 import { ChangePinComponent } from '../../../change-pin/change-pin.component';
 import { ChangeMaxLogLengthComponent } from '../../../change-max-log-length/change-max-log-length.component';
 
@@ -27,6 +27,7 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   disk: DiskInterface;
   state: StateInterface;
   version!: VersionInterface;
+  headsets = Object.values(Headset);
 
   diskSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
@@ -69,16 +70,6 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
 
   // VARIABLES - SHOULD BE MOVED?
 
-  // headsets: Array<string> = [
-  //   "None",
-  //   "HDA200",
-  //   "VicFirth",
-  //   "VicFirthS2",
-  //   "WAHTS",
-  //   "EPHD1",
-  //   "Audiometer"
-  // ];
-
   // languages: Array<string> = [
   //   this.translate.instant("English"),
   //   this.translate.instant("Japanese"),
@@ -90,10 +81,14 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
 
   // Functions
 
-  // changeHeadset(headset: string) {
-  //   this.diskModel.updateDiskModel("headset", headset);
-  //   this.logger.debug("Headset changed to: " + headset);
-  // }
+  /**
+   * Change the default headset for the application.
+   * @param headset The new headset enumeration value to be stored.
+   */
+  changeHeadset(headset: Headset) {
+    this.diskModel.updateDiskModel('headset', headset);
+    this.logger.debug('Headset changed to: ' + headset);
+  }
 
   // changeLanguage(language: string) {
   //   // need to update the language here

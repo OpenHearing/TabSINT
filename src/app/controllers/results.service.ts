@@ -19,6 +19,7 @@ import { VersionModel } from '../models/version/version.service';
 import { DevicesService } from '../services/devices/devices.service';
 import { IDeviceMetadata } from '../interfaces/devices/device-metadata.interface';
 import { IDevice } from '../interfaces/devices/device.interface';
+import { DeviceState } from '../utilities/constants';
 
 @Injectable({
   providedIn: 'root',
@@ -29,7 +30,7 @@ export class ResultsService {
   hostMetadata: IDeviceMetadata;
   version: VersionInterface;
   disk: DiskInterface;
-  deviceNames: string[];
+  connectedDeviceNames: string[];
   diskSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
   hostMetadataSubscription: Subscription | undefined;
@@ -48,7 +49,7 @@ export class ResultsService {
     this.results = this.resultsModel.getResults();
     this.protocol = this.protocolM.getProtocolModel();
     this.hostMetadata = {};
-    this.deviceNames = [];
+    this.connectedDeviceNames = [];
     this.version = this.versionModel.version;
     this.disk = this.diskModel.getDisk();
     this.hostMetadataSubscription = this.devicesService.hostMetadata.subscribe((hostMetadata: IDeviceMetadata) => {
@@ -56,8 +57,8 @@ export class ResultsService {
       this.resultsModel.updateCurrentExam({ hostMetadata: this.hostMetadata });
     });
     this.devicesSubscription = this.devicesService.devices.subscribe((devices: IDevice[]) => {
-      this.deviceNames = devices.map(device => device.name);
-      this.resultsModel.updateCurrentExam({ devices: this.deviceNames });
+      this.connectedDeviceNames = devices.filter(device => device.state == DeviceState.Connected).map(device => device.name);
+      this.resultsModel.updateCurrentExam({ devices: this.connectedDeviceNames });
     });
     this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;

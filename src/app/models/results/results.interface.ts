@@ -1,5 +1,6 @@
+import { CalibrationFileVersionInformation } from '../../interfaces/calibration-file.interface';
 import { IDeviceMetadata } from '../../interfaces/devices/device-metadata.interface';
-import { ChaWavfileInterface, ImageInterface, VideoInterface, WavfileInterface } from '../../interfaces/page-definition.interface';
+import { ChaWavfileInterface, ImageInterface, VideoInterface, PageWavfileInterface } from '../../interfaces/page-definition.interface';
 import { ProtocolServer } from '../../utilities/constants';
 import { ProtocolInterface } from '../protocol/protocol.interface';
 import { VersionInterface } from '../version/version.interface';
@@ -17,7 +18,7 @@ export interface CurrentResults {
   isSkipped?: boolean;
   responseArea?: string;
   page: {
-    wavfiles?: WavfileInterface[];
+    wavfiles?: PageWavfileInterface[];
     chaWavFiles?: ChaWavfileInterface[];
     image?: ImageInterface;
     video?: VideoInterface;
@@ -37,7 +38,7 @@ export interface ExamResults {
     longitude?: number;
     accuracy?: number;
   };
-  calibrationVersion: any; // TODO: define calibrationVersion interface
+  calibrationVersion: Partial<CalibrationFileVersionInformation>;
   hostMetadata: IDeviceMetadata;
   devices: string[];
   flags: FlagsInterface;
