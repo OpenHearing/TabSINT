@@ -9,6 +9,7 @@ export interface MrtExamInterface extends CommonResponseAreaInterface {
   randomizeChoices?: boolean;
   trialList?: MrtTrialInterface[];
   showResults?: boolean;
+  showFeedback?: boolean;
 }
 
 export interface MrtTrialInterface {

@@ -35,6 +35,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   allowableDevices = [DeviceType.Tympan];
   tabsintId: string = mrtSchema.properties.tabsintId.default;
   showResults: boolean = mrtSchema.properties.showResults.default;
+  showFeedback: boolean = mrtSchema.properties.showFeedback.default;
   isAutoSubmit: boolean = pageSchema.properties.isAutoSubmit.default;
   currentStep: string = 'Ready';
   outputChannel!: string[];
@@ -209,6 +210,9 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   }
 
   getButtonClass(index: number): string {
+    if (this.showFeedback === false) {
+      return '';
+    }
     if (this.selectedResponseIndex === null) {
       return '';
     }
@@ -232,6 +236,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   private initializeResponseArea(responseArea: MrtExamInterface) {
     this.tabsintId = responseArea.tabsintId ?? this.tabsintId;
     this.showResults = responseArea.showResults ?? this.showResults;
+    this.showFeedback = responseArea.showFeedback ?? this.showFeedback;
     this.outputChannel = responseArea.outputChannel ?? mrtSchema.properties.outputChannel.default;
     this.randomizeTrials = responseArea.randomizeTrials ?? mrtSchema.properties.randomizeTrials.default;
     this.randomizeChoices = responseArea.randomizeChoices ?? mrtSchema.properties.randomizeChoices.default;
@@ -313,29 +318,32 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   private gradeExam() {
     // Group the trial list results by their SNR values
     return Object.values(
-      this.trialListResults.reduce((acc, trial) => {
-        const snr = trial.SNR;
-        if (!acc[snr]) {
-          // Initialize the group if it doesn't exist
-          acc[snr] = {
-            snr: snr,
-            nbTrials: 0,
-            nbTrialsCorrect: 0,
-            pctCorrect: 0,
-            trialList: [],
-          };
-        }
+      this.trialListResults.reduce(
+        (acc, trial) => {
+          const snr = trial.SNR;
+          if (!acc[snr]) {
+            // Initialize the group if it doesn't exist
+            acc[snr] = {
+              snr: snr,
+              nbTrials: 0,
+              nbTrialsCorrect: 0,
+              pctCorrect: 0,
+              trialList: [],
+            };
+          }
 
-        // Update the group's statistics
-        acc[snr].trialList.push(trial);
-        acc[snr].nbTrials++;
-        if (trial.isCorrect) {
-          acc[snr].nbTrialsCorrect++;
-        }
-        acc[snr].pctCorrect = parseFloat(((acc[snr].nbTrialsCorrect / acc[snr].nbTrials) * 100).toFixed(1));
+          // Update the group's statistics
+          acc[snr].trialList.push(trial);
+          acc[snr].nbTrials++;
+          if (trial.isCorrect) {
+            acc[snr].nbTrialsCorrect++;
+          }
+          acc[snr].pctCorrect = parseFloat(((acc[snr].nbTrialsCorrect / acc[snr].nbTrials) * 100).toFixed(1));
 
-        return acc;
-      }, {} as Record<number, MrtResultsInterface>)
+          return acc;
+        },
+        {} as Record<number, MrtResultsInterface>
+      )
     );
   }
 
