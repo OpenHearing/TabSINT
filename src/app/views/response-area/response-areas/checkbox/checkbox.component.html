@@ -1,20 +1,24 @@
 <div>
-  
-  <div class="row" *ngFor="let choice of choices; let i = index">
-    <button class="checkbox-button" (click)="choiceSelected(choice.id)"> {{choice.text}} </button>
-  </div>
-  <div class="row" *ngIf="other">
-    <button (click)="toggleOther()"> {{other}} </button>
-  </div>
-  <div class="row" *ngIf="otherSelected">
-    <textarea
-      [(ngModel)]="results.currentPage.response"
-      (ngModelChange)="onResponseChange()"
-      (keydown.enter)="onEnter()"
-      rows="5"
-      autofocus="true"
-      maxlength="5000">
-    </textarea>
-  </div>
+  <span class="multi-choice-container">
+    
+    <div class="row" *ngFor="let choice of choices; let i = index">
+      <button 
+        [class]="checkboxBtnClass(choice)"
+        [ngStyle]="{'width': '200px','font-size':choice.fontSize,'background':(choice.backgroundColor)||(choice.disable&&'#cccccc'),'color':(choice.textColor)||(choice.disable&&'#666666')}" 
+        (click)="choiceSelected(choice.id)"> {{choice.text}} 
+      </button>
+    </div>
 
+    <div class="row" *ngIf="otherSelected">
+      <textarea
+        [(ngModel)]="results.currentPage.response.other"
+        (ngModelChange)="onResponseChange()"
+        (keydown.enter)="onEnter()"
+        rows="5"
+        autofocus="true"
+        maxlength="5000">
+      </textarea>
+    </div>
+
+  </span>
 </div>

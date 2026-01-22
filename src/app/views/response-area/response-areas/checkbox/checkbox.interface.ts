@@ -1,19 +1,11 @@
 import { CommonResponseAreaInterface } from '../../../../interfaces/page-definition.interface';
+import { ChoiceInterface } from '../../../../interfaces/choice.interface';
 
 export interface CheckboxInterface extends CommonResponseAreaInterface {
-  choices: CheckboxChoiceInterface[];
-  buttonScheme?: string;
+  choices: ChoiceInterface[];
+  buttonScheme?: 'markCorrect' | 'markIncorrect';
+  feedback?: 'gradeResponse' | 'showCorrect';
   other?: string;
   verticalSpacing?: number;
   exportToCSV?: boolean;
-}
-
-export interface CheckboxChoiceInterface {
-  id: string;
-  text?: string;
-  correct?: boolean;
-  disable?: boolean;
-  textColor?: string;
-  backgroundColor?: string;
-  fontSize?: string;
 }
