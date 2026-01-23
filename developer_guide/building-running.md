@@ -90,7 +90,15 @@ We recommend using a private browser (i.e. Mozilla Private Window or Google Chro
 
 ## On a Tablet
 
-You can build the app for a mobile device and push it using the tabsint build tools. From the root directory, run the following command on the command line:
+You can build the app for a mobile device and push it using the tabsint build tools. From the root directory, run the following commands on the command line:
+
+Install the needed Java Archive files for device communication.
+
+```bash
+$ bash bin/svn_import.sh <svn_repository_tags_url> <username> <password> <optional:tag>
+```
+
+Run the application on an Android device.
 
 ```bash
 $ npm run run.android

@@ -7,7 +7,7 @@ import { PageModel } from '../models/page/page.service';
 import { StateModel } from '../models/state/state.service';
 import { Notifications } from '../services/notifications.service';
 import { Logger } from '../services/logger.service';
-import { AppState, DeviceState, ExamState, ProtocolServer, ProtocolState } from '../utilities/constants';
+import { AppState, ExamState, ProtocolServer, ProtocolState } from '../utilities/constants';
 import { BehaviorSubject, of } from 'rxjs';
 import { PageInterface } from '../models/page/page.interface';
 import { StateInterface } from '../models/state/state.interface';
@@ -86,7 +86,6 @@ describe('ExamService', () => {
       },
       bluetoothConnected: true,
       wifiConnected: true,
-      newDeviceConnection: false,
     });
 
     mockStateModel.getState.and.returnValue({
@@ -131,7 +130,6 @@ describe('ExamService', () => {
 
       bluetoothConnected: true,
       wifiConnected: true,
-      newDeviceConnection: false,
     });
 
     mockResultsModel.resultsSubject = new BehaviorSubject<ResultsInterface>({
@@ -182,9 +180,9 @@ describe('ExamService', () => {
           longitude: -122.4194,
           accuracy: 5,
         },
-        calibrationVersion: 'v1.2',
+        calibrationVersion: {},
         flags: {},
-        devices: {
+        hostMetadata: {
           build: '2024.01',
           uuid: 'device-uuid-123',
           version: '1.0.3',
@@ -192,27 +190,9 @@ describe('ExamService', () => {
           model: 'Galaxy Tab S7',
           os: 'Android 11',
           other: 'Some other info',
-          diskspace: '64GB',
-          connectedDevices: {
-            tympan: [
-              {
-                type: 'hearing-device',
-                tabsintId: 'tym-001',
-                description: 'Test Tympan Device',
-                buildDateTime: new Date().toISOString(),
-                serialNumber: 'SN-12345',
-                deviceId: 'dev-001',
-                name: 'Tympan Device',
-                state: DeviceState.Connected,
-                msgId: 123,
-                maxByteLength: 244,
-                isMsgPending: false,
-              },
-            ],
-            cha: [{}],
-            svantek: [{}],
-          },
+          diskSpace: '64GB',
         },
+        devices: [],
       },
     });
 
@@ -253,9 +233,9 @@ describe('ExamService', () => {
           longitude: -122.4194,
           accuracy: 5,
         },
-        calibrationVersion: 'v1.2',
+        calibrationVersion: {},
         flags: {},
-        devices: {
+        hostMetadata: {
           build: '2024.01',
           uuid: 'device-uuid-123',
           version: '1.0.3',
@@ -263,27 +243,9 @@ describe('ExamService', () => {
           model: 'Galaxy Tab S7',
           os: 'Android 11',
           other: 'Some other info',
-          diskspace: '64GB',
-          connectedDevices: {
-            tympan: [
-              {
-                type: 'hearing-device',
-                tabsintId: 'tym-001',
-                description: 'Test Tympan Device',
-                buildDateTime: new Date().toISOString(),
-                serialNumber: 'SN-12345',
-                deviceId: 'dev-001',
-                name: 'Tympan Device',
-                state: DeviceState.Connected,
-                msgId: 123,
-                maxByteLength: 244,
-                isMsgPending: false,
-              },
-            ],
-            cha: [{}],
-            svantek: [{}],
-          },
+          diskSpace: '64GB',
         },
+        devices: [],
       },
     });
 
@@ -384,6 +346,7 @@ describe('ExamService', () => {
 
     mockPageModel.stack = [];
 
+    spyOn(examService as any, 'startPage').and.stub();
     await examService.begin();
 
     expect(mockResultsService.initializeExamResults).toHaveBeenCalled();

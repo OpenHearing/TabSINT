@@ -1,8 +1,10 @@
+import { CalibrationFileInterface } from '../../interfaces/calibration-file.interface';
 import { FollowOnsDictionary } from '../../interfaces/follow-ons-dictionary';
+import { MediaReposInterface } from '../../interfaces/media-repos.interface';
 import { ProtocolDictionary } from '../../interfaces/protocol-dictionary';
 import { ProtocolErrorInterface } from '../../interfaces/protocol-error.interface';
 import { ProtocolSchemaInterface } from '../../interfaces/protocol-schema.interface';
-import { ProtocolServer } from '../../utilities/constants';
+import { Headset, ProtocolServer } from '../../utilities/constants';
 import { GitlabConfigInterface } from '../disk/disk.interface';
 
 export interface ProtocolMetaInterface {
@@ -24,12 +26,12 @@ export interface ProtocolModelInterface {
   activeProtocolFollowOnsDictionary?: FollowOnsDictionary;
 }
 export interface ProtocolInterface extends ProtocolSchemaInterface, ProtocolMetaInterface {
-  cCommon?: any;
   key?: string;
-  commonRepo?: any;
+  commonRepo?: MediaReposInterface;
+  cCommon?: CalibrationFileInterface;
   protocolTabsintOutdated?: boolean;
   protocolUsbCMissing?: boolean;
-  currentCalibration?: 'None' | 'VicFirth' | 'VicFirthS2' | 'HDA200' | 'WAHTS' | 'Audiometer' | 'EPHD1';
+  currentCalibration?: Headset;
   _audioProfileVersion?: string;
   _calibrationPySVNRevision?: string;
   _calibrationPyManualReleaseDate?: string;

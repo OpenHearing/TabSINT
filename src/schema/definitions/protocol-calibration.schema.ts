@@ -1,14 +1,15 @@
 import { JSONSchemaType } from 'ajv';
-import { CalibrationInterface } from '../../app/interfaces/protocol-schema.interface';
 import { CalibrationResultViewerInterface } from '../../app/views/response-area/response-areas/calibration-exam/calibration-exam-component/calibration-exam.interface';
+import { CalibrationFilter } from '../../app/utilities/constants';
+import { ProtocolCalibrationInterface } from '../../app/interfaces/protocol-schema.interface';
 
-export const calibrationSchema: JSONSchemaType<CalibrationInterface> = {
+export const protocolCalibrationSchema: JSONSchemaType<ProtocolCalibrationInterface> = {
   type: 'object',
   properties: {
     wavfiles: { type: 'array', items: { type: 'string' } },
     referenceFile: { type: 'string', nullable: true },
     referenceLevel: { type: 'number', nullable: true },
-    calibrationFilter: { type: 'string', enum: ['full', 'flat'], default: 'full', nullable: true },
+    calibrationFilter: { type: 'string', enum: Object.values(CalibrationFilter), default: CalibrationFilter.Full, nullable: true },
   },
   required: ['wavfiles'],
 };

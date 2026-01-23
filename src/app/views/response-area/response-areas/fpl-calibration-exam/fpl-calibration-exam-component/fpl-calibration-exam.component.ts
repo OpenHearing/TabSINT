@@ -4,9 +4,7 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 import { PageModel } from '../../../../../models/page/page.service';
 import { FPLCalibrationExamInterface } from './fpl-calibration-exam.interface';
 import { PageInterface } from '../../../../../models/page/page.interface';
-import { DevicesService } from '../../../../../controllers/devices.service';
-import { DeviceUtil } from '../../../../../services/device-utility.service';
-import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
+import { DevicesService } from '../../../../../services/devices/devices.service';
 import { Logger } from '../../../../../services/logger.service';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { ResultsInterface } from '../../../../../models/results/results.interface';
@@ -18,6 +16,9 @@ import { WAIResultsInterface } from '../../wideband-acoustic-immittance/wai-exam
 import { StateModel } from '../../../../../models/state/state.service';
 import { StateInterface } from '../../../../../models/state/state.interface';
 import { getCurrentDatetime } from '../../../../../utilities/exam-helper-functions';
+import { IDevice } from '../../../../../interfaces/devices/device.interface';
+import { IDeviceResponse } from '../../../../../interfaces/devices/device-response.interface';
+import { DeviceType } from '../../../../../utilities/constants';
 
 @Component({
   selector: 'app-fpl-calibration-exam',
@@ -25,8 +26,9 @@ import { getCurrentDatetime } from '../../../../../utilities/exam-helper-functio
   styleUrls: ['./fpl-calibration-exam.component.css'],
 })
 export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
+  allowableDevices = [DeviceType.Tympan];
   currentStep: string = 'landing';
-  device: ConnectedDevice | undefined;
+  device: IDevice | undefined;
   tabsintId: string = FPLcalibrationExamSchema.properties.tabsintId.default;
   results: ResultsInterface;
   navigationHistory: { step: string; outputChannel: string }[] = [];
@@ -76,7 +78,6 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
     private readonly changeDetectorRef: ChangeDetectorRef,
     private readonly pageModel: PageModel,
     private readonly devicesService: DevicesService,
-    private readonly deviceUtil: DeviceUtil,
     private readonly logger: Logger,
     private readonly resultsModel: ResultsModel,
     private readonly examService: ExamService,
@@ -121,7 +122,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
         this.numFrequencies = responseArea.numFrequencies ?? this.numFrequencies;
         this.sweepDuration = responseArea.sweepDuration ?? this.sweepDuration;
         this.windowDuration = responseArea.windowDuration ?? this.windowDuration;
-        this.device = this.deviceUtil.getDeviceFromTabsintId(responseArea.tabsintId ?? '1');
+        this.device = await this.devicesService.getDeviceOrDefault(responseArea.tabsintId, this.allowableDevices);
         if (!this.device) {
           await this.devicesService.deviceNotFound();
           this.logger.error('Error setting up FPL Calibration exam, device not found.');
@@ -183,7 +184,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
       }
       this.stateModel.updateState({ isSubmittable: false });
       const resp = await this.devicesService.queueExam(this.device, 'WAI', examProperties);
-      if (resp![1] != 'ERROR') {
+      if (resp!.msg[1] != 'ERROR') {
         await this.waitForWAIExamCompletion();
       }
     } else {
@@ -203,7 +204,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
       if (this.shouldAbort) return;
 
       if (this.doesRespContainResults(resp)) {
-        this.inProgressResultsSubject.next(resp![1]);
+        this.inProgressResultsSubject.next(resp?.msg[1] as WAIResultsInterface);
         if (this.inProgressResults.State === 'DONE') {
           this.stateModel.updateState({ isSubmittable: true });
           this.changeDetectorRef.detectChanges();
@@ -229,8 +230,15 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
     this.updateStateOnAbort();
   }
 
-  private doesRespContainResults(resp: any[] | undefined) {
-    return resp !== undefined && resp.length > 1 && resp[1] !== 'ERROR' && resp[2] !== 'timeout' && resp[2] !== 'byte timeout' && resp[1] !== 'OK';
+  private doesRespContainResults(resp: IDeviceResponse | undefined) {
+    return (
+      resp?.msg !== undefined &&
+      resp.msg.length > 1 &&
+      resp.msg[1] !== 'ERROR' &&
+      resp.msg[2] !== 'timeout' &&
+      resp.msg[2] !== 'byte timeout' &&
+      resp.msg[1] !== 'OK'
+    );
   }
 
   private async waitForRequestResultsDone() {

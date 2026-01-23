@@ -14,23 +14,23 @@
       <tbody>
         <tr *ngFor="let freq of getKeys(results.leftEar)">
           <td
-            (click)="!device?.isMsgPending && navigateToStep('Left', freq, 'calibration')"
-            (keydown.enter)="!device?.isMsgPending && navigateToStep('Left', freq, 'calibration')">
+            (click)="device?.status === DeviceStatus.Ready && navigateToStep('Left', freq, 'calibration')"
+            (keydown.enter)="device?.status === DeviceStatus.Ready && navigateToStep('Left', freq, 'calibration')">
             {{ freq }}
           </td>
           <td
-            (click)="!device?.isMsgPending && navigateToStep('Left', freq, 'calibration')"
-            (keydown.enter)="!device?.isMsgPending && navigateToStep('Left', freq, 'calibration')">
+            (click)="device?.status === DeviceStatus.Ready && navigateToStep('Left', freq, 'calibration')"
+            (keydown.enter)="device?.status === DeviceStatus.Ready && navigateToStep('Left', freq, 'calibration')">
             {{ results.leftEar[freq].calFactor }}
           </td>
           <td
-            (click)="!device?.isMsgPending && navigateToStep('Left', freq, 'calibration')"
-            (keydown.enter)="!device?.isMsgPending && navigateToStep('Left', freq, 'calibration')">
+            (click)="device?.status === DeviceStatus.Ready && navigateToStep('Left', freq, 'calibration')"
+            (keydown.enter)="device?.status === DeviceStatus.Ready && navigateToStep('Left', freq, 'calibration')">
             {{ results.leftEar[freq].measurement }}
           </td>
           <td
-            (click)="!device?.isMsgPending && navigateToStep('Left', freq, 'max-output')"
-            (keydown.enter)="!device?.isMsgPending && navigateToStep('Left', freq, 'max-output')">
+            (click)="device?.status === DeviceStatus.Ready && navigateToStep('Left', freq, 'max-output')"
+            (keydown.enter)="device?.status === DeviceStatus.Ready && navigateToStep('Left', freq, 'max-output')">
             {{ results.leftEar[freq].maxOutput }}
           </td>
         </tr>
@@ -52,23 +52,23 @@
       <tbody>
         <tr *ngFor="let freq of getKeys(results.rightEar)">
           <td
-            (click)="!device?.isMsgPending && navigateToStep('Right', freq, 'calibration')"
-            (keydown.enter)="!device?.isMsgPending && navigateToStep('Right', freq, 'calibration')">
+            (click)="device?.status === DeviceStatus.Ready && navigateToStep('Right', freq, 'calibration')"
+            (keydown.enter)="device?.status === DeviceStatus.Ready && navigateToStep('Right', freq, 'calibration')">
             {{ freq }}
           </td>
           <td
-            (click)="!device?.isMsgPending && navigateToStep('Right', freq, 'calibration')"
-            (keydown.enter)="!device?.isMsgPending && navigateToStep('Right', freq, 'calibration')">
+            (click)="device?.status === DeviceStatus.Ready && navigateToStep('Right', freq, 'calibration')"
+            (keydown.enter)="device?.status === DeviceStatus.Ready && navigateToStep('Right', freq, 'calibration')">
             {{ results.rightEar[freq].calFactor }}
           </td>
           <td
-            (click)="!device?.isMsgPending && navigateToStep('Right', freq, 'calibration')"
-            (keydown.enter)="!device?.isMsgPending && navigateToStep('Right', freq, 'calibration')">
+            (click)="device?.status === DeviceStatus.Ready && navigateToStep('Right', freq, 'calibration')"
+            (keydown.enter)="device?.status === DeviceStatus.Ready && navigateToStep('Right', freq, 'calibration')">
             {{ results.rightEar[freq].measurement }}
           </td>
           <td
-            (click)="!device?.isMsgPending && navigateToStep('Right', freq, 'max-output')"
-            (keydown.enter)="!device?.isMsgPending && navigateToStep('Right', freq, 'max-output')">
+            (click)="device?.status === DeviceStatus.Ready && navigateToStep('Right', freq, 'max-output')"
+            (keydown.enter)="device?.status === DeviceStatus.Ready && navigateToStep('Right', freq, 'max-output')">
             {{ results.rightEar[freq].maxOutput }}
           </td>
         </tr>

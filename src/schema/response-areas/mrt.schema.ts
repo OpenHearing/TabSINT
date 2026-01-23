@@ -31,12 +31,14 @@ export const mrtSchema: JSONSchemaType<MrtExamInterface> = {
       default: ['HPL0'],
     },
     randomizeTrials: { type: 'boolean', nullable: true, default: false },
+    randomizeChoices: { type: 'boolean', nullable: true, default: false },
     trialList: {
       type: 'array',
       items: mrtTrialSchema,
       nullable: true,
     },
     showResults: { type: 'boolean', nullable: true, default: true },
+    showFeedback: { type: 'boolean', nullable: true, default: true },
   },
   required: ['type'],
 };

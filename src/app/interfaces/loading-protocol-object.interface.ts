@@ -1,9 +1,9 @@
 import { ProtocolMetaInterface, ProtocolInterface } from '../models/protocol/protocol.interface';
-import { CalibrationInterface } from './protocol-schema.interface';
+import { CalibrationFileInterface } from './calibration-file.interface';
 
 export interface LoadingProtocolInterface {
   protocol: ProtocolInterface;
-  calibration?: CalibrationInterface;
+  calibration?: CalibrationFileInterface;
   meta: ProtocolMetaInterface;
   notify: boolean;
   requiresValidation: boolean;

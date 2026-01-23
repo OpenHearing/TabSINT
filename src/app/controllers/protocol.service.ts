@@ -2,8 +2,7 @@ import * as _ from 'lodash';
 import { inject, Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
-import Ajv from 'ajv';
-const ajv = new Ajv({ useDefaults: true, strict: false });
+import Ajv, { JSONSchemaType } from 'ajv';
 
 import { LoadingProtocolInterface } from '../interfaces/loading-protocol-object.interface';
 import { ProtocolValidationResultInterface } from '../interfaces/protocol-validation-result.interface';
@@ -29,6 +28,7 @@ import { processProtocol } from '../utilities/process-protocol.function';
 import { initializeLoadingProtocol } from '../utilities/initialize-loading-protocol';
 
 import { protocolSchema } from '../../schema/protocol.schema';
+import { calibrationFileSchema } from '../../schema/definitions/calibration-file.schema';
 
 @Injectable({
   providedIn: 'root',
@@ -140,7 +140,7 @@ export class ProtocolService {
       } else {
         const response = await this.fileService.readFile('protocol.json', this.loading.meta.contentURI);
         protocol = response?.content;
-        finalProtocol = JSON.parse(protocol!);
+        finalProtocol = protocol ? JSON.parse(protocol) : undefined;
       }
 
       if (!_.isUndefined(protocol)) {
@@ -164,38 +164,51 @@ export class ProtocolService {
     return loadError;
   }
 
-  private async validate() {
-    const validate = ajv.compile(protocolSchema);
-    const isValid = validate(this.loading.protocol);
+  /**
+   * Validate an object against a provided schema.
+   * @param data The data to be validated.
+   * @param schema The schema to validate against.
+   * @returns A validation result containing whether the data is valid and any errors.
+   */
+  private validate<T = unknown>(data: object, schema: JSONSchemaType<T>): ProtocolValidationResultInterface {
+    const ajv = new Ajv({ useDefaults: true, strict: false });
+    const validateAjv = ajv.compile(schema);
+    const isValid = validateAjv(data);
     this.logger.debug('AJV isValid? ' + isValid);
-    this.logger.debug('AJV ERRORS: ' + validate.errors);
+    this.logger.debug('AJV ERRORS: ' + validateAjv.errors);
     const ret: ProtocolValidationResultInterface = {
       valid: isValid,
-      error: validate.errors,
+      error: validateAjv.errors,
     };
     return ret;
   }
 
-  private async validateIfCalledFor(): Promise<ProtocolErrorInterface | undefined> {
-    if (this.disk.validateProtocols) {
-      if (this.loading.notify) {
-        this.tasks.register('Validate Protocol', 'Validating Protocol... This process could take several minutes');
-      }
-      const validationResult = await this.validate();
-      this.tasks.deregister('Validate Protocol');
-      if (validationResult.valid) {
-        return;
-      } else {
-        const error: ProtocolErrorInterface = {
-          type: 'Protocol Schema',
-          error: JSON.stringify(validationResult.error),
-        };
-        this.logger.error('validateIfCalledFor failed with error: ' + error.error);
-        return error;
-      }
-    } else {
-      return;
+  private validateIfCalledFor(): ProtocolErrorInterface | undefined {
+    if (!this.disk.validateProtocols) return undefined;
+    if (this.loading.notify) {
+      this.tasks.register('Validate Protocol', 'Validating Protocol... This process could take several minutes');
     }
+    const protocolValidationResult = this.validate(this.loading.protocol, protocolSchema);
+    let calibrationValidationResult: ProtocolValidationResultInterface = { valid: true, error: null };
+    if (this.loading.calibration) {
+      calibrationValidationResult = this.validate(this.loading.calibration, calibrationFileSchema);
+    }
+    this.tasks.deregister('Validate Protocol');
+    if (!protocolValidationResult.valid || !calibrationValidationResult.valid) {
+      const protocolErrors = JSON.stringify(protocolValidationResult.error) ?? '';
+      const calibrationErrors = JSON.stringify(calibrationValidationResult.error) ?? '';
+      const errorType =
+        (protocolErrors ? 'Protocol Schema' : '') +
+        (protocolErrors && calibrationErrors ? 'and ' : '') +
+        (calibrationErrors ? 'Calibration Schema' : '');
+      const error: ProtocolErrorInterface = {
+        type: errorType,
+        error: protocolErrors + calibrationErrors,
+      };
+      this.logger.error('validateIfCalledFor failed with error: ' + error.error);
+      return error;
+    }
+    return undefined;
   }
 
   private handleLoadErrors(errors: (ProtocolErrorInterface | undefined)[]) {
@@ -251,7 +264,7 @@ export class ProtocolService {
   private async initializeProtocol() {
     try {
       this.tasks.register('Initialize Protocol', 'Initializing Protocol...');
-      this.loading = initializeLoadingProtocol(this.loading, this.logger, this.translate, this.disk, this.fileService);
+      this.loading = await initializeLoadingProtocol(this.loading, this.logger, this.translate, this.disk, this.fileService);
       this.tasks.register('Initialize Protocol', 'Processing Protocol...');
 
       [this.protocolModel.activeProtocol, this.protocolModel.activeProtocolDictionary, this.protocolModel.activeProtocolFollowOnsDictionary] =
@@ -262,8 +275,6 @@ export class ProtocolService {
           this.protocolModel.activeProtocol.publicKey = decodeURI(this.protocolModel.activeProtocol.key);
         }
       }
-
-      this.diskModel.updateDiskModel('headset', this.protocolModel.activeProtocol.headset ?? 'None');
 
       // TODO: Implement this variable for tympan? Or remove it? We should implement for CHA and Tympan!
       if (this.loading.protocol._requiresCha) {
@@ -292,10 +303,10 @@ export class ProtocolService {
     if (this.loading.meta.server === ProtocolServer.Developer) {
       calibration = DeveloperProtocolsCalibration[this.loading.meta.name];
     } else {
-      calibration = await this.fileService.readFile(this.loading.meta.contentURI + '/calibration.json');
-    }
-    if (calibration) {
-      this.loading.calibration = JSON.parse(calibration);
+      // The loaded calibration file is validated as necessary in validateIfCalledFor
+      const calibrationFile = await this.fileService.readFile('calibration.json', this.loading.meta.contentURI);
+      calibration = calibrationFile?.content;
+      this.loading.calibration = calibration ? JSON.parse(calibration) : undefined;
     }
   }
 

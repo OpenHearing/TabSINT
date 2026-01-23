@@ -206,7 +206,9 @@ export class ExamService {
     if (this.pageModel.stack.length > nextExamIndex) {
       this.stateModel.updateState({ examIndex: nextExamIndex });
       this.startPage();
-    } else {
+    } else if (pageList !== undefined) {
+      // Undefined page list signals special reference handling.
+      // Only end normally if the page list is defined.
       this.endExam();
     }
   }

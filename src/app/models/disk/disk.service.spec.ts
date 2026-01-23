@@ -4,7 +4,6 @@ import { DiskInterface } from './disk.interface';
 import { ExamResults } from '../results/results.interface';
 import { ProtocolServer } from '../../utilities/constants';
 import { PageDefinition } from '../../interfaces/page-definition.interface';
-import { DevicesModel } from '../devices/devices-model.service';
 import { VersionModel } from '../version/version.service';
 import { Logger } from '../../services/logger.service';
 import { SqLite } from '../../services/sqLite.service';
@@ -15,16 +14,13 @@ describe('DiskModel', () => {
   let appModel: AppModel;
   let sqLite: SqLite;
   let logger: Logger;
-  let devicesModel: DevicesModel;
   let versionModel: VersionModel;
-
   beforeEach(async () => {
-    await TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({});
     diskModel = new DiskModel(new Document());
     appModel = new AppModel();
     sqLite = new SqLite(appModel, diskModel);
     logger = new Logger(diskModel, sqLite);
-    devicesModel = new DevicesModel(logger);
     versionModel = new VersionModel(logger);
   });
 
@@ -99,9 +95,10 @@ describe('DiskModel', () => {
       },
       responses: [1, 2, 3],
       softwareVersion: versionModel.version,
-      devices: devicesModel.getDevices(),
+      hostMetadata: {},
+      devices: [],
       tabletLocation: {},
-      calibrationVersion: 0,
+      calibrationVersion: {},
       flags: {},
     };
     let returnedDisk: DiskInterface = diskModel.getDisk();

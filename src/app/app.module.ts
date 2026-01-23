@@ -35,7 +35,6 @@ import { NotificationsComponent } from './views/notifications/notifications.comp
 
 // Models
 import { AppModel } from './models/app/app.service';
-import { DevicesModel } from './models/devices/devices-model.service';
 import { DiskModel } from './models/disk/disk.service';
 import { ProtocolModel } from './models/protocol/protocol-model.service';
 import { ResultsModel } from './models/results/results-model.service';
@@ -46,7 +45,6 @@ import { Notifications } from './services/notifications.service';
 import { SqLite } from './services/sqLite.service';
 import { Logger } from './services/logger.service';
 import { Paths } from './services/paths.service';
-import { DeviceUtil } from './services/device-utility.service';
 
 // Controllers
 import { FileService } from './services/file.service';
@@ -55,8 +53,6 @@ import { ProtocolService } from './controllers/protocol.service';
 import { LocalServerService } from './controllers/local-server.service';
 import { ResultsService } from './controllers/results.service';
 import { ExamService } from './controllers/exam.service';
-import { TympanWrap } from './services/tympan-wrap.service';
-import { TympanService } from './controllers/devices/tympan.service';
 import { AdminService } from './controllers/admin.service';
 import { TabsintConfigComponent } from './views/config/config-views/tabsint-config/tabsint-config.component';
 import { SoftwareConfigComponent } from './views/config/config-views/software-config/software-config.component';
@@ -83,7 +79,7 @@ import { CalibrationScreenComponent } from './views/response-area/response-areas
 import { MaxOutputScreenComponent } from './views/response-area/response-areas/calibration-exam/max-output-screen/max-output-screen.component';
 import { FPLCalibrationExamComponent } from './views/response-area/response-areas/fpl-calibration-exam/fpl-calibration-exam-component/fpl-calibration-exam.component';
 import { FPLCalibrationScreenComponent } from './views/response-area/response-areas/fpl-calibration-exam/fpl-calibration-screen/fpl-calibration-screen.component';
-import { DevicesService } from './controllers/devices.service';
+import { DevicesService } from './services/devices/devices.service';
 import { CalibrationResultsViewerComponent } from './views/response-area/response-areas/calibration-exam/calibration-results-viewer/calibration-results-viewer.component';
 import { ManualAudiometryResultViewerComponent } from './views/response-area/response-areas/manual-audiometry/manual-audiometry-result-viewer/manual-audiometry-result-viewer';
 import { AudiogramComponent } from './views/audiogram/audiogram.component';
@@ -199,7 +195,6 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     provideClientHydration(),
     provideHttpClient(withFetch()),
     AppModel,
-    DevicesModel,
     DiskModel,
     ProtocolModel,
     ResultsModel,
@@ -208,7 +203,6 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     Notifications,
     Logger,
     Paths,
-    DeviceUtil,
     FileService,
     VersionModel,
     ProtocolService,
@@ -217,8 +211,6 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     ExamService,
     AdminService,
     TranslateService,
-    TympanWrap,
-    TympanService,
     DevicesService,
     NetworkService,
   ],

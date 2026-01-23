@@ -39,7 +39,6 @@ export class StateModel {
     },
     bluetoothConnected: false,
     wifiConnected: false,
-    newDeviceConnection: false,
   };
 
   stateSubject = new BehaviorSubject<StateInterface>(this.stateModel);

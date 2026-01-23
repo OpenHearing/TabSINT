@@ -32,5 +32,4 @@ export interface StateInterface {
   };
   bluetoothConnected: boolean;
   wifiConnected: boolean;
-  newDeviceConnection: boolean;
 }

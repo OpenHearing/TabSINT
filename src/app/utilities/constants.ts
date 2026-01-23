@@ -20,17 +20,33 @@ export enum ExamState {
 }
 
 export enum DeviceState {
-  Connected,
-  Disconnected,
-  Discovery,
-  Reprogram,
+  Connected = 'Connected',
+  Disconnected = 'Disconnected',
+  Discovery = 'Discovery',
+  Reprogram = 'Reprogram',
 }
 
-export const AvailableConnectableDevices: Array<string> = [
-  'Tympan',
-  // "CHA",
-  // "Svantek"
-];
+export enum DeviceStatus {
+  Ready = 'Ready',
+  Busy = 'Busy',
+  Error = 'Error',
+}
+
+export enum DeviceType {
+  Tympan = 'Tympan',
+  Wahts = 'WAHTS',
+  // Svantek,
+}
+
+export enum Headset {
+  None = 'None',
+  Audiometer = 'Audiometer',
+  EPHD1 = 'EPHD1',
+  HDA200 = 'HDA200',
+  VicFirth = 'VicFirth',
+  VicFirthS2 = 'VicFirthS2',
+  WAHTS = 'WAHTS',
+}
 
 export enum ResultsMode {
   UploadOnly = 'Upload Only',
@@ -55,11 +71,27 @@ export enum SvantekState {
   Recording,
 }
 
-export const BluetoothType = {
-  BLUETOOTH: 'Bluetooth 2.0',
-  BLUETOOTH_LE: 'Bluetooth 3.0',
-  USB: 'USB Host',
-};
+export enum BluetoothType {
+  BLUETOOTH = 'Bluetooth 2.0',
+  BLUETOOTH_LE = 'Bluetooth 3.0',
+  USB = 'USB Host',
+}
+
+export enum CalibrationFilter {
+  Full = 'full',
+  Flat = 'flat',
+}
+
+export enum PlaybackMethod {
+  AsRecorded = 'as-recorded',
+  Arbitrary = 'arbitrary',
+}
+
+export enum WavfileWeighting {
+  A = 'A',
+  C = 'C',
+  Z = 'Z',
+}
 
 export const LevelUnits = {
   dB_SPL: 'dB SPL',
@@ -69,14 +101,15 @@ export const LevelUnits = {
 // import PurdueShakedown from '../../assets/protocols/purdue-shakedown/protocol.json';
 import develop from '../../assets/protocols/develop/protocol.json';
 import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
-export const DeveloperProtocols: { [key: string]: ProtocolSchemaInterface } = {
+export const DeveloperProtocols: Record<string, ProtocolSchemaInterface> = {
   // "Purdue Shakedown": PurdueShakedown,
-  develop: develop,
+  develop: develop as unknown as ProtocolSchemaInterface,
 };
 
 import WahtsDeviceTestCalibration from '../../assets/protocols/wahts-device-test/calibration.json';
-export const DeveloperProtocolsCalibration: any = {
-  'wahts-device-test': WahtsDeviceTestCalibration,
+import { CalibrationFileInterface } from '../interfaces/calibration-file.interface';
+export const DeveloperProtocolsCalibration: Record<string, CalibrationFileInterface> = {
+  'wahts-device-test': WahtsDeviceTestCalibration as unknown as CalibrationFileInterface,
 };
 
 export const bluetoothTimeout: number = 5000;

@@ -12,14 +12,14 @@
           [class.correct]="getButtonClass(i * 3 + idx) === 'correct'"
           [class.incorrect]="getButtonClass(i * 3 + idx) === 'incorrect'"
           (click)="choose(i * 3 + idx)"
-          [disabled]="selectedResponseIndex !== null || isPaused || device?.isMsgPending">
+          [disabled]="selectedResponseIndex !== null || isPaused || device?.status !== DeviceStatus.Ready">
           {{ choice }}
         </button>
       </div>
     </div>
 
     <div class="feedback">
-      <p>{{ feedbackMessage }}</p>
+      <p *ngIf="showFeedback">{{ feedbackMessage }}</p>
     </div>
 
     <div class="fixed-footer">
@@ -27,9 +27,12 @@
       <button class="btn btn-danger btn-block" (click)="pauseExam()">
         {{ isPausedText }}
       </button>
+      <button class="btn btn-danger btn-block" (click)="replayTrial()">
+        {{ "Replay" }}
+      </button>
       <button
         class="btn btn-danger btn-block"
-        [disabled]="!isPaused || device?.isMsgPending"
+        [disabled]="!isPaused || device?.status !== DeviceStatus.Ready"
         [ngStyle]="{ visibility: getVisibilityStyle() }"
         (click)="finishExam()">
         {{ "End Early" }}

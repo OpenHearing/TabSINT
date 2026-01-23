@@ -1,4 +1,5 @@
 import { PageTypes } from '../types/custom-types';
+import { CalibrationFilter, Headset } from '../utilities/constants';
 import { NavMenuInterface } from './page-definition.interface';
 
 export interface ProtocolSchemaInterface {
@@ -11,12 +12,12 @@ export interface ProtocolSchemaInterface {
   instructionText?: string;
   helpText?: string;
   submitText?: string;
-  headset?: 'None' | 'VicFirth' | 'VicFirthS2' | 'HDA200' | 'WAHTS' | 'Audiometer' | 'EPHD1';
+  headset?: Headset;
   chaStream?: boolean;
   randomization?: 'WithoutReplacement';
   minTabsintVersion?: string;
   commonMediaRepository?: string;
-  calibration?: CalibrationInterface[];
+  calibration?: ProtocolCalibrationInterface[];
   timeout?: TimeoutInterface;
   hideProgressBar?: boolean;
   enableBackButton?: boolean;
@@ -25,12 +26,11 @@ export interface ProtocolSchemaInterface {
   pages: PageTypes[];
   subProtocols?: ProtocolSchemaInterface[];
 }
-
-export interface CalibrationInterface {
+export interface ProtocolCalibrationInterface {
   wavfiles: string[];
   referenceFile?: string;
   referenceLevel?: number;
-  calibrationFilter?: 'full' | 'flat';
+  calibrationFilter?: CalibrationFilter;
 }
 
 export interface TimeoutInterface {

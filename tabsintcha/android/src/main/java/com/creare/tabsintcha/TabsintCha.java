@@ -927,6 +927,10 @@ class TabsintCha {
       handleResponse("ProbeId", id);
     }
 
+    public void dateTimeReceived(long time) {
+      // NOOP
+    }
+
     public void statusReceived(Status s) {
       try {
         // Create a JSON object from the fields in the ID:
