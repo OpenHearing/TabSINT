@@ -60,10 +60,10 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
   ];
 
   ngOnInit(): void {
-    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe((updatedState: StateInterface) => {
       this.state = updatedState;
     });
-    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
+    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe((updatedResults: ResultsInterface) => {
       this.results = updatedResults;
     });
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
@@ -71,6 +71,7 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
         const updatedMultipleChoiceResponseArea = updatedPage.responseArea as MultipleChoiceInterface;
         if (updatedMultipleChoiceResponseArea) {
           this.choices = _.cloneDeep(updatedMultipleChoiceResponseArea.choices || this.yesNo);
+          this.choices = this.choices ?? [];
           if (updatedMultipleChoiceResponseArea.other) {
             this.enableOther = true;
             this.choices.push({

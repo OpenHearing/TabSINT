@@ -5,7 +5,7 @@ export interface StateInterface {
   appState: AppState;
   protocolState: ProtocolState;
   examState: ExamState;
-  deviceError: Array<any>;
+  deviceError: any[];
   doesResponseExist: boolean;
   isResponseRequired: boolean;
   isSubmittable: boolean;
@@ -27,8 +27,8 @@ export interface StateInterface {
   };
   examProgress: {
     pctProgress: number;
-    anticipatedProtocols: Array<ProtocolInterface>;
-    activatedProtocols: Array<ProtocolInterface>;
+    anticipatedProtocols: ProtocolInterface[];
+    activatedProtocols: ProtocolInterface[];
   };
   bluetoothConnected: boolean;
   wifiConnected: boolean;

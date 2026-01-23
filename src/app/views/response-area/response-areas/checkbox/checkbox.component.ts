@@ -47,10 +47,10 @@ export class CheckboxComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe((updatedState: StateInterface) => {
       this.state = updatedState;
     });
-    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
+    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe((updatedResults: ResultsInterface) => {
       this.results = updatedResults;
       if (typeof this.results.currentPage.response !== 'object') {
         this.results.currentPage.response = {
@@ -95,7 +95,6 @@ export class CheckboxComponent implements OnInit, OnDestroy {
   onResponseChange() {
     this.stateModel.updateState({ doesResponseExist: this.results.currentPage.response.other !== '' });
     this.resultsModel.updateCurrentPage({ response: this.results.currentPage.response.other });
-    this.stateModel.setPageSubmittable();
   }
 
   choiceSelected(id: string) {
@@ -103,7 +102,7 @@ export class CheckboxComponent implements OnInit, OnDestroy {
     if (id === 'Other') {
       this.toggleOther();
     }
-    // Remove element if already selected, else add element to slected
+    // Remove element if already selected, else add element to selected
     if (this.results.currentPage.response.selected.includes(id)) {
       const index = this.results.currentPage.response.selected.indexOf(id);
       if (index > -1) {
@@ -113,6 +112,13 @@ export class CheckboxComponent implements OnInit, OnDestroy {
       this.results.currentPage.response.selected.push(id);
     }
     this.resultsModel.updateCurrentPage({ response: this.results.currentPage.response });
+    // Set page submittable
+    if (this.results.currentPage.response.selected.length > 0) {
+      this.stateModel.updateState({ doesResponseExist: true });
+    } else {
+      this.stateModel.updateState({ doesResponseExist: false });
+    }
+    this.stateModel.setPageSubmittable();
   }
 
   toggleOther() {
