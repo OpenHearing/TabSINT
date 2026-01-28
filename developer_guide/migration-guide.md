@@ -6,6 +6,13 @@ Please use the develop protocol to get started writing a protocol in TabSINT 5.0
 
 ## Parameter mapping
 
+Please review the model interfaces to see how to access the new models variables.
+
+For example:
+
+- `dm.examResults.testResults.responses[i].response` --> `results.currentExam.responses[i].response`
+- `disk.protocol.name` --> `disk.activeProtocolMeta.name`
+
 ## CustomJS
 
 [PREVIOUS: Repository Organization](organization.md)
