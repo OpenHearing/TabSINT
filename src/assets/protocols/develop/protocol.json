@@ -2,7 +2,6 @@
   "title": "Development Protocol",
   "subtitle": "Developer testing of open-tabsint responseArea's.",
   "instructionText": "instructionText goes here",
-  "hideProgressBar": true,
   "navMenu": [
     {
       "text": "Back to Main Menu",
@@ -660,7 +659,7 @@
           "setFlags": [
             {
               "id": "testFlag",
-              "conditional":"result.response==='Set testFlag'"
+              "conditional": "result.response==='Set testFlag'"
             }
           ]
         },
@@ -674,8 +673,8 @@
             "responseRequired": false
           },
           "preProcessFunction": {
-            "filepath":"customPreprocess.js", 
-            "function":"testPreprocess"
+            "filepath": "customPreprocess.js",
+            "function": "testPreprocess"
           }
         },
         {
