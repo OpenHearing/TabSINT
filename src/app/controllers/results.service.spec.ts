@@ -2,10 +2,13 @@ import { TestBed } from '@angular/core/testing';
 import { ResultsService } from './results.service';
 import { ResultsInterface } from '../models/results/results.interface';
 import { DeveloperProtocols } from '../utilities/constants';
+import { TranslateService } from '@ngx-translate/core';
 
 describe('ResultsService', () => {
   beforeEach(async () => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [ResultsService, { provide: TranslateService, useValue: TranslateService }],
+    });
   });
 
   it('initializes exam results', () => {
