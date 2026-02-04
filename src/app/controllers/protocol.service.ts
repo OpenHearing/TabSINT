@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import Ajv, { JSONSchemaType } from 'ajv';
@@ -34,6 +34,16 @@ import { calibrationFileSchema } from '../../schema/definitions/calibration-file
   providedIn: 'root',
 })
 export class ProtocolService {
+  private readonly appModel = inject(AppModel);
+  private readonly diskModel = inject(DiskModel);
+  private readonly fileService = inject(FileService);
+  private readonly logger = inject(Logger);
+  private readonly notifications = inject(Notifications);
+  private readonly protocolM = inject(ProtocolModel);
+  private readonly stateModel = inject(StateModel);
+  private readonly translate = inject(TranslateService);
+  private readonly tasks = inject(Tasks);
+
   app: AppInterface;
   disk: DiskInterface;
   loading: LoadingProtocolInterface;
@@ -43,17 +53,7 @@ export class ProtocolService {
   diskSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
 
-  constructor(
-    private readonly appModel: AppModel,
-    private readonly diskModel: DiskModel,
-    private readonly fileService: FileService,
-    private readonly logger: Logger,
-    private readonly notifications: Notifications,
-    private readonly protocolM: ProtocolModel,
-    private readonly stateModel: StateModel,
-    private readonly translate: TranslateService,
-    private readonly tasks: Tasks
-  ) {
+  constructor() {
     this.app = this.appModel.getApp();
     this.protocolModel = this.protocolM.getProtocolModel();
     this.state = this.stateModel.getState();
@@ -84,9 +84,7 @@ export class ProtocolService {
       if (loadError === undefined) {
         await this.setCalibration();
         await this.initializeProtocol();
-        const validationError = this.validateIfCalledFor();
-        // .then(loadCustomJs)
-        // .then(validateCustomJsIfCalledFor)
+        const validationError = await this.validateIfCalledFor();
         this.handleLoadErrors([validationError]);
       } else {
         this.notifyProtocolDidntLoadProperly();
@@ -120,9 +118,9 @@ export class ProtocolService {
     }
 
     try {
-      let availProtocols = this.disk.availableProtocolsMeta;
+      const availProtocols = this.disk.availableProtocolsMeta;
       delete availProtocols[p.name];
-      let updatedAvailableProtocolsMeta = availProtocols;
+      const updatedAvailableProtocolsMeta = availProtocols;
       this.diskModel.updateDiskModel('availableProtocolsMeta', updatedAvailableProtocolsMeta);
     } catch (error) {
       this.logger.error('Error trying to delete files: ' + error);
@@ -213,10 +211,12 @@ export class ProtocolService {
     return undefined;
   }
 
-  private handleLoadErrors(errors: Array<ProtocolErrorInterface | undefined>) {
-    errors.forEach(error => {
-      if (!_.isUndefined(error)) this.protocolModel.activeProtocol!.errors!.push(error);
-    });
+  private handleLoadErrors(errors: (ProtocolErrorInterface | undefined)[]) {
+    if (errors) {
+      errors.forEach(error => {
+        if (!_.isUndefined(error)) this.protocolModel.activeProtocol!.errors!.push(error);
+      });
+    }
 
     this.tasks.register('Handle Load Errors', 'Checking Protocol Files...');
     let msg = checkCalibrationFiles(this.protocolModel.activeProtocol!);
@@ -236,7 +236,7 @@ export class ProtocolService {
 
     if (this.protocolModel.activeProtocol!.errors!.length > 0) {
       msg = 'The protocol contains the following errors and may not function properly.' + ' \n\n';
-      for (let err of this.protocolModel.activeProtocol!.errors!) {
+      for (const err of this.protocolModel.activeProtocol!.errors!) {
         msg += err.type + ':\n';
         msg += ' - ' + err.error + '\n';
       }

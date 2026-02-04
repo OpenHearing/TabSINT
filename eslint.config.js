@@ -32,6 +32,10 @@ module.exports = tseslint.config(
           style: "kebab-case",
         },
       ],
+      "@typescript-eslint/no-inferrable-types": ["error", {
+        "ignoreParameters": true,
+        "ignoreProperties": true
+      }]
     },
   },
   {
