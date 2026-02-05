@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { TabsintFs } from 'tabsintfs';
 
@@ -15,16 +15,16 @@ import { listOfTabsintDirectories } from '../utilities/constants';
   providedIn: 'root',
 })
 export class FileService {
+  public appModel = inject(AppModel);
+  public logger = inject(Logger);
+  private readonly diskModel = inject(DiskModel);
+
   app: AppInterface;
   rootUri: string | null;
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
 
-  constructor(
-    public appModel: AppModel,
-    public logger: Logger,
-    private readonly diskModel: DiskModel
-  ) {
+  constructor() {
     this.app = this.appModel.getApp();
     this.disk = this.diskModel.getDisk();
     this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
@@ -93,7 +93,7 @@ export class FileService {
       this.logger.debug('TabsintFs read file: ' + input);
       return result;
     } catch (error) {
-      this.logger.error('Failed to read file: ' + error);
+      this.logger.error('Failed to read file: ' + input + '. ' + error);
     }
     return result;
   }
@@ -184,7 +184,7 @@ export class FileService {
     return result;
   }
 
-  async writeBinaryFile(path: string, data: any, rootDir: string | null = this.rootUri) {
+  async writeBinaryFile(path: string, data: unknown, rootDir: string | null = this.rootUri) {
     let result = null;
     try {
       let base64Data: string;
@@ -197,7 +197,7 @@ export class FileService {
         base64Data = await this.blobToBase64(data);
       } else {
         // Handle other formats (ArrayBuffer, etc.)
-        const blob = new Blob([data]);
+        const blob = new Blob([data as BlobPart]);
         base64Data = await this.blobToBase64(blob);
       }
       result = base64Data

@@ -15,5 +15,10 @@
     <span [textContent]="instructionText" id="instructions-testing"></span>
   </p>
 
+  <!-- Images -->
+  <div class="multimedia" *ngIf="imageBytes.length > 0" [style.width]="imageWidth">
+    <img [src]="imageBytes" class="img-responsive img-rounded" alt="" style="margin:0 auto;max-height:40vh;" />
+  </div>
+
   <response-area></response-area>
 </div>

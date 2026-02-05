@@ -98,6 +98,8 @@ import { MrtResultsComponent } from './views/response-area/response-areas/mrt/mr
 import { MemrExamComponent } from './views/response-area/response-areas/memr/memr-exam/memr-exam.component';
 import { InputParametersComponent } from './views/response-area/response-areas/shared/input-parameters/input-parameters.component';
 import { NetworkService } from './controllers/network.service';
+import { SubjectIdComponent } from './views/response-area/response-areas/subject-id/subject-id.component';
+import { CheckboxComponent } from './views/response-area/response-areas/checkbox/checkbox.component';
 
 // required for AOT compilation
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -124,6 +126,8 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     ExamFinalizedComponent,
     ResponseAreaComponent,
     TextboxComponent,
+    SubjectIdComponent,
+    CheckboxComponent,
     LikertComponent,
     TextboxResultViewerComponent,
     MultipleChoiceComponent,

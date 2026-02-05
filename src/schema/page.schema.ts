@@ -16,6 +16,8 @@ import { sweptDpoaeSchema } from './response-areas/swept-dpoae.schema';
 import { waiSchema } from './response-areas/wai.schema';
 import { mrtSchema } from './response-areas/mrt.schema';
 import { memrSchema } from './response-areas/memr.schema';
+import { subjectIdSchema } from './response-areas/subject-id.schema';
+import { checkboxSchema } from './response-areas/checkbox.schema';
 import { CustomResponseAreaSchema } from './response-areas/custom-response-area.schema';
 import { Headset } from '../app/utilities/constants';
 
@@ -73,6 +75,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
       properties: {
         path: { type: 'string' },
         width: { type: 'string', nullable: true, default: '100%' },
+        b64: { type: 'string', nullable: true },
       },
       required: ['path'],
       nullable: true,
@@ -93,6 +96,8 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
       oneOf: [
         textBoxSchema,
         textBoxResultViewerSchema,
+        subjectIdSchema,
+        checkboxSchema,
         multipleChoiceSchema,
         multipleInputSchema,
         manualAudiometrySchema,

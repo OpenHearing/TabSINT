@@ -179,7 +179,7 @@ export class ExamService {
    * @returns boolean if page response is required
    */
   isPageResponseRequired(page: PageInterface): boolean {
-    if (page.responseArea) {
+    if (page?.responseArea) {
       let responseRequired = page.responseArea.responseRequired;
       if (responseRequired === undefined) {
         const responseType = page.responseArea.type;

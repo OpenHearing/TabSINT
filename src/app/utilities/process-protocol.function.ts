@@ -13,6 +13,8 @@ import { MrtExamInterface } from '../views/response-area/response-areas/mrt/mrt-
 import { WAIInterface } from '../views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.interface';
 import { SweptDpoaeInterface } from '../views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/swept-dpoae-exam.interface';
 import { CustomResponseAreaInterface } from '../views/response-area/response-areas/custom-response-area/custom-response-area.interface';
+import { ProtocolServer } from './constants';
+import { TabsintFs } from 'tabsintfs';
 import { loadCustomJS, loadFile } from './load-custom-js';
 import { CalibrationFileWavProperties } from '../interfaces/calibration-file.interface';
 
@@ -30,7 +32,7 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
   const rootProtocol = loading.protocol;
   const protocolDict: ProtocolDictionary = {};
   const followOnsDict: FollowOnsDictionary = {};
-  const prefix = loading.meta.path!;
+  const prefix = loading.meta.server == ProtocolServer.Developer ? 'assets/' + loading.meta.path! + '/' : loading.meta.contentURI + '/';
 
   await iterateThroughPages(rootProtocol.pages);
 
@@ -77,7 +79,7 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
     updatePageWavProperties(page);
 
     if (isPageDefinition(page) && page.image) {
-      page.image.path = prefix + page.image.path;
+      page.image.b64 = await readImageFileAsBytes(loading, page.image.path);
     }
 
     if (page.video) {
@@ -172,5 +174,34 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
     } else {
       return 'Should not get here';
     }
+  }
+
+  async function readImageFileAsBytes(loading: LoadingProtocolInterface, imagePath: string): Promise<string | undefined> {
+    let imageBytes: string | undefined;
+    if (loading.meta.server == ProtocolServer.Developer) {
+      const resp = await fetch('assets/' + loading.meta.path + '/' + imagePath);
+      if (!resp.ok) {
+        throw new Error(`Failed to fetch the file: ${resp.statusText}`);
+      }
+      const blob = await resp.blob();
+      imageBytes = await blobToBase64DataURL(blob);
+    } else if (loading.meta.server === ProtocolServer.LocalServer || loading.meta.server === ProtocolServer.Gitlab) {
+      const resp = await TabsintFs.readFile({ rootUri: loading.meta.contentURI, filePath: imagePath, asBase64: true });
+      imageBytes = 'data:' + resp.mimeType + ';base64,' + resp.content;
+    }
+    return imageBytes;
+  }
+
+  async function blobToBase64DataURL(blob: Blob): Promise<string | undefined> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        resolve(reader.result as string);
+      };
+      reader.onerror = () => {
+        reject(reader.error);
+      };
+      reader.readAsDataURL(blob);
+    });
   }
 }

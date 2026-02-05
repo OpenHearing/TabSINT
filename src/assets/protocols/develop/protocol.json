@@ -63,6 +63,15 @@
                 "id": "MEMR Exam (Between Blocks)"
               },
               {
+                "id": "Subject ID"
+              },
+              {
+                "id": "Checkbox"
+              },
+              {
+                "id": "Image"
+              },
+              {
                 "id": "Advanced Protocol Logic"
               },
               {
@@ -150,6 +159,24 @@
               "conditional": "result.response=='MEMR Exam (Between Blocks)'",
               "target": {
                 "reference": "MEMRExamBetweenBlocks"
+              }
+            },
+            {
+              "conditional": "result.response=='Subject ID'",
+              "target": {
+                "reference": "subjectId"
+              }
+            },
+            {
+              "conditional": "result.response=='Checkbox'",
+              "target": {
+                "reference": "checkbox"
+              }
+            },
+            {
+              "conditional": "result.response=='Image'",
+              "target": {
+                "reference": "image"
               }
             },
             {
@@ -588,57 +615,41 @@
       ]
     },
     {
-      "protocolId": "advancedProtocolLogic",
+      "protocolId": "subjectId",
       "pages": [
         {
-          "id": "advancedProtocolLogic_001",
-          "title": "Page 1",
-          "instructionText": "After submitting this page, it should skip the next one if you have entered text",
+          "id": "subjectId",
+          "title": "Subject ID",
           "responseArea": {
-            "type": "textboxResponseArea",
-            "rows": 3,
-            "responseRequired": false
+            "type": "subjectIdResponseArea"
           }
         },
         {
-          "id": "advancedProtocolLogic_002",
-          "title": "Page 2",
-          "instructionText": "This page should have been skipped if you entered text in the previous page",
-          "responseArea": {
-            "type": "textboxResponseArea",
-            "rows": 3,
-            "responseRequired": false
-          },
-          "skipIf": "result.response.length > 0"
-        },
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "checkbox",
+      "pages": [
         {
-          "id": "advancedProtocolLogic_003",
-          "title": "Page 3",
-          "instructionText": "You are now on page 3",
+          "id": "checkbox",
+          "title": "Checkbox",
           "responseArea": {
-            "type": "textboxResponseArea",
-            "rows": 3,
-            "responseRequired": false
-          }
-        },
-        {
-          "id": "advancedProtocolLogic_004",
-          "title": "Page 4",
-          "instructionText": "This page is repeatable up to a maximum of three times",
-          "responseArea": {
-            "type": "multipleChoiceResponseArea",
+            "type": "checkboxResponseArea",
             "choices": [
               {
-                "id": "Repeat"
+                "id": "Red"
               },
               {
-                "id": "Do not repeat"
+                "id": "Blue"
+              },
+              {
+                "id": "Green"
               }
-            ]
-          },
-          "repeatPage": {
-            "nRepeats": 1,
-            "repeatIf": "result.response==='Repeat'"
+            ],
+            "other": "Some other color"
           }
         },
         {
@@ -675,6 +686,22 @@
           "preProcessFunction": {
             "filepath": "customPreprocess.js",
             "function": "testPreprocess"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "image",
+      "pages": [
+        {
+          "id": "image",
+          "title": "Image",
+          "image": {
+            "path": "tabsint.png"
           }
         },
         {
