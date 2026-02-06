@@ -91,6 +91,8 @@ export class ProtocolService {
       }
     } catch (error: unknown) {
       const err = error instanceof Error ? error.message : error;
+      // delete the protocol if it does not load properly
+      this.delete(this.loading.meta);
       this.logger.error(`Could not load protocol. ${err}`);
       this.notifications
         .alert({
@@ -183,7 +185,7 @@ export class ProtocolService {
     return ret;
   }
 
-  private validateIfCalledFor(): ProtocolErrorInterface | undefined {
+  private async validateIfCalledFor(): Promise<ProtocolErrorInterface | undefined> {
     if (!this.disk.validateProtocols) return undefined;
     if (this.loading.notify) {
       this.tasks.register('Validate Protocol', 'Validating Protocol... This process could take several minutes');
