@@ -15,9 +15,9 @@ import { DialogDataInterface } from '../../../../../interfaces/dialog-data.inter
 import { MemrExamInterface, MemrQueueExamInterface, MemrExamSubmissionInterface, MemrResultsInterface } from './memr-exam.interface';
 import { StateInterface } from '../../../../../models/state/state.interface';
 import { StateModel } from '../../../../../models/state/state.service';
-import { pageSchema } from '../../../../../../schema/page.schema';
 import { memrSchema } from '../../../../../../schema/response-areas/memr.schema';
 import { getCurrentDatetime } from '../../../../../utilities/exam-helper-functions';
+import { parsePageParameters } from '../../../../../utilities/page-parameter-helper';
 
 @Component({
   selector: 'memr-exam',
@@ -56,7 +56,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
 
   // Configuration Variables
   allowableDevices = [DeviceType.Tympan];
-  isAutoSubmit: boolean = pageSchema.properties.isAutoSubmit.default;
+  pageParameters?: PageInterface;
   currentStep: string = 'Ready';
   chinchillaType = 'Chinchilla';
   humanType = 'Human';
@@ -112,7 +112,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'memrResponseArea') {
         setTimeout(() => {
-          this.isAutoSubmit = updatedPage.isAutoSubmit ?? this.isAutoSubmit;
+          this.pageParameters = parsePageParameters(updatedPage);
           this.initializeResponseArea(updatedPage.responseArea as MemrExamInterface);
           this.setupDevice(updatedPage.responseArea as MemrExamInterface);
         });
@@ -320,7 +320,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     this.updateExamProgress(results); // Update UI components
     if (this.currentBlockIndex >= this.blockCount) {
       await this.delay(1000); // Delay to show final block count to the user before the next step
-      if (this.isAutoSubmit) {
+      if (this.pageParameters?.autoSubmit) {
         await this.finishExam();
       } else {
         this.nextStep();

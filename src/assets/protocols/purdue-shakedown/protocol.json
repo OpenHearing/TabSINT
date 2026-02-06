@@ -2309,7 +2309,7 @@
         {
           "id": "MEMR",
           "title": "MEMR Exam (Within Block)",
-          "isAutoSubmit": false,
+          "autoSubmit": false,
           "responseArea": {
             "type": "memrResponseArea",
             "soundFileName": "900Hz_1000Hz_Tones_Level_-3dBrms.wav",
@@ -2337,7 +2337,7 @@
         {
           "id": "MEMR",
           "title": "MEMR Exam (Between Blocks)",
-          "isAutoSubmit": false,
+          "autoSubmit": false,
           "responseArea": {
             "type": "memrResponseArea",
             "soundFileName": "900Hz_1000Hz_Tones_Level_-3dBrms.wav",

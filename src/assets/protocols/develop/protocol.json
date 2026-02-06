@@ -562,7 +562,7 @@
         {
           "id": "MEMR",
           "title": "MEMR Exam (Within Block)",
-          "isAutoSubmit": false,
+          "autoSubmit": false,
           "responseArea": {
             "type": "memrResponseArea",
             "soundFileName": "/PurdueMEMR/MEMR_Sinc16_2ch.wav",
@@ -591,7 +591,7 @@
         {
           "id": "MEMR",
           "title": "MEMR Exam (Between Blocks)",
-          "isAutoSubmit": false,
+          "autoSubmit": false,
           "responseArea": {
             "type": "memrResponseArea",
             "soundFileName": "/PurdueMEMR/MEMR_Sinc16_2ch.wav",
@@ -737,7 +737,7 @@
           "questionSubText": "Example of questionSubText",
           "instructionText": "Example of instructionText",
           "helpText": "Example of helpText",
-          "isAutoSubmit": false,
+          "autoSubmit": false,
           "responseArea": {
             "type": "customResponseArea",
             "htmlFilePath": "custom-response-areas/html_basic_example.html",
@@ -747,7 +747,7 @@
         {
           "id": "customResponseArea",
           "title": "Multi Page Example",
-          "isAutoSubmit": false,
+          "autoSubmit": false,
           "responseArea": {
             "type": "customResponseArea",
             "htmlFilePath": "custom-response-areas/html_multi_example.html",
@@ -757,7 +757,7 @@
         {
           "id": "customResponseArea",
           "title": "Reading and Writing Files Example",
-          "isAutoSubmit": false,
+          "autoSubmit": false,
           "responseArea": {
             "type": "customResponseArea",
             "htmlFilePath": "custom-response-areas/html_file_example.html",
@@ -767,7 +767,7 @@
         {
           "id": "customResponseArea",
           "title": "Page and Disk Variables",
-          "isAutoSubmit": false,
+          "autoSubmit": false,
           "responseArea": {
             "type": "customResponseArea",
             "htmlFilePath": "custom-response-areas/html_disk_example.html",
@@ -871,7 +871,7 @@
           "questionSubText": "Example of questionSubText",
           "instructionText": "Example of instructionText",
           "helpText": "Example of helpText",
-          "isAutoSubmit": false,
+          "autoSubmit": false,
           "responseArea": {
             "type": "customResponseArea",
             "htmlFilePath": "custom-response-areas/html_basic_example.html",
@@ -881,7 +881,7 @@
         {
           "id": "customResponseArea",
           "title": "Multi Page Example",
-          "isAutoSubmit": false,
+          "autoSubmit": false,
           "responseArea": {
             "type": "customResponseArea",
             "htmlFilePath": "custom-response-areas/html_multi_example.html",
@@ -891,7 +891,7 @@
         {
           "id": "customResponseArea",
           "title": "Reading and Writing Files Example",
-          "isAutoSubmit": false,
+          "autoSubmit": false,
           "responseArea": {
             "type": "customResponseArea",
             "htmlFilePath": "custom-response-areas/html_file_example.html",
@@ -901,7 +901,7 @@
         {
           "id": "customResponseArea",
           "title": "Page and Disk Variables",
-          "isAutoSubmit": false,
+          "autoSubmit": false,
           "responseArea": {
             "type": "customResponseArea",
             "htmlFilePath": "custom-response-areas/html_disk_example.html",

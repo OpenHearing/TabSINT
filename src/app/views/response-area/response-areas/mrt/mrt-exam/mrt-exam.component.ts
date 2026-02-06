@@ -36,7 +36,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   tabsintId: string = mrtSchema.properties.tabsintId.default;
   showResults: boolean = mrtSchema.properties.showResults.default;
   showFeedback: boolean = mrtSchema.properties.showFeedback.default;
-  isAutoSubmit: boolean = pageSchema.properties.isAutoSubmit.default;
+  autoSubmit: boolean = pageSchema.properties.autoSubmit.default;
   currentStep: string = 'Ready';
   outputChannel!: string[];
   trialList!: MrtTrialInterface[];
@@ -146,7 +146,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
           await this.waitForReadyState();
           await this.playTrial(this.currentTrial);
         } else {
-          this.isAutoSubmit = false;
+          this.autoSubmit = false;
           this.finishExam();
         }
         break;
@@ -172,7 +172,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
       this.feedbackMessage = `The correct word was '${correctWord}'`;
     }
 
-    if (this.isAutoSubmit) {
+    if (this.autoSubmit) {
       await this.delay(this.waitingMs);
       this.stateModel.updateState({ isSubmittable: false });
       this.nextStep();
@@ -195,7 +195,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
 
   async pauseExam() {
     this.isPaused = !this.isPaused;
-    this.isAutoSubmit = !this.isAutoSubmit;
+    this.autoSubmit = !this.autoSubmit;
     if (this.isPaused) {
       this.isPausedText = 'Resume';
     } else {
