@@ -18,6 +18,7 @@ import { SingleResultModalComponent } from '../single-result-modal/single-result
 import { DialogType } from '../../utilities/constants';
 import { Notifications } from '../../services/notifications.service';
 import { ResultsUploadService } from '../../controllers/results-upload.service';
+import { DialogDataInterface } from '../../interfaces/dialog-data.interface';
 
 @Component({
   selector: 'results-view',
@@ -99,10 +100,10 @@ export class ResultsComponent implements OnInit, OnDestroy {
   async exportAll() {
     try {
       if (!_.isUndefined(this.results)) {
-        this.results.forEach((examResult: ExamResults) => {
-          this.resultsService.writeResultToFile(examResult);
+        this.results.forEach(async (examResult: ExamResults) => {
+          await this.resultsService.writeResultToFile(examResult);
         });
-        await this.deleteAll();
+        await this.deleteAll(false);
       }
     } catch (e) {
       this.logger.error('Failed to export all results to file with error: ' + _(e).toJSON);
@@ -116,9 +117,24 @@ export class ResultsComponent implements OnInit, OnDestroy {
   /**
    * Delete all exam results from the disk completed exam results and from the sqlite database.
    */
-  async deleteAll() {
-    await this.sqLite.deleteAll('results');
-    this.results = await this.sqLite.getAllResults();
+  async deleteAll(showPopup = true) {
+    // deleteAll defaults to presenting a popup confirm, can be ignored by setting to false.
+    if (showPopup === true) {
+      const msg: DialogDataInterface = {
+        title: 'Confirm',
+        content: 'Are you sure you want to delete all of the results?',
+        type: DialogType.Confirm,
+      };
+      this.notifications.alert(msg).subscribe(async result => {
+        if (result === 'OK') {
+          await this.sqLite.deleteAll('results');
+          this.results = await this.sqLite.getAllResults();
+        }
+      });
+    } else {
+      await this.sqLite.deleteAll('results');
+      this.results = await this.sqLite.getAllResults();
+    }
   }
 
   async bulkUpload() {
