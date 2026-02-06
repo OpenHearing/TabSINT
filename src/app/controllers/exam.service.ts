@@ -234,9 +234,19 @@ export class ExamService {
           this.handleSpecialReferences(nextID);
           return undefined;
         } else {
-          this.protocolModel.protocolModel.activeProtocolDictionary![nextID].pages.forEach((page: PageTypes) => {
-            pageList.push(page);
-          });
+          if (nextID in this.protocolModel.protocolModel.activeProtocolDictionary!) {
+            this.protocolModel.protocolModel.activeProtocolDictionary![nextID].pages.forEach((page: PageTypes) => {
+              pageList.push(page);
+            });
+          } else {
+            this.notifications
+              .alert({
+                title: 'Alert',
+                content: `FollowOn target ${nextID} not found. Please check your protocol.`,
+                type: DialogType.Alert,
+              })
+              .subscribe();
+          }
         }
       }
     }
