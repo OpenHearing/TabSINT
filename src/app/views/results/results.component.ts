@@ -100,8 +100,8 @@ export class ResultsComponent implements OnInit, OnDestroy {
   async exportAll() {
     try {
       if (!_.isUndefined(this.results)) {
-        this.results.forEach((examResult: ExamResults) => {
-          this.resultsService.writeResultToFile(examResult);
+        this.results.forEach(async (examResult: ExamResults) => {
+          await this.resultsService.writeResultToFile(examResult);
         });
         await this.deleteAll(false);
       }
