@@ -59,7 +59,7 @@ describe('deviceService', () => {
   it('adding new saved device', async () => {
     await devicesService.saveDevice(savedDevice);
     expect(diskModel.disk.savedDevices.length).toEqual(1);
-    expect(diskModel.disk.savedDevices).toContain(savedDevice);
+    expect(diskModel.disk.savedDevices[0]).toEqual(jasmine.objectContaining(savedDevice));
   });
 
   it('removing saved devices', async () => {
@@ -70,7 +70,7 @@ describe('deviceService', () => {
 
     await devicesService.saveDevice(savedDevice);
     expect(diskModel.disk.savedDevices.length).toEqual(1);
-    expect(diskModel.disk.savedDevices).toContain(savedDevice);
+    expect(diskModel.disk.savedDevices[0]).toEqual(jasmine.objectContaining(savedDevice));
 
     await devicesService.removeSavedDevice(device);
     expect(diskModel.disk.savedDevices).toEqual([]);

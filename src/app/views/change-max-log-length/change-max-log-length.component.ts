@@ -26,7 +26,7 @@ export class ChangeMaxLogLengthComponent {
     private readonly diskModel: DiskModel
   ) {
     this.disk = this.diskModel.getDisk();
-    this.maxLogLength = this.disk.maxLogRows; // Initialize with the current max log length
+    this.maxLogLength = this.disk.preferences.maxLogRows; // Initialize with the current max log length
   }
 
   ngOnInit(): void {
@@ -42,8 +42,8 @@ export class ChangeMaxLogLengthComponent {
   save(maxLogLength: number | undefined) {
     if (maxLogLength != undefined) {
       this.logger.debug('Max log length changed to: ' + maxLogLength);
-      this.disk.maxLogRows = maxLogLength;
-      this.diskModel.updateDiskModel('maxLogRows', maxLogLength);
+      this.disk.preferences.maxLogRows = maxLogLength;
+      this.diskModel.updatePreferences({ maxLogRows: maxLogLength });
     }
     this.dialog.closeAll();
   }

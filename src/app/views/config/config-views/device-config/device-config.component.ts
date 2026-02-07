@@ -57,7 +57,7 @@ export class DeviceConfigComponent implements OnInit, OnDestroy {
       }
       await this.devicesService.removeSavedDevice(device);
     }
-    this.diskModel.updateDiskModel('wahtsConnectionType', connectionType);
+    this.diskModel.updatePreferences({ wahtsConnectionType: connectionType });
   }
 
   wahtsCommunicationPopover = this.translate.instant('Set the connection type for WAHTS devices.');

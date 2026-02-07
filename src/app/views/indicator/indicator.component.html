@@ -29,7 +29,7 @@
 </a>
 
 <!-- Streaming Status -->
-<a href="javascript:" class="header-text" *ngIf="!disk.disableAudioStreaming" title="Streaming status">
+<a href="javascript:" class="header-text" *ngIf="!disk.preferences.disableAudioStreaming" title="Streaming status">
   <span>
     <i [matMenuTriggerFor]="StreamingConnectionMenu" class="ion-radio-waves"></i>
   </span>

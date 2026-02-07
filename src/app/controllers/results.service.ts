@@ -183,7 +183,7 @@ export class ResultsService {
       result.testDateTime,
       '.json'
     );
-    let dir = this.disk.servers.localServer.resultsDir ? this.disk.servers.localServer.resultsDir : 'tabsint-results';
+    let dir = this.disk.preferences.servers.localServer.resultsDir ? this.disk.preferences.servers.localServer.resultsDir : 'tabsint-results';
     dir = dir + '/' + this.protocol.activeProtocol?.name + '/';
     await this.fileService.writeFile(dir + filename, JSON.stringify(result));
     this.diskModel.updateSummary(result);

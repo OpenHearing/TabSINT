@@ -36,7 +36,7 @@ export class Logger {
   }
 
   log(msg: string, prefix: string, error?: unknown) {
-    if (!this.disk.disableLogs && this.disk.numLogRows <= this.disk.maxLogRows) {
+    if (!this.disk.preferences.disableLogs && this.disk.numLogRows <= this.disk.preferences.maxLogRows) {
       const err = error instanceof Error ? error.message : error;
       const logMsg = error ? `${msg}: ${err}` : msg;
       const timestamp = new Date().toISOString();

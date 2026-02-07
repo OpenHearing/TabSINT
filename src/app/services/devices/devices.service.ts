@@ -214,7 +214,7 @@ export class DevicesService {
     this.getManager(device.type).removeDevice(device);
     let savedDevices = structuredClone((await firstValueFrom(this.diskModel.diskSubject)).savedDevices);
     savedDevices = savedDevices.filter(dev => dev.deviceId != device.deviceId);
-    this.diskModel.updateDiskModel('savedDevices', savedDevices);
+    this.diskModel.updateDiskModel({ savedDevices: savedDevices });
   }
 
   /**
@@ -225,7 +225,7 @@ export class DevicesService {
     let savedDevices = structuredClone((await firstValueFrom(this.diskModel.diskSubject)).savedDevices);
     savedDevices = savedDevices.filter(dev => dev.deviceId != device.deviceId);
     savedDevices.push(device);
-    this.diskModel.updateDiskModel('savedDevices', savedDevices);
+    this.diskModel.updateDiskModel({ savedDevices: savedDevices });
   }
 
   /**
@@ -254,7 +254,7 @@ export class DevicesService {
       this.getManager(device.type).setTabsintId(device, id);
       let savedDevices = structuredClone((await firstValueFrom(this.diskModel.diskSubject)).savedDevices);
       savedDevices = savedDevices.map(dev => (dev.deviceId === device.deviceId ? { ...dev, tabsintId: id } : dev));
-      this.diskModel.updateDiskModel('savedDevices', savedDevices);
+      this.diskModel.updateDiskModel({ savedDevices: savedDevices });
     }
   }
 
