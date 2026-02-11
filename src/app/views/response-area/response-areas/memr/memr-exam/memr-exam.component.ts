@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { PageModel } from '../../../../../models/page/page.service';
 import { DevicesService } from '../../../../../services/devices/devices.service';
@@ -20,11 +20,20 @@ import { getCurrentDatetime } from '../../../../../utilities/exam-helper-functio
 import { parsePageParameters } from '../../../../../utilities/page-parameter-helper';
 
 @Component({
-  selector: 'memr-exam',
+  selector: 'app-memr-exam',
   templateUrl: './memr-exam.component.html',
   styleUrl: './memr-exam.component.css',
 })
 export class MemrExamComponent implements OnInit, OnDestroy {
+  private readonly logger = inject(Logger);
+  private readonly devicesService = inject(DevicesService);
+  private readonly examService = inject(ExamService);
+  private readonly notifications = inject(Notifications);
+  private readonly pageModel = inject(PageModel);
+  private readonly resultsModel = inject(ResultsModel);
+  private readonly stateModel = inject(StateModel);
+  private readonly paths = inject(Paths);
+
   // Core Data
   DeviceStatus = DeviceStatus;
   results: ResultsInterface;
@@ -48,7 +57,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     elicitorOutputChannel: memrSchema.properties.elicitorOutputChannel.default,
     bleDelayPerTrial: memrSchema.properties.bleDelayPerTrial.default,
   };
-  inputParameterMap: Map<string, string> = new Map(); // Parameter map to display to the user in ready state
+  inputParameterMap = new Map<string, string>(); // Parameter map to display to the user in ready state
   trialsPerBlock: number = 0;
   blockCount: number = 0;
   currentBlockIndex: number = -1;
@@ -74,29 +83,28 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   stateSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
 
-  constructor(
-    private readonly devicesService: DevicesService,
-    private readonly examService: ExamService,
-    private readonly logger: Logger,
-    private readonly notifications: Notifications,
-    private readonly pageModel: PageModel,
-    private readonly resultsModel: ResultsModel,
-    private readonly stateModel: StateModel,
-    private readonly paths: Paths
-  ) {
+  constructor() {
     this.state = this.stateModel.getState();
     this.results = this.resultsModel.getResults();
     this.examService.submit = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.nextStep();
+      }
     };
     this.examService.reset = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.examService.resetDefault();
+      }
     };
     this.examService.submitPartial = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.examService.submitPartialDefault();
+      }
     };
     this.examService.navigateToTarget = subProtocolId => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.navigateToTargetDefault(subProtocolId);
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.examService.navigateToTargetDefault(subProtocolId);
+      }
     };
     this.stateModel.updateState({ isSubmittable: true });
   }

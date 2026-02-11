@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs/internal/Subscription';
 
 import { PageModel } from '../../../../../models/page/page.service';
@@ -14,16 +14,24 @@ import { MrtExamInterface, MrtResultsInterface, MrtTrialInterface, MrtTrialResul
 import { StateInterface } from '../../../../../models/state/state.interface';
 import { StateModel } from '../../../../../models/state/state.service';
 import { shuffleArray } from '../../../../../utilities/shuffle-array';
-import { pageSchema } from '../../../../../../schema/page.schema';
 import { IDevice } from '../../../../../interfaces/devices/device.interface';
 import { DeviceStatus, DeviceType } from '../../../../../utilities/constants';
+import { parsePageParameters } from '../../../../../utilities/page-parameter-helper';
 
 @Component({
-  selector: 'mrt-exam',
+  selector: 'app-mrt-exam',
   templateUrl: './mrt-exam.component.html',
   styleUrl: './mrt-exam.component.css',
 })
 export class MrtExamComponent implements OnInit, OnDestroy {
+  private readonly logger = inject(Logger);
+  private readonly buttonTextService = inject(ButtonTextService);
+  private readonly devicesService = inject(DevicesService);
+  private readonly examService = inject(ExamService);
+  private readonly pageModel = inject(PageModel);
+  private readonly resultsModel = inject(ResultsModel);
+  private readonly stateModel = inject(StateModel);
+
   // Core Data
   DeviceStatus = DeviceStatus;
   results: ResultsInterface;
@@ -36,7 +44,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   tabsintId: string = mrtSchema.properties.tabsintId.default;
   showResults: boolean = mrtSchema.properties.showResults.default;
   showFeedback: boolean = mrtSchema.properties.showFeedback.default;
-  autoSubmit: boolean = pageSchema.properties.autoSubmit.default;
+  pageParameters?: PageInterface;
   currentStep: string = 'Ready';
   outputChannel!: string[];
   trialList!: MrtTrialInterface[];
@@ -61,28 +69,28 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   stateSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
 
-  constructor(
-    private readonly buttonTextService: ButtonTextService,
-    private readonly devicesService: DevicesService,
-    private readonly examService: ExamService,
-    private readonly logger: Logger,
-    private readonly pageModel: PageModel,
-    private readonly resultsModel: ResultsModel,
-    private readonly stateModel: StateModel
-  ) {
+  constructor() {
     this.state = this.stateModel.getState();
     this.results = this.resultsModel.getResults();
     this.examService.submit = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.nextStep();
+      }
     };
     this.examService.reset = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.examService.resetDefault();
+      }
     };
     this.examService.submitPartial = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.examService.submitPartialDefault();
+      }
     };
     this.examService.navigateToTarget = subProtocolId => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.navigateToTargetDefault(subProtocolId);
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.examService.navigateToTargetDefault(subProtocolId);
+      }
     };
   }
 
@@ -96,6 +104,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'mrtResponseArea') {
         setTimeout(() => {
+          this.pageParameters = parsePageParameters(updatedPage);
           this.initializeResponseArea(updatedPage.responseArea as MrtExamInterface);
           this.setupDevice(updatedPage.responseArea as MrtExamInterface);
         });
@@ -146,7 +155,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
           await this.waitForReadyState();
           await this.playTrial(this.currentTrial);
         } else {
-          this.autoSubmit = false;
+          this.pageParameters!.autoSubmit = false;
           this.finishExam();
         }
         break;
@@ -172,7 +181,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
       this.feedbackMessage = `The correct word was '${correctWord}'`;
     }
 
-    if (this.autoSubmit) {
+    if (this.pageParameters?.autoSubmit) {
       await this.delay(this.waitingMs);
       this.stateModel.updateState({ isSubmittable: false });
       this.nextStep();
@@ -195,7 +204,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
 
   async pauseExam() {
     this.isPaused = !this.isPaused;
-    this.autoSubmit = !this.autoSubmit;
+    this.pageParameters!.autoSubmit = !this.pageParameters!.autoSubmit;
     if (this.isPaused) {
       this.isPausedText = 'Resume';
     } else {
