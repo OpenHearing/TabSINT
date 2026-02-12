@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { ResultsInterface } from '../../../../models/results/results.interface';
 import { PageInterface } from '../../../../models/page/page.interface';
 
 import { ResultsModel } from '../../../../models/results/results-model.service';
@@ -20,12 +19,10 @@ import { DialogType } from '../../../../utilities/constants';
   styleUrl: './qr-code.component.css',
 })
 export class QrCodeResponseAreaComponent implements OnInit, OnDestroy {
-  results: ResultsInterface;
   scope: QrCodeResponseAreaScope;
   qrData?: string;
 
   pageSubscription: Subscription | undefined;
-  resultsSubscription: Subscription | undefined;
 
   constructor(
     private readonly resultsModel: ResultsModel,
@@ -34,14 +31,10 @@ export class QrCodeResponseAreaComponent implements OnInit, OnDestroy {
     private readonly qrService: QrService,
     private readonly notifications: Notifications
   ) {
-    this.results = this.resultsModel.getResults();
     this.scope = qrCodeResponseAreaSchema.properties.scope.default;
   }
 
   ngOnInit(): void {
-    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
-      this.results = updatedResults;
-    });
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type == 'qrCodeResponseArea') {
         this.scope = (updatedPage.responseArea as QrCodeResponseAreaInterface).scope;
@@ -51,7 +44,6 @@ export class QrCodeResponseAreaComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.pageSubscription?.unsubscribe();
-    this.resultsSubscription?.unsubscribe();
   }
 
   /**
@@ -66,12 +58,10 @@ export class QrCodeResponseAreaComponent implements OnInit, OnDestroy {
 
     switch (this.scope) {
       case QrCodeResponseAreaScope.Page:
-        this.results.currentPage.response = scanResult;
-        this.resultsModel.updateCurrentPage({ response: this.results.currentPage.response });
+        this.resultsModel.updateCurrentPage({ response: scanResult });
         break;
       case QrCodeResponseAreaScope.Exam:
-        this.results.currentPage.response = scanResult;
-        this.resultsModel.updateCurrentPage({ response: this.results.currentPage.response });
+        this.resultsModel.updateCurrentPage({ response: scanResult });
         this.resultsModel.updateCurrentExam({ qrString: scanResult });
         break;
       default:
