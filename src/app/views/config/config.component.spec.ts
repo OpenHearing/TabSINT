@@ -12,6 +12,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { ConnectedDevicesComponent } from './config-views/connected-devices/connected-devices.component';
+import { QRCodeModule } from 'angularx-qrcode';
 
 describe('ConfigComponent', () => {
   let component: ConfigComponent;
@@ -34,6 +35,7 @@ describe('ConfigComponent', () => {
         BrowserAnimationsModule,
         MatMenuModule,
         NgbModule,
+        QRCodeModule,
         TranslateModule.forRoot({
           loader: {
             provide: TranslateLoader,

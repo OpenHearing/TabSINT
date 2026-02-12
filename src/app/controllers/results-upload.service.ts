@@ -162,7 +162,7 @@ export class ResultsUploadService {
       };
 
       this.disk.uploadSummary.push(uploadSummaryEntry);
-      this.diskModel.updateDiskModel('uploadSummary', this.disk.uploadSummary);
+      this.diskModel.updateDiskModel({ uploadSummary: this.disk.uploadSummary });
 
       this.logger.debug('Successfully uploaded to upload summary in disk ');
 

@@ -39,7 +39,7 @@ export async function initializeLoadingProtocol(
   }
 
   function checkPublicKeyError() {
-    if (disk.requireEncryptedResults && !loading.protocol.publicKey) {
+    if (disk.preferences.requireEncryptedResults && !loading.protocol.publicKey) {
       loading.protocol.errors!.push({
         type: translate.instant('Public Key'),
         error: translate.instant(

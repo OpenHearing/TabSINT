@@ -38,7 +38,7 @@
         <div class="col-6"><label translate for="wahtsConnectionType">WAHTS Connection Type:</label></div>
         <div ngbDropdown class="col-2 dropdown-width" display="dynamic">
           <button type="button" class="btn btn-default btn-block dropdown-toggle" id="wahtsConnectionType" ngbDropdownToggle>
-            {{ (disk | async)?.wahtsConnectionType ?? "Select One" }}
+            {{ (disk | async)?.preferences?.wahtsConnectionType ?? "Select One" }}
           </button>
           <div ngbDropdownMenu aria-labelledby="wahtsConnectionType">
             <button *ngFor="let bluetoothType of BluetoothType | keyvalue" ngbDropdownItem (click)="changeWahtsConnectionType(bluetoothType.value)">
