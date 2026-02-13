@@ -747,6 +747,10 @@
             ],
             "other": "Some other color"
           }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
         }
       ]
     },
