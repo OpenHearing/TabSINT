@@ -765,6 +765,60 @@
           "reference": "MainMenu"
         }
       ]
+    },
+    {
+      "protocolId": "customResponseArea",
+      "pages": [
+        {
+          "id": "customResponseArea",
+          "title": "Basic Button Results Test",
+          "questionPreMainText": "Example of questionPreMainText",
+          "questionMainText": "Example of questionMainText",
+          "questionSubText": "Example of questionSubText",
+          "instructionText": "Example of instructionText",
+          "helpText": "Example of helpText",
+          "isAutoSubmit": false,
+          "responseArea": {
+            "type": "customResponseArea",
+            "htmlFilePath": "custom-response-areas/html_basic_example.html",
+            "jsFilePath": "custom-response-areas/js_basic_example.js"
+          }
+        },
+        {
+          "id": "customResponseArea",
+          "title": "Multi Page Example",
+          "isAutoSubmit": false,
+          "responseArea": {
+            "type": "customResponseArea",
+            "htmlFilePath": "custom-response-areas/html_multi_example.html",
+            "jsFilePath": "custom-response-areas/js_multi_example.js"
+          }
+        },
+        {
+          "id": "customResponseArea",
+          "title": "Reading and Writing Files Example",
+          "isAutoSubmit": false,
+          "responseArea": {
+            "type": "customResponseArea",
+            "htmlFilePath": "custom-response-areas/html_file_example.html",
+            "jsFilePath": "custom-response-areas/js_file_example.js"
+          }
+        },
+        {
+          "id": "customResponseArea",
+          "title": "Page and Disk Variables",
+          "isAutoSubmit": false,
+          "responseArea": {
+            "type": "customResponseArea",
+            "htmlFilePath": "custom-response-areas/html_disk_example.html",
+            "jsFilePath": "custom-response-areas/js_disk_example.js"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
     }
   ]
 }
