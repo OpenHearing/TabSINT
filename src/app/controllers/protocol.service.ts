@@ -81,14 +81,10 @@ export class ProtocolService {
     this.tasks.register('Load Protocol', 'Load Protocol');
     try {
       const loadError = await this.loadFiles();
-      console.log('1', loadError);
       if (loadError === undefined) {
         await this.setCalibration();
-        console.log('2');
         await this.initializeProtocol();
-        console.log('3');
         const validationError = await this.validateIfCalledFor();
-        console.log('4');
         this.handleLoadErrors([validationError]);
       } else {
         this.notifyProtocolDidntLoadProperly();
