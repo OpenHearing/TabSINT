@@ -25,11 +25,11 @@
   <!-- <li (click)="toggleAppDeveloperMode()">
         <b>{{'Build Name' | translate}}:</b>
         <span>
-            <span *ngIf="disk.appDeveloperMode">
+            <span *ngIf="disk.preferences.appDeveloperMode">
                 - App-Developer Mode is on <button class="btn btn-default"
                     (click)="toggleAppDeveloperMode()">Turn Off</button>
             </span>
-            <span *ngIf="!disk.appDeveloperMode && disk.appDeveloperModeCount > 1">
+            <span *ngIf="!disk.preferences.appDeveloperMode && disk.appDeveloperModeCount > 1">
                 - Tap {{5-disk.appDeveloperModeCount}} more times to turn on App-Developer Mode
             </span>
         </span>

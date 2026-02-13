@@ -31,10 +31,10 @@ describe('DiskModel', () => {
 
   it('updates and stores disk model', () => {
     let returnedDisk: DiskInterface = diskModel.getDisk();
-    expect(returnedDisk.pin).toBe('7114');
-    diskModel.updateDiskModel('pin', '0000');
+    expect(returnedDisk.preferences.pin).toBe('7114');
+    diskModel.updatePreferences({ pin: '0000' });
     returnedDisk = diskModel.getDisk();
-    expect(returnedDisk.pin).toBe('0000');
+    expect(returnedDisk.preferences.pin).toBe('0000');
   });
 
   it('empties completed exam results', () => {

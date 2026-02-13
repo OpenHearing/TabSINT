@@ -146,7 +146,7 @@ export class WahtsManager implements IDeviceManager {
     }
     try {
       this.scanning = true;
-      const connectionType = (await firstValueFrom(this.diskModel.diskSubject)).wahtsConnectionType;
+      const connectionType = (await firstValueFrom(this.diskModel.diskSubject)).preferences.wahtsConnectionType;
       const connectionTypeKey = this.getConnectionKey(connectionType);
       this.discoverListener = (response: DiscoveryResponse) => {
         const newDevice = new WahtsDevice(response.name, response.name);

@@ -40,11 +40,21 @@
             <i class="ion-upload"></i> {{ "Upload" | translate }}
           </button>
 
-          <button type="button" *ngIf="!disk.preventExports" [disabled]="sqLite.count['results'] === 0" class="btn btn-primary" (click)="exportAll()">
+          <button
+            type="button"
+            *ngIf="!disk.preferences.preventExports"
+            [disabled]="sqLite.count['results'] === 0"
+            class="btn btn-primary"
+            (click)="exportAll()">
             <span class="glyphicon glyphicon-floppy-disk"></span> {{ "Export" | translate }}
           </button>
 
-          <button type="button" *ngIf="disk.debugMode" [disabled]="sqLite.count['results'] === 0" class="btn btn-danger" (click)="deleteAll()">
+          <button
+            type="button"
+            *ngIf="disk.preferences.debugMode"
+            [disabled]="sqLite.count['results'] === 0"
+            class="btn btn-danger"
+            (click)="deleteAll()">
             <i class="ion-trash-a"></i> {{ "Delete" | translate }}
           </button>
         </div>

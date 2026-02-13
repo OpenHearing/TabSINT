@@ -51,7 +51,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
     this.disk = this.diskModel.getDisk();
     this.protocolModel = this.protocolM.getProtocolModel();
     this.state = this.stateModel.getState();
-    this.gitlabConfig = this.disk.gitlabConfig;
+    this.gitlabConfig = this.disk.preferences.gitlabConfig;
   }
 
   ngOnInit(): void {
@@ -429,25 +429,25 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
 
   onGitlabConfigChange(event: any, value: string) {
     if (value == 'host') {
-      this.disk.gitlabConfig.host = event.target.value;
+      this.disk.preferences.gitlabConfig.host = event.target.value;
     } else if (value == 'repository') {
-      this.disk.gitlabConfig.repository = event.target.value;
+      this.disk.preferences.gitlabConfig.repository = event.target.value;
     } else if (value == 'token') {
-      this.disk.gitlabConfig.token = event.target.value;
+      this.disk.preferences.gitlabConfig.token = event.target.value;
     } else if (value == 'group') {
-      this.disk.gitlabConfig.group = event.target.value;
+      this.disk.preferences.gitlabConfig.group = event.target.value;
     } else if (value == 'tag') {
-      this.disk.gitlabConfig.tag = event.target.value;
+      this.disk.preferences.gitlabConfig.tag = event.target.value;
     }
     this.diskModel.storeDisk();
   }
 
   gitlabButtonClass(): string {
-    return this.disk.server === ProtocolServer.Gitlab ? 'active' : 'disabled';
+    return this.disk.preferences.server === ProtocolServer.Gitlab ? 'active' : 'disabled';
   }
 
   localServerButtonClass(): string {
-    return this.disk.server === ProtocolServer.LocalServer ? 'active' : '';
+    return this.disk.preferences.server === ProtocolServer.LocalServer ? 'active' : '';
   }
 
   /**
@@ -586,7 +586,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
       }
     }
     availableMetaProtocols[protocolMetaData.name] = protocolMetaData;
-    this.diskModel.updateDiskModel('availableProtocolsMeta', availableMetaProtocols);
+    this.diskModel.updateDiskModel({ availableProtocolsMeta: availableMetaProtocols });
     this.protocolModel = this.protocolM.getProtocolModel();
     this.select(protocolMetaData);
     await this.loadProtocol();
@@ -626,7 +626,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
   }
 
   toggleValidateProtocols() {
-    this.diskModel.updateDiskModel('validateProtocols', !this.disk.validateProtocols);
+    this.diskModel.updatePreferences({ validateProtocols: !this.disk.preferences.validateProtocols });
   }
 
   validateProtocolPopover = this.translate.instant(
@@ -654,7 +654,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
   );
 
   serverDefaultPopover = this.translate.instant(
-    'Reset all configuration values to the defaults set in the build configuaration file. This file can only be edited when TabSINT is built from source code.'
+    'Reset all configuration values to the defaults set in the build configuration file. This file can only be edited when TabSINT is built from source code.'
   );
 
   gitlabAddPopover = this.translate.instant(
@@ -678,7 +678,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
       'Uncheck this box if you would only like to download changes that are associated with repository <b>commits</b>.'
   );
 
-  gitlabUseSeperateResultsRepoPopover = this.translate.instant(
+  gitlabUseSeparateResultsRepoPopover = this.translate.instant(
     'Select this option to choose a different gitlab group or repository for results upload.  <br /><br />By default, results are uploaded to a <code>results</code> repository in the same group that contains the protocol.'
   );
 

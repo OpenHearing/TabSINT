@@ -2,7 +2,8 @@ import { IDevice } from '../../interfaces/devices/device.interface';
 import { ITympanDevice } from '../../interfaces/devices/tympan-device.interface';
 import { IWahtsDevice } from '../../interfaces/devices/wahts-device.interface';
 import { MediaReposInterface } from '../../interfaces/media-repos.interface';
-import { ProtocolServer, ResultsMode, BluetoothType, Headset } from '../../utilities/constants';
+import { Preferences } from '../../interfaces/preferences.interface';
+import { ProtocolServer } from '../../utilities/constants';
 import { ProtocolMetaInterface } from '../protocol/protocol.interface';
 
 export interface GitlabConfigInterface {
@@ -15,79 +16,33 @@ export interface GitlabConfigInterface {
 
 export interface DiskInterface {
   activeProtocolMeta?: ProtocolMetaInterface;
-  adminSkipMode: boolean;
-  appDeveloperMode: boolean;
   appDeveloperModeCount: number;
   audhere: string;
-  autoUpload: boolean;
   availableProtocolsMeta: {
     [Key: string]: ProtocolMetaInterface;
   };
   contentURI: string | null;
-  debugMode: boolean;
-  disableAudioStreaming?: boolean;
-  disableLogs: boolean;
-  disableVolume?: boolean;
   downloadInProgress: boolean;
-  externalMode: boolean;
   extStorageRootDir?: string;
   extStorageUuidDir?: string;
-  gitlab: {
-    repos: Array<string>;
-    useSeperateResultsRepo: boolean;
-    useTagsOnly: boolean;
-  };
-  gitlabConfig: GitlabConfigInterface;
-  headset: Headset;
   interApp: {
     appName: string;
     dataIn: string;
     dataOut: string;
   };
-  language: string;
   lastReleaseCheck: string;
-  mediaRepos: Array<MediaReposInterface>;
-  maxLogRows: number;
+  mediaRepos: MediaReposInterface[];
   numLogRows: number;
-  pin: string;
-  preventExports: boolean;
-  preventUploads: boolean;
-  qrcodeConfig?: object;
-  recordTestLocation?: boolean;
   reloadingBrowser: boolean;
-  requireEncryptedResults: boolean;
-  resultsMode: ResultsMode;
-  server: ProtocolServer;
-  servers: {
-    gitlab: {
-      group?: string;
-      host?: string;
-      resultsGroup?: string;
-      resultsRepo: string;
-      repository?: string;
-      token?: string;
-      version?: string;
-    };
-    localServer: {
-      protocolDir: string;
-      resultsDir: string;
-      resultsDirUri: string;
-    };
-  };
-  showUploadSummary: boolean;
-  showDisclaimer: boolean;
-  suppressAlerts: boolean;
-  tabletGain: number;
   tabletLocation: {
     accuracy?: number;
     latitude?: number;
     longitude?: number;
   };
-  uploadSummary: Array<UploadSummary>;
-  validateProtocols: boolean;
-  versionCheck: boolean;
+  uploadSummary: UploadSummary[];
   savedDevices: SavedDevice[];
-  wahtsConnectionType: BluetoothType;
+  showDisclaimer: boolean;
+  preferences: Preferences;
 }
 
 export interface UploadSummary {

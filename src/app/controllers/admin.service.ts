@@ -28,7 +28,7 @@ export class AdminService {
   }
 
   onAdminViewClick(): void {
-    if (!this.disk.debugMode) {
+    if (!this.disk.preferences.debugMode) {
       const dialogRef = this.dialog.open(ChangePinComponent);
       dialogRef.componentInstance.setValidationMode(true);
       dialogRef.componentInstance.pinValidated.subscribe((isValid: boolean) => {

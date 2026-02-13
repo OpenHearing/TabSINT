@@ -91,6 +91,8 @@ export class ProtocolService {
       }
     } catch (error: unknown) {
       const err = error instanceof Error ? error.message : error;
+      // delete the protocol if it does not load properly
+      this.delete(this.loading.meta);
       this.logger.error(`Could not load protocol. ${err}`);
       this.notifications
         .alert({
@@ -121,7 +123,7 @@ export class ProtocolService {
       const availProtocols = this.disk.availableProtocolsMeta;
       delete availProtocols[p.name];
       const updatedAvailableProtocolsMeta = availProtocols;
-      this.diskModel.updateDiskModel('availableProtocolsMeta', updatedAvailableProtocolsMeta);
+      this.diskModel.updateDiskModel({ availableProtocolsMeta: updatedAvailableProtocolsMeta });
     } catch (error) {
       this.logger.error('Error trying to delete files: ' + error);
     }
@@ -145,7 +147,7 @@ export class ProtocolService {
 
       if (!_.isUndefined(protocol)) {
         this.loading.protocol = { ...this.loading.meta, ...finalProtocol };
-        this.diskModel.updateDiskModel('activeProtocolMeta', this.loading.meta);
+        this.diskModel.updateDiskModel({ activeProtocolMeta: this.loading.meta });
       } else {
         loadError = {
           type: 'Load Files',
@@ -183,8 +185,8 @@ export class ProtocolService {
     return ret;
   }
 
-  private validateIfCalledFor(): ProtocolErrorInterface | undefined {
-    if (!this.disk.validateProtocols) return undefined;
+  private async validateIfCalledFor(): Promise<ProtocolErrorInterface | undefined> {
+    if (!this.disk.preferences.validateProtocols) return undefined;
     if (this.loading.notify) {
       this.tasks.register('Validate Protocol', 'Validating Protocol... This process could take several minutes');
     }

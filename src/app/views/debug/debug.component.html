@@ -1,4 +1,4 @@
-<div *ngIf="disk.debugMode" class="debug-view">
+<div *ngIf="disk.preferences.debugMode" class="debug-view">
   <button type="button" class="btn btn-xs btn-link" (click)="isCollapsed = !isCollapsed">
     <span *ngIf="!isCollapsed"
       ><small>{{ "Hide Debug Info" | translate }} <i class="ion-chevron-up"></i></small

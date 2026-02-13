@@ -1,9 +1,7 @@
-import { Component, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
-
-import { TabsintFs } from 'tabsintfs';
 
 import { DiskInterface } from '../../../../models/disk/disk.interface';
 import { StateInterface } from '../../../../models/state/state.interface';
@@ -14,9 +12,13 @@ import { Logger } from '../../../../services/logger.service';
 import { VersionModel } from '../../../../models/version/version.service';
 import { StateModel } from '../../../../models/state/state.service';
 
-import { AppState, Headset } from '../../../../utilities/constants';
+import { AppState, DialogType, Headset } from '../../../../utilities/constants';
 import { ChangePinComponent } from '../../../change-pin/change-pin.component';
 import { ChangeMaxLogLengthComponent } from '../../../change-max-log-length/change-max-log-length.component';
+import { QrService } from '../../../../services/qr.service';
+import { FileService } from '../../../../services/file.service';
+import { TabsintFs } from 'tabsintfs';
+import { Notifications } from '../../../../services/notifications.service';
 
 @Component({
   selector: 'tabsint-config-view',
@@ -28,6 +30,11 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   state: StateInterface;
   version!: VersionInterface;
   headsets = Object.values(Headset);
+  qrPreferencesString?: string = undefined;
+  displayPreferencesQrCode: boolean = false;
+
+  @ViewChild('qrCanvas', { read: ElementRef })
+  qrCanvas!: ElementRef;
 
   diskSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
@@ -39,7 +46,10 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
     private readonly dialog: MatDialog,
     private readonly stateModel: StateModel,
     private readonly translate: TranslateService,
-    private readonly versionModel: VersionModel
+    private readonly versionModel: VersionModel,
+    private readonly qrService: QrService,
+    private readonly fileService: FileService,
+    private readonly notifications: Notifications
   ) {
     this.state = this.stateModel.getState();
     this.disk = this.diskModel.getDisk();
@@ -49,6 +59,7 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
     this.asyncNgOnInit();
     this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
+      this.qrPreferencesString = JSON.stringify(this.disk.preferences);
     });
     this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
@@ -86,19 +97,19 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
    * @param headset The new headset enumeration value to be stored.
    */
   changeHeadset(headset: Headset) {
-    this.diskModel.updateDiskModel('headset', headset);
+    this.diskModel.updatePreferences({ headset: headset });
     this.logger.debug('Headset changed to: ' + headset);
   }
 
   // changeLanguage(language: string) {
   //   // need to update the language here
-  //   this.diskModel.updateDiskModel("language", language);
+  //   this.diskModel.updatePreferences({language: language});
   //   this.translate.setDefaultLang(language);
   //   this.logger.debug("Language changed to: "+language);
   // }
 
   // changeResultsMode(resultsMode: ResultsMode) {
-  //   this.diskModel.updateDiskModel("resultsMode", resultsMode);
+  //   this.diskModel.updatePreferences({resultsMode: resultsMode});
   //   this.logger.debug("ResultsMode changed to: "+JSON.stringify(resultsMode));
   // }
 
@@ -111,24 +122,64 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   }
 
   toggleAutoUpload() {
-    this.diskModel.updateDiskModel('autoUpload', this.disk.autoUpload == undefined || !this.disk.autoUpload);
+    this.diskModel.updatePreferences({ autoUpload: this.disk.preferences.autoUpload == undefined || !this.disk.preferences.autoUpload });
   }
 
   toggleDebugMode() {
-    this.diskModel.updateDiskModel('debugMode', !this.disk.debugMode);
+    this.diskModel.updatePreferences({ debugMode: !this.disk.preferences.debugMode });
   }
 
   toggleDisableLogs() {
-    this.diskModel.updateDiskModel('disableLogs', !this.disk.disableLogs);
+    this.diskModel.updatePreferences({ disableLogs: !this.disk.preferences.disableLogs });
+  }
+
+  /**
+   * Reset the preferences to the default values.
+   */
+  resetConfig() {
+    this.diskModel.resetPreferences();
+  }
+
+  /**
+   * Save the preference QR code to the device and display the QR Code.
+   */
+  async generatePreferencesQrCode() {
+    const outputDirectory = 'tabsint-configuration';
+    const date = new Date().toISOString().replace(':', '_').replace(':', '-').split('.')[0];
+    const filename = `${date}-qrcode.png`;
+
+    const qrPreferencesUrl = this.qrCanvas.nativeElement.querySelector('canvas').toDataURL('image/png');
+    const dataBlob = this.qrService.urlToBlob(qrPreferencesUrl);
+    let fileResponse = undefined;
+
+    if (dataBlob) {
+      fileResponse = await this.fileService.writeBinaryFile(`${outputDirectory}/${filename}`, dataBlob);
+    }
+    if (fileResponse) {
+      this.displayPreferencesQrCode = true;
+      this.notifications.alert({
+        title: 'QR Code',
+        content: `Current TabSINT configuration saved as QR Code on your tablet: ${outputDirectory}/${filename}`,
+        type: DialogType.Alert,
+      });
+    } else {
+      this.displayPreferencesQrCode = false;
+      this.notifications.alert({
+        title: 'QR Code',
+        content: 'Failed to save the QR code.',
+        type: DialogType.Alert,
+      });
+      this.logger.error('Saving QR Code failed.');
+    }
   }
 
   async changeLocalResultsDir() {
     try {
       const result = await TabsintFs.chooseFolder();
-      let servers = this.disk.servers;
+      const servers = this.disk.preferences.servers;
       servers.localServer.resultsDir = result.name;
       servers.localServer.resultsDirUri = result.uri;
-      this.diskModel.updateDiskModel('servers', servers);
+      this.diskModel.updatePreferences({ servers: servers });
     } catch (error) {
       this.logger.debug('Error choosing folder:' + error);
     }
@@ -182,13 +233,11 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   //   "<br /><br />TabSINT will request permission to access the device location when this option is enabled. The device's location services must be turned for the location to be successfully stored."
   // );
 
-  // qrCodePopover = this.translate.instant(
-  //   "Generate a QR Code containing all the current configuration settings. Select the local directory to save the QR Code for future use."
-  // );
+  qrCodePopover = this.translate.instant(
+    'Generate a QR Code containing all the current configuration settings. Select the local directory to save the QR Code for future use.'
+  );
 
-  // resetConfigurationPopover = this.translate.instant(
-  //   "Reset TabSINT configuration to the default configuration. All manual changes will be removed."
-  // );
+  resetConfigurationPopover = this.translate.instant('Reset TabSINT configuration to the default configuration. All manual changes will be removed.');
 
   automaticallyOutputResultsPopover = this.translate.instant(
     'Automatically upload or export the result when a test is finished. The result will be uploaded or exported on the <b>Exam Complete</b> page. <br /><br /> Once the result is uploaded to a server or exported to a local file, it will be removed from TabSINT.'
