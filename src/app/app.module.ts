@@ -100,6 +100,7 @@ import { InputParametersComponent } from './views/response-area/response-areas/s
 import { NetworkService } from './controllers/network.service';
 import { SubjectIdComponent } from './views/response-area/response-areas/subject-id/subject-id.component';
 import { CheckboxComponent } from './views/response-area/response-areas/checkbox/checkbox.component';
+import { ButtonGridComponent } from './views/response-area/response-areas/button-grid/button-grid.component';
 import { QrService } from './services/qr.service';
 import { QRCodeModule } from 'angularx-qrcode';
 
@@ -130,6 +131,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     TextboxComponent,
     SubjectIdComponent,
     CheckboxComponent,
+    ButtonGridComponent,
     LikertComponent,
     TextboxResultViewerComponent,
     MultipleChoiceComponent,

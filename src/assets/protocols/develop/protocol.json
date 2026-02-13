@@ -69,6 +69,9 @@
                 "id": "Checkbox"
               },
               {
+                "id": "Button Grid"
+              },
+              {
                 "id": "Image"
               },
               {
@@ -171,6 +174,12 @@
               "conditional": "result.response=='Checkbox'",
               "target": {
                 "reference": "checkbox"
+              }
+            },
+            {
+              "conditional": "result.response=='Button Grid'",
+              "target": {
+                "reference": "buttonGrid"
               }
             },
             {
