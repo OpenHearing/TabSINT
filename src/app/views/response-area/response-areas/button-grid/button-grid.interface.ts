@@ -1,11 +1,11 @@
 import { CommonResponseAreaInterface } from '../../../../interfaces/page-definition.interface';
-import { ChoiceInterface } from '../../../../interfaces/choice.interface';
+import { RowInterface } from '../../../../interfaces/row.interface';
 
 export interface ButtonGridInterface extends CommonResponseAreaInterface {
-  choices: ChoiceInterface[];
-  buttonScheme?: 'markCorrect' | 'markIncorrect';
   feedback?: 'gradeResponse' | 'showCorrect';
-  other?: string;
+  rows: RowInterface[];
   verticalSpacing?: number;
+  horizontalSpacing?: number;
+  delayEnable?: number;
   exportToCSV?: boolean;
 }

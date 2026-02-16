@@ -1,17 +1,9 @@
-.multi-choice-container {
-  margin-left: auto;
-  margin-right:auto;
-  display: inline-block;
-  padding-left:30px;
-  padding-right:30px;
-}
-
-.multi-choice-container button {
-  padding-left: 20px;
-  padding-right: 20px;
-}
-@media (min-width: 350px) {
-  .multi-choice-container button {
-    min-width: 300px;
-  }
+.button-grid {
+    display: flex; /* Forces buttons into a single row */
+    align-items: center;     /* Centers vertically */
+    width: 100%; /* Ensures the container uses the full available width */
+    justify-content: space-evenly; /* or space-between, space-evenly, center depending on desired spacing */
+    gap: 10px; /* Adds a consistent gap between the buttons (modern approach) */
+    padding-top: 20px;
+    padding-bottom: 20px;
 }

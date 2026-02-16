@@ -5,17 +5,19 @@ import { PageInterface } from '../../../../models/page/page.interface';
 import { ButtonGridInterface } from './button-grid.interface';
 import { ResultsModel } from '../../../../models/results/results-model.service';
 import { PageModel } from '../../../../models/page/page.service';
-import { checkboxSchema } from '../../../../../schema/response-areas/checkbox.schema';
+import { buttonGridSchema } from '../../../../../schema/response-areas/button-grid.schema';
 import { StateInterface } from '../../../../models/state/state.interface';
 import { StateModel } from '../../../../models/state/state.service';
 import { ExamService } from '../../../../controllers/exam.service';
 import { ChoiceInterface } from '../../../../interfaces/choice.interface';
 import { Logger } from '../../../../services/logger.service';
+import { RowInterface } from '../../../../interfaces/row.interface';
+import { choiceSchema } from '../../../../../schema/definitions/choice.schema';
 
 @Component({
   selector: 'app-button-grid',
-  templateUrl: './utton-grid.component.html',
-  styleUrl: './utton-grid.component.css',
+  templateUrl: './button-grid.component.html',
+  styleUrl: './button-grid.component.css',
 })
 export class ButtonGridComponent implements OnInit, OnDestroy {
   private readonly examService = inject(ExamService);
@@ -26,12 +28,11 @@ export class ButtonGridComponent implements OnInit, OnDestroy {
 
   results: ResultsInterface;
   state: StateInterface;
-  choices: ChoiceInterface[];
-  buttonScheme: string;
+  rows: RowInterface[];
   feedback: string;
-  other: string | undefined;
   verticalSpacing: number;
-  otherSelected: boolean = false;
+  horizontalSpacing: number;
+  delayEnable: number;
 
   pageSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
@@ -40,10 +41,11 @@ export class ButtonGridComponent implements OnInit, OnDestroy {
   constructor() {
     this.results = this.resultsModel.getResults();
     this.state = this.stateModel.getState();
-    this.choices = checkboxSchema.properties.choices.default;
-    this.buttonScheme = checkboxSchema.properties.buttonScheme.default;
-    this.feedback = checkboxSchema.properties.feedback.default;
-    this.verticalSpacing = checkboxSchema.properties.verticalSpacing.default;
+    this.rows = buttonGridSchema.properties.rows.default;
+    this.feedback = buttonGridSchema.properties.feedback.default;
+    this.verticalSpacing = buttonGridSchema.properties.verticalSpacing.default;
+    this.horizontalSpacing = buttonGridSchema.properties.horizontalSpacing.default;
+    this.delayEnable = buttonGridSchema.properties.delayEnable.default;
   }
 
   ngOnInit(): void {
@@ -60,25 +62,28 @@ export class ButtonGridComponent implements OnInit, OnDestroy {
     });
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type == 'buttonGridResponseArea') {
-        const updatedCheckboxResponseArea = updatedPage.responseArea as ButtonGridInterface;
-        if (updatedCheckboxResponseArea) {
-          this.choices = updatedCheckboxResponseArea.choices;
-          this.choices.forEach(choice => {
-            choice.text = choice.text ?? choice.id;
-          });
-          this.buttonScheme = updatedCheckboxResponseArea.buttonScheme ?? this.buttonScheme;
-          this.feedback = updatedCheckboxResponseArea.feedback ?? this.feedback;
-          this.verticalSpacing = updatedCheckboxResponseArea.verticalSpacing ?? this.verticalSpacing;
-          this.other = updatedCheckboxResponseArea.other ?? this.other;
-          if (this.other) {
-            this.choices.push({
-              id: 'Other',
-              text: this.other ?? 'Other',
+        const updatedButtonGridResponseArea = updatedPage.responseArea as ButtonGridInterface;
+        if (updatedButtonGridResponseArea) {
+          this.rows = updatedButtonGridResponseArea.rows;
+          // Fill in defaults for choices of each row
+          this.rows.forEach(row => {
+            row.choices.forEach(choice => {
+              choice.text = choice.text ?? choice.id;
+              choice.correct = choiceSchema.properties.correct.default;
+              choice.disable = choiceSchema.properties.disable.default;
+              choice.textColor = choiceSchema.properties.textColor.default;
+              choice.backgroundColor = choiceSchema.properties.backgroundColor.default;
+              choice.fontSize = choiceSchema.properties.fontSize.default;
             });
-            this.results.currentPage.response.other = '';
-          }
+          });
+          this.feedback = updatedButtonGridResponseArea.feedback ?? this.feedback;
+          this.verticalSpacing = updatedButtonGridResponseArea.verticalSpacing ?? this.verticalSpacing;
+          this.horizontalSpacing = updatedButtonGridResponseArea.horizontalSpacing ?? this.horizontalSpacing;
+          this.horizontalSpacing = updatedButtonGridResponseArea.horizontalSpacing ?? this.horizontalSpacing;
+          this.delayEnable = updatedButtonGridResponseArea.delayEnable ?? this.delayEnable;
+
           // TODO: Implement this functionality and remove this logging
-          if (this.buttonScheme || this.feedback) {
+          if (this.feedback) {
             this.logger.warning('buttonScheme and feedback not yet supported for checkbox response area.');
           }
         }
@@ -98,10 +103,6 @@ export class ButtonGridComponent implements OnInit, OnDestroy {
   }
 
   choiceSelected(id: string) {
-    // Handle the other case
-    if (id === 'Other') {
-      this.toggleOther();
-    }
     // Remove element if already selected, else add element to selected
     if (this.results.currentPage.response.selected.includes(id)) {
       const index = this.results.currentPage.response.selected.indexOf(id);
@@ -119,14 +120,6 @@ export class ButtonGridComponent implements OnInit, OnDestroy {
       this.stateModel.updateState({ doesResponseExist: false });
     }
     this.stateModel.setPageSubmittable();
-  }
-
-  toggleOther() {
-    this.otherSelected = !this.otherSelected;
-    // Clear the other field if it was toggled off
-    if (!this.otherSelected) {
-      this.results.currentPage.response.other = '';
-    }
   }
 
   onEnter() {

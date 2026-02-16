@@ -1,24 +1,11 @@
-<div>
-  <span class="multi-choice-container">
-    
-    <div class="row" *ngFor="let choice of choices; let i = index">
-      <button 
+<div style="width: 100%;">
+  <table style="width: 100%;">
+    <tr *ngFor="let row of rows; let i = index" class="button-grid">
+      <button *ngFor="let choice of row.choices; let j = index"
         [class]="checkboxBtnClass(choice)"
-        [ngStyle]="{'width': '200px','font-size':choice.fontSize,'background':(choice.backgroundColor)||(choice.disable&&'#cccccc'),'color':(choice.textColor)||(choice.disable&&'#666666')}" 
+        [ngStyle]="{'font-size':choice.fontSize,'background':(choice.backgroundColor)||(choice.disable&&'#cccccc'),'color':(choice.textColor)||(choice.disable&&'#666666')}" 
         (click)="choiceSelected(choice.id)"> {{choice.text}} 
       </button>
-    </div>
-
-    <div class="row" *ngIf="otherSelected">
-      <textarea
-        [(ngModel)]="results.currentPage.response.other"
-        (ngModelChange)="onResponseChange()"
-        (keydown.enter)="onEnter()"
-        rows="5"
-        autofocus="true"
-        maxlength="5000">
-      </textarea>
-    </div>
-
-  </span>
+    </tr>
+  </table>
 </div>

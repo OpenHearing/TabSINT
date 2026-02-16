@@ -764,6 +764,64 @@
       ]
     },
     {
+      "protocolId": "buttonGrid",
+      "pages": [
+        {
+          "id": "buttonGrid",
+          "title": "Button Grid",
+          "responseArea": {
+            "type": "buttonGridResponseArea",
+            "rows": [
+              {
+                "choices":[
+                  {
+                    "id":"One",
+                    "correct": true
+                  },
+                  {
+                    "id":"Two"
+                  },
+                  {
+                    "id":"Three"
+                  }
+                ]
+              },
+              {
+                "choices": [
+                  {
+                    "id":"Four"
+                  },
+                  {
+                    "id":"Five"
+                  },
+                  {
+                    "id":"Six"
+                  }
+                ]
+              },
+              {
+                "choices": [
+                  {
+                    "id":"Seven"
+                  },
+                  {
+                    "id":"Eight"
+                  },
+                  {
+                    "id":"Nine"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
       "protocolId": "image",
       "pages": [
         {
