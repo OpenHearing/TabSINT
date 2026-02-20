@@ -329,7 +329,9 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     if (this.currentBlockIndex >= this.blockCount) {
       await this.delay(1000); // Delay to show final block count to the user before the next step
       if (this.pageParameters?.autoSubmit) {
-        await this.finishExam();
+        setTimeout(async () => {
+          await this.finishExam();
+        }, this.pageParameters?.autoSubmitDelay ?? 0);
       } else {
         this.nextStep();
       }

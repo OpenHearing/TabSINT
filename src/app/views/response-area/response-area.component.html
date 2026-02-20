@@ -1,5 +1,5 @@
 <div [ngSwitch]="currentPage.responseArea?.type">
-  <textbox-view *ngSwitchCase="'textboxResponseArea'"></textbox-view>
+  <app-textbox-view *ngSwitchCase="'textboxResponseArea'"></app-textbox-view>
   <textbox-result-viewer-view *ngSwitchCase="'textboxResponseAreaResultViewer'"></textbox-result-viewer-view>
   <likert-view *ngSwitchCase="'likertResponseArea'"></likert-view>
   <multiple-input-view *ngSwitchCase="'multipleInputResponseArea'"></multiple-input-view>

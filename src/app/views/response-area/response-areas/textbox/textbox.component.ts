@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { ResultsInterface } from '../../../../models/results/results.interface';
@@ -12,27 +12,29 @@ import { textBoxSchema } from '../../../../../schema/response-areas/textbox.sche
 import { StateInterface } from '../../../../models/state/state.interface';
 import { StateModel } from '../../../../models/state/state.service';
 import { ExamService } from '../../../../controllers/exam.service';
+import { parsePageParameters } from '../../../../utilities/page-parameter-helper';
 
 @Component({
-  selector: 'textbox-view',
+  selector: 'app-textbox-view',
   templateUrl: './textbox.component.html',
   styleUrl: './textbox.component.css',
 })
 export class TextboxComponent implements OnInit, OnDestroy {
+  private readonly examService = inject(ExamService);
+  private readonly resultsModel = inject(ResultsModel);
+  private readonly pageModel = inject(PageModel);
+  private readonly stateModel = inject(StateModel);
+
   results: ResultsInterface;
   state: StateInterface;
   rows: number;
+  pageParameters?: PageInterface;
 
   pageSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
 
-  constructor(
-    private readonly examService: ExamService,
-    private readonly resultsModel: ResultsModel,
-    private readonly pageModel: PageModel,
-    private readonly stateModel: StateModel
-  ) {
+  constructor() {
     this.results = this.resultsModel.getResults();
     this.state = this.stateModel.getState();
     this.rows = textBoxSchema.properties.rows.default;
@@ -50,6 +52,12 @@ export class TextboxComponent implements OnInit, OnDestroy {
         const updatedTextboxResponseArea = updatedPage.responseArea as TextBoxInterface;
         if (updatedTextboxResponseArea) {
           this.rows = updatedTextboxResponseArea?.rows;
+        }
+        this.pageParameters = parsePageParameters(updatedPage);
+        if (this.pageParameters?.autoSubmit) {
+          setTimeout(() => {
+            this.examService.submit();
+          }, this.pageParameters?.autoSubmitDelay ?? 0);
         }
       }
     });

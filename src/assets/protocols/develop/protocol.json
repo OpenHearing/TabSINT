@@ -75,6 +75,9 @@
                 "id": "Advanced Protocol Logic"
               },
               {
+                "id": "Auto Submit"
+              },
+              {
                 "id": "Custom Response Area"
               },
               {
@@ -183,6 +186,12 @@
               "conditional": "result.response=='Advanced Protocol Logic'",
               "target": {
                 "reference": "advancedProtocolLogic"
+              }
+            },
+            {
+              "conditional": "result.response=='Auto Submit'",
+              "target": {
+                "reference": "autoSubmit"
               }
             },
             {
@@ -836,6 +845,27 @@
           "preProcessFunction": {
             "filepath": "customPreprocess.js",
             "function": "testPreprocess"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "autoSubmit",
+      "pages": [
+        {
+          "id": "textbox_001",
+          "title": "Text Box",
+          "instructionText": "Should auto submit after 3 seconds",
+          "autoSubmit": true,
+          "autoSubmitDelay": 3000,
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 5,
+            "responseRequired": false
           }
         },
         {

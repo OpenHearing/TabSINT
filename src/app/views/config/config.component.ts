@@ -1,22 +1,22 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
 import { ExamService } from '../../controllers/exam.service';
 import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
-  selector: 'config-view',
+  selector: 'app-config-view',
   templateUrl: './config.component.html',
   styleUrl: './config.component.css',
 })
-export class ConfigComponent {
+export class ConfigComponent implements OnInit, OnDestroy {
+  private readonly examService = inject(ExamService);
+  private readonly stateModel = inject(StateModel);
+
   state: StateInterface;
   stateSubscription: Subscription | undefined;
 
-  constructor(
-    private readonly examService: ExamService,
-    private readonly stateModel: StateModel
-  ) {
+  constructor() {
     this.state = this.stateModel.getState();
   }
 
@@ -32,5 +32,4 @@ export class ConfigComponent {
   }
 
   title = 'config';
-
 }
