@@ -739,8 +739,8 @@
       "protocolId": "checkbox",
       "pages": [
         {
-          "id": "checkbox",
-          "title": "Checkbox",
+          "id": "checkbox1",
+          "title": "Checkbox without grading",
           "responseArea": {
             "type": "checkboxResponseArea",
             "choices": [
@@ -758,6 +758,86 @@
           }
         },
         {
+          "id": "checkbox2",
+          "title": "Checkbox with markCorrect",
+          "responseArea": {
+            "type": "checkboxResponseArea",
+            "buttonScheme": "markCorrect",
+            "choices": [
+              {
+                "id": "One",
+                "correct": true
+              },
+              {
+                "id": "Two"
+              },
+              {
+                "id": "Three"
+              }
+            ]
+          }
+        },
+        {
+          "id": "checkbox3",
+          "title": "Checkbox with markIncorrect",
+          "responseArea": {
+            "type": "checkboxResponseArea",
+            "buttonScheme": "markIncorrect",
+            "choices": [
+              {
+                "id": "One",
+                "correct": true
+              },
+              {
+                "id": "Two"
+              },
+              {
+                "id": "Three"
+              }
+            ]
+          }
+        },
+        {
+          "id": "checkbox4",
+          "title": "Checkbox with gradeResponse",
+          "responseArea": {
+            "type": "checkboxResponseArea",
+            "feedback": "gradeResponse",
+            "choices": [
+              {
+                "id": "One",
+                "correct": true
+              },
+              {
+                "id": "Two"
+              },
+              {
+                "id": "Three"
+              }
+            ]
+          }
+        },
+        {
+          "id": "checkbox5",
+          "title": "Checkbox with showCorrect",
+          "responseArea": {
+            "type": "checkboxResponseArea",
+            "feedback": "showCorrect",
+            "choices": [
+              {
+                "id": "One"
+              },
+              {
+                "id": "Two",
+                "correct": true
+              },
+              {
+                "id": "Three"
+              }
+            ]
+          }
+        },
+        {
           "id": "backtomain",
           "reference": "MainMenu"
         }
@@ -767,7 +847,7 @@
       "protocolId": "buttonGrid",
       "pages": [
         {
-          "id": "buttonGrid",
+          "id": "buttonGrid1",
           "title": "Button Grid",
           "responseArea": {
             "type": "buttonGridResponseArea",
@@ -809,6 +889,56 @@
                   },
                   {
                     "id":"Nine"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "buttonGrid2",
+          "title": "Button Grid with grade response",
+          "responseArea": {
+            "type": "buttonGridResponseArea",
+            "feedback": "gradeResponse",
+            "rows": [
+              {
+                "choices":[
+                  {
+                    "id":"1",
+                    "correct": true
+                  },
+                  {
+                    "id":"2"
+                  },
+                  {
+                    "id":"3"
+                  }
+                ]
+              },
+              {
+                "choices": [
+                  {
+                    "id":"4"
+                  },
+                  {
+                    "id":"5"
+                  },
+                  {
+                    "id":"6"
+                  }
+                ]
+              },
+              {
+                "choices": [
+                  {
+                    "id":"7"
+                  },
+                  {
+                    "id":"8"
+                  },
+                  {
+                    "id":"9"
                   }
                 ]
               }

@@ -13,6 +13,7 @@ import { ChoiceInterface } from '../../../../interfaces/choice.interface';
 import { Logger } from '../../../../services/logger.service';
 import { RowInterface } from '../../../../interfaces/row.interface';
 import { choiceSchema } from '../../../../../schema/definitions/choice.schema';
+import { choiceBtnClassHelper } from '../../../../utilities/response-area-helper-functions';
 
 @Component({
   selector: 'app-button-grid',
@@ -33,6 +34,8 @@ export class ButtonGridComponent implements OnInit, OnDestroy {
   verticalSpacing: number;
   horizontalSpacing: number;
   delayEnable: number;
+  choices: ChoiceInterface[] = [];
+  submitted = false;
 
   pageSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
@@ -61,19 +64,21 @@ export class ButtonGridComponent implements OnInit, OnDestroy {
       }
     });
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
-      if (updatedPage?.responseArea?.type == 'buttonGridResponseArea') {
+      if (updatedPage?.responseArea?.type === 'buttonGridResponseArea') {
         const updatedButtonGridResponseArea = updatedPage.responseArea as ButtonGridInterface;
         if (updatedButtonGridResponseArea) {
           this.rows = updatedButtonGridResponseArea.rows;
           // Fill in defaults for choices of each row
+          this.choices = [];
           this.rows.forEach(row => {
             row.choices.forEach(choice => {
               choice.text = choice.text ?? choice.id;
-              choice.correct = choiceSchema.properties.correct.default;
-              choice.disable = choiceSchema.properties.disable.default;
-              choice.textColor = choiceSchema.properties.textColor.default;
-              choice.backgroundColor = choiceSchema.properties.backgroundColor.default;
-              choice.fontSize = choiceSchema.properties.fontSize.default;
+              choice.correct = choice.correct ?? choiceSchema.properties.correct.default;
+              choice.disable = choice.disable ?? choiceSchema.properties.disable.default;
+              choice.textColor = choice.textColor ?? choiceSchema.properties.textColor.default;
+              choice.backgroundColor = choice.backgroundColor ?? choiceSchema.properties.backgroundColor.default;
+              choice.fontSize = choice.fontSize ?? choiceSchema.properties.fontSize.default;
+              this.choices.push(choice);
             });
           });
           this.feedback = updatedButtonGridResponseArea.feedback ?? this.feedback;
@@ -82,10 +87,21 @@ export class ButtonGridComponent implements OnInit, OnDestroy {
           this.horizontalSpacing = updatedButtonGridResponseArea.horizontalSpacing ?? this.horizontalSpacing;
           this.delayEnable = updatedButtonGridResponseArea.delayEnable ?? this.delayEnable;
 
-          // TODO: Implement this functionality and remove this logging
-          if (this.feedback) {
-            this.logger.warning('buttonScheme and feedback not yet supported for checkbox response area.');
-          }
+          // delay 100ms to allow results and exam defaults to be set before we override them
+          setTimeout(() => {
+            (this.results.currentPage.page.responseArea as ButtonGridInterface).choices = this.choices;
+            // Allow for 1250ms delay if feedback is present
+            if (this.feedback) {
+              this.examService.submit = () => {
+                this.submitted = true;
+                setTimeout(() => {
+                  this.examService.submit = this.examService.submitDefault;
+                  this.examService.submit();
+                  this.submitted = false;
+                }, 1250);
+              };
+            }
+          }, 100);
         }
       }
     });
@@ -120,19 +136,17 @@ export class ButtonGridComponent implements OnInit, OnDestroy {
       this.stateModel.updateState({ doesResponseExist: false });
     }
     this.stateModel.setPageSubmittable();
+    this.examService.submit();
   }
 
   onEnter() {
     this.examService.submit();
   }
 
-  checkboxBtnClass(choice: ChoiceInterface) {
-    let btnClass = 'btn btn-block ';
-    if (this.results.currentPage.response.selected.includes(choice.id)) {
-      btnClass += 'btn-default active ';
-    } else {
-      btnClass += 'btn-default ';
-    }
-    return btnClass;
+  buttonGridBtnClass(choice: ChoiceInterface) {
+    const options = {
+      feedback: this.submitted ? this.feedback : undefined,
+    };
+    return choiceBtnClassHelper(choice, this.results.currentPage.response, options);
   }
 }

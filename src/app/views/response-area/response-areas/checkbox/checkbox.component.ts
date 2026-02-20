@@ -11,6 +11,7 @@ import { StateModel } from '../../../../models/state/state.service';
 import { ExamService } from '../../../../controllers/exam.service';
 import { ChoiceInterface } from '../../../../interfaces/choice.interface';
 import { Logger } from '../../../../services/logger.service';
+import { choiceBtnClassHelper } from '../../../../utilities/response-area-helper-functions';
 
 @Component({
   selector: 'app-checkbox',
@@ -32,6 +33,7 @@ export class CheckboxComponent implements OnInit, OnDestroy {
   other: string | undefined;
   verticalSpacing: number;
   otherSelected: boolean = false;
+  submitted = false;
 
   pageSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
@@ -59,17 +61,17 @@ export class CheckboxComponent implements OnInit, OnDestroy {
       }
     });
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
-      if (updatedPage?.responseArea?.type == 'checkboxResponseArea') {
+      if (updatedPage?.responseArea?.type === 'checkboxResponseArea') {
         const updatedCheckboxResponseArea = updatedPage.responseArea as CheckboxInterface;
         if (updatedCheckboxResponseArea) {
           this.choices = updatedCheckboxResponseArea.choices;
           this.choices.forEach(choice => {
             choice.text = choice.text ?? choice.id;
           });
-          this.buttonScheme = updatedCheckboxResponseArea.buttonScheme ?? this.buttonScheme;
-          this.feedback = updatedCheckboxResponseArea.feedback ?? this.feedback;
-          this.verticalSpacing = updatedCheckboxResponseArea.verticalSpacing ?? this.verticalSpacing;
-          this.other = updatedCheckboxResponseArea.other ?? this.other;
+          this.buttonScheme = updatedCheckboxResponseArea.buttonScheme ?? checkboxSchema.properties.buttonScheme.default;
+          this.feedback = updatedCheckboxResponseArea.feedback ?? checkboxSchema.properties.feedback.default;
+          this.verticalSpacing = updatedCheckboxResponseArea.verticalSpacing ?? checkboxSchema.properties.verticalSpacing.default;
+          this.other = updatedCheckboxResponseArea?.other;
           if (this.other) {
             this.choices.push({
               id: 'Other',
@@ -77,13 +79,62 @@ export class CheckboxComponent implements OnInit, OnDestroy {
             });
             this.results.currentPage.response.other = '';
           }
-          // TODO: Implement this functionality and remove this logging
-          if (this.buttonScheme || this.feedback) {
-            this.logger.warning('buttonScheme and feedback not yet supported for checkbox response area.');
+
+          // Overwrite the gradeResponses default
+          this.examService.gradeResponses = this.gradeResponses.bind(this);
+
+          // Allow for 1250ms delay if feedback is present
+          if (this.feedback) {
+            setTimeout(() => {
+              this.examService.submit = () => {
+                this.submitted = true;
+                setTimeout(() => {
+                  this.examService.submit = this.examService.submitDefault;
+                  this.examService.submit();
+                  this.submitted = false;
+                }, 1250);
+              };
+            }, 100);
           }
         }
       }
     });
+  }
+
+  gradeResponses() {
+    this.results.currentPage.correct = undefined;
+    this.results.currentPage.eachCorrect = undefined;
+
+    const eachCorrect: boolean[] = [];
+    let questionContainsCorrect = false;
+
+    const choices: ChoiceInterface[] = (this.results.currentPage?.page?.responseArea as any).choices;
+    choices.forEach((choice: ChoiceInterface) => {
+      if (choice?.correct) {
+        questionContainsCorrect = true;
+        eachCorrect.push(this.results.currentPage.response.selected.includes(choice.id));
+      } else {
+        eachCorrect.push(!this.results.currentPage.response.selected.includes(choice.id));
+      }
+    });
+    if (questionContainsCorrect) {
+      this.results.currentPage.correct = !!eachCorrect.every(ele => ele === true);
+      this.results.currentPage.eachCorrect = eachCorrect;
+      this.results.currentPage.numberCorrect = 0;
+      this.results.currentPage.numberIncorrect = 0;
+
+      eachCorrect.forEach((ele: boolean) => {
+        if (ele) {
+          this.results.currentPage.numberCorrect! += 1;
+        } else {
+          this.results.currentPage.numberIncorrect! += 1;
+        }
+      });
+    } else {
+      this.results.currentPage.correct = undefined;
+      this.results.currentPage.numberIncorrect = undefined;
+      this.results.currentPage.numberCorrect = undefined;
+    }
   }
 
   ngOnDestroy(): void {
@@ -134,12 +185,10 @@ export class CheckboxComponent implements OnInit, OnDestroy {
   }
 
   checkboxBtnClass(choice: ChoiceInterface) {
-    let btnClass = 'btn btn-block ';
-    if (this.results.currentPage.response.selected.includes(choice.id)) {
-      btnClass += 'btn-default active ';
-    } else {
-      btnClass += 'btn-default ';
-    }
-    return btnClass;
+    const options = {
+      buttonScheme: this.buttonScheme,
+      feedback: this.submitted ? this.feedback : undefined,
+    };
+    return choiceBtnClassHelper(choice, this.results.currentPage.response, options);
   }
 }

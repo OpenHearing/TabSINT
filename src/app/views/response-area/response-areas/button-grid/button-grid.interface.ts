@@ -1,3 +1,4 @@
+import { ChoiceInterface } from '../../../../interfaces/choice.interface';
 import { CommonResponseAreaInterface } from '../../../../interfaces/page-definition.interface';
 import { RowInterface } from '../../../../interfaces/row.interface';
 
@@ -8,4 +9,5 @@ export interface ButtonGridInterface extends CommonResponseAreaInterface {
   horizontalSpacing?: number;
   delayEnable?: number;
   exportToCSV?: boolean;
+  choices?: ChoiceInterface[];
 }

@@ -103,6 +103,9 @@ export class ResultsService {
       pageId: currentPage.id,
       response: '',
       correct: undefined,
+      eachCorrect: undefined,
+      numberCorrect: undefined,
+      numberIncorrect: undefined,
       isSkipped: false,
       responseArea: currentPage.responseArea ? currentPage.responseArea.type : undefined,
       page: currentPage,
@@ -118,6 +121,7 @@ export class ResultsService {
    * @param response Response for the current page.
    */
   pushResults(currentPageResults: CurrentResults) {
+    console.log('currentPageResults', currentPageResults);
     this.resultsModel.pushResponse(currentPageResults);
   }
 
