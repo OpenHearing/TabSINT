@@ -6,7 +6,7 @@ export function parsePageParameters(page: PageInterface) {
     id: page.id,
     autoSubmit: page.autoSubmit ?? pageSchema.properties.autoSubmit.default,
     autoSubmitDelay: page.autoSubmitDelay ?? pageSchema.properties.autoSubmitDelay.default,
-    hideProgressBar: page.canGoBack ?? pageSchema.properties.hideProgressBar.default,
+    hideProgressBar: page.hideProgressBar ?? pageSchema.properties.hideProgressBar.default,
   };
   return pageParameters;
 }
