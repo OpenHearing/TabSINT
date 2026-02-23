@@ -727,60 +727,6 @@
       ]
     },
     {
-      "protocolId": "customResponseArea",
-      "pages": [
-        {
-          "id": "customResponseArea",
-          "title": "Basic Button Results Test",
-          "questionPreMainText": "Example of questionPreMainText",
-          "questionMainText": "Example of questionMainText",
-          "questionSubText": "Example of questionSubText",
-          "instructionText": "Example of instructionText",
-          "helpText": "Example of helpText",
-          "isAutoSubmit": false,
-          "responseArea": {
-            "type": "customResponseArea",
-            "htmlFilePath": "custom-response-areas/html_basic_example.html",
-            "jsFilePath": "custom-response-areas/js_basic_example.js"
-          }
-        },
-        {
-          "id": "customResponseArea",
-          "title": "Multi Page Example",
-          "isAutoSubmit": false,
-          "responseArea": {
-            "type": "customResponseArea",
-            "htmlFilePath": "custom-response-areas/html_multi_example.html",
-            "jsFilePath": "custom-response-areas/js_multi_example.js"
-          }
-        },
-        {
-          "id": "customResponseArea",
-          "title": "Reading and Writing Files Example",
-          "isAutoSubmit": false,
-          "responseArea": {
-            "type": "customResponseArea",
-            "htmlFilePath": "custom-response-areas/html_file_example.html",
-            "jsFilePath": "custom-response-areas/js_file_example.js"
-          }
-        },
-        {
-          "id": "customResponseArea",
-          "title": "Page and Disk Variables",
-          "isAutoSubmit": false,
-          "responseArea": {
-            "type": "customResponseArea",
-            "htmlFilePath": "custom-response-areas/html_disk_example.html",
-            "jsFilePath": "custom-response-areas/js_disk_example.js"
-          }
-        },
-        {
-          "id": "backtomain",
-          "reference": "MainMenu"
-        }
-      ]
-    },
-    {
       "protocolId": "checkbox",
       "pages": [
         {
@@ -800,42 +746,6 @@
               }
             ],
             "other": "Some other color"
-          }
-        },
-        {
-          "id": "advancedProtocolLogic_005",
-          "title": "Page 5",
-          "instructionText": "This page can set testFlag",
-          "responseArea": {
-            "type": "multipleChoiceResponseArea",
-            "choices": [
-              {
-                "id": "Set testFlag"
-              },
-              {
-                "id": "Do not set testFlag"
-              }
-            ]
-          },
-          "setFlags": [
-            {
-              "id": "testFlag",
-              "conditional": "result.response==='Set testFlag'"
-            }
-          ]
-        },
-        {
-          "id": "advancedProtocolLogic_006",
-          "title": "Page 3",
-          "instructionText": "If flags were set on the last page, something should be logged",
-          "responseArea": {
-            "type": "textboxResponseArea",
-            "rows": 3,
-            "responseRequired": false
-          },
-          "preProcessFunction": {
-            "filepath": "customPreprocess.js",
-            "function": "testPreprocess"
           }
         },
         {
