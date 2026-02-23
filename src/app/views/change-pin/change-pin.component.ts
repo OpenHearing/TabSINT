@@ -47,8 +47,8 @@ export class ChangePinComponent {
   save(pin: number | undefined) {
     if (pin != undefined) {
       this.logger.debug('Admin pin changed to: ' + pin.toString());
-      this.disk.pin = pin.toString();
-      this.diskModel.updateDiskModel('pin', this.disk.pin);
+      this.disk.preferences.pin = pin.toString();
+      this.diskModel.updatePreferences({ pin: this.disk.preferences.pin });
     }
     this.dialog.closeAll();
   }
@@ -58,7 +58,7 @@ export class ChangePinComponent {
   }
 
   validatePin() {
-    if (this.isValidationMode && this.pin?.toString() === this.disk.pin) {
+    if (this.isValidationMode && this.pin?.toString() === this.disk.preferences.pin) {
       this.logger.debug('Admin PIN validated successfully');
       this.pinValidated.emit(true);
       this.dialog.closeAll();

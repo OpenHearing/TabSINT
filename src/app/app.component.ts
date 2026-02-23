@@ -57,7 +57,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.app = this.appModel.getApp();
     this.protocol = this.protocolM.getProtocolModel();
     this.disk = this.diskModel.getDisk();
-    this.diskModel.updateDiskModel('numLogRows', 1);
+    this.diskModel.updateDiskModel({ numLogRows: 1 });
   }
 
   ngOnInit(): void {
@@ -82,13 +82,13 @@ export class AppComponent implements OnInit, OnDestroy {
       await firstValueFrom(
         this.notifications.alert({
           title: 'Select Documents Folder',
-          content: `Please use the Android File Chooser to select the docuements folder.`,
+          content: `Please use the Android File Chooser to select the documents folder.`,
           type: DialogType.Alert,
         })
       );
       try {
         const result = await TabsintFs.chooseFolder();
-        this.diskModel.updateDiskModel('contentURI', result.uri);
+        this.diskModel.updateDiskModel({ contentURI: result.uri });
       } catch (error) {
         this.logger.error('Error selecting folder: ' + JSON.stringify(error));
       }
@@ -102,7 +102,7 @@ export class AppComponent implements OnInit, OnDestroy {
       await this.protocolService.load(this.disk.activeProtocolMeta);
     if (this.disk.showDisclaimer || this.disk.showDisclaimer == undefined) {
       this.openDisclaimer();
-      this.diskModel.updateDiskModel('showDisclaimer', false);
+      this.diskModel.updateDiskModel({ showDisclaimer: false });
     }
     await this.devicesService.initialize();
     this.setupNetworkListener();

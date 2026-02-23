@@ -16,6 +16,7 @@ import { FormsModule } from '@angular/forms';
 import { DeviceConfigComponent } from '../config/config-views/device-config/device-config.component';
 import { NewConnectionComponent } from '../config/config-views/new-connection/new-connection.component';
 import { ConnectedDevicesComponent } from '../config/config-views/connected-devices/connected-devices.component';
+import { QRCodeModule } from 'angularx-qrcode';
 
 describe('AdminComponent', () => {
   let component: AdminComponent;
@@ -41,6 +42,7 @@ describe('AdminComponent', () => {
         MatMenuModule,
         MatExpansionModule,
         BrowserAnimationsModule,
+        QRCodeModule,
         TranslateModule.forRoot({
           loader: {
             provide: TranslateLoader,

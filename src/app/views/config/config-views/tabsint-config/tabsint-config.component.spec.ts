@@ -5,6 +5,7 @@ import { TabsintConfigComponent } from './tabsint-config.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
+import { QRCodeModule } from 'angularx-qrcode';
 
 describe('TabsintConfigComponent', () => {
   let component: TabsintConfigComponent;
@@ -17,6 +18,7 @@ describe('TabsintConfigComponent', () => {
         MatMenuModule,
         NgbModule,
         FormsModule,
+        QRCodeModule,
         TranslateModule.forRoot({
           loader: {
             provide: TranslateLoader,

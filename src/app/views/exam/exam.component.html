@@ -61,7 +61,9 @@
       </div>
     </div>
     <div *ngIf="state.examState === ExamState.Testing && currentPage?.responseArea?.type !== 'manualAudiometryResponseArea'">
-      <div class="row response-buttons" *ngIf="(disk.debugMode && disk.adminSkipMode) || currentPage?.responseArea?.enableSkip">
+      <div
+        class="row response-buttons"
+        *ngIf="(disk.preferences.debugMode && disk.preferences.adminSkipMode) || currentPage?.responseArea?.enableSkip">
         <div class="col-4">
           <button
             id="help-btn"
@@ -100,7 +102,9 @@
           </button>
         </div>
       </div>
-      <div class="row response-buttons" *ngIf="!((disk.debugMode && disk.adminSkipMode) || currentPage?.responseArea?.enableSkip)">
+      <div
+        class="row response-buttons"
+        *ngIf="!((disk.preferences.debugMode && disk.preferences.adminSkipMode) || currentPage?.responseArea?.enableSkip)">
         <div class="col-6">
           <button
             id="help-btn"

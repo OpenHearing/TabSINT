@@ -7,6 +7,7 @@ import { DiskInterface, GitlabConfigInterface } from './disk.interface';
 import { ExamResults } from '../results/results.interface';
 import { diskSchema } from '../../../schema/definitions/disk.schema';
 import { safeParse } from '../../utilities/safe-parsing';
+import { Preferences } from '../../interfaces/preferences.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -23,46 +24,22 @@ export class DiskModel {
   window: (Window & typeof globalThis) | null;
 
   disk: DiskInterface = {
-    activeProtocolMeta: diskSchema.properties.activeProtocolMeta.default,
-    adminSkipMode: diskSchema.properties.adminSkipMode.default,
-    appDeveloperMode: diskSchema.properties.appDeveloperMode.default,
-    appDeveloperModeCount: diskSchema.properties.appDeveloperModeCount.default,
-    audhere: diskSchema.properties.audhere.default,
-    autoUpload: diskSchema.properties.autoUpload.default,
-    availableProtocolsMeta: diskSchema.properties.availableProtocolsMeta.default,
-    contentURI: diskSchema.properties.contentURI.default,
-    debugMode: diskSchema.properties.debugMode.default,
-    disableAudioStreaming: diskSchema.properties.disableAudioStreaming.default,
-    disableLogs: diskSchema.properties.disableLogs.default,
-    downloadInProgress: diskSchema.properties.downloadInProgress.default,
-    externalMode: diskSchema.properties.externalMode.default,
-    gitlab: diskSchema.properties.gitlab.default,
-    gitlabConfig: diskSchema.properties.gitlabConfig.default,
-    headset: diskSchema.properties.headset.default,
-    interApp: diskSchema.properties.interApp.default,
-    language: diskSchema.properties.language.default,
-    lastReleaseCheck: diskSchema.properties.lastReleaseCheck.default,
-    mediaRepos: diskSchema.properties.mediaRepos.default,
-    maxLogRows: diskSchema.properties.maxLogRows.default,
-    numLogRows: diskSchema.properties.numLogRows.default,
-    pin: diskSchema.properties.pin.default,
-    preventExports: diskSchema.properties.preventExports.default,
-    preventUploads: diskSchema.properties.preventUploads.default,
-    reloadingBrowser: diskSchema.properties.reloadingBrowser.default,
-    requireEncryptedResults: diskSchema.properties.requireEncryptedResults.default,
-    resultsMode: diskSchema.properties.resultsMode.default,
-    server: diskSchema.properties.server.default,
-    servers: diskSchema.properties.servers.default,
-    showUploadSummary: diskSchema.properties.showUploadSummary.default,
-    showDisclaimer: diskSchema.properties.showDisclaimer.default,
-    suppressAlerts: diskSchema.properties.suppressAlerts.default,
-    tabletGain: diskSchema.properties.tabletGain.default,
-    tabletLocation: diskSchema.properties.tabletLocation.default,
-    uploadSummary: diskSchema.properties.uploadSummary.default,
-    validateProtocols: diskSchema.properties.validateProtocols.default,
-    versionCheck: diskSchema.properties.versionCheck.default,
-    savedDevices: diskSchema.properties.savedDevices.default,
-    wahtsConnectionType: diskSchema.properties.wahtsConnectionType.default,
+    activeProtocolMeta: structuredClone(diskSchema.properties.activeProtocolMeta.default),
+    appDeveloperModeCount: structuredClone(diskSchema.properties.appDeveloperModeCount.default),
+    audhere: structuredClone(diskSchema.properties.audhere.default),
+    availableProtocolsMeta: structuredClone(diskSchema.properties.availableProtocolsMeta.default),
+    contentURI: structuredClone(diskSchema.properties.contentURI.default),
+    downloadInProgress: structuredClone(diskSchema.properties.downloadInProgress.default),
+    interApp: structuredClone(diskSchema.properties.interApp.default),
+    lastReleaseCheck: structuredClone(diskSchema.properties.lastReleaseCheck.default),
+    mediaRepos: structuredClone(diskSchema.properties.mediaRepos.default),
+    numLogRows: structuredClone(diskSchema.properties.numLogRows.default),
+    reloadingBrowser: structuredClone(diskSchema.properties.reloadingBrowser.default),
+    tabletLocation: structuredClone(diskSchema.properties.tabletLocation.default),
+    uploadSummary: structuredClone(diskSchema.properties.uploadSummary.default),
+    savedDevices: structuredClone(diskSchema.properties.savedDevices.default),
+    showDisclaimer: structuredClone(diskSchema.properties.showDisclaimer.default),
+    preferences: structuredClone(diskSchema.properties.preferences.default),
   };
 
   diskSubject = new BehaviorSubject<DiskInterface>(this.disk);
@@ -107,22 +84,36 @@ export class DiskModel {
   }
 
   /**
-   * Convenience function to update disk in local storage.
-   * @summary Set key: value on the disk model, then store the disk model on local storage.
-   * @models disk
-   * @param key: key of the parameter to update on the disk model
-   * @param value: value to change the parameter to
+   * Update the disk held in local storage.
+   * @param diskPartial The partial object to update the disk with.
    */
-  updateDiskModel(key: string, value: any) {
-    if (_.has(this.disk, key)) {
-      _.set(this.disk, key, value);
-      this.storeDisk();
-    }
+  updateDiskModel(diskPartial: Partial<DiskInterface>) {
+    const updatedPartial = structuredClone(diskPartial);
+    this.disk = { ...this.disk, ...updatedPartial };
+    this.storeDisk();
+  }
+
+  /**
+   * Update the preferences held in local storage.
+   * @param preferencesPartial The partial object to update the preferences with.
+   */
+  updatePreferences(preferencesPartial: Partial<Preferences>) {
+    const updatedPartial = structuredClone(preferencesPartial);
+    this.disk.preferences = { ...this.disk.preferences, ...updatedPartial };
+    this.storeDisk();
+  }
+
+  /**
+   * Reset preferences held in local storage to the default values.
+   */
+  resetPreferences() {
+    this.disk.preferences = structuredClone(diskSchema.properties.preferences.default);
+    this.storeDisk();
   }
 
   /**
    * Update summary info that is used to display recently exported or uploaded results
-   * @summary Add result meta data to disk.uploadSumary, then store it on local storage
+   * @summary Add result meta data to disk.uploadSummary, then store it on local storage
    * @models disk
    * @param result: exam result
    */
