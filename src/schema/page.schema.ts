@@ -20,6 +20,7 @@ import { subjectIdSchema } from './response-areas/subject-id.schema';
 import { checkboxSchema } from './response-areas/checkbox.schema';
 import { CustomResponseAreaSchema } from './response-areas/custom-response-area.schema';
 import { Headset } from '../app/utilities/constants';
+import { qrCodeResponseAreaSchema } from './response-areas/qr-code.schema';
 
 export const pageSchema: JSONSchemaType<PageDefinition> = {
   $id: 'page_base',
@@ -109,6 +110,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
         mrtSchema,
         memrSchema,
         CustomResponseAreaSchema,
+        qrCodeResponseAreaSchema,
       ],
       required: ['type'],
       nullable: true,
