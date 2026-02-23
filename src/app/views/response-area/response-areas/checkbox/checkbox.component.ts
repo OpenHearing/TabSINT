@@ -118,7 +118,7 @@ export class CheckboxComponent implements OnInit, OnDestroy {
       }
     });
     if (questionContainsCorrect) {
-      this.results.currentPage.correct = !!eachCorrect.every(ele => ele === true);
+      this.results.currentPage.correct = eachCorrect.every(ele => ele === true);
       this.results.currentPage.eachCorrect = eachCorrect;
       this.results.currentPage.numberCorrect = 0;
       this.results.currentPage.numberIncorrect = 0;

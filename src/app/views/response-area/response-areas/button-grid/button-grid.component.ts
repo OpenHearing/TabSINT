@@ -139,10 +139,6 @@ export class ButtonGridComponent implements OnInit, OnDestroy {
     this.examService.submit();
   }
 
-  onEnter() {
-    this.examService.submit();
-  }
-
   buttonGridBtnClass(choice: ChoiceInterface) {
     const options = {
       feedback: this.submitted ? this.feedback : undefined,

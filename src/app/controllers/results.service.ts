@@ -121,7 +121,6 @@ export class ResultsService {
    * @param response Response for the current page.
    */
   pushResults(currentPageResults: CurrentResults) {
-    console.log('currentPageResults', currentPageResults);
     this.resultsModel.pushResponse(currentPageResults);
   }
 
