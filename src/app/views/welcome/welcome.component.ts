@@ -68,7 +68,7 @@ export class WelcomeComponent implements OnInit, OnDestroy {
    * Scan the configuration QR code and adjust the preferences.
    */
   async scanQrCodeandAutoConfig() {
-    const preferences = await this.qrService.scan(preferencesSchema);
+    const preferences = await this.qrService.validatedScan(preferencesSchema);
     if (preferences) {
       this.diskModel.updatePreferences(preferences);
       this.notifications.alert({

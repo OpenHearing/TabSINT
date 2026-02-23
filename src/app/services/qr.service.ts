@@ -28,13 +28,33 @@ export class QrService {
   }
 
   /**
+   * Scan a QR code.
+   *
+   * @returns The scanned data or undefined.
+   */
+  async scan(): Promise<string | undefined> {
+    try {
+      const scanResults = await CapacitorBarcodeScanner.scanBarcode({
+        hint: CapacitorBarcodeScannerTypeHint.QR_CODE,
+        scanInstructions: 'Scan QR Code',
+        scanText: 'Scan QR Code',
+        android: { scanningLibrary: CapacitorBarcodeScannerAndroidScanningLibrary.MLKIT },
+      });
+      return scanResults.ScanResult;
+    } catch (err) {
+      this.logger.error('Error scanning the QR code', err);
+      return undefined;
+    }
+  }
+
+  /**
    * Scan a QR code based on the provided schema.
    * If the QR code cannot be validated against the schema an undefined response is returned.
    *
    * @param schema The schema to validate the scanned data against.
    * @returns The scanned data in the specified schema format or undefined.
    */
-  async scan<T>(schema: JSONSchemaType<T>): Promise<T | undefined> {
+  async validatedScan<T>(schema: JSONSchemaType<T>): Promise<T | undefined> {
     try {
       const scanResults = await CapacitorBarcodeScanner.scanBarcode({
         hint: CapacitorBarcodeScannerTypeHint.QR_CODE,

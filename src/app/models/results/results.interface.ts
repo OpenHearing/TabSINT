@@ -42,4 +42,5 @@ export interface ExamResults {
   hostMetadata: IDeviceMetadata;
   devices: string[];
   flags: FlagsInterface;
+  qrString?: string;
 }

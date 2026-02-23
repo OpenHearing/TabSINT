@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     unzip=6.0-28ubuntu4.1 \
     build-essential=12.10ubuntu1 \
     lib32z1=1:1.3.dfsg-3.1ubuntu2.1 \
-    lib32stdc++6=14.2.0-4ubuntu2~24.04 \
+    lib32stdc++6=14.2.0-4ubuntu2~24.04.1 \
     subversion=1.14.3-1build4 \
     && rm -rf /var/lib/apt/lists/*
 
