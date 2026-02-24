@@ -6,6 +6,7 @@ import { ProtocolErrorInterface } from '../../interfaces/protocol-error.interfac
 import { ProtocolSchemaInterface } from '../../interfaces/protocol-schema.interface';
 import { Headset, ProtocolServer } from '../../utilities/constants';
 import { GitlabConfigInterface } from '../disk/disk.interface';
+import { ProtocolStack } from './protocol-stack';
 
 export interface ProtocolMetaInterface {
   group?: string;
@@ -22,6 +23,7 @@ export interface ProtocolMetaInterface {
 
 export interface ProtocolModelInterface {
   activeProtocol?: ProtocolInterface;
+  activeProtocolStack: ProtocolStack;
   activeProtocolDictionary?: ProtocolDictionary;
   activeProtocolFollowOnsDictionary?: FollowOnsDictionary;
 }

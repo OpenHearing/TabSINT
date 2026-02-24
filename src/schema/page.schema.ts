@@ -120,6 +120,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
     submitText: { type: 'string', nullable: true },
     followOns: { type: 'array', items: followOnSchema, nullable: true },
     setFlags: { type: 'array', items: setFlagSchema, nullable: true },
+    progressBarVal: { type: ['string', 'number'], nullable: true },
   },
   required: ['id'],
   additionalProperties: true,

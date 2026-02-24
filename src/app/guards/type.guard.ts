@@ -8,7 +8,7 @@ export function isProtocolSchemaInterface(page: PageTypes): page is ProtocolSche
 }
 
 export function isPageDefinition(page: PageTypes): page is PageDefinition {
-  return (page as PageDefinition).id !== undefined;
+  return (page as ProtocolReferenceInterface).reference === undefined && (page as PageDefinition).id !== undefined;
 }
 
 export function isProtocolReferenceInterface(page: PageTypes): page is ProtocolReferenceInterface {

@@ -11,7 +11,6 @@ export interface PageInterface extends PageDefinition {
   isSubmittable?: boolean;
   isAutoSubmit?: boolean;
   canGoBack?: boolean;
-  subtitle?: string;
   loadingRequired?: boolean;
   loadingActive?: boolean;
 }

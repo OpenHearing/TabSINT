@@ -15,7 +15,6 @@ export class StateModel {
     doesResponseExist: false,
     isResponseRequired: false,
     isSubmittable: true,
-    examIndex: 0,
     canGoBack: () => {},
     isPaneOpen: {
       general: true,
@@ -31,12 +30,7 @@ export class StateModel {
       completedExams: true,
       exportedAndUploadedResults: true,
     },
-    examProgress: {
-      //not implemented
-      pctProgress: 1,
-      anticipatedProtocols: [],
-      activatedProtocols: [],
-    },
+    examProgress: 0,
     bluetoothConnected: false,
     wifiConnected: false,
   };

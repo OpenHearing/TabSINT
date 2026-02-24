@@ -89,7 +89,6 @@ describe('ProtocolService', () => {
     await protocolService.load(protocolService.disk.availableProtocolsMeta['develop']);
     expect(protocolService.protocolModel.activeProtocolDictionary).toBeDefined();
     expect(protocolService.protocolModel.activeProtocolFollowOnsDictionary).toBeDefined();
-    expect(protocolService.state.examIndex).toEqual(0);
     expect(protocolService.state.examState).toEqual(2);
   });
 

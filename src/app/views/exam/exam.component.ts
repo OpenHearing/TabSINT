@@ -76,6 +76,10 @@ export class ExamComponent implements OnInit, OnDestroy {
     this.stateSubscription?.unsubscribe();
   }
 
+  isString(data: unknown): boolean {
+    return typeof data === 'string';
+  }
+
   begin() {
     this.examService.begin();
   }
