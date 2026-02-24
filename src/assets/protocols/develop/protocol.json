@@ -69,6 +69,9 @@
                 "id": "Checkbox"
               },
               {
+                "id": "Button Grid"
+              },
+              {
                 "id": "Image"
               },
               {
@@ -79,6 +82,9 @@
               },
               {
                 "id": "Custom Response Area"
+              },
+              {
+                "id": "Scan QR Code"
               },
               {
                 "id": "End All"
@@ -177,6 +183,12 @@
               }
             },
             {
+              "conditional": "result.response=='Button Grid'",
+              "target": {
+                "reference": "buttonGrid"
+              }
+            },
+            {
               "conditional": "result.response=='Image'",
               "target": {
                 "reference": "image"
@@ -198,6 +210,12 @@
               "conditional": "result.response=='Custom Response Area'",
               "target": {
                 "reference": "customResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='Scan QR Code'",
+              "target": {
+                "reference": "qrCodeResponseArea"
               }
             },
             {
@@ -711,7 +729,7 @@
           "setFlags": [
             {
               "id": "testFlag",
-              "conditional":"result.response==='Set testFlag'"
+              "conditional": "result.response==='Set testFlag'"
             }
           ]
         },
@@ -725,8 +743,8 @@
             "responseRequired": false
           },
           "preProcessFunction": {
-            "filepath":"customPreprocess.js", 
-            "function":"testPreprocess"
+            "filepath": "customPreprocess.js",
+            "function": "testPreprocess"
           }
         },
         {
@@ -739,8 +757,8 @@
       "protocolId": "checkbox",
       "pages": [
         {
-          "id": "checkbox",
-          "title": "Checkbox",
+          "id": "checkbox1",
+          "title": "Checkbox without grading",
           "responseArea": {
             "type": "checkboxResponseArea",
             "choices": [
@@ -755,6 +773,194 @@
               }
             ],
             "other": "Some other color"
+          }
+        },
+        {
+          "id": "checkbox2",
+          "title": "Checkbox with markCorrect",
+          "responseArea": {
+            "type": "checkboxResponseArea",
+            "buttonScheme": "markCorrect",
+            "choices": [
+              {
+                "id": "One",
+                "correct": true
+              },
+              {
+                "id": "Two"
+              },
+              {
+                "id": "Three"
+              }
+            ]
+          }
+        },
+        {
+          "id": "checkbox3",
+          "title": "Checkbox with markIncorrect",
+          "responseArea": {
+            "type": "checkboxResponseArea",
+            "buttonScheme": "markIncorrect",
+            "choices": [
+              {
+                "id": "One",
+                "correct": true
+              },
+              {
+                "id": "Two"
+              },
+              {
+                "id": "Three"
+              }
+            ]
+          }
+        },
+        {
+          "id": "checkbox4",
+          "title": "Checkbox with gradeResponse",
+          "responseArea": {
+            "type": "checkboxResponseArea",
+            "feedback": "gradeResponse",
+            "choices": [
+              {
+                "id": "One",
+                "correct": true
+              },
+              {
+                "id": "Two"
+              },
+              {
+                "id": "Three"
+              }
+            ]
+          }
+        },
+        {
+          "id": "checkbox5",
+          "title": "Checkbox with showCorrect",
+          "responseArea": {
+            "type": "checkboxResponseArea",
+            "feedback": "showCorrect",
+            "choices": [
+              {
+                "id": "One"
+              },
+              {
+                "id": "Two",
+                "correct": true
+              },
+              {
+                "id": "Three"
+              }
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "buttonGrid",
+      "pages": [
+        {
+          "id": "buttonGrid1",
+          "title": "Button Grid",
+          "responseArea": {
+            "type": "buttonGridResponseArea",
+            "rows": [
+              {
+                "choices":[
+                  {
+                    "id":"One",
+                    "correct": true
+                  },
+                  {
+                    "id":"Two"
+                  },
+                  {
+                    "id":"Three"
+                  }
+                ]
+              },
+              {
+                "choices": [
+                  {
+                    "id":"Four"
+                  },
+                  {
+                    "id":"Five"
+                  },
+                  {
+                    "id":"Six"
+                  }
+                ]
+              },
+              {
+                "choices": [
+                  {
+                    "id":"Seven"
+                  },
+                  {
+                    "id":"Eight"
+                  },
+                  {
+                    "id":"Nine"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "buttonGrid2",
+          "title": "Button Grid with grade response",
+          "responseArea": {
+            "type": "buttonGridResponseArea",
+            "feedback": "gradeResponse",
+            "rows": [
+              {
+                "choices":[
+                  {
+                    "id":"1",
+                    "correct": true
+                  },
+                  {
+                    "id":"2"
+                  },
+                  {
+                    "id":"3"
+                  }
+                ]
+              },
+              {
+                "choices": [
+                  {
+                    "id":"4"
+                  },
+                  {
+                    "id":"5"
+                  },
+                  {
+                    "id":"6"
+                  }
+                ]
+              },
+              {
+                "choices": [
+                  {
+                    "id":"7"
+                  },
+                  {
+                    "id":"8"
+                  },
+                  {
+                    "id":"9"
+                  }
+                ]
+              }
+            ]
           }
         },
         {
@@ -846,6 +1052,26 @@
             "type": "customResponseArea",
             "htmlFilePath": "custom-response-areas/html_disk_example.html",
             "jsFilePath": "custom-response-areas/js_disk_example.js"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "qrCodeResponseArea",
+      "pages": [
+        {
+          "id": "qrCodeResponseArea",
+          "title": "QR Code Scanning",
+          "questionMainText": "Example of scanning a QR Code",
+          "questionSubText": "Scan a QR code",
+          "isAutoSubmit": false,
+          "responseArea": {
+            "type": "qrCodeResponseArea",
+            "scope": "page"
           }
         },
         {

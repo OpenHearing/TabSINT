@@ -1,0 +1,11 @@
+<div style="width: 100%;">
+  <table style="width: 100%;">
+    <tr *ngFor="let row of rows; let i = index" class="button-grid">
+      <button *ngFor="let choice of row.choices; let j = index"
+        [class]="buttonGridBtnClass(choice)"
+        [ngStyle]="{'font-size':choice.fontSize,'background':(choice.backgroundColor)||(choice.disable&&'#cccccc'),'color':(choice.textColor)||(choice.disable&&'#666666')}" 
+        (click)="choiceSelected(choice.id)"> {{choice.text}} 
+      </button>
+    </tr>
+  </table>
+</div>

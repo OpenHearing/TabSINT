@@ -64,6 +64,7 @@ import { ExamTestingComponent } from './views/exam-testing/exam-testing.componen
 import { ExamFinalizedComponent } from './views/exam-finalized/exam-finalized.component';
 import { ResponseAreaComponent } from './views/response-area/response-area.component';
 import { TextboxComponent } from './views/response-area/response-areas/textbox/textbox.component';
+import { QrCodeResponseAreaComponent } from './views/response-area/response-areas/qr-code/qr-code.component';
 import { TextboxResultViewerComponent } from './views/response-area/response-areas/textbox-result-viewer/textbox-result-viewer.component';
 import { MultipleChoiceComponent } from './views/response-area/response-areas/multiple-choice/multiple-choice.component';
 import { SingleResultModalComponent } from './views/single-result-modal/single-result-modal/single-result-modal.component';
@@ -100,6 +101,7 @@ import { InputParametersComponent } from './views/response-area/response-areas/s
 import { NetworkService } from './controllers/network.service';
 import { SubjectIdComponent } from './views/response-area/response-areas/subject-id/subject-id.component';
 import { CheckboxComponent } from './views/response-area/response-areas/checkbox/checkbox.component';
+import { ButtonGridComponent } from './views/response-area/response-areas/button-grid/button-grid.component';
 import { QrService } from './services/qr.service';
 import { QRCodeModule } from 'angularx-qrcode';
 
@@ -128,8 +130,10 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     ExamFinalizedComponent,
     ResponseAreaComponent,
     TextboxComponent,
+    QrCodeResponseAreaComponent,
     SubjectIdComponent,
     CheckboxComponent,
+    ButtonGridComponent,
     LikertComponent,
     TextboxResultViewerComponent,
     MultipleChoiceComponent,
