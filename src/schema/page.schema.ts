@@ -20,6 +20,7 @@ import { subjectIdSchema } from './response-areas/subject-id.schema';
 import { checkboxSchema } from './response-areas/checkbox.schema';
 import { CustomResponseAreaSchema } from './response-areas/custom-response-area.schema';
 import { Headset } from '../app/utilities/constants';
+import { buttonGridSchema } from './response-areas/button-grid.schema';
 import { qrCodeResponseAreaSchema } from './response-areas/qr-code.schema';
 
 export const pageSchema: JSONSchemaType<PageDefinition> = {
@@ -99,6 +100,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
         textBoxResultViewerSchema,
         subjectIdSchema,
         checkboxSchema,
+        buttonGridSchema,
         multipleChoiceSchema,
         multipleInputSchema,
         manualAudiometrySchema,

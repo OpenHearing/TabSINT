@@ -19,6 +19,7 @@ import { DialogType, ExamState, AppState } from '../utilities/constants';
 import { Notifications } from '../services/notifications.service';
 import { Logger } from '../services/logger.service';
 import { calculateElapsedTime, checkForSpecialReference, getDefaultResponseRequired } from '../utilities/exam-helper-functions';
+import { ChoiceInterface } from '../interfaces/choice.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -91,6 +92,7 @@ export class ExamService {
     this.resultsService.initializeExamResults();
     this.startPage();
     this.stateModel.updateState({ examState: ExamState.Testing });
+    this.submit = this.submitDefault;
   }
 
   /** Default submit function for exam pages.
@@ -98,6 +100,8 @@ export class ExamService {
    * @models results, state
    */
   submitDefault() {
+    this.gradeResponses();
+    this.gradeResponses = this.gradeResponsesDefault;
     this.resultsService.pushResults(this.results.currentPage);
     this.advancePage();
     this.submit = this.submitDefault;
@@ -108,6 +112,25 @@ export class ExamService {
    */
   submit() {
     this.submitDefault();
+  }
+
+  gradeResponsesDefault() {
+    this.results.currentPage.correct = undefined;
+    const choices: ChoiceInterface[] | undefined = (this.results.currentPage?.page?.responseArea as any)?.choices;
+    if (choices) {
+      choices.forEach((choice: ChoiceInterface) => {
+        if (choice?.correct && JSON.stringify(this.results.currentPage.response.selected) === JSON.stringify([choice.id])) {
+          this.results.currentPage.correct = true;
+        }
+        if (choice?.correct && this.results.currentPage.correct === undefined) {
+          this.results.currentPage.correct = false;
+        }
+      });
+    }
+  }
+
+  gradeResponses() {
+    this.gradeResponsesDefault();
   }
 
   skipDefault() {
@@ -141,6 +164,8 @@ export class ExamService {
    * Default submit partial function for exam pages.
    */
   submitPartialDefault() {
+    this.gradeResponses();
+    this.gradeResponses = this.gradeResponsesDefault;
     this.resultsService.pushResults(this.results.currentPage);
     this.submit = this.submitDefault;
     this.endExam();

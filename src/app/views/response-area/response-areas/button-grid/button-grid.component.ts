@@ -2,23 +2,25 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ResultsInterface } from '../../../../models/results/results.interface';
 import { PageInterface } from '../../../../models/page/page.interface';
-import { CheckboxInterface } from './checkbox.interface';
+import { ButtonGridInterface } from './button-grid.interface';
 import { ResultsModel } from '../../../../models/results/results-model.service';
 import { PageModel } from '../../../../models/page/page.service';
-import { checkboxSchema } from '../../../../../schema/response-areas/checkbox.schema';
+import { buttonGridSchema } from '../../../../../schema/response-areas/button-grid.schema';
 import { StateInterface } from '../../../../models/state/state.interface';
 import { StateModel } from '../../../../models/state/state.service';
 import { ExamService } from '../../../../controllers/exam.service';
 import { ChoiceInterface } from '../../../../interfaces/choice.interface';
 import { Logger } from '../../../../services/logger.service';
+import { RowInterface } from '../../../../interfaces/row.interface';
+import { choiceSchema } from '../../../../../schema/definitions/choice.schema';
 import { choiceBtnClassHelper } from '../../../../utilities/response-area-helper-functions';
 
 @Component({
-  selector: 'app-checkbox',
-  templateUrl: './checkbox.component.html',
-  styleUrl: './checkbox.component.css',
+  selector: 'app-button-grid',
+  templateUrl: './button-grid.component.html',
+  styleUrl: './button-grid.component.css',
 })
-export class CheckboxComponent implements OnInit, OnDestroy {
+export class ButtonGridComponent implements OnInit, OnDestroy {
   private readonly examService = inject(ExamService);
   private readonly resultsModel = inject(ResultsModel);
   private readonly pageModel = inject(PageModel);
@@ -27,12 +29,12 @@ export class CheckboxComponent implements OnInit, OnDestroy {
 
   results: ResultsInterface;
   state: StateInterface;
-  choices: ChoiceInterface[];
-  buttonScheme: string;
+  rows: RowInterface[];
   feedback: string;
-  other: string | undefined;
   verticalSpacing: number;
-  otherSelected: boolean = false;
+  horizontalSpacing: number;
+  delayEnable: number;
+  choices: ChoiceInterface[] = [];
   submitted = false;
 
   pageSubscription: Subscription | undefined;
@@ -42,10 +44,11 @@ export class CheckboxComponent implements OnInit, OnDestroy {
   constructor() {
     this.results = this.resultsModel.getResults();
     this.state = this.stateModel.getState();
-    this.choices = checkboxSchema.properties.choices.default;
-    this.buttonScheme = checkboxSchema.properties.buttonScheme.default;
-    this.feedback = checkboxSchema.properties.feedback.default;
-    this.verticalSpacing = checkboxSchema.properties.verticalSpacing.default;
+    this.rows = buttonGridSchema.properties.rows.default;
+    this.feedback = buttonGridSchema.properties.feedback.default;
+    this.verticalSpacing = buttonGridSchema.properties.verticalSpacing.default;
+    this.horizontalSpacing = buttonGridSchema.properties.horizontalSpacing.default;
+    this.delayEnable = buttonGridSchema.properties.delayEnable.default;
   }
 
   ngOnInit(): void {
@@ -61,31 +64,34 @@ export class CheckboxComponent implements OnInit, OnDestroy {
       }
     });
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
-      if (updatedPage?.responseArea?.type === 'checkboxResponseArea') {
-        const updatedCheckboxResponseArea = updatedPage.responseArea as CheckboxInterface;
-        if (updatedCheckboxResponseArea) {
-          this.choices = updatedCheckboxResponseArea.choices;
-          this.choices.forEach(choice => {
-            choice.text = choice.text ?? choice.id;
-          });
-          this.buttonScheme = updatedCheckboxResponseArea.buttonScheme ?? checkboxSchema.properties.buttonScheme.default;
-          this.feedback = updatedCheckboxResponseArea.feedback ?? checkboxSchema.properties.feedback.default;
-          this.verticalSpacing = updatedCheckboxResponseArea.verticalSpacing ?? checkboxSchema.properties.verticalSpacing.default;
-          this.other = updatedCheckboxResponseArea?.other;
-          if (this.other) {
-            this.choices.push({
-              id: 'Other',
-              text: this.other ?? 'Other',
+      if (updatedPage?.responseArea?.type === 'buttonGridResponseArea') {
+        const updatedButtonGridResponseArea = updatedPage.responseArea as ButtonGridInterface;
+        if (updatedButtonGridResponseArea) {
+          this.rows = updatedButtonGridResponseArea.rows;
+          // Fill in defaults for choices of each row
+          this.choices = [];
+          this.rows.forEach(row => {
+            row.choices.forEach(choice => {
+              choice.text = choice.text ?? choice.id;
+              choice.correct = choice.correct ?? choiceSchema.properties.correct.default;
+              choice.disable = choice.disable ?? choiceSchema.properties.disable.default;
+              choice.textColor = choice.textColor ?? choiceSchema.properties.textColor.default;
+              choice.backgroundColor = choice.backgroundColor ?? choiceSchema.properties.backgroundColor.default;
+              choice.fontSize = choice.fontSize ?? choiceSchema.properties.fontSize.default;
+              this.choices.push(choice);
             });
-            this.results.currentPage.response.other = '';
-          }
+          });
+          this.feedback = updatedButtonGridResponseArea.feedback ?? this.feedback;
+          this.verticalSpacing = updatedButtonGridResponseArea.verticalSpacing ?? this.verticalSpacing;
+          this.horizontalSpacing = updatedButtonGridResponseArea.horizontalSpacing ?? this.horizontalSpacing;
+          this.horizontalSpacing = updatedButtonGridResponseArea.horizontalSpacing ?? this.horizontalSpacing;
+          this.delayEnable = updatedButtonGridResponseArea.delayEnable ?? this.delayEnable;
 
-          // Overwrite the gradeResponses default
-          this.examService.gradeResponses = this.gradeResponses.bind(this);
-
-          // Allow for 1250ms delay if feedback is present
-          if (this.feedback) {
-            setTimeout(() => {
+          // delay 100ms to allow results and exam defaults to be set before we override them
+          setTimeout(() => {
+            (this.results.currentPage.page.responseArea as ButtonGridInterface).choices = this.choices;
+            // Allow for 1250ms delay if feedback is present
+            if (this.feedback) {
               this.examService.submit = () => {
                 this.submitted = true;
                 setTimeout(() => {
@@ -94,47 +100,11 @@ export class CheckboxComponent implements OnInit, OnDestroy {
                   this.submitted = false;
                 }, 1250);
               };
-            }, 100);
-          }
+            }
+          }, 100);
         }
       }
     });
-  }
-
-  gradeResponses() {
-    this.results.currentPage.correct = undefined;
-    this.results.currentPage.eachCorrect = undefined;
-
-    const eachCorrect: boolean[] = [];
-    let questionContainsCorrect = false;
-
-    const choices: ChoiceInterface[] = (this.results.currentPage?.page?.responseArea as any).choices;
-    choices.forEach((choice: ChoiceInterface) => {
-      if (choice?.correct) {
-        questionContainsCorrect = true;
-        eachCorrect.push(this.results.currentPage.response.selected.includes(choice.id));
-      } else {
-        eachCorrect.push(!this.results.currentPage.response.selected.includes(choice.id));
-      }
-    });
-    if (questionContainsCorrect) {
-      this.results.currentPage.correct = eachCorrect.every(ele => ele === true);
-      this.results.currentPage.eachCorrect = eachCorrect;
-      this.results.currentPage.numberCorrect = 0;
-      this.results.currentPage.numberIncorrect = 0;
-
-      eachCorrect.forEach((ele: boolean) => {
-        if (ele) {
-          this.results.currentPage.numberCorrect! += 1;
-        } else {
-          this.results.currentPage.numberIncorrect! += 1;
-        }
-      });
-    } else {
-      this.results.currentPage.correct = undefined;
-      this.results.currentPage.numberIncorrect = undefined;
-      this.results.currentPage.numberCorrect = undefined;
-    }
   }
 
   ngOnDestroy(): void {
@@ -149,10 +119,6 @@ export class CheckboxComponent implements OnInit, OnDestroy {
   }
 
   choiceSelected(id: string) {
-    // Handle the other case
-    if (id === 'Other') {
-      this.toggleOther();
-    }
     // Remove element if already selected, else add element to selected
     if (this.results.currentPage.response.selected.includes(id)) {
       const index = this.results.currentPage.response.selected.indexOf(id);
@@ -170,23 +136,11 @@ export class CheckboxComponent implements OnInit, OnDestroy {
       this.stateModel.updateState({ doesResponseExist: false });
     }
     this.stateModel.setPageSubmittable();
-  }
-
-  toggleOther() {
-    this.otherSelected = !this.otherSelected;
-    // Clear the other field if it was toggled off
-    if (!this.otherSelected) {
-      this.results.currentPage.response.other = '';
-    }
-  }
-
-  onEnter() {
     this.examService.submit();
   }
 
-  checkboxBtnClass(choice: ChoiceInterface) {
+  buttonGridBtnClass(choice: ChoiceInterface) {
     const options = {
-      buttonScheme: this.buttonScheme,
       feedback: this.submitted ? this.feedback : undefined,
     };
     return choiceBtnClassHelper(choice, this.results.currentPage.response, options);

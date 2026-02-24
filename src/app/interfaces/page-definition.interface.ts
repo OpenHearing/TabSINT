@@ -16,6 +16,7 @@ import { SubjectIdInterface } from '../views/response-area/response-areas/subjec
 import { CheckboxInterface } from '../views/response-area/response-areas/checkbox/checkbox.interface';
 import { PreProcessFunctionInterface } from './preProcessFunction.interface';
 import { Headset, PlaybackMethod, WavfileWeighting } from '../utilities/constants';
+import { ButtonGridInterface } from '../views/response-area/response-areas/button-grid/button-grid.interface';
 import { QrCodeResponseAreaInterface } from '../views/response-area/response-areas/qr-code/qr-code.interface';
 
 export interface PageDefinition {
@@ -116,6 +117,7 @@ export type ResponseArea =
   | TextBoxResultViewerInterface
   | SubjectIdInterface
   | CheckboxInterface
+  | ButtonGridInterface
   | MultipleChoiceInterface
   | ManualAudiometryInterface
   | CalibrationExamInterface
