@@ -81,6 +81,9 @@
                 "id": "Custom Response Area"
               },
               {
+                "id": "Scan QR Code"
+              },
+              {
                 "id": "End All"
               }
             ]
@@ -198,6 +201,12 @@
               "conditional": "result.response=='Custom Response Area'",
               "target": {
                 "reference": "customResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='Scan QR Code'",
+              "target": {
+                "reference": "qrCodeResponseArea"
               }
             },
             {
@@ -711,7 +720,7 @@
           "setFlags": [
             {
               "id": "testFlag",
-              "conditional":"result.response==='Set testFlag'"
+              "conditional": "result.response==='Set testFlag'"
             }
           ]
         },
@@ -725,8 +734,8 @@
             "responseRequired": false
           },
           "preProcessFunction": {
-            "filepath":"customPreprocess.js", 
-            "function":"testPreprocess"
+            "filepath": "customPreprocess.js",
+            "function": "testPreprocess"
           }
         },
         {
@@ -1013,6 +1022,26 @@
             "type": "customResponseArea",
             "htmlFilePath": "custom-response-areas/html_disk_example.html",
             "jsFilePath": "custom-response-areas/js_disk_example.js"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "qrCodeResponseArea",
+      "pages": [
+        {
+          "id": "qrCodeResponseArea",
+          "title": "QR Code Scanning",
+          "questionMainText": "Example of scanning a QR Code",
+          "questionSubText": "Scan a QR code",
+          "isAutoSubmit": false,
+          "responseArea": {
+            "type": "qrCodeResponseArea",
+            "scope": "page"
           }
         },
         {
