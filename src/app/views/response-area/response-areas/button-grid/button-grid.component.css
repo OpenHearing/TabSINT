@@ -1,0 +1,9 @@
+.button-grid {
+    display: flex; /* Forces buttons into a single row */
+    align-items: center;     /* Centers vertically */
+    width: 100%; /* Ensures the container uses the full available width */
+    justify-content: space-evenly; /* or space-between, space-evenly, center depending on desired spacing */
+    gap: 10px; /* Adds a consistent gap between the buttons (modern approach) */
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
