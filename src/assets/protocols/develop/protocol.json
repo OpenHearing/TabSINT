@@ -995,7 +995,7 @@
           }
         },
         {
-          "id": "customResponseArea",
+          "id": "customResponseArea2",
           "title": "Multi Page Example",
           "isAutoSubmit": false,
           "responseArea": {
@@ -1005,7 +1005,7 @@
           }
         },
         {
-          "id": "customResponseArea",
+          "id": "customResponseArea3",
           "title": "Reading and Writing Files Example",
           "isAutoSubmit": false,
           "responseArea": {
@@ -1015,7 +1015,7 @@
           }
         },
         {
-          "id": "customResponseArea",
+          "id": "customResponseArea4",
           "title": "Page and Disk Variables",
           "isAutoSubmit": false,
           "responseArea": {
