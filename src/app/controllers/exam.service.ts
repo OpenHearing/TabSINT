@@ -464,7 +464,7 @@ export class ExamService {
 
   /**
    * Determine the current exam progress based on the page index in the page stack.
-   * The active page is included in the process count.
+   * The active page is included in the progress count.
    *
    * @returns The progress percentage as a number from 0 to 100 or the user defined number/string.
    */
