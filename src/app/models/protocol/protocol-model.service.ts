@@ -14,12 +14,4 @@ export class ProtocolModel {
   getProtocolModel(): ProtocolModelInterface {
     return this.protocolModel;
   }
-
-  /**
-   * Get a clone of the current protocol stack.
-   * @returns The cloned protocol stack.
-   */
-  getProtocolStack(): ProtocolStack {
-    return structuredClone(this.protocolModel.activeProtocolStack);
-  }
 }
