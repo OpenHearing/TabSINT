@@ -55,9 +55,9 @@ export class ExamService {
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
       this.results = updatedResults;
     });
-    this.protocolModel.protocolModel.activeProtocolStack.latestProtocolObservable.subscribe(latestStackItem =>
-      this.updateExamProgress(latestStackItem)
-    );
+    this.protocolModel.getProtocolModel().activeProtocolStack.latestProtocolObservable.subscribe(latestStackItem => {
+      this.updateExamProgress(latestStackItem);
+    });
   }
 
   /** Switches to exam view.
