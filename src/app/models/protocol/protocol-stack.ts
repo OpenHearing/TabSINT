@@ -42,8 +42,8 @@ export class ProtocolStack {
     const item: ProtocolStackItem = {
       protocolId: protocolCopy.protocolId ?? '',
       startTime: new Date(),
-      maxSeconds: protocol.timeout?.nMaxSeconds ?? Number.MAX_SAFE_INTEGER,
-      maxPages: protocol.timeout?.nMaxPages ?? protocolCopy.pages.length,
+      maxSeconds: protocolCopy.timeout?.nMaxSeconds ?? Number.MAX_SAFE_INTEGER,
+      maxPages: protocolCopy.timeout?.nMaxPages ?? protocolCopy.pages.length,
       pageQueue: protocolCopy.pages,
       pageIndex: -1,
     };
