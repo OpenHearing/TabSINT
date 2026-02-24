@@ -1,11 +1,11 @@
 import _ from 'lodash';
 import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
 import { ProtocolInterface } from '../models/protocol/protocol.interface';
-import { FollowOnInterface, PageDefinition } from '../interfaces/page-definition.interface';
+import { FollowOnInterface, PageInterface } from '../interfaces/page-definition.interface';
 import { LoadingProtocolInterface } from '../interfaces/loading-protocol-object.interface';
 import { ProtocolDictionary } from '../interfaces/protocol-dictionary';
 import { FollowOnsDictionary } from '../interfaces/follow-ons-dictionary';
-import { isPageDefinition, isProtocolReferenceInterface, isProtocolSchemaInterface } from '../guards/type.guard';
+import { isPageInterface, isProtocolReferenceInterface, isProtocolSchemaInterface } from '../guards/type.guard';
 import { PageTypes } from '../types/custom-types';
 import { loadMrtExamCsv } from './load-mrt-exam-csv';
 import { loadSweptDPOAENormativeData, loadWAINormativeData } from './load-normative-data-xlsx';
@@ -65,20 +65,20 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
         await processSubProtocol(page);
         // } else if (isProtocolReferenceInterface(page)) {
         // processPage(page as ProtocolReferenceInterface);
-      } else if (isPageDefinition(page)) {
+      } else if (isPageInterface(page)) {
         await processPage(page);
       }
     }
   }
 
-  async function processPage(page: PageDefinition) {
+  async function processPage(page: PageInterface) {
     if (page.preProcessFunction) {
       page.preProcessFunction.js = await loadFile(page.preProcessFunction.filepath, loading.meta);
     }
 
     updatePageWavProperties(page);
 
-    if (isPageDefinition(page) && page.image) {
+    if (isPageInterface(page) && page.image) {
       page.image.b64 = await readImageFileAsBytes(loading, page.image.path);
     }
 
@@ -135,7 +135,7 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
    * Process the data from a calibration file add properties to the wav file object held in the page.
    * @param page The page with wav files to be processed and updated.
    */
-  function updatePageWavProperties(page: PageDefinition): void {
+  function updatePageWavProperties(page: PageInterface): void {
     for (const wavfile of page.wavfiles ?? []) {
       // Determine if a common calibration is available or if a custom calibration is available
       const missingCommonMediaRepo = !rootProtocol.commonRepo || !rootProtocol.cCommon;
@@ -165,7 +165,7 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
   }
 
   function getId(target: PageTypes): string {
-    if (isPageDefinition(target)) {
+    if (isPageInterface(target)) {
       return target.id;
     } else if (isProtocolSchemaInterface(target)) {
       return target.protocolId!;

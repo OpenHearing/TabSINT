@@ -8,10 +8,8 @@ import { DiskModel } from '../../models/disk/disk.service';
 import { StateModel } from '../../models/state/state.service';
 import { ExamService } from '../../controllers/exam.service';
 import { AppState, ExamState } from '../../utilities/constants';
-import { PageInterface } from '../../models/page/page.interface';
-import { PageModel } from '../../models/page/page.service';
+import { PageInterface } from '../../interfaces/page-definition.interface';
 import { ButtonTextService } from '../../controllers/button-text.service';
-
 @Component({
   selector: 'exam-view',
   templateUrl: './exam.component.html',
@@ -24,7 +22,7 @@ export class ExamComponent implements OnInit, OnDestroy {
 
   // Models
   disk: DiskInterface;
-  currentPage: PageInterface;
+  currentPage?: PageInterface;
   state: StateInterface;
   ExamState = ExamState;
 
@@ -41,12 +39,10 @@ export class ExamComponent implements OnInit, OnDestroy {
     private readonly examService: ExamService,
     private readonly diskModel: DiskModel,
     private readonly stateModel: StateModel,
-    private readonly pageModel: PageModel,
     private readonly buttonTextService: ButtonTextService
   ) {
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();
-    this.currentPage = this.pageModel.getPage();
   }
 
   ngOnInit(): void {
@@ -54,7 +50,7 @@ export class ExamComponent implements OnInit, OnDestroy {
     this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
     });
-    this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
+    this.pageSubscription = this.examService.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       this.currentPage = updatedPage;
     });
     this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
@@ -74,6 +70,10 @@ export class ExamComponent implements OnInit, OnDestroy {
     this.pageSubscription?.unsubscribe();
     this.buttonTextSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();
+  }
+
+  isString(data: unknown): boolean {
+    return typeof data === 'string';
   }
 
   begin() {

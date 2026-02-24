@@ -3,11 +3,10 @@ import { Subscription } from 'rxjs';
 import { ResultsInterface } from '../../../../models/results/results.interface';
 import { ProtocolModelInterface } from '../../../../models/protocol/protocol.interface';
 import { StateInterface } from '../../../../models/state/state.interface';
-import { PageInterface } from '../../../../models/page/page.interface';
+import { PageInterface } from '../../../../interfaces/page-definition.interface';
 import { ResultsModel } from '../../../../models/results/results-model.service';
 import { ProtocolModel } from '../../../../models/protocol/protocol-model.service';
 import { StateModel } from '../../../../models/state/state.service';
-import { PageModel } from '../../../../models/page/page.service';
 import { WINDOW } from '../../../../utilities/window';
 import { Logger } from '../../../../services/logger.service';
 import { ExamService } from '../../../../controllers/exam.service';
@@ -38,7 +37,6 @@ export class CustomResponseAreaComponent implements OnInit, OnDestroy {
     private readonly examService: ExamService,
     private readonly fileService: FileService,
     private readonly resultsService: ResultsService,
-    private readonly pageModel: PageModel,
     private readonly diskModel: DiskModel,
     private readonly protocolModel: ProtocolModel,
     private readonly resultsModel: ResultsModel,
@@ -60,7 +58,6 @@ export class CustomResponseAreaComponent implements OnInit, OnDestroy {
     this.window.tabsint.stateModel = this.stateModel;
     this.window.tabsint.diskModel = this.diskModel;
     this.window.tabsint.resultsModel = this.resultsModel;
-    this.window.tabsint.pageModel = this.pageModel;
     this.window.tabsint.protocolModel = this.protocolModel;
     // Subscribe to observables and load html/js
     this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
@@ -69,7 +66,7 @@ export class CustomResponseAreaComponent implements OnInit, OnDestroy {
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
       this.results = updatedResults;
     });
-    this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
+    this.pageSubscription = this.examService.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'customResponseArea') {
         const responseArea = updatedPage.responseArea as CustomResponseAreaInterface;
         this.html = responseArea?.html;

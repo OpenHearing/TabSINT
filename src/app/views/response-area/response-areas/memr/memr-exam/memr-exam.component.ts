@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs/internal/Subscription';
-import { PageModel } from '../../../../../models/page/page.service';
 import { DevicesService } from '../../../../../services/devices/devices.service';
 import { DeviceStatus, DeviceType, DialogType } from '../../../../../utilities/constants';
 import { Paths } from '../../../../../services/paths.service';
@@ -9,13 +8,12 @@ import { Notifications } from '../../../../../services/notifications.service';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { ExamService } from '../../../../../controllers/exam.service';
 import { ResultsInterface } from '../../../../../models/results/results.interface';
-import { PageInterface } from '../../../../../models/page/page.interface';
+import { PageInterface } from '../../../../../interfaces/page-definition.interface';
 import { IDevice } from '../../../../../interfaces/devices/device.interface';
 import { DialogDataInterface } from '../../../../../interfaces/dialog-data.interface';
 import { MemrExamInterface, MemrQueueExamInterface, MemrExamSubmissionInterface, MemrResultsInterface } from './memr-exam.interface';
 import { StateInterface } from '../../../../../models/state/state.interface';
 import { StateModel } from '../../../../../models/state/state.service';
-import { pageSchema } from '../../../../../../schema/page.schema';
 import { memrSchema } from '../../../../../../schema/response-areas/memr.schema';
 import { getCurrentDatetime } from '../../../../../utilities/exam-helper-functions';
 
@@ -56,7 +54,6 @@ export class MemrExamComponent implements OnInit, OnDestroy {
 
   // Configuration Variables
   allowableDevices = [DeviceType.Tympan];
-  isAutoSubmit: boolean = pageSchema.properties.isAutoSubmit.default;
   currentStep: string = 'Ready';
   chinchillaType = 'Chinchilla';
   humanType = 'Human';
@@ -79,7 +76,6 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     private readonly examService: ExamService,
     private readonly logger: Logger,
     private readonly notifications: Notifications,
-    private readonly pageModel: PageModel,
     private readonly resultsModel: ResultsModel,
     private readonly stateModel: StateModel,
     private readonly paths: Paths
@@ -109,10 +105,9 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
       this.results = updatedResults;
     });
-    this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
+    this.pageSubscription = this.examService.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'memrResponseArea') {
         setTimeout(() => {
-          this.isAutoSubmit = updatedPage.isAutoSubmit ?? this.isAutoSubmit;
           this.initializeResponseArea(updatedPage.responseArea as MemrExamInterface);
           this.setupDevice(updatedPage.responseArea as MemrExamInterface);
         });
@@ -320,11 +315,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     this.updateExamProgress(results); // Update UI components
     if (this.currentBlockIndex >= this.blockCount) {
       await this.delay(1000); // Delay to show final block count to the user before the next step
-      if (this.isAutoSubmit) {
-        await this.finishExam();
-      } else {
-        this.nextStep();
-      }
+      this.nextStep();
       return;
     }
     // Compute block data based on change type (2D Array Data: CH 0: Elicitor, CH 1: Probe)

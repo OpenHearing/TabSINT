@@ -4,7 +4,7 @@ import { ScreenOrientation } from '@capacitor/screen-orientation';
 
 import { StateInterface } from '../../../../models/state/state.interface';
 import { ManualAudiometryInterface } from './manual-audiometry.interface';
-import { PageInterface } from '../../../../models/page/page.interface';
+import { PageInterface } from '../../../../interfaces/page-definition.interface';
 import { ResultsInterface } from '../../../../models/results/results.interface';
 import { ProtocolModelInterface } from '../../../../models/protocol/protocol.interface';
 import { AudiometryResultsInterface, RetsplsInterface } from '../../../../interfaces/audiometry-results.interface';
@@ -12,7 +12,6 @@ import { AudiometryResultsInterface, RetsplsInterface } from '../../../../interf
 import { isManualAudiometryResponseArea } from '../../../../guards/type.guard';
 import { DevicesService } from '../../../../services/devices/devices.service';
 import { ExamService } from '../../../../controllers/exam.service';
-import { PageModel } from '../../../../models/page/page.service';
 import { StateModel } from '../../../../models/state/state.service';
 import { ProtocolModel } from '../../../../models/protocol/protocol-model.service';
 import { ResultsModel } from '../../../../models/results/results-model.service';
@@ -74,7 +73,6 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     readonly examService: ExamService,
     private readonly cdr: ChangeDetectorRef,
     private readonly resultsModel: ResultsModel,
-    private readonly pageModel: PageModel,
     private readonly protocolModel: ProtocolModel,
     private readonly stateModel: StateModel,
     private readonly devicesService: DevicesService,
@@ -103,7 +101,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
       this.results = updatedResults;
     });
-    this.pageSubscription = this.pageModel.currentPageObservable.subscribe(this.handlePageUpdate.bind(this));
+    this.pageSubscription = this.examService.currentPageObservable.subscribe(this.handlePageUpdate.bind(this));
     this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });

@@ -11,7 +11,6 @@ When using the customResponseArea, the `window` variable will be updated to cont
 - examService
 - fileService
 - resultsModel
-- pageModel
 - protocolModel
 - diskModel
 - stateModel

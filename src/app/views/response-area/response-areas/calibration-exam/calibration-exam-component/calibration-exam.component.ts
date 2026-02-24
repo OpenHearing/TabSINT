@@ -1,8 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, EventEmitter, Output } from '@angular/core';
-import { PageModel } from '../../../../../models/page/page.service';
 import { Subscription } from 'rxjs';
 import { CalibrationExamInterface, EarData, ExamResponse } from './calibration-exam.interface';
-import { PageInterface } from '../../../../../models/page/page.interface';
+import { PageInterface } from '../../../../../interfaces/page-definition.interface';
 import { DevicesService } from '../../../../../services/devices/devices.service';
 import { Logger } from '../../../../../services/logger.service';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
@@ -51,7 +50,6 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   batchFrequencies: boolean = calibrationExamSchema.properties.batchFrequencies.default;
 
   constructor(
-    private readonly pageModel: PageModel,
     private readonly devicesService: DevicesService,
     private readonly logger: Logger,
     private readonly resultsModel: ResultsModel,
@@ -80,7 +78,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
       this.results = updatedResults;
     });
-    this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
+    this.pageSubscription = this.examService.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'calibrationResponseArea') {
         const calibrationResponse = updatedPage?.responseArea as CalibrationExamInterface;
         if (calibrationResponse) {

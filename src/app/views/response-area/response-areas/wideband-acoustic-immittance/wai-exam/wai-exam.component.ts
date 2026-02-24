@@ -1,12 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs/internal/Subscription';
-import { PageModel } from '../../../../../models/page/page.service';
 import { DevicesService } from '../../../../../services/devices/devices.service';
 import { Logger } from '../../../../../services/logger.service';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { ExamService } from '../../../../../controllers/exam.service';
 import { ResultsInterface } from '../../../../../models/results/results.interface';
-import { PageInterface } from '../../../../../models/page/page.interface';
+import { PageInterface } from '../../../../../interfaces/page-definition.interface';
 import { WAIInterface, WAIResultsInterface } from './wai-exam.interface';
 import { NormativeDataInterface } from '../../../../../interfaces/normative-data-interface';
 import { ButtonTextService } from '../../../../../controllers/button-text.service';
@@ -62,7 +61,6 @@ export class WAIExamComponent implements OnInit, OnDestroy {
   xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000];
 
   constructor(
-    private readonly pageModel: PageModel,
     private readonly devicesService: DevicesService,
     private readonly logger: Logger,
     private readonly resultsModel: ResultsModel,
@@ -88,7 +86,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
       this.results = updatedResults;
     });
-    this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
+    this.pageSubscription = this.examService.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'WAIResponseArea') {
         const responseArea = updatedPage.responseArea as WAIInterface;
         this.tabsintId = responseArea.tabsintId ?? this.tabsintId;

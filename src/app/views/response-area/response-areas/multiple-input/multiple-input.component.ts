@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { PageModel } from '../../../../models/page/page.service';
 import { Subscription } from 'rxjs';
-import { PageInterface } from '../../../../models/page/page.interface';
+import { PageInterface } from '../../../../interfaces/page-definition.interface';
 import { InputListItem, MultipleInputInterface } from './multiple-input.interface';
 import { ResultsModel } from '../../../../models/results/results-model.service';
 import { ResultsInterface } from '../../../../models/results/results.interface';
 import { StateModel } from '../../../../models/state/state.service';
 import { StateInterface } from '../../../../models/state/state.interface';
 import { multipleInputSchema } from '../../../../../schema/response-areas/multiple-input.schema';
+import { ExamService } from '../../../../controllers/exam.service';
 
 @Component({
   selector: 'multiple-input-view',
@@ -37,7 +37,7 @@ export class MultipleInputComponent implements OnInit {
   resultsSubscription: Subscription | undefined;
 
   constructor(
-    private readonly pageModel: PageModel,
+    private readonly examService: ExamService,
     private readonly resultsModel: ResultsModel,
     private readonly stateModel: StateModel
   ) {
@@ -52,9 +52,9 @@ export class MultipleInputComponent implements OnInit {
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
       this.results = updatedResults;
     });
-    this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
+    this.pageSubscription = this.examService.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type == 'multipleInputResponseArea') {
-        let updatedMultipleInputResponseArea = updatedPage.responseArea as MultipleInputInterface;
+        const updatedMultipleInputResponseArea = updatedPage.responseArea as MultipleInputInterface;
         if (updatedMultipleInputResponseArea) {
           this.initializeConfigurationVariables(updatedMultipleInputResponseArea);
           this.updateSubmittableLogic();

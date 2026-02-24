@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { PageInterface } from '../../models/page/page.interface';
-import { PageModel } from '../../models/page/page.service';
+import { PageInterface } from '../../interfaces/page-definition.interface';
+import { ExamService } from '../../controllers/exam.service';
 
 @Component({
   selector: 'response-area',
@@ -11,14 +11,12 @@ import { PageModel } from '../../models/page/page.service';
 })
 export class ResponseAreaComponent implements OnInit, OnDestroy {
   pageSubscription: Subscription | undefined;
-  currentPage: PageInterface;
+  currentPage?: PageInterface;
 
-  constructor(private readonly pageModel: PageModel) {
-    this.currentPage = pageModel.getPage();
-  }
+  constructor(private readonly examService: ExamService) {}
 
   ngOnInit(): void {
-    this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
+    this.pageSubscription = this.examService.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       this.currentPage = updatedPage;
     });
   }

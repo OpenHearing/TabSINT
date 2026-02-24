@@ -3,57 +3,40 @@ import { ExamService } from './exam.service';
 import { ResultsService } from './results.service';
 import { ResultsModel } from '../models/results/results-model.service';
 import { ProtocolModel } from '../models/protocol/protocol-model.service';
-import { PageModel } from '../models/page/page.service';
 import { StateModel } from '../models/state/state.service';
 import { Notifications } from '../services/notifications.service';
 import { Logger } from '../services/logger.service';
 import { AppState, ExamState, ProtocolServer, ProtocolState } from '../utilities/constants';
 import { BehaviorSubject, of } from 'rxjs';
-import { PageInterface } from '../models/page/page.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { ResultsInterface } from '../models/results/results.interface';
+import { PageInterface } from '../interfaces/page-definition.interface';
+import { ProtocolStack } from '../models/protocol/protocol-stack';
 
 describe('ExamService', () => {
   let examService: ExamService;
   let mockResultsService: jasmine.SpyObj<ResultsService>;
   let mockResultsModel: jasmine.SpyObj<ResultsModel>;
-  let mockPageModel: jasmine.SpyObj<PageModel>;
   let mockProtocolModel: jasmine.SpyObj<ProtocolModel>;
   let mockStateModel: jasmine.SpyObj<StateModel>;
   let mockNotifications: jasmine.SpyObj<Notifications>;
   let mockLogger: jasmine.SpyObj<Logger>;
 
+  const mockProtocol = {
+    name: 'Test Protocol',
+    date: new Date().toISOString(),
+    version: '1.0',
+    server: ProtocolServer.LocalServer,
+    admin: true,
+    pages: [],
+  };
+
   beforeEach(() => {
     mockResultsService = jasmine.createSpyObj('ResultsService', ['initializeExamResults', 'pushResults', 'save', 'initializePageResults']);
     mockResultsModel = jasmine.createSpyObj('ResultsModel', ['getResults']);
-    mockPageModel = jasmine.createSpyObj('PageModel', ['getPage', 'stack', 'updatePage']);
-    mockPageModel.currentPageObservable = new BehaviorSubject<PageInterface>({
-      id: 'test-page',
-      responseArea: {
-        responseRequired: false,
-        type: 'textboxResponseArea',
-      },
-      title: 'Mock Page',
-      questionMainText: '',
-      questionSubText: '',
-      instructionText: '',
-      helpText: '',
-      submitText: '',
-    } as PageInterface).asObservable();
-
     mockProtocolModel = jasmine.createSpyObj('ProtocolModel', ['getProtocolModel']);
-    mockProtocolModel.getProtocolModel.and.returnValue({ activeProtocol: undefined });
-    const mockProtocol = {
-      activeProtocol: {
-        name: 'Test Protocol',
-        date: new Date().toISOString(),
-        version: '1.0',
-        server: ProtocolServer.LocalServer,
-        admin: true,
-        pages: [],
-      },
-    };
-    mockProtocolModel.getProtocolModel.and.returnValue(mockProtocol);
+
+    mockProtocolModel.getProtocolModel.and.returnValue({ activeProtocol: mockProtocol, activeProtocolStack: new ProtocolStack() });
     mockStateModel = jasmine.createSpyObj('StateModel', ['getState', 'setPageSubmittable', 'updateState']);
     mockStateModel.stateSubject = new BehaviorSubject<StateInterface>({
       examState: ExamState.Ready,
@@ -63,7 +46,6 @@ describe('ExamService', () => {
       doesResponseExist: false,
       isResponseRequired: false,
       isSubmittable: false,
-      examIndex: 0,
       canGoBack: () => true,
       isPaneOpen: {
         general: false,
@@ -79,11 +61,7 @@ describe('ExamService', () => {
         completedExams: false,
         exportedAndUploadedResults: false,
       },
-      examProgress: {
-        pctProgress: 0,
-        anticipatedProtocols: [],
-        activatedProtocols: [],
-      },
+      examProgress: 0,
       bluetoothConnected: true,
       wifiConnected: true,
     });
@@ -103,7 +81,6 @@ describe('ExamService', () => {
       doesResponseExist: false,
       isResponseRequired: false,
       isSubmittable: false,
-      examIndex: 0,
 
       canGoBack: () => true,
 
@@ -122,11 +99,7 @@ describe('ExamService', () => {
         exportedAndUploadedResults: false,
       },
 
-      examProgress: {
-        pctProgress: 0,
-        anticipatedProtocols: [],
-        activatedProtocols: [],
-      },
+      examProgress: 0,
 
       bluetoothConnected: true,
       wifiConnected: true,
@@ -249,42 +222,47 @@ describe('ExamService', () => {
       },
     });
 
+    const activeProtocol = {
+      name: 'Test Protocol',
+      date: new Date().toISOString(),
+      version: '1.0',
+      server: ProtocolServer.LocalServer,
+      admin: true,
+      pages: [
+        {
+          id: 'test-page',
+          responseArea: {
+            responseRequired: false,
+            type: 'textboxResponseArea',
+          },
+          title: 'Mock Page',
+          questionMainText: '',
+          questionSubText: '',
+          instructionText: '',
+          helpText: '',
+          submitText: '',
+        },
+        {
+          id: 'test-page',
+          responseArea: {
+            responseRequired: false,
+            type: 'textboxResponseArea',
+          },
+          title: 'Mock Page',
+          questionMainText: '',
+          questionSubText: '',
+          instructionText: '',
+          helpText: '',
+          submitText: '',
+        },
+      ],
+    };
+    const activeProtocolStack = new ProtocolStack();
+    activeProtocolStack.addProtocol(activeProtocol);
     mockProtocolModel.getProtocolModel.and.returnValue({
-      activeProtocol: {
-        name: 'Test Protocol',
-        date: new Date().toISOString(),
-        version: '1.0',
-        server: ProtocolServer.LocalServer,
-        admin: true,
-        pages: [
-          {
-            id: 'test-page',
-            responseArea: {
-              responseRequired: false,
-              type: 'textboxResponseArea',
-            },
-            title: 'Mock Page',
-            questionMainText: '',
-            questionSubText: '',
-            instructionText: '',
-            helpText: '',
-            submitText: '',
-          },
-          {
-            id: 'test-page',
-            responseArea: {
-              responseRequired: false,
-              type: 'textboxResponseArea',
-            },
-            title: 'Mock Page',
-            questionMainText: '',
-            questionSubText: '',
-            instructionText: '',
-            helpText: '',
-            submitText: '',
-          },
-        ],
-      },
+      activeProtocol: activeProtocol,
+      activeProtocolDictionary: { 'Test Protocol': activeProtocol },
+      activeProtocolStack: activeProtocolStack,
     });
 
     mockNotifications = jasmine.createSpyObj('Notifications', ['alert']);
@@ -296,7 +274,6 @@ describe('ExamService', () => {
         ExamService,
         { provide: ResultsService, useValue: mockResultsService },
         { provide: ResultsModel, useValue: mockResultsModel },
-        { provide: PageModel, useValue: mockPageModel },
         { provide: ProtocolModel, useValue: mockProtocolModel },
         { provide: StateModel, useValue: mockStateModel },
         { provide: Notifications, useValue: mockNotifications },
@@ -321,32 +298,10 @@ describe('ExamService', () => {
         admin: true,
         pages: [],
       },
+      activeProtocolStack: new ProtocolStack(),
     });
 
-    mockPageModel.getPage.and.returnValue({
-      id: 'test-page',
-      responseArea: { responseRequired: false, type: 'textboxResponseArea' },
-    });
-
-    mockPageModel.updatePage.and.stub();
-
-    mockPageModel.currentPageObservable = new BehaviorSubject<PageInterface>({
-      id: 'test-page',
-      responseArea: {
-        responseRequired: false,
-        type: 'textboxResponseArea',
-      },
-      title: 'Mock Page',
-      questionMainText: '',
-      questionSubText: '',
-      instructionText: '',
-      helpText: '',
-      submitText: '',
-    } as PageInterface).asObservable();
-
-    mockPageModel.stack = [];
-
-    spyOn(examService as any, 'startPage').and.stub();
+    spyOn(examService as any, 'fetchNextPage').and.stub();
     await examService.begin();
 
     expect(mockResultsService.initializeExamResults).toHaveBeenCalled();
@@ -354,11 +309,11 @@ describe('ExamService', () => {
 
   it('should submit the default response and advance the page', () => {
     mockResultsService.pushResults.and.stub();
-    spyOn<any>(examService, 'advancePage');
+    spyOn<any>(examService, 'fetchNextPage');
 
     examService.submitDefault();
     expect(mockResultsService.pushResults).toHaveBeenCalled();
-    expect(examService['advancePage' as keyof ExamService]).toHaveBeenCalled();
+    expect(examService['fetchNextPage' as keyof ExamService]).toHaveBeenCalled();
   });
 
   it('should reset the exam state to Ready when reset is called', () => {
@@ -376,7 +331,7 @@ describe('ExamService', () => {
   it('should navigate to target protocol and submit default', () => {
     spyOn<any>(examService, 'submitDefault');
 
-    examService.navigateToTarget('test-protocol');
+    examService.navigateToTarget('Test Protocol');
     expect(examService['submitDefault' as keyof ExamService]).toHaveBeenCalled();
   });
 
@@ -384,9 +339,7 @@ describe('ExamService', () => {
     const mockPage = {
       responseArea: { responseRequired: undefined, type: 'textboxResponseArea' },
     } as any;
-    mockPageModel.getPage.and.returnValue(mockPage);
     spyOn<any>(examService, 'isPageResponseRequired').and.callThrough();
-
     expect(examService.isPageResponseRequired(mockPage)).toBeDefined();
   });
 });

@@ -2,20 +2,21 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 
 import { LikertComponent } from './likert.component';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
-import { PageModel } from '../../../../../models/page/page.service';
 import { DiskModel } from '../../../../../models/disk/disk.service';
 import { SqLite } from '../../../../../services/sqLite.service';
 import { AppModel } from '../../../../../models/app/app.service';
 import { Logger } from '../../../../../services/logger.service';
 import { VersionModel } from '../../../../../models/version/version.service';
 import { ExamService } from '../../../../../controllers/exam.service';
+import { ProtocolModel } from '../../../../../models/protocol/protocol-model.service';
+import { ProtocolSchemaInterface } from '../../../../../interfaces/protocol-schema.interface';
 
 describe('LikertComponent', () => {
   let component: LikertComponent;
   let fixture: ComponentFixture<LikertComponent>;
   let mockResultsModel: ResultsModel;
   let mockExamService: jasmine.SpyObj<ExamService>;
-  let mockPageModel: PageModel;
+  let mockProtocolModel: ProtocolModel;
   const appModel = new AppModel();
   const diskModel = new DiskModel(new Document());
   const sqLite = new SqLite(appModel, diskModel);
@@ -24,26 +25,31 @@ describe('LikertComponent', () => {
 
   beforeEach(async () => {
     mockResultsModel = new ResultsModel(version, logger);
-    mockExamService = jasmine.createSpyObj('ExamService', ['_dummyMethod']);
-
-    mockPageModel = new PageModel();
-    mockPageModel.updatePage({
-      responseArea: {
-        type: 'likertResponseArea',
-        questions: ['Question 1', 'Question 2'],
-        levels: 5,
-        position: 'above',
-        labels: ['Strongly Disagree', 'Strongly Agree'],
-        useEmoticons: false,
-      },
-      id: 'page1',
+    mockProtocolModel = new ProtocolModel();
+    mockProtocolModel.protocolModel.activeProtocolStack.addProtocol({
+      pages: [
+        {
+          responseArea: {
+            type: 'likertResponseArea',
+            questions: ['Question 1', 'Question 2'],
+            levels: 5,
+            position: 'above',
+            labels: ['Strongly Disagree', 'Strongly Agree'],
+            useEmoticons: false,
+          },
+          id: 'page1',
+        },
+      ],
+    } as ProtocolSchemaInterface);
+    mockExamService = jasmine.createSpyObj('ExamService', ['_dummyMethod'], {
+      currentPageObservable: mockProtocolModel.protocolModel.activeProtocolStack.currentPageObservable,
     });
 
     await TestBed.configureTestingModule({
       declarations: [LikertComponent],
       providers: [
         { provide: ResultsModel, useValue: mockResultsModel },
-        { provide: PageModel, useValue: mockPageModel },
+        { provide: ProtocolModel, useValue: mockProtocolModel },
         { provide: ExamService, useValue: mockExamService },
       ],
     }).compileComponents();
@@ -71,19 +77,21 @@ describe('LikertComponent', () => {
   });
 
   it('should subscribe to pageModel currentPageObservable and update questions', fakeAsync(() => {
-    const updatedPage = {
-      responseArea: {
-        type: 'likertResponseArea',
-        questions: ['Updated Question 1', 'Updated Question 2'],
-        levels: 7,
-        position: 'below',
-        labels: ['Never', 'Always'],
-        useEmoticons: true,
-      },
-      id: 'page2',
-    };
-
-    mockPageModel.updatePage(updatedPage);
+    mockProtocolModel.protocolModel.activeProtocolStack.addProtocol({
+      pages: [
+        {
+          responseArea: {
+            type: 'likertResponseArea',
+            questions: ['Updated Question 1', 'Updated Question 2'],
+            levels: 7,
+            position: 'below',
+            labels: ['Never', 'Always'],
+            useEmoticons: true,
+          },
+          id: 'page2',
+        },
+      ],
+    } as ProtocolSchemaInterface);
     tick();
     fixture.detectChanges();
 

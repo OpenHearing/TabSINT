@@ -3,7 +3,7 @@ import { DiskModel } from './disk.service';
 import { DiskInterface } from './disk.interface';
 import { ExamResults } from '../results/results.interface';
 import { ProtocolServer } from '../../utilities/constants';
-import { PageDefinition } from '../../interfaces/page-definition.interface';
+import { PageInterface } from '../../interfaces/page-definition.interface';
 import { VersionModel } from '../version/version.service';
 import { Logger } from '../../services/logger.service';
 import { SqLite } from '../../services/sqLite.service';
@@ -65,7 +65,7 @@ describe('DiskModel', () => {
   });
 
   it('updates upload summary', () => {
-    const page: PageDefinition = {
+    const page: PageInterface = {
       id: 't',
       title: 'test',
       questionMainText: 'questionMainText',

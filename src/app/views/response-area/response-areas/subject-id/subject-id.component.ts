@@ -2,11 +2,10 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { ResultsInterface } from '../../../../models/results/results.interface';
-import { PageInterface } from '../../../../models/page/page.interface';
+import { PageInterface } from '../../../../interfaces/page-definition.interface';
 import { SubjectIdInterface } from './subject-id.interface';
 
 import { ResultsModel } from '../../../../models/results/results-model.service';
-import { PageModel } from '../../../../models/page/page.service';
 
 import { subjectIdSchema } from '../../../../../schema/response-areas/subject-id.schema';
 import { StateInterface } from '../../../../models/state/state.interface';
@@ -20,7 +19,6 @@ import { ExamService } from '../../../../controllers/exam.service';
 export class SubjectIdComponent implements OnInit, OnDestroy {
   private readonly examService = inject(ExamService);
   private readonly resultsModel = inject(ResultsModel);
-  private readonly pageModel = inject(PageModel);
   private readonly stateModel = inject(StateModel);
 
   results: ResultsInterface;
@@ -44,7 +42,7 @@ export class SubjectIdComponent implements OnInit, OnDestroy {
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
       this.results = updatedResults;
     });
-    this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
+    this.pageSubscription = this.examService.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type == 'subjectIdResponseArea') {
         const updatedSubjectIdResponseArea = updatedPage.responseArea as SubjectIdInterface;
         if (updatedSubjectIdResponseArea) {

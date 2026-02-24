@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ResultsModel } from '../../../../models/results/results-model.service';
 import { ExamService } from '../../../../controllers/exam.service';
 import { StateModel } from '../../../../models/state/state.service';
-import { PageModel } from '../../../../models/page/page.service';
+import { Observable } from 'rxjs';
 
 describe('TextboxComponent', () => {
   let component: TextboxComponent;
@@ -13,12 +13,12 @@ describe('TextboxComponent', () => {
   let mockExamService: jasmine.SpyObj<ExamService>;
 
   beforeEach(async () => {
-    mockExamService = jasmine.createSpyObj('ExamService', ['_dummyMethod']);
+    mockExamService = jasmine.createSpyObj('ExamService', ['_dummyMethod'], { currentPageObservable: new Observable(undefined) });
 
     await TestBed.configureTestingModule({
       declarations: [TextboxComponent],
       imports: [FormsModule],
-      providers: [StateModel, ResultsModel, PageModel, { provide: ExamService, useValue: mockExamService }],
+      providers: [StateModel, ResultsModel, { provide: ExamService, useValue: mockExamService }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TextboxComponent);

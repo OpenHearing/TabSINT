@@ -2,13 +2,12 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import * as d3 from 'd3';
 import { Subscription } from 'rxjs/internal/Subscription';
 
-import { PageModel } from '../../../../../models/page/page.service';
 import { DevicesService } from '../../../../../services/devices/devices.service';
 import { Logger } from '../../../../../services/logger.service';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { ExamService } from '../../../../../controllers/exam.service';
 import { ResultsInterface } from '../../../../../models/results/results.interface';
-import { PageInterface } from '../../../../../models/page/page.interface';
+import { PageInterface } from '../../../../../interfaces/page-definition.interface';
 import { SweptDpoaeInterface, SweptDpoaeResultsInterface } from './swept-dpoae-exam.interface';
 import { ButtonTextService } from '../../../../../controllers/button-text.service';
 import { IDevice } from '../../../../../interfaces/devices/device.interface';
@@ -67,7 +66,6 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
   yScale = d3.scaleLinear();
 
   constructor(
-    private readonly pageModel: PageModel,
     private readonly devicesService: DevicesService,
     private readonly logger: Logger,
     private readonly resultsModel: ResultsModel,
@@ -93,7 +91,7 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
       this.results = updatedResults;
     });
-    this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
+    this.pageSubscription = this.examService.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'sweptDPOAEResponseArea') {
         const responseArea = updatedPage.responseArea as SweptDpoaeInterface;
         this.tabsintId = responseArea.tabsintId ?? this.tabsintId;

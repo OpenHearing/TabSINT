@@ -44,7 +44,7 @@
           id="help-btn"
           type="button"
           class="btn btn-block btn-lg btn-default btn-centered"
-          [ngClass]="currentPage.helpText ? '' : 'disabled custom-disabled'"
+          [ngClass]="currentPage?.helpText ? '' : 'disabled custom-disabled'"
           (click)="help()">
           <span class="ion-help-circled"></span> {{ "Help" | translate }}
         </button>
@@ -69,7 +69,7 @@
             id="help-btn"
             type="button"
             class="btn btn-block btn-lg btn-default btn-centered"
-            [ngClass]="currentPage.helpText ? '' : 'disabled custom-disabled'"
+            [ngClass]="currentPage?.helpText ? '' : 'disabled custom-disabled'"
             *ngIf="!currentPage?.enableBackButton"
             (click)="help()">
             <span class="ion-help-circled"></span> {{ "Help" | translate }}
@@ -97,7 +97,7 @@
             [ngClass]="state.isSubmittable ? '' : 'disabled custom-disabled'"
             [disabled]="!state.isSubmittable"
             (click)="submit()">
-            <div *ngIf="currentPage?.submitText">{{ currentPage.submitText }}</div>
+            <div *ngIf="currentPage?.submitText">{{ currentPage?.submitText }}</div>
             <div *ngIf="!currentPage?.submitText">{{ buttonText || "Submit" | translate }}</div>
           </button>
         </div>
@@ -110,7 +110,7 @@
             id="help-btn"
             type="button"
             class="btn btn-block btn-lg btn-default btn-centered"
-            [ngClass]="currentPage.helpText ? '' : 'disabled custom-disabled'"
+            [ngClass]="currentPage?.helpText ? '' : 'disabled custom-disabled'"
             *ngIf="!currentPage?.enableBackButton"
             (click)="help()">
             <span class="ion-help-circled"></span> {{ "Help" | translate }}
@@ -132,7 +132,7 @@
             [ngClass]="state.isSubmittable ? '' : 'disabled custom-disabled'"
             [disabled]="!state.isSubmittable"
             (click)="submit()">
-            <div *ngIf="currentPage?.submitText">{{ currentPage.submitText }}</div>
+            <div *ngIf="currentPage?.submitText">{{ currentPage?.submitText }}</div>
             <div *ngIf="!currentPage?.submitText">{{ buttonText || "Submit" | translate }}</div>
           </button>
         </div>
@@ -144,7 +144,7 @@
           id="help-btn"
           type="button"
           class="btn btn-block btn-lg btn-default btn-centered"
-          [ngClass]="currentPage.helpText ? '' : 'disabled custom-disabled'"
+          [ngClass]="currentPage?.helpText ? '' : 'disabled custom-disabled'"
           (click)="help()">
           <span class="ion-help-circled"></span> {{ "Help" | translate }}
         </button>
@@ -153,6 +153,15 @@
         <button id="reset-btn" type="button" class="btn btn-block btn-lg btn-success btn-centered" (click)="reset()">
           {{ "New Exam" | translate }}
         </button>
+      </div>
+    </div>
+    <div
+      class="row response-buttons"
+      style="margin-top: 30px"
+      *ngIf="!(currentPage?.hideProgressBar || state.examState === ExamState.Ready || state.examState === ExamState.Finalized)">
+      <mat-progress-bar mode="determinate" *ngIf="!isString(state.examProgress)" [value]="state.examProgress"></mat-progress-bar>
+      <div *ngIf="isString(state.examProgress)" class="progress-words">
+        {{ state.examProgress }}
       </div>
     </div>
   </div>

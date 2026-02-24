@@ -17,7 +17,7 @@
           <i class="section-icon" [ngClass]="sectionExpanded.page ? 'ion-chevron-up' : 'ion-chevron-down'"></i>
         </button>
         <div [ngClass]="{ 'section-collapsed': !sectionExpanded.page }" class="debug-section-content">
-          <ngx-json-viewer [json]="currentPage" [expanded]="false" aria-labelledby="page"> </ngx-json-viewer>
+          <ngx-json-viewer [json]="currentPage || {}" [expanded]="false" aria-labelledby="page"> </ngx-json-viewer>
         </div>
       </div>
 

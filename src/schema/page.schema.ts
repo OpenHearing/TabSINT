@@ -3,7 +3,7 @@ import { navMenuSchema } from './definitions/navMenu.schema';
 import { pageWavfileSchema } from './definitions/page-wavfile.schema';
 import { followOnSchema } from './definitions/follow-on.schema';
 import { setFlagSchema } from './definitions/set-flag.schema';
-import { PageDefinition } from '../app/interfaces/page-definition.interface';
+import { PageInterface } from '../app/interfaces/page-definition.interface';
 import { chaWavFileSchema } from './definitions/cha-wavfile.schema';
 import { textBoxResultViewerSchema, textBoxSchema } from './response-areas/textbox.schema';
 import { multipleChoiceSchema } from './response-areas/multiple-choice.schema';
@@ -21,7 +21,7 @@ import { checkboxSchema } from './response-areas/checkbox.schema';
 import { CustomResponseAreaSchema } from './response-areas/custom-response-area.schema';
 import { Headset } from '../app/utilities/constants';
 
-export const pageSchema: JSONSchemaType<PageDefinition> = {
+export const pageSchema: JSONSchemaType<PageInterface> = {
   $id: 'page_base',
   type: 'object',
   properties: {
@@ -116,6 +116,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
     submitText: { type: 'string', nullable: true },
     followOns: { type: 'array', items: followOnSchema, nullable: true },
     setFlags: { type: 'array', items: setFlagSchema, nullable: true },
+    progressBarVal: { type: ['string', 'number'], nullable: true },
   },
   required: ['id'],
   additionalProperties: true,

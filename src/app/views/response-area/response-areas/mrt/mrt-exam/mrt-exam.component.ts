@@ -1,13 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs/internal/Subscription';
 
-import { PageModel } from '../../../../../models/page/page.service';
 import { DevicesService } from '../../../../../services/devices/devices.service';
 import { Logger } from '../../../../../services/logger.service';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { ExamService } from '../../../../../controllers/exam.service';
 import { ResultsInterface } from '../../../../../models/results/results.interface';
-import { PageInterface } from '../../../../../models/page/page.interface';
+import { PageInterface } from '../../../../../interfaces/page-definition.interface';
 import { ButtonTextService } from '../../../../../controllers/button-text.service';
 import { mrtSchema } from '../../../../../../schema/response-areas/mrt.schema';
 import { MrtExamInterface, MrtResultsInterface, MrtTrialInterface, MrtTrialResultInterface } from './mrt-exam.interface';
@@ -66,7 +65,6 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     private readonly devicesService: DevicesService,
     private readonly examService: ExamService,
     private readonly logger: Logger,
-    private readonly pageModel: PageModel,
     private readonly resultsModel: ResultsModel,
     private readonly stateModel: StateModel
   ) {
@@ -93,7 +91,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
       this.results = updatedResults;
     });
-    this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
+    this.pageSubscription = this.examService.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'mrtResponseArea') {
         setTimeout(() => {
           this.initializeResponseArea(updatedPage.responseArea as MrtExamInterface);

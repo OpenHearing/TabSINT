@@ -2,8 +2,7 @@ import { Component, inject, Inject, OnDestroy, OnInit } from '@angular/core';
 import { ExamService } from '../../controllers/exam.service';
 import { WINDOW } from '../../utilities/window';
 import { Subscription } from 'rxjs';
-import { PageInterface } from '../../models/page/page.interface';
-import { PageModel } from '../../models/page/page.service';
+import { PageInterface } from '../../interfaces/page-definition.interface';
 
 @Component({
   selector: 'app-exam-testing-view',
@@ -12,7 +11,6 @@ import { PageModel } from '../../models/page/page.service';
 })
 export class ExamTestingComponent implements OnInit, OnDestroy {
   private readonly examService = inject(ExamService);
-  private readonly pageModel = inject(PageModel);
 
   pageSubscription: Subscription | undefined;
   questionPreMainTextClass?: object;
@@ -29,7 +27,7 @@ export class ExamTestingComponent implements OnInit, OnDestroy {
   constructor(@Inject(WINDOW) private readonly window: Window) {} // eslint-disable-line
 
   ngOnInit(): void {
-    this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
+    this.pageSubscription = this.examService.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       this.title = updatedPage?.title;
       this.questionPreMainTextClass = this.shrinkTitleIfTooLong(updatedPage?.questionPreMainText);
       this.questionMainTextClass = this.shrinkTitleIfTooLong(updatedPage?.questionMainText);

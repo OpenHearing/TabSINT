@@ -1,9 +1,8 @@
 import { LoadingProtocolInterface } from '../interfaces/loading-protocol-object.interface';
-import { PageInterface } from '../models/page/page.interface';
 import { ProtocolMetaInterface, ProtocolInterface } from '../models/protocol/protocol.interface';
 import { ProtocolServer } from './constants';
-import { checkIfCanGoBack } from './exam-helper-functions';
 import { DiskInterface } from '../models/disk/disk.interface';
+import { PageInterface } from '../interfaces/page-definition.interface';
 
 export const metaDefaults: ProtocolMetaInterface = {
   name: '',
@@ -21,7 +20,7 @@ export const partialMetaDefaults = {
 };
 
 export function loadingProtocolDefaults(disk: DiskInterface): LoadingProtocolInterface {
-  let loadingProtocol: LoadingProtocolInterface = {
+  const loadingProtocol: LoadingProtocolInterface = {
     protocol: protocolDefaults,
     calibration: undefined,
     requiresValidation: disk.preferences.validateProtocols,
@@ -45,20 +44,6 @@ export const pageInterfaceDefaults: PageInterface = {
     type: '',
   },
   submitText: undefined,
-  // followOns: [],
-  name: '',
-  filename: '',
-  units: '',
-  example: 0,
-  other: [],
-  dict: {},
-  hideProgressBar: true,
-  isSubmittable: true,
-  canGoBack: checkIfCanGoBack(),
-  subtitle: '',
-  loadingRequired: false,
-  loadingActive: false,
-  exportToCSV: false,
 };
 
 export const protocolDefaults: ProtocolInterface = {

@@ -1,10 +1,9 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
-import { PageModel } from '../../../../../models/page/page.service';
 import { ResultsInterface } from '../../../../../models/results/results.interface';
 import { LikertInterface } from './likert.interface';
-import { PageInterface } from '../../../../../models/page/page.interface';
+import { PageInterface } from '../../../../../interfaces/page-definition.interface';
 import { likertSchema } from '../../../../../../schema/response-areas/likert.schema';
 import { ExamService } from '../../../../../controllers/exam.service';
 import { StateModel } from '../../../../../models/state/state.service';
@@ -42,7 +41,6 @@ export class LikertComponent implements OnInit, OnDestroy {
   constructor(
     private readonly examService: ExamService,
     private readonly resultsModel: ResultsModel,
-    private readonly pageModel: PageModel,
     private readonly stateModel: StateModel
   ) {
     this.results = this.resultsModel.getResults();
@@ -56,7 +54,7 @@ export class LikertComponent implements OnInit, OnDestroy {
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
       this.results = updatedResults;
     });
-    this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
+    this.pageSubscription = this.examService.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type == 'likertResponseArea') {
         setTimeout(() => {
           this.initializeResponseArea(updatedPage.responseArea as LikertInterface);

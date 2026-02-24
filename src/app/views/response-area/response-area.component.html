@@ -1,4 +1,4 @@
-<div [ngSwitch]="currentPage.responseArea?.type">
+<div [ngSwitch]="currentPage?.responseArea?.type">
   <textbox-view *ngSwitchCase="'textboxResponseArea'"></textbox-view>
   <textbox-result-viewer-view *ngSwitchCase="'textboxResponseAreaResultViewer'"></textbox-result-viewer-view>
   <likert-view *ngSwitchCase="'likertResponseArea'"></likert-view>

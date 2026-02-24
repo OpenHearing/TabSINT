@@ -2,11 +2,10 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { ResultsInterface } from '../../../../models/results/results.interface';
-import { PageInterface } from '../../../../models/page/page.interface';
+import { PageInterface } from '../../../../interfaces/page-definition.interface';
 import { TextBoxInterface } from './textbox.interface';
 
 import { ResultsModel } from '../../../../models/results/results-model.service';
-import { PageModel } from '../../../../models/page/page.service';
 
 import { textBoxSchema } from '../../../../../schema/response-areas/textbox.schema';
 import { StateInterface } from '../../../../models/state/state.interface';
@@ -30,7 +29,6 @@ export class TextboxComponent implements OnInit, OnDestroy {
   constructor(
     private readonly examService: ExamService,
     private readonly resultsModel: ResultsModel,
-    private readonly pageModel: PageModel,
     private readonly stateModel: StateModel
   ) {
     this.results = this.resultsModel.getResults();
@@ -45,7 +43,7 @@ export class TextboxComponent implements OnInit, OnDestroy {
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
       this.results = updatedResults;
     });
-    this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
+    this.pageSubscription = this.examService.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type == 'textboxResponseArea') {
         const updatedTextboxResponseArea = updatedPage.responseArea as TextBoxInterface;
         if (updatedTextboxResponseArea) {

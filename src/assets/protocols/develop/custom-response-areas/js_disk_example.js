@@ -9,7 +9,7 @@ function handleButtonClick() {
   window.tabsint.logger.debug("PIN changed to 7115");
 }
 
-const page = window.tabsint.pageModel.getPage();
+const page = window.tabsint.examService.currentPage;
 window.tabsint.logger.debug("page: " + JSON.stringify(page));
 typeTd.textContent = page?.responseArea?.type;
 htmlPathTd.textContent = page?.responseArea?.htmlFilePath;

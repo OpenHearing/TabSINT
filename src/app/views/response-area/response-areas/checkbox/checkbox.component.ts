@@ -1,10 +1,9 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ResultsInterface } from '../../../../models/results/results.interface';
-import { PageInterface } from '../../../../models/page/page.interface';
+import { PageInterface } from '../../../../interfaces/page-definition.interface';
 import { CheckboxInterface } from './checkbox.interface';
 import { ResultsModel } from '../../../../models/results/results-model.service';
-import { PageModel } from '../../../../models/page/page.service';
 import { checkboxSchema } from '../../../../../schema/response-areas/checkbox.schema';
 import { StateInterface } from '../../../../models/state/state.interface';
 import { StateModel } from '../../../../models/state/state.service';
@@ -20,7 +19,6 @@ import { Logger } from '../../../../services/logger.service';
 export class CheckboxComponent implements OnInit, OnDestroy {
   private readonly examService = inject(ExamService);
   private readonly resultsModel = inject(ResultsModel);
-  private readonly pageModel = inject(PageModel);
   private readonly stateModel = inject(StateModel);
   private readonly logger = inject(Logger);
 
@@ -58,7 +56,7 @@ export class CheckboxComponent implements OnInit, OnDestroy {
         };
       }
     });
-    this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
+    this.pageSubscription = this.examService.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type == 'checkboxResponseArea') {
         const updatedCheckboxResponseArea = updatedPage.responseArea as CheckboxInterface;
         if (updatedCheckboxResponseArea) {

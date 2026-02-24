@@ -3,12 +3,12 @@ import { Subscription } from 'rxjs';
 
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { DiskModel } from '../../models/disk/disk.service';
-import { PageInterface } from '../../models/page/page.interface';
-import { PageModel } from '../../models/page/page.service';
+import { PageInterface } from '../../interfaces/page-definition.interface';
 import { ResultsModel } from '../../models/results/results-model.service';
 import { ResultsInterface } from '../../models/results/results.interface';
 import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
+import { ExamService } from '../../controllers/exam.service';
 @Component({
   selector: 'debug-view',
   templateUrl: './debug.component.html',
@@ -16,7 +16,7 @@ import { StateInterface } from '../../models/state/state.interface';
 })
 export class DebugComponent implements OnInit, OnDestroy {
   disk: DiskInterface;
-  currentPage: PageInterface;
+  currentPage?: PageInterface;
   results: ResultsInterface;
   state: StateInterface;
   isCollapsed: boolean = true;
@@ -37,12 +37,11 @@ export class DebugComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly diskModel: DiskModel,
-    private readonly pageModel: PageModel,
     private readonly resultsModel: ResultsModel,
-    private readonly stateModel: StateModel
+    private readonly stateModel: StateModel,
+    private readonly examService: ExamService
   ) {
     this.disk = this.diskModel.getDisk();
-    this.currentPage = this.pageModel.getPage();
     this.results = this.resultsModel.getResults();
     this.state = this.stateModel.getState();
   }
@@ -51,7 +50,7 @@ export class DebugComponent implements OnInit, OnDestroy {
     this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
     });
-    this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
+    this.pageSubscription = this.examService.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       this.currentPage = updatedPage;
     });
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe((updatedResults: ResultsInterface) => {

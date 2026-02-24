@@ -10,8 +10,7 @@ import { ProtocolModel } from '../../../../models/protocol/protocol-model.servic
 import { MultipleChoiceInterface } from './multiple-choice.interface';
 import { ChoiceInterface } from '../../../../interfaces/choice.interface';
 import { Subscription } from 'rxjs';
-import { PageInterface } from '../../../../models/page/page.interface';
-import { PageModel } from '../../../../models/page/page.service';
+import { PageInterface } from '../../../../interfaces/page-definition.interface';
 import { ExamService } from '../../../../controllers/exam.service';
 import { Logger } from '../../../../services/logger.service';
 
@@ -23,7 +22,6 @@ import { Logger } from '../../../../services/logger.service';
 export class MultipleChoiceComponent implements OnInit, OnDestroy {
   private readonly examService = inject(ExamService);
   private readonly resultsModel = inject(ResultsModel);
-  private readonly pageModel = inject(PageModel);
   private readonly stateModel = inject(StateModel);
   private readonly protocolModel = inject(ProtocolModel);
   private readonly logger = inject(Logger);
@@ -66,7 +64,7 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe((updatedResults: ResultsInterface) => {
       this.results = updatedResults;
     });
-    this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
+    this.pageSubscription = this.examService.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type == 'multipleChoiceResponseArea') {
         const updatedMultipleChoiceResponseArea = updatedPage.responseArea as MultipleChoiceInterface;
         if (updatedMultipleChoiceResponseArea) {

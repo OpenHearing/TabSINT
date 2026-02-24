@@ -1,8 +1,8 @@
 import { IDeviceResponse } from '../interfaces/devices/device-response.interface';
-import { PageDefinition, ProtocolReferenceInterface } from '../interfaces/page-definition.interface';
+import { PageInterface, ProtocolReferenceInterface } from '../interfaces/page-definition.interface';
 import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
 
-export type PageTypes = PageDefinition | ProtocolReferenceInterface | ProtocolSchemaInterface;
+export type PageTypes = PageInterface | ProtocolReferenceInterface | ProtocolSchemaInterface;
 
 export interface Command {
   func: () => Promise<IDeviceResponse>;

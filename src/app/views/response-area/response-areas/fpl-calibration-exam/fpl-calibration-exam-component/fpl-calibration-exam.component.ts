@@ -1,9 +1,8 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
-import { PageModel } from '../../../../../models/page/page.service';
 import { FPLCalibrationExamInterface } from './fpl-calibration-exam.interface';
-import { PageInterface } from '../../../../../models/page/page.interface';
+import { PageInterface } from '../../../../../interfaces/page-definition.interface';
 import { DevicesService } from '../../../../../services/devices/devices.service';
 import { Logger } from '../../../../../services/logger.service';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
@@ -76,7 +75,6 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly changeDetectorRef: ChangeDetectorRef,
-    private readonly pageModel: PageModel,
     private readonly devicesService: DevicesService,
     private readonly logger: Logger,
     private readonly resultsModel: ResultsModel,
@@ -112,7 +110,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
     this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
-    this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
+    this.pageSubscription = this.examService.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'fplCalibrationResponseArea') {
         const responseArea = updatedPage?.responseArea as FPLCalibrationExamInterface;
         this.tabsintId = responseArea.tabsintId ?? this.tabsintId;

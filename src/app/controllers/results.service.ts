@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 
 import { ResultsInterface, ExamResults, CurrentResults } from '../models/results/results.interface';
 import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
-import { PageInterface } from '../models/page/page.interface';
+import { PageInterface } from '../interfaces/page-definition.interface';
 import { DiskInterface } from '../models/disk/disk.interface';
 import { VersionInterface } from '../models/version/version.interface';
 

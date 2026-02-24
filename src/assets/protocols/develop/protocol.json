@@ -2,6 +2,7 @@
   "title": "Development Protocol",
   "subtitle": "Developer testing of open-tabsint responseArea's.",
   "instructionText": "instructionText goes here",
+  "hideProgressBar": false,
   "navMenu": [
     {
       "text": "Back to Main Menu",

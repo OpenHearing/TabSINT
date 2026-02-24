@@ -17,7 +17,7 @@ import { CheckboxInterface } from '../views/response-area/response-areas/checkbo
 import { PreProcessFunctionInterface } from './preProcessFunction.interface';
 import { Headset, PlaybackMethod, WavfileWeighting } from '../utilities/constants';
 
-export interface PageDefinition {
+export interface PageInterface {
   id: string;
   headset?: Headset;
   skipIf?: string;
@@ -43,11 +43,12 @@ export interface PageDefinition {
   submitText?: string;
   followOns?: FollowOnInterface[];
   setFlags?: SetFlagInterface[];
+  progressBarVal?: number | string;
 }
 
 export interface NavMenuInterface {
   text: string;
-  target: PageDefinition | ProtocolReferenceInterface;
+  target: PageInterface | ProtocolReferenceInterface;
   returnHereAfterward: boolean;
 }
 

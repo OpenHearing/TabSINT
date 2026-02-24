@@ -8,7 +8,7 @@ import { Logger } from '../../services/logger.service';
 import { StateInterface } from '../../models/state/state.interface';
 import { ProtocolModel } from '../../models/protocol/protocol-model.service';
 import { ProtocolModelInterface } from '../../models/protocol/protocol.interface';
-import { NavMenuInterface } from '../../interfaces/page-definition.interface';
+import { PageInterface, NavMenuInterface } from '../../interfaces/page-definition.interface';
 import { isProtocolReferenceInterface } from '../../guards/type.guard';
 import { DiskModel } from '../../models/disk/disk.service';
 import { DiskInterface } from '../../models/disk/disk.interface';
@@ -17,9 +17,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { AppModel } from '../../models/app/app.service';
 import { AppInterface } from '../../models/app/app.interface';
 import { AdminService } from '../../controllers/admin.service';
-import { PageInterface } from '../../models/page/page.interface';
-import { PageModel } from '../../models/page/page.service';
-
 @Component({
   selector: 'header-view',
   templateUrl: './header.component.html',
@@ -31,7 +28,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ExamState = ExamState;
   AppState = AppState;
   disk: DiskInterface;
-  currentPage: PageInterface;
+  currentPage?: PageInterface;
   app: AppInterface;
   pageSubscription: Subscription | undefined;
   diskSubscription: Subscription | undefined;
@@ -45,7 +42,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private readonly examService: ExamService,
     private readonly logger: Logger,
     private readonly notifications: Notifications,
-    private readonly pageModel: PageModel,
     private readonly protocolM: ProtocolModel,
     private readonly stateModel: StateModel
   ) {
@@ -53,14 +49,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.protocol = this.protocolM.getProtocolModel();
     this.disk = this.diskModel.getDisk();
     this.app = this.appModel.getApp();
-    this.currentPage = this.pageModel.getPage();
   }
 
   ngOnInit(): void {
     this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
     });
-    this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
+    this.pageSubscription = this.examService.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       this.currentPage = updatedPage;
     });
     this.stateSubscription = this.stateModel.stateSubject.subscribe((updatedState: StateInterface) => {
