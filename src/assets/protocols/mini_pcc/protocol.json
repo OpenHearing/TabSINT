@@ -46,6 +46,9 @@
                 "id": "Checkbox"
               },
               {
+                "id": "Button Grid"
+              },
+              {
                 "id": "Image"
               },
               {
@@ -53,6 +56,9 @@
               },
               {
                 "id": "Custom Response Area"
+              },
+              {
+                "id": "Scan QR Code"
               },
               {
                 "id": "End All"
@@ -103,6 +109,12 @@
               }
             },
             {
+              "conditional": "result.response=='Button Grid'",
+              "target": {
+                "reference": "buttonGrid"
+              }
+            },
+            {
               "conditional": "result.response=='Image'",
               "target": {
                 "reference": "image"
@@ -124,6 +136,12 @@
               "conditional": "result.response=='End All'",
               "target": {
                 "reference": "@END_ALL"
+              }
+            },
+            {
+              "conditional": "result.response=='Scan QR Code'",
+              "target": {
+                "reference": "qrCodeResponseArea"
               }
             }
           ]
@@ -710,6 +728,26 @@
           "title": "Image",
           "image": {
             "path": "tabsint.png"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "qrCodeResponseArea",
+      "pages": [
+        {
+          "id": "qrCodeResponseArea",
+          "title": "QR Code Scanning",
+          "questionMainText": "Example of scanning a QR Code",
+          "questionSubText": "Scan a QR code",
+          "isAutoSubmit": false,
+          "responseArea": {
+            "type": "qrCodeResponseArea",
+            "scope": "page"
           }
         },
         {
