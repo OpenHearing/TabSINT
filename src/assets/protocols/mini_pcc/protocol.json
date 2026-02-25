@@ -2,6 +2,7 @@
   "title": "Development Protocol",
   "subtitle": "Developer testing of open-tabsint responseArea's.",
   "instructionText": "instructionText goes here",
+  "hideProgressBar": true,
   "navMenu": [
     {
       "text": "Back to Main Menu",
@@ -33,34 +34,10 @@
                 "id": "Multiple Input"
               },
               {
-                "id": "Manual Audiometry"
+                "id": "Yes/No"
               },
               {
-                "id": "Calibration Exam"
-              },
-              {
-                "id": "FPL Calibration Exam"
-              },
-              {
-                "id": "Swept DPOAE Exam (SPL)"
-              },
-              {
-                "id": "Swept DPOAE Exam (FPL)"
-              },
-              {
-                "id": "WAI Exam (SPL)"
-              },
-              {
-                "id": "WAI Exam (FPL)"
-              },
-              {
-                "id": "MRT Exam"
-              },
-              {
-                "id": "MEMR Exam (Within Block)"
-              },
-              {
-                "id": "MEMR Exam (Between Blocks)"
+                "id": "Integer"
               },
               {
                 "id": "Subject ID"
@@ -108,63 +85,15 @@
               }
             },
             {
-              "conditional": "result.response=='Manual Audiometry'",
+              "conditional": "result.response=='Yes/No'",
               "target": {
-                "reference": "ManualAudiometry"
+                "reference": "Yes/No"
               }
             },
             {
-              "conditional": "result.response=='Calibration Exam'",
+              "conditional": "result.response=='Integer'",
               "target": {
-                "reference": "CalibrationExam"
-              }
-            },
-            {
-              "conditional": "result.response=='FPL Calibration Exam'",
-              "target": {
-                "reference": "FPLCalibrationExam"
-              }
-            },
-            {
-              "conditional": "result.response=='Swept DPOAE Exam (SPL)'",
-              "target": {
-                "reference": "SweptDpoaeExamSPL"
-              }
-            },
-            {
-              "conditional": "result.response=='Swept DPOAE Exam (FPL)'",
-              "target": {
-                "reference": "SweptDpoaeExamFPL"
-              }
-            },
-            {
-              "conditional": "result.response=='WAI Exam (SPL)'",
-              "target": {
-                "reference": "WAIExamSPL"
-              }
-            },
-            {
-              "conditional": "result.response=='WAI Exam (FPL)'",
-              "target": {
-                "reference": "WAIExamFPL"
-              }
-            },
-            {
-              "conditional": "result.response=='MRT Exam'",
-              "target": {
-                "reference": "MRTExam"
-              }
-            },
-            {
-              "conditional": "result.response=='MEMR Exam (Within Block)'",
-              "target": {
-                "reference": "MEMRExamWithinBlock"
-              }
-            },
-            {
-              "conditional": "result.response=='MEMR Exam (Between Blocks)'",
-              "target": {
-                "reference": "MEMRExamBetweenBlocks"
+                "reference": "Integer"
               }
             },
             {
@@ -204,15 +133,15 @@
               }
             },
             {
-              "conditional": "result.response=='Scan QR Code'",
-              "target": {
-                "reference": "qrCodeResponseArea"
-              }
-            },
-            {
               "conditional": "result.response=='End All'",
               "target": {
                 "reference": "@END_ALL"
+              }
+            },
+            {
+              "conditional": "result.response=='Scan QR Code'",
+              "target": {
+                "reference": "qrCodeResponseArea"
               }
             }
           ]
@@ -365,27 +294,20 @@
       ]
     },
     {
-      "protocolId": "ManualAudiometry",
+      "protocolId": "Yes/No",
       "pages": [
         {
-          "id": "audiometry_001",
-          "title": "Manual Audiometry Test",
-          "instructionText": "Test manual audiometry response area",
+          "id": "yes_no",
+          "title": "Yes/No",
           "responseArea": {
-            "type": "manualAudiometryResponseArea",
-            "tabsintId": "1",
-            "frequencies": [500, 1000, 2000, 3000, 4000, 6000, 8000],
-            "adjustmentStepSize": 2,
-            "incrementRatioMultiplier": 2,
-            "retspls": {
-              "500": 11.0,
-              "1000": 5.5,
-              "2000": 4.5,
-              "3000": 2.5,
-              "4000": 9.5,
-              "6000": 17.0,
-              "8000": 17.5
-            }
+            "type": "multipleInputResponseArea",
+            "inputList": [
+              {
+                "text": "Answer yes or no to this question",
+                "inputType": "dropdown",
+                "options": ["yes", "no"]
+              }
+            ]
           }
         },
         {
@@ -395,235 +317,19 @@
       ]
     },
     {
-      "protocolId": "CalibrationExam",
+      "protocolId": "Integer",
       "pages": [
         {
-          "id": "calibration_001",
-          "title": "Calibration Exam",
-          "enableBackButton": true,
+          "id": "integer",
+          "title": "Integer",
           "responseArea": {
-            "type": "calibrationResponseArea",
-            "frequencies": [500, 1000],
-            "targetLevels": [60, 70],
-            "showResults": true
-          }
-        },
-        {
-          "id": "backtomain",
-          "reference": "MainMenu"
-        }
-      ]
-    },
-    {
-      "protocolId": "FPLCalibrationExam",
-      "pages": [
-        {
-          "id": "fpl_calibration_001",
-          "title": "FPL Calibration Exam",
-          "enableBackButton": true,
-          "responseArea": {
-            "type": "fplCalibrationResponseArea",
-            "outputChannels": ["HPL1", "HPR1"],
-            "fStart": 390,
-            "fEnd": 16500,
-            "sweepDuration": 10.806,
-            "numFrequencies": 64,
-            "windowDuration": 0.0427
-          }
-        },
-        {
-          "id": "backtomain",
-          "reference": "MainMenu"
-        }
-      ]
-    },
-    {
-      "protocolId": "SweptDpoaeExamSPL",
-      "pages": [
-        {
-          "id": "swept_oae_001",
-          "title": "Swept DPOAE (SPL)",
-          "responseArea": {
-            "type": "sweptDPOAEResponseArea",
-            "normativeDataPath": "swept-dpoae-normative-data-human.xlsx",
-            "outputChannel1": "HPL1",
-            "outputChannel2": "HPR1",
-            "inputChannel": "EPSHIELD_LEFT_PDM_MIC1",
-            "l1": 75,
-            "l2": 65,
-            "f2Start": 500,
-            "f2End": 16000,
-            "frequencyRatio": 1.22,
-            "sweepDuration": 10.0,
-            "windowDuration": 0.1,
-            "sweepType": "log",
-            "minSweeps": 16,
-            "maxSweeps": 24,
-            "numFrequencies": 64,
-            "noiseFloorThreshold": -10,
-            "outputRawMeasurements": false,
-            "outputCalibrationType": "SPL"
-          }
-        },
-        {
-          "id": "backtomain",
-          "reference": "MainMenu"
-        }
-      ]
-    },
-    {
-      "protocolId": "SweptDpoaeExamFPL",
-      "pages": [
-        {
-          "id": "swept_oae_002",
-          "title": "Swept DPOAE (FPL)",
-          "responseArea": {
-            "type": "sweptDPOAEResponseArea",
-            "normativeDataPath": "swept-dpoae-normative-data-human.xlsx",
-            "outputChannel1": "HPL1",
-            "outputChannel2": "HPR1",
-            "inputChannel": "EPSHIELD_LEFT_PDM_MIC1",
-            "l1": 75,
-            "l2": 65,
-            "f2Start": 500,
-            "f2End": 16000,
-            "frequencyRatio": 1.22,
-            "sweepDuration": 10.0,
-            "windowDuration": 0.1,
-            "sweepType": "log",
-            "minSweeps": 16,
-            "maxSweeps": 50,
-            "numFrequencies": 64,
-            "noiseFloorThreshold": -10,
-            "outputRawMeasurements": false,
-            "outputCalibrationType": "FPL"
-          }
-        },
-        {
-          "id": "backtomain",
-          "reference": "MainMenu"
-        }
-      ]
-    },
-    {
-      "protocolId": "WAIExamSPL",
-      "pages": [
-        {
-          "id": "wai_001",
-          "title": "Wideband Acoustic Immittance (WAI) - SPL",
-          "responseArea": {
-            "type": "WAIResponseArea",
-            "fStart": 500,
-            "fEnd": 4000,
-            "normativeAbsorbanceDataPath": "wai-normative-absorbance-data-human.xlsx",
-            "outputCalibrationType": "SPL",
-            "outputChannel": "HPL1",
-            "numFrequencies": 128,
-            "numSweeps": 5,
-            "windowDuration": 0.1,
-            "sweepDuration": 6.0,
-            "inputChannels": ["EPSHIELD_RIGHT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2", "EPSHIELD_LEFT_PDM_MIC1"]
-          }
-        },
-        {
-          "id": "backtomain",
-          "reference": "MainMenu"
-        }
-      ]
-    },
-    {
-      "protocolId": "WAIExamFPL",
-      "pages": [
-        {
-          "id": "wai_002",
-          "title": "Wideband Acoustic Immittance (WAI) - FPL",
-          "responseArea": {
-            "type": "WAIResponseArea",
-            "fStart": 500,
-            "fEnd": 4000,
-            "normativeAbsorbanceDataPath": "wai-normative-absorbance-data-human.xlsx",
-            "outputCalibrationType": "FPL",
-            "outputChannel": "HPL1",
-            "numFrequencies": 128,
-            "numSweeps": 5,
-            "windowDuration": 0.1,
-            "sweepDuration": 6.0,
-            "inputChannels": ["EPSHIELD_RIGHT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2", "EPSHIELD_LEFT_PDM_MIC1"]
-          }
-        },
-        {
-          "id": "backtomain",
-          "reference": "MainMenu"
-        }
-      ]
-    },
-    {
-      "protocolId": "MRTExam",
-      "pages": [
-        {
-          "id": "MRT",
-          "title": "Modified Rhyme Test",
-          "responseArea": {
-            "type": "mrtResponseArea",
-            "examDefinitionFilename": "mrt-exam-definition.csv"
-          }
-        },
-        {
-          "id": "backtomain",
-          "reference": "MainMenu"
-        }
-      ]
-    },
-    {
-      "protocolId": "MEMRExamWithinBlock",
-      "pages": [
-        {
-          "id": "MEMR",
-          "title": "MEMR Exam (Within Block)",
-          "isAutoSubmit": false,
-          "responseArea": {
-            "type": "memrResponseArea",
-            "soundFileName": "/PurdueMEMR/MEMR_Sinc16_2ch.wav",
-            "recordFileFolder": "MEMR_REC_WITHIN",
-            "nRepeats": 5,
-            "useMetaRMS": true,
-            "elicitorLevelChange": "Within Block",
-            "elicitorLevelArray": [70.0, 74.0, 78.0, 82.0, 86.0],
-            "probeStimulusLevel": 70,
-            "submissionIntervalMs": 500,
-            "probeOutputChannel": ["FPL/HPR1"],
-            "elicitorOutputChannel": ["FPL/HPL1"],
-            "recordChannels": ["FPL/HPR1", "EPSHIELD_LEFT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2", "EPSHIELD_RIGHT_PDM_MIC1"],
-            "bleDelayPerTrial": 4000
-          }
-        },
-        {
-          "id": "backtomain",
-          "reference": "MainMenu"
-        }
-      ]
-    },
-    {
-      "protocolId": "MEMRExamBetweenBlocks",
-      "pages": [
-        {
-          "id": "MEMR",
-          "title": "MEMR Exam (Between Blocks)",
-          "isAutoSubmit": false,
-          "responseArea": {
-            "type": "memrResponseArea",
-            "soundFileName": "/PurdueMEMR/MEMR_Sinc16_2ch.wav",
-            "recordFileFolder": "MEMR_REC_BETWEEN",
-            "nRepeats": 5,
-            "useMetaRMS": true,
-            "elicitorLevelChange": "Between Blocks",
-            "elicitorLevelArray": [70.0, 74.0, 78.0, 82.0, 86.0],
-            "probeStimulusLevel": 70,
-            "submissionIntervalMs": 500,
-            "probeOutputChannel": ["FPL/HPR1"],
-            "elicitorOutputChannel": ["FPL/HPL1"],
-            "recordChannels": ["FPL/HPR1", "EPSHIELD_LEFT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2", "EPSHIELD_RIGHT_PDM_MIC1"],
-            "bleDelayPerTrial": 4000
+            "type": "multipleInputResponseArea",
+            "inputList": [
+              {
+                "text": "Here you can input an integer",
+                "inputType": "number"
+              }
+            ]
           }
         },
         {
@@ -720,7 +426,7 @@
           "setFlags": [
             {
               "id": "testFlag",
-              "conditional": "result.response==='Set testFlag'"
+              "conditional":"result.response==='Set testFlag'"
             }
           ]
         },
@@ -734,8 +440,62 @@
             "responseRequired": false
           },
           "preProcessFunction": {
-            "filepath": "customPreprocess.js",
-            "function": "testPreprocess"
+            "filepath":"customPreprocess.js", 
+            "function":"testPreprocess"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "customResponseArea",
+      "pages": [
+        {
+          "id": "customResponseArea",
+          "title": "Basic Button Results Test",
+          "questionPreMainText": "Example of questionPreMainText",
+          "questionMainText": "Example of questionMainText",
+          "questionSubText": "Example of questionSubText",
+          "instructionText": "Example of instructionText",
+          "helpText": "Example of helpText",
+          "isAutoSubmit": false,
+          "responseArea": {
+            "type": "customResponseArea",
+            "htmlFilePath": "custom-response-areas/html_basic_example.html",
+            "jsFilePath": "custom-response-areas/js_basic_example.js"
+          }
+        },
+        {
+          "id": "customResponseArea2",
+          "title": "Multi Page Example",
+          "isAutoSubmit": false,
+          "responseArea": {
+            "type": "customResponseArea",
+            "htmlFilePath": "custom-response-areas/html_multi_example.html",
+            "jsFilePath": "custom-response-areas/js_multi_example.js"
+          }
+        },
+        {
+          "id": "customResponseArea3",
+          "title": "Reading and Writing Files Example",
+          "isAutoSubmit": false,
+          "responseArea": {
+            "type": "customResponseArea",
+            "htmlFilePath": "custom-response-areas/html_file_example.html",
+            "jsFilePath": "custom-response-areas/js_file_example.js"
+          }
+        },
+        {
+          "id": "customResponseArea4",
+          "title": "Page and Disk Variables",
+          "isAutoSubmit": false,
+          "responseArea": {
+            "type": "customResponseArea",
+            "htmlFilePath": "custom-response-areas/html_disk_example.html",
+            "jsFilePath": "custom-response-areas/js_disk_example.js"
           }
         },
         {
@@ -968,60 +728,6 @@
           "title": "Image",
           "image": {
             "path": "tabsint.png"
-          }
-        },
-        {
-          "id": "backtomain",
-          "reference": "MainMenu"
-        }
-      ]
-    },
-    {
-      "protocolId": "customResponseArea",
-      "pages": [
-        {
-          "id": "customResponseArea",
-          "title": "Basic Button Results Test",
-          "questionPreMainText": "Example of questionPreMainText",
-          "questionMainText": "Example of questionMainText",
-          "questionSubText": "Example of questionSubText",
-          "instructionText": "Example of instructionText",
-          "helpText": "Example of helpText",
-          "isAutoSubmit": false,
-          "responseArea": {
-            "type": "customResponseArea",
-            "htmlFilePath": "custom-response-areas/html_basic_example.html",
-            "jsFilePath": "custom-response-areas/js_basic_example.js"
-          }
-        },
-        {
-          "id": "customResponseArea2",
-          "title": "Multi Page Example",
-          "isAutoSubmit": false,
-          "responseArea": {
-            "type": "customResponseArea",
-            "htmlFilePath": "custom-response-areas/html_multi_example.html",
-            "jsFilePath": "custom-response-areas/js_multi_example.js"
-          }
-        },
-        {
-          "id": "customResponseArea3",
-          "title": "Reading and Writing Files Example",
-          "isAutoSubmit": false,
-          "responseArea": {
-            "type": "customResponseArea",
-            "htmlFilePath": "custom-response-areas/html_file_example.html",
-            "jsFilePath": "custom-response-areas/js_file_example.js"
-          }
-        },
-        {
-          "id": "customResponseArea4",
-          "title": "Page and Disk Variables",
-          "isAutoSubmit": false,
-          "responseArea": {
-            "type": "customResponseArea",
-            "htmlFilePath": "custom-response-areas/html_disk_example.html",
-            "jsFilePath": "custom-response-areas/js_disk_example.js"
           }
         },
         {
