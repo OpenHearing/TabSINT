@@ -565,7 +565,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
 
   private async updateDiskModel(protocol: ProtocolInterface): Promise<boolean> {
     const protocolMetaData: ProtocolMetaInterface = getProtocolMetaData(protocol);
-    let availableMetaProtocols = this.disk.availableProtocolsMeta;
+    const availableMetaProtocols = this.disk.availableProtocolsMeta;
 
     // Check if a protocol with this name already exists
     const existingProtocolEntry = Object.entries(availableMetaProtocols).find(([key, p]) => p.name === protocolMetaData.name);
