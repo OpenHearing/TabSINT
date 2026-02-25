@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
 import { combineLatest, interval, Subscription } from 'rxjs';
-import { isPageDefinition, isProtocolReferenceInterface, isProtocolSchemaInterface } from '../guards/type.guard';
+import { isPageDefinition, isProtocolReferenceInterface, isProtocolSchemaInterface, isProtocolStarted } from '../guards/type.guard';
 import { PageTypes } from '../types/custom-types';
 import { FollowOnInterface, ProtocolReferenceInterface } from '../interfaces/page-definition.interface';
 import { ResultsInterface } from '../models/results/results.interface';
@@ -465,7 +465,7 @@ export class ExamService {
   updateExamProgress(protocol: ProtocolStackItem | undefined) {
     let progress: string | number = 0;
 
-    if (protocol === undefined || protocol.pageQueue.length === 0 || protocol.pageIndex < 0 || protocol.pageIndex >= protocol.pageQueue.length) {
+    if (!isProtocolStarted(protocol)) {
       this.stateModel.updateState({ examProgress: progress });
       return;
     }

@@ -1,7 +1,12 @@
 import { PageDefinition, ProtocolReferenceInterface } from '../interfaces/page-definition.interface';
 import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
 import { PageInterface } from '../models/page/page.interface';
+import { ProtocolStackItem } from '../models/protocol/protocol-stack';
 import { PageTypes } from '../types/custom-types';
+
+export function isProtocolStarted(item?: ProtocolStackItem): item is ProtocolStackItem {
+  return item !== undefined && item.pageQueue.length > 0 && item.pageIndex >= 0 && item.pageIndex < item.pageQueue.length;
+}
 
 export function isProtocolSchemaInterface(page: PageTypes): page is ProtocolSchemaInterface {
   return (page as ProtocolSchemaInterface).pages !== undefined;
