@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { combineLatest, interval, Subscription } from 'rxjs';
 import { isPageDefinition, isProtocolReferenceInterface, isProtocolSchemaInterface } from '../guards/type.guard';
 import { PageTypes } from '../types/custom-types';
 import { FollowOnInterface, ProtocolReferenceInterface } from '../interfaces/page-definition.interface';
@@ -55,9 +55,11 @@ export class ExamService {
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
       this.results = updatedResults;
     });
-    this.protocolModel.getProtocolModel().activeProtocolStack.latestProtocolObservable.subscribe(latestStackItem => {
-      this.updateExamProgress(latestStackItem);
-    });
+    combineLatest([this.protocolModel.getProtocolModel().activeProtocolStack.latestProtocolObservable, interval(1000)]).subscribe(
+      ([latestStackItem]) => {
+        this.updateExamProgress(latestStackItem);
+      }
+    );
   }
 
   /** Switches to exam view.
@@ -228,27 +230,19 @@ export class ExamService {
     if (page.followOns) {
       const nextID = this.findFollowOn(page);
       if (nextID != undefined) {
-        if (checkForSpecialReference(nextID)) {
+        if (checkForSpecialReference(nextID) || nextID in this.protocol.activeProtocolDictionary!) {
           const followOnReference: ProtocolReferenceInterface = {
             reference: nextID,
           };
           pageList.push(followOnReference);
         } else {
-          if (nextID in this.protocol.activeProtocolDictionary!) {
-            // Follow on exists, create a reference definition to add to the pages
-            const followOnReference: ProtocolReferenceInterface = {
-              reference: nextID,
-            };
-            pageList.push(followOnReference);
-          } else {
-            this.notifications
-              .alert({
-                title: 'Alert',
-                content: `FollowOn target ${nextID} not found. Please check your protocol.`,
-                type: DialogType.Alert,
-              })
-              .subscribe();
-          }
+          this.notifications
+            .alert({
+              title: 'Alert',
+              content: `FollowOn target ${nextID} not found. Please check your protocol.`,
+              type: DialogType.Alert,
+            })
+            .subscribe();
         }
       }
     }
