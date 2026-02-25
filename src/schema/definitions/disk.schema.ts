@@ -18,17 +18,8 @@ export const diskSchema: JSONSchemaType<DiskInterface> = {
       type: 'object',
       additionalProperties: protocolMetaSchema,
       properties: {
-        // Commenting out purdue shakedown while we develop
-        // PurdueShakedown: {
-        //      date: new Date().toJSON(),
-        //      version: '0.0',
-        //      server: ProtocolServer.Developer,
-        //      admin: true,
-        //     creator: "Creare",
-        //     name: "Purdue Shakedown",
-        //     path: "protocols/purdue-shakedown"
-        // },
         develop: protocolMetaSchema,
+        mini_pcc: protocolMetaSchema,
       },
       default: {
         develop: {
@@ -40,8 +31,17 @@ export const diskSchema: JSONSchemaType<DiskInterface> = {
           name: 'develop',
           path: 'protocols/develop',
         },
+        mini_pcc: {
+          date: new Date().toJSON(),
+          version: '0.0',
+          server: ProtocolServer.Developer,
+          admin: true,
+          creator: 'Creare',
+          name: 'mini_pcc',
+          path: 'protocols/mini_pcc',
+        },
       },
-      required: ['develop'],
+      required: ['develop', 'mini_pcc'],
     },
     contentURI: { type: 'string', default: null },
     downloadInProgress: { type: 'boolean', default: false },
