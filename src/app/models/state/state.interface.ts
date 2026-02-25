@@ -8,7 +8,7 @@ export interface StateInterface {
   doesResponseExist: boolean;
   isResponseRequired: boolean;
   isSubmittable: boolean;
-  canGoBack: Function;
+  canGoBack: () => boolean;
   isPaneOpen: {
     general: boolean;
     advanced: boolean;

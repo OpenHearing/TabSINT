@@ -294,7 +294,7 @@ describe('ExamService', () => {
       submitText: '',
     } as PageInterface).asObservable();
 
-    spyOn(examService as any, 'fetchNextPage').and.stub();
+    spyOn(examService, 'advancePage' as never).and.stub();
     await examService.begin();
 
     expect(mockResultsService.initializeExamResults).toHaveBeenCalled();
@@ -302,11 +302,11 @@ describe('ExamService', () => {
 
   it('should submit the default response and advance the page', () => {
     mockResultsService.pushResults.and.stub();
-    spyOn<any>(examService, 'fetchNextPage');
+    spyOn(examService, 'advancePage' as never);
 
     examService.submitDefault();
     expect(mockResultsService.pushResults).toHaveBeenCalled();
-    expect(examService['fetchNextPage' as keyof ExamService]).toHaveBeenCalled();
+    expect(examService['advancePage' as keyof ExamService]).toHaveBeenCalled();
   });
 
   it('should reset the exam state to Ready when reset is called', () => {
@@ -322,7 +322,7 @@ describe('ExamService', () => {
   // });
 
   it('should navigate to target protocol and submit default', () => {
-    spyOn<any>(examService, 'submitDefault');
+    spyOn(examService, 'submitDefault');
 
     examService.navigateToTarget('test-protocol');
     expect(examService['submitDefault' as keyof ExamService]).toHaveBeenCalled();
@@ -331,9 +331,9 @@ describe('ExamService', () => {
   it('should determine if a page response is required', () => {
     const mockPage = {
       responseArea: { responseRequired: undefined, type: 'textboxResponseArea' },
-    } as any;
+    } as PageInterface;
     mockPageModel.getPage.and.returnValue(mockPage);
-    spyOn<any>(examService, 'isPageResponseRequired').and.callThrough();
+    spyOn(examService, 'isPageResponseRequired').and.callThrough();
 
     expect(examService.isPageResponseRequired(mockPage)).toBeDefined();
   });

@@ -15,7 +15,7 @@ export class StateModel {
     doesResponseExist: false,
     isResponseRequired: false,
     isSubmittable: true,
-    canGoBack: () => {},
+    canGoBack: () => true,
     isPaneOpen: {
       general: true,
       advanced: false,

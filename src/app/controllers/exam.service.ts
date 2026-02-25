@@ -1,6 +1,12 @@
-import { Injectable, Inject } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { combineLatest, interval, Subscription } from 'rxjs';
-import { isPageDefinition, isProtocolReferenceInterface, isProtocolSchemaInterface, isProtocolStarted } from '../guards/type.guard';
+import {
+  isChoiceResponseArea,
+  isPageDefinition,
+  isProtocolReferenceInterface,
+  isProtocolSchemaInterface,
+  isProtocolStarted,
+} from '../guards/type.guard';
 import { PageTypes } from '../types/custom-types';
 import { FollowOnInterface, ProtocolReferenceInterface } from '../interfaces/page-definition.interface';
 import { ResultsInterface } from '../models/results/results.interface';
@@ -34,18 +40,18 @@ export class ExamService {
   stateSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
 
-  constructor(
-    private readonly logger: Logger,
-    private readonly resultsService: ResultsService,
-    private readonly resultsModel: ResultsModel,
-    private readonly pageModel: PageModel,
-    private readonly protocolModel: ProtocolModel,
-    private readonly stateModel: StateModel,
-    private readonly notifications: Notifications,
-    @Inject(WINDOW) private readonly window: any,
-    private readonly fileService: FileService,
-    private readonly diskModel: DiskModel
-  ) {
+  private readonly logger = inject(Logger);
+  private readonly resultsService = inject(ResultsService);
+  private readonly resultsModel = inject(ResultsModel);
+  private readonly pageModel = inject(PageModel);
+  private readonly protocolModel = inject(ProtocolModel);
+  private readonly stateModel = inject(StateModel);
+  private readonly notifications = inject(Notifications);
+  private readonly window = inject(WINDOW);
+  private readonly fileService = inject(FileService);
+  private readonly diskModel = inject(DiskModel);
+
+  constructor() {
     this.results = this.resultsModel.getResults();
     this.state = this.stateModel.getState();
     this.protocol = this.protocolModel.getProtocolModel();
@@ -92,12 +98,12 @@ export class ExamService {
     this.resultsService.initializeExamResults();
     this.stateModel.updateState({ examState: ExamState.Testing });
     this.protocol.activeProtocolStack.addProtocol(this.protocol.activeProtocol!);
-    this.fetchNextPage();
+    this.advancePage();
     this.submit = this.submitDefault;
   }
 
   /** Default submit function for exam pages.
-   * @summary Appends current page results to current exam results, calls fetchNextPage(), and resets.
+   * @summary Appends current page results to current exam results, calls advancePage(), and resets.
    * @models results, state
    */
   submitDefault() {
@@ -105,7 +111,7 @@ export class ExamService {
     this.gradeResponses = this.gradeResponsesDefault;
     this.resultsService.pushResults(this.results.currentPage);
     this.submit = this.submitDefault;
-    this.fetchNextPage();
+    this.advancePage();
   }
 
   /** Submit function for exam pages. Can be overwritten by exams.
@@ -117,16 +123,18 @@ export class ExamService {
 
   gradeResponsesDefault() {
     this.results.currentPage.correct = undefined;
-    const choices: ChoiceInterface[] | undefined = (this.results.currentPage?.page?.responseArea as any)?.choices;
-    if (choices) {
-      choices.forEach((choice: ChoiceInterface) => {
-        if (choice?.correct && JSON.stringify(this.results.currentPage.response.selected) === JSON.stringify([choice.id])) {
-          this.results.currentPage.correct = true;
-        }
-        if (choice?.correct && this.results.currentPage.correct === undefined) {
-          this.results.currentPage.correct = false;
-        }
-      });
+    if (isChoiceResponseArea(this.results.currentPage?.page?.responseArea)) {
+      const choices: ChoiceInterface[] | undefined = this.results.currentPage.page.responseArea.choices;
+      if (choices) {
+        choices.forEach((choice: ChoiceInterface) => {
+          if (choice?.correct && JSON.stringify(this.results.currentPage.response.selected) === JSON.stringify([choice.id])) {
+            this.results.currentPage.correct = true;
+          }
+          if (choice?.correct && this.results.currentPage.correct === undefined) {
+            this.results.currentPage.correct = false;
+          }
+        });
+      }
     }
   }
 
@@ -265,16 +273,17 @@ export class ExamService {
 
   private async handlePreProcessFunctions(page: PageInterface) {
     if (page.preProcessFunction) {
-      this.window.tabsint = {};
-      this.window.tabsint.logger = this.logger;
-      this.window.tabsint.examService = this;
-      this.window.tabsint.fileService = this.fileService;
-      this.window.tabsint.resultsService = this.resultsService;
-      this.window.tabsint.stateModel = this.stateModel;
-      this.window.tabsint.diskModel = this.diskModel;
-      this.window.tabsint.resultsModel = this.resultsModel;
-      this.window.tabsint.pageModel = this.pageModel;
-      this.window.tabsint.protocolModel = this.protocolModel;
+      this.window.tabsint = {
+        logger: this.logger,
+        examService: this,
+        fileService: this.fileService,
+        resultsService: this.resultsService,
+        stateModel: this.stateModel,
+        diskModel: this.diskModel,
+        resultsModel: this.resultsModel,
+        pageModel: this.pageModel,
+        protocolModel: this.protocolModel,
+      };
 
       eval(page.preProcessFunction.js! + '\n' + page.preProcessFunction.function + '()');
     }
@@ -296,7 +305,7 @@ export class ExamService {
   /**
    * Proceed to next page in the exam with handling of pre-processing and post-processing.
    */
-  private fetchNextPage() {
+  private advancePage() {
     // End the exam if no protocol is available in the stack
     const currentProtocol = this.protocol.activeProtocolStack.peek();
     if (currentProtocol === undefined) {
@@ -323,7 +332,7 @@ export class ExamService {
     // A protocol should be removed from the stack if all of the pages have been completed
     if (pageIndex >= pageQueue.length) {
       this.protocol.activeProtocolStack.pop();
-      this.fetchNextPage();
+      this.advancePage();
       return;
     }
 
@@ -331,13 +340,13 @@ export class ExamService {
       // Increment the current protocol page index before moving to a new stack item to mark as completed
       this.protocol.activeProtocolStack.updateCurrentProtocol({ pageIndex: pageIndex + 1 });
       if (page.skipIf && this.conditionalEvaluator(page.skipIf)) {
-        this.fetchNextPage();
+        this.advancePage();
       } else if (checkForSpecialReference(page.reference)) {
         this.handleSpecialReferences(page.reference);
       } else {
         const referenceProtocol = this.protocol.activeProtocolDictionary![page?.reference];
         this.protocol.activeProtocolStack.addProtocol(referenceProtocol);
-        this.fetchNextPage();
+        this.advancePage();
       }
       return;
     }
@@ -346,12 +355,12 @@ export class ExamService {
       // Increment the current protocol page index before moving to a new stack item to mark as completed
       this.protocol.activeProtocolStack.updateCurrentProtocol({ pageIndex: pageIndex + 1 });
       this.protocol.activeProtocolStack.addProtocol(page);
-      this.fetchNextPage();
+      this.advancePage();
       return;
     }
 
     if (page.skipIf && this.conditionalEvaluator(page.skipIf)) {
-      this.fetchNextPage();
+      this.advancePage();
       return;
     }
 
@@ -364,7 +373,7 @@ export class ExamService {
     });
     this.stateModel.setPageSubmittable();
     this.resultsService.initializePageResults(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   /** Finds followOn from current page.
@@ -439,7 +448,7 @@ export class ExamService {
     this.resultsService.save(this.results.currentExam);
     this.stateModel.updateState({ examState: ExamState.Finalized });
     this.resetProtocolStack();
-    window.scrollTo(0, 0);
+    this.window.scrollTo(0, 0);
   }
 
   switchToAdminView() {

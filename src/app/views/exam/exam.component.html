@@ -60,17 +60,17 @@
         </button>
       </div>
     </div>
-    <div *ngIf="state.examState === ExamState.Testing && currentPage?.responseArea?.type !== 'manualAudiometryResponseArea'">
+    <div *ngIf="state.examState === ExamState.Testing && currentPage.responseArea?.type !== 'manualAudiometryResponseArea'">
       <div
         class="row response-buttons"
-        *ngIf="(disk.preferences.debugMode && disk.preferences.adminSkipMode) || currentPage?.responseArea?.enableSkip">
+        *ngIf="(disk.preferences.debugMode && disk.preferences.adminSkipMode) || currentPage.responseArea?.enableSkip">
         <div class="col-4">
           <button
             id="help-btn"
             type="button"
             class="btn btn-block btn-lg btn-default btn-centered"
             [ngClass]="currentPage.helpText ? '' : 'disabled custom-disabled'"
-            *ngIf="!currentPage?.enableBackButton"
+            *ngIf="!currentPage.enableBackButton"
             (click)="help()">
             <span class="ion-help-circled"></span> {{ "Help" | translate }}
           </button>
@@ -79,7 +79,7 @@
             type="button"
             class="btn btn-block btn-lg btn-default btn-centered"
             [ngClass]="state.canGoBack() ? '' : 'disabled custom-disabled'"
-            *ngIf="!!currentPage?.enableBackButton"
+            *ngIf="currentPage.enableBackButton"
             (click)="back()">
             <span class="ion-arrow-left"></span> {{ "Back" | translate }}
           </button>
@@ -97,21 +97,21 @@
             [ngClass]="state.isSubmittable ? '' : 'disabled custom-disabled'"
             [disabled]="!state.isSubmittable"
             (click)="submit()">
-            <div *ngIf="currentPage?.submitText">{{ currentPage.submitText }}</div>
-            <div *ngIf="!currentPage?.submitText">{{ buttonText || "Submit" | translate }}</div>
+            <div *ngIf="currentPage.submitText">{{ currentPage.submitText }}</div>
+            <div *ngIf="!currentPage.submitText">{{ buttonText || "Submit" | translate }}</div>
           </button>
         </div>
       </div>
       <div
         class="row response-buttons"
-        *ngIf="!((disk.preferences.debugMode && disk.preferences.adminSkipMode) || currentPage?.responseArea?.enableSkip)">
+        *ngIf="!((disk.preferences.debugMode && disk.preferences.adminSkipMode) || currentPage.responseArea?.enableSkip)">
         <div class="col-6">
           <button
             id="help-btn"
             type="button"
             class="btn btn-block btn-lg btn-default btn-centered"
             [ngClass]="currentPage.helpText ? '' : 'disabled custom-disabled'"
-            *ngIf="!currentPage?.enableBackButton"
+            *ngIf="!currentPage.enableBackButton"
             (click)="help()">
             <span class="ion-help-circled"></span> {{ "Help" | translate }}
           </button>
@@ -119,7 +119,7 @@
             id="back-btn"
             type="button"
             class="btn btn-block btn-lg btn-default btn-centered"
-            *ngIf="!!currentPage?.enableBackButton"
+            *ngIf="currentPage.enableBackButton"
             (click)="back()">
             <span class="ion-arrow-left"></span> {{ "Back" | translate }}
           </button>
@@ -132,8 +132,8 @@
             [ngClass]="state.isSubmittable ? '' : 'disabled custom-disabled'"
             [disabled]="!state.isSubmittable"
             (click)="submit()">
-            <div *ngIf="currentPage?.submitText">{{ currentPage.submitText }}</div>
-            <div *ngIf="!currentPage?.submitText">{{ buttonText || "Submit" | translate }}</div>
+            <div *ngIf="currentPage.submitText">{{ currentPage.submitText }}</div>
+            <div *ngIf="!currentPage.submitText">{{ buttonText || "Submit" | translate }}</div>
           </button>
         </div>
       </div>

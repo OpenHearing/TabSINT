@@ -21,10 +21,12 @@ describe('tympanWrap', () => {
   let tympanAdapter: TympanAdapter;
 
   beforeEach(async () => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [DiskModel],
+    });
 
     appModel = new AppModel();
-    diskModel = new DiskModel(new Document());
+    diskModel = TestBed.inject(DiskModel);
     sqLite = new SqLite(appModel, diskModel);
     logger = new Logger(diskModel, sqLite);
     tympanAdapter = new TympanAdapter(logger);

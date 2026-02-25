@@ -5,12 +5,13 @@ import { DiskModel } from '../models/disk/disk.service';
 import { ProtocolServer } from '../utilities/constants';
 import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
 import { Notifications } from '../services/notifications.service';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ProtocolInterface } from '../models/protocol/protocol.interface';
 import { partialMetaDefaults } from '../utilities/defaults';
+import { Component } from '@angular/core';
 
 describe('ProtocolService', () => {
-  const diskModel = new DiskModel(new Document());
+  let diskModel: DiskModel;
   let matDialogSpy: jasmine.SpyObj<MatDialog>;
 
   const testProtocol = {
@@ -54,7 +55,7 @@ describe('ProtocolService', () => {
     matDialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
     matDialogSpy.open.and.returnValue({
       afterClosed: () => of(true),
-    } as any);
+    } as MatDialogRef<Component>);
 
     TestBed.configureTestingModule({
       imports: [
@@ -65,9 +66,10 @@ describe('ProtocolService', () => {
           },
         }),
       ],
-      providers: [Notifications, { provide: MatDialog, useValue: matDialogSpy }, TranslateService, TranslateStore],
+      providers: [Notifications, { provide: MatDialog, useValue: matDialogSpy }, TranslateService, TranslateStore, DiskModel],
     });
 
+    diskModel = TestBed.inject(DiskModel);
     if (!diskModel.disk.availableProtocolsMeta) {
       diskModel.disk.availableProtocolsMeta = {};
     }
