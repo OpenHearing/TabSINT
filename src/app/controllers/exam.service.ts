@@ -1,8 +1,14 @@
-import { Injectable, Inject } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { isPageDefinition, isProtocolReferenceInterface, isProtocolSchemaInterface } from '../guards/type.guard';
+import { Injectable, inject } from '@angular/core';
+import { combineLatest, interval, Subscription } from 'rxjs';
+import {
+  isChoiceResponseArea,
+  isPageDefinition,
+  isProtocolReferenceInterface,
+  isProtocolSchemaInterface,
+  isProtocolStarted,
+} from '../guards/type.guard';
 import { PageTypes } from '../types/custom-types';
-import { FollowOnInterface } from '../interfaces/page-definition.interface';
+import { FollowOnInterface, PageDefinition, ProtocolReferenceInterface } from '../interfaces/page-definition.interface';
 import { ResultsInterface } from '../models/results/results.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
@@ -19,7 +25,9 @@ import { DialogType, ExamState, AppState } from '../utilities/constants';
 import { Notifications } from '../services/notifications.service';
 import { Logger } from '../services/logger.service';
 import { calculateElapsedTime, checkForSpecialReference, getDefaultResponseRequired } from '../utilities/exam-helper-functions';
+import { ProtocolStackItem } from '../models/protocol/protocol-stack';
 import { ChoiceInterface } from '../interfaces/choice.interface';
+import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -28,29 +36,24 @@ export class ExamService {
   protocol: ProtocolModelInterface;
   results: ResultsInterface;
   state: StateInterface;
-  currentPage: PageInterface;
 
   pageSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
 
-  constructor(
-    private readonly logger: Logger,
-    private readonly resultsService: ResultsService,
-    private readonly resultsModel: ResultsModel,
-    private readonly pageModel: PageModel,
-    private readonly protocolModel: ProtocolModel,
-    private readonly stateModel: StateModel,
-    private readonly notifications: Notifications,
-    @Inject(WINDOW) private readonly window: any,
-    private readonly fileService: FileService,
-    private readonly diskModel: DiskModel
-  ) {
+  private readonly logger = inject(Logger);
+  private readonly resultsService = inject(ResultsService);
+  private readonly resultsModel = inject(ResultsModel);
+  private readonly pageModel = inject(PageModel);
+  private readonly protocolModel = inject(ProtocolModel);
+  private readonly stateModel = inject(StateModel);
+  private readonly notifications = inject(Notifications);
+  private readonly window = inject(WINDOW);
+  private readonly fileService = inject(FileService);
+  private readonly diskModel = inject(DiskModel);
+
+  constructor() {
     this.results = this.resultsModel.getResults();
-    this.currentPage = this.pageModel.getPage();
-    this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
-      this.currentPage = updatedPage;
-    });
     this.state = this.stateModel.getState();
     this.protocol = this.protocolModel.getProtocolModel();
     this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
@@ -59,10 +62,15 @@ export class ExamService {
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
       this.results = updatedResults;
     });
+    combineLatest([this.protocolModel.getProtocolModel().activeProtocolStack.latestProtocolObservable, interval(1000)]).subscribe(
+      ([latestStackItem]) => {
+        this.updateExamProgress(latestStackItem);
+      }
+    );
   }
 
   /** Switches to exam view.
-   * @summary Can be called from any other TabSINT view. If pageModel.stack is not empty, the exam
+   * @summary Can be called from any other TabSINT view. If protocol stack is not empty, the exam
    * will proceed where it left off. Otherwise examState gets changed to Ready.
    */
   switchToExamView() {
@@ -77,7 +85,7 @@ export class ExamService {
       return;
     }
 
-    if (this.pageModel.stack.length == 0) {
+    if (!this.protocol.activeProtocolStack.peek()) {
       this.stateModel.updateState({ examState: ExamState.Ready });
     }
   }
@@ -88,10 +96,10 @@ export class ExamService {
    */
   async begin() {
     this.resetProtocolStack();
-    this.addPagesToStack(this.protocol.activeProtocol!.pages, 0);
     this.resultsService.initializeExamResults();
-    this.startPage();
     this.stateModel.updateState({ examState: ExamState.Testing });
+    this.protocol.activeProtocolStack.addProtocol(this.protocol.activeProtocol!);
+    this.advancePage();
     this.submit = this.submitDefault;
   }
 
@@ -103,8 +111,8 @@ export class ExamService {
     this.gradeResponses();
     this.gradeResponses = this.gradeResponsesDefault;
     this.resultsService.pushResults(this.results.currentPage);
-    this.advancePage();
     this.submit = this.submitDefault;
+    this.advancePage();
   }
 
   /** Submit function for exam pages. Can be overwritten by exams.
@@ -116,16 +124,18 @@ export class ExamService {
 
   gradeResponsesDefault() {
     this.results.currentPage.correct = undefined;
-    const choices: ChoiceInterface[] | undefined = (this.results.currentPage?.page?.responseArea as any)?.choices;
-    if (choices) {
-      choices.forEach((choice: ChoiceInterface) => {
-        if (choice?.correct && JSON.stringify(this.results.currentPage.response.selected) === JSON.stringify([choice.id])) {
-          this.results.currentPage.correct = true;
-        }
-        if (choice?.correct && this.results.currentPage.correct === undefined) {
-          this.results.currentPage.correct = false;
-        }
-      });
+    if (isChoiceResponseArea(this.results.currentPage?.page?.responseArea)) {
+      const choices: ChoiceInterface[] | undefined = this.results.currentPage.page.responseArea.choices;
+      if (choices) {
+        choices.forEach((choice: ChoiceInterface) => {
+          if (choice?.correct && JSON.stringify(this.results.currentPage.response.selected) === JSON.stringify([choice.id])) {
+            this.results.currentPage.correct = true;
+          }
+          if (choice?.correct && this.results.currentPage.correct === undefined) {
+            this.results.currentPage.correct = false;
+          }
+        });
+      }
     }
   }
 
@@ -154,6 +164,7 @@ export class ExamService {
    */
   resetDefault() {
     this.stateModel.updateState({ examState: ExamState.Ready });
+    this.resetProtocolStack();
   }
 
   reset() {
@@ -181,12 +192,8 @@ export class ExamService {
    */
   navigateToTargetDefault(subProtocolID: string) {
     // TODO: returnHereAfterward NOT IMPLEMENTED
-    this.currentPage.followOns = [
-      {
-        conditional: 'true',
-        target: { reference: subProtocolID },
-      },
-    ];
+    const referenceProtocol = this.protocol.activeProtocolDictionary![subProtocolID];
+    this.protocol.activeProtocolStack.addProtocol(referenceProtocol);
     this.stateModel.updateState({ examState: ExamState.Testing });
     this.submitDefault();
   }
@@ -215,63 +222,36 @@ export class ExamService {
     return false;
   }
 
-  /** Advance to next page in the exam
-   * @summary Increments the exam page index. Advances to next page in protocolStack. If there is no next page it will
-   * search for a followOn. The protocolStack will be updated.
-   * @models state
-   */
-  private advancePage() {
-    const nextExamIndex = this.state.examIndex + 1;
-    this.setFlags();
-    const pageList = this.getPagesFromAdvancedLogic();
-    if (pageList !== undefined && pageList.length > 0) {
-      this.addPagesToStack(pageList, nextExamIndex);
-    }
-    // make sure there are more pages, if not end the exam
-    if (this.pageModel.stack.length > nextExamIndex) {
-      this.stateModel.updateState({ examIndex: nextExamIndex });
-      this.startPage();
-    } else if (pageList !== undefined) {
-      // Undefined page list signals special reference handling.
-      // Only end normally if the page list is defined.
-      this.endExam();
-    }
-  }
-
   /** Grabs all pages necessary from advanced logic (skips, repeats, followOns, preprocess)
    * @summary The exam will proceed to the correct page.
    * @models page
    */
-  private getPagesFromAdvancedLogic() {
+  private getPagesFromAdvancedLogic(page: PageInterface): PageTypes[] {
     const pageList: PageTypes[] = [];
-    if (this.currentPage.repeatPage) {
-      const repeatedPages = this.handleRepeats();
+    if (page.repeatPage) {
+      const repeatedPages = this.handleRepeats(page);
       if (repeatedPages !== undefined) {
         repeatedPages.forEach(repeatedPage => {
           pageList.push(repeatedPage);
         });
       }
     }
-    if (this.currentPage.followOns) {
-      const nextID = this.findFollowOn();
+    if (page.followOns) {
+      const nextID = this.findFollowOn(page);
       if (nextID != undefined) {
-        if (checkForSpecialReference(nextID)) {
-          this.handleSpecialReferences(nextID);
-          return undefined;
+        if (checkForSpecialReference(nextID) || nextID in this.protocol.activeProtocolDictionary!) {
+          const followOnReference: ProtocolReferenceInterface = {
+            reference: nextID,
+          };
+          pageList.push(followOnReference);
         } else {
-          if (nextID in this.protocolModel.protocolModel.activeProtocolDictionary!) {
-            this.protocolModel.protocolModel.activeProtocolDictionary![nextID].pages.forEach((page: PageTypes) => {
-              pageList.push(page);
-            });
-          } else {
-            this.notifications
-              .alert({
-                title: 'Alert',
-                content: `FollowOn target ${nextID} not found. Please check your protocol.`,
-                type: DialogType.Alert,
-              })
-              .subscribe();
-          }
+          this.notifications
+            .alert({
+              title: 'Alert',
+              content: `FollowOn target ${nextID} not found. Please check your protocol.`,
+              type: DialogType.Alert,
+            })
+            .subscribe();
         }
       }
     }
@@ -281,9 +261,9 @@ export class ExamService {
   /** Checks for flags and sets them
    * @summary TBD.
    */
-  private setFlags() {
-    if (this.currentPage.setFlags) {
-      this.currentPage.setFlags.forEach(flags => {
+  private setFlags(page: PageInterface) {
+    if (page.setFlags) {
+      page.setFlags.forEach(flags => {
         if (this.conditionalEvaluator(flags.conditional)) {
           this.results.currentExam.flags[flags.id] = true;
           this.logger.debug('Flag set: ' + flags.id);
@@ -294,16 +274,17 @@ export class ExamService {
 
   private async handlePreProcessFunctions(page: PageInterface) {
     if (page.preProcessFunction) {
-      this.window.tabsint = {};
-      this.window.tabsint.logger = this.logger;
-      this.window.tabsint.examService = this;
-      this.window.tabsint.fileService = this.fileService;
-      this.window.tabsint.resultsService = this.resultsService;
-      this.window.tabsint.stateModel = this.stateModel;
-      this.window.tabsint.diskModel = this.diskModel;
-      this.window.tabsint.resultsModel = this.resultsModel;
-      this.window.tabsint.pageModel = this.pageModel;
-      this.window.tabsint.protocolModel = this.protocolModel;
+      this.window.tabsint = {
+        logger: this.logger,
+        examService: this,
+        fileService: this.fileService,
+        resultsService: this.resultsService,
+        stateModel: this.stateModel,
+        diskModel: this.diskModel,
+        resultsModel: this.resultsModel,
+        pageModel: this.pageModel,
+        protocolModel: this.protocolModel,
+      };
 
       eval(page.preProcessFunction.js! + '\n' + page.preProcessFunction.function + '()');
     }
@@ -322,59 +303,44 @@ export class ExamService {
     }
   }
 
-  /** Proceed to next page in the exam
-   * @summary The exam will proceed
-   * to the correct page.
-   * @models state
+  /**
+   * Proceed to next page in the exam with handling of pre-processing and post-processing.
    */
-  private startPage() {
-    const nextPage: PageInterface = this.pageModel.stack[this.state.examIndex];
-
-    if (nextPage.skipIf && this.conditionalEvaluator(nextPage.skipIf)) {
-      this.advancePage();
-      /* Note that with this approach we skip over nexting the nextPage
-        I think that should be okay as the state.examIndex is being updated in advancePage
-        So what should happen here is we completely skip a page
-        There would be no record of it in the results and should never get rendered or anything
-      */
-    } else {
-      this.handlePreProcessFunctions(nextPage);
-      // Make sure isSubmittable gets set correctly
-      this.stateModel.updateState({
-        doesResponseExist: false,
-        isResponseRequired: this.isPageResponseRequired(nextPage),
-      });
-      if (nextPage?.isSubmittable === false) {
-        this.stateModel.updateState({ isSubmittable: false });
-      } else {
-        this.stateModel.setPageSubmittable();
-      }
-      this.pageModel.updatePage(nextPage);
-      this.resultsService.initializePageResults(this.currentPage);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+  private advancePage() {
+    const currentProtocol = this.protocol.activeProtocolStack.peek();
+    if (currentProtocol === undefined) {
+      this.endExam();
+      return;
     }
-  }
 
-  /** Parse page objects and add them to the pageModel.stack.
-   * @summary Adds pages to pageModel.stack. This will parse any page with a reference and put the
-   * correct pages in place.
-   * @models state, protocol, page
-   * @param pages list of page objects
-   */
-  private addPagesToStack(pages: PageTypes[], index: number) {
-    let extraPages: PageTypes[];
-    pages.forEach((page: PageTypes) => {
-      if (isProtocolReferenceInterface(page)) {
-        extraPages = this.protocolModel.protocolModel.activeProtocolDictionary![page?.reference].pages;
-        this.addPagesToStack(extraPages, index + 1);
-      } else if (isProtocolSchemaInterface(page)) {
-        extraPages = page.pages;
-        this.addPagesToStack(extraPages, index + 1);
-      } else if (isPageDefinition(page)) {
-        this.pageModel.stack.splice(index, 0, page);
-        index = index + 1;
-      }
-    });
+    // Follow ons should be added for the previous page before iterating to a new page
+    let pageIndex = currentProtocol.pageIndex;
+    let pageQueue = currentProtocol.pageQueue;
+    pageQueue = this.addFollowOns(pageQueue, pageIndex);
+    this.protocol.activeProtocolStack.updateCurrentProtocol({ pageQueue: pageQueue });
+
+    pageIndex = pageIndex + 1;
+    const page: PageTypes = pageQueue[pageIndex];
+    this.protocol.activeProtocolStack.updateCurrentProtocol({ pageIndex: pageIndex });
+
+    // A protocol should be removed from the stack if all of the pages have been completed
+    if (pageIndex >= pageQueue.length) {
+      this.protocol.activeProtocolStack.pop();
+      this.advancePage();
+      return;
+    }
+
+    if (isProtocolReferenceInterface(page)) {
+      this.protocol.activeProtocolStack.updateCurrentProtocol({ pageIndex: pageIndex + 1 });
+      this.handleProtocolReference(page);
+    } else if (isProtocolSchemaInterface(page)) {
+      this.protocol.activeProtocolStack.updateCurrentProtocol({ pageIndex: pageIndex + 1 });
+      this.handleProtocolSchema(page);
+    } else if (page.skipIf && this.conditionalEvaluator(page.skipIf)) {
+      this.advancePage();
+    } else {
+      this.initializeCurrentPage(page);
+    }
   }
 
   /** Finds followOn from current page.
@@ -382,9 +348,9 @@ export class ExamService {
    * @models state, results
    * @returns followOn ID: string or undefined
    */
-  private findFollowOn() {
+  private findFollowOn(page: PageInterface) {
     let id: string | undefined = undefined;
-    this.currentPage.followOns?.forEach((followOn: FollowOnInterface) => {
+    page.followOns?.forEach((followOn: FollowOnInterface) => {
       // backward compatibility
       if (followOn.conditional && this.conditionalEvaluator(followOn.conditional)) {
         // TODO: handle if target is protocol or page
@@ -396,24 +362,21 @@ export class ExamService {
     return id;
   }
 
-  private handleRepeats() {
+  private handleRepeats(page: PageInterface) {
     let repeatedPages: PageTypes[] | undefined;
     // repeat if repeatIf not present or it evaluates to true
-    if (
-      this.currentPage.repeatPage!.repeatIf === undefined ||
-      (this.currentPage.repeatPage!.repeatIf && this.conditionalEvaluator(this.currentPage.repeatPage!.repeatIf))
-    ) {
+    if (page.repeatPage!.repeatIf === undefined || (page.repeatPage!.repeatIf && this.conditionalEvaluator(page.repeatPage!.repeatIf))) {
       // determine number of times page has been repeated
       repeatedPages = [];
       let currentRepeatCount = 0;
-      if (this.currentPage.id.includes('_repeated_')) {
-        currentRepeatCount = Number(this.currentPage.id.split('_repeated_')[this.currentPage.id.split('_repeated_').length - 1]);
+      if (page.id.includes('_repeated_')) {
+        currentRepeatCount = Number(page.id.split('_repeated_')[page.id.split('_repeated_').length - 1]);
       }
       // determine number of repititions
-      const numRepititions = Number(this.currentPage.repeatPage!.nRepeats);
+      const numRepititions = Number(page.repeatPage!.nRepeats);
       // create desired number of repeated pages
       for (let i = currentRepeatCount + 1; i < (numRepititions + currentRepeatCount + 1 < 4 ? numRepititions + currentRepeatCount + 1 : 4); i++) {
-        const repeatedPage: PageInterface = JSON.parse(JSON.stringify(this.currentPage));
+        const repeatedPage: PageInterface = JSON.parse(JSON.stringify(page));
         if (i > 1) {
           repeatedPage.id = repeatedPage.id.replace('_repeated_' + String(i - 1), '_repeated_' + String(i));
         } else {
@@ -439,8 +402,7 @@ export class ExamService {
    * @summary Resets the protocol stack to an empty array and the exam index to 0.
    */
   private resetProtocolStack() {
-    this.pageModel.stack = [];
-    this.stateModel.updateState({ examIndex: 0 });
+    this.protocol.activeProtocolStack.clear();
   }
 
   /**
@@ -453,7 +415,7 @@ export class ExamService {
     this.resultsService.save(this.results.currentExam);
     this.stateModel.updateState({ examState: ExamState.Finalized });
     this.resetProtocolStack();
-    window.scrollTo(0, 0);
+    this.window.scrollTo(0, 0);
   }
 
   switchToAdminView() {
@@ -468,5 +430,103 @@ export class ExamService {
 
   help() {
     // TODO: Implement this!
+  }
+
+  /**
+   * Determine the current exam progress based on the page index in the page stack.
+   * The active page is included in the progress count.
+   *
+   * @returns The progress percentage as a number from 0 to 100 or the user defined number/string.
+   */
+  updateExamProgress(protocol: ProtocolStackItem | undefined) {
+    let progress: string | number = 0;
+
+    if (!isProtocolStarted(protocol)) {
+      this.stateModel.updateState({ examProgress: progress });
+      return;
+    }
+
+    // Filter any subprotocols at the end of a protocol as these will not contribute to the visible progress bar
+    const filteredQueue: PageTypes[] = structuredClone(protocol.pageQueue);
+    for (let index = protocol.pageQueue.length - 1; index > protocol.pageIndex; index--) {
+      if (isPageDefinition(protocol.pageQueue[index])) {
+        break;
+      } else {
+        filteredQueue.pop();
+      }
+    }
+
+    const activePage = protocol.pageQueue[protocol.pageIndex];
+    const pageCount = filteredQueue.length;
+    const maxPages = protocol.maxPages;
+    const maxSeconds = protocol.maxSeconds;
+
+    if (isPageDefinition(activePage) && activePage.progressBarVal) {
+      progress = activePage.progressBarVal;
+    } else {
+      const maxPageProgress = (protocol.pageIndex + 1) / maxPages;
+      const maxTimeProgress = Math.floor((Date.now() - protocol.startTime.getTime()) / 1000) / maxSeconds;
+      const defaultPageProgress = (protocol.pageIndex + 1) / pageCount;
+      const maxProgress = Math.max(maxPageProgress, maxTimeProgress, defaultPageProgress);
+      progress = Math.min(Math.max(maxProgress, 0), 1) * 100;
+    }
+    this.stateModel.updateState({ examProgress: progress });
+  }
+
+  /**
+   * Initializes the provided page and set it as the current page.
+   * @param page The new page to initialize.
+   */
+  private initializeCurrentPage(page: PageDefinition) {
+    this.setFlags(page);
+    this.handlePreProcessFunctions(page);
+    this.pageModel.updatePage(page);
+    this.stateModel.updateState({
+      doesResponseExist: false,
+      isResponseRequired: this.isPageResponseRequired(page),
+    });
+    this.stateModel.setPageSubmittable();
+    this.resultsService.initializePageResults(page);
+    this.window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /**
+   * Add follow ons to a page queue based on the current index.
+   * @param pageQueue The page queue to update.
+   * @param pageIndex The index of the current page.
+   * @returns The updated page queue.
+   */
+  private addFollowOns(pageQueue: PageTypes[], pageIndex: number) {
+    const page = pageQueue[pageIndex];
+    const advancedPagesCopy = page !== undefined && isPageDefinition(page) ? structuredClone(this.getPagesFromAdvancedLogic(page)) : [];
+    if (advancedPagesCopy.length > 0) {
+      pageQueue = [...pageQueue.slice(0, pageIndex + 1), ...advancedPagesCopy, ...pageQueue.slice(pageIndex + 1)];
+    }
+    return pageQueue;
+  }
+
+  /**
+   * Handle navigation for pages which are protocol references.
+   * @param page The page to use for navigation.
+   */
+  private handleProtocolReference(page: ProtocolReferenceInterface) {
+    if (page.skipIf && this.conditionalEvaluator(page.skipIf)) {
+      this.advancePage();
+    } else if (checkForSpecialReference(page.reference)) {
+      this.handleSpecialReferences(page.reference);
+    } else {
+      const referenceProtocol = this.protocol.activeProtocolDictionary![page?.reference];
+      this.protocol.activeProtocolStack.addProtocol(referenceProtocol);
+      this.advancePage();
+    }
+  }
+
+  /**
+   * Handle navigation for pages which are protocol schema.
+   * @param page The page to use for navigation.
+   */
+  private handleProtocolSchema(page: ProtocolSchemaInterface) {
+    this.protocol.activeProtocolStack.addProtocol(page);
+    this.advancePage();
   }
 }

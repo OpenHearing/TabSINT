@@ -285,7 +285,6 @@ export class ProtocolService {
       }
 
       this.stateModel.updateState({
-        examIndex: 0,
         examState: ExamState.Ready,
       });
     } catch (error: unknown) {

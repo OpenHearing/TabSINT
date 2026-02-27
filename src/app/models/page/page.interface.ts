@@ -10,7 +10,6 @@ export interface PageInterface extends PageDefinition {
   dict?: object;
   isSubmittable?: boolean;
   canGoBack?: boolean;
-  subtitle?: string;
   loadingRequired?: boolean;
   loadingActive?: boolean;
 }

@@ -29,6 +29,7 @@ export interface PageDefinition {
   enableBackButton?: boolean;
   navMenu?: NavMenuInterface[];
   title?: string;
+  subtitle?: string;
   questionPreMainText?: string;
   questionMainText?: string;
   questionSubText?: string;
@@ -46,6 +47,7 @@ export interface PageDefinition {
   submitText?: string;
   followOns?: FollowOnInterface[];
   setFlags?: SetFlagInterface[];
+  progressBarVal?: number | string;
 }
 
 export interface NavMenuInterface {

@@ -2,7 +2,6 @@ import { CalibrationFileVersionInformation } from '../../interfaces/calibration-
 import { IDeviceMetadata } from '../../interfaces/devices/device-metadata.interface';
 import { ChaWavfileInterface, ImageInterface, VideoInterface, PageWavfileInterface, ResponseArea } from '../../interfaces/page-definition.interface';
 import { ProtocolServer } from '../../utilities/constants';
-import { PageInterface } from '../page/page.interface';
 import { ProtocolInterface } from '../protocol/protocol.interface';
 import { VersionInterface } from '../version/version.interface';
 import { FlagsInterface } from './flags.interface';
