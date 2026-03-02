@@ -24,7 +24,6 @@ export interface PageDefinition {
   headset?: Headset;
   skipIf?: string;
   hideProgressBar?: boolean;
-  autoSubmit?: boolean;
   autoSubmitDelay?: number;
   enableBackButton?: boolean;
   navMenu?: NavMenuInterface[];

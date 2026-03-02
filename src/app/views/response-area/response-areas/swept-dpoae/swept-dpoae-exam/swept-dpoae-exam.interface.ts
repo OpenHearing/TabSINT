@@ -26,6 +26,7 @@ export interface SweptDpoaeInterface extends CommonResponseAreaInterface {
   showResults?: boolean;
   normativeDataPath?: string;
   normativeData?: NormativeDataInterface[];
+  autoSubmit?: boolean;
 }
 
 export interface SweptDpoaeResultsInterface {

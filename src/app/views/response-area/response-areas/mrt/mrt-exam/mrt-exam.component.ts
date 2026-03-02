@@ -16,7 +16,6 @@ import { StateModel } from '../../../../../models/state/state.service';
 import { shuffleArray } from '../../../../../utilities/shuffle-array';
 import { IDevice } from '../../../../../interfaces/devices/device.interface';
 import { DeviceStatus, DeviceType } from '../../../../../utilities/constants';
-import { parsePageParameters } from '../../../../../utilities/page-parameter-helper';
 
 @Component({
   selector: 'app-mrt-exam',
@@ -44,7 +43,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   tabsintId: string = mrtSchema.properties.tabsintId.default;
   showResults: boolean = mrtSchema.properties.showResults.default;
   showFeedback: boolean = mrtSchema.properties.showFeedback.default;
-  pageParameters?: PageInterface;
+  pageParameters?: any; // should be pageInterface? or at least mrt interface? If we add back in...
   currentStep: string = 'Ready';
   outputChannel!: string[];
   trialList!: MrtTrialInterface[];
@@ -104,7 +103,8 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'mrtResponseArea') {
         setTimeout(() => {
-          this.pageParameters = parsePageParameters(updatedPage);
+          // TODO: Clean this up and remove it?
+          this.pageParameters = { autoSubmitDelay: 100, id: 'lol' };
           this.initializeResponseArea(updatedPage.responseArea as MrtExamInterface);
           this.setupDevice(updatedPage.responseArea as MrtExamInterface);
         });

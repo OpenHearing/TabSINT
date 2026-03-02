@@ -283,7 +283,7 @@
       "protocolId": "LikeRT",
       "pages": [
         {
-          "id": "default",
+          "id": "default1",
           "instructionText": "Page should only be submittable when there is a response",
           "responseArea": {
             "type": "likertResponseArea",
@@ -295,7 +295,7 @@
           }
         },
         {
-          "id": "default",
+          "id": "default2",
           "instructionText": "Page should only be submittable when there is a response",
           "responseArea": {
             "type": "likertResponseArea",
@@ -308,7 +308,7 @@
           }
         },
         {
-          "id": "default",
+          "id": "default3",
           "instructionText": "Page should always be submittable",
           "responseArea": {
             "type": "likertResponseArea",
@@ -317,6 +317,19 @@
             "naBox": true,
             "labels": ["Not at all", "Perfectly"],
             "questions": ["Question 1", "Question 2", "Question 3"]
+          }
+        },
+        {
+          "id": "default4",
+          "instructionText": "Page should autoSubmit",
+          "responseArea": {
+            "type": "likertResponseArea",
+            "responseRequired": false,
+            "autoSubmit": true,
+            "levels": 5,
+            "naBox": true,
+            "labels": ["Not at all", "Perfectly"],
+            "questions": ["Question"]
           }
         },
         {
@@ -1068,7 +1081,6 @@
           "title": "QR Code Scanning",
           "questionMainText": "Example of scanning a QR Code",
           "questionSubText": "Scan a QR code",
-          "isAutoSubmit": false,
           "responseArea": {
             "type": "qrCodeResponseArea",
             "scope": "page"

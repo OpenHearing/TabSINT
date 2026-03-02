@@ -15,7 +15,6 @@ import { CalibrationScreenComponent } from '../calibration-screen/calibration-sc
 import { calibrationExamSchema } from '../../../../../../schema/response-areas/calibration-exam.schema';
 import { IDevice } from '../../../../../interfaces/devices/device.interface';
 import { DeviceType } from '../../../../../utilities/constants';
-import { parsePageParameters } from '../../../../../utilities/page-parameter-helper';
 
 @Component({
   selector: 'app-calibration-exam',
@@ -57,7 +56,6 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   userInput: number | null = null;
   poppedHistory: { step: string; frequencyIndex: number; earCup: string }[] = [];
   batchFrequencies: boolean = calibrationExamSchema.properties.batchFrequencies.default;
-  pageParameters?: PageInterface;
 
   constructor() {
     this.results = this.resultsModel.getResults();
@@ -96,7 +94,6 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       if (updatedPage?.responseArea?.type === 'calibrationResponseArea') {
         const calibrationResponse = updatedPage?.responseArea as CalibrationExamInterface;
         if (calibrationResponse) {
-          this.pageParameters = parsePageParameters(updatedPage);
           this.frequencies = calibrationResponse.frequencies ?? [500, 1000, 2000];
           this.targetLevels = calibrationResponse.targetLevels ?? [60, 70, 80];
           this.batchFrequencies = calibrationResponse.batchFrequencies ?? this.batchFrequencies;

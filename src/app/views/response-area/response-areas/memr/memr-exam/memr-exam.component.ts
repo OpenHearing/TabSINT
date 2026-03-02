@@ -17,7 +17,6 @@ import { StateInterface } from '../../../../../models/state/state.interface';
 import { StateModel } from '../../../../../models/state/state.service';
 import { memrSchema } from '../../../../../../schema/response-areas/memr.schema';
 import { getCurrentDatetime } from '../../../../../utilities/exam-helper-functions';
-import { parsePageParameters } from '../../../../../utilities/page-parameter-helper';
 
 @Component({
   selector: 'app-memr-exam',
@@ -56,6 +55,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     probeOutputChannel: memrSchema.properties.probeOutputChannel.default,
     elicitorOutputChannel: memrSchema.properties.elicitorOutputChannel.default,
     bleDelayPerTrial: memrSchema.properties.bleDelayPerTrial.default,
+    autoSubmit: memrSchema.properties.autoSubmit.default,
   };
   inputParameterMap = new Map<string, string>(); // Parameter map to display to the user in ready state
   trialsPerBlock: number = 0;
@@ -65,7 +65,6 @@ export class MemrExamComponent implements OnInit, OnDestroy {
 
   // Configuration Variables
   allowableDevices = [DeviceType.Tympan];
-  pageParameters?: PageInterface;
   currentStep: string = 'Ready';
   chinchillaType = 'Chinchilla';
   humanType = 'Human';
@@ -120,7 +119,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'memrResponseArea') {
         setTimeout(() => {
-          this.pageParameters = parsePageParameters(updatedPage);
+          this.memrExamProperties.autoSubmit = (updatedPage.responseArea as MemrExamInterface)?.autoSubmit;
           this.initializeResponseArea(updatedPage.responseArea as MemrExamInterface);
           this.setupDevice(updatedPage.responseArea as MemrExamInterface);
         });
@@ -328,10 +327,8 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     this.updateExamProgress(results); // Update UI components
     if (this.currentBlockIndex >= this.blockCount) {
       await this.delay(1000); // Delay to show final block count to the user before the next step
-      if (this.pageParameters?.autoSubmit) {
-        setTimeout(async () => {
-          await this.finishExam();
-        }, this.pageParameters?.autoSubmitDelay ?? 0);
+      if (this.memrExamProperties?.autoSubmit) {
+        await this.finishExam();
       } else {
         this.nextStep();
       }

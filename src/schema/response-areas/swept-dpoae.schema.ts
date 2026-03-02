@@ -43,6 +43,7 @@ export const sweptDpoaeSchema: JSONSchemaType<SweptDpoaeInterface> = {
     showResults: { type: 'boolean', nullable: true, default: true },
     normativeDataPath: { type: 'string', nullable: true, default: '' },
     normativeData: { type: 'array', items: normativeDataSchema, nullable: true, default: [] },
+    autoSubmit: { type: 'boolean', nullable: true, default: false },
   },
   required: ['type'],
 };

@@ -488,6 +488,7 @@ export class ExamService {
     this.stateModel.setPageSubmittable();
     this.resultsService.initializePageResults(page);
     this.window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.handleAutoSubmitDelay(page);
   }
 
   /**
@@ -528,5 +529,17 @@ export class ExamService {
   private handleProtocolSchema(page: ProtocolSchemaInterface) {
     this.protocol.activeProtocolStack.addProtocol(page);
     this.advancePage();
+  }
+
+  /**
+   * Handle autoSubmitDelay if called for.
+   * @param page The page to use for navigation.
+   */
+  private handleAutoSubmitDelay(page: PageDefinition) {
+    if (page?.autoSubmitDelay) {
+      setTimeout(() => {
+        this.submit();
+      }, page.autoSubmitDelay);
+    }
   }
 }

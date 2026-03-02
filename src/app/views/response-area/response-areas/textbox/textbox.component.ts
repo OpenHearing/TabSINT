@@ -12,7 +12,6 @@ import { textBoxSchema } from '../../../../../schema/response-areas/textbox.sche
 import { StateInterface } from '../../../../models/state/state.interface';
 import { StateModel } from '../../../../models/state/state.service';
 import { ExamService } from '../../../../controllers/exam.service';
-import { parsePageParameters } from '../../../../utilities/page-parameter-helper';
 
 @Component({
   selector: 'app-textbox-view',
@@ -52,12 +51,6 @@ export class TextboxComponent implements OnInit, OnDestroy {
         const updatedTextboxResponseArea = updatedPage.responseArea as TextBoxInterface;
         if (updatedTextboxResponseArea) {
           this.rows = updatedTextboxResponseArea?.rows;
-        }
-        this.pageParameters = parsePageParameters(updatedPage);
-        if (this.pageParameters?.autoSubmit) {
-          setTimeout(() => {
-            this.examService.submit();
-          }, this.pageParameters?.autoSubmitDelay ?? 0);
         }
       }
     });
