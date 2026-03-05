@@ -43,7 +43,6 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   tabsintId: string = mrtSchema.properties.tabsintId.default;
   showResults: boolean = mrtSchema.properties.showResults.default;
   showFeedback: boolean = mrtSchema.properties.showFeedback.default;
-  pageParameters?: any; // should be pageInterface? or at least mrt interface? If we add back in...
   currentStep: string = 'Ready';
   outputChannel!: string[];
   trialList!: MrtTrialInterface[];
@@ -103,8 +102,6 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'mrtResponseArea') {
         setTimeout(() => {
-          // TODO: Clean this up and remove it?
-          this.pageParameters = { autoSubmitDelay: 100, id: 'lol' };
           this.initializeResponseArea(updatedPage.responseArea as MrtExamInterface);
           this.setupDevice(updatedPage.responseArea as MrtExamInterface);
         });
@@ -155,7 +152,6 @@ export class MrtExamComponent implements OnInit, OnDestroy {
           await this.waitForReadyState();
           await this.playTrial(this.currentTrial);
         } else {
-          this.pageParameters!.autoSubmit = false;
           this.finishExam();
         }
         break;
@@ -180,14 +176,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
       const correctWord = this.currentTrial.choices[this.currentTrial.answer - 1];
       this.feedbackMessage = `The correct word was '${correctWord}'`;
     }
-
-    if (this.pageParameters?.autoSubmit) {
-      await this.delay(this.waitingMs);
-      this.stateModel.updateState({ isSubmittable: false });
-      this.nextStep();
-    } else {
-      this.stateModel.updateState({ isSubmittable: true });
-    }
+    this.stateModel.updateState({ isSubmittable: true });
   }
 
   async finishExam() {
@@ -204,7 +193,6 @@ export class MrtExamComponent implements OnInit, OnDestroy {
 
   async pauseExam() {
     this.isPaused = !this.isPaused;
-    this.pageParameters!.autoSubmit = !this.pageParameters!.autoSubmit;
     if (this.isPaused) {
       this.isPausedText = 'Resume';
     } else {
