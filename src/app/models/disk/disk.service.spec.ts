@@ -4,24 +4,14 @@ import { DiskInterface } from './disk.interface';
 import { ExamResults } from '../results/results.interface';
 import { ProtocolServer } from '../../utilities/constants';
 import { PageDefinition } from '../../interfaces/page-definition.interface';
-import { VersionModel } from '../version/version.service';
-import { Logger } from '../../services/logger.service';
-import { SqLite } from '../../services/sqLite.service';
-import { AppModel } from '../app/app.service';
 
 describe('DiskModel', () => {
   let diskModel: DiskModel;
-  let appModel: AppModel;
-  let sqLite: SqLite;
-  let logger: Logger;
-  let versionModel: VersionModel;
   beforeEach(async () => {
-    TestBed.configureTestingModule({});
-    diskModel = new DiskModel(new Document());
-    appModel = new AppModel();
-    sqLite = new SqLite(appModel, diskModel);
-    logger = new Logger(diskModel, sqLite);
-    versionModel = new VersionModel(logger);
+    TestBed.configureTestingModule({
+      providers: [DiskModel],
+    });
+    diskModel = TestBed.inject(DiskModel);
   });
 
   it('gets disk model from local storage', () => {
@@ -94,7 +84,18 @@ describe('DiskModel', () => {
         contentURI: 'test',
       },
       responses: [1, 2, 3],
-      softwareVersion: versionModel.version,
+      softwareVersion: {
+        tabsint: '',
+        date: '',
+        rev: '',
+        version_code: '',
+        deps: {
+          user_agent: '',
+          node: '',
+          capacitor: '',
+        },
+        plugins: [],
+      },
       hostMetadata: {},
       devices: [],
       tabletLocation: {},

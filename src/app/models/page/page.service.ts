@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { PageInterface } from './page.interface';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
-import { PageDefinition } from '../../interfaces/page-definition.interface';
 import { pageInterfaceDefaults } from '../../utilities/defaults';
 import { Observable, map } from 'rxjs';
 
@@ -13,8 +12,6 @@ export class PageModel {
   private readonly currentPageSubject = new BehaviorSubject<PageInterface>(this.currentPage);
 
   currentPageObservable: Observable<PageInterface> = this.currentPageSubject.pipe(map(page => structuredClone(page)));
-
-  stack: PageDefinition[] = [];
 
   getPage(): PageInterface {
     return structuredClone(this.currentPageSubject.value);

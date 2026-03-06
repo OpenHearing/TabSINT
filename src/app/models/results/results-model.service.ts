@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { CurrentResults, ExamResults, ResultsInterface } from './results.interface';
 import { pageInterfaceDefaults, protocolDefaults } from '../../utilities/defaults';
 import { VersionModel } from '../version/version.service';
@@ -12,10 +12,10 @@ export class ResultsModel {
   resultsModel: ResultsInterface;
   resultsSubject: BehaviorSubject<ResultsInterface>;
 
-  constructor(
-    private readonly versionModel: VersionModel,
-    private readonly logger: Logger
-  ) {
+  private readonly versionModel = inject(VersionModel);
+  private readonly logger = inject(Logger);
+
+  constructor() {
     this.resultsModel = {
       currentPage: {
         pageId: '',

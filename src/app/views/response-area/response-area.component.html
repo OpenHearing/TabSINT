@@ -1,12 +1,12 @@
 <div [ngSwitch]="currentPage.responseArea?.type">
   <textbox-view *ngSwitchCase="'textboxResponseArea'"></textbox-view>
   <textbox-result-viewer-view *ngSwitchCase="'textboxResponseAreaResultViewer'"></textbox-result-viewer-view>
-  <likert-view *ngSwitchCase="'likertResponseArea'"></likert-view>
+  <app-likert-view *ngSwitchCase="'likertResponseArea'"></app-likert-view>
   <multiple-input-view *ngSwitchCase="'multipleInputResponseArea'"></multiple-input-view>
   <manual-audiometry-view *ngSwitchCase="'manualAudiometryResponseArea'"></manual-audiometry-view>
   <manual-audiometry-result-viewer-view *ngSwitchCase="'manualAudiometryResponseAreaResultViewer'"></manual-audiometry-result-viewer-view>
   <app-multiple-choice-view *ngSwitchCase="'multipleChoiceResponseArea'"></app-multiple-choice-view>
-  <custom-response-area-view *ngSwitchCase="'customResponseArea'"></custom-response-area-view>
+  <app-custom-response-area-view *ngSwitchCase="'customResponseArea'"></app-custom-response-area-view>
   <app-calibration-exam *ngSwitchCase="'calibrationResponseArea'"></app-calibration-exam>
   <app-fpl-calibration-exam *ngSwitchCase="'fplCalibrationResponseArea'"></app-fpl-calibration-exam>
   <swept-dpoae-exam *ngSwitchCase="'sweptDPOAEResponseArea'"></swept-dpoae-exam>

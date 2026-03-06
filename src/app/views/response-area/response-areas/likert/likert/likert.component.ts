@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, OnDestroy, OnInit, Output } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { PageModel } from '../../../../../models/page/page.service';
@@ -6,12 +6,11 @@ import { ResultsInterface } from '../../../../../models/results/results.interfac
 import { LikertInterface } from './likert.interface';
 import { PageInterface } from '../../../../../models/page/page.interface';
 import { likertSchema } from '../../../../../../schema/response-areas/likert.schema';
-import { ExamService } from '../../../../../controllers/exam.service';
 import { StateModel } from '../../../../../models/state/state.service';
 import { StateInterface } from '../../../../../models/state/state.interface';
 
 @Component({
-  selector: 'likert-view',
+  selector: 'app-likert-view',
   templateUrl: './likert.component.html',
   styleUrl: './likert.component.css',
 })
@@ -39,12 +38,11 @@ export class LikertComponent implements OnInit, OnDestroy {
   stateSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
 
-  constructor(
-    private readonly examService: ExamService,
-    private readonly resultsModel: ResultsModel,
-    private readonly pageModel: PageModel,
-    private readonly stateModel: StateModel
-  ) {
+  private readonly resultsModel = inject(ResultsModel);
+  private readonly pageModel = inject(PageModel);
+  private readonly stateModel = inject(StateModel);
+
+  constructor() {
     this.results = this.resultsModel.getResults();
     this.state = this.stateModel.getState();
   }

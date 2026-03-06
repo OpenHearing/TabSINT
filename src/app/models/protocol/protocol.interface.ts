@@ -6,6 +6,7 @@ import { ProtocolErrorInterface } from '../../interfaces/protocol-error.interfac
 import { ProtocolSchemaInterface } from '../../interfaces/protocol-schema.interface';
 import { Headset, ProtocolServer } from '../../utilities/constants';
 import { GitlabConfigInterface } from '../disk/disk.interface';
+import { ProtocolStack } from './protocol-stack';
 
 export interface ProtocolMetaInterface {
   group?: string;
@@ -22,6 +23,7 @@ export interface ProtocolMetaInterface {
 
 export interface ProtocolModelInterface {
   activeProtocol?: ProtocolInterface;
+  activeProtocolStack: ProtocolStack;
   activeProtocolDictionary?: ProtocolDictionary;
   activeProtocolFollowOnsDictionary?: FollowOnsDictionary;
 }
@@ -36,18 +38,18 @@ export interface ProtocolInterface extends ProtocolSchemaInterface, ProtocolMeta
   _calibrationPySVNRevision?: string;
   _calibrationPyManualReleaseDate?: string;
   _exportCSV?: boolean;
-  _protocolIdDict?: any;
-  _missingWavCalList?: Array<string>;
-  _missingCommonWavCalList?: Array<string>;
-  _missingControllerList?: Array<string>;
-  _missingHtmlList?: Array<string>;
+  _protocolIdDict?: Record<string, ProtocolSchemaInterface>;
+  _missingWavCalList?: string[];
+  _missingCommonWavCalList?: string[];
+  _missingControllerList?: string[];
+  _missingHtmlList?: string[];
   _missingCommonMediaRepo?: boolean;
   _hasSubjectIdResponseArea?: boolean;
-  _customHtmlList?: Array<{
+  _customHtmlList?: {
     name: string;
     path: string;
     id: string;
-  }>;
+  }[];
   _requiresCha?: boolean;
-  errors?: Array<ProtocolErrorInterface>;
+  errors?: ProtocolErrorInterface[];
 }

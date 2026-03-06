@@ -1,5 +1,4 @@
 import { AppState, ProtocolState, ExamState } from '../../utilities/constants';
-import { ProtocolInterface } from '../protocol/protocol.interface';
 
 export interface StateInterface {
   appState: AppState;
@@ -9,8 +8,7 @@ export interface StateInterface {
   doesResponseExist: boolean;
   isResponseRequired: boolean;
   isSubmittable: boolean;
-  examIndex: number;
-  canGoBack: Function;
+  canGoBack: () => boolean;
   isPaneOpen: {
     general: boolean;
     advanced: boolean;
@@ -25,11 +23,7 @@ export interface StateInterface {
     completedExams: boolean;
     exportedAndUploadedResults: boolean;
   };
-  examProgress: {
-    pctProgress: number;
-    anticipatedProtocols: ProtocolInterface[];
-    activatedProtocols: ProtocolInterface[];
-  };
+  examProgress: number | string;
   bluetoothConnected: boolean;
   wifiConnected: boolean;
 }
