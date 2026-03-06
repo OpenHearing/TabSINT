@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { PageInterface } from '../../../../models/page/page.interface';
@@ -12,6 +12,7 @@ import { qrCodeResponseAreaSchema } from '../../../../../schema/response-areas/q
 import { QrService } from '../../../../services/qr.service';
 import { Notifications } from '../../../../services/notifications.service';
 import { DialogType } from '../../../../utilities/constants';
+import { ExamService } from '../../../../controllers/exam.service';
 
 @Component({
   selector: 'app-qr-code-response-area',
@@ -19,25 +20,30 @@ import { DialogType } from '../../../../utilities/constants';
   styleUrl: './qr-code.component.css',
 })
 export class QrCodeResponseAreaComponent implements OnInit, OnDestroy {
-  scope: QrCodeResponseAreaScope;
-  qrData?: string;
+  private readonly notifications = inject(Notifications);
+  private readonly pageModel = inject(PageModel);
+  private readonly resultsModel = inject(ResultsModel);
+  private readonly stateModel = inject(StateModel);
+  private readonly qrService = inject(QrService);
+  private readonly examService = inject(ExamService);
 
+  qrExamProperties: QrCodeResponseAreaInterface = {
+    type: qrCodeResponseAreaSchema.properties.type.default,
+    scope: qrCodeResponseAreaSchema.properties.scope.default,
+    autoSubmit: qrCodeResponseAreaSchema.properties.autoSubmit.default,
+  };
+  qrData?: string;
   pageSubscription: Subscription | undefined;
 
-  constructor(
-    private readonly resultsModel: ResultsModel,
-    private readonly pageModel: PageModel,
-    private readonly stateModel: StateModel,
-    private readonly qrService: QrService,
-    private readonly notifications: Notifications
-  ) {
-    this.scope = qrCodeResponseAreaSchema.properties.scope.default;
+  constructor() {
+    /* empty */
   }
 
   ngOnInit(): void {
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type == 'qrCodeResponseArea') {
-        this.scope = (updatedPage.responseArea as QrCodeResponseAreaInterface).scope;
+        this.qrExamProperties.scope = (updatedPage.responseArea as QrCodeResponseAreaInterface).scope;
+        this.qrExamProperties.autoSubmit = (updatedPage.responseArea as QrCodeResponseAreaInterface).autoSubmit;
       }
     });
   }
@@ -56,7 +62,7 @@ export class QrCodeResponseAreaComponent implements OnInit, OnDestroy {
     }
     this.qrData = scanResult;
 
-    switch (this.scope) {
+    switch (this.qrExamProperties.scope) {
       case QrCodeResponseAreaScope.Page:
         this.resultsModel.updateCurrentPage({ response: scanResult });
         break;
@@ -65,7 +71,7 @@ export class QrCodeResponseAreaComponent implements OnInit, OnDestroy {
         this.resultsModel.updateCurrentExam({ qrString: scanResult });
         break;
       default:
-        this.scope satisfies never;
+        this.qrExamProperties.scope satisfies never;
         break;
     }
 
@@ -77,6 +83,9 @@ export class QrCodeResponseAreaComponent implements OnInit, OnDestroy {
         content: 'QR code scanned successfully.',
         type: DialogType.Alert,
       });
+      if (this.qrExamProperties.autoSubmit) {
+        this.examService.submit();
+      }
     } else {
       this.notifications.alert({
         title: 'QR Code',

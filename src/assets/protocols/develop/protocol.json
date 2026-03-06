@@ -274,7 +274,7 @@
       "protocolId": "LikeRT",
       "pages": [
         {
-          "id": "default",
+          "id": "default1",
           "instructionText": "Page should only be submittable when there is a response",
           "responseArea": {
             "type": "likertResponseArea",
@@ -286,7 +286,7 @@
           }
         },
         {
-          "id": "default",
+          "id": "default2",
           "instructionText": "Page should only be submittable when there is a response",
           "responseArea": {
             "type": "likertResponseArea",
@@ -299,7 +299,7 @@
           }
         },
         {
-          "id": "default",
+          "id": "default3",
           "instructionText": "Page should always be submittable",
           "responseArea": {
             "type": "likertResponseArea",
@@ -308,6 +308,19 @@
             "naBox": true,
             "labels": ["Not at all", "Perfectly"],
             "questions": ["Question 1", "Question 2", "Question 3"]
+          }
+        },
+        {
+          "id": "default4",
+          "instructionText": "Page should autoSubmit",
+          "responseArea": {
+            "type": "likertResponseArea",
+            "responseRequired": false,
+            "autoSubmit": true,
+            "levels": 5,
+            "naBox": true,
+            "labels": ["Not at all", "Perfectly"],
+            "questions": ["Question"]
           }
         },
         {
@@ -580,7 +593,7 @@
         {
           "id": "MEMR",
           "title": "MEMR Exam (Within Block)",
-          "isAutoSubmit": false,
+          "autoSubmit": false,
           "responseArea": {
             "type": "memrResponseArea",
             "soundFileName": "/PurdueMEMR/MEMR_Sinc16_2ch.wav",
@@ -609,7 +622,7 @@
         {
           "id": "MEMR",
           "title": "MEMR Exam (Between Blocks)",
-          "isAutoSubmit": false,
+          "autoSubmit": false,
           "responseArea": {
             "type": "memrResponseArea",
             "soundFileName": "/PurdueMEMR/MEMR_Sinc16_2ch.wav",
@@ -987,7 +1000,6 @@
           "questionSubText": "Example of questionSubText",
           "instructionText": "Example of instructionText",
           "helpText": "Example of helpText",
-          "isAutoSubmit": false,
           "responseArea": {
             "type": "customResponseArea",
             "htmlFilePath": "custom-response-areas/html_basic_example.html",
@@ -997,7 +1009,6 @@
         {
           "id": "customResponseArea2",
           "title": "Multi Page Example",
-          "isAutoSubmit": false,
           "responseArea": {
             "type": "customResponseArea",
             "htmlFilePath": "custom-response-areas/html_multi_example.html",
@@ -1007,7 +1018,6 @@
         {
           "id": "customResponseArea3",
           "title": "Reading and Writing Files Example",
-          "isAutoSubmit": false,
           "responseArea": {
             "type": "customResponseArea",
             "htmlFilePath": "custom-response-areas/html_file_example.html",
@@ -1017,7 +1027,6 @@
         {
           "id": "customResponseArea4",
           "title": "Page and Disk Variables",
-          "isAutoSubmit": false,
           "responseArea": {
             "type": "customResponseArea",
             "htmlFilePath": "custom-response-areas/html_disk_example.html",
@@ -1038,7 +1047,6 @@
           "title": "QR Code Scanning",
           "questionMainText": "Example of scanning a QR Code",
           "questionSubText": "Scan a QR code",
-          "isAutoSubmit": false,
           "responseArea": {
             "type": "qrCodeResponseArea",
             "scope": "page"

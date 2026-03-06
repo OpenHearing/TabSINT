@@ -9,4 +9,5 @@ export interface LikertInterface extends CommonResponseAreaInterface {
   questions?: string[];
   useSlider?: boolean;
   naBox?: boolean;
+  autoSubmit?: boolean;
 }

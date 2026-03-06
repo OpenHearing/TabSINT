@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { PageModel } from '../../../../../models/page/page.service';
 import { DevicesService } from '../../../../../services/devices/devices.service';
@@ -15,16 +15,24 @@ import { DialogDataInterface } from '../../../../../interfaces/dialog-data.inter
 import { MemrExamInterface, MemrQueueExamInterface, MemrExamSubmissionInterface, MemrResultsInterface } from './memr-exam.interface';
 import { StateInterface } from '../../../../../models/state/state.interface';
 import { StateModel } from '../../../../../models/state/state.service';
-import { pageSchema } from '../../../../../../schema/page.schema';
 import { memrSchema } from '../../../../../../schema/response-areas/memr.schema';
 import { getCurrentDatetime } from '../../../../../utilities/exam-helper-functions';
 
 @Component({
-  selector: 'memr-exam',
+  selector: 'app-memr-exam',
   templateUrl: './memr-exam.component.html',
   styleUrl: './memr-exam.component.css',
 })
 export class MemrExamComponent implements OnInit, OnDestroy {
+  private readonly logger = inject(Logger);
+  private readonly devicesService = inject(DevicesService);
+  private readonly examService = inject(ExamService);
+  private readonly notifications = inject(Notifications);
+  private readonly pageModel = inject(PageModel);
+  private readonly resultsModel = inject(ResultsModel);
+  private readonly stateModel = inject(StateModel);
+  private readonly paths = inject(Paths);
+
   // Core Data
   DeviceStatus = DeviceStatus;
   results: ResultsInterface;
@@ -47,8 +55,9 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     probeOutputChannel: memrSchema.properties.probeOutputChannel.default,
     elicitorOutputChannel: memrSchema.properties.elicitorOutputChannel.default,
     bleDelayPerTrial: memrSchema.properties.bleDelayPerTrial.default,
+    autoSubmit: memrSchema.properties.autoSubmit.default,
   };
-  inputParameterMap: Map<string, string> = new Map(); // Parameter map to display to the user in ready state
+  inputParameterMap = new Map<string, string>(); // Parameter map to display to the user in ready state
   trialsPerBlock: number = 0;
   blockCount: number = 0;
   currentBlockIndex: number = -1;
@@ -56,7 +65,6 @@ export class MemrExamComponent implements OnInit, OnDestroy {
 
   // Configuration Variables
   allowableDevices = [DeviceType.Tympan];
-  isAutoSubmit: boolean = pageSchema.properties.isAutoSubmit.default;
   currentStep: string = 'Ready';
   chinchillaType = 'Chinchilla';
   humanType = 'Human';
@@ -74,29 +82,28 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   stateSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
 
-  constructor(
-    private readonly devicesService: DevicesService,
-    private readonly examService: ExamService,
-    private readonly logger: Logger,
-    private readonly notifications: Notifications,
-    private readonly pageModel: PageModel,
-    private readonly resultsModel: ResultsModel,
-    private readonly stateModel: StateModel,
-    private readonly paths: Paths
-  ) {
+  constructor() {
     this.state = this.stateModel.getState();
     this.results = this.resultsModel.getResults();
     this.examService.submit = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.nextStep();
+      }
     };
     this.examService.reset = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.examService.resetDefault();
+      }
     };
     this.examService.submitPartial = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.examService.submitPartialDefault();
+      }
     };
     this.examService.navigateToTarget = subProtocolId => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.navigateToTargetDefault(subProtocolId);
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.examService.navigateToTargetDefault(subProtocolId);
+      }
     };
     this.stateModel.updateState({ isSubmittable: true });
   }
@@ -112,7 +119,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'memrResponseArea') {
         setTimeout(() => {
-          this.isAutoSubmit = updatedPage.isAutoSubmit ?? this.isAutoSubmit;
+          this.memrExamProperties.autoSubmit = (updatedPage.responseArea as MemrExamInterface)?.autoSubmit;
           this.initializeResponseArea(updatedPage.responseArea as MemrExamInterface);
           this.setupDevice(updatedPage.responseArea as MemrExamInterface);
         });
@@ -320,7 +327,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     this.updateExamProgress(results); // Update UI components
     if (this.currentBlockIndex >= this.blockCount) {
       await this.delay(1000); // Delay to show final block count to the user before the next step
-      if (this.isAutoSubmit) {
+      if (this.memrExamProperties?.autoSubmit) {
         await this.finishExam();
       } else {
         this.nextStep();

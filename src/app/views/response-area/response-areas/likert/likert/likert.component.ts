@@ -8,6 +8,7 @@ import { PageInterface } from '../../../../../models/page/page.interface';
 import { likertSchema } from '../../../../../../schema/response-areas/likert.schema';
 import { StateModel } from '../../../../../models/state/state.service';
 import { StateInterface } from '../../../../../models/state/state.interface';
+import { ExamService } from '../../../../../controllers/exam.service';
 
 @Component({
   selector: 'app-likert-view',
@@ -15,7 +16,16 @@ import { StateInterface } from '../../../../../models/state/state.interface';
   styleUrl: './likert.component.css',
 })
 export class LikertComponent implements OnInit, OnDestroy {
+  private readonly resultsModel = inject(ResultsModel);
+  private readonly pageModel = inject(PageModel);
+  private readonly stateModel = inject(StateModel);
+  private readonly examService = inject(ExamService);
   @Output() responseChange = new EventEmitter<number>();
+
+  likertExamProperties: LikertInterface = {
+    type: likertSchema.properties.type.default,
+    autoSubmit: likertSchema.properties.autoSubmit.default,
+  };
 
   // Controller variables
   questions: string[] = [];
@@ -38,10 +48,6 @@ export class LikertComponent implements OnInit, OnDestroy {
   stateSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
 
-  private readonly resultsModel = inject(ResultsModel);
-  private readonly pageModel = inject(PageModel);
-  private readonly stateModel = inject(StateModel);
-
   constructor() {
     this.results = this.resultsModel.getResults();
     this.state = this.stateModel.getState();
@@ -56,6 +62,7 @@ export class LikertComponent implements OnInit, OnDestroy {
     });
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type == 'likertResponseArea') {
+        this.likertExamProperties.autoSubmit = (updatedPage.responseArea as LikertInterface)?.autoSubmit;
         setTimeout(() => {
           this.initializeResponseArea(updatedPage.responseArea as LikertInterface);
         });
@@ -76,6 +83,9 @@ export class LikertComponent implements OnInit, OnDestroy {
     });
     this.stateModel.setPageSubmittable();
     this.responseChange.emit(this.results.currentPage.response);
+    if (this.likertExamProperties.autoSubmit) {
+      this.examService.submit();
+    }
   }
 
   onSliderChange(questionIndex: number, event: Event): void {

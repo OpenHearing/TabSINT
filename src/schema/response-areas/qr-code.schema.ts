@@ -11,6 +11,7 @@ export const qrCodeResponseAreaSchema: JSONSchemaType<QrCodeResponseAreaInterfac
     responseRequired: { type: 'boolean', nullable: true, default: true },
     type: { type: 'string', enum: ['qrCodeResponseArea'] },
     scope: { type: 'string', enum: Object.values(QrCodeResponseAreaScope), default: QrCodeResponseAreaScope.Exam },
+    autoSubmit: { type: 'boolean', nullable: true, default: true },
   },
   required: ['type', 'scope'],
 };

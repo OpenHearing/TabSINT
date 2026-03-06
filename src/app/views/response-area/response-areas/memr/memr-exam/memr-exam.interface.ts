@@ -33,6 +33,7 @@ export interface MemrExamInterface extends CommonResponseAreaInterface {
   elicitorOutputChannel?: string[];
   recordChannels?: string[];
   bleDelayPerTrial?: number;
+  autoSubmit?: boolean;
 }
 
 /**

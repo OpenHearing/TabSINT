@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import * as d3 from 'd3';
 import { Subscription } from 'rxjs/internal/Subscription';
 
@@ -18,11 +18,18 @@ import { handleOutputCalibration, getCurrentDatetime } from '../../../../../util
 import { DeviceType } from '../../../../../utilities/constants';
 
 @Component({
-  selector: 'swept-dpoae-exam',
+  selector: 'app-swept-dpoae-exam',
   templateUrl: './swept-dpoae-exam.component.html',
   styleUrl: './swept-dpoae-exam.component.css',
 })
 export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
+  private readonly resultsModel = inject(ResultsModel);
+  private readonly pageModel = inject(PageModel);
+  private readonly logger = inject(Logger);
+  private readonly examService = inject(ExamService);
+  private readonly devicesService = inject(DevicesService);
+  private readonly buttonTextService = inject(ButtonTextService);
+
   tabsintId: string = sweptDpoaeSchema.properties.tabsintId.default;
   outputCalibrationType: string = sweptDpoaeSchema.properties.outputCalibrationType.default;
   outputChannel1: string = sweptDpoaeSchema.properties.outputChannel1.default;
@@ -45,8 +52,10 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
   outputRawMeasurements: boolean = sweptDpoaeSchema.properties.outputRawMeasurements.default;
   normativeDataPath: string = sweptDpoaeSchema.properties.normativeDataPath.default;
   normativeData: NormativeDataInterface[] = sweptDpoaeSchema.properties.normativeData.default;
-  results: ResultsInterface;
+  autoSubmit: boolean = sweptDpoaeSchema.properties.autoSubmit.default;
   showResults: boolean = sweptDpoaeSchema.properties.showResults.default;
+  
+  results: ResultsInterface;
   pageSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
   currentStep: string = 'input-parameters';
@@ -55,7 +64,7 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
     State: 'READY',
     PctComplete: 0,
   };
-  inputParameterMap: Map<string, string> = new Map(); // Parameter map to display the user input parameters
+  inputParameterMap = new Map<string, string>(); // Parameter map to display the user input parameters
   allowableDevices = [DeviceType.Tympan];
 
   // Set default dimensions and margins
@@ -66,26 +75,19 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
   xScale = d3.scaleLog();
   yScale = d3.scaleLinear();
 
-  constructor(
-    private readonly pageModel: PageModel,
-    private readonly devicesService: DevicesService,
-    private readonly logger: Logger,
-    private readonly resultsModel: ResultsModel,
-    private readonly examService: ExamService,
-    private readonly buttonTextService: ButtonTextService
-  ) {
+  constructor() {
     this.results = this.resultsModel.getResults();
     this.examService.submit = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep();
+      return !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep();
     };
     this.examService.reset = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault();
+      return !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault();
     };
     this.examService.submitPartial = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault();
+      return !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault();
     };
     this.examService.navigateToTarget = subProtocolId => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.navigateToTargetDefault(subProtocolId);
+      return !this.devicesService.isDeviceMessagePending(this.device) && this.examService.navigateToTargetDefault(subProtocolId);
     };
   }
 
@@ -168,9 +170,12 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
       case 'in-progress':
         this.currentStep = 'results';
         this.buttonTextService.updateButtonText('Finish');
+        if (this.autoSubmit) {
+          this.examService.submit();
+        }
         break;
       case 'results':
-        this.examService.submitDefault();
+        this.examService.submit();
         break;
     }
   }

@@ -1,5 +1,5 @@
 <div [ngSwitch]="currentPage.responseArea?.type">
-  <textbox-view *ngSwitchCase="'textboxResponseArea'"></textbox-view>
+  <app-textbox-view *ngSwitchCase="'textboxResponseArea'"></app-textbox-view>
   <textbox-result-viewer-view *ngSwitchCase="'textboxResponseAreaResultViewer'"></textbox-result-viewer-view>
   <app-likert-view *ngSwitchCase="'likertResponseArea'"></app-likert-view>
   <multiple-input-view *ngSwitchCase="'multipleInputResponseArea'"></multiple-input-view>
@@ -9,10 +9,10 @@
   <app-custom-response-area-view *ngSwitchCase="'customResponseArea'"></app-custom-response-area-view>
   <app-calibration-exam *ngSwitchCase="'calibrationResponseArea'"></app-calibration-exam>
   <app-fpl-calibration-exam *ngSwitchCase="'fplCalibrationResponseArea'"></app-fpl-calibration-exam>
-  <swept-dpoae-exam *ngSwitchCase="'sweptDPOAEResponseArea'"></swept-dpoae-exam>
-  <mrt-exam *ngSwitchCase="'mrtResponseArea'"></mrt-exam>
+  <app-swept-dpoae-exam *ngSwitchCase="'sweptDPOAEResponseArea'"></app-swept-dpoae-exam>
+  <app-mrt-exam *ngSwitchCase="'mrtResponseArea'"></app-mrt-exam>
   <wai-exam *ngSwitchCase="'WAIResponseArea'"></wai-exam>
-  <memr-exam *ngSwitchCase="'memrResponseArea'"></memr-exam>
+  <app-memr-exam *ngSwitchCase="'memrResponseArea'"></app-memr-exam>
   <app-subject-id *ngSwitchCase="'subjectIdResponseArea'"></app-subject-id>
   <app-checkbox *ngSwitchCase="'checkboxResponseArea'"></app-checkbox>
   <app-button-grid *ngSwitchCase="'buttonGridResponseArea'"></app-button-grid>

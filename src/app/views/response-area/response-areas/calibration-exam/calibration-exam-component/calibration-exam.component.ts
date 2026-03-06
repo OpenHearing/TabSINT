@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, EventEmitter, Output, inject } from '@angular/core';
 import { PageModel } from '../../../../../models/page/page.service';
 import { Subscription } from 'rxjs';
 import { CalibrationExamInterface, EarData, ExamResponse } from './calibration-exam.interface';
@@ -22,6 +22,13 @@ import { DeviceType } from '../../../../../utilities/constants';
   styleUrls: ['./calibration-exam.component.css'],
 })
 export class CalibrationExamComponent implements OnInit, OnDestroy {
+  private readonly logger = inject(Logger);
+  private readonly devicesService = inject(DevicesService);
+  private readonly examService = inject(ExamService);
+  private readonly pageModel = inject(PageModel);
+  private readonly resultsModel = inject(ResultsModel);
+  private readonly buttonTextService = inject(ButtonTextService);
+
   @ViewChild(CalibrationResultsViewerComponent) resultsViewer!: CalibrationResultsViewerComponent;
   @ViewChild(MaxOutputScreenComponent) maxOutputScreen!: MaxOutputScreenComponent;
   @ViewChild(CalibrationScreenComponent) calibrationScreen!: CalibrationScreenComponent;
@@ -50,29 +57,32 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   poppedHistory: { step: string; frequencyIndex: number; earCup: string }[] = [];
   batchFrequencies: boolean = calibrationExamSchema.properties.batchFrequencies.default;
 
-  constructor(
-    private readonly pageModel: PageModel,
-    private readonly devicesService: DevicesService,
-    private readonly logger: Logger,
-    private readonly resultsModel: ResultsModel,
-    private readonly examService: ExamService,
-    private readonly buttonTextService: ButtonTextService
-  ) {
+  constructor() {
     this.results = this.resultsModel.getResults();
     this.examService.submit = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.nextStep();
+      }
     };
     this.examService.back = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.previousStep();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.previousStep();
+      }
     };
     this.examService.reset = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.examService.resetDefault();
+      }
     };
     this.examService.submitPartial = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.examService.submitPartialDefault();
+      }
     };
     this.examService.navigateToTarget = subProtocolId => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.navigateToTargetDefault(subProtocolId);
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.examService.navigateToTargetDefault(subProtocolId);
+      }
     };
   }
 
@@ -260,7 +270,9 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       this.poppedHistory.push(this.navigationHistory.pop()!); // Store popped entries
     }
     this.examService.submit = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.nextStep();
+      }
     };
   }
 
@@ -289,7 +301,9 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
 
   private async handleFinishedStep(): Promise<void> {
     this.examService.submit = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.nextStep();
+      }
     };
 
     await this.devicesService.abortExams(this.device!);

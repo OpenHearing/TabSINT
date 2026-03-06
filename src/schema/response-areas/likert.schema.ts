@@ -58,6 +58,7 @@ export const likertSchema: JSONSchemaType<LikertInterface> = {
       nullable: true,
       default: false,
     },
+    autoSubmit: { type: 'boolean', nullable: true, default: false },
   },
   required: ['type'],
 };
