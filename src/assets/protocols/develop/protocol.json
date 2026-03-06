@@ -78,9 +78,6 @@
                 "id": "Advanced Protocol Logic"
               },
               {
-                "id": "Auto Submit"
-              },
-              {
                 "id": "Custom Response Area"
               },
               {
@@ -198,12 +195,6 @@
               "conditional": "result.response=='Advanced Protocol Logic'",
               "target": {
                 "reference": "advancedProtocolLogic"
-              }
-            },
-            {
-              "conditional": "result.response=='Auto Submit'",
-              "target": {
-                "reference": "autoSubmit"
               }
             },
             {
@@ -983,27 +974,6 @@
       ]
     },
     {
-      "protocolId": "autoSubmit",
-      "pages": [
-        {
-          "id": "textbox_001",
-          "title": "Text Box",
-          "instructionText": "Should auto submit after 3 seconds",
-          "autoSubmit": true,
-          "autoSubmitDelay": 3000,
-          "responseArea": {
-            "type": "textboxResponseArea",
-            "rows": 5,
-            "responseRequired": false
-          }
-        },
-        {
-          "id": "backtomain",
-          "reference": "MainMenu"
-        }
-      ]
-    },
-    {
       "protocolId": "image",
       "pages": [
         {
@@ -1030,7 +1000,6 @@
           "questionSubText": "Example of questionSubText",
           "instructionText": "Example of instructionText",
           "helpText": "Example of helpText",
-          "autoSubmit": false,
           "responseArea": {
             "type": "customResponseArea",
             "htmlFilePath": "custom-response-areas/html_basic_example.html",
@@ -1040,7 +1009,6 @@
         {
           "id": "customResponseArea2",
           "title": "Multi Page Example",
-          "autoSubmit": false,
           "responseArea": {
             "type": "customResponseArea",
             "htmlFilePath": "custom-response-areas/html_multi_example.html",
@@ -1050,7 +1018,6 @@
         {
           "id": "customResponseArea3",
           "title": "Reading and Writing Files Example",
-          "autoSubmit": false,
           "responseArea": {
             "type": "customResponseArea",
             "htmlFilePath": "custom-response-areas/html_file_example.html",
@@ -1060,7 +1027,6 @@
         {
           "id": "customResponseArea4",
           "title": "Page and Disk Variables",
-          "autoSubmit": false,
           "responseArea": {
             "type": "customResponseArea",
             "htmlFilePath": "custom-response-areas/html_disk_example.html",
