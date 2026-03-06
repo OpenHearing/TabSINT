@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, inject } from '@angular/core';
 import { Keyboard } from '@capacitor/keyboard';
 import { PluginListenerHandle } from '@capacitor/core';
 import { Subscription } from 'rxjs';
@@ -13,7 +13,7 @@ import { PageModel } from '../../models/page/page.service';
 import { ButtonTextService } from '../../controllers/button-text.service';
 
 @Component({
-  selector: 'exam-view',
+  selector: 'app-exam-view',
   templateUrl: './exam.component.html',
   styleUrl: './exam.component.css',
 })
@@ -36,14 +36,14 @@ export class ExamComponent implements OnInit, OnDestroy {
   private keyboardShowListener?: PluginListenerHandle;
   private keyboardHideListener?: PluginListenerHandle;
 
-  constructor(
-    private readonly cdr: ChangeDetectorRef,
-    private readonly examService: ExamService,
-    private readonly diskModel: DiskModel,
-    private readonly stateModel: StateModel,
-    private readonly pageModel: PageModel,
-    private readonly buttonTextService: ButtonTextService
-  ) {
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly examService = inject(ExamService);
+  private readonly diskModel = inject(DiskModel);
+  private readonly stateModel = inject(StateModel);
+  private readonly pageModel = inject(PageModel);
+  private readonly buttonTextService = inject(ButtonTextService);
+
+  constructor() {
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();
     this.currentPage = this.pageModel.getPage();
@@ -74,6 +74,10 @@ export class ExamComponent implements OnInit, OnDestroy {
     this.pageSubscription?.unsubscribe();
     this.buttonTextSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();
+  }
+
+  isString(data: unknown): boolean {
+    return typeof data === 'string';
   }
 
   begin() {

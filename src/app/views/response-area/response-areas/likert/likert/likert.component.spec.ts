@@ -3,29 +3,15 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 import { LikertComponent } from './likert.component';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { PageModel } from '../../../../../models/page/page.service';
-import { DiskModel } from '../../../../../models/disk/disk.service';
-import { SqLite } from '../../../../../services/sqLite.service';
-import { AppModel } from '../../../../../models/app/app.service';
-import { Logger } from '../../../../../services/logger.service';
-import { VersionModel } from '../../../../../models/version/version.service';
-import { ExamService } from '../../../../../controllers/exam.service';
+import { StateModel } from '../../../../../models/state/state.service';
 
 describe('LikertComponent', () => {
   let component: LikertComponent;
   let fixture: ComponentFixture<LikertComponent>;
-  let mockResultsModel: ResultsModel;
-  let mockExamService: jasmine.SpyObj<ExamService>;
   let mockPageModel: PageModel;
-  const appModel = new AppModel();
-  const diskModel = new DiskModel(new Document());
-  const sqLite = new SqLite(appModel, diskModel);
-  const logger = new Logger(diskModel, sqLite);
-  const version = new VersionModel(logger);
+  let resultsModel: ResultsModel;
 
   beforeEach(async () => {
-    mockResultsModel = new ResultsModel(version, logger);
-    mockExamService = jasmine.createSpyObj('ExamService', ['_dummyMethod']);
-
     mockPageModel = new PageModel();
     mockPageModel.updatePage({
       responseArea: {
@@ -41,16 +27,13 @@ describe('LikertComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [LikertComponent],
-      providers: [
-        { provide: ResultsModel, useValue: mockResultsModel },
-        { provide: PageModel, useValue: mockPageModel },
-        { provide: ExamService, useValue: mockExamService },
-      ],
+      providers: [ResultsModel, StateModel, { provide: PageModel, useValue: mockPageModel }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(LikertComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+    resultsModel = TestBed.inject(ResultsModel);
   });
 
   it('should create', () => {
@@ -64,10 +47,10 @@ describe('LikertComponent', () => {
 
   it('should emit response change when onResponseChange is called', () => {
     spyOn(component.responseChange, 'emit');
-    mockResultsModel.resultsModel.currentPage.response = [0];
+    resultsModel.resultsModel.currentPage.response = [0];
     component.onResponseChange(0, 2);
-    expect(mockResultsModel.resultsModel.currentPage.response[0]).toEqual(2);
-    expect(component.responseChange.emit).toHaveBeenCalledWith(mockResultsModel.resultsModel.currentPage.response);
+    expect(resultsModel.resultsModel.currentPage.response[0]).toEqual(2);
+    expect(component.responseChange.emit).toHaveBeenCalledWith(resultsModel.resultsModel.currentPage.response);
   });
 
   it('should subscribe to pageModel currentPageObservable and update questions', fakeAsync(() => {

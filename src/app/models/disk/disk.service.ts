@@ -1,6 +1,5 @@
-import { Inject, Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import _ from 'lodash';
-import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 
 import { DiskInterface, GitlabConfigInterface } from './disk.interface';
@@ -8,6 +7,8 @@ import { ExamResults } from '../results/results.interface';
 import { diskSchema } from '../../../schema/definitions/disk.schema';
 import { safeParse } from '../../utilities/safe-parsing';
 import { Preferences } from '../../interfaces/preferences.interface';
+import { AppWindow } from '../../utilities/window';
+import { DOCUMENT } from '@angular/common';
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +22,7 @@ export class DiskModel {
     group: '',
   };
 
-  window: (Window & typeof globalThis) | null;
+  window: AppWindow | null;
 
   disk: DiskInterface = {
     activeProtocolMeta: structuredClone(diskSchema.properties.activeProtocolMeta.default),
@@ -44,8 +45,10 @@ export class DiskModel {
 
   diskSubject = new BehaviorSubject<DiskInterface>(this.disk);
 
-  constructor(@Inject(DOCUMENT) private readonly document: Document) {
-    this.window = document.defaultView;
+  private readonly document = inject(DOCUMENT);
+
+  constructor() {
+    this.window = this.document.defaultView;
     this.initializeDiskModel();
   }
 
