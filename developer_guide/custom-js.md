@@ -1,10 +1,8 @@
 # User Guide
 
-This is a WIP guide for how to use customJS response areas. This customJS response area framework allows users to input their own html and js files to be injected into TabSINT. It should be noted that when using your own html and js files that TabSINT may not function as expected. Additionally, errors inside the html and js users generate may be incorrect and error out without the errors propagating back to TabSINT. As a result the customJS response area can be unpredictable, challenging to debug, and used at the developers' own risk.
+This is a WIP guide for how to use customJS response areas. This customJS response area framework allows users to input their own html and js files to be injected into TabSINT. It should be noted that when using your own html and js files that TabSINT may not function as expected. Additionally, errors inside the html and js users generate may be incorrect and error out without the errors propagating back to TabSINT. As a result the customJS response area can be unpredictable, challenging to debug, and used at the developers' own risk. Developers will not be able to leverage Angular or its syntax as the app is compiled ahead of time. This means developers can only rely on html and js code and anything they import themselves. Examples can be found in the built in develop protocol (`src/assets/protocols/develop/protocol.json`) after selecting the `Custom Response Area` subprotocol. These examples provide simple ways to interact with various TabSINT functionality and reviewing the html and js files serves as basic documentation. A brief description of each the html and js files are outlined in Example Usage section below.
 
-Examples are outlined and provided after a brief explanation of the exposed TabSINT functionality.
-
-When using the customResponseArea, the `window` variable will be updated to contain the `tabsint` property. Note that this property will get overwritten each time you call a customJS response area so user defined variables inside the `tabsint` property may be deleted. Additionally, the following `window.tabsint` variables should never be overwritten from the customJS code as overwritting them would eliminate access to them and cause major issues running tabsint:
+When using the customResponseArea, the `window` variable will be updated to contain the `tabsint` property. Note that this property will get overwritten each time you call a customJS response area so user defined variables inside the `tabsint` property may be deleted. As a result we recommend storing variables that need to persist somehwere else. Additionally, `window.tabsint` itself and the following `window.tabsint` variables should never be overwritten from the customJS code as overwritting them would eliminate access to them and potentially cause major issues when running tabsint:
 
 - logger
 - resultsService
@@ -16,21 +14,17 @@ When using the customResponseArea, the `window` variable will be updated to cont
 - diskModel
 - stateModel
 
-These properties provide access to TabSINT's built in functionality and should be used with caution. In general, the services contain functions and the models contain data. The services typically complement the models. Interact with the models using getters and setters to avoid any data loss. Inspect the specific models to view their getter and setter functions.
+These properties provide access to TabSINT's built in functionality and should be used with caution. In general, the services contain functions and the models contain data. The services typically complement the models. Developers should interact with the models using getters and setters to avoid any data loss. Note that you should use the getter directly before you need the data to avoid any missing data. To determine the getters, setters, and functions provided by the various services and models, develoeprs should look at the TabSINT code for each of them. The exact files are referenced below and the TabSINT code base itself can act as some documentation on when and how to use the functions.
 
 ## Models
 
 ### Results Model
 
-Review the structure of the TabSINT results (see `results-model.service.ts`) to read from it in the customJS response area. To set results, use the following command:
-
-`window.tabsint.resultsModel.updateCurrentPage({ response: myResponse });`
-
-See `src/app/models/results/results-model.service.ts` for more details about how to use the getter and setter for the results model.
+This model can be used to interact with the TabSINT results to read and/or write to the results from the customJS response area. To view the results, use the following command: `window.tabsint.resultsModel.getResults();`. To set results, use the following command: `window.tabsint.resultsModel.updateCurrentPage({ response: myResponse });`. See `src/app/models/results/results-model.service.ts` and its adjacent interface for more details about how to use the getter and setter for the results model.
 
 ### Page Model
 
-The page model contains everything about the current page. See `src/app/models/page/page.service.ts` for more details.
+The page model contains everything about the current page. To grab information about the page, use the following command: `window.tabsint.pageModel.getPage();`. See `src/app/models/page/page.service.ts` and its adjacent interface for more details. 
 
 ### Protocol Model
 
@@ -75,3 +69,5 @@ There are four different example html and js files that cover a range of useful 
    - `html_file_example.html` and `js_file_example.js`
 4. Example showing how to interact with the page and disk variables.
    - `html_disk_example.html` and `js_disk_example.js`
+5. Example showing how to interact with previous results and optionally display information.
+   - `html_results_example.html` and `js_results_example.js`
