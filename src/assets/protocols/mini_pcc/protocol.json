@@ -499,6 +499,15 @@
           }
         },
         {
+          "id": "customResponseArea5",
+          "title": "Results and JS Variable Display",
+          "responseArea": {
+            "type": "customResponseArea",
+            "htmlFilePath": "custom-response-areas/html_results_example.html",
+            "jsFilePath": "custom-response-areas/js_results_example.js"
+          }
+        },
+        {
           "id": "backtomain",
           "reference": "MainMenu"
         }
