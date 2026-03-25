@@ -9,6 +9,7 @@ import { firstValueFrom, Observable } from 'rxjs';
 import { DiskInterface } from '../../../../models/disk/disk.interface';
 import { DevicesService } from '../../../../services/devices/devices.service';
 import { IWahtsDevice } from '../../../../interfaces/devices/wahts-device.interface';
+import { FirmwareAsset } from '../../../../interfaces/firmware-asset.interface';
 
 @Component({
   selector: 'device-config-view',
@@ -20,6 +21,7 @@ export class DeviceConfigComponent implements OnInit, OnDestroy {
   stateSubscription: Subscription | undefined;
   disk: Observable<DiskInterface>;
   BluetoothType = BluetoothType;
+  wahtsFirmwareAsset: Promise<FirmwareAsset | undefined>;
 
   constructor(
     private readonly stateModel: StateModel,
@@ -29,6 +31,7 @@ export class DeviceConfigComponent implements OnInit, OnDestroy {
   ) {
     this.state = this.stateModel.getState();
     this.disk = diskModel.diskSubject;
+    this.wahtsFirmwareAsset = this.devicesService.getApplicationFirmware(DeviceType.Wahts);
   }
 
   ngOnInit(): void {
@@ -61,4 +64,9 @@ export class DeviceConfigComponent implements OnInit, OnDestroy {
   }
 
   wahtsCommunicationPopover = this.translate.instant('Set the connection type for WAHTS devices.');
+
+  wahtsFirmwarePopover = this.translate.instant(`
+    This version of the WAHTS Firmware is built into TabSINT and can be updated to the WAHTS wirelessly.
+    TabSINT will work best if the WAHTS is updated to this version of the firmware.
+  `);
 }

@@ -18,6 +18,7 @@ import { IDeviceResponse } from '../../interfaces/devices/device-response.interf
 import { DeviceChooseComponent } from '../../views/config/config-views/device-choose/device-choose.component';
 import { MatDialog } from '@angular/material/dialog';
 import { WahtsManager } from './wahts-manager';
+import { FirmwareAsset } from '../../interfaces/firmware-asset.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -317,5 +318,32 @@ export class DevicesService {
    */
   async requestResults(device: IDevice): Promise<IDeviceResponse | undefined> {
     return this.getManager(device.type).requestResults?.(device);
+  }
+
+  /**
+   * Reprogram the firmware for a device.
+   * @param device The device to reprogram.
+   * @returns The device response for the reprogram request or undefined.
+   */
+  async reprogramFirmware(device: IDevice): Promise<IDeviceResponse | undefined> {
+    return this.getManager(device.type).reprogramFirmware?.(device);
+  }
+
+  /**
+   * Reboot the device.
+   * @param device The device to reboot.
+   * @returns The device response for the reboot request or undefined.
+   */
+  async reboot(device: IDevice): Promise<IDeviceResponse | undefined> {
+    return this.getManager(device.type).reboot?.(device);
+  }
+
+  /**
+   * Get the available application firmware for a device.
+   * @param deviceType The device type associated with the firmware.
+   * @returns The firmware asset provided by the application for the managed device type.
+   */
+  async getApplicationFirmware(deviceType: DeviceType): Promise<FirmwareAsset | undefined> {
+    return this.getManager(deviceType).getApplicationFirmware?.();
   }
 }

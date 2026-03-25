@@ -18,7 +18,7 @@ export class ConnectedDevicesComponent implements OnInit, OnDestroy {
   connectedDevicesMap: Observable<Map<DeviceType, IDevice[]>>;
   state: StateInterface;
   DeviceState = DeviceState;
-  expanded: boolean = false;
+  expanded = new Map<string, boolean>();
 
   // Subscriptions
   stateSubscription: Subscription | undefined;
@@ -73,5 +73,40 @@ export class ConnectedDevicesComponent implements OnInit, OnDestroy {
       await this.devicesService.disconnect(device);
     }
     await this.devicesService.removeSavedDevice(device);
+  }
+
+  getPanelState(deviceType: DeviceType): boolean {
+    let panel = false;
+    switch (deviceType) {
+      case DeviceType.Tympan:
+        panel = this.state.isPaneOpen.tympans;
+        break;
+      case DeviceType.Wahts:
+        panel = this.state.isPaneOpen.wahts;
+        break;
+      default:
+        deviceType satisfies never;
+        break;
+    }
+    return panel;
+  }
+
+  setPanelState(deviceType: DeviceType, state: boolean) {
+    switch (deviceType) {
+      case DeviceType.Tympan:
+        this.stateModel.updatePaneOpen({ tympans: state });
+        break;
+      case DeviceType.Wahts:
+        this.stateModel.updatePaneOpen({ wahts: state });
+        break;
+      default:
+        deviceType satisfies never;
+        break;
+    }
+  }
+
+  toggleDeviceExpanded(device: IDevice) {
+    const currentState = this.expanded.get(device.deviceId) ?? false;
+    this.expanded.set(device.deviceId, !currentState);
   }
 }

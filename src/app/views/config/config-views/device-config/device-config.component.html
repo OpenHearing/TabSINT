@@ -58,4 +58,39 @@
       </div>
     </div>
   </div>
+
+  <div class="row pad-top">
+    <div class="col-12">
+      <h5>Firmware</h5>
+
+      <!-- WAHTS Firmware Information -->
+      <div class="row pad-top">
+        <div class="col-6">WAHTS Firmware Tag:</div>
+        <div class="col-4">{{ (wahtsFirmwareAsset | async)?.version ?? "--" }}</div>
+        <div class="col-1"></div>
+        <div class="col-1" title="{{ 'WAHTS Firmware Help' | translate }}">
+          <i [matMenuTriggerFor]="wahtsFirmwareHelpMenu" class="ion-help-circled"></i>
+        </div>
+        <mat-menu #wahtsFirmwareHelpMenu="matMenu">
+          <button mat-menu-item>
+            <div [innerHTML]="wahtsFirmwarePopover"></div>
+          </button>
+        </mat-menu>
+      </div>
+
+      <div class="row pad-top">
+        <div class="col-6">WAHTS Firmware Build Time:</div>
+        <div class="col-4">{{ (wahtsFirmwareAsset | async)?.buildDatetime ?? "--" }}</div>
+        <div class="col-1"></div>
+        <div class="col-1" title="{{ 'WAHTS Firmware Help' | translate }}">
+          <i [matMenuTriggerFor]="wahtsFirmwareHelpMenu" class="ion-help-circled"></i>
+        </div>
+        <mat-menu #wahtsFirmwareHelpMenu="matMenu">
+          <button mat-menu-item>
+            <div [innerHTML]="wahtsFirmwarePopover"></div>
+          </button>
+        </mat-menu>
+      </div>
+    </div>
+  </div>
 </div>

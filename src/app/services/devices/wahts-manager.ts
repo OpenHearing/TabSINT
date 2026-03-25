@@ -1,4 +1,6 @@
 import { BehaviorSubject, Observable, Subject, catchError, firstValueFrom, map, of, timeout } from 'rxjs';
+import { Filesystem, Directory } from '@capacitor/filesystem';
+import { Buffer } from 'buffer';
 import { IDeviceManager } from '../../interfaces/devices/device-manager.interface';
 import { Logger } from '../logger.service';
 import { BluetoothType, DeviceState, DialogType, ExamState } from '../../utilities/constants';
@@ -13,6 +15,9 @@ import { WahtsDevice } from '../../models/devices/wahts-device';
 import { DiscoveryResponse, TabsintCha } from 'tabsintcha';
 import { SavedDevice } from '../../models/disk/disk.interface';
 import { DiskModel } from '../../models/disk/disk.service';
+import { FirmwareAsset } from '../../interfaces/firmware-asset.interface';
+import { RequestIdResponse } from '../../interfaces/devices/device-responses.interface';
+import { isValidDeviceResponse } from '../../guards/type.guard';
 
 /**
  * WAHTS implementation of the device manager.
@@ -22,6 +27,26 @@ export class WahtsManager implements IDeviceManager {
    * Whether a BLE scan is currently in progress.
    */
   private scanning = false;
+
+  /**
+   * Information related to the application held firmware.
+   */
+  private firmwareAsset: FirmwareAsset | undefined = undefined;
+
+  /**
+   * Binary firmware file name.
+   */
+  private readonly BINARY_FIRMWARE_FILENAME = 'CHA_firmware.dat';
+
+  /**
+   * Assets path to the binary firmware file.
+   */
+  private readonly BINARY_FIRMWARE_PATH = `assets/firmware/${this.BINARY_FIRMWARE_FILENAME}`;
+
+  /**
+   * Assets path to the metadata firmware file.
+   */
+  private readonly METADATA_FIRMWARE_PATH = 'assets/firmware/CHA_firmware.json';
 
   /**
    * The timeout used for BLE scans.
@@ -93,7 +118,7 @@ export class WahtsManager implements IDeviceManager {
       if (!this.requestedDisconnectionIds.has(deviceId)) {
         this.notifications.alert({
           title: 'Alert',
-          content: this.translate.instant("The tympan device's connection has timed out."),
+          content: this.translate.instant("The WAHTS device's connection has timed out."),
           type: DialogType.Alert,
         });
       }
@@ -218,11 +243,12 @@ export class WahtsManager implements IDeviceManager {
       await connectWithRetry();
       await this.wahtsAdapter.abortExams(device);
       const resp = await this.wahtsAdapter.requestId(device);
-      if (!resp.msg || resp.msg.includes('ERROR')) {
+      if (!isValidDeviceResponse(resp)) {
         await this.disconnect(device);
         throw new Error('Reconnection failed.');
       }
-      this.stateModel.updatePaneOpen({ tympans: true });
+      this.stateModel.updatePaneOpen({ wahts: true });
+      this.updateDeviceMetadata(device, resp.msg[1] as RequestIdResponse);
       this.tasks.deregister('Connect Device');
       device.state = DeviceState.Connected;
       this.updateDevice(device);
@@ -301,6 +327,58 @@ export class WahtsManager implements IDeviceManager {
   }
 
   /**
+   * Reprogram a device.
+   * @param device The device to reprogram.
+   * @returns The device response for the reprogram request.
+   */
+  async reprogramFirmware(device: WahtsDevice): Promise<IDeviceResponse> {
+    const firmwareTask = 'Transfer Firmware';
+    this.tasks.register(firmwareTask, 'Transferring Firmware to the Device...');
+    const firmwareErrorResponse = { deviceId: device.deviceId, msg: ['Error', 'Failed to create firmware asset'] };
+    try {
+      if (!this.firmwareAsset) {
+        this.firmwareAsset = await this.loadFirmwareAsset();
+        if (!this.firmwareAsset) {
+          this.tasks.deregister(firmwareTask);
+          await this.deviceErrorHandler(firmwareErrorResponse);
+          return firmwareErrorResponse;
+        }
+      }
+      const response = await this.wahtsAdapter.reprogramFirmware(device, this.firmwareAsset);
+      this.tasks.deregister(firmwareTask);
+      await this.deviceErrorHandler(response);
+      return response;
+    } catch (error) {
+      this.logger.error('Error while reprogramming firmware: ' + error);
+      this.tasks.deregister(firmwareTask);
+      await this.deviceErrorHandler(firmwareErrorResponse);
+      return firmwareErrorResponse;
+    }
+  }
+
+  /**
+   * Reboot a device.
+   * @param device The device to reboot.
+   * @param examId The device response for the reboot request.
+   */
+  async reboot(device: WahtsDevice): Promise<IDeviceResponse> {
+    const response = await this.wahtsAdapter.reboot(device);
+    await this.deviceErrorHandler(response);
+    return response;
+  }
+
+  /**
+   * Get firmware information for the available application firmware.
+   * @returns The firmware asset provided by the application for the managed device type or undefined.
+   */
+  async getApplicationFirmware(): Promise<FirmwareAsset | undefined> {
+    if (!this.firmwareAsset) {
+      this.firmwareAsset = await this.loadFirmwareAsset();
+    }
+    return this.firmwareAsset;
+  }
+
+  /**
    * Check for device errors and update the application state model if an error occurs.
    * @param resp The response to check for errors.
    * @param ignoreErrors Errors which should be ignored during the check.
@@ -317,11 +395,91 @@ export class WahtsManager implements IDeviceManager {
   }
 
   /**
+   * Update the metadata for a device with request ID information.
+   * If a serial number is negative, wrap the value.
+   * @param device The device to update.
+   * @param idResponse Request ID response information.
+   */
+  private updateDeviceMetadata(device: WahtsDevice, idResponse: RequestIdResponse) {
+    device.metadata.buildDateTime = idResponse.buildDateTime;
+    device.metadata.serialNumber = idResponse.serialNumber
+      ? (idResponse.serialNumber < 0 ? 0xffffffff + idResponse.serialNumber + 1 : idResponse.serialNumber).toString()
+      : undefined;
+    this.updateDevice(device);
+  }
+
+  /**
    * Determine the key of BluetoothType needed for the TabsintCha plugin.
    * @param connectionType The BluetoothType for the device.
    * @returns The string representation of the BluetoothType key.
    */
   private getConnectionKey(connectionType: BluetoothType): string {
     return Object.keys(BluetoothType).find(k => BluetoothType[k as keyof typeof BluetoothType] === connectionType) ?? 'BLUETOOTH_LE';
+  }
+
+  /**
+   * Load a firmware asset and create the firmware file in an accessible location for the CHA plugin.
+   * @returns The created firmware asset or undefined.
+   */
+  private async loadFirmwareAsset(): Promise<FirmwareAsset | undefined> {
+    const firmwareResponse = await fetch(this.BINARY_FIRMWARE_PATH);
+    const metadataResponse = await fetch(this.METADATA_FIRMWARE_PATH);
+
+    const buffer = await firmwareResponse.arrayBuffer();
+    const metadataJSON = await metadataResponse.json();
+
+    const base64Data = Buffer.from(buffer).toString('base64');
+    const checksum = this.calculateCRC32(new Uint8Array(buffer));
+
+    const writeResponse = await Filesystem.writeFile({
+      path: this.BINARY_FIRMWARE_FILENAME,
+      data: base64Data,
+      directory: Directory.Data,
+    });
+
+    if (!writeResponse.uri || !metadataJSON.tag || !metadataJSON.time) {
+      this.logger.error('Failed to generate the firmware asset');
+      return undefined;
+    }
+    // Make the path accessible via Java
+    const updatedFilePath = writeResponse.uri.replace('file://', '');
+
+    return {
+      fileName: this.BINARY_FIRMWARE_FILENAME,
+      filePath: updatedFilePath,
+      version: String(metadataJSON.tag),
+      buildDatetime: String(metadataJSON.time),
+      checksum: checksum,
+    };
+  }
+
+  /**
+   * Calculate a CRC32 checksum for a byte array.
+   * @param byteArray The byte array for checksum calculation.
+   * @returns The CRC32 checksum.
+   */
+  private calculateCRC32(byteArray: Uint8Array): number {
+    const crcTable = new Uint32Array(256);
+    for (let index = 0; index <= 255; index++) {
+      let tableValue = index;
+      for (let k = 0; k <= 7; k++) {
+        const leastSignificantBit = tableValue & 1;
+        if (leastSignificantBit === 1) {
+          const reversedGeneratorPolynomial = 0xedb88320;
+          tableValue = reversedGeneratorPolynomial ^ (tableValue >>> 1);
+        } else {
+          tableValue = tableValue >>> 1;
+        }
+      }
+      crcTable[index] = tableValue >>> 0;
+    }
+    const maxInt32 = 0xffffffff;
+    let crcValue = maxInt32;
+    for (const byte of byteArray) {
+      const crcTableIndex = (crcValue ^ byte) & 255;
+      crcValue = crcTable[crcTableIndex] ^ (crcValue >>> 8);
+    }
+    crcValue = (crcValue ^ maxInt32) >>> 0;
+    return crcValue;
   }
 }

@@ -1,3 +1,4 @@
+import { IDeviceResponse } from '../interfaces/devices/device-response.interface';
 import { PageDefinition, ProtocolReferenceInterface, ResponseArea } from '../interfaces/page-definition.interface';
 import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
 import { PageInterface } from '../models/page/page.interface';
@@ -29,4 +30,8 @@ export function isProtocolReferenceInterface(page: PageTypes): page is ProtocolR
 
 export function isManualAudiometryResponseArea(page: PageInterface): boolean {
   return page?.responseArea?.type === 'manualAudiometryResponseArea';
+}
+
+export function isValidDeviceResponse(response?: IDeviceResponse): response is IDeviceResponse {
+  return response?.msg !== undefined && !response.msg.includes('ERROR') && !response.msg.includes('error');
 }

@@ -1,6 +1,10 @@
 <!-- Devices -->
 <ng-container *ngFor="let entry of connectedDevicesMap | async | keyvalue">
-  <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.tympans">
+  <mat-expansion-panel
+    class="panel panel-default"
+    [expanded]="getPanelState(entry.key)"
+    (opened)="setPanelState(entry.key, true)"
+    (closed)="setPanelState(entry.key, false)">
     <mat-expansion-panel-header>
       <mat-panel-title>
         {{ entry.key | translate }}
@@ -18,7 +22,9 @@
           </div>
           <div class="col-1 text-scale">
             <em>
-              <span (click)="expanded = !expanded" (keydown.enter)="expanded = !expanded"> <i class="ion-information-circled"></i> </span>
+              <span (click)="toggleDeviceExpanded(device)" (keydown.enter)="toggleDeviceExpanded(device)">
+                <i class="ion-information-circled"></i>
+              </span>
             </em>
           </div>
 
@@ -32,10 +38,7 @@
           <div class="col-1 admin-labels text-scale">State:</div>
           <div class="col-2 text-scale" *ngIf="device.state === DeviceState.Connected"><em>Connected</em></div>
           <div class="col-2 text-scale" *ngIf="device.state === DeviceState.Disconnected"><em>Not Connected</em></div>
-          <div class="col-2 text-scale" *ngIf="device.state === DeviceState.Reprogram"><em>Reprogramming</em></div>
-          <div
-            class="col-2 text-scale"
-            *ngIf="device.state !== DeviceState.Connected && device.state !== DeviceState.Disconnected && device.state !== DeviceState.Reprogram">
+          <div class="col-2 text-scale" *ngIf="device.state !== DeviceState.Connected && device.state !== DeviceState.Disconnected">
             <em>Connecting</em>
           </div>
 
@@ -61,7 +64,7 @@
             </div>
           </div>
 
-          <div #collapse="ngbCollapse" [ngbCollapse]="!expanded">
+          <div #collapse="ngbCollapse" [ngbCollapse]="!expanded.get(device.deviceId)">
             <device-info-view [device]="device"></device-info-view>
           </div>
         </div>

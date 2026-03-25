@@ -14,6 +14,7 @@ export interface StateInterface {
     advanced: boolean;
     devices: boolean;
     tympans: boolean;
+    wahts: boolean;
     dosimeter: boolean;
     softwareHardware: boolean;
     appLog: boolean;

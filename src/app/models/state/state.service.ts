@@ -21,6 +21,7 @@ export class StateModel {
       advanced: false,
       devices: true,
       tympans: true,
+      wahts: true,
       dosimeter: false,
       softwareHardware: false,
       appLog: false,

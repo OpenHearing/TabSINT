@@ -2,6 +2,7 @@ import { Observable } from 'rxjs';
 import { IDevice } from './device.interface';
 import { IDeviceResponse } from './device-response.interface';
 import { SavedDevice } from '../../models/disk/disk.interface';
+import { FirmwareAsset } from '../firmware-asset.interface';
 
 /**
  * Device Manager Interface.
@@ -95,4 +96,24 @@ export interface IDeviceManager {
    * @param examId The identifier of the exam to request results for.
    */
   requestResults?(device: IDevice): Promise<IDeviceResponse>;
+
+  /**
+   * Optional method to reprogram the firmware for a device.
+   * @param device The device to reprogram.
+   * @returns The device response for the reprogram request.
+   */
+  reprogramFirmware?(device: IDevice): Promise<IDeviceResponse>;
+
+  /**
+   * Optional method to reboot a device.
+   * @param device The device to reboot.
+   * @returns The device response for the reboot request or undefined.
+   */
+  reboot?(device: IDevice): Promise<IDeviceResponse | undefined>;
+
+  /**
+   * Optional method to retrieve the application firmware that is available.
+   * @returns The firmware asset provided by the application for the managed device type or undefined.
+   */
+  getApplicationFirmware?(): Promise<FirmwareAsset | undefined>;
 }

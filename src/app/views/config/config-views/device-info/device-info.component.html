@@ -16,7 +16,7 @@
     <div class="col-1" href="javascript:" title="{{ 'TabSINT ID Edit Help' | translate }}">
       <i [matMenuTriggerFor]="setTabsintIdMenu" class="ion-help-circled"></i>
     </div>
-    <mat-menu class="col-1" #setTabsintIdMenu="matMenu">
+    <mat-menu #setTabsintIdMenu="matMenu">
       <button mat-menu-item>
         <div [innerHTML]="setTabsintIdPopover"></div>
       </button>
@@ -38,7 +38,21 @@
   <!-- Connected Device Firmware-->
   <div class="row pad-top">
     <div class="col-4">Firmware:</div>
-    <div class="col-8">{{ device.metadata.buildDateTime ?? "N/A" }}</div>
+    <div class="col-4" [ngStyle]="{ color: firmwareMatch === undefined ? 'black' : firmwareMatch ? 'green' : 'red' }">
+      {{ device.metadata.buildDateTime ?? "N/A" }}
+    </div>
+    <div class="col-1">
+      <a href="javascript:" title="{{ 'Update Firmware' | translate }}" (click)="reprogramFirmware(device)"><i class="ion-refresh"></i></a>
+    </div>
+    <div class="col-1"></div>
+    <div class="col-1" href="javascript:" title="{{ 'Update Firmware Help' | translate }}">
+      <i [matMenuTriggerFor]="firmwareMenu" class="ion-help-circled"></i>
+    </div>
+    <mat-menu #firmwareMenu="matMenu">
+      <button mat-menu-item>
+        <div [innerHTML]="firmwarePopover"></div>
+      </button>
+    </mat-menu>
   </div>
 
   <!-- Connected Device Serial-->
