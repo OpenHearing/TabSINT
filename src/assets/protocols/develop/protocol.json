@@ -1066,6 +1066,23 @@
           "reference": "MainMenu"
         }
       ]
+    },
+    {
+      "protocolId":"@PARTIAL",
+      "pages":[
+        {
+          "id": "partial_test",
+          "instructionText": "This should only be shown if a partial exam is submitted.",
+          "responseArea": {
+            "type": "likertResponseArea",
+            "responseRequired": false,
+            "levels": 5,
+            "naBox": true,
+            "labels": ["Not at all", "Perfectly"],
+            "questions": ["Question 1", "Question 2", "Question 3"]
+          }
+        }
+      ]
     }
   ]
 }

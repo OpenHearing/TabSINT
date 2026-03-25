@@ -100,7 +100,6 @@ export class ExamService {
     this.stateModel.updateState({ examState: ExamState.Testing });
     this.protocol.activeProtocolStack.addProtocol(this.protocol.activeProtocol!);
     this.advancePage();
-    this.submit = this.submitDefault;
   }
 
   /** Default submit function for exam pages.
@@ -109,9 +108,7 @@ export class ExamService {
    */
   submitDefault() {
     this.gradeResponses();
-    this.gradeResponses = this.gradeResponsesDefault;
     this.resultsService.pushResults(this.results.currentPage);
-    this.submit = this.submitDefault;
     this.advancePage();
   }
 
@@ -176,10 +173,13 @@ export class ExamService {
    */
   submitPartialDefault() {
     this.gradeResponses();
-    this.gradeResponses = this.gradeResponsesDefault;
     this.resultsService.pushResults(this.results.currentPage);
-    this.submit = this.submitDefault;
-    this.endExam();
+    this.resetProtocolStack();
+    if (this.protocol.activeProtocolDictionary!['@PARTIAL'] === undefined) {
+      this.endExam();
+    } else {
+      this.navigateToTarget('@PARTIAL');
+    }
   }
 
   submitPartial() {
@@ -195,7 +195,7 @@ export class ExamService {
     const referenceProtocol = this.protocol.activeProtocolDictionary![subProtocolID];
     this.protocol.activeProtocolStack.addProtocol(referenceProtocol);
     this.stateModel.updateState({ examState: ExamState.Testing });
-    this.submitDefault();
+    this.advancePage();
   }
 
   /**
@@ -295,8 +295,7 @@ export class ExamService {
    */
   private handleSpecialReferences(id: string | undefined) {
     if (id === '@PARTIAL') {
-      this.endExam();
-      this.logger.debug('@PARTIAL not implemented, instead using @END_ALL');
+      this.submitPartial();
     } else if (id === '@END_ALL') {
       this.endExam();
       return;
@@ -307,6 +306,13 @@ export class ExamService {
    * Proceed to next page in the exam with handling of pre-processing and post-processing.
    */
   private advancePage() {
+    // Reset everything to defaults on the start of each new page
+    this.reset = this.resetDefault;
+    this.submit = this.submitDefault;
+    this.submitPartial = this.submitPartialDefault;
+    this.navigateToTarget = this.navigateToTargetDefault;
+    this.gradeResponses = this.gradeResponsesDefault;
+
     const currentProtocol = this.protocol.activeProtocolStack.peek();
     if (currentProtocol === undefined) {
       this.endExam();
