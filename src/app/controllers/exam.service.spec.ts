@@ -314,18 +314,18 @@ describe('ExamService', () => {
     expect(mockStateModel.getState().examState).toEqual(ExamState.Ready);
   });
 
-  // it('should submit partial results and advance page', () => {
-  //     spyOn<any>(examService, 'advancePage');
+  it('should submit partial results and end exam', () => {
+    spyOn(examService, 'endExam' as never);
 
-  //     examService.submitPartial();
-  //     expect(examService["advancePage" as keyof ExamService]).toHaveBeenCalled();
-  // });
+    examService.submitPartial();
+    expect(examService['endExam' as keyof ExamService]).toHaveBeenCalled();
+  });
 
-  it('should navigate to target protocol and submit default', () => {
-    spyOn(examService, 'submitDefault');
+  it('should navigate to target protocol and advancePage', () => {
+    spyOn(examService, 'advancePage' as never);
 
     examService.navigateToTarget('test-protocol');
-    expect(examService['submitDefault' as keyof ExamService]).toHaveBeenCalled();
+    expect(examService['advancePage' as keyof ExamService]).toHaveBeenCalled();
   });
 
   it('should determine if a page response is required', () => {
