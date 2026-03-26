@@ -10,7 +10,7 @@ TabSINT is an open source platform for administering tablet based hearing-relate
 Exams and questionnaires are presented as a series of pages using a crisp and intuitive interface. Results are uploaded to a central server or saved locally on the tablet.
 
 
-This software is &copy; Creare 2015-2025, released under the Apache v2 License for educational or research purposes (and under a commercial license for other purposes) as provided below under TabSINT Licenses. License agreements for open source libraries used in the project are listed in [NOTICE](https://github.com/OpenHearing/TabSINT/blob/main/NOTICE.md).
+This software is &copy; Creare 2015-2026, released under the Apache v2 License for educational or research purposes (and under a commercial license for other purposes) as provided below under TabSINT Licenses. License agreements for open source libraries used in the project are listed in [NOTICE](https://github.com/OpenHearing/TabSINT/blob/main/NOTICE.md).
 
 ## Releases
 
@@ -37,7 +37,7 @@ TabSINT's translations support is in development.
 
 ### I.	Free License for Educational or Research Purposes 
 
-TabSINT is Copyright (C) 2015-2025 Creare. Use for educational or research purposes is licensed under the Apache License, Version 2.0 (the "License"); you may not use TabSINT except in compliance with the License. You may obtain a copy of
+TabSINT is Copyright (C) 2015-2026 Creare. Use for educational or research purposes is licensed under the Apache License, Version 2.0 (the "License"); you may not use TabSINT except in compliance with the License. You may obtain a copy of
 License at LICENSE or http://www.apache.org/licenses/LICENSE-2.0. All rights reserved.
 License agreements for open source libraries used in the project can be found in [NOTICE](https://github.com/OpenHearing/TabSINT/blob/main/NOTICE.md).
 
