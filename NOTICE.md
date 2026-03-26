@@ -1,6 +1,6 @@
 # Notice
 
-Code and documentation Copyright (C) 2015-2025 Creare. Code released under the Apache v2 License, for educational or research purposes (and under a commercial license for other purposes) as provided under TabSINT Licenses. 
+Code and documentation Copyright (C) 2015-2026 Creare. Code released under the Apache v2 License, for educational or research purposes (and under a commercial license for other purposes) as provided under TabSINT Licenses. 
 
 Creare has used commercially reasonable efforts in preparing the
 TabSINT Software but makes no guarantee or warranty of any nature
