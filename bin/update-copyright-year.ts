@@ -12,7 +12,7 @@ const currentYear = new Date().getFullYear().toString();
 if (previousCopyrightRange.split('-')[1] === currentYear) {
   console.log('Copyright year does not require updating');
 } else {
-  // All copywright paths
+  // All copyright paths
   const commercialLicensePath = path.join(__dirname, '../COMMERCIAL_LICENSE.md');
   const noticePath = path.join(__dirname, '../NOTICE.md');
   const readmePath = path.join(__dirname, '../README.md');
