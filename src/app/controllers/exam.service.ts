@@ -302,16 +302,20 @@ export class ExamService {
     }
   }
 
-  /**
-   * Proceed to next page in the exam with handling of pre-processing and post-processing.
-   */
-  private advancePage() {
-    // Reset everything to defaults on the start of each new page
+  private resetFunctionsToDefaults() {
     this.reset = this.resetDefault;
     this.submit = this.submitDefault;
     this.submitPartial = this.submitPartialDefault;
     this.navigateToTarget = this.navigateToTargetDefault;
     this.gradeResponses = this.gradeResponsesDefault;
+  }
+
+  /**
+   * Proceed to next page in the exam with handling of pre-processing and post-processing.
+   */
+  private advancePage() {
+    // Reset everything to defaults on the start of each new page
+    this.resetFunctionsToDefaults();
 
     const currentProtocol = this.protocol.activeProtocolStack.peek();
     if (currentProtocol === undefined) {
