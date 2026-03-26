@@ -4,6 +4,7 @@ import { LikertComponent } from './likert.component';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { PageModel } from '../../../../../models/page/page.service';
 import { StateModel } from '../../../../../models/state/state.service';
+import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
 
 describe('LikertComponent', () => {
   let component: LikertComponent;
@@ -27,7 +28,15 @@ describe('LikertComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [LikertComponent],
-      providers: [ResultsModel, StateModel, { provide: PageModel, useValue: mockPageModel }],
+      imports: [
+        TranslateModule.forRoot({
+          loader: {
+            provide: TranslateLoader,
+            useClass: TranslateFakeLoader,
+          },
+        }),
+      ],
+      providers: [TranslateService, TranslateStore, ResultsModel, StateModel, { provide: PageModel, useValue: mockPageModel }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(LikertComponent);

@@ -82,10 +82,11 @@ test:
     - docker pull $IMAGE_TAG
     - mkdir -p coverage
     - CONTAINER_ID=$(docker run -d $IMAGE_TAG npm run test:headless)
-    - docker wait $CONTAINER_ID
+    - CONTAINER_EXIT_CODE=$(docker wait $CONTAINER_ID)
     - docker cp $CONTAINER_ID:/usr/src/app/coverage/lcov.info ./coverage/lcov.info
     - docker stop $CONTAINER_ID
     - docker rm $CONTAINER_ID
+    - exit $CONTAINER_EXIT_CODE
   artifacts:
     paths:
       - coverage/lcov.info
@@ -137,10 +138,11 @@ beta-release:
     - docker pull $IMAGE_TAG
     - mkdir -p android
     - CONTAINER_ID=$(docker run -d $IMAGE_TAG npm run run.build.beta:ci)
-    - docker wait $CONTAINER_ID
+    - CONTAINER_EXIT_CODE=$(docker wait $CONTAINER_ID)
     - docker cp $CONTAINER_ID:/usr/src/app/android/app/build/outputs/apk/debug/app-debug.apk ./android/app/
     - docker stop $CONTAINER_ID
     - docker rm $CONTAINER_ID
+    - exit $CONTAINER_EXIT_CODE
   artifacts:
     paths:
       - android/app/app-debug.apk
@@ -178,10 +180,11 @@ release:
           echo \$ANDROID_KEYSTORE_BASE64 | base64 -d > /tmp/release.keystore &&
           npm run run.build.production:ci
         ")
-    - docker wait $CONTAINER_ID
+    - CONTAINER_EXIT_CODE=$(docker wait $CONTAINER_ID)
     - docker cp $CONTAINER_ID:/usr/src/app/android/app/build/outputs/apk/release/app-release.apk ./android/app/
     - docker stop $CONTAINER_ID
     - docker rm $CONTAINER_ID
+    - exit $CONTAINER_EXIT_CODE
   artifacts:
     paths:
       - android/app/app-release.apk
