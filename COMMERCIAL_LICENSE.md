@@ -33,7 +33,7 @@ Absent Developer’s agreement to the terms below, Developer shall have no right
 
 6.	**COPYRIGHT NOTICE.** Developer shall include in all end user licenses, in the same point font style and size as the related text, the following:
 
-“Copyright Notice. The software incorporated herein is Copyright ©2015-2025 CREARE. All Rights Reserved.
+“Copyright Notice. The software incorporated herein is Copyright ©2015-2026 CREARE. All Rights Reserved.
 The name ‘CREARE’ (alone or as part of another name) or any logos, seals, insignia or other words, names, symbols or devices that identify CREARE or any CREARE division or affiliate may not be used to endorse or promote products derived from this software without specific prior written permission.”
 
 7.	**NO WARRANTIES.** THE SOFTWARE IS PROVIDED “AS IS.” TO THE FULLEST EXTENT PERMITTED BY LAW, CREARE HEREBY DISCLAIMS ALL WARRANTIES OF ANY KIND (EXPRESS, IMPLIED OR OTHERWISE) REGARDING THE SOFTWARE, INCLUDING BUT NOT LIMITED TO ANY IMPLIED WARRANTIES OF MERCHANTABILITY, DESIGN, FITNESS FOR A PARTICULAR PURPOSE, SATISFACTORY QUALITY, OWNERSHIP, AND NON-INFRINGEMENT. CREARE MAKES NO WARRANTY ABOUT THE ACCURACY, RELIABILITY, COMPLETENESS, TIMELINESS, SUFFICIENCY OR QUALITY OF THE SOFTWARE. CREARE DOES NOT WARRANT THAT THE SOFTWARE WILL OPERATE WITHOUT ERROR OR INTERRUPTION, OR THAT THE SOFTWARE IS FREE OF COMPUTER VIRUSES OR OTHER HARMFUL COMPUTER CODE.
@@ -87,4 +87,4 @@ Exams and questionnaires are presented as a series of pages using a crisp and in
 
 Results are uploaded to a central server or saved locally on the tablet.
 
-This software is © Creare 2015-2025. Copyright notice: “Copyright 2015-2025 CREARE. All rights reserved.”
+This software is © Creare 2015-2026. Copyright notice: “Copyright 2015-2026 CREARE. All rights reserved.”
