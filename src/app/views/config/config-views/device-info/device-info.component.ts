@@ -82,7 +82,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy, OnChanges {
           const response = await this.devicesService.reprogramFirmware(device);
           if (isValidDeviceResponse(response)) {
             await this.devicesService.reboot(device);
-            completionResponse = 'The device is will now reboot. Reconnect the device to verify firmware was updated.';
+            completionResponse = 'The device will now reboot. Reconnect the device to verify firmware was updated.';
           }
         }
         this.notifications.alert({

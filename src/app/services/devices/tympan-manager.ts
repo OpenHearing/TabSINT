@@ -12,8 +12,8 @@ import { Tasks } from '../tasks.service';
 import { NgZone } from '@angular/core';
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
 import { SavedDevice } from '../../models/disk/disk.interface';
-import { RequestIdResponse } from '../../interfaces/devices/device-responses.interface';
-import { isValidDeviceResponse } from '../../guards/type.guard';
+import { RequestIdObject } from '../../interfaces/devices/device-responses.interface';
+import { isRequestIdResponse } from '../../guards/type.guard';
 
 /**
  * Tympan implementation of the device manager.
@@ -203,12 +203,12 @@ export class TympanManager implements IDeviceManager {
       await this.tympanAdapter.connect(device);
       await this.tympanAdapter.abortExams(device);
       const resp = await this.tympanAdapter.requestId(device);
-      if (!isValidDeviceResponse(resp)) {
+      if (!isRequestIdResponse(resp)) {
         await this.disconnect(device);
         throw new Error('Reconnection failed.');
       }
       this.stateModel.updatePaneOpen({ tympans: true });
-      this.updateDeviceMetadata(device, resp.msg[1] as RequestIdResponse);
+      this.updateDeviceMetadata(device, resp.msg[1]);
       this.tasks.deregister('Connect Device');
       device.state = DeviceState.Connected;
       this.updateDevice(device);
@@ -305,9 +305,9 @@ export class TympanManager implements IDeviceManager {
   /**
    * Update the metadata for a device with request ID information.
    * @param device The device to update.
-   * @param idResponse Request ID response information.
+   * @param idResponse Request ID information.
    */
-  private updateDeviceMetadata(device: TympanDevice, idResponse: RequestIdResponse) {
+  private updateDeviceMetadata(device: TympanDevice, idResponse: RequestIdObject) {
     device.metadata.buildDateTime = idResponse.buildDateTime;
     device.metadata.serialNumber = idResponse.serialNumber?.toString();
     this.updateDevice(device);

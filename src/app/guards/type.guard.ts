@@ -1,4 +1,5 @@
 import { IDeviceResponse } from '../interfaces/devices/device-response.interface';
+import { RequestIdResponse } from '../interfaces/devices/device-responses.interface';
 import { PageDefinition, ProtocolReferenceInterface, ResponseArea } from '../interfaces/page-definition.interface';
 import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
 import { PageInterface } from '../models/page/page.interface';
@@ -33,5 +34,14 @@ export function isManualAudiometryResponseArea(page: PageInterface): boolean {
 }
 
 export function isValidDeviceResponse(response?: IDeviceResponse): response is IDeviceResponse {
-  return response?.msg !== undefined && !response.msg.includes('ERROR') && !response.msg.includes('error');
+  return response?.msg !== undefined && Array.isArray(response?.msg) && !response.msg.includes('ERROR') && !response.msg.includes('error');
+}
+
+export function isRequestIdResponse(response?: IDeviceResponse): response is RequestIdResponse {
+  return (
+    isValidDeviceResponse(response) &&
+    response.msg.length >= 2 &&
+    (response as RequestIdResponse).msg[1].serialNumber !== undefined &&
+    (response as RequestIdResponse).msg[1].buildDateTime !== undefined
+  );
 }

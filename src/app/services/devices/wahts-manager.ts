@@ -16,8 +16,8 @@ import { DiscoveryResponse, TabsintCha } from 'tabsintcha';
 import { SavedDevice } from '../../models/disk/disk.interface';
 import { DiskModel } from '../../models/disk/disk.service';
 import { FirmwareAsset } from '../../interfaces/firmware-asset.interface';
-import { RequestIdResponse } from '../../interfaces/devices/device-responses.interface';
-import { isValidDeviceResponse } from '../../guards/type.guard';
+import { RequestIdObject } from '../../interfaces/devices/device-responses.interface';
+import { isRequestIdResponse } from '../../guards/type.guard';
 
 /**
  * WAHTS implementation of the device manager.
@@ -243,12 +243,12 @@ export class WahtsManager implements IDeviceManager {
       await connectWithRetry();
       await this.wahtsAdapter.abortExams(device);
       const resp = await this.wahtsAdapter.requestId(device);
-      if (!isValidDeviceResponse(resp)) {
+      if (!isRequestIdResponse(resp)) {
         await this.disconnect(device);
         throw new Error('Reconnection failed.');
       }
       this.stateModel.updatePaneOpen({ wahts: true });
-      this.updateDeviceMetadata(device, resp.msg[1] as RequestIdResponse);
+      this.updateDeviceMetadata(device, resp.msg[1]);
       this.tasks.deregister('Connect Device');
       device.state = DeviceState.Connected;
       this.updateDevice(device);
@@ -398,9 +398,9 @@ export class WahtsManager implements IDeviceManager {
    * Update the metadata for a device with request ID information.
    * If a serial number is negative, wrap the value.
    * @param device The device to update.
-   * @param idResponse Request ID response information.
+   * @param idResponse Request ID information.
    */
-  private updateDeviceMetadata(device: WahtsDevice, idResponse: RequestIdResponse) {
+  private updateDeviceMetadata(device: WahtsDevice, idResponse: RequestIdObject) {
     device.metadata.buildDateTime = idResponse.buildDateTime;
     device.metadata.serialNumber = idResponse.serialNumber
       ? (idResponse.serialNumber < 0 ? 0xffffffff + idResponse.serialNumber + 1 : idResponse.serialNumber).toString()
