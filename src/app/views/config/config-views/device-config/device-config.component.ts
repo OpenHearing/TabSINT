@@ -21,7 +21,7 @@ export class DeviceConfigComponent implements OnInit, OnDestroy {
   stateSubscription: Subscription | undefined;
   disk: Observable<DiskInterface>;
   BluetoothType = BluetoothType;
-  wahtsFirmwareAsset: Promise<FirmwareAsset | undefined>;
+  wahtsFirmwareAsset = this.getWahtsFirmwareAsset();
 
   constructor(
     private readonly stateModel: StateModel,
@@ -31,7 +31,6 @@ export class DeviceConfigComponent implements OnInit, OnDestroy {
   ) {
     this.state = this.stateModel.getState();
     this.disk = diskModel.diskSubject;
-    this.wahtsFirmwareAsset = this.devicesService.getApplicationFirmware(DeviceType.Wahts);
   }
 
   ngOnInit(): void {
@@ -43,6 +42,14 @@ export class DeviceConfigComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.stateSubscription?.unsubscribe();
+  }
+
+  /**
+   * Get the firmware asset for WAHTS devices.
+   * @returns The firmware asset or undefined.
+   */
+  async getWahtsFirmwareAsset(): Promise<FirmwareAsset | undefined> {
+    return this.devicesService.getApplicationFirmware(DeviceType.Wahts);
   }
 
   /**

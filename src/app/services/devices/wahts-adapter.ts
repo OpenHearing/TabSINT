@@ -4,7 +4,7 @@ import { Logger } from '../logger.service';
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
 import { WahtsDevice } from '../../models/devices/wahts-device';
 import { DeviceResponse, TabsintCha } from 'tabsintcha';
-import { BehaviorSubject, catchError, filter, firstValueFrom, of, skip, Subject, tap, timeout } from 'rxjs';
+import { BehaviorSubject, catchError, filter, firstValueFrom, of, skip, Subject, timeout } from 'rxjs';
 import { FirmwareAsset } from '../../interfaces/firmware-asset.interface';
 import { isValidDeviceResponse } from '../../guards/type.guard';
 

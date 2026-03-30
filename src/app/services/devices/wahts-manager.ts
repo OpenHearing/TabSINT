@@ -402,9 +402,11 @@ export class WahtsManager implements IDeviceManager {
    */
   private updateDeviceMetadata(device: WahtsDevice, idResponse: RequestIdObject) {
     device.metadata.buildDateTime = idResponse.buildDateTime;
-    device.metadata.serialNumber = idResponse.serialNumber
-      ? (idResponse.serialNumber < 0 ? 0xffffffff + idResponse.serialNumber + 1 : idResponse.serialNumber).toString()
-      : undefined;
+    let serialNumber = idResponse.serialNumber;
+    if (serialNumber < 0) {
+      serialNumber = serialNumber + 0xffffffff + 1;
+    }
+    device.metadata.serialNumber = serialNumber.toString();
     this.updateDevice(device);
   }
 
