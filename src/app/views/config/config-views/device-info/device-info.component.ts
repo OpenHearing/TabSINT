@@ -95,7 +95,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   /**
-   * Determine if the firmware matches the applications build in firmware based on the datetime.
+   * Determine if the firmware matches the applications built in firmware based on the datetime.
    * If a datetime is missing set the firmwareMatch value to undefined.
    */
   async updateFirmwareMatch() {
