@@ -34,7 +34,6 @@ export enum DeviceStatus {
 
 export enum DeviceType {
   Tympan = 'Tympan',
-  Cha = 'CHA',
   Wahts = 'WAHTS',
   Duodose = 'DuoDose',
   // Svantek,

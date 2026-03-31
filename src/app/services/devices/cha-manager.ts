@@ -1,7 +1,7 @@
 import { BehaviorSubject, Observable, Subject, catchError, firstValueFrom, map, of, timeout } from 'rxjs';
 import { IDeviceManager } from '../../interfaces/devices/device-manager.interface';
 import { Logger } from '../logger.service';
-import { BluetoothType, ChaDeviceType, DeviceState, DeviceType, DialogType, ExamState } from '../../utilities/constants';
+import { BluetoothType, ChaDeviceType, DeviceState, DialogType, ExamState } from '../../utilities/constants';
 import { StateModel } from '../../models/state/state.service';
 import { Notifications } from '../notifications.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -13,15 +13,14 @@ import { DiscoveryResponse, TabsintCha } from 'tabsintcha';
 import { SavedDevice } from '../../models/disk/disk.interface';
 import { DiskModel } from '../../models/disk/disk.service';
 import { WahtsDevice } from '../../models/devices/wahts-device';
-import { DuodoseDevice } from '../../models/devices/duodose-device';
 
 /**
- * CHA implementation of the device manager.
+ * CHA base device manager.
  */
-export class ChaManager implements IDeviceManager {
+export abstract class ChaManager implements IDeviceManager {
   private readonly logger = inject(Logger);
   private readonly stateModel = inject(StateModel);
-  private readonly diskModel = inject(DiskModel);
+  public readonly diskModel = inject(DiskModel);
   private readonly zone = inject(NgZone);
   private readonly notifications = inject(Notifications);
   private readonly translate = inject(TranslateService);
@@ -30,7 +29,7 @@ export class ChaManager implements IDeviceManager {
   /**
    * Whether a BLE scan is currently in progress.
    */
-  private scanning = false;
+  public scanning = false;
 
   /**
    * The timeout used for BLE scans.
@@ -40,12 +39,7 @@ export class ChaManager implements IDeviceManager {
   /**
    * The adapter used for interacting with a device.
    */
-  private readonly adapter: ChaAdapter;
-
-  /**
-   * The adapter used for interacting with a device.
-   */
-  private readonly deviceType: DeviceType;
+  private readonly adapter: ChaAdapter = new ChaAdapter();
 
   /**
    * Set of device identifiers for devices which have requested a disconnection.
@@ -65,11 +59,9 @@ export class ChaManager implements IDeviceManager {
   /**
    * Callback invoked on device discovery events
    */
-  private discoverListener: ((response: DiscoveryResponse) => void) | undefined = undefined;
+  public discoverListener: ((response: DiscoveryResponse) => void) | undefined = undefined;
 
-  constructor(deviceType: DeviceType) {
-    this.deviceType = deviceType;
-    this.adapter = new ChaAdapter();
+  constructor() {
     this.adapter.setDisconnectCallback(this.onDisconnectCallback);
     this.adapter.setDeviceUpdate(this.updateDevice);
   }
@@ -115,15 +107,9 @@ export class ChaManager implements IDeviceManager {
    * @returns The created device.
    */
   createDevice(savedDevice: SavedDevice): ChaDeviceType {
-    if (this.deviceType === DeviceType.Duodose) {
-      const device = new DuodoseDevice(savedDevice.deviceId, savedDevice.name, savedDevice.tabsintId);
-      device.connectionType = (savedDevice as ChaDeviceType).connectionType;
-      return device;
-    } else {
-      const device = new WahtsDevice(savedDevice.deviceId, savedDevice.name, savedDevice.tabsintId);
-      device.connectionType = (savedDevice as ChaDeviceType).connectionType;
-      return device;
-    }
+    const device = new WahtsDevice(savedDevice.deviceId, savedDevice.name, savedDevice.tabsintId);
+    device.connectionType = (savedDevice as ChaDeviceType).connectionType;
+    return device;
   }
 
   /**
@@ -159,12 +145,10 @@ export class ChaManager implements IDeviceManager {
     }
     try {
       this.scanning = true;
-      // TODO: Should this still be called wahtsConnectionType? Is it there for Duodose or other CHA like devices?
       const connectionType = (await firstValueFrom(this.diskModel.diskSubject)).preferences.wahtsConnectionType;
       const connectionTypeKey = this.getConnectionKey(connectionType);
       this.discoverListener = (response: DiscoveryResponse) => {
-        const newDevice =
-          this.deviceType === DeviceType.Duodose ? new DuodoseDevice(response.name, response.name) : new WahtsDevice(response.name, response.name);
+        const newDevice = new WahtsDevice(response.name, response.name);
         newDevice.connectionType = connectionType;
         newDevice.state = DeviceState.Discovery;
         this.addDevice(newDevice);
@@ -336,7 +320,7 @@ export class ChaManager implements IDeviceManager {
    * @param connectionType The BluetoothType for the device.
    * @returns The string representation of the BluetoothType key.
    */
-  private getConnectionKey(connectionType: BluetoothType): string {
+  public getConnectionKey(connectionType: BluetoothType): string {
     return Object.keys(BluetoothType).find(k => BluetoothType[k as keyof typeof BluetoothType] === connectionType) ?? 'BLUETOOTH_LE';
   }
 }

@@ -17,7 +17,8 @@ import { IDeviceMetadata } from '../../interfaces/devices/device-metadata.interf
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
 import { DeviceChooseComponent } from '../../views/config/config-views/device-choose/device-choose.component';
 import { MatDialog } from '@angular/material/dialog';
-import { ChaManager } from './cha-manager';
+import { WahtsManager } from './wahts-manager';
+import { DuodoseManager } from './duodose-manager';
 
 @Injectable({
   providedIn: 'root',
@@ -56,10 +57,8 @@ export class DevicesService {
     // Define the manager registry and create a device list from each managers device observable
     this.managerRegistry = {
       [DeviceType.Tympan]: new TympanManager(),
-      // TODO: This is a little hacky and the CHA version will default to WAHTS
-      [DeviceType.Cha]: new ChaManager(DeviceType.Cha),
-      [DeviceType.Wahts]: new ChaManager(DeviceType.Wahts),
-      [DeviceType.Duodose]: new ChaManager(DeviceType.Duodose),
+      [DeviceType.Wahts]: new WahtsManager(),
+      [DeviceType.Duodose]: new DuodoseManager(),
     };
     this.devices = combineLatest(Object.values(this.managerRegistry).map(m => m.devices)).pipe(map(devices => devices.flat()));
   }

@@ -3,9 +3,9 @@ import { DeviceType, DeviceState, DeviceStatus, BluetoothType } from '../../util
 import { IChaDevice } from '../../interfaces/devices/cha-device.interface';
 
 /**
- * WAHTS implementation of the device interface.
+ * CHA implementation of the device interface.
  */
-export class ChaDevice implements IChaDevice {
+export abstract class ChaDevice implements IChaDevice {
   /**
    * The identifier for the device.
    */
@@ -60,12 +60,12 @@ export class ChaDevice implements IChaDevice {
    * @param name The friendly name for the device.
    * @param tabsintId The TabSINT identifier for the device. If not provided, should match the device identifier.
    */
-  constructor(deviceId: string, name: string, tabsintId?: string) {
+  constructor(deviceType: DeviceType, deviceId: string, name: string, tabsintId?: string) {
     this.deviceId = deviceId;
     this.name = name;
+    this.type = deviceType;
     this.state = DeviceState.Disconnected;
     this.status = DeviceStatus.Ready;
-    this.type = DeviceType.Cha;
     this.tabsintId = tabsintId ?? deviceId;
     this.msgId = -1;
     this.metadata = {};

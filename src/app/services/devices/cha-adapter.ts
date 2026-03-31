@@ -7,7 +7,7 @@ import { BehaviorSubject, catchError, filter, firstValueFrom, of, skip, timeout 
 import { inject } from '@angular/core';
 
 /**
- * WAHTS implementation of the device adapter.
+ * CHA base device adapter.
  */
 export class ChaAdapter implements IDeviceAdapter {
   private readonly logger = inject(Logger);
