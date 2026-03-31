@@ -33,13 +33,15 @@ export class WahtsManager extends ChaManager {
       this.scanning = true;
       const connectionType = (await firstValueFrom(this.diskModel.diskSubject)).preferences.wahtsConnectionType;
       const connectionTypeKey = this.getConnectionKey(connectionType);
-      this.discoverListener = (response: DiscoveryResponse) => {
+      this.discoveryListener = (response: DiscoveryResponse) => {
         const newDevice = new WahtsDevice(response.name, response.name);
         newDevice.connectionType = connectionType;
         newDevice.state = DeviceState.Discovery;
-        this.addDevice(newDevice);
+        if (!newDevice.name.includes('DOS')) {
+          this.addDevice(newDevice);
+        }
       };
-      TabsintCha.addListener('TabsintChaDiscovery', response => this.discoverListener?.(response));
+      TabsintCha.addListener('TabsintChaDiscovery', response => this.discoveryListener?.(response));
       await TabsintCha.startChaSearch({ infStr: connectionTypeKey });
     } catch (error) {
       this.scanning = false;

@@ -12,7 +12,6 @@ import { ChaAdapter } from './cha-adapter';
 import { DiscoveryResponse, TabsintCha } from 'tabsintcha';
 import { SavedDevice } from '../../models/disk/disk.interface';
 import { DiskModel } from '../../models/disk/disk.service';
-import { WahtsDevice } from '../../models/devices/wahts-device';
 
 /**
  * CHA base device manager.
@@ -59,7 +58,7 @@ export abstract class ChaManager implements IDeviceManager {
   /**
    * Callback invoked on device discovery events
    */
-  public discoverListener: ((response: DiscoveryResponse) => void) | undefined = undefined;
+  public discoveryListener: ((response: DiscoveryResponse) => void) | undefined = undefined;
 
   constructor() {
     this.adapter.setDisconnectCallback(this.onDisconnectCallback);
@@ -106,11 +105,7 @@ export abstract class ChaManager implements IDeviceManager {
    * @param savedDevice The saved device to create a device for.
    * @returns The created device.
    */
-  createDevice(savedDevice: SavedDevice): ChaDeviceType {
-    const device = new WahtsDevice(savedDevice.deviceId, savedDevice.name, savedDevice.tabsintId);
-    device.connectionType = (savedDevice as ChaDeviceType).connectionType;
-    return device;
-  }
+  abstract createDevice(savedDevice: SavedDevice): ChaDeviceType;
 
   /**
    * Add a device to the device list.
@@ -139,27 +134,7 @@ export abstract class ChaManager implements IDeviceManager {
    * The search is limited to the user-specified connection type (BluetoothType).
    * @param deviceType The type of device the search should be started for.
    */
-  async startDeviceSearch(): Promise<void> {
-    if (this.scanning) {
-      return;
-    }
-    try {
-      this.scanning = true;
-      const connectionType = (await firstValueFrom(this.diskModel.diskSubject)).preferences.wahtsConnectionType;
-      const connectionTypeKey = this.getConnectionKey(connectionType);
-      this.discoverListener = (response: DiscoveryResponse) => {
-        const newDevice = new WahtsDevice(response.name, response.name);
-        newDevice.connectionType = connectionType;
-        newDevice.state = DeviceState.Discovery;
-        this.addDevice(newDevice);
-      };
-      TabsintCha.addListener('TabsintChaDiscovery', response => this.discoverListener?.(response));
-      await TabsintCha.startChaSearch({ infStr: connectionTypeKey });
-    } catch (error) {
-      this.scanning = false;
-      throw new Error('Error starting BLE scan: ' + JSON.stringify(error));
-    }
-  }
+  abstract startDeviceSearch(): Promise<void>;
 
   /**
    * Stop an ongoing device search.

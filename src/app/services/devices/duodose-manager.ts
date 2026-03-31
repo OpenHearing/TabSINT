@@ -33,13 +33,15 @@ export class DuodoseManager extends ChaManager {
       // Force Duodose to only support a single bluetooth connection type
       const connectionType = BluetoothType.BLUETOOTH_LE;
       const connectionTypeKey = this.getConnectionKey(connectionType);
-      this.discoverListener = (response: DiscoveryResponse) => {
+      this.discoveryListener = (response: DiscoveryResponse) => {
         const newDevice = new DuodoseDevice(response.name, response.name);
         newDevice.connectionType = connectionType;
         newDevice.state = DeviceState.Discovery;
-        this.addDevice(newDevice);
+        if (newDevice.name.includes('DOS')) {
+          this.addDevice(newDevice);
+        }
       };
-      TabsintCha.addListener('TabsintChaDiscovery', response => this.discoverListener?.(response));
+      TabsintCha.addListener('TabsintChaDiscovery', response => this.discoveryListener?.(response));
       await TabsintCha.startChaSearch({ infStr: connectionTypeKey });
     } catch (error) {
       this.scanning = false;
