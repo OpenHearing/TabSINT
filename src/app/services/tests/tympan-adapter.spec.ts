@@ -1,8 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { TympanAdapter } from '../devices/tympan-adapter';
-import { DiskModel } from '../../models/disk/disk.service';
-import { AppModel } from '../../models/app/app.service';
-import { SqLite } from '../sqLite.service';
 import { Logger } from '../logger.service';
 
 const msg = '[1,"requestId"]';
@@ -14,22 +11,15 @@ const bytes2: Uint8Array = new Uint8Array([3, 143]);
 const bytes_2_unescaped: Uint8Array = new Uint8Array([15]);
 
 describe('tympanWrap', () => {
-  let appModel: AppModel;
-  let diskModel: DiskModel;
-  let sqLite: SqLite;
-  let logger: Logger;
   let tympanAdapter: TympanAdapter;
+  let mockLogger: jasmine.SpyObj<Logger>;
 
   beforeEach(async () => {
+    mockLogger = jasmine.createSpyObj('Logger', ['debug']);
     TestBed.configureTestingModule({
-      providers: [DiskModel],
+      providers: [TympanAdapter, { provide: Logger, useValue: mockLogger }],
     });
-
-    appModel = new AppModel();
-    diskModel = TestBed.inject(DiskModel);
-    sqLite = new SqLite(appModel, diskModel);
-    logger = new Logger(diskModel, sqLite);
-    tympanAdapter = new TympanAdapter(logger);
+    tympanAdapter = TestBed.inject(TympanAdapter);
   });
 
   it('msgToDataView', () => {
