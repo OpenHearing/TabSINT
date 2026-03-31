@@ -195,7 +195,7 @@ export class WahtsManager implements IDeviceManager {
     this.scanning = false;
     // Remove discovered devices which were added but not selected during the search
     let devices = this.devicesSubject.getValue();
-    devices = devices.filter(device => device.state === DeviceState.Discovery);
+    devices = devices.filter(device => device.state !== DeviceState.Discovery);
     this.devicesSubject.next(devices);
   }
 
@@ -426,6 +426,11 @@ export class WahtsManager implements IDeviceManager {
   private async loadFirmwareAsset(): Promise<FirmwareAsset | undefined> {
     const firmwareResponse = await fetch(this.BINARY_FIRMWARE_PATH);
     const metadataResponse = await fetch(this.METADATA_FIRMWARE_PATH);
+
+    if (!firmwareResponse.ok || !metadataResponse.ok) {
+      this.logger.error('Failed to read firmware files');
+      return undefined;
+    }
 
     const buffer = await firmwareResponse.arrayBuffer();
     const metadataJSON = await metadataResponse.json();

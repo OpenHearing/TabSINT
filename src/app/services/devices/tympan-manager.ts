@@ -178,7 +178,7 @@ export class TympanManager implements IDeviceManager {
     this.scanning = false;
     // Remove discovered devices which were added but not selected during the search
     let devices = this.devicesSubject.getValue();
-    devices = devices.filter(device => device.state === DeviceState.Discovery);
+    devices = devices.filter(device => device.state !== DeviceState.Discovery);
     this.devicesSubject.next(devices);
   }
 

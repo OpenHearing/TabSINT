@@ -11,7 +11,7 @@ import { BleClient } from '@capacitor-community/bluetooth-le';
 import { Tasks } from '../tasks.service';
 import { DiskModel } from '../../models/disk/disk.service';
 import { SavedDevice } from '../../models/disk/disk.interface';
-import { BehaviorSubject, combineLatest, firstValueFrom, map, Observable, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, concatMap, firstValueFrom, map, Observable } from 'rxjs';
 import { IDevice } from '../../interfaces/devices/device.interface';
 import { IDeviceMetadata } from '../../interfaces/devices/device-metadata.interface';
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
@@ -141,7 +141,7 @@ export class DevicesService {
         .open(DeviceChooseComponent, { data: deviceType })
         .afterClosed()
         .pipe(
-          tap(async (device: IDevice | undefined) => {
+          concatMap(async (device: IDevice | undefined) => {
             if (device != undefined) {
               this.tasks.register('Connect Device', `Connecting to Device... `);
               try {
@@ -152,6 +152,7 @@ export class DevicesService {
               }
               this.tasks.deregister('Connect Device');
             }
+            return device;
           })
         )
     );
