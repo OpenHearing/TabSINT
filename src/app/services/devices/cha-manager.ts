@@ -1,23 +1,32 @@
 import { BehaviorSubject, Observable, Subject, catchError, firstValueFrom, map, of, timeout } from 'rxjs';
 import { IDeviceManager } from '../../interfaces/devices/device-manager.interface';
 import { Logger } from '../logger.service';
-import { BluetoothType, DeviceState, DialogType, ExamState } from '../../utilities/constants';
+import { BluetoothType, ChaDeviceType, DeviceState, DeviceType, DialogType, ExamState } from '../../utilities/constants';
 import { StateModel } from '../../models/state/state.service';
 import { Notifications } from '../notifications.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Tasks } from '../tasks.service';
-import { NgZone } from '@angular/core';
+import { inject, NgZone } from '@angular/core';
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
-import { WahtsAdapter } from './wahts-adapter';
-import { WahtsDevice } from '../../models/devices/wahts-device';
+import { ChaAdapter } from './cha-adapter';
 import { DiscoveryResponse, TabsintCha } from 'tabsintcha';
 import { SavedDevice } from '../../models/disk/disk.interface';
 import { DiskModel } from '../../models/disk/disk.service';
+import { WahtsDevice } from '../../models/devices/wahts-device';
+import { DuodoseDevice } from '../../models/devices/duodose-device';
 
 /**
- * WAHTS implementation of the device manager.
+ * CHA implementation of the device manager.
  */
-export class WahtsManager implements IDeviceManager {
+export class ChaManager implements IDeviceManager {
+  private readonly logger = inject(Logger);
+  private readonly stateModel = inject(StateModel);
+  private readonly diskModel = inject(DiskModel);
+  private readonly zone = inject(NgZone);
+  private readonly notifications = inject(Notifications);
+  private readonly translate = inject(TranslateService);
+  private readonly tasks = inject(Tasks);
+
   /**
    * Whether a BLE scan is currently in progress.
    */
@@ -31,7 +40,12 @@ export class WahtsManager implements IDeviceManager {
   /**
    * The adapter used for interacting with a device.
    */
-  private readonly wahtsAdapter: WahtsAdapter;
+  private readonly adapter: ChaAdapter;
+
+  /**
+   * The adapter used for interacting with a device.
+   */
+  private readonly deviceType: DeviceType;
 
   /**
    * Set of device identifiers for devices which have requested a disconnection.
@@ -41,37 +55,30 @@ export class WahtsManager implements IDeviceManager {
   /**
    * Behavioral subject for the devices.
    */
-  private readonly devicesSubject = new BehaviorSubject<WahtsDevice[]>([]);
+  private readonly devicesSubject = new BehaviorSubject<ChaDeviceType[]>([]);
 
   /**
    * Observable for the devices.
    */
-  readonly devices: Observable<WahtsDevice[]> = this.devicesSubject.pipe(map(device => structuredClone(device)));
+  readonly devices: Observable<ChaDeviceType[]> = this.devicesSubject.pipe(map(device => structuredClone(device)));
 
   /**
    * Callback invoked on device discovery events
    */
   private discoverListener: ((response: DiscoveryResponse) => void) | undefined = undefined;
 
-  constructor(
-    private readonly logger: Logger,
-    private readonly stateModel: StateModel,
-    private readonly diskModel: DiskModel,
-    private readonly zone: NgZone,
-    private readonly notifications: Notifications,
-    private readonly translate: TranslateService,
-    private readonly tasks: Tasks
-  ) {
-    this.wahtsAdapter = new WahtsAdapter(logger);
-    this.wahtsAdapter.setDisconnectCallback(this.onDisconnectCallback);
-    this.wahtsAdapter.setDeviceUpdate(this.updateDevice);
+  constructor(deviceType: DeviceType) {
+    this.deviceType = deviceType;
+    this.adapter = new ChaAdapter();
+    this.adapter.setDisconnectCallback(this.onDisconnectCallback);
+    this.adapter.setDeviceUpdate(this.updateDevice);
   }
 
   /**
    * The callback to be invoked when a device property is changed.
    * @param device The device with property changes to be updated.
    */
-  updateDevice = (device: WahtsDevice) => {
+  updateDevice = (device: ChaDeviceType) => {
     const devices = this.devicesSubject.getValue();
     const updatedDevice = devices.find(dev => dev.deviceId === device.deviceId);
     if (updatedDevice) {
@@ -107,17 +114,23 @@ export class WahtsManager implements IDeviceManager {
    * @param savedDevice The saved device to create a device for.
    * @returns The created device.
    */
-  createDevice(savedDevice: SavedDevice): WahtsDevice {
-    const wahtsDevice = new WahtsDevice(savedDevice.deviceId, savedDevice.name, savedDevice.tabsintId);
-    wahtsDevice.connectionType = (savedDevice as WahtsDevice).connectionType;
-    return wahtsDevice;
+  createDevice(savedDevice: SavedDevice): ChaDeviceType {
+    if (this.deviceType === DeviceType.Duodose) {
+      const device = new DuodoseDevice(savedDevice.deviceId, savedDevice.name, savedDevice.tabsintId);
+      device.connectionType = (savedDevice as ChaDeviceType).connectionType;
+      return device;
+    } else {
+      const device = new WahtsDevice(savedDevice.deviceId, savedDevice.name, savedDevice.tabsintId);
+      device.connectionType = (savedDevice as ChaDeviceType).connectionType;
+      return device;
+    }
   }
 
   /**
    * Add a device to the device list.
    * @param device The device to be added.
    */
-  addDevice(device: WahtsDevice): void {
+  addDevice(device: ChaDeviceType): void {
     const devices = structuredClone(this.devicesSubject.getValue());
     if (!devices.some(dev => dev.deviceId == device.deviceId)) {
       devices.push(device);
@@ -129,7 +142,7 @@ export class WahtsManager implements IDeviceManager {
    * Remove a device from the device list.
    * @param device The device to be removed.
    */
-  removeDevice(device: WahtsDevice): void {
+  removeDevice(device: ChaDeviceType): void {
     let devices = structuredClone(this.devicesSubject.getValue());
     devices = devices.filter(dev => dev.deviceId != device.deviceId);
     this.devicesSubject.next(devices);
@@ -146,10 +159,12 @@ export class WahtsManager implements IDeviceManager {
     }
     try {
       this.scanning = true;
+      // TODO: Should this still be called wahtsConnectionType? Is it there for Duodose or other CHA like devices?
       const connectionType = (await firstValueFrom(this.diskModel.diskSubject)).preferences.wahtsConnectionType;
       const connectionTypeKey = this.getConnectionKey(connectionType);
       this.discoverListener = (response: DiscoveryResponse) => {
-        const newDevice = new WahtsDevice(response.name, response.name);
+        const newDevice =
+          this.deviceType === DeviceType.Duodose ? new DuodoseDevice(response.name, response.name) : new WahtsDevice(response.name, response.name);
         newDevice.connectionType = connectionType;
         newDevice.state = DeviceState.Discovery;
         this.addDevice(newDevice);
@@ -179,7 +194,7 @@ export class WahtsManager implements IDeviceManager {
    * @param device The device whose matching reference should be updated.
    * @param id The new TabSINT identifier for the device.
    */
-  setTabsintId(device: WahtsDevice, id: string): void {
+  setTabsintId(device: ChaDeviceType, id: string): void {
     const devices = structuredClone(this.devicesSubject.getValue());
     const updatedDevices = devices.map(dev => (dev.deviceId === device.deviceId ? { ...dev, tabsintId: id } : dev));
     this.devicesSubject.next(updatedDevices);
@@ -189,13 +204,13 @@ export class WahtsManager implements IDeviceManager {
    * Connect to the device.
    * @param device The device to be connected to.
    */
-  async connect(device: WahtsDevice): Promise<void> {
+  async connect(device: ChaDeviceType): Promise<void> {
     // Connection process which calls a new search callback if initial connection fails.
     const connectWithRetry = async () => {
       try {
-        await this.wahtsAdapter.connect(device);
+        await this.adapter.connect(device);
       } catch {
-        const deviceSubject = new Subject<WahtsDevice>();
+        const deviceSubject = new Subject<ChaDeviceType>();
         const listener = (response: DiscoveryResponse) => {
           if (response.name === device.deviceId) {
             deviceSubject.next(device);
@@ -210,14 +225,14 @@ export class WahtsManager implements IDeviceManager {
           )
         );
         await TabsintCha.cancelChaSearch(new Object());
-        await this.wahtsAdapter.connect(device);
+        await this.adapter.connect(device);
       }
     };
     try {
       this.tasks.register('Connect Device', 'Connecting to Device...');
       await connectWithRetry();
-      await this.wahtsAdapter.abortExams(device);
-      const resp = await this.wahtsAdapter.requestId(device);
+      await this.adapter.abortExams(device);
+      const resp = await this.adapter.requestId(device);
       if (!resp.msg || resp.msg.includes('ERROR')) {
         await this.disconnect(device);
         throw new Error('Reconnection failed.');
@@ -238,9 +253,9 @@ export class WahtsManager implements IDeviceManager {
    * Disconnect from the device.
    * @param device The device to be disconnected from.
    */
-  async disconnect(device: WahtsDevice): Promise<void> {
+  async disconnect(device: ChaDeviceType): Promise<void> {
     this.requestedDisconnectionIds.add(device.deviceId);
-    await this.wahtsAdapter.disconnect(device);
+    await this.adapter.disconnect(device);
     device.state = DeviceState.Disconnected;
     this.updateDevice(device);
   }
@@ -249,8 +264,8 @@ export class WahtsManager implements IDeviceManager {
    * Request a device identifier.
    * @param device The device to request the identifier from.
    */
-  async requestId(device: WahtsDevice): Promise<IDeviceResponse> {
-    const response = await this.wahtsAdapter.requestId(device);
+  async requestId(device: ChaDeviceType): Promise<IDeviceResponse> {
+    const response = await this.adapter.requestId(device);
     await this.deviceErrorHandler(response);
     return response;
   }
@@ -261,8 +276,8 @@ export class WahtsManager implements IDeviceManager {
    * @param examId The identifier of the exam to be queued.
    * @param examProperties Object holding properties related to the exam.
    */
-  async queueExam(device: WahtsDevice, examId: string, examProperties: object): Promise<IDeviceResponse> {
-    const response = await this.wahtsAdapter.queueExam(device, examId, examProperties);
+  async queueExam(device: ChaDeviceType, examId: string, examProperties: object): Promise<IDeviceResponse> {
+    const response = await this.adapter.queueExam(device, examId, examProperties);
     await this.deviceErrorHandler(response);
     return response;
   }
@@ -273,8 +288,8 @@ export class WahtsManager implements IDeviceManager {
    * @param examProperties Object holding properties related to the exam.
    * @param ignoreErrors A list of keywords for which matching errors will be ignored.
    */
-  async examSubmission(device: WahtsDevice, examProperties: object, ignoreErrors: string[]): Promise<IDeviceResponse> {
-    const response = await this.wahtsAdapter.examSubmission(device, examProperties, ignoreErrors);
+  async examSubmission(device: ChaDeviceType, examProperties: object, ignoreErrors: string[]): Promise<IDeviceResponse> {
+    const response = await this.adapter.examSubmission(device, examProperties, ignoreErrors);
     await this.deviceErrorHandler(response);
     return response;
   }
@@ -283,8 +298,8 @@ export class WahtsManager implements IDeviceManager {
    * Abort an exam for a device.
    * @param device The device to abort the exam for.
    */
-  async abortExams(device: WahtsDevice): Promise<IDeviceResponse> {
-    const response = await this.wahtsAdapter.abortExams(device);
+  async abortExams(device: ChaDeviceType): Promise<IDeviceResponse> {
+    const response = await this.adapter.abortExams(device);
     await this.deviceErrorHandler(response);
     return response;
   }
@@ -294,8 +309,8 @@ export class WahtsManager implements IDeviceManager {
    * @param device The device to request exam results from.
    * @param examId The identifier of the exam to request results for.
    */
-  async requestResults(device: WahtsDevice): Promise<IDeviceResponse> {
-    const response = await this.wahtsAdapter.requestResults(device);
+  async requestResults(device: ChaDeviceType): Promise<IDeviceResponse> {
+    const response = await this.adapter.requestResults(device);
     await this.deviceErrorHandler(response);
     return response;
   }

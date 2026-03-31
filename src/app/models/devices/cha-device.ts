@@ -1,10 +1,11 @@
 import { IDeviceMetadata } from '../../interfaces/devices/device-metadata.interface';
 import { DeviceType, DeviceState, DeviceStatus, BluetoothType } from '../../utilities/constants';
-import { IWahtsDevice } from '../../interfaces/devices/wahts-device.interface';
+import { IChaDevice } from '../../interfaces/devices/cha-device.interface';
+
 /**
  * WAHTS implementation of the device interface.
  */
-export class WahtsDevice implements IWahtsDevice {
+export class ChaDevice implements IChaDevice {
   /**
    * The identifier for the device.
    */
@@ -64,7 +65,7 @@ export class WahtsDevice implements IWahtsDevice {
     this.name = name;
     this.state = DeviceState.Disconnected;
     this.status = DeviceStatus.Ready;
-    this.type = DeviceType.Wahts;
+    this.type = DeviceType.Cha;
     this.tabsintId = tabsintId ?? deviceId;
     this.msgId = -1;
     this.metadata = {};

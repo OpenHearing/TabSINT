@@ -9,7 +9,7 @@ import { StateModel } from '../../models/state/state.service';
 import { Notifications } from '../notifications.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Tasks } from '../tasks.service';
-import { NgZone } from '@angular/core';
+import { inject, NgZone } from '@angular/core';
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
 import { SavedDevice } from '../../models/disk/disk.interface';
 
@@ -17,6 +17,13 @@ import { SavedDevice } from '../../models/disk/disk.interface';
  * Tympan implementation of the device manager.
  */
 export class TympanManager implements IDeviceManager {
+  private readonly logger = inject(Logger);
+  private readonly stateModel = inject(StateModel);
+  private readonly zone = inject(NgZone);
+  private readonly notifications = inject(Notifications);
+  private readonly translate = inject(TranslateService);
+  private readonly tasks = inject(Tasks);
+
   /**
    * Whether a BLE scan is currently in progress.
    */
@@ -47,15 +54,8 @@ export class TympanManager implements IDeviceManager {
    */
   readonly devices: Observable<TympanDevice[]> = this.devicesSubject.pipe(map(device => structuredClone(device)));
 
-  constructor(
-    private readonly logger: Logger,
-    private readonly stateModel: StateModel,
-    private readonly zone: NgZone,
-    private readonly notifications: Notifications,
-    private readonly translate: TranslateService,
-    private readonly tasks: Tasks
-  ) {
-    this.tympanAdapter = new TympanAdapter(logger);
+  constructor() {
+    this.tympanAdapter = new TympanAdapter();
     this.tympanAdapter.setDisconnectCallback(this.onDisconnectCallback);
     this.tympanAdapter.setDeviceUpdate(this.updateDevice);
   }

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AppState, BluetoothType, DeviceState, DeviceType } from '../../../../utilities/constants';
 import { StateModel } from '../../../../models/state/state.service';
@@ -11,24 +11,24 @@ import { DevicesService } from '../../../../services/devices/devices.service';
 import { IWahtsDevice } from '../../../../interfaces/devices/wahts-device.interface';
 
 @Component({
-  selector: 'device-config-view',
+  selector: 'app-device-config-view',
   templateUrl: './device-config.component.html',
   styleUrl: './device-config.component.css',
 })
 export class DeviceConfigComponent implements OnInit, OnDestroy {
+  private readonly stateModel = inject(StateModel);
+  private readonly translate = inject(TranslateService);
+  private readonly diskModel = inject(DiskModel);
+  private readonly devicesService = inject(DevicesService);
+
   state: StateInterface;
   stateSubscription: Subscription | undefined;
   disk: Observable<DiskInterface>;
   BluetoothType = BluetoothType;
 
-  constructor(
-    private readonly stateModel: StateModel,
-    private readonly translate: TranslateService,
-    private readonly diskModel: DiskModel,
-    private readonly devicesService: DevicesService
-  ) {
+  constructor() {
     this.state = this.stateModel.getState();
-    this.disk = diskModel.diskSubject;
+    this.disk = this.diskModel.diskSubject;
   }
 
   ngOnInit(): void {
