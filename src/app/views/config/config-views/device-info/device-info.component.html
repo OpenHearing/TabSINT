@@ -36,7 +36,13 @@
       {{ device.metadata.buildDateTime ?? "N/A" }}
     </div>
     <div class="col-1">
-      <a href="javascript:" title="{{ 'Update Firmware' | translate }}" (click)="reprogramFirmware(device)"><i class="ion-refresh"></i></a>
+      <a
+        *ngIf="firmwareMatch === false && device.state === DeviceState.Connected"
+        href="javascript:"
+        title="{{ 'Update Firmware' | translate }}"
+        (click)="reprogramFirmware(device)"
+        ><i class="ion-refresh"></i
+      ></a>
     </div>
     <div class="col-1"></div>
     <div class="col-1" href="javascript:" title="{{ 'Update Firmware Help' | translate }}">

@@ -24,6 +24,7 @@ import { isValidDeviceResponse } from '../../../../guards/type.guard';
 })
 export class DeviceInfoComponent implements OnInit, OnDestroy, OnChanges {
   @Input() device!: IDevice;
+  DeviceState = DeviceState;
   disk: DiskInterface;
   state: StateInterface;
   firmwareMatch: boolean | undefined = undefined;
