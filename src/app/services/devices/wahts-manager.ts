@@ -362,6 +362,7 @@ export class WahtsManager implements IDeviceManager {
    * @param examId The device response for the reboot request.
    */
   async reboot(device: WahtsDevice): Promise<IDeviceResponse> {
+    this.requestedDisconnectionIds.add(device.deviceId);
     const response = await this.wahtsAdapter.reboot(device);
     await this.deviceErrorHandler(response);
     return response;
