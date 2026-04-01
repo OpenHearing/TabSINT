@@ -119,6 +119,11 @@ export class ConnectedDevicesComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Get the expanded state for a device type panel.
+   * @param deviceType The device type associated with the panel.
+   * @returns The current panel state.
+   */
   getPanelState(deviceType: DeviceType): boolean {
     let panel = false;
     switch (deviceType) {
@@ -135,6 +140,11 @@ export class ConnectedDevicesComponent implements OnInit, OnDestroy {
     return panel;
   }
 
+  /**
+   * Set the expanded state for a device type panel.
+   * @param deviceType The device type associated with the panel.
+   * @param state The new state for the panel.
+   */
   setPanelState(deviceType: DeviceType, state: boolean) {
     switch (deviceType) {
       case DeviceType.Tympan:
@@ -149,6 +159,10 @@ export class ConnectedDevicesComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Toggle the expanded state for a device information panel.
+   * @param device The device for panel toggling.
+   */
   toggleDeviceExpanded(device: IDevice) {
     const currentState = this.expanded.get(device.deviceId) ?? false;
     this.expanded.set(device.deviceId, !currentState);

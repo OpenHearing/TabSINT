@@ -68,6 +68,10 @@ export class DeviceInfoComponent implements OnInit, OnDestroy, OnChanges {
     this.dialog.open(ChangeTabsintIdComponent, { data: device });
   }
 
+  /**
+   * Open the dialog for reprogramming a device.
+   * @param device The device to reprogram.
+   */
   reprogramFirmware(device: IDevice) {
     this.devicesService.reprogramFirmwareDialog(device);
   }
