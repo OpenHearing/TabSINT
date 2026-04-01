@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { DevicesService } from '../../../../services/devices/devices.service';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { IDevice } from '../../../../interfaces/devices/device.interface';
@@ -6,20 +6,21 @@ import { DeviceState, DeviceType } from '../../../../utilities/constants';
 import { map, Observable } from 'rxjs';
 
 @Component({
-  selector: 'new-connection',
+  selector: 'app-new-connection',
   templateUrl: './new-connection.component.html',
 })
 export class NewConnectionComponent {
+  private readonly devicesService = inject(DevicesService);
+
   deviceTypes = Object.values(DeviceType);
   connectedDevices: Observable<IDevice[]>;
-  maxConnectedDevices = 2;
-  newDeviceConnection: boolean;
+  maxConnectedDevices = 3;
+  newDeviceConnection: boolean = false;
   newConnectionType: DeviceType | undefined;
   stateSubscription: Subscription | undefined;
   devicesSubscription: Subscription | undefined;
 
-  constructor(private readonly devicesService: DevicesService) {
-    this.newDeviceConnection = false;
+  constructor() {
     this.connectedDevices = this.devicesService.devices.pipe(
       map(devices => devices.filter((device: IDevice) => device.state !== DeviceState.Discovery))
     );

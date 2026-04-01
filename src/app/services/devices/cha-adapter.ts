@@ -1,15 +1,17 @@
-import { DeviceStatus } from '../../utilities/constants';
+import { ChaDeviceType, DeviceStatus } from '../../utilities/constants';
 import { IDeviceAdapter } from '../../interfaces/devices/device-adapter.interface';
 import { Logger } from '../logger.service';
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
-import { WahtsDevice } from '../../models/devices/wahts-device';
 import { DeviceResponse, TabsintCha } from 'tabsintcha';
 import { BehaviorSubject, catchError, filter, firstValueFrom, of, skip, timeout } from 'rxjs';
+import { inject } from '@angular/core';
 
 /**
- * WAHTS implementation of the device adapter.
+ * CHA base device adapter.
  */
-export class WahtsAdapter implements IDeviceAdapter {
+export class ChaAdapter implements IDeviceAdapter {
+  private readonly logger = inject(Logger);
+
   /**
    * Behavioral subject which emits message responses for all devices.
    */
@@ -33,9 +35,7 @@ export class WahtsAdapter implements IDeviceAdapter {
   /**
    * Callback invoked when a device property needs to be updated for the given device.
    */
-  private onDeviceUpdate: ((device: WahtsDevice) => void) | undefined;
-
-  constructor(private readonly logger: Logger) {}
+  private onDeviceUpdate: ((device: ChaDeviceType) => void) | undefined;
 
   /**
    * Set the callback for disconnection events.
@@ -49,7 +49,7 @@ export class WahtsAdapter implements IDeviceAdapter {
    * Set the callback for device update events.
    * @param onDeviceUpdate The callback for device state change events.
    */
-  setDeviceUpdate(onDeviceUpdate: (device: WahtsDevice) => void) {
+  setDeviceUpdate(onDeviceUpdate: (device: ChaDeviceType) => void) {
     this.onDeviceUpdate = onDeviceUpdate;
   }
 
@@ -57,7 +57,7 @@ export class WahtsAdapter implements IDeviceAdapter {
    * Connect to the device.
    * @param device The device to be connected to.
    */
-  async connect(device: WahtsDevice): Promise<void> {
+  async connect(device: ChaDeviceType): Promise<void> {
     if (!this.isDeviceListenerSet) {
       await TabsintCha.addListener('TabsintChaDevice', response => this.deviceEventListener(response));
       this.isDeviceListenerSet = true;
@@ -71,7 +71,7 @@ export class WahtsAdapter implements IDeviceAdapter {
    * Disconnect from the device.
    * @param device The device to be disconnected from.
    */
-  async disconnect(device: WahtsDevice) {
+  async disconnect(device: ChaDeviceType) {
     const nameOptions = { name: device.deviceId };
     await TabsintCha.disconnect(nameOptions);
     await TabsintCha.stopListener(nameOptions);
@@ -81,7 +81,7 @@ export class WahtsAdapter implements IDeviceAdapter {
    * Request a device identifier.
    * @param device The device to request the identifier from.
    */
-  async requestId(device: WahtsDevice): Promise<IDeviceResponse> {
+  async requestId(device: ChaDeviceType): Promise<IDeviceResponse> {
     const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
       const nameOptions = { name: device.deviceId };
       const waitForResponse = this.waitForResponse(device, 'Id');
@@ -97,7 +97,7 @@ export class WahtsAdapter implements IDeviceAdapter {
    * @param examId The identifier of the exam to be queued.
    * @param examProperties Object holding properties related to the exam.
    */
-  async queueExam(device: WahtsDevice, examType: string, examProperties: object): Promise<IDeviceResponse> {
+  async queueExam(device: ChaDeviceType, examType: string, examProperties: object): Promise<IDeviceResponse> {
     const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
       const queueExamOptions = { name: device.deviceId, examName: examType, params: examProperties };
       const msg = await TabsintCha.queueExam(queueExamOptions);
@@ -113,7 +113,7 @@ export class WahtsAdapter implements IDeviceAdapter {
    * @param examProperties Object holding properties related to the exam.
    * @param ignoreErrors A list of keywords for which matching errors will be ignored.
    */
-  async examSubmission(device: WahtsDevice, examProperties: object, ignoreErrors: string[]): Promise<IDeviceResponse> {
+  async examSubmission(device: ChaDeviceType, examProperties: object, ignoreErrors: string[]): Promise<IDeviceResponse> {
     const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
       const examSubmissionOptions = { name: device.deviceId, submissionName: (examProperties as { name: string }).name, params: examProperties };
       const msg = await TabsintCha.examSubmission(examSubmissionOptions);
@@ -127,7 +127,7 @@ export class WahtsAdapter implements IDeviceAdapter {
    * Abort an exam for a device.
    * @param device The device to abort the exam for.
    */
-  async abortExams(device: WahtsDevice): Promise<IDeviceResponse> {
+  async abortExams(device: ChaDeviceType): Promise<IDeviceResponse> {
     const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
       const nameOptions = { name: device.deviceId };
       const msg = await TabsintCha.abortExams(nameOptions);
@@ -142,7 +142,7 @@ export class WahtsAdapter implements IDeviceAdapter {
    * @param device The device to request exam results from.
    * @param examId The identifier of the exam to request results for.
    */
-  async requestResults(device: WahtsDevice, timeoutTimeMs: number = this.defaultTimeoutTimeMs): Promise<IDeviceResponse> {
+  async requestResults(device: ChaDeviceType, timeoutTimeMs: number = this.defaultTimeoutTimeMs): Promise<IDeviceResponse> {
     const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
       const nameOptions = { name: device.deviceId };
       const waitForResponse = this.waitForResponse(device, 'Result');
@@ -160,7 +160,7 @@ export class WahtsAdapter implements IDeviceAdapter {
    * @param func The function to be invoked.
    * @returns The response from the provided function.
    */
-  private async runWithStateChanges<T>(device: WahtsDevice, func: () => Promise<T>): Promise<T> {
+  private async runWithStateChanges<T>(device: ChaDeviceType, func: () => Promise<T>): Promise<T> {
     device.msgId++;
     device.status = DeviceStatus.Busy;
     this.onDeviceUpdate?.(device);
@@ -187,7 +187,7 @@ export class WahtsAdapter implements IDeviceAdapter {
    * @param identifier The message identifier for the expected response.
    * @returns The response from the device or undefined.
    */
-  private async waitForResponse(device: WahtsDevice, identifier: string): Promise<IDeviceResponse | undefined> {
+  private async waitForResponse(device: ChaDeviceType, identifier: string): Promise<IDeviceResponse | undefined> {
     const response = await firstValueFrom(
       this.responseSubject.pipe(
         skip(1),
@@ -208,7 +208,7 @@ export class WahtsAdapter implements IDeviceAdapter {
    * @param device The device to create the response for.
    * @returns The invalid response for the device.
    */
-  private defaultInvalidResponse(device: WahtsDevice) {
+  private defaultInvalidResponse(device: ChaDeviceType) {
     const response: IDeviceResponse = { deviceId: device.deviceId, msg: ['ERROR'] };
     return response;
   }

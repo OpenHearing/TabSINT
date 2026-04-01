@@ -1,22 +1,21 @@
-import { firstValueFrom } from 'rxjs';
-import { WahtsDevice } from '../../models/devices/wahts-device';
+import { DuodoseDevice } from '../../models/devices/duodose-device';
 import { SavedDevice } from '../../models/disk/disk.interface';
 import { ChaManager } from './cha-manager';
-import { DeviceState } from '../../utilities/constants';
+import { BluetoothType, DeviceState } from '../../utilities/constants';
 import { DiscoveryResponse, TabsintCha } from 'tabsintcha';
 
 /**
- * WAHTS implementation of the CHA device manager.
+ * DuoDose implementation of the CHA device manager.
  */
-export class WahtsManager extends ChaManager {
+export class DuodoseManager extends ChaManager {
   /**
    * Create a new device from a saved device.
    * @param savedDevice The saved device to create a device for.
    * @returns The created device.
    */
-  override createDevice(savedDevice: SavedDevice): WahtsDevice {
-    const device = new WahtsDevice(savedDevice.deviceId, savedDevice.name, savedDevice.tabsintId);
-    device.connectionType = (savedDevice as WahtsDevice).connectionType;
+  override createDevice(savedDevice: SavedDevice): DuodoseDevice {
+    const device = new DuodoseDevice(savedDevice.deviceId, savedDevice.name, savedDevice.tabsintId);
+    device.connectionType = (savedDevice as DuodoseDevice).connectionType;
     return device;
   }
 
@@ -31,13 +30,14 @@ export class WahtsManager extends ChaManager {
     }
     try {
       this.scanning = true;
-      const connectionType = (await firstValueFrom(this.diskModel.diskSubject)).preferences.wahtsConnectionType;
+      // Force Duodose to only support a single bluetooth connection type
+      const connectionType = BluetoothType.BLUETOOTH_LE;
       const connectionTypeKey = this.getConnectionKey(connectionType);
       this.discoveryListener = (response: DiscoveryResponse) => {
-        const newDevice = new WahtsDevice(response.name, response.name);
+        const newDevice = new DuodoseDevice(response.name, response.name);
         newDevice.connectionType = connectionType;
         newDevice.state = DeviceState.Discovery;
-        if (!newDevice.name.includes('DOS')) {
+        if (newDevice.name.includes('DOS')) {
           this.addDevice(newDevice);
         }
       };
