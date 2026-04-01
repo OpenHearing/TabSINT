@@ -22,7 +22,7 @@ export class StateModel {
       devices: true,
       tympans: true,
       wahts: true,
-      dosimeter: false,
+      duodose: true,
       softwareHardware: false,
       appLog: false,
       protocols: true,

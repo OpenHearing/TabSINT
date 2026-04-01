@@ -133,6 +133,9 @@ export class ConnectedDevicesComponent implements OnInit, OnDestroy {
       case DeviceType.Wahts:
         panel = this.state.isPaneOpen.wahts;
         break;
+      case DeviceType.Duodose:
+        panel = this.state.isPaneOpen.duodose;
+        break;
       default:
         deviceType satisfies never;
         break;
@@ -152,6 +155,9 @@ export class ConnectedDevicesComponent implements OnInit, OnDestroy {
         break;
       case DeviceType.Wahts:
         this.stateModel.updatePaneOpen({ wahts: state });
+        break;
+      case DeviceType.Duodose:
+        this.stateModel.updatePaneOpen({ duodose: state });
         break;
       default:
         deviceType satisfies never;

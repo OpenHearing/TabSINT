@@ -1,3 +1,5 @@
+import { Directory, Filesystem } from '@capacitor/filesystem';
+import { Buffer } from 'buffer';
 import { firstValueFrom } from 'rxjs';
 import { WahtsDevice } from '../../models/devices/wahts-device';
 import { SavedDevice } from '../../models/disk/disk.interface';
@@ -6,7 +8,6 @@ import { DeviceState } from '../../utilities/constants';
 import { DiscoveryResponse, TabsintCha } from 'tabsintcha';
 import { FirmwareAsset } from '../../interfaces/firmware-asset.interface';
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
-import { Directory, Filesystem } from '@capacitor/filesystem';
 
 /**
  * WAHTS implementation of the CHA device manager.
