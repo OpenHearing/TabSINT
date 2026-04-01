@@ -8,14 +8,12 @@ import { StateInterface } from '../../../../models/state/state.interface';
 import { DiskModel } from '../../../../models/disk/disk.service';
 import { StateModel } from '../../../../models/state/state.service';
 
-import { AppState, DeviceState, DeviceStatus, DialogType } from '../../../../utilities/constants';
+import { AppState, DeviceState } from '../../../../utilities/constants';
 import { IDevice } from '../../../../interfaces/devices/device.interface';
 import { ChangeTabsintIdComponent } from '../../../change-tabsint-id/change-tabsint-id.component';
 import { MatDialog } from '@angular/material/dialog';
-import { DialogDataInterface } from '../../../../interfaces/dialog-data.interface';
 import { DevicesService } from '../../../../services/devices/devices.service';
 import { Notifications } from '../../../../services/notifications.service';
-import { isValidDeviceResponse } from '../../../../guards/type.guard';
 
 @Component({
   selector: 'device-info-view',
@@ -71,28 +69,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   reprogramFirmware(device: IDevice) {
-    const msg: DialogDataInterface = {
-      title: 'Confirm Firmware Update',
-      content: 'Are you sure you want to update the firmware?',
-      type: DialogType.Confirm,
-    };
-    this.notifications.alert(msg).subscribe(async (result: string) => {
-      if (result === 'OK') {
-        let completionResponse = 'The device is unavailable to reprogram.';
-        if (device.state === DeviceState.Connected && device.status !== DeviceStatus.Busy) {
-          const response = await this.devicesService.reprogramFirmware(device);
-          if (isValidDeviceResponse(response)) {
-            await this.devicesService.reboot(device);
-            completionResponse = 'The device will now reboot. Reconnect the device to verify firmware was updated.';
-          }
-        }
-        this.notifications.alert({
-          title: 'Alert',
-          content: this.translate.instant(completionResponse),
-          type: DialogType.Alert,
-        });
-      }
-    });
+    this.devicesService.reprogramFirmwareDialog(device);
   }
 
   /**

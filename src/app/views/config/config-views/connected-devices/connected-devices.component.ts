@@ -2,12 +2,16 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { StateInterface } from '../../../../models/state/state.interface';
 import { StateModel } from '../../../../models/state/state.service';
 import { IDevice } from '../../../../interfaces/devices/device.interface';
-import { DeviceState, DeviceType } from '../../../../utilities/constants';
+import { DeviceState, DeviceType, DialogType } from '../../../../utilities/constants';
 import { DevicesService } from '../../../../services/devices/devices.service';
 import { Logger } from '../../../../services/logger.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { map, Observable } from 'rxjs';
+import { DiskInterface } from '../../../../models/disk/disk.interface';
+import { DiskModel } from '../../../../models/disk/disk.service';
+import { Notifications } from '../../../../services/notifications.service';
+import { DialogDataInterface } from '../../../../interfaces/dialog-data.interface';
 
 @Component({
   selector: 'connected-devices',
@@ -15,6 +19,7 @@ import { map, Observable } from 'rxjs';
 })
 export class ConnectedDevicesComponent implements OnInit, OnDestroy {
   DeviceType = DeviceType;
+  disk: DiskInterface;
   connectedDevicesMap: Observable<Map<DeviceType, IDevice[]>>;
   state: StateInterface;
   DeviceState = DeviceState;
@@ -22,13 +27,20 @@ export class ConnectedDevicesComponent implements OnInit, OnDestroy {
 
   // Subscriptions
   stateSubscription: Subscription | undefined;
+  diskSubscription: Subscription | undefined;
 
   constructor(
     private readonly stateModel: StateModel,
     private readonly devicesService: DevicesService,
     private readonly logger: Logger,
-    private readonly translate: TranslateService
+    private readonly translate: TranslateService,
+    private readonly diskModel: DiskModel,
+    private readonly notifications: Notifications
   ) {
+    this.disk = this.diskModel.getDisk();
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+    });
     this.state = this.stateModel.getState();
     this.connectedDevicesMap = this.devicesService.devices.pipe(
       map(devices => {
@@ -49,6 +61,7 @@ export class ConnectedDevicesComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.stateSubscription?.unsubscribe();
+    this.diskSubscription?.unsubscribe();
   }
 
   ngOnInit(): void {
@@ -60,6 +73,7 @@ export class ConnectedDevicesComponent implements OnInit, OnDestroy {
   async reconnect(device: IDevice) {
     this.logger.debug('attempting to reconnect to device: ' + JSON.stringify(device));
     await this.devicesService.connect(device);
+    await this.checkForFirmwareUpdate(device);
   }
 
   async disconnect(device: IDevice) {
@@ -73,6 +87,36 @@ export class ConnectedDevicesComponent implements OnInit, OnDestroy {
       await this.devicesService.disconnect(device);
     }
     await this.devicesService.removeSavedDevice(device);
+  }
+
+  /**
+   * Check whether a firmware update is available and alert the user if necessary.
+   * @param device The device to check for a firmware update.
+   */
+  async checkForFirmwareUpdate(device: IDevice) {
+    const firmwareAsset = await this.devicesService.getApplicationFirmware(device.type);
+    if (
+      !this.disk.preferences.ignoreFirmwareUpdates &&
+      device.metadata.buildDateTime &&
+      firmwareAsset?.buildDatetime &&
+      Date.parse(device.metadata.buildDateTime) !== Date.parse(firmwareAsset.buildDatetime)
+    ) {
+      const msg: DialogDataInterface = {
+        title: 'Firmware Update',
+        content: `
+        The firmware on device ${device.deviceId} is not supported by this TabSINT version. 
+        This TabSINT version supports ${firmwareAsset.version} firmware. 
+        Select 'OK' to update the firmware on ${device.deviceId}.
+        The firmware can be also updated through the device information panel.
+        `,
+        type: DialogType.Confirm,
+      };
+      this.notifications.alert(msg).subscribe(async result => {
+        if (result === 'OK') {
+          await this.devicesService.reprogramFirmwareDialog(device);
+        }
+      });
+    }
   }
 
   getPanelState(deviceType: DeviceType): boolean {

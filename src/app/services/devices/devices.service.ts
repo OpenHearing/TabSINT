@@ -19,6 +19,8 @@ import { DeviceChooseComponent } from '../../views/config/config-views/device-ch
 import { MatDialog } from '@angular/material/dialog';
 import { WahtsManager } from './wahts-manager';
 import { FirmwareAsset } from '../../interfaces/firmware-asset.interface';
+import { DialogDataInterface } from '../../interfaces/dialog-data.interface';
+import { isValidDeviceResponse } from '../../guards/type.guard';
 
 @Injectable({
   providedIn: 'root',
@@ -156,6 +158,36 @@ export class DevicesService {
           })
         )
     );
+  }
+
+  /**
+   * Open a dialog used for reprogramming firmware on a device.
+   * @param device The device to be reprogrammed.
+   * @param text Optional content override for the dialog.
+   */
+  async reprogramFirmwareDialog(device: IDevice, text: string | undefined = undefined): Promise<void> {
+    const msg: DialogDataInterface = {
+      title: 'Confirm Firmware Update',
+      content: text ?? 'Are you sure you want to update the firmware?',
+      type: DialogType.Confirm,
+    };
+    this.notifications.alert(msg).subscribe(async (result: string) => {
+      if (result === 'OK') {
+        let completionResponse = 'The device is unavailable to reprogram.';
+        if (device.state === DeviceState.Connected && device.status !== DeviceStatus.Busy) {
+          const response = await this.reprogramFirmware(device);
+          if (isValidDeviceResponse(response)) {
+            await this.reboot(device);
+            completionResponse = 'The device will now reboot. Reconnect the device to verify firmware was updated.';
+          }
+        }
+        this.notifications.alert({
+          title: 'Alert',
+          content: this.translate.instant(completionResponse),
+          type: DialogType.Alert,
+        });
+      }
+    });
   }
 
   /**
