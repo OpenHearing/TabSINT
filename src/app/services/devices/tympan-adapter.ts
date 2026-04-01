@@ -7,11 +7,14 @@ import { Command } from '../../types/custom-types';
 import { IDeviceAdapter } from '../../interfaces/devices/device-adapter.interface';
 import { Logger } from '../logger.service';
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
+import { inject } from '@angular/core';
 
 /**
  * Tympan implementation of the device adapter.
  */
 export class TympanAdapter implements IDeviceAdapter {
+  private readonly logger = inject(Logger);
+
   /**
    * Record to hold whether a device should be accumulating response bytes.
    * The device identifier acts as the record key.
@@ -87,8 +90,6 @@ export class TympanAdapter implements IDeviceAdapter {
    * Callback invoked when a device property needs to be updated for the given device.
    */
   private onDeviceUpdate: ((device: TympanDevice) => void) | undefined;
-
-  constructor(private readonly logger: Logger) {}
 
   /**
    * Set the callback for disconnection events.

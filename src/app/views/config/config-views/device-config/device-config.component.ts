@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AppState, BluetoothType, DeviceState, DeviceType } from '../../../../utilities/constants';
 import { StateModel } from '../../../../models/state/state.service';
@@ -12,11 +12,16 @@ import { IWahtsDevice } from '../../../../interfaces/devices/wahts-device.interf
 import { FirmwareAsset } from '../../../../interfaces/firmware-asset.interface';
 
 @Component({
-  selector: 'device-config-view',
+  selector: 'app-device-config-view',
   templateUrl: './device-config.component.html',
   styleUrl: './device-config.component.css',
 })
 export class DeviceConfigComponent implements OnInit, OnDestroy {
+  private readonly stateModel = inject(StateModel);
+  private readonly translate = inject(TranslateService);
+  private readonly diskModel = inject(DiskModel);
+  private readonly devicesService = inject(DevicesService);
+
   state: StateInterface;
   stateSubscription: Subscription | undefined;
   diskSubscription: Subscription | undefined;
@@ -24,18 +29,12 @@ export class DeviceConfigComponent implements OnInit, OnDestroy {
   BluetoothType = BluetoothType;
   wahtsFirmwareAsset = this.getWahtsFirmwareAsset();
 
-  constructor(
-    private readonly stateModel: StateModel,
-    private readonly translate: TranslateService,
-    private readonly diskModel: DiskModel,
-    private readonly devicesService: DevicesService
-  ) {
+  constructor() {
     this.state = this.stateModel.getState();
     this.disk = this.diskModel.getDisk();
   }
 
   ngOnInit(): void {
-    this.disk = this.diskModel.getDisk();
     this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
     });

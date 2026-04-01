@@ -1,6 +1,7 @@
 import { IDevice } from '../../interfaces/devices/device.interface';
 import { ITympanDevice } from '../../interfaces/devices/tympan-device.interface';
 import { IWahtsDevice } from '../../interfaces/devices/wahts-device.interface';
+import { IDuodoseDevice } from '../../interfaces/devices/duodose-device.interface';
 import { MediaReposInterface } from '../../interfaces/media-repos.interface';
 import { Preferences } from '../../interfaces/preferences.interface';
 import { ProtocolServer } from '../../utilities/constants';
@@ -55,4 +56,4 @@ export interface UploadSummary {
   output: ProtocolServer;
 }
 
-export type SavedDevice = IDevice | IWahtsDevice | ITympanDevice;
+export type SavedDevice = IDevice | IWahtsDevice | ITympanDevice | IDuodoseDevice;

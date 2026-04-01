@@ -35,8 +35,13 @@ export enum DeviceStatus {
 export enum DeviceType {
   Tympan = 'Tympan',
   Wahts = 'WAHTS',
+  Duodose = 'DuoDose',
   // Svantek,
 }
+
+import { WahtsDevice } from '../models/devices/wahts-device';
+import { DuodoseDevice } from '../models/devices/duodose-device';
+export type ChaDeviceType = WahtsDevice | DuodoseDevice;
 
 export enum Headset {
   None = 'None',
@@ -116,7 +121,7 @@ export const DeveloperProtocolsCalibration: Record<string, CalibrationFileInterf
 
 export const bluetoothTimeout: number = 5000;
 
-export const listOfTabsintDirectories: Array<string> = [
+export const listOfTabsintDirectories: string[] = [
   '.tabsint-results-backup',
   // ".tabsint-uuid",
   'tabsint-configuration',

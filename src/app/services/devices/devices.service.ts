@@ -1,4 +1,4 @@
-import { Injectable, NgZone } from '@angular/core';
+import { inject, Injectable, NgZone } from '@angular/core';
 import { DeviceState, DeviceStatus, DeviceType, DialogType, ExamState } from '../../utilities/constants';
 import { IDeviceManager } from '../../interfaces/devices/device-manager.interface';
 import { StateModel } from '../../models/state/state.service';
@@ -21,11 +21,21 @@ import { WahtsManager } from './wahts-manager';
 import { FirmwareAsset } from '../../interfaces/firmware-asset.interface';
 import { DialogDataInterface } from '../../interfaces/dialog-data.interface';
 import { isValidDeviceResponse } from '../../guards/type.guard';
+import { DuodoseManager } from './duodose-manager';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DevicesService {
+  private readonly logger = inject(Logger);
+  private readonly stateModel = inject(StateModel);
+  private readonly zone = inject(NgZone);
+  private readonly notifications = inject(Notifications);
+  private readonly translate = inject(TranslateService);
+  private readonly tasks = inject(Tasks);
+  private readonly diskModel = inject(DiskModel);
+  private readonly dialog = inject(MatDialog);
+
   /**
    * Record to hold the device manager for each device type.
    */
@@ -46,20 +56,12 @@ export class DevicesService {
    */
   readonly devices: Observable<IDevice[]>;
 
-  constructor(
-    private readonly logger: Logger,
-    private readonly stateModel: StateModel,
-    private readonly zone: NgZone,
-    private readonly notifications: Notifications,
-    private readonly translate: TranslateService,
-    private readonly tasks: Tasks,
-    private readonly diskModel: DiskModel,
-    private readonly dialog: MatDialog
-  ) {
+  constructor() {
     // Define the manager registry and create a device list from each managers device observable
     this.managerRegistry = {
-      [DeviceType.Tympan]: new TympanManager(this.logger, this.stateModel, this.zone, this.notifications, this.translate, this.tasks),
-      [DeviceType.Wahts]: new WahtsManager(this.logger, this.stateModel, this.diskModel, this.zone, this.notifications, this.translate, this.tasks),
+      [DeviceType.Tympan]: new TympanManager(),
+      [DeviceType.Wahts]: new WahtsManager(),
+      [DeviceType.Duodose]: new DuodoseManager(),
     };
     this.devices = combineLatest(Object.values(this.managerRegistry).map(m => m.devices)).pipe(map(devices => devices.flat()));
   }
