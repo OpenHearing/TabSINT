@@ -42,6 +42,8 @@ testem.log
 android/keystore.properties
 *.keystore
 keystore.base64
+**/assets/firmware/*
+!**/assets/firmware/.gitkeep
 
 # System files
 .DS_Store

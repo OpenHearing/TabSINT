@@ -85,6 +85,7 @@ export const preferencesSchema: JSONSchemaType<Preferences> = {
     validateProtocols: { type: 'boolean', default: true },
     versionCheck: { type: 'boolean', default: false },
     wahtsConnectionType: { type: 'string', enum: Object.values(BluetoothType), default: BluetoothType.BLUETOOTH_LE },
+    ignoreFirmwareUpdates: { type: 'boolean', default: false },
   },
   required: [
     'adminSkipMode',
@@ -111,5 +112,6 @@ export const preferencesSchema: JSONSchemaType<Preferences> = {
     'validateProtocols',
     'versionCheck',
     'wahtsConnectionType',
+    'ignoreFirmwareUpdates',
   ],
 };

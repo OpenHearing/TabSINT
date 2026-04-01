@@ -11,13 +11,16 @@ import { BleClient } from '@capacitor-community/bluetooth-le';
 import { Tasks } from '../tasks.service';
 import { DiskModel } from '../../models/disk/disk.service';
 import { SavedDevice } from '../../models/disk/disk.interface';
-import { BehaviorSubject, combineLatest, firstValueFrom, map, Observable, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, concatMap, firstValueFrom, map, Observable } from 'rxjs';
 import { IDevice } from '../../interfaces/devices/device.interface';
 import { IDeviceMetadata } from '../../interfaces/devices/device-metadata.interface';
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
 import { DeviceChooseComponent } from '../../views/config/config-views/device-choose/device-choose.component';
 import { MatDialog } from '@angular/material/dialog';
 import { WahtsManager } from './wahts-manager';
+import { FirmwareAsset } from '../../interfaces/firmware-asset.interface';
+import { DialogDataInterface } from '../../interfaces/dialog-data.interface';
+import { isValidDeviceResponse } from '../../guards/type.guard';
 import { DuodoseManager } from './duodose-manager';
 
 @Injectable({
@@ -142,7 +145,7 @@ export class DevicesService {
         .open(DeviceChooseComponent, { data: deviceType })
         .afterClosed()
         .pipe(
-          tap(async (device: IDevice | undefined) => {
+          concatMap(async (device: IDevice | undefined) => {
             if (device != undefined) {
               this.tasks.register('Connect Device', `Connecting to Device... `);
               try {
@@ -153,9 +156,40 @@ export class DevicesService {
               }
               this.tasks.deregister('Connect Device');
             }
+            return device;
           })
         )
     );
+  }
+
+  /**
+   * Open a dialog used for reprogramming firmware on a device.
+   * @param device The device to be reprogrammed.
+   * @param text Optional content override for the dialog.
+   */
+  async reprogramFirmwareDialog(device: IDevice, text: string | undefined = undefined): Promise<void> {
+    const msg: DialogDataInterface = {
+      title: 'Confirm Firmware Update',
+      content: text ?? 'Are you sure you want to update the firmware?',
+      type: DialogType.Confirm,
+    };
+    this.notifications.alert(msg).subscribe(async (result: string) => {
+      if (result === 'OK') {
+        let completionResponse = 'The device is unavailable to reprogram.';
+        if (device.state === DeviceState.Connected && device.status !== DeviceStatus.Busy) {
+          const response = await this.reprogramFirmware(device);
+          if (isValidDeviceResponse(response)) {
+            await this.reboot(device);
+            completionResponse = 'The device will now reboot. Reconnect the device to verify firmware was updated.';
+          }
+        }
+        this.notifications.alert({
+          title: 'Alert',
+          content: this.translate.instant(completionResponse),
+          type: DialogType.Alert,
+        });
+      }
+    });
   }
 
   /**
@@ -319,5 +353,32 @@ export class DevicesService {
    */
   async requestResults(device: IDevice): Promise<IDeviceResponse | undefined> {
     return this.getManager(device.type).requestResults?.(device);
+  }
+
+  /**
+   * Reprogram the firmware for a device.
+   * @param device The device to reprogram.
+   * @returns The device response for the reprogram request or undefined.
+   */
+  async reprogramFirmware(device: IDevice): Promise<IDeviceResponse | undefined> {
+    return this.getManager(device.type).reprogramFirmware?.(device);
+  }
+
+  /**
+   * Reboot the device.
+   * @param device The device to reboot.
+   * @returns The device response for the reboot request or undefined.
+   */
+  async reboot(device: IDevice): Promise<IDeviceResponse | undefined> {
+    return this.getManager(device.type).reboot?.(device);
+  }
+
+  /**
+   * Get the available application firmware for a device.
+   * @param deviceType The device type associated with the firmware.
+   * @returns The firmware asset provided by the application for the managed device type.
+   */
+  async getApplicationFirmware(deviceType: DeviceType): Promise<FirmwareAsset | undefined> {
+    return this.getManager(deviceType).getApplicationFirmware?.();
   }
 }

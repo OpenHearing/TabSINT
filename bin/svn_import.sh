@@ -19,20 +19,29 @@ else
 fi
 
 BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-JAR_DIR="$BIN_DIR/../tabsintcha/android/libs/"
-JAR_FILE="$BIN_DIR/../tabsintcha/android/libs/CHA.jar"
 
-# Exit if the directory does not exist.
-if [ ! -d "$JAR_DIR" ]; then
-  echo "$JAR_DIR does not exist."
-  exit 1
-fi
+TABSINTCHA_JAR_DIR="${BIN_DIR}/../tabsintcha/android/libs"
+FIRMWARE_DIR="${BIN_DIR}/../src/assets/firmware"
 
-# Remove the current JAR file if it is found.
-if [ -f "$JAR_FILE" ]; then
-    echo "Removing the pre-existing JAR file."
-    rm "$JAR_FILE"
-fi
+JAR_FILE="${TABSINTCHA_JAR_DIR}/CHA.jar"
+WAHTS_FIRMWARE_FILE="${FIRMWARE_DIR}/CHA_firmware.dat"
+WAHTS_FIRMWARE_METADATA_FILE="${FIRMWARE_DIR}/CHA_firmware.json"
+
+# Exit if the directories do not exist.
+for directory in "$TABSINTCHA_JAR_DIR" "$FIRMWARE_DIR"; do
+    if [ ! -d "$directory" ]; then
+        echo "${directory} does not exist."
+        exit 1
+    fi
+done
+
+# Remove existing files if found.
+for file in "$JAR_FILE" "$WAHTS_FIRMWARE_FILE" "$WAHTS_FIRMWARE_METADATA_FILE"; do
+    if [ -f "$file" ]; then
+        echo "Removing the pre-existing ${file}."
+        rm "$file"
+    fi
+done
 
 # Check if we have a tag specified and if not determine the tag
 if [ -z "$SVN_TAG" ]; then
@@ -49,12 +58,33 @@ if [ -z "$SVN_TAG" ]; then
 fi
 
 # Pull the new JAR file from SVN
-echo "Pulling the new JAR file."
-    svn export "$SVN_TAG_DIRECTORY""$SVN_TAG"/Android/CHA/bin/CHA.jar "$JAR_DIR" --username "$SVN_USERNAME" --password "$SVN_PASSWORD" --non-interactive --trust-server-cert
+BASE_SVN_PATH="${SVN_TAG_DIRECTORY}${SVN_TAG}"
 
-if [ -f "$JAR_FILE" ]; then
-    echo "Successfully pulled the JAR file."
-else
-    echo "Failed to pull the JAR file."
+echo "Pulling the new JAR file."
+svn export "${BASE_SVN_PATH}/Android/CHA/bin/CHA.jar" "$TABSINTCHA_JAR_DIR" --username "$SVN_USERNAME" --password "$SVN_PASSWORD" --non-interactive --trust-server-cert
+
+# Pull the new WAHTS firmware file from SVN
+echo "Pulling the new WAHTS firmware file."
+svn export "${BASE_SVN_PATH}/DSP/C5515/CHA/bin/Release/CHA_firmware.dat" "$FIRMWARE_DIR" --username "$SVN_USERNAME" --password "$SVN_PASSWORD" --non-interactive --trust-server-cert
+
+for file in "$JAR_FILE" "$WAHTS_FIRMWARE_FILE"; do
+    if [ ! -f "$file" ]; then
+        echo "Failed to pull file for ${file}."
+        exit 1
+    fi
+done
+
+# Keep only printable characters and squeeze spaces
+WAHTS_DATA=$(iconv -f utf-8 -t ascii//IGNORE -c $WAHTS_FIRMWARE_FILE | tr -d '\000-\037\177-\377' | tr -d '\n\r\t\b' | tr -s ' ')
+WAHTS_DATETIME=$(echo "$WAHTS_DATA" | grep -oP '(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s[0-9]{1,2}\s[0-9]{4}\s[0-9]{2}:[0-9]{2}:[0-9]{2}')
+if [[ -z "$WAHTS_DATETIME" ]]; then
+    echo "No WAHTS metadata date found."
     exit 1
 fi
+
+# Create a metadata file for the WAHTS firmware
+WAHTS_JSON_STRING="{\"tag\":\"${SVN_TAG}\",\"time\":\"${WAHTS_DATETIME}\"}"
+echo "${WAHTS_JSON_STRING}" > "${WAHTS_FIRMWARE_METADATA_FILE}"
+
+echo "Successfully generated the files."
+exit 0

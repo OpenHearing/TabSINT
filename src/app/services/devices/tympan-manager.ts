@@ -12,6 +12,8 @@ import { Tasks } from '../tasks.service';
 import { inject, NgZone } from '@angular/core';
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
 import { SavedDevice } from '../../models/disk/disk.interface';
+import { RequestIdObject } from '../../interfaces/devices/device-responses.interface';
+import { isRequestIdResponse } from '../../guards/type.guard';
 
 /**
  * Tympan implementation of the device manager.
@@ -176,7 +178,7 @@ export class TympanManager implements IDeviceManager {
     this.scanning = false;
     // Remove discovered devices which were added but not selected during the search
     let devices = this.devicesSubject.getValue();
-    devices = devices.filter(device => device.state === DeviceState.Discovery);
+    devices = devices.filter(device => device.state !== DeviceState.Discovery);
     this.devicesSubject.next(devices);
   }
 
@@ -201,11 +203,11 @@ export class TympanManager implements IDeviceManager {
       await this.tympanAdapter.connect(device);
       await this.tympanAdapter.abortExams(device);
       const resp = await this.tympanAdapter.requestId(device);
-      if (!resp.msg || resp.msg.includes('ERROR')) {
+      if (!isRequestIdResponse(resp)) {
         await this.disconnect(device);
         throw new Error('Reconnection failed.');
       }
-      this.stateModel.updatePaneOpen({ tympans: true });
+      this.updateDeviceMetadata(device, resp.msg[1]);
       this.tasks.deregister('Connect Device');
       device.state = DeviceState.Connected;
       this.updateDevice(device);
@@ -297,5 +299,16 @@ export class TympanManager implements IDeviceManager {
         this.stateModel.updateState({ deviceError: resp.msg });
       }
     }
+  }
+
+  /**
+   * Update the metadata for a device with request ID information.
+   * @param device The device to update.
+   * @param idResponse Request ID information.
+   */
+  private updateDeviceMetadata(device: TympanDevice, idResponse: RequestIdObject) {
+    device.metadata.buildDateTime = idResponse.buildDateTime;
+    device.metadata.serialNumber = idResponse.serialNumber?.toString();
+    this.updateDevice(device);
   }
 }

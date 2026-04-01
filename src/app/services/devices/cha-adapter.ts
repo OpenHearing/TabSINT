@@ -3,7 +3,9 @@ import { IDeviceAdapter } from '../../interfaces/devices/device-adapter.interfac
 import { Logger } from '../logger.service';
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
 import { DeviceResponse, TabsintCha } from 'tabsintcha';
-import { BehaviorSubject, catchError, filter, firstValueFrom, of, skip, timeout } from 'rxjs';
+import { BehaviorSubject, catchError, filter, firstValueFrom, of, skip, Subject, timeout } from 'rxjs';
+import { FirmwareAsset } from '../../interfaces/firmware-asset.interface';
+import { isValidDeviceResponse } from '../../guards/type.guard';
 import { inject } from '@angular/core';
 
 /**
@@ -153,6 +155,50 @@ export class ChaAdapter implements IDeviceAdapter {
   }
 
   /**
+   * Reprogram firmware for a device.
+   * @param device The device to reprogram.
+   * @param firmwareAsset The metadata related to the firmware to reprogram.
+   * @param progressCallback A callback which takes IDeviceResponse values for FileProgress response updates.
+   * @returns The device response for the reprogram operation.
+   */
+  async reprogramFirmware(
+    device: ChaDeviceType,
+    firmwareAsset: FirmwareAsset,
+    progressCallback?: (progress: IDeviceResponse) => void
+  ): Promise<IDeviceResponse> {
+    const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
+      const startFirmwareWriteOptions = { name: device.deviceId, localFile: firmwareAsset.filePath, remoteFile: 'CHA_PROG.dat', flags: 0 };
+      const writeResponsePromise = this.waitForResponseWithStatusUpdates(device, 'FileOperationComplete', 'FileProgress', progressCallback, 10000);
+      await TabsintCha.startFileWrite(startFirmwareWriteOptions);
+      const writeResponse = await writeResponsePromise;
+
+      let reprogramResponse: IDeviceResponse | undefined = undefined;
+      if (isValidDeviceResponse(writeResponse)) {
+        const reprogramOptions = { name: device.deviceId, crc32: firmwareAsset.checksum };
+        const msg = await TabsintCha.reprogram(reprogramOptions);
+        reprogramResponse = { deviceId: device.deviceId, msg: [msg] };
+      }
+      return reprogramResponse ?? this.defaultInvalidResponse(device);
+    });
+    return response;
+  }
+
+  /**
+   * Reboot a device.
+   * @param device The device to reboot.
+   * @returns The device response for the reboot operation.
+   */
+  async reboot(device: ChaDeviceType): Promise<IDeviceResponse> {
+    const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
+      const rebootOptions = { name: device.deviceId };
+      const msg = await TabsintCha.reboot(rebootOptions);
+      const resp: IDeviceResponse = { deviceId: device.deviceId, msg: [msg] };
+      return resp;
+    });
+    return response;
+  }
+
+  /**
    * Run a command to the device with state changes.
    * This function will send the device state to busy, and increment device message count.
    * Additionally it will invoke the device update callback to ensure state is properly updated for the device.
@@ -201,6 +247,50 @@ export class ChaAdapter implements IDeviceAdapter {
     } else {
       return undefined;
     }
+  }
+
+  /**
+   * Function to wait for a response from a device with timely status updates.
+   * A timeout occurs if a status update or final response is not received within the expected timeframe.
+   * In the case of failure or response error message, undefined is returned.
+   * @param device The device to wait for a response from.
+   * @param identifier The message identifier for the expected response.
+   * @param statusIdentifier The message identifier for the status responses.
+   * @param statusCallback The callback for status updates.
+   * @param timeout The timeout for each status update/final response, a default is used if not provided.
+   * @returns The response from the device or undefined.
+   */
+  private async waitForResponseWithStatusUpdates(
+    device: ChaDeviceType,
+    identifier: string,
+    statusIdentifier: string,
+    statusCallback?: (response: IDeviceResponse) => void,
+    timeoutMs?: number
+  ): Promise<IDeviceResponse | undefined> {
+    const finalResponseSubject = new Subject<IDeviceResponse | undefined>();
+    const subscription = this.responseSubject
+      .pipe(
+        skip(1),
+        filter(
+          response =>
+            response?.deviceId === device.deviceId &&
+            (response.msg[0] == identifier || response.msg[0] == statusIdentifier || response.msg[0] == 'Error')
+        ),
+        timeout({ each: timeoutMs ?? this.defaultTimeoutTimeMs }),
+        catchError(() => of(undefined))
+      )
+      .subscribe(response => {
+        if (response === undefined || response.msg[0] === 'Error') {
+          finalResponseSubject.next(undefined);
+        } else if (response.msg[0] == statusIdentifier) {
+          statusCallback?.(response);
+        } else {
+          finalResponseSubject.next(response);
+        }
+      });
+    const finalResponse = await firstValueFrom(finalResponseSubject);
+    subscription.unsubscribe();
+    return finalResponse;
   }
 
   /**
