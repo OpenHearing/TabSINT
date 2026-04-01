@@ -25,6 +25,7 @@ export class IndicatorComponent implements OnInit, OnDestroy {
   SvantekState = SvantekState;
   hasConnectedTympan: Observable<boolean>;
   hasConnectedWahts: Observable<boolean>;
+  hasConnectedDuodose: Observable<boolean>;
 
   constructor(
     private readonly devicesService: DevicesService,
@@ -39,6 +40,9 @@ export class IndicatorComponent implements OnInit, OnDestroy {
     );
     this.hasConnectedWahts = this.devicesService.devices.pipe(
       map(devices => devices.some(device => device.type === DeviceType.Wahts && device.state === DeviceState.Connected))
+    );
+    this.hasConnectedDuodose = this.devicesService.devices.pipe(
+      map(devices => devices.some(device => device.type === DeviceType.Duodose && device.state === DeviceState.Connected))
     );
   }
 
@@ -65,6 +69,8 @@ export class IndicatorComponent implements OnInit, OnDestroy {
   TympanConnectedPopover = this.translate.instant('Tympan Connected');
 
   WahtsConnectedPopover = this.translate.instant('WAHTS Connected');
+
+  DuodoseConnectedPopover = this.translate.instant('DuoDose Connected');
 
   DosimeterConnectedPopover = this.translate.instant('Dosimeter Connected');
 

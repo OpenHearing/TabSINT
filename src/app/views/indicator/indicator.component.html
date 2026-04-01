@@ -28,6 +28,18 @@
   </mat-menu>
 </a>
 
+<!-- duodose status -->
+<a href="javascript:" class="header-text" *ngIf="hasConnectedDuodose | async" title="DuoDose Connected">
+  <span>
+    <i [matMenuTriggerFor]="DuodoseConnectedMenu" class="duodose-logo"></i>
+  </span>
+  <mat-menu #DuodoseConnectedMenu="matMenu">
+    <button mat-menu-item>
+      <div [innerHTML]="DuodoseConnectedPopover"></div>
+    </button>
+  </mat-menu>
+</a>
+
 <!-- Streaming Status -->
 <a href="javascript:" class="header-text" *ngIf="!disk.preferences.disableAudioStreaming" title="Streaming status">
   <span>

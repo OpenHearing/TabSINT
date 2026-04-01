@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
@@ -8,20 +8,24 @@ import { StateInterface } from '../../../../models/state/state.interface';
 import { DiskModel } from '../../../../models/disk/disk.service';
 import { StateModel } from '../../../../models/state/state.service';
 
-import { AppState } from '../../../../utilities/constants';
+import { AppState, DeviceState } from '../../../../utilities/constants';
 import { IDevice } from '../../../../interfaces/devices/device.interface';
 import { ChangeTabsintIdComponent } from '../../../change-tabsint-id/change-tabsint-id.component';
 import { MatDialog } from '@angular/material/dialog';
+import { DevicesService } from '../../../../services/devices/devices.service';
+import { Notifications } from '../../../../services/notifications.service';
 
 @Component({
   selector: 'device-info-view',
   templateUrl: './device-info.component.html',
   styleUrl: './device-info.component.css',
 })
-export class DeviceInfoComponent implements OnInit, OnDestroy {
+export class DeviceInfoComponent implements OnInit, OnDestroy, OnChanges {
   @Input() device!: IDevice;
+  DeviceState = DeviceState;
   disk: DiskInterface;
   state: StateInterface;
+  firmwareMatch: boolean | undefined = undefined;
 
   diskSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
@@ -31,7 +35,9 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     private readonly diskModel: DiskModel,
     private readonly stateModel: StateModel,
     private readonly translate: TranslateService,
-    private readonly dialog: MatDialog
+    private readonly dialog: MatDialog,
+    private readonly devicesService: DevicesService,
+    private readonly notifications: Notifications
   ) {
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();
@@ -52,11 +58,42 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     this.stateSubscription?.unsubscribe();
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['device']) {
+      this.updateFirmwareMatch();
+    }
+  }
+
   editTabsintId(device: IDevice): void {
     this.dialog.open(ChangeTabsintIdComponent, { data: device });
+  }
+
+  /**
+   * Open the dialog for reprogramming a device.
+   * @param device The device to reprogram.
+   */
+  reprogramFirmware(device: IDevice) {
+    this.devicesService.reprogramFirmwareDialog(device);
+  }
+
+  /**
+   * Determine if the firmware matches the applications built in firmware based on the datetime.
+   * If a datetime is missing set the firmwareMatch value to undefined.
+   */
+  async updateFirmwareMatch() {
+    const firmwareAsset = await this.devicesService.getApplicationFirmware(this.device.type);
+    if (!this.device.metadata.buildDateTime || !firmwareAsset?.buildDatetime) {
+      this.firmwareMatch = undefined;
+    } else {
+      this.firmwareMatch = Date.parse(this.device.metadata.buildDateTime) === Date.parse(firmwareAsset.buildDatetime);
+    }
   }
 
   setShutdownTimerPopover = this.translate.instant('Auto shutdown time (in minutes) for the WAHTS headset.');
 
   setTabsintIdPopover = this.translate.instant('Set the unique TabSINT ID for the device.');
+
+  firmwarePopover = this.translate.instant(
+    'The firmware currently running on the device. If the firmware is listed in red, the firmware on the device is not supported by this version of TabSINT and should be updated.'
+  );
 }

@@ -1,6 +1,6 @@
 {
   "sonarlint.connectedMode.project": {
-    "connectionId": "http-bastet-creare-com-",
+    "connectionId": "http://bastet.creare.com",
     "projectKey": "Open-Hearing-TabSINT"
   },
   "css.lint.unknownAtRules": "ignore",

@@ -12,43 +12,45 @@ import { ChaAdapter } from './cha-adapter';
 import { DiscoveryResponse, TabsintCha } from 'tabsintcha';
 import { SavedDevice } from '../../models/disk/disk.interface';
 import { DiskModel } from '../../models/disk/disk.service';
+import { isRequestIdResponse } from '../../guards/type.guard';
+import { RequestIdObject } from '../../interfaces/devices/device-responses.interface';
 
 /**
  * CHA base device manager.
  */
 export abstract class ChaManager implements IDeviceManager {
-  private readonly logger = inject(Logger);
-  private readonly stateModel = inject(StateModel);
-  public readonly diskModel = inject(DiskModel);
-  private readonly zone = inject(NgZone);
-  private readonly notifications = inject(Notifications);
-  private readonly translate = inject(TranslateService);
-  private readonly tasks = inject(Tasks);
+  protected readonly logger = inject(Logger);
+  protected readonly stateModel = inject(StateModel);
+  protected readonly diskModel = inject(DiskModel);
+  protected readonly zone = inject(NgZone);
+  protected readonly notifications = inject(Notifications);
+  protected readonly translate = inject(TranslateService);
+  protected readonly tasks = inject(Tasks);
 
   /**
    * Whether a BLE scan is currently in progress.
    */
-  public scanning = false;
+  protected scanning = false;
 
   /**
    * The timeout used for BLE scans.
    */
-  private readonly SCAN_TIMEOUT = 10000; // ms
+  protected readonly SCAN_TIMEOUT = 10000; // ms
 
   /**
    * The adapter used for interacting with a device.
    */
-  private readonly adapter: ChaAdapter = new ChaAdapter();
+  protected readonly adapter: ChaAdapter = new ChaAdapter();
 
   /**
    * Set of device identifiers for devices which have requested a disconnection.
    */
-  private readonly requestedDisconnectionIds: Set<string> = new Set<string>();
+  protected readonly requestedDisconnectionIds: Set<string> = new Set<string>();
 
   /**
    * Behavioral subject for the devices.
    */
-  private readonly devicesSubject = new BehaviorSubject<ChaDeviceType[]>([]);
+  protected readonly devicesSubject = new BehaviorSubject<ChaDeviceType[]>([]);
 
   /**
    * Observable for the devices.
@@ -58,7 +60,7 @@ export abstract class ChaManager implements IDeviceManager {
   /**
    * Callback invoked on device discovery events
    */
-  public discoveryListener: ((response: DiscoveryResponse) => void) | undefined = undefined;
+  protected discoveryListener: ((response: DiscoveryResponse) => void) | undefined = undefined;
 
   constructor() {
     this.adapter.setDisconnectCallback(this.onDisconnectCallback);
@@ -91,7 +93,7 @@ export abstract class ChaManager implements IDeviceManager {
       if (!this.requestedDisconnectionIds.has(deviceId)) {
         this.notifications.alert({
           title: 'Alert',
-          content: this.translate.instant("The tympan device's connection has timed out."),
+          content: this.translate.instant("The CHA device's connection has timed out."),
           type: DialogType.Alert,
         });
       }
@@ -144,7 +146,7 @@ export abstract class ChaManager implements IDeviceManager {
     this.scanning = false;
     // Remove discovered devices which were added but not selected during the search
     let devices = this.devicesSubject.getValue();
-    devices = devices.filter(device => device.state === DeviceState.Discovery);
+    devices = devices.filter(device => device.state !== DeviceState.Discovery);
     this.devicesSubject.next(devices);
   }
 
@@ -192,11 +194,11 @@ export abstract class ChaManager implements IDeviceManager {
       await connectWithRetry();
       await this.adapter.abortExams(device);
       const resp = await this.adapter.requestId(device);
-      if (!resp.msg || resp.msg.includes('ERROR')) {
+      if (!isRequestIdResponse(resp)) {
         await this.disconnect(device);
         throw new Error('Reconnection failed.');
       }
-      this.stateModel.updatePaneOpen({ tympans: true });
+      this.updateDeviceMetadata(device, resp.msg[1]);
       this.tasks.deregister('Connect Device');
       device.state = DeviceState.Connected;
       this.updateDevice(device);
@@ -275,11 +277,23 @@ export abstract class ChaManager implements IDeviceManager {
   }
 
   /**
+   * Reboot a device.
+   * @param device The device to reboot.
+   * @param examId The device response for the reboot request.
+   */
+  async reboot(device: ChaDeviceType): Promise<IDeviceResponse> {
+    this.requestedDisconnectionIds.add(device.deviceId);
+    const response = await this.adapter.reboot(device);
+    await this.deviceErrorHandler(response);
+    return response;
+  }
+
+  /**
    * Check for device errors and update the application state model if an error occurs.
    * @param resp The response to check for errors.
    * @param ignoreErrors Errors which should be ignored during the check.
    */
-  private async deviceErrorHandler(resp: IDeviceResponse | undefined, ignoreErrors: string[] = []) {
+  protected async deviceErrorHandler(resp: IDeviceResponse | undefined, ignoreErrors: string[] = []) {
     if (resp?.msg[1] === 'ERROR') {
       if (typeof resp.msg[2] === 'string' && ignoreErrors?.includes(resp.msg[2])) {
         // ignore the error
@@ -295,7 +309,23 @@ export abstract class ChaManager implements IDeviceManager {
    * @param connectionType The BluetoothType for the device.
    * @returns The string representation of the BluetoothType key.
    */
-  public getConnectionKey(connectionType: BluetoothType): string {
+  protected getConnectionKey(connectionType: BluetoothType): string {
     return Object.keys(BluetoothType).find(k => BluetoothType[k as keyof typeof BluetoothType] === connectionType) ?? 'BLUETOOTH_LE';
+  }
+
+  /**
+   * Update the metadata for a device with request ID information.
+   * If a serial number is negative, wrap the value.
+   * @param device The device to update.
+   * @param idResponse Request ID information.
+   */
+  protected updateDeviceMetadata(device: ChaDeviceType, idResponse: RequestIdObject) {
+    device.metadata.buildDateTime = idResponse.buildDateTime;
+    let serialNumber = idResponse.serialNumber;
+    if (serialNumber < 0) {
+      serialNumber = serialNumber + 0xffffffff + 1;
+    }
+    device.metadata.serialNumber = serialNumber.toString();
+    this.updateDevice(device);
   }
 }

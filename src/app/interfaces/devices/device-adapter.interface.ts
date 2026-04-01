@@ -1,3 +1,4 @@
+import { FirmwareAsset } from '../firmware-asset.interface';
 import { IDeviceResponse } from './device-response.interface';
 import { IDevice } from './device.interface';
 
@@ -52,4 +53,24 @@ export interface IDeviceAdapter {
    * @param examId The identifier of the exam to request results for.
    */
   requestResults?(device: IDevice): Promise<IDeviceResponse>;
+
+  /**
+   * Optional method to reprogram a device.
+   * @param device The device to reprogram.
+   * @param firmwareAsset The metadata related to the firmware to reprogram.
+   * @param progressCallback A callback which takes IDeviceResponse values for progress response updates.
+   * @returns The device response for the reprogram request or undefined.
+   */
+  reprogram?(
+    device: IDevice,
+    firmwareAsset: FirmwareAsset,
+    progressCallback: (progress: IDeviceResponse) => void
+  ): Promise<IDeviceResponse | undefined>;
+
+  /**
+   * Optional method to reboot a device.
+   * @param device The device to reboot.
+   * @returns The device response for the reboot request or undefined.
+   */
+  reboot?(device: IDevice): Promise<IDeviceResponse | undefined>;
 }
