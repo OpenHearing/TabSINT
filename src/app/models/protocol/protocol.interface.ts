@@ -19,6 +19,7 @@ export interface ProtocolMetaInterface {
   admin: boolean;
   contentURI?: string | null;
   gitlabConfig?: GitlabConfigInterface;
+  publicKey?: string;
 }
 
 export interface ProtocolModelInterface {

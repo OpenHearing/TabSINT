@@ -67,7 +67,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
    * Function to be called by ngOnIit to handle any asynchronous operations.
    */
   private async asyncNgOnInit(): Promise<void> {
-    this.results = await this.sqLite.getAllResults();
+    this.results = await this.resultsService.getAllResults();
   }
 
   trackByIndex(index: number, item: any): number {
@@ -87,7 +87,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
       })
       .afterClosed()
       .subscribe(async () => {
-        this.results = await this.sqLite.getAllResults();
+        this.results = await this.resultsService.getAllResults();
       });
   }
 
@@ -128,12 +128,12 @@ export class ResultsComponent implements OnInit, OnDestroy {
       this.notifications.alert(msg).subscribe(async result => {
         if (result === 'OK') {
           await this.sqLite.deleteAll('results');
-          this.results = await this.sqLite.getAllResults();
+          this.results = await this.resultsService.getAllResults();
         }
       });
     } else {
       await this.sqLite.deleteAll('results');
-      this.results = await this.sqLite.getAllResults();
+      this.results = await this.resultsService.getAllResults();
     }
   }
 
@@ -170,7 +170,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
         await this.sqLite.deleteSingleResult(index);
       }
 
-      this.results = await this.sqLite.getAllResults();
+      this.results = await this.resultsService.getAllResults();
     }
 
     const successMessage = uploadResults.success.map(s => `✔️ ${s.result.protocol.name || 'Unknown Protocol'}: ${s.message}`).join('<br>');
