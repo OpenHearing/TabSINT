@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslocoService } from '@jsverse/transloco';
 import _ from 'lodash';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
@@ -46,14 +46,14 @@ export class AppComponent implements OnInit, OnDestroy {
     private readonly protocolService: ProtocolService,
     private readonly router: Router,
     private readonly sqLite: SqLite,
-    private readonly translate: TranslateService,
+    private readonly transloco: TranslocoService,
     private readonly dialog: MatDialog,
     private readonly stateModel: StateModel,
     private readonly networkService: NetworkService,
     private readonly notifications: Notifications
   ) {
-    this.translate.setDefaultLang('English');
-    this.translate.use('English');
+    const savedLang = this.diskModel.getDisk().preferences.language ?? 'en';
+    this.transloco.setActiveLang(savedLang);
     this.app = this.appModel.getApp();
     this.protocol = this.protocolM.getProtocolModel();
     this.disk = this.diskModel.getDisk();

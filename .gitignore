@@ -48,3 +48,4 @@ keystore.base64
 # System files
 .DS_Store
 Thumbs.db
+.claude/settings.json

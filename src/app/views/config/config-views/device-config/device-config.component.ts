@@ -1,5 +1,5 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { AppState, BluetoothType, DeviceState, DeviceType } from '../../../../utilities/constants';
 import { StateModel } from '../../../../models/state/state.service';
 import { StateInterface } from '../../../../models/state/state.interface';
@@ -18,7 +18,7 @@ import { FirmwareAsset } from '../../../../interfaces/firmware-asset.interface';
 })
 export class DeviceConfigComponent implements OnInit, OnDestroy {
   private readonly stateModel = inject(StateModel);
-  private readonly translate = inject(TranslateService);
+  private readonly transloco = inject(TranslocoService);
   private readonly diskModel = inject(DiskModel);
   private readonly devicesService = inject(DevicesService);
 
@@ -82,16 +82,18 @@ export class DeviceConfigComponent implements OnInit, OnDestroy {
     this.diskModel.updatePreferences({ wahtsConnectionType: connectionType });
   }
 
-  wahtsCommunicationPopover = this.translate.instant('Set the connection type for WAHTS devices.');
-
-  wahtsFirmwarePopover = this.translate.instant(`
+  get wahtsCommunicationPopover() { return this.transloco.translate('Set the connection type for WAHTS devices.'); }
+  get wahtsFirmwarePopover() {
+    return this.transloco.translate(`
     This version of the WAHTS Firmware is built into TabSINT and can be updated to the WAHTS wirelessly.
     TabSINT will work best if the WAHTS is updated to this version of the firmware.
   `);
-
-  ignoreFirmwareUpdatesPopover = this.translate.instant(`
-    This option will ignore firmware update messages when connecting to a device. 
-    Each version of TabSINT supports a specific versions of device firmware. 
+  }
+  get ignoreFirmwareUpdatesPopover() {
+    return this.transloco.translate(`
+    This option will ignore firmware update messages when connecting to a device.
+    Each version of TabSINT supports a specific versions of device firmware.
     If this option is not checked, TabSINT will pop a notification if the current version of a device's firmware is not supported by TabSINT.
   `);
+  }
 }

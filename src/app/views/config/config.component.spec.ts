@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { DeviceConfigComponent } from './config-views/device-config/device-config.component';
 import { NewConnectionComponent } from './config-views/new-connection/new-connection.component';
 import { ConfigComponent } from './config.component';
@@ -36,14 +36,9 @@ describe('ConfigComponent', () => {
         MatMenuModule,
         NgbModule,
         QRCodeModule,
-        TranslateModule.forRoot({
-          loader: {
-            provide: TranslateLoader,
-            useClass: TranslateFakeLoader,
-          },
-        }),
+        TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
       ],
-      providers: [TranslateService, TranslateStore],
+      
     }).compileComponents();
 
     fixture = TestBed.createComponent(ConfigComponent);

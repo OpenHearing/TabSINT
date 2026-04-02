@@ -46,7 +46,7 @@
           class="btn btn-block btn-lg btn-default btn-centered"
           [ngClass]="currentPage.helpText ? '' : 'disabled custom-disabled'"
           (click)="help()">
-          <span class="ion-help-circled"></span> {{ "Help" | translate }}
+          <span class="ion-help-circled"></span> {{ "Help" | transloco }}
         </button>
       </div>
       <div class="col-6">
@@ -56,7 +56,7 @@
           class="btn btn-block btn-lg btn-primary btn-centered"
           (click)="begin()"
           *ngIf="state.examState === ExamState.Ready">
-          {{ "Begin" | translate }}
+          {{ "Begin" | transloco }}
         </button>
       </div>
     </div>
@@ -72,7 +72,7 @@
             [ngClass]="currentPage.helpText ? '' : 'disabled custom-disabled'"
             *ngIf="!currentPage.enableBackButton"
             (click)="help()">
-            <span class="ion-help-circled"></span> {{ "Help" | translate }}
+            <span class="ion-help-circled"></span> {{ "Help" | transloco }}
           </button>
           <button
             id="back-btn"
@@ -81,12 +81,12 @@
             [ngClass]="state.canGoBack() ? '' : 'disabled custom-disabled'"
             *ngIf="currentPage.enableBackButton"
             (click)="back()">
-            <span class="ion-arrow-left"></span> {{ "Back" | translate }}
+            <span class="ion-arrow-left"></span> {{ "Back" | transloco }}
           </button>
         </div>
         <div class="col-4">
           <button id="submit-btn" type="button" class="btn btn-block btn-lg btn-primary btn-centered" (click)="skip()">
-            <span class="ion-arrow-right"></span> {{ "Skip" | translate }}
+            <span class="ion-arrow-right"></span> {{ "Skip" | transloco }}
           </button>
         </div>
         <div class="col-4">
@@ -98,7 +98,7 @@
             [disabled]="!state.isSubmittable"
             (click)="submit()">
             <div *ngIf="currentPage.submitText">{{ currentPage.submitText }}</div>
-            <div *ngIf="!currentPage.submitText">{{ buttonText || "Submit" | translate }}</div>
+            <div *ngIf="!currentPage.submitText">{{ buttonText || "Submit" | transloco }}</div>
           </button>
         </div>
       </div>
@@ -113,7 +113,7 @@
             [ngClass]="currentPage.helpText ? '' : 'disabled custom-disabled'"
             *ngIf="!currentPage.enableBackButton"
             (click)="help()">
-            <span class="ion-help-circled"></span> {{ "Help" | translate }}
+            <span class="ion-help-circled"></span> {{ "Help" | transloco }}
           </button>
           <button
             id="back-btn"
@@ -121,7 +121,7 @@
             class="btn btn-block btn-lg btn-default btn-centered"
             *ngIf="currentPage.enableBackButton"
             (click)="back()">
-            <span class="ion-arrow-left"></span> {{ "Back" | translate }}
+            <span class="ion-arrow-left"></span> {{ "Back" | transloco }}
           </button>
         </div>
         <div class="col-6">
@@ -133,7 +133,7 @@
             [disabled]="!state.isSubmittable"
             (click)="submit()">
             <div *ngIf="currentPage.submitText">{{ currentPage.submitText }}</div>
-            <div *ngIf="!currentPage.submitText">{{ buttonText || "Submit" | translate }}</div>
+            <div *ngIf="!currentPage.submitText">{{ buttonText || "Submit" | transloco }}</div>
           </button>
         </div>
       </div>
@@ -146,12 +146,12 @@
           class="btn btn-block btn-lg btn-default btn-centered"
           [ngClass]="currentPage.helpText ? '' : 'disabled custom-disabled'"
           (click)="help()">
-          <span class="ion-help-circled"></span> {{ "Help" | translate }}
+          <span class="ion-help-circled"></span> {{ "Help" | transloco }}
         </button>
       </div>
       <div class="col-6">
         <button id="reset-btn" type="button" class="btn btn-block btn-lg btn-success btn-centered" (click)="reset()">
-          {{ "New Exam" | translate }}
+          {{ "New Exam" | transloco }}
         </button>
       </div>
     </div>

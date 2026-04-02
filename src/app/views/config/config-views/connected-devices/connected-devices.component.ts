@@ -5,7 +5,7 @@ import { IDevice } from '../../../../interfaces/devices/device.interface';
 import { DeviceState, DeviceType, DialogType } from '../../../../utilities/constants';
 import { DevicesService } from '../../../../services/devices/devices.service';
 import { Logger } from '../../../../services/logger.service';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { map, Observable } from 'rxjs';
 import { DiskInterface } from '../../../../models/disk/disk.interface';
@@ -33,7 +33,7 @@ export class ConnectedDevicesComponent implements OnInit, OnDestroy {
     private readonly stateModel: StateModel,
     private readonly devicesService: DevicesService,
     private readonly logger: Logger,
-    private readonly translate: TranslateService,
+    private readonly transloco: TranslocoService,
     private readonly diskModel: DiskModel,
     private readonly notifications: Notifications
   ) {

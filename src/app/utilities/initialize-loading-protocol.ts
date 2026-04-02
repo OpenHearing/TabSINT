@@ -1,4 +1,4 @@
-import { TranslateService } from '@ngx-translate/core';
+import { TranslocoService } from '@jsverse/transloco';
 import _ from 'lodash';
 
 import { LoadingProtocolInterface } from '../interfaces/loading-protocol-object.interface';
@@ -10,7 +10,7 @@ import { CalibrationFileInterface } from '../interfaces/calibration-file.interfa
 export async function initializeLoadingProtocol(
   loading: LoadingProtocolInterface,
   logger: Logger,
-  translate: TranslateService,
+  transloco: TranslocoService,
   disk: DiskInterface,
   fileService: FileService
 ): Promise<LoadingProtocolInterface> {

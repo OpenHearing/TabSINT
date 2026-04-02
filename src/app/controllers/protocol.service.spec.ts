@@ -3,7 +3,7 @@ import { of } from 'rxjs';
 import { ProtocolService } from './protocol.service';
 import { DiskModel } from '../models/disk/disk.service';
 import { ProtocolServer } from '../utilities/constants';
-import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { Notifications } from '../services/notifications.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ProtocolInterface } from '../models/protocol/protocol.interface';
@@ -59,14 +59,9 @@ describe('ProtocolService', () => {
 
     TestBed.configureTestingModule({
       imports: [
-        TranslateModule.forRoot({
-          loader: {
-            provide: TranslateLoader,
-            useClass: TranslateFakeLoader,
-          },
-        }),
+        TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
       ],
-      providers: [Notifications, { provide: MatDialog, useValue: matDialogSpy }, TranslateService, TranslateStore, DiskModel],
+      providers: [Notifications, { provide: MatDialog, useValue: matDialogSpy }, DiskModel],
     });
 
     diskModel = TestBed.inject(DiskModel);

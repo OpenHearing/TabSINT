@@ -12,12 +12,12 @@
 <br />
 <div class="modal-footer">
   <button *ngIf="isValidationMode" type="button" class="btn btn-primary btn-block" (click)="validatePin()">
-    {{ "Submit" | translate }}
+    {{ "Submit" | transloco }}
   </button>
   <button *ngIf="!isValidationMode" type="button" class="btn btn-primary btn-block" (click)="save(pin)">
-    {{ "Save" | translate }}
+    {{ "Save" | transloco }}
   </button>
   <button type="button" class="btn btn-warning" (click)="cancel()">
-    {{ "Cancel" | translate }}
+    {{ "Cancel" | transloco }}
   </button>
 </div>

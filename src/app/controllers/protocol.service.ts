@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import { inject, Injectable } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 import Ajv, { JSONSchemaType } from 'ajv';
 
@@ -41,7 +41,7 @@ export class ProtocolService {
   private readonly notifications = inject(Notifications);
   private readonly protocolM = inject(ProtocolModel);
   private readonly stateModel = inject(StateModel);
-  private readonly translate = inject(TranslateService);
+  private readonly transloco = inject(TranslocoService);
   private readonly tasks = inject(Tasks);
 
   app: AppInterface;
@@ -266,7 +266,7 @@ export class ProtocolService {
   private async initializeProtocol() {
     try {
       this.tasks.register('Initialize Protocol', 'Initializing Protocol...');
-      this.loading = await initializeLoadingProtocol(this.loading, this.logger, this.translate, this.disk, this.fileService);
+      this.loading = await initializeLoadingProtocol(this.loading, this.logger, this.transloco, this.disk, this.fileService);
       this.tasks.register('Initialize Protocol', 'Processing Protocol...');
 
       [this.protocolModel.activeProtocol, this.protocolModel.activeProtocolDictionary, this.protocolModel.activeProtocolFollowOnsDictionary] =
@@ -317,7 +317,7 @@ export class ProtocolService {
       this.notifications
         .alert({
           title: 'Alert',
-          content: this.translate.instant('The protocol specified is not available, please see the administrator.'),
+          content: this.transloco.translate('The protocol specified is not available, please see the administrator.'),
           type: DialogType.Alert,
         })
         .subscribe();
@@ -325,7 +325,7 @@ export class ProtocolService {
       this.notifications
         .alert({
           title: 'Alert',
-          content: this.translate.instant('Protocol did not load properly. Please validate your protocol before trying to load again.'),
+          content: this.transloco.translate('Protocol did not load properly. Please validate your protocol before trying to load again.'),
           type: DialogType.Alert,
         })
         .subscribe();

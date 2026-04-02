@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { SqLite } from '../../../../services/sqLite.service';
 import { StateModel } from '../../../../models/state/state.service';
 import { StateInterface } from '../../../../models/state/state.interface';
@@ -26,7 +26,7 @@ export class LogConfigComponent implements OnInit, OnDestroy {
   stateSubscription: Subscription | undefined;
 
   constructor(
-    public translate: TranslateService,
+    public transloco: TranslocoService,
     public stateModel: StateModel,
     public logger: Logger,
     private readonly sqLite: SqLite,

@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { WelcomeComponent } from './welcome.component';
-import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { MatIconModule } from '@angular/material/icon';
 import { BuildDetailsComponent } from '../build-details/build-details.component';
 
@@ -14,14 +14,9 @@ describe('WelcomeComponent', () => {
       declarations: [WelcomeComponent, BuildDetailsComponent],
       imports: [
         MatIconModule,
-        TranslateModule.forRoot({
-          loader: {
-            provide: TranslateLoader,
-            useClass: TranslateFakeLoader,
-          },
-        }),
+        TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
       ],
-      providers: [TranslateService, TranslateStore],
+      
     }).compileComponents();
 
     fixture = TestBed.createComponent(WelcomeComponent);

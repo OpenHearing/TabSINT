@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { Logger } from '../../services/logger.service';
 import { CommonModule } from '@angular/common';
 import { DevicesService } from '../../services/devices/devices.service';
@@ -12,7 +12,7 @@ import { IDevice } from '../../interfaces/devices/device.interface';
   selector: 'app-change-tabsint-id-view',
   standalone: true,
   templateUrl: './change-tabsint-id.component.html',
-  imports: [CommonModule, FormsModule, TranslateModule],
+  imports: [CommonModule, FormsModule, TranslocoModule],
 })
 export class ChangeTabsintIdComponent {
   /**

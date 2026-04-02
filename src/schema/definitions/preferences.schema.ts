@@ -36,7 +36,7 @@ export const preferencesSchema: JSONSchemaType<Preferences> = {
       },
     },
     headset: { type: 'string', enum: Object.values(Headset), default: Headset.None },
-    language: { type: 'string', default: 'English' },
+    language: { type: 'string', default: 'en' },
     maxLogRows: { type: 'integer', default: 1000 },
     pin: { type: 'string', default: '7114' },
     preventExports: { type: 'boolean', default: false },

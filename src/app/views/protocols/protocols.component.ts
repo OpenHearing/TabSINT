@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 import _ from 'lodash';
 import { DialogDataInterface } from '../../interfaces/dialog-data.interface';
@@ -46,7 +46,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
     private readonly notifications: Notifications,
     private readonly stateModel: StateModel,
     private readonly tasks: Tasks,
-    private readonly translate: TranslateService
+    private readonly transloco: TranslocoService
   ) {
     this.disk = this.diskModel.getDisk();
     this.protocolModel = this.protocolM.getProtocolModel();
@@ -629,72 +629,90 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
     this.diskModel.updatePreferences({ validateProtocols: !this.disk.preferences.validateProtocols });
   }
 
-  validateProtocolPopover = this.translate.instant(
-    'Validate protocols against the <b>Protocol Schema</b> before loading into the application. <br /><br /> The protocol schema defines the allowable inputs for use in protocols.'
-  );
-
-  protocolServerPopover = this.translate.instant(
-    'Choose the location to use as the protocol source and results output. <br /><br />Additional configuration for <b>Gitlab</b> will become active below this box when it is selected.'
-  );
-
-  protocolTablePopover = this.translate.instant(
-    'The table below shows a list of the available test protocols within TabSINT. You can select a protocol by pressing on the table row, then <b>load</b>, <b>update</b>, or <b>delete</b> the protocol using the buttons below. <br /><br />' +
-      'Protocols can be added from each of the servers listed on the <i>Configuration</i> page using the pane below this one. The input area will change depending on the server selected.'
-  );
-
-  mediaTablePopover = this.translate.instant(
-    'This table shows a list of the downloaded media repositories. ' +
-      'These repositories can be referenced by any protocols using the <code>mediaRepository</code> key in the top level of the protocol. <br /><br />' +
-      'Media repositories will be downloaded from the Gitlab Server defined in the <b>Gitlab Configuration</b> pane under the <i>Configuration</i> tab.'
-  );
-
-  mediaAddPopover = this.translate.instant(
-    'Type in the name of a repository to use as a common media repository. <br /><br />' +
-      'The repository must be located on the host in the group defined in the <b>Gitlab Configuration</b> pane under the <i>Configuration</i> tab.'
-  );
-
-  serverDefaultPopover = this.translate.instant(
-    'Reset all configuration values to the defaults set in the build configuration file. This file can only be edited when TabSINT is built from source code.'
-  );
-
-  gitlabAddPopover = this.translate.instant(
-    'Type in the name of the protocol repository located on the host and group. If applicable, put all parent directories in the group field.'
-  );
-
-  gitlabAddVersionPopover = this.translate.instant(
-    '<strong>OPTIONAL:</strong> Type in the repository tag for the version of the repository you would like to download. Leave blank to download the latest tag/commit from the repository.'
-  );
-
-  gitlabHostPopover = this.translate.instant('Hostname of the gitlab server instance you are running. Generally this will be "https://gitlab.com/"');
-
-  gitlabTokenPopover = this.translate.instant(
-    'The secret token used to access your gitlab repositories. See the user guide for more information about finding the Token.'
-  );
-
-  gitlabNamespacePopover = this.translate.instant('The group where protocol, media, and result repositories are stored.');
-
-  gitlabUseTagsPopover = this.translate.instant(
-    'By default, TabSINT will track changes to protocol files based on the <b>tags</b> to a repository.<br /><br />' +
-      'Uncheck this box if you would only like to download changes that are associated with repository <b>commits</b>.'
-  );
-
-  gitlabUseSeparateResultsRepoPopover = this.translate.instant(
-    'Select this option to choose a different gitlab group or repository for results upload.  <br /><br />By default, results are uploaded to a <code>results</code> repository in the same group that contains the protocol.'
-  );
-
-  gitlabResultsGroupPopover = this.translate.instant(
-    'Type the group that contains the <b>Results Repository</b> specified below. <br /><br /> <i>Note: This group must use the same <b>Host</b> and <b>Token</b> above.</i>'
-  );
-
-  gitlabResultsRepoPopover = this.translate.instant(
-    'Type the name of the repository where results will be uploaded. To avoid errors, please create the repository before trying to upload results to it.<br /><br /> <i>Note: This repository must use the same <b>Host</b> and <b>Token</b> above.</i>'
-  );
-
-  downloadCreareProtocolsPopover = this.translate.instant(
-    'Select this option to download standard protocols from Creare.  Results will still go to the gitlab host, group, and repository defined in <b>Gitlab Configuration</b> on the <i>Configuration</i> tab.  When this option is not selected, protocols are downloaded from the host and group defined in <b>Gitlab Configuration</b> on the <i>Configuration</i> tab.'
-  );
-
-  localAddPopover = this.translate.instant(
-    'The local directory under <code>Documents/tabsint-protocols</code> where the protocol is stored on the tablet. Press <b>Add</b> to select a protocol directory via a file chooser.'
-  );
+  get validateProtocolPopover() {
+    return this.transloco.translate(
+      'Validate protocols against the <b>Protocol Schema</b> before loading into the application. <br /><br /> The protocol schema defines the allowable inputs for use in protocols.'
+    );
+  }
+  get protocolServerPopover() {
+    return this.transloco.translate(
+      'Choose the location to use as the protocol source and results output. <br /><br />Additional configuration for <b>Gitlab</b> will become active below this box when it is selected.'
+    );
+  }
+  get protocolTablePopover() {
+    return this.transloco.translate(
+      'The table below shows a list of the available test protocols within TabSINT. You can select a protocol by pressing on the table row, then <b>load</b>, <b>update</b>, or <b>delete</b> the protocol using the buttons below. <br /><br />' +
+        'Protocols can be added from each of the servers listed on the <i>Configuration</i> page using the pane below this one. The input area will change depending on the server selected.'
+    );
+  }
+  get mediaTablePopover() {
+    return this.transloco.translate(
+      'This table shows a list of the downloaded media repositories. ' +
+        'These repositories can be referenced by any protocols using the <code>mediaRepository</code> key in the top level of the protocol. <br /><br />' +
+        'Media repositories will be downloaded from the Gitlab Server defined in the <b>Gitlab Configuration</b> pane under the <i>Configuration</i> tab.'
+    );
+  }
+  get mediaAddPopover() {
+    return this.transloco.translate(
+      'Type in the name of a repository to use as a common media repository. <br /><br />' +
+        'The repository must be located on the host in the group defined in the <b>Gitlab Configuration</b> pane under the <i>Configuration</i> tab.'
+    );
+  }
+  get serverDefaultPopover() {
+    return this.transloco.translate(
+      'Reset all configuration values to the defaults set in the build configuration file. This file can only be edited when TabSINT is built from source code.'
+    );
+  }
+  get gitlabAddPopover() {
+    return this.transloco.translate(
+      'Type in the name of the protocol repository located on the host and group. If applicable, put all parent directories in the group field.'
+    );
+  }
+  get gitlabAddVersionPopover() {
+    return this.transloco.translate(
+      '<strong>OPTIONAL:</strong> Type in the repository tag for the version of the repository you would like to download. Leave blank to download the latest tag/commit from the repository.'
+    );
+  }
+  get gitlabHostPopover() {
+    return this.transloco.translate('Hostname of the gitlab server instance you are running. Generally this will be "https://gitlab.com/"');
+  }
+  get gitlabTokenPopover() {
+    return this.transloco.translate(
+      'The secret token used to access your gitlab repositories. See the user guide for more information about finding the Token.'
+    );
+  }
+  get gitlabNamespacePopover() {
+    return this.transloco.translate('The group where protocol, media, and result repositories are stored.');
+  }
+  get gitlabUseTagsPopover() {
+    return this.transloco.translate(
+      'By default, TabSINT will track changes to protocol files based on the <b>tags</b> to a repository.<br /><br />' +
+        'Uncheck this box if you would only like to download changes that are associated with repository <b>commits</b>.'
+    );
+  }
+  get gitlabUseSeparateResultsRepoPopover() {
+    return this.transloco.translate(
+      'Select this option to choose a different gitlab group or repository for results upload.  <br /><br />By default, results are uploaded to a <code>results</code> repository in the same group that contains the protocol.'
+    );
+  }
+  get gitlabResultsGroupPopover() {
+    return this.transloco.translate(
+      'Type the group that contains the <b>Results Repository</b> specified below. <br /><br /> <i>Note: This group must use the same <b>Host</b> and <b>Token</b> above.</i>'
+    );
+  }
+  get gitlabResultsRepoPopover() {
+    return this.transloco.translate(
+      'Type the name of the repository where results will be uploaded. To avoid errors, please create the repository before trying to upload results to it.<br /><br /> <i>Note: This repository must use the same <b>Host</b> and <b>Token</b> above.</i>'
+    );
+  }
+  get downloadCreareProtocolsPopover() {
+    return this.transloco.translate(
+      'Select this option to download standard protocols from Creare.  Results will still go to the gitlab host, group, and repository defined in <b>Gitlab Configuration</b> on the <i>Configuration</i> tab.  When this option is not selected, protocols are downloaded from the host and group defined in <b>Gitlab Configuration</b> on the <i>Configuration</i> tab.'
+    );
+  }
+  get localAddPopover() {
+    return this.transloco.translate(
+      'The local directory under <code>Documents/tabsint-protocols</code> where the protocol is stored on the tablet. Press <b>Add</b> to select a protocol directory via a file chooser.'
+    );
+  }
 }

@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 
 import { DiskInterface } from '../../../../models/disk/disk.interface';
@@ -34,7 +34,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy, OnChanges {
   constructor(
     private readonly diskModel: DiskModel,
     private readonly stateModel: StateModel,
-    private readonly translate: TranslateService,
+    private readonly transloco: TranslocoService,
     private readonly dialog: MatDialog,
     private readonly devicesService: DevicesService,
     private readonly notifications: Notifications
@@ -89,11 +89,11 @@ export class DeviceInfoComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  setShutdownTimerPopover = this.translate.instant('Auto shutdown time (in minutes) for the WAHTS headset.');
-
-  setTabsintIdPopover = this.translate.instant('Set the unique TabSINT ID for the device.');
-
-  firmwarePopover = this.translate.instant(
-    'The firmware currently running on the device. If the firmware is listed in red, the firmware on the device is not supported by this version of TabSINT and should be updated.'
-  );
+  get setShutdownTimerPopover() { return this.transloco.translate('Auto shutdown time (in minutes) for the WAHTS headset.'); }
+  get setTabsintIdPopover() { return this.transloco.translate('Set the unique TabSINT ID for the device.'); }
+  get firmwarePopover() {
+    return this.transloco.translate(
+      'The firmware currently running on the device. If the firmware is listed in red, the firmware on the device is not supported by this version of TabSINT and should be updated.'
+    );
+  }
 }

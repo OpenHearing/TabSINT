@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 
 import { TabsintConfigComponent } from './tabsint-config.component';
 import { MatMenuModule } from '@angular/material/menu';
@@ -19,14 +19,9 @@ describe('TabsintConfigComponent', () => {
         NgbModule,
         FormsModule,
         QRCodeModule,
-        TranslateModule.forRoot({
-          loader: {
-            provide: TranslateLoader,
-            useClass: TranslateFakeLoader,
-          },
-        }),
+        TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
       ],
-      providers: [TranslateService, TranslateStore],
+      
     }).compileComponents();
 
     fixture = TestBed.createComponent(TabsintConfigComponent);

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 
 import { DiskInterface } from '../../models/disk/disk.interface';
@@ -13,7 +13,7 @@ import { DiskModel } from '../../models/disk/disk.service';
   standalone: true,
   templateUrl: './change-max-log-length.component.html',
   styleUrl: './change-max-log-length.component.css',
-  imports: [FormsModule, TranslateModule],
+  imports: [FormsModule, TranslocoModule],
 })
 export class ChangeMaxLogLengthComponent {
   disk: DiskInterface;

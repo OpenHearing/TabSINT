@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angula
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { NgFor, NgClass, CommonModule } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { map, Observable, Subscription } from 'rxjs';
 
 import { DiskInterface } from '../../../../models/disk/disk.interface';
@@ -15,7 +15,7 @@ import { DeviceState, DeviceType } from '../../../../utilities/constants';
   selector: 'device-choose-view',
   standalone: true,
   templateUrl: './device-choose.component.html',
-  imports: [FormsModule, TranslateModule, NgFor, NgClass, CommonModule],
+  imports: [FormsModule, TranslocoModule, NgFor, NgClass, CommonModule],
 })
 export class DeviceChooseComponent implements OnInit, OnDestroy {
   disk: DiskInterface;
