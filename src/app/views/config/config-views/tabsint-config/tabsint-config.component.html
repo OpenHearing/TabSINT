@@ -26,30 +26,29 @@
 
 <!-- Select Language -->
 <!-- <div class="row pad-top">
-    <div class="col-5">
-        <label translate for="selectLanguage">Select Language:</label>
+  <div class="col-5">
+    <label translate for="selectLanguage">Select Language:</label>
+  </div>
+  <div ngbDropdown class="col-5 dropdown-width" display="dynamic">                            
+    <button type="button" class="btn btn-default btn-block dropdown-toggle" id="selectLanguage" ngbDropdownToggle>
+      {{disk.preferences.language}}
+    </button>
+    <div ngbDropdownMenu aria-labelledby="selectLanguage">
+      <button *ngFor="let language of languages" ngbDropdownItem (click)="changeLanguage(language)">{{language | translate}}</button>
     </div>
-    <div ngbDropdown class="col-5 dropdown-width" display="dynamic">                            
-        <button type="button" class="btn btn-default btn-block dropdown-toggle" id="selectLanguage" ngbDropdownToggle>
-            {{disk.preferences.language}}
-        </button>
-        <div ngbDropdownMenu aria-labelledby="selectLanguage">
-            <button *ngFor="let language of languages" ngbDropdownItem (click)="changeLanguage(language)">{{language | translate}}</button>
-        </div>
-    </div>
+  </div>
 
-    <div class="col-1" href="javascript:" title="{{'Select Language Help' | translate}}">
-        <i [matMenuTriggerFor]= "languageMenu" class="ion-help-circled"></i>
-    </div>
-    <mat-menu #languageMenu="matMenu">
-        <button mat-menu-item>
-            <div [innerHTML]="languagePopover"></div>
-        </button>
-    </mat-menu>
+  <div class="col-1" href="javascript:" title="{{'Select Language Help' | translate}}">
+    <i [matMenuTriggerFor]= "languageMenu" class="ion-help-circled"></i>
+  </div>
+  <mat-menu #languageMenu="matMenu">
+    <button mat-menu-item>
+      <div [innerHTML]="languagePopover"></div>
+    </button>
+  </mat-menu>
+</div> -->
 
-</div>
-
-Show Advanced
+<!-- Show Advanced -->
 <div class="row showhideSection">
     <div class="col-12 text-center">
         <a href="javascript:" (click)="state.isPaneOpen.advanced = !state.isPaneOpen.advanced">
@@ -67,80 +66,80 @@ Show Advanced
 
  <div #collapse="ngbCollapse" [ngbCollapse]="!state.isPaneOpen.advanced"> 
     
-    <div class="row pad-top">
-        <div class="col-12">
-            <h5>Preferences</h5>
-        </div>
-    </div> -->
-
-<!-- Admin Mode -->
-<div class="row pad-top">
-  <div class="col-6"><label translate for="adminMode">Admin Mode:</label></div>
-  <div class="col-2"><input id="adminMode" type="checkbox" [ngModel]="disk.preferences.debugMode" (change)="toggleDebugMode()" /></div>
-  <div class="col-2"></div>
-  <div class="col-1" title="{{ 'Admin Mode Help' | translate }}">
-    <i [matMenuTriggerFor]="adminHelpMenu" class="ion-help-circled"></i>
-  </div>
-  <mat-menu #adminHelpMenu="matMenu">
-    <button mat-menu-item>
-      <div [innerHTML]="adminPopover"></div>
-    </button>
-  </mat-menu>
-</div>
-
-<div class="row pad-top">
-  <div class="col-6">Admin PIN:</div>
-  <div class="col-2">{{ disk.preferences.pin }}</div>
-
-  <div class="col-1">
-    <a href="javascript:" title="{{ 'Admin PIN Edit' | translate }}" (click)="editAdminPin()"><i class="ion-edit"></i></a>
+  <div class="row pad-top">
+    <div class="col-12">
+      <h5>Preferences</h5>
+    </div>
   </div>
 
-  <div class="col-1"></div>
-  <div class="col-1" title="{{ 'Admin PIN Help' | translate }}">
-    <i [matMenuTriggerFor]="adminPinMenu" class="ion-help-circled"></i>
-  </div>
-  <mat-menu #adminPinMenu="matMenu">
-    <button mat-menu-item>
-      <div [innerHTML]="adminPinPopover"></div>
-    </button>
-  </mat-menu>
-</div>
-
-<!-- Disable Logs -->
-<div class="row pad-top">
-  <div class="col-6"><label translate for="disableLogs">Disable Logs:</label></div>
-  <div class="col-2"><input id="disableLogsID" type="checkbox" [ngModel]="disk.preferences.disableLogs" (change)="toggleDisableLogs()" /></div>
-  <div class="col-2"></div>
-  <div class="col-1" title="{{ 'Disable Logs Help' | translate }}">
-    <i [matMenuTriggerFor]="disableLogsMenu" class="ion-help-circled"></i>
-  </div>
-  <mat-menu #disableLogsMenu="matMenu">
-    <button mat-menu-item>
-      <div [innerHTML]="disableLogsPopover"></div>
-    </button>
-  </mat-menu>
-</div>
-
-<!-- Set the Maximum number of log records -->
-<div class="row pad-top">
-  <div class="col-6" translate>Max Log Length:</div>
-  <div class="col-2">{{ disk.preferences.maxLogRows }}</div>
-
-  <div class="col-1">
-    <a href="javascript:" title="{{ 'Max Log Length Edit' | translate }}" (click)="editMaxLogRows()"><i class="ion-edit"></i></a>
+  <!-- Admin Mode -->
+  <div class="row pad-top">
+    <div class="col-6"><label translate for="adminMode">Admin Mode:</label></div>
+    <div class="col-2"><input id="adminMode" type="checkbox" [ngModel]="disk.preferences.debugMode" (change)="toggleDebugMode()" /></div>
+    <div class="col-2"></div>
+    <div class="col-1" title="{{ 'Admin Mode Help' | translate }}">
+      <i [matMenuTriggerFor]="adminHelpMenu" class="ion-help-circled"></i>
+    </div>
+    <mat-menu #adminHelpMenu="matMenu">
+      <button mat-menu-item>
+        <div [innerHTML]="adminPopover"></div>
+      </button>
+    </mat-menu>
   </div>
 
-  <div class="col-1"></div>
-  <div class="col-1" href="javascript:" title="{{ 'Max Log Length Help' | translate }}">
-    <i [matMenuTriggerFor]="setMaxLogRowsMenu" class="ion-help-circled"></i>
+  <div class="row pad-top">
+    <div class="col-6">Admin PIN:</div>
+    <div class="col-2">{{ disk.preferences.pin }}</div>
+
+    <div class="col-1">
+      <a href="javascript:" title="{{ 'Admin PIN Edit' | translate }}" (click)="editAdminPin()"><i class="ion-edit"></i></a>
+    </div>
+
+    <div class="col-1"></div>
+    <div class="col-1" title="{{ 'Admin PIN Help' | translate }}">
+      <i [matMenuTriggerFor]="adminPinMenu" class="ion-help-circled"></i>
+    </div>
+    <mat-menu #adminPinMenu="matMenu">
+      <button mat-menu-item>
+        <div [innerHTML]="adminPinPopover"></div>
+      </button>
+    </mat-menu>
   </div>
-  <mat-menu #setMaxLogRowsMenu="matMenu">
-    <button mat-menu-item>
-      <div [innerHTML]="setMaxLogRowsPopover"></div>
-    </button>
-  </mat-menu>
-</div>
+
+  <!-- Disable Logs -->
+  <div class="row pad-top">
+    <div class="col-6"><label translate for="disableLogs">Disable Logs:</label></div>
+    <div class="col-2"><input id="disableLogsID" type="checkbox" [ngModel]="disk.preferences.disableLogs" (change)="toggleDisableLogs()" /></div>
+    <div class="col-2"></div>
+    <div class="col-1" title="{{ 'Disable Logs Help' | translate }}">
+      <i [matMenuTriggerFor]="disableLogsMenu" class="ion-help-circled"></i>
+    </div>
+    <mat-menu #disableLogsMenu="matMenu">
+      <button mat-menu-item>
+        <div [innerHTML]="disableLogsPopover"></div>
+      </button>
+    </mat-menu>
+  </div>
+
+  <!-- Set the Maximum number of log records -->
+  <div class="row pad-top">
+    <div class="col-6" translate>Max Log Length:</div>
+    <div class="col-2">{{ disk.preferences.maxLogRows }}</div>
+
+    <div class="col-1">
+      <a href="javascript:" title="{{ 'Max Log Length Edit' | translate }}" (click)="editMaxLogRows()"><i class="ion-edit"></i></a>
+    </div>
+
+    <div class="col-1"></div>
+    <div class="col-1" href="javascript:" title="{{ 'Max Log Length Help' | translate }}">
+      <i [matMenuTriggerFor]="setMaxLogRowsMenu" class="ion-help-circled"></i>
+    </div>
+    <mat-menu #setMaxLogRowsMenu="matMenu">
+      <button mat-menu-item>
+        <div [innerHTML]="setMaxLogRowsPopover"></div>
+      </button>
+    </mat-menu>
+  </div>
 
 <!-- Disable Automatic Volume Control -->
 <!-- <div class="row pad-top">
@@ -203,76 +202,76 @@ Show Advanced
         </mat-menu>
     </div> -->
 
-<!-- QR Code Generation -->
-<div class="row pad-top">
-  <div class="col-6"><label translate for="QRCode">QR Code:</label></div>
-  <div class="col-4">
-    <button id="QRCode" class="btn btn-default btn-block" (click)="generatePreferencesQrCode()">{{ "Generate" | translate }}</button>
-  </div>
-  <div class="col-1" href="javascript:" title="{{ 'QR Code Help' | translate }}">
-    <i [matMenuTriggerFor]="qrCodePopoverMenu" class="ion-help-circled"></i>
-  </div>
-  <mat-menu #qrCodePopoverMenu="matMenu">
-    <button mat-menu-item>
-      <div [innerHTML]="qrCodePopover"></div>
-    </button>
-  </mat-menu>
-</div>
-
-<!-- Display QR Code (Requires rendering the QR code for URL generation) -->
-<div *ngIf="qrPreferencesString">
+  <!-- QR Code Generation -->
   <div class="row pad-top">
-    <div class="col-11">
-      <qrcode
-        #qrCanvas
-        [qrdata]="qrPreferencesString"
-        [elementType]="'canvas'"
-        [hidden]="!displayPreferencesQrCode"
-        [errorCorrectionLevel]="'M'"
-        alt="{{ 'Generated QR Code' | translate }}" />
+    <div class="col-6"><label translate for="QRCode">QR Code:</label></div>
+    <div class="col-4">
+      <button id="QRCode" class="btn btn-default btn-block" (click)="generatePreferencesQrCode()">{{ "Generate" | translate }}</button>
+    </div>
+    <div class="col-1" href="javascript:" title="{{ 'QR Code Help' | translate }}">
+      <i [matMenuTriggerFor]="qrCodePopoverMenu" class="ion-help-circled"></i>
+    </div>
+    <mat-menu #qrCodePopoverMenu="matMenu">
+      <button mat-menu-item>
+        <div [innerHTML]="qrCodePopover"></div>
+      </button>
+    </mat-menu>
+  </div>
+
+  <!-- Display QR Code (Requires rendering the QR code for URL generation) -->
+  <div *ngIf="qrPreferencesString">
+    <div class="row pad-top">
+      <div class="col-11">
+        <qrcode
+          #qrCanvas
+          [qrdata]="qrPreferencesString"
+          [elementType]="'canvas'"
+          [hidden]="!displayPreferencesQrCode"
+          [errorCorrectionLevel]="'M'"
+          alt="{{ 'Generated QR Code' | translate }}" />
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Reset -->
-<div class="row pad-top">
-  <div class="col-6"><label translate for="resetConfig">Reset configuration:</label></div>
-  <div class="col-4">
-    <button id="resetConfig" type="button" class="btn btn-block btn-danger" (click)="resetConfig()">Reset</button>
+  <!-- Reset -->
+  <div class="row pad-top">
+    <div class="col-6"><label translate for="resetConfig">Reset configuration:</label></div>
+    <div class="col-4">
+      <button id="resetConfig" type="button" class="btn btn-block btn-danger" (click)="resetConfig()">Reset</button>
+    </div>
+    <div class="col-1" href="javascript:" title="{{ 'Reset configuration Help' | translate }}">
+      <i [matMenuTriggerFor]="resetConfigurationPopoverMenu" class="ion-help-circled"></i>
+    </div>
+    <mat-menu #resetConfigurationPopoverMenu="matMenu">
+      <button mat-menu-item>
+        <div [innerHTML]="resetConfigurationPopover"></div>
+      </button>
+    </mat-menu>
   </div>
-  <div class="col-1" href="javascript:" title="{{ 'Reset configuration Help' | translate }}">
-    <i [matMenuTriggerFor]="resetConfigurationPopoverMenu" class="ion-help-circled"></i>
-  </div>
-  <mat-menu #resetConfigurationPopoverMenu="matMenu">
-    <button mat-menu-item>
-      <div [innerHTML]="resetConfigurationPopover"></div>
-    </button>
-  </mat-menu>
-</div>
 
-<!-- <br />
-<div class="row pad-top">
-  <div class="col-12">
-    <h5>Results Preferences</h5>
+  <br />
+  <div class="row pad-top">
+    <div class="col-12">
+      <h5>Results Preferences</h5>
+    </div>
   </div>
-</div> -->
 
-<!-- Automatically Output Test Results -->
-<div class="row pad-top">
-  <div class="col-6">
-    <label for="outputResults">{{ "Automatically Output Test Results" | translate }}:</label>
+  <!-- Automatically Output Test Results -->
+  <div class="row pad-top">
+    <div class="col-6">
+      <label for="outputResults">{{ "Automatically Output Test Results" | translate }}:</label>
+    </div>
+    <div class="col-2"><input id="outputResults" type="checkbox" [ngModel]="disk.preferences.autoUpload" (change)="toggleAutoUpload()" /></div>
+    <div class="col-2"></div>
+    <div class="col-1" href="javascript:" title="{{ 'Automatically Output Test Results Help' | translate }}">
+      <i [matMenuTriggerFor]="automaticallyOutputResultsPopoverMenu" class="ion-help-circled"></i>
+    </div>
+    <mat-menu #automaticallyOutputResultsPopoverMenu="matMenu">
+      <button mat-menu-item>
+        <div [innerHTML]="automaticallyOutputResultsPopover"></div>
+      </button>
+    </mat-menu>
   </div>
-  <div class="col-2"><input id="outputResults" type="checkbox" [ngModel]="disk.preferences.autoUpload" (change)="toggleAutoUpload()" /></div>
-  <div class="col-2"></div>
-  <div class="col-1" href="javascript:" title="{{ 'Automatically Output Test Results Help' | translate }}">
-    <i [matMenuTriggerFor]="automaticallyOutputResultsPopoverMenu" class="ion-help-circled"></i>
-  </div>
-  <mat-menu #automaticallyOutputResultsPopoverMenu="matMenu">
-    <button mat-menu-item>
-      <div [innerHTML]="automaticallyOutputResultsPopover"></div>
-    </button>
-  </mat-menu>
-</div>
 
 <!-- Results Mode -->
 <!-- <div class="row pad-top">
@@ -288,30 +287,28 @@ Show Advanced
         </div>
     </div> -->
 
-<!-- Local Results Directory -->
-<div class="row pad-top">
-  <div class="col-6">
-    <label for="localResultsDir">{{ "Local Results Directory" | translate }}:</label>
+  <!-- Local Results Directory -->
+  <div class="row pad-top">
+    <div class="col-6">
+      <label for="localResultsDir">{{ "Local Results Directory" | translate }}:</label>
+    </div>
+    <div class="col-5">
+      <em>{{ disk.preferences.servers.localServer.resultsDir }}</em>
+    </div>
   </div>
-  <div class="col-5">
-    <em>{{ disk.preferences.servers.localServer.resultsDir }}</em>
+  <div class="row pad-top">
+    <div class="col-6"></div>
+    <div class="col-6">
+      <button id="localResultsDir" class="btn btn-default btn-block" (click)="changeLocalResultsDir()">{{ "Change Directory" | translate }}</button>
+    </div>
   </div>
-  <!-- <div class="col-5"><em><input type="text" [(ngModel)]="disk.preferences.servers.localServer.resultsDir" disabled></em></div> -->
-</div>
-<div class="row pad-top">
-  <div class="col-6"></div>
-  <div class="col-6">
-    <!-- <button id="localResultsDir" class="btn btn-default btn-block" (click)="localServer.changeResultsDirectory()">{{'Change Directory' | translate}}</button> -->
-    <button id="localResultsDir" class="btn btn-default btn-block" (click)="changeLocalResultsDir()">{{ "Change Directory" | translate }}</button>
-  </div>
-</div>
 
-<div class="row pad-top">
-  <div class="col-6">
-    <label for="rootDir">{{ "Root Directory" | translate }}:</label>
-  </div>
-  <div class="col-5" style="overflow-wrap: break-word;">
-    <em>{{ disk.contentURI }}</em>
+  <div class="row pad-top">
+    <div class="col-6">
+      <label for="rootDir">{{ "Root Directory" | translate }}:</label>
+    </div>
+    <div class="col-5" style="overflow-wrap: break-word;">
+      <em>{{ disk.contentURI }}</em>
   </div>
 
 <!-- <br />
@@ -370,4 +367,4 @@ Show Advanced
         </div>
     </div> -->
 
-<!-- </div> -->
+</div>
