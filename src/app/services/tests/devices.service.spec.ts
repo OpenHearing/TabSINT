@@ -80,7 +80,8 @@ describe('deviceService', () => {
     // @ts-expect-error - Private method access
     const tympanManager = devicesService.managerRegistry[DeviceType.Tympan];
     tympanManager.addDevice(new TympanDevice(savedDevice.deviceId, savedDevice.name, savedDevice.tabsintId));
-    const device = await devicesService.getDeviceOrDefault(savedDevice.tabsintId, [DeviceType.Tympan]);
+    const deviceList = await devicesService.getDeviceOrDefault(savedDevice.tabsintId, [DeviceType.Tympan]);
+    const device = await devicesService.confirmSingleDevice(deviceList);
     expect(device?.deviceId).toEqual(savedDevice.deviceId);
   });
 
