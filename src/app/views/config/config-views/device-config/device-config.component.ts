@@ -5,10 +5,11 @@ import { StateModel } from '../../../../models/state/state.service';
 import { StateInterface } from '../../../../models/state/state.interface';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { DiskModel } from '../../../../models/disk/disk.service';
-import { firstValueFrom, Observable } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { DiskInterface } from '../../../../models/disk/disk.interface';
 import { DevicesService } from '../../../../services/devices/devices.service';
 import { IWahtsDevice } from '../../../../interfaces/devices/wahts-device.interface';
+import { FirmwareAsset } from '../../../../interfaces/firmware-asset.interface';
 
 @Component({
   selector: 'app-device-config-view',
@@ -23,15 +24,20 @@ export class DeviceConfigComponent implements OnInit, OnDestroy {
 
   state: StateInterface;
   stateSubscription: Subscription | undefined;
-  disk: Observable<DiskInterface>;
+  diskSubscription: Subscription | undefined;
+  disk: DiskInterface;
   BluetoothType = BluetoothType;
+  wahtsFirmwareAsset = this.getWahtsFirmwareAsset();
 
   constructor() {
     this.state = this.stateModel.getState();
-    this.disk = this.diskModel.diskSubject;
+    this.disk = this.diskModel.getDisk();
   }
 
   ngOnInit(): void {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+    });
     this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
@@ -40,6 +46,22 @@ export class DeviceConfigComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.stateSubscription?.unsubscribe();
+    this.diskSubscription?.unsubscribe();
+  }
+
+  /**
+   * Toggle the preference for whether needed firmware updates show alerts.
+   */
+  toggleIgnoreFirmwareUpdates() {
+    this.diskModel.updatePreferences({ ignoreFirmwareUpdates: !this.disk.preferences.ignoreFirmwareUpdates });
+  }
+
+  /**
+   * Get the firmware asset for WAHTS devices.
+   * @returns The firmware asset or undefined.
+   */
+  async getWahtsFirmwareAsset(): Promise<FirmwareAsset | undefined> {
+    return this.devicesService.getApplicationFirmware(DeviceType.Wahts);
   }
 
   /**
@@ -61,4 +83,15 @@ export class DeviceConfigComponent implements OnInit, OnDestroy {
   }
 
   wahtsCommunicationPopover = this.translate.instant('Set the connection type for WAHTS devices.');
+
+  wahtsFirmwarePopover = this.translate.instant(`
+    This version of the WAHTS Firmware is built into TabSINT and can be updated to the WAHTS wirelessly.
+    TabSINT will work best if the WAHTS is updated to this version of the firmware.
+  `);
+
+  ignoreFirmwareUpdatesPopover = this.translate.instant(`
+    This option will ignore firmware update messages when connecting to a device. 
+    Each version of TabSINT supports a specific versions of device firmware. 
+    If this option is not checked, TabSINT will pop a notification if the current version of a device's firmware is not supported by TabSINT.
+  `);
 }

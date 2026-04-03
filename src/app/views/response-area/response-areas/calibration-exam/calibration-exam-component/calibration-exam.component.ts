@@ -131,11 +131,10 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   }
 
   private async setupDevice(updatedResponseArea: CalibrationExamInterface) {
-    this.device = await this.devicesService.getDeviceOrDefault(updatedResponseArea.tabsintId, this.allowableDevices);
-
-    if (!this.device) {
-      await this.devicesService.deviceNotFound();
-      this.logger.error('Error setting up HNCalibration exam');
+    const deviceList = await this.devicesService.getDeviceOrDefault(updatedResponseArea.tabsintId, this.allowableDevices);
+    this.device = await this.devicesService.confirmSingleDevice(deviceList);
+    if (this.device === undefined) {
+      return;
     } else if (this.devicesService.isDeviceMessagePending(this.device, false)) {
       await this.devicesService.deviceMessagePendingError();
       this.logger.error('Error setting up HNCalibration exam: Device message pending');

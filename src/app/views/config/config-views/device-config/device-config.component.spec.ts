@@ -7,6 +7,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { ConnectedDevicesComponent } from '../connected-devices/connected-devices.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { FormsModule } from '@angular/forms';
 
 describe('DeviceConfigComponent', () => {
   let component: DeviceConfigComponent;
@@ -16,6 +17,7 @@ describe('DeviceConfigComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [DeviceConfigComponent, NewConnectionComponent, ConnectedDevicesComponent],
       imports: [
+        FormsModule,
         NgbModule,
         MatMenuModule,
         MatExpansionModule,

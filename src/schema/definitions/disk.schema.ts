@@ -102,6 +102,7 @@ export const diskSchema: JSONSchemaType<DiskInterface> = {
         validateProtocols: preferencesSchema.properties.validateProtocols.default,
         versionCheck: preferencesSchema.properties.versionCheck.default,
         wahtsConnectionType: preferencesSchema.properties.wahtsConnectionType.default,
+        ignoreFirmwareUpdates: preferencesSchema.properties.ignoreFirmwareUpdates.default,
       },
     },
   },

@@ -51,4 +51,5 @@ export interface Preferences {
   versionCheck: boolean;
   wahtsConnectionType: BluetoothType;
   recordTestLocation?: boolean;
+  ignoreFirmwareUpdates: boolean;
 }

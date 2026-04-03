@@ -246,10 +246,10 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   }
 
   private async setupDevice(updatedResponseArea: MrtExamInterface) {
-    this.device = await this.devicesService.getDeviceOrDefault(updatedResponseArea.tabsintId, this.allowableDevices);
+    const deviceList = await this.devicesService.getDeviceOrDefault(updatedResponseArea.tabsintId, this.allowableDevices);
+    this.device = await this.devicesService.confirmSingleDevice(deviceList);
     if (!this.device) {
-      await this.devicesService.deviceNotFound();
-      this.logger.error('Error setting up MRT exam');
+      return;
     } else if (this.devicesService.isDeviceMessagePending(this.device, false)) {
       await this.devicesService.deviceMessagePendingError();
       this.logger.error('Error setting up MRT exam: Device message pending');

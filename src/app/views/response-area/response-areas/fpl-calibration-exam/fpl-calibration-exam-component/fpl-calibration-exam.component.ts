@@ -122,10 +122,10 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
         this.numFrequencies = responseArea.numFrequencies ?? this.numFrequencies;
         this.sweepDuration = responseArea.sweepDuration ?? this.sweepDuration;
         this.windowDuration = responseArea.windowDuration ?? this.windowDuration;
-        this.device = await this.devicesService.getDeviceOrDefault(responseArea.tabsintId, this.allowableDevices);
+        const deviceList = await this.devicesService.getDeviceOrDefault(responseArea.tabsintId, this.allowableDevices);
+        this.device = await this.devicesService.confirmSingleDevice(deviceList);
         if (!this.device) {
-          await this.devicesService.deviceNotFound();
-          this.logger.error('Error setting up FPL Calibration exam, device not found.');
+          return;
         }
         if (this.outputChannels.length < 1) {
           this.logger.error('Error setting up FPL Calibration exam, no outputChannel(s) specified.');

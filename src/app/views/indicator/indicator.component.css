@@ -5,7 +5,8 @@
   width: 1em;
   display: inline-block;
   background-position: center;
-  background-size: cover;
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
 .wahts-logo {
@@ -15,5 +16,17 @@
   width: 1em;
   display: inline-block;
   background-position: center;
-  background-size: cover;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.duodose-logo {
+  content: "";
+  background-image: url("/assets/img/duodose-indicator.png");
+  height: 1em;
+  width: 1em;
+  display: inline-block;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
 }

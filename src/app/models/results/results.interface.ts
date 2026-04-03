@@ -1,5 +1,6 @@
 import { CalibrationFileVersionInformation } from '../../interfaces/calibration-file.interface';
 import { IDeviceMetadata } from '../../interfaces/devices/device-metadata.interface';
+import { DosimetryResultsInterface } from '../../interfaces/dosimeter-results.interface';
 import { ChaWavfileInterface, ImageInterface, VideoInterface, PageWavfileInterface, ResponseArea } from '../../interfaces/page-definition.interface';
 import { ProtocolServer } from '../../utilities/constants';
 import { ProtocolInterface } from '../protocol/protocol.interface';
@@ -27,6 +28,7 @@ export interface CurrentResults {
     video?: VideoInterface;
     responseArea?: ResponseArea;
   };
+  dosimetry?: DosimetryResultsInterface;
 }
 
 export interface ExamResults {

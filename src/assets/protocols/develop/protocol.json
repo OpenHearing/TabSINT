@@ -84,6 +84,9 @@
                 "id": "Scan QR Code"
               },
               {
+                "id": "Dosimetry"
+              },
+              {
                 "id": "End All"
               }
             ]
@@ -207,6 +210,12 @@
               "conditional": "result.response=='Scan QR Code'",
               "target": {
                 "reference": "qrCodeResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='Dosimetry'",
+              "target": {
+                "reference": "dosimetryResponseArea"
               }
             },
             {
@@ -1060,6 +1069,25 @@
             "type": "qrCodeResponseArea",
             "scope": "page"
           }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "dosimetryResponseArea",
+      "pages": [
+        {
+          "id": "dosimetryResponseArea",
+          "title": "Dosimetry testing",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": false
+          },
+          "dosimetry": {}
         },
         {
           "id": "backtomain",

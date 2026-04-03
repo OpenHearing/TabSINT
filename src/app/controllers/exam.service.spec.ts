@@ -13,6 +13,7 @@ import { PageInterface } from '../models/page/page.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { ResultsInterface } from '../models/results/results.interface';
 import { ProtocolStack } from '../models/protocol/protocol-stack';
+import { TranslateModule } from '@ngx-translate/core';
 
 describe('ExamService', () => {
   let examService: ExamService;
@@ -77,7 +78,8 @@ describe('ExamService', () => {
         advanced: false,
         devices: false,
         tympans: false,
-        dosimeter: false,
+        wahts: false,
+        duodose: false,
         softwareHardware: false,
         appLog: false,
         protocols: false,
@@ -114,7 +116,8 @@ describe('ExamService', () => {
         advanced: false,
         devices: false,
         tympans: false,
-        dosimeter: false,
+        wahts: false,
+        duodose: false,
         softwareHardware: false,
         appLog: false,
         protocols: false,
@@ -253,6 +256,7 @@ describe('ExamService', () => {
     mockLogger = jasmine.createSpyObj('Logger', ['debug']);
 
     TestBed.configureTestingModule({
+      imports: [TranslateModule.forRoot()],
       providers: [
         ExamService,
         { provide: ResultsService, useValue: mockResultsService },
