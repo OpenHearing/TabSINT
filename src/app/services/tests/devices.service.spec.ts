@@ -81,7 +81,7 @@ describe('deviceService', () => {
     const tympanManager = devicesService.managerRegistry[DeviceType.Tympan];
     tympanManager.addDevice(new TympanDevice(savedDevice.deviceId, savedDevice.name, savedDevice.tabsintId));
     const deviceList = await devicesService.getDeviceOrDefault(savedDevice.tabsintId, [DeviceType.Tympan]);
-    const device = await devicesService.handleDevices(deviceList);
+    const device = await devicesService.confirmSingleDevice(deviceList);
     expect(device?.deviceId).toEqual(savedDevice.deviceId);
   });
 

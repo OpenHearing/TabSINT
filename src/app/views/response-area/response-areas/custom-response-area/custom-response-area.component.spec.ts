@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CustomResponseAreaComponent } from './custom-response-area.component';
 import { ResultsService } from '../../../../controllers/results.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 describe('CustomResponseAreaComponent', () => {
   let component: CustomResponseAreaComponent;
@@ -12,6 +13,7 @@ describe('CustomResponseAreaComponent', () => {
     mockResultsService = jasmine.createSpyObj('ResultsService', ['_dummyMethod']);
 
     await TestBed.configureTestingModule({
+      imports: [TranslateModule.forRoot()],
       declarations: [CustomResponseAreaComponent],
       providers: [{ provide: ResultsService, useValue: mockResultsService }],
     }).compileComponents();
