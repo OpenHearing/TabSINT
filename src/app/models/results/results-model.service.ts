@@ -4,6 +4,7 @@ import { pageInterfaceDefaults, protocolDefaults } from '../../utilities/default
 import { VersionModel } from '../version/version.service';
 import { BehaviorSubject } from 'rxjs';
 import { Logger } from '../../services/logger.service';
+import { DosimeterResultsInterface } from '../../interfaces/dosimeter-results.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -51,12 +52,17 @@ export class ResultsModel {
     this.resultsSubject.next(this.resultsModel);
   }
 
-  pushResponse(response: any): void {
+  pushResponse(response: unknown): void {
     this.resultsModel.currentExam.responses.push(response);
     this.resultsSubject.next(this.resultsModel);
   }
 
-  updateCurrentPageResponseElement(index: number, value: any): void {
+  pushDosimeterData(data: DosimeterResultsInterface): void {
+    this.resultsModel.currentPage.dosimetry!.push(data);
+    this.resultsSubject.next(this.resultsModel);
+  }
+
+  updateCurrentPageResponseElement(index: number, value: unknown): void {
     if (Array.isArray(this.resultsModel.currentPage.response)) {
       const updatedResponse = [...this.resultsModel.currentPage.response];
       updatedResponse[index] = value;

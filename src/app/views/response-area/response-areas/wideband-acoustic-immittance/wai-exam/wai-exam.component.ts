@@ -176,7 +176,8 @@ export class WAIExamComponent implements OnInit, OnDestroy {
   }
 
   private async beginExam() {
-    this.device = await this.devicesService.getDeviceOrDefault(this.tabsintId, this.allowableDevices);
+    const deviceList = await this.devicesService.getDeviceOrDefault(this.tabsintId, this.allowableDevices);
+    this.device = await this.devicesService.confirmSingleDevice(deviceList);
     if (this.device) {
       const examProperties: any = {
         FStart: this.fStart,

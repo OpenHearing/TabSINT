@@ -218,10 +218,20 @@ export class DevicesService {
    * @param defaultTypes The types to find a default from.
    * @returns A promise resolving to the found device or first available device. If no devices available returns undefined.
    */
-  async getDeviceOrDefault(tabsintId: string | undefined, defaultTypes: DeviceType[]): Promise<IDevice | undefined> {
+  async getDeviceOrDefault(tabsintId: string | undefined, defaultTypes: DeviceType[]): Promise<IDevice[]> {
     const devices = await firstValueFrom(this.devices);
-    const device = devices.find(device => device.tabsintId == tabsintId) ?? devices.find(device => defaultTypes.includes(device.type));
-    return structuredClone(device);
+    const availableDevices: IDevice[] = [];
+    if (tabsintId !== undefined) {
+      const device = devices.find(device => device.tabsintId == tabsintId);
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      device !== undefined && availableDevices.push(structuredClone(device));
+    } else {
+      const foundDevices = devices.filter(device => defaultTypes.includes(device.type));
+      foundDevices.forEach(dev => {
+        availableDevices.push(structuredClone(dev));
+      });
+    }
+    return availableDevices;
   }
 
   /**
@@ -231,6 +241,37 @@ export class DevicesService {
     const resp = ['0', 'ERROR', 'Default device not found. Make sure a supported device is connected and try again.'];
     this.stateModel.updateState({ examState: ExamState.DeviceError });
     this.stateModel.updateState({ deviceError: resp });
+  }
+
+  /**
+   * Produce an error for when multiple devices are found.
+   */
+  async multipleDevicesFound() {
+    const resp = [
+      '0',
+      'ERROR',
+      'Multiple devices found. TabSINT is not sure which device exam should run on. \
+      Please see TabSINT.org for more information about using TabSINT with multiple devices.',
+    ];
+    this.stateModel.updateState({ examState: ExamState.DeviceError });
+    this.stateModel.updateState({ deviceError: resp });
+  }
+
+  /**
+   * Produce an error for when multiple devices are found (more than 1).
+   */
+  async confirmSingleDevice(deviceList: IDevice[]): Promise<IDevice | undefined> {
+    if (deviceList.length === 0) {
+      await this.deviceNotFound();
+      this.logger.error('Error setting up exam - no device found.');
+      return;
+    } else if (deviceList.length >= 2) {
+      await this.multipleDevicesFound();
+      this.logger.error('Error setting up exam - multiple devices found.');
+      return;
+    } else {
+      return deviceList[0];
+    }
   }
 
   /**

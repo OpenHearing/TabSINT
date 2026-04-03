@@ -120,6 +120,13 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
     followOns: { type: 'array', items: followOnSchema, nullable: true },
     setFlags: { type: 'array', items: setFlagSchema, nullable: true },
     progressBarVal: { type: ['string', 'number'], nullable: true },
+    dosimetry: {
+      type: 'object',
+      properties: {
+        tabsintId: { type: 'array', items: { type: 'string' }, default: [], nullable: true },
+      },
+      nullable: true,
+    },
   },
   required: ['id'],
   additionalProperties: true,
