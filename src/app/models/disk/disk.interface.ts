@@ -24,8 +24,6 @@ export interface DiskInterface {
   };
   contentURI: string | null;
   downloadInProgress: boolean;
-  extStorageRootDir?: string;
-  extStorageUuidDir?: string;
   interApp: {
     appName: string;
     dataIn: string;
