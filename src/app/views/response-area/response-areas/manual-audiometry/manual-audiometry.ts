@@ -360,10 +360,10 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
   }
 
   private async setupDevice(updatedAudiometryResponseArea: ManualAudiometryInterface) {
-    this.device = await this.devicesService.getDeviceOrDefault(updatedAudiometryResponseArea.tabsintId, this.allowableDevices);
+    const deviceList = await this.devicesService.getDeviceOrDefault(updatedAudiometryResponseArea.tabsintId, this.allowableDevices);
+    this.device = await this.devicesService.confirmSingleDevice(deviceList);
     if (!this.device) {
-      await this.devicesService.deviceNotFound();
-      this.logger.error('Error setting up Manual Audiometry exam');
+      return;
     } else if (this.devicesService.isDeviceMessagePending(this.device, false)) {
       await this.devicesService.deviceMessagePendingError();
       this.logger.error('Error setting up Manual Audiometry exam: Device message pending');

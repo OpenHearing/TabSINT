@@ -297,7 +297,8 @@ export class MemrExamComponent implements OnInit, OnDestroy {
    * @param updatedResponseArea The response area used to determine the device id.
    */
   private async setupDevice(updatedResponseArea: MemrExamInterface): Promise<void> {
-    this.device = await this.devicesService.getDeviceOrDefault(updatedResponseArea.tabsintId, this.allowableDevices);
+    const deviceList = await this.devicesService.getDeviceOrDefault(updatedResponseArea.tabsintId, this.allowableDevices);
+    this.device = await this.devicesService.confirmSingleDevice(deviceList);
   }
 
   /**
