@@ -14,6 +14,9 @@ import { PageInterface } from '../../../../models/page/page.interface';
 import { PageModel } from '../../../../models/page/page.service';
 import { ExamService } from '../../../../controllers/exam.service';
 import { Logger } from '../../../../services/logger.service';
+import { multipleChoiceSchema } from '../../../../../schema/response-areas/multiple-choice.schema';
+import { choiceBtnClassHelper } from '../../../../utilities/response-area-helper-functions';
+import { choiceSchema } from '../../../../../schema/definitions/choice.schema';
 
 @Component({
   selector: 'app-multiple-choice-view',
@@ -42,12 +45,17 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
     this.state = this.stateModel.getState();
   }
 
-  choices: ChoiceInterface[] | undefined;
-  choice: ChoiceInterface | undefined;
-  enableOther = false;
-  buttonDisabled = true;
-  gradeResponse = false;
-  showCorrect = true;
+  verticalSpacing: number = multipleChoiceSchema.properties.verticalSpacing.default;
+  feedback: string = multipleChoiceSchema.properties.feedback.default;
+  delayEnable: number = multipleChoiceSchema.properties.delayEnable.default;
+  other: string = multipleChoiceSchema.properties.other.default;
+
+  choices: ChoiceInterface[] = [];
+  otherSelected: boolean = false;
+  submitted: boolean = false;
+  disableButtons: boolean = true;
+  enableOther: boolean = false;
+  paddingBottom: string = '1px';
   yesNo = [
     {
       id: 'yes',
@@ -70,18 +78,54 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
       if (updatedPage?.responseArea?.type == 'multipleChoiceResponseArea') {
         const updatedMultipleChoiceResponseArea = updatedPage.responseArea as MultipleChoiceInterface;
         if (updatedMultipleChoiceResponseArea) {
-          this.choices = _.cloneDeep(updatedMultipleChoiceResponseArea.choices || this.yesNo);
-          this.choices = this.choices ?? [];
+          const rawchoices: ChoiceInterface[] = _.cloneDeep(updatedMultipleChoiceResponseArea.choices || this.yesNo);
+          this.choices = [];
+          rawchoices.forEach(choice => {
+            choice.text = choice.text ?? choice.id;
+            choice.correct = choice.correct ?? choiceSchema.properties.correct.default;
+            choice.disable = choice.disable ?? choiceSchema.properties.disable.default;
+            choice.textColor = choice.textColor ?? choiceSchema.properties.textColor.default;
+            choice.backgroundColor = choice.backgroundColor ?? choiceSchema.properties.backgroundColor.default;
+            choice.fontSize = choice.fontSize ?? choiceSchema.properties.fontSize.default;
+            this.choices.push(choice);
+          });
+
+          this.feedback = updatedMultipleChoiceResponseArea.feedback ?? multipleChoiceSchema.properties.feedback.default;
+          this.verticalSpacing = updatedMultipleChoiceResponseArea.verticalSpacing ?? multipleChoiceSchema.properties.verticalSpacing.default;
+          this.delayEnable = updatedMultipleChoiceResponseArea.delayEnable ?? multipleChoiceSchema.properties.delayEnable.default;
+          this.other = updatedMultipleChoiceResponseArea.other ?? multipleChoiceSchema.properties.other.default;
+
+          this.paddingBottom = this.verticalSpacing.toString() + 'px';
+
           if (updatedMultipleChoiceResponseArea.other) {
             this.enableOther = true;
+            this.otherSelected = false;
             this.choices.push({
               id: 'Other',
               text: updatedMultipleChoiceResponseArea.other,
             });
           }
-          if (updatedMultipleChoiceResponseArea.feedback) {
-            this.logger.warning('feedback not yet supported for multiple-choice response area.');
-          }
+
+          this.disableButtons = true;
+          setTimeout(() => {
+            this.disableButtons = false;
+          }, this.delayEnable);
+
+          // delay 100ms to allow results and exam defaults to be set before we override them
+          setTimeout(() => {
+            (this.results.currentPage.page.responseArea as MultipleChoiceInterface).choices = this.choices;
+            // Allow for 1250ms delay if feedback is present
+            if (this.feedback) {
+              this.examService.submit = () => {
+                this.submitted = true;
+                setTimeout(() => {
+                  this.examService.submit = this.examService.submitDefault;
+                  this.examService.submit();
+                  this.submitted = false;
+                }, 1250);
+              };
+            }
+          }, 100);
         }
       }
     });
@@ -94,12 +138,39 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
   }
 
   choose(id: string) {
-    this.resultsModel.updateCurrentPage({ response: id });
+    this.results.currentPage.response = id;
     this.stateModel.updateState({ doesResponseExist: true });
     this.stateModel.setPageSubmittable();
     if (this.state.isSubmittable && this.results.currentPage.response !== 'Other') {
-      this.examService.submit = this.examService.submitDefault;
       this.examService.submit();
     }
+  }
+
+  toggleOther() {
+    this.otherSelected = !this.otherSelected;
+    // Clear the other field if it was toggled off
+    if (!this.otherSelected) {
+      this.results.currentPage.response.other = '';
+    }
+  }
+
+  onResponseChange() {
+    this.stateModel.updateState({ doesResponseExist: this.results.currentPage.response.other !== '' });
+    this.resultsModel.updateCurrentPage({ response: this.results.currentPage.response.other });
+  }
+
+  onEnter() {
+    this.examService.submit();
+  }
+
+  multipleChoiceBtnClass(choice: ChoiceInterface) {
+    const options = {
+      feedback: this.submitted ? this.feedback : undefined,
+      disableButton: this.disableButtons,
+    };
+    const response = {
+      selected: this.results.currentPage.response,
+    };
+    return choiceBtnClassHelper(choice, response, options);
   }
 }

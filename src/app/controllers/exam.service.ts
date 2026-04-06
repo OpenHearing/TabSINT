@@ -611,8 +611,8 @@ export class ExamService {
    * Stop polling results for all dosimeters.
    */
   stopDosimetry() {
-    this.logger.debug('Stopping Dosimetry');
     Object.keys(this.dosimeterResultsPoll).forEach(key => {
+      this.logger.debug('Stopping dosimetry for: ' + key);
       clearInterval(this.dosimeterResultsPoll[key]);
       delete this.dosimeterResultsPoll[key];
     });
