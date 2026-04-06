@@ -73,6 +73,7 @@
     "tabsintcha": "file:tabsintcha",
     "tabsintfs": "file:tabsintfs",
     "tslib": "^2.3.0",
+    "webpack-subresource-integrity": "^5.1.0",
     "xlsx": "^0.18.5",
     "zone.js": "~0.14.3"
   },

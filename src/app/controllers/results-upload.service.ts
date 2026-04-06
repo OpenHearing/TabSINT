@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { CapacitorHttp, HttpOptions } from '@capacitor/core';
 import { DiskModel } from '../models/disk/disk.service';
 import { Logger } from '../services/logger.service';
@@ -15,12 +15,13 @@ import { EncryptResultsService } from '../utilities/encrypt-results.service';
 export class ResultsUploadService {
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
-  constructor(
-    private readonly diskModel: DiskModel,
-    private readonly encryptResults: EncryptResultsService,
-    private readonly logger: Logger
-  ) {
-    this.disk = diskModel.getDisk();
+
+  private readonly diskModel = inject(DiskModel);
+  private readonly encryptResults = inject(EncryptResultsService);
+  private readonly logger = inject(Logger);
+
+  constructor() {
+    this.disk = this.diskModel.getDisk();
     this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
     });
@@ -145,10 +146,37 @@ export class ResultsUploadService {
           publicKey,
           JSON.stringify(singleExamResult)
         );
-        await this.uploadFileToGitlab(gitlabToken, gitlabHost, resultsRepoId, resultsRepoDefaultBranch, folderName, `${fileUuid}-${timeStamp}.json.enc`, encryptedResult, singleExamResult);
-        await this.uploadFileToGitlab(gitlabToken, gitlabHost, resultsRepoId, resultsRepoDefaultBranch, folderName, `${fileUuid}-${timeStamp}.json.key.enc`, encryptedAESKey, singleExamResult);
+        await this.uploadFileToGitlab(
+          gitlabToken,
+          gitlabHost,
+          resultsRepoId,
+          resultsRepoDefaultBranch,
+          folderName,
+          `${fileUuid}-${timeStamp}.json.enc`,
+          encryptedResult,
+          singleExamResult
+        );
+        await this.uploadFileToGitlab(
+          gitlabToken,
+          gitlabHost,
+          resultsRepoId,
+          resultsRepoDefaultBranch,
+          folderName,
+          `${fileUuid}-${timeStamp}.json.key.enc`,
+          encryptedAESKey,
+          singleExamResult
+        );
       } else {
-        await this.uploadFileToGitlab(gitlabToken, gitlabHost, resultsRepoId, resultsRepoDefaultBranch, folderName, `${fileUuid}-${timeStamp}.json`, JSON.stringify(singleExamResult, null, 2), singleExamResult);
+        await this.uploadFileToGitlab(
+          gitlabToken,
+          gitlabHost,
+          resultsRepoId,
+          resultsRepoDefaultBranch,
+          folderName,
+          `${fileUuid}-${timeStamp}.json`,
+          JSON.stringify(singleExamResult, null, 2),
+          singleExamResult
+        );
       }
 
       const uploadSummaryEntry = {
@@ -168,6 +196,7 @@ export class ResultsUploadService {
       this.logger.debug(`Successfully uploaded exam result to '${folderName}'.`);
 
       return { success: true, message: `Successfully uploaded result to GitLab at ${gitlabGroup}/results` };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       this.logger.error('Upload failed: ' + error);
       return { success: false, message: error.message };
