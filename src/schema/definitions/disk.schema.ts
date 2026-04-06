@@ -45,8 +45,6 @@ export const diskSchema: JSONSchemaType<DiskInterface> = {
     },
     contentURI: { type: 'string', default: null },
     downloadInProgress: { type: 'boolean', default: false },
-    extStorageRootDir: nullable({ type: 'string' }),
-    extStorageUuidDir: nullable({ type: 'string' }),
     interApp: {
       type: 'object',
       properties: {

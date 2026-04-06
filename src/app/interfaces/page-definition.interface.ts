@@ -36,7 +36,6 @@ export interface PageDefinition {
   helpText?: string;
   repeatPage?: RepeatPageInterface;
   preProcessFunction?: PreProcessFunctionInterface;
-  wavfileStartDelayTime?: number;
   wavfiles?: PageWavfileInterface[];
   chaWavFiles?: ChaWavfileInterface[];
   chaStream?: boolean;

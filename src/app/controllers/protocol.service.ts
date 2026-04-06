@@ -272,12 +272,6 @@ export class ProtocolService {
       [this.protocolModel.activeProtocol, this.protocolModel.activeProtocolDictionary, this.protocolModel.activeProtocolFollowOnsDictionary] =
         await processProtocol(this.loading);
 
-      if (this.protocolModel.activeProtocol && 'key' in this.protocolModel.activeProtocol) {
-        if (this.protocolModel.activeProtocol.key !== undefined) {
-          this.protocolModel.activeProtocol.publicKey = decodeURI(this.protocolModel.activeProtocol.key);
-        }
-      }
-
       // TODO: Implement this variable for tympan? Or remove it? We should implement for CHA and Tympan!
       if (this.loading.protocol._requiresCha) {
         this.logger.debug('This exam requires the CHA, attempting to connect...');
