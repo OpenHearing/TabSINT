@@ -19,6 +19,7 @@ export const protocolMetaSchema: JSONSchemaType<ProtocolMetaInterface> = {
       ...gitlabConfigSchema,
       nullable: true,
     },
+    publicKey: { type: 'string', nullable: true },
   },
   required: ['name', 'date', 'version', 'server', 'admin'],
 };
