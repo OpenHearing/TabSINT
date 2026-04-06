@@ -121,10 +121,6 @@ classdef TabsintResults < handle
                 return;
             end
 
-            % Ensure files transferred from Android (often read-only) are readable
-            fileattrib('*.json.enc',     '+w');
-            fileattrib('*.json.key.enc', '+w');
-
             for i = 1:length(encFiles)
                 encFilename    = encFiles(i).name;
                 % *.json.enc  ->  *.json
