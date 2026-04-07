@@ -1,50 +1,17 @@
 <!-- Top Space -->
 <br />
 
-<!-- Default Headset -->
+<!-- Admin Mode -->
 <div class="row pad-top">
-  <div class="col-6">
-    <label translate for="defaultHeadset">{{ "Default Headset:" | transloco }}</label>
+  <div class="col-6"><label for="adminMode">{{ "Admin Mode:" | transloco }}</label></div>
+  <div class="col-2"><input id="adminMode" type="checkbox" [ngModel]="disk.preferences.debugMode" (change)="toggleDebugMode()" /></div>
+  <div class="col-2"></div>
+  <div class="col-1" title="{{ 'Admin Mode Help' | transloco }}">
+    <i [matMenuTriggerFor]="adminHelpMenu" class="ion-help-circled"></i>
   </div>
-  <div ngbDropdown class="col-4 dropdown-width" display="dynamic">
-    <button type="button" class="btn btn-default btn-block dropdown-toggle" id="defaultHeadset" ngbDropdownToggle>
-      {{ disk.preferences.headset }}
-    </button>
-    <div ngbDropdownMenu aria-labelledby="defaultHeadset">
-      <button *ngFor="let headset of headsets" ngbDropdownItem (click)="changeHeadset(headset)">{{ headset }}</button>
-    </div>
-  </div>
-  <div class="col-1" href="javascript:" title="{{ 'Default Headset Help' | transloco }}">
-    <i [matMenuTriggerFor]="headsetMenu" class="ion-help-circled"></i>
-  </div>
-  <mat-menu #headsetMenu="matMenu">
+  <mat-menu #adminHelpMenu="matMenu">
     <button mat-menu-item>
-      <div [innerHTML]="headsetPopover"></div>
-    </button>
-  </mat-menu>
-</div>
-
-<!-- Select Language -->
-<div class="row pad-top">
-  <div class="col-5">
-    <label for="selectLanguage">{{ "Select Language:" | transloco }}</label>
-  </div>
-  <div ngbDropdown class="col-5 dropdown-width" display="dynamic">
-    <button type="button" class="btn btn-default btn-block dropdown-toggle" id="selectLanguage" ngbDropdownToggle>
-      {{ currentLanguageLabel | transloco }}
-    </button>
-    <div ngbDropdownMenu aria-labelledby="selectLanguage">
-      <button *ngFor="let lang of languages" ngbDropdownItem (click)="changeLanguage(lang.code)">
-        {{ lang.label | transloco }}
-      </button>
-    </div>
-  </div>
-  <div class="col-1" title="{{ 'Select Language Help' | transloco }}">
-    <i [matMenuTriggerFor]="languageMenu" class="ion-help-circled"></i>
-  </div>
-  <mat-menu #languageMenu="matMenu">
-    <button mat-menu-item>
-      <div [innerHTML]="languagePopover"></div>
+      <div [innerHTML]="adminPopover"></div>
     </button>
   </mat-menu>
 </div>
@@ -73,17 +40,50 @@
     </div>
   </div>
 
-  <!-- Admin Mode -->
+  <!-- Default Headset -->
   <div class="row pad-top">
-    <div class="col-6"><label for="adminMode">{{ "Admin Mode:" | transloco }}</label></div>
-    <div class="col-2"><input id="adminMode" type="checkbox" [ngModel]="disk.preferences.debugMode" (change)="toggleDebugMode()" /></div>
-    <div class="col-2"></div>
-    <div class="col-1" title="{{ 'Admin Mode Help' | transloco }}">
-      <i [matMenuTriggerFor]="adminHelpMenu" class="ion-help-circled"></i>
+    <div class="col-6">
+      <label translate for="defaultHeadset">{{ "Default Headset:" | transloco }}</label>
     </div>
-    <mat-menu #adminHelpMenu="matMenu">
+    <div ngbDropdown class="col-4 dropdown-width" display="dynamic">
+      <button type="button" class="btn btn-default btn-block dropdown-toggle" id="defaultHeadset" ngbDropdownToggle>
+        {{ disk.preferences.headset }}
+      </button>
+      <div ngbDropdownMenu aria-labelledby="defaultHeadset">
+        <button *ngFor="let headset of headsets" ngbDropdownItem (click)="changeHeadset(headset)">{{ headset }}</button>
+      </div>
+    </div>
+    <div class="col-1" href="javascript:" title="{{ 'Default Headset Help' | transloco }}">
+      <i [matMenuTriggerFor]="headsetMenu" class="ion-help-circled"></i>
+    </div>
+    <mat-menu #headsetMenu="matMenu">
       <button mat-menu-item>
-        <div [innerHTML]="adminPopover"></div>
+        <div [innerHTML]="headsetPopover"></div>
+      </button>
+    </mat-menu>
+  </div>
+
+  <!-- Select Language -->
+  <div class="row pad-top">
+    <div class="col-5">
+      <label for="selectLanguage">{{ "Select Language:" | transloco }}</label>
+    </div>
+    <div ngbDropdown class="col-5 dropdown-width" display="dynamic">
+      <button type="button" class="btn btn-default btn-block dropdown-toggle" id="selectLanguage" ngbDropdownToggle>
+        {{ currentLanguageLabel | transloco }}
+      </button>
+      <div ngbDropdownMenu aria-labelledby="selectLanguage">
+        <button *ngFor="let lang of languages" ngbDropdownItem (click)="changeLanguage(lang.code)">
+          {{ lang.label | transloco }}
+        </button>
+      </div>
+    </div>
+    <div class="col-1" title="{{ 'Select Language Help' | transloco }}">
+      <i [matMenuTriggerFor]="languageMenu" class="ion-help-circled"></i>
+    </div>
+    <mat-menu #languageMenu="matMenu">
+      <button mat-menu-item>
+        <div [innerHTML]="languagePopover"></div>
       </button>
     </mat-menu>
   </div>
