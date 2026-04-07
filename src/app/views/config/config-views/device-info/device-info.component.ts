@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, inject } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 
@@ -16,11 +16,18 @@ import { DevicesService } from '../../../../services/devices/devices.service';
 import { Notifications } from '../../../../services/notifications.service';
 
 @Component({
-  selector: 'device-info-view',
+  selector: 'app-device-info-view',
   templateUrl: './device-info.component.html',
   styleUrl: './device-info.component.css',
 })
 export class DeviceInfoComponent implements OnInit, OnDestroy, OnChanges {
+  private readonly diskModel = inject(DiskModel);
+  private readonly stateModel = inject(StateModel);
+  private readonly transloco = inject(TranslocoService);
+  private readonly dialog = inject(MatDialog);
+  private readonly devicesService = inject(DevicesService);
+  private readonly notifications = inject(Notifications);
+
   @Input() device!: IDevice;
   DeviceState = DeviceState;
   disk: DiskInterface;
@@ -31,14 +38,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy, OnChanges {
   stateSubscription: Subscription | undefined;
   devicesSubscription: Subscription | undefined;
 
-  constructor(
-    private readonly diskModel: DiskModel,
-    private readonly stateModel: StateModel,
-    private readonly transloco: TranslocoService,
-    private readonly dialog: MatDialog,
-    private readonly devicesService: DevicesService,
-    private readonly notifications: Notifications
-  ) {
+  constructor() {
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();
   }
@@ -89,8 +89,12 @@ export class DeviceInfoComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  get setShutdownTimerPopover() { return this.transloco.translate('Auto shutdown time (in minutes) for the WAHTS headset.'); }
-  get setTabsintIdPopover() { return this.transloco.translate('Set the unique TabSINT ID for the device.'); }
+  get setShutdownTimerPopover() {
+    return this.transloco.translate('Auto shutdown time (in minutes) for the WAHTS headset.');
+  }
+  get setTabsintIdPopover() {
+    return this.transloco.translate('Set the unique TabSINT ID for the device.');
+  }
   get firmwarePopover() {
     return this.transloco.translate(
       'The firmware currently running on the device. If the firmware is listed in red, the firmware on the device is not supported by this version of TabSINT and should be updated.'

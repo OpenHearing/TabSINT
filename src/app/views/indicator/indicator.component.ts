@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { map, Observable, Subscription } from 'rxjs';
 import { TranslocoService } from '@jsverse/transloco';
 
@@ -12,11 +12,16 @@ import { DeviceState, DeviceType, SvantekState } from '../../utilities/constants
 import { DevicesService } from '../../services/devices/devices.service';
 
 @Component({
-  selector: 'indicator-view',
+  selector: 'app-indicator-view',
   templateUrl: './indicator.component.html',
   styleUrl: './indicator.component.css',
 })
 export class IndicatorComponent implements OnInit, OnDestroy {
+  private readonly devicesService = inject(DevicesService);
+  private readonly diskModel = inject(DiskModel);
+  private readonly stateModel = inject(StateModel);
+  private readonly transloco = inject(TranslocoService);
+
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
@@ -27,12 +32,7 @@ export class IndicatorComponent implements OnInit, OnDestroy {
   hasConnectedWahts: Observable<boolean>;
   hasConnectedDuodose: Observable<boolean>;
 
-  constructor(
-    private readonly devicesService: DevicesService,
-    private readonly diskModel: DiskModel,
-    private readonly stateModel: StateModel,
-    private readonly transloco: TranslocoService
-  ) {
+  constructor() {
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();
     this.hasConnectedTympan = this.devicesService.devices.pipe(
@@ -60,12 +60,28 @@ export class IndicatorComponent implements OnInit, OnDestroy {
     this.stateSubscription?.unsubscribe();
   }
 
-  get WiFiNotConnectedPopover() { return this.transloco.translate('WiFi Not Connected'); }
-  get WiFiConnectedPopover() { return this.transloco.translate('WiFi Connected'); }
-  get BluetoothConnectedPopover() { return this.transloco.translate('Bluetooth Connected'); }
-  get TympanConnectedPopover() { return this.transloco.translate('Tympan Connected'); }
-  get WahtsConnectedPopover() { return this.transloco.translate('WAHTS Connected'); }
-  get DuodoseConnectedPopover() { return this.transloco.translate('DuoDose Connected'); }
-  get DosimeterConnectedPopover() { return this.transloco.translate('Dosimeter Connected'); }
-  get StreamingConnectionPopover() { return this.transloco.translate('Streaming Connection Established'); }
+  get WiFiNotConnectedPopover() {
+    return this.transloco.translate('WiFi Not Connected');
+  }
+  get WiFiConnectedPopover() {
+    return this.transloco.translate('WiFi Connected');
+  }
+  get BluetoothConnectedPopover() {
+    return this.transloco.translate('Bluetooth Connected');
+  }
+  get TympanConnectedPopover() {
+    return this.transloco.translate('Tympan Connected');
+  }
+  get WahtsConnectedPopover() {
+    return this.transloco.translate('WAHTS Connected');
+  }
+  get DuodoseConnectedPopover() {
+    return this.transloco.translate('DuoDose Connected');
+  }
+  get DosimeterConnectedPopover() {
+    return this.transloco.translate('Dosimeter Connected');
+  }
+  get StreamingConnectionPopover() {
+    return this.transloco.translate('Streaming Connection Established');
+  }
 }

@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output, inject } from '@angular/core';
 import * as d3 from 'd3';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
@@ -13,11 +13,16 @@ import { IDevice } from '../../../../../interfaces/devices/device.interface';
 import { IDeviceResponse } from '../../../../../interfaces/devices/device-response.interface';
 
 @Component({
-  selector: 'swept-dpoae-in-progress',
+  selector: 'app-swept-dpoae-in-progress',
   templateUrl: './swept-dpoae-in-progress.component.html',
   styleUrl: './swept-dpoae-in-progress.component.css',
 })
 export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterViewInit {
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
+  private readonly devicesService = inject(DevicesService);
+  private readonly logger = inject(Logger);
+  private readonly stateModel = inject(StateModel);
+
   @Input() device: IDevice | undefined;
   @Input() f2Start: number = sweptDpoaeSchema.properties.f2Start.default;
   @Input() f2End: number = sweptDpoaeSchema.properties.f2End.default;
@@ -43,12 +48,7 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
 
   stateSubscription: Subscription | undefined;
 
-  constructor(
-    private readonly changeDetectorRef: ChangeDetectorRef,
-    private readonly devicesService: DevicesService,
-    private readonly logger: Logger,
-    private readonly stateModel: StateModel
-  ) {
+  constructor() {
     this.state = this.stateModel.getState();
     this.stateModel.updateState({ isSubmittable: false });
   }
@@ -184,7 +184,7 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
   }
 
   private filterData(dpLowData: DPOAEDataInterface, f2Data: DPOAEDataInterface) {
-    let filteredData: { [key: string]: number[] } = {
+    const filteredData: Record<string, number[]> = {
       Frequency: [],
       F2Frequency: [],
       Amplitude: [],

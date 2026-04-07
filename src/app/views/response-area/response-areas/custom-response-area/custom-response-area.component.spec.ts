@@ -13,7 +13,9 @@ describe('CustomResponseAreaComponent', () => {
     mockResultsService = jasmine.createSpyObj('ResultsService', ['_dummyMethod']);
 
     await TestBed.configureTestingModule({
-      imports: [TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true })],
+      imports: [
+        TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
+      ],
       declarations: [CustomResponseAreaComponent],
       providers: [{ provide: ResultsService, useValue: mockResultsService }],
     }).compileComponents();

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output, inject } from '@angular/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
 import { DevicesService } from '../../../../../services/devices/devices.service';
@@ -10,11 +10,16 @@ import { IDevice } from '../../../../../interfaces/devices/device.interface';
 import { IDeviceResponse } from '../../../../../interfaces/devices/device-response.interface';
 
 @Component({
-  selector: 'wai-in-progress',
+  selector: 'app-wai-in-progress',
   templateUrl: './wai-in-progress.component.html',
   styleUrl: './wai-in-progress.component.css',
 })
 export class WAIInProgressComponent implements OnInit, OnDestroy {
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
+  private readonly devicesService = inject(DevicesService);
+  private readonly logger = inject(Logger);
+  private readonly stateModel = inject(StateModel);
+
   @Input() device: IDevice | undefined;
   @Input() parameterMap!: Map<string, string>;
   @Output() WAIResultsEvent = new EventEmitter<WAIResultsInterface>();
@@ -32,12 +37,7 @@ export class WAIInProgressComponent implements OnInit, OnDestroy {
   inProgressResultsSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
 
-  constructor(
-    private readonly changeDetectorRef: ChangeDetectorRef,
-    private readonly devicesService: DevicesService,
-    private readonly logger: Logger,
-    private readonly stateModel: StateModel
-  ) {
+  constructor() {
     this.state = this.stateModel.getState();
     this.stateModel.updateState({ isSubmittable: false });
   }

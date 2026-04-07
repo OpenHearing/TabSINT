@@ -1,11 +1,11 @@
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable, NgZone, OnDestroy, inject } from '@angular/core';
 import { Network, ConnectionStatusChangeListener, ConnectionStatus } from '@capacitor/network';
 
 @Injectable({
   providedIn: 'root',
 })
-export class NetworkService {
-  constructor(private readonly ngZone: NgZone) {}
+export class NetworkService implements OnDestroy {
+  private readonly ngZone = inject(NgZone);
 
   /** Clean up the network listeners. */
   ngOnDestroy(): void {

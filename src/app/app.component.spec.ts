@@ -12,7 +12,6 @@ describe('AppComponent', () => {
         RouterOutlet,
         TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
       ],
-      
     }).compileComponents();
   });
 

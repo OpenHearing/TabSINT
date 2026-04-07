@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 import _ from 'lodash';
@@ -22,11 +22,22 @@ import { partialMetaDefaults } from '../../utilities/defaults';
 import { CapacitorHttp } from '@capacitor/core';
 
 @Component({
-  selector: 'protocols-view',
+  selector: 'app-protocols-view',
   templateUrl: './protocols.component.html',
   styleUrl: './protocols.component.css',
 })
 export class ProtocolsComponent implements OnInit, OnDestroy {
+  private readonly diskModel = inject(DiskModel);
+  private readonly examService = inject(ExamService);
+  private readonly protocolM = inject(ProtocolModel);
+  private readonly protocolService = inject(ProtocolService);
+  private readonly fileService = inject(FileService);
+  private readonly logger = inject(Logger);
+  private readonly notifications = inject(Notifications);
+  private readonly stateModel = inject(StateModel);
+  private readonly tasks = inject(Tasks);
+  private readonly transloco = inject(TranslocoService);
+
   selected?: ProtocolMetaInterface;
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
@@ -36,18 +47,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
   selectedSource = 'device';
   gitlabConfig: GitlabConfigInterface;
 
-  constructor(
-    private readonly diskModel: DiskModel,
-    private readonly examService: ExamService,
-    private readonly protocolM: ProtocolModel,
-    private readonly protocolService: ProtocolService,
-    private readonly fileService: FileService,
-    private readonly logger: Logger,
-    private readonly notifications: Notifications,
-    private readonly stateModel: StateModel,
-    private readonly tasks: Tasks,
-    private readonly transloco: TranslocoService
-  ) {
+  constructor() {
     this.disk = this.diskModel.getDisk();
     this.protocolModel = this.protocolM.getProtocolModel();
     this.state = this.stateModel.getState();
@@ -120,8 +120,8 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
       if (!result) {
         this.logger.error('There was an error in choosing the folder');
       }
-      let protocolsFolderUri = result?.uri;
-      let protocolName = result?.name;
+      const protocolsFolderUri = result?.uri;
+      const protocolName = result?.name;
       const resultFromListFiles = await this.fileService.listDirectory(protocolsFolderUri);
       if (!resultFromListFiles) {
         throw new Error('Unable to load protocol directory.');
@@ -230,8 +230,8 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
       this.gitlabConfig.repository = this.gitlabConfig.repository.slice(0, -1);
     }
     // move "/"s (directories) from repository to group
-    let tmpGroup = this.gitlabConfig.group + this.gitlabConfig.repository.split('/').slice(0, -1).join('/');
-    let tmpRepository = this.gitlabConfig.repository.split('/')[this.gitlabConfig.repository.split('/').length - 1];
+    const tmpGroup = this.gitlabConfig.group + this.gitlabConfig.repository.split('/').slice(0, -1).join('/');
+    const tmpRepository = this.gitlabConfig.repository.split('/')[this.gitlabConfig.repository.split('/').length - 1];
     this.gitlabConfig.repository = tmpRepository;
     this.gitlabConfig.group = tmpGroup;
   }
@@ -272,12 +272,12 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
     this.tasks.register('Load Protocol', 'Loading Protocol...');
 
     try {
-      let protocolMetaData = getProtocolMetaData(this.selected);
+      const protocolMetaData = getProtocolMetaData(this.selected);
 
       if (!this.protocolModel.activeProtocol) {
         await this.protocolService.load(protocolMetaData, true);
       } else {
-        let msg: DialogDataInterface = {
+        const msg: DialogDataInterface = {
           title: 'Confirm',
           content: `Switch to protocol ${this.selected.name} and reset the current test? The current test results will be deleted`,
           type: DialogType.Confirm,
@@ -594,7 +594,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
   }
 
   private handleGitlabError(error: any) {
-    let errorMessage = error.message || 'An error occurred while fetching the GitLab protocol.';
+    const errorMessage = error.message || 'An error occurred while fetching the GitLab protocol.';
 
     if (errorMessage.includes('Unauthorized')) {
       this.notifications.alert({

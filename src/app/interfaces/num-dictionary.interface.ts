@@ -1,3 +1,1 @@
-export interface NumDictionary {
-  [Key: string]: number;
-}
+export type NumDictionary = Record<string, number>;

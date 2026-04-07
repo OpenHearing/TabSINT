@@ -40,8 +40,8 @@ function areThereMissingCommonWavCal(missingCommonWavCalList: number): boolean {
   return missingCommonWavCalList > 0;
 }
 
-export function checkControllers(activeProtocol: ProtocolInterface): Array<ProtocolErrorInterface> {
-  let errors = [];
+export function checkControllers(activeProtocol: ProtocolInterface): ProtocolErrorInterface[] {
+  const errors = [];
   let msg;
 
   if (activeProtocol._missingControllerList!.length > 0) {

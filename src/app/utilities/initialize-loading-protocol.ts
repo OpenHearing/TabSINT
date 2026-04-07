@@ -14,7 +14,7 @@ export async function initializeLoadingProtocol(
   disk: DiskInterface,
   fileService: FileService
 ): Promise<LoadingProtocolInterface> {
-  let msg: string = '';
+  let msg = '';
 
   initializeVariables();
   checkPublicKeyError();
@@ -39,8 +39,8 @@ export async function initializeLoadingProtocol(
   function checkPublicKeyError() {
     if (disk.preferences.requireEncryptedResults && !loading.protocol.publicKey) {
       loading.protocol.errors!.push({
-        type: translate.instant('Public Key'),
-        error: translate.instant(
+        type: transloco.translate('Public Key'),
+        error: transloco.translate(
           'No public encryption key is defined in the protocol. ' +
             'Results will not be recorded from this protocol while the "Require Encryption" setting is enabled.'
         ),

@@ -20,7 +20,7 @@ function parseCSVAsync(csvString: string) {
   });
 }
 
-function validateHeaders(actualHeaders: string[], expectedPositions: { [key: string]: number }) {
+function validateHeaders(actualHeaders: string[], expectedPositions: Record<string, number>) {
   for (const [expectedHeader, expectedIndex] of Object.entries(expectedPositions)) {
     if (actualHeaders[expectedIndex] !== expectedHeader) {
       throw new Error(
@@ -57,7 +57,7 @@ async function parseCsvString(csvFileContent: string): Promise<any> {
 
   const trialsIndex = lines.findIndex(line => line[0].startsWith('{TRIALS')) + 1;
   const header = lines[trialsIndex];
-  const expectedHeaderPositions: { [key: string]: number } = {
+  const expectedHeaderPositions: Record<string, number> = {
     FILENAME: 1,
     'LEVEL DBSPL': 2,
     'USE META RMS': 3,
@@ -86,7 +86,7 @@ async function parseCsvString(csvFileContent: string): Promise<any> {
 }
 
 async function parseLeveldBSpl(line: any[]) {
-  let level: Array<number>;
+  let level: number[];
   try {
     level = typeof line[2] === 'number' ? [line[2]] : [parseInt(line[2].split(',')[0]), parseInt(line[2].split(',')[1])];
   } catch {

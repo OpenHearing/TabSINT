@@ -38,7 +38,6 @@ describe('ConfigComponent', () => {
         QRCodeModule,
         TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
       ],
-      
     }).compileComponents();
 
     fixture = TestBed.createComponent(ConfigComponent);

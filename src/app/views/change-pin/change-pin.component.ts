@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit, OnDestroy, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -9,24 +9,24 @@ import { DiskModel } from '../../models/disk/disk.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'change-pin-view',
+  selector: 'app-change-pin-view',
   standalone: true,
   templateUrl: './change-pin.component.html',
   styleUrl: './change-pin.component.css',
   imports: [CommonModule, FormsModule, TranslocoModule],
 })
-export class ChangePinComponent {
+export class ChangePinComponent implements OnInit, OnDestroy {
+  private readonly logger = inject(Logger);
+  private readonly dialog = inject(MatDialog);
+  private readonly diskModel = inject(DiskModel);
+
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
   pin: number | undefined;
   isValidationMode: boolean = false;
   @Output() pinValidated = new EventEmitter<boolean>();
 
-  constructor(
-    private readonly logger: Logger,
-    private readonly dialog: MatDialog,
-    private readonly diskModel: DiskModel
-  ) {
+  constructor() {
     this.disk = this.diskModel.getDisk();
   }
 

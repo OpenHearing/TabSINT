@@ -12,7 +12,7 @@ import { SweptDpoaeInterface } from '../views/response-area/response-areas/swept
  * @param actualHeaders The headers read from the file
  * @param expectedPositions The expected headers which align with data properties
  */
-function validateHeaders(actualHeaders: string[], expectedPositions: { [key: string]: number }) {
+function validateHeaders(actualHeaders: string[], expectedPositions: Record<string, number>) {
   for (const [expectedHeader, expectedIndex] of Object.entries(expectedPositions)) {
     if (actualHeaders[expectedIndex] !== expectedHeader) {
       throw new Error(
@@ -40,7 +40,7 @@ async function parseXlsxBuffer(xlsxFileContent: ArrayBuffer): Promise<NormativeD
   const lines: any[][] = XLSX.utils.sheet_to_json(workSheet, { header: 1 });
   const headerIndex = lines.findIndex(line => line[0].startsWith('X'));
   const header = lines[headerIndex];
-  const expectedHeaderPositions: { [key: string]: number } = {
+  const expectedHeaderPositions: Record<string, number> = {
     X: 0,
     Y_MIN: 1,
     Y_MAX: 2,

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { CapacitorSQLite, CapacitorSQLitePlugin, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 
@@ -26,12 +26,12 @@ export class SqLite {
   sqlitePlugin!: CapacitorSQLitePlugin;
   sqliteConnection!: SQLiteConnection;
 
+  private readonly appModel = inject(AppModel);
+  private readonly diskModel = inject(DiskModel);
+
   private db!: SQLiteDBConnection;
 
-  constructor(
-    private readonly appModel: AppModel,
-    private readonly diskModel: DiskModel
-  ) {
+  constructor() {
     this.sqlitePlugin = CapacitorSQLite;
     this.disk = this.diskModel.getDisk();
     this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
@@ -143,7 +143,7 @@ export class SqLite {
   }
 
   private async open() {
-    const database: string = 'storage';
+    const database = 'storage';
     this.db = await this.sqliteConnection.createConnection(database, false, 'no-encryption', 1, false);
     await this.db.open();
     await this.db.execute(createResultsTableSql);

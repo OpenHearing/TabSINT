@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ChangePinComponent } from '../views/change-pin/change-pin.component';
@@ -9,14 +9,15 @@ import { DiskInterface } from '../models/disk/disk.interface';
 @Injectable({
   providedIn: 'root',
 })
-export class AdminService {
+export class AdminService implements OnDestroy {
+  private readonly dialog = inject(MatDialog);
+  private readonly router = inject(Router);
+  private readonly diskModel = inject(DiskModel);
+
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
-  constructor(
-    private readonly dialog: MatDialog,
-    private readonly router: Router,
-    private readonly diskModel: DiskModel
-  ) {
+
+  constructor() {
     this.disk = this.diskModel.getDisk();
     this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;

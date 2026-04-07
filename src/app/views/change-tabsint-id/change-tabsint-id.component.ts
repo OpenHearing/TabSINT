@@ -1,7 +1,7 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Logger } from '../../services/logger.service';
 import { CommonModule } from '@angular/common';
 import { DevicesService } from '../../services/devices/devices.service';
@@ -12,20 +12,18 @@ import { IDevice } from '../../interfaces/devices/device.interface';
   selector: 'app-change-tabsint-id-view',
   standalone: true,
   templateUrl: './change-tabsint-id.component.html',
-  imports: [CommonModule, FormsModule, TranslocoModule],
+  imports: [CommonModule, FormsModule, TranslocoPipe],
 })
 export class ChangeTabsintIdComponent {
+  private readonly logger = inject(Logger);
+  private readonly dialog = inject(MatDialog);
+  private readonly devicesService = inject(DevicesService);
+  readonly device = inject<IDevice>(MAT_DIALOG_DATA);
+
   /**
    * TabSINT identifier to be changed by the user.
    */
   tabsintId: string | undefined;
-
-  constructor(
-    private readonly logger: Logger,
-    private readonly dialog: MatDialog,
-    private readonly devicesService: DevicesService,
-    @Inject(MAT_DIALOG_DATA) public device: IDevice
-  ) {}
 
   /**
    * Save a new TabSINT identifier for the input device.

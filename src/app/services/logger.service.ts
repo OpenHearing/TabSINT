@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { DiskInterface } from '../models/disk/disk.interface';
@@ -10,13 +10,13 @@ import { SqLite } from './sqLite.service';
   providedIn: 'root',
 })
 export class Logger {
+  private readonly diskModel = inject(DiskModel);
+  private readonly sqLite = inject(SqLite);
+
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
 
-  constructor(
-    private readonly diskModel: DiskModel,
-    private readonly sqLite: SqLite
-  ) {
+  constructor() {
     this.disk = this.diskModel.getDisk();
     this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
 import { Logger } from '../../services/logger.service';
@@ -6,19 +6,19 @@ import { ExamState } from '../../utilities/constants';
 import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
-  selector: 'exam-device-error-view',
+  selector: 'app-exam-device-error-view',
   templateUrl: './exam-device-error.component.html',
   styleUrl: '../../../styles.scss',
 })
 export class ExamDeviceErrorComponent implements OnInit, OnDestroy {
+  private readonly stateModel = inject(StateModel);
+  private readonly logger = inject(Logger);
+
   state: StateInterface;
-  deviceErrors: Array<any> = [];
+  deviceErrors: any[] = [];
   stateSubscription: Subscription | undefined;
 
-  constructor(
-    private readonly stateModel: StateModel,
-    private readonly logger: Logger
-  ) {
+  constructor() {
     this.state = this.stateModel.getState();
     this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;

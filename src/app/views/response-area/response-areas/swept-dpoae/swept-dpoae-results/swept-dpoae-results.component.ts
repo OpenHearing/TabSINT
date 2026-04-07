@@ -5,7 +5,7 @@ import { createLegend, createOAEResultsChartSvg, createNormativeDataPath } from 
 import { NormativeDataInterface } from '../../../../../interfaces/normative-data-interface';
 
 @Component({
-  selector: 'swept-dpoae-results',
+  selector: 'app-swept-dpoae-results',
   templateUrl: './swept-dpoae-results.component.html',
   styleUrl: './swept-dpoae-results.component.css',
 })

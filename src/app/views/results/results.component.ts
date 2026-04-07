@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import _ from 'lodash';
 import { Subscription } from 'rxjs';
@@ -21,11 +21,21 @@ import { ResultsUploadService } from '../../controllers/results-upload.service';
 import { DialogDataInterface } from '../../interfaces/dialog-data.interface';
 
 @Component({
-  selector: 'results-view',
+  selector: 'app-results-view',
   templateUrl: './results.component.html',
   styleUrl: './results.component.css',
 })
 export class ResultsComponent implements OnInit, OnDestroy {
+  readonly dialog = inject(MatDialog);
+  readonly diskModel = inject(DiskModel);
+  readonly resultsModel = inject(ResultsModel);
+  readonly resultsService = inject(ResultsService);
+  readonly sqLite = inject(SqLite);
+  private readonly resultsUploadService = inject(ResultsUploadService);
+  private readonly notifications = inject(Notifications);
+  readonly stateModel = inject(StateModel);
+  private readonly logger = inject(Logger);
+
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
   state: StateInterface;
@@ -33,17 +43,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
   results?: ExamResults[];
   stateSubscription: Subscription | undefined;
 
-  constructor(
-    public dialog: MatDialog,
-    public diskModel: DiskModel,
-    public resultsModel: ResultsModel,
-    public resultsService: ResultsService,
-    public sqLite: SqLite,
-    private readonly resultsUploadService: ResultsUploadService,
-    private readonly notifications: Notifications,
-    public stateModel: StateModel,
-    private readonly logger: Logger
-  ) {
+  constructor() {
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();
   }

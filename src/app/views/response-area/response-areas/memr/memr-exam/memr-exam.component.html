@@ -1,7 +1,7 @@
 <div [ngSwitch]="currentStep">
   <p class="instructions">{{ instructions }}</p>
 
-  <input-parameters *ngSwitchCase="'Ready'" [parameterMap]="inputParameterMap"> </input-parameters>
+  <app-input-parameters *ngSwitchCase="'Ready'" [parameterMap]="inputParameterMap"> </app-input-parameters>
 
   <div *ngSwitchCase="'Finish'">
     <div *ngIf="memrResults && getRecordChannelsArray().length > 0" class="results-container">

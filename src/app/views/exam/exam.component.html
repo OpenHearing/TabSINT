@@ -9,24 +9,24 @@
         <!-- Change which template we show based on what "mode" the exam is in. -->
         <div [ngSwitch]="state.examState">
           <div *ngSwitchCase="ExamState.Ready">
-            <exam-ready-view></exam-ready-view>
+            <app-exam-ready-view></app-exam-ready-view>
           </div>
           <div *ngSwitchCase="ExamState.NotReady">
-            <exam-not-ready-view></exam-not-ready-view>
+            <app-exam-not-ready-view></app-exam-not-ready-view>
           </div>
           <div *ngSwitchCase="ExamState.DeviceError">
-            <exam-device-error-view></exam-device-error-view>
+            <app-exam-device-error-view></app-exam-device-error-view>
           </div>
           <div *ngSwitchCase="ExamState.Testing">
             <app-exam-testing-view></app-exam-testing-view>
           </div>
           <div *ngSwitchCase="ExamState.Finalized">
-            <exam-finalized-view></exam-finalized-view>
+            <app-exam-finalized-view></app-exam-finalized-view>
           </div>
         </div>
 
         <!-- Debugging display. -->
-        <debug-view></debug-view>
+        <app-debug-view></app-debug-view>
 
         <!-- add space for keyboard -->
         <div class="keyboard-spacer"></div>

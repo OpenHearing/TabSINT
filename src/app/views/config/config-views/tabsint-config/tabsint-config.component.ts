@@ -1,4 +1,4 @@
-import { Component, ChangeDetectorRef, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslocoService } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
@@ -21,11 +21,22 @@ import { TabsintFs } from 'tabsintfs';
 import { Notifications } from '../../../../services/notifications.service';
 
 @Component({
-  selector: 'tabsint-config-view',
+  selector: 'app-tabsint-config-view',
   templateUrl: './tabsint-config.component.html',
   styleUrl: './tabsint-config.component.css',
 })
 export class TabsintConfigComponent implements OnInit, OnDestroy {
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly diskModel = inject(DiskModel);
+  private readonly logger = inject(Logger);
+  private readonly dialog = inject(MatDialog);
+  private readonly stateModel = inject(StateModel);
+  private readonly transloco = inject(TranslocoService);
+  private readonly versionModel = inject(VersionModel);
+  private readonly qrService = inject(QrService);
+  private readonly fileService = inject(FileService);
+  private readonly notifications = inject(Notifications);
+
   disk: DiskInterface;
   state: StateInterface;
   version!: VersionInterface;
@@ -39,18 +50,7 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   diskSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
 
-  constructor(
-    private readonly cdr: ChangeDetectorRef,
-    private readonly diskModel: DiskModel,
-    private readonly logger: Logger,
-    private readonly dialog: MatDialog,
-    private readonly stateModel: StateModel,
-    private readonly transloco: TranslocoService,
-    private readonly versionModel: VersionModel,
-    private readonly qrService: QrService,
-    private readonly fileService: FileService,
-    private readonly notifications: Notifications
-  ) {
+  constructor() {
     this.state = this.stateModel.getState();
     this.disk = this.diskModel.getDisk();
   }
@@ -221,9 +221,7 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   }
 
   get setMaxLogRowsPopover() {
-    return this.transloco.translate(
-      'Set the maximum number of log records to be saved. This will prevent the logs from consuming too much memory.'
-    );
+    return this.transloco.translate('Set the maximum number of log records to be saved. This will prevent the logs from consuming too much memory.');
   }
 
   get qrCodePopover() {

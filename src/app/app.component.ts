@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import _ from 'lodash';
@@ -30,28 +30,28 @@ import { DevicesService } from './services/devices/devices.service';
   templateUrl: './app.component.html',
 })
 export class AppComponent implements OnInit, OnDestroy {
+  private readonly appModel = inject(AppModel);
+  private readonly devicesService = inject(DevicesService);
+  private readonly diskModel = inject(DiskModel);
+  private readonly fileService = inject(FileService);
+  private readonly logger = inject(Logger);
+  private readonly protocolM = inject(ProtocolModel);
+  private readonly protocolService = inject(ProtocolService);
+  private readonly router = inject(Router);
+  private readonly sqLite = inject(SqLite);
+  private readonly transloco = inject(TranslocoService);
+  private readonly dialog = inject(MatDialog);
+  private readonly stateModel = inject(StateModel);
+  private readonly networkService = inject(NetworkService);
+  private readonly notifications = inject(Notifications);
+
   title = 'tabsint';
   app: AppInterface;
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
   protocol: ProtocolModelInterface;
 
-  constructor(
-    private readonly appModel: AppModel,
-    private readonly devicesService: DevicesService,
-    private readonly diskModel: DiskModel,
-    private readonly fileService: FileService,
-    private readonly logger: Logger,
-    private readonly protocolM: ProtocolModel,
-    private readonly protocolService: ProtocolService,
-    private readonly router: Router,
-    private readonly sqLite: SqLite,
-    private readonly transloco: TranslocoService,
-    private readonly dialog: MatDialog,
-    private readonly stateModel: StateModel,
-    private readonly networkService: NetworkService,
-    private readonly notifications: Notifications
-  ) {
+  constructor() {
     const savedLang = this.diskModel.getDisk().preferences.language ?? 'en';
     this.transloco.setActiveLang(savedLang);
     this.app = this.appModel.getApp();

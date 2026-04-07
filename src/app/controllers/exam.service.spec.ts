@@ -256,7 +256,9 @@ describe('ExamService', () => {
     mockLogger = jasmine.createSpyObj('Logger', ['debug']);
 
     TestBed.configureTestingModule({
-      imports: [TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true })],
+      imports: [
+        TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
+      ],
       providers: [
         ExamService,
         { provide: ResultsService, useValue: mockResultsService },

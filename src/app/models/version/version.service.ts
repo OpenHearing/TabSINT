@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Logger } from '../../services/logger.service';
 import { VersionInterface } from './version.interface';
 
@@ -6,6 +6,8 @@ import { VersionInterface } from './version.interface';
   providedIn: 'root',
 })
 export class VersionModel {
+  private readonly logger = inject(Logger);
+
   version: VersionInterface = {
     tabsint: '',
     date: '',
@@ -19,8 +21,6 @@ export class VersionModel {
     plugins: [],
   };
   private versionLoaded: Promise<void> | undefined = undefined;
-
-  constructor(private readonly logger: Logger) {}
 
   /**
    * Load tabsint version information from version.js

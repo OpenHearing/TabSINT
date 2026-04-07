@@ -82,7 +82,9 @@ export class DeviceConfigComponent implements OnInit, OnDestroy {
     this.diskModel.updatePreferences({ wahtsConnectionType: connectionType });
   }
 
-  get wahtsCommunicationPopover() { return this.transloco.translate('Set the connection type for WAHTS devices.'); }
+  get wahtsCommunicationPopover() {
+    return this.transloco.translate('Set the connection type for WAHTS devices.');
+  }
   get wahtsFirmwarePopover() {
     return this.transloco.translate(`
     This version of the WAHTS Firmware is built into TabSINT and can be updated to the WAHTS wirelessly.

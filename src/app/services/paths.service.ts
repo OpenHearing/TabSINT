@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 
 import { AppModel } from '../models/app/app.service';
 import { AppInterface } from '../models/app/app.interface';
@@ -7,9 +7,11 @@ import { AppInterface } from '../models/app/app.interface';
   providedIn: 'root',
 })
 export class Paths {
+  private readonly appModel = inject(AppModel);
+
   app: AppInterface;
 
-  constructor(private readonly appModel: AppModel) {
+  constructor() {
     this.app = this.appModel.getApp();
   }
 
