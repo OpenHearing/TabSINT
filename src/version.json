@@ -5,7 +5,7 @@
   "version_code": "856",
   "deps": {
     "user_agent": "angular/^17.1.1",
-    "node": "node/v20.17.0",
+    "node": "node/v18.19.1",
     "capacitor": "capacitor/^6.1.0"
   },
   "plugins": []

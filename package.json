@@ -12,7 +12,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test --code-coverage",
     "test:headless": "ng test --code-coverage --browsers=ChromeHeadlessNoSandbox --watch=false",
-    "run.build": "npm run prepare --suffix dev && ng build && npx cap sync android && cd android && ./gradlew assembleDebug && ./gradlew installDebug && cd ..",
+    "run.build": "npm run prepare --suffix dev && ng build && npx cap sync android && cd android && ./gradlew assembleDebug && cd ..",
     "run.build.beta:ci": "npm run prepare --suffix beta && ng build && npx cap sync android && cd android && ./gradlew assembleDebug && cd ..",
     "run.build.production:ci": "npm run prepare && ng build && npx cap sync android && cd android && ./gradlew assembleRelease && cd ..",
     "run.android": "npm run prepare --suffix dev && ng build && npx cap sync android && npx cap run android",
@@ -73,6 +73,7 @@
     "tabsintcha": "file:tabsintcha",
     "tabsintfs": "file:tabsintfs",
     "tslib": "^2.3.0",
+    "webpack-subresource-integrity": "^5.1.0",
     "xlsx": "^0.18.5",
     "zone.js": "~0.14.3"
   },

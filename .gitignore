@@ -49,3 +49,6 @@ keystore.base64
 .DS_Store
 Thumbs.db
 .claude/settings.json
+tools/tabsint.pem
+.gitignore
+tools/tabsint.pub

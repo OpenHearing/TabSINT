@@ -184,8 +184,6 @@ public class TabsintFsPlugin extends Plugin {
     // Get parameters from the call
     String rootUri = call.getString("rootUri");
     String path = call.getString("path");
-    // Remove leading and trailing slashes if present
-    path = path.replaceAll("^/+|/+$", "");
     String content = call.getString("content");
     boolean asBase64 = call.getBoolean("asBase64", false);
 
@@ -193,6 +191,9 @@ public class TabsintFsPlugin extends Plugin {
         call.reject("Must provide rootUri and path");
         return;
     }
+
+    // Remove leading and trailing slashes if present
+    path = path.replaceAll("^/+|/+$", "");
 
     Uri uri = Uri.parse(rootUri);
     DocumentFile rootDir = DocumentFile.fromTreeUri(getContext(), uri);
@@ -204,6 +205,7 @@ public class TabsintFsPlugin extends Plugin {
     DocumentFile currentDir = createPathHelper(path, rootDir, content, asBase64);
     if(currentDir==null){
         call.reject("Failed to create or access file/directory");
+        return;
     }
     JSObject ret = new JSObject();
     ret.put("uri", currentDir.getUri().toString());
@@ -239,12 +241,15 @@ private DocumentFile createPathHelper(String path, DocumentFile rootDir, String 
 }
 
 private boolean hasFileExtension(String component) {
-    String[] fileExtensions = { "txt", "pdf", "docx", "jpg", "png", "xlsx", "csv", "json", "xml", "html" };
+    String lower = component.toLowerCase();
+    String[] fileExtensions = { "txt", "pdf", "docx", "jpg", "png", "xlsx", "csv", "json", "xml", "html", "enc" };
     for (String extension : fileExtensions) {
-        if (component.toLowerCase().endsWith("." + extension)) {
+        if (lower.endsWith("." + extension)) {
+            Log.d(TAG, "hasFileExtension: " + component + " → file (matched ." + extension + ")");
             return true;
         }
     }
+    Log.d(TAG, "hasFileExtension: " + component + " → directory (no match)");
     return false;
 }
 

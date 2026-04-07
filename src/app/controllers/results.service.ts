@@ -20,6 +20,7 @@ import { DevicesService } from '../services/devices/devices.service';
 import { IDeviceMetadata } from '../interfaces/devices/device-metadata.interface';
 import { IDevice } from '../interfaces/devices/device.interface';
 import { DeviceState } from '../utilities/constants';
+import { EncryptResultsService } from '../utilities/encrypt-results.service';
 
 @Injectable({
   providedIn: 'root',
@@ -27,6 +28,7 @@ import { DeviceState } from '../utilities/constants';
 export class ResultsService {
   private readonly devicesService = inject(DevicesService);
   private readonly diskModel = inject(DiskModel);
+  private readonly encryptResults = inject(EncryptResultsService);
   private readonly fileService = inject(FileService);
   private readonly logger = inject(Logger);
   private readonly protocolM = inject(ProtocolModel);
@@ -125,12 +127,20 @@ export class ResultsService {
   }
 
   /**
-   * Save exam results
-   * @summary Save result in SQLite db, than backup results on tablet.
+   * Save exam results.
+   * @summary Encrypts result if the active protocol has a publicKey, and stores result in SQLite,
+   * then backs up to tablet storage in plaintext.
    * @param result Partial or completed current exam result.
    */
   async save(result: ExamResults) {
-    await this.sqLite.store('results', JSON.stringify(result));
+    const publicKey = this.protocol.activeProtocol?.publicKey;
+    const uuid = this.hostMetadata?.uuid;
+    if (publicKey && uuid && result.testDateTime) {
+      const encrypted = await this.encryptResults.encryptForStorage(result.testDateTime, uuid, JSON.stringify(result));
+      await this.sqLite.store('results', JSON.stringify({ testDateTime: result.testDateTime, encrypted }));
+    } else {
+      await this.sqLite.store('results', JSON.stringify(result));
+    }
     await this.backup(result);
   }
 
@@ -162,33 +172,114 @@ export class ResultsService {
   }
 
   /**
+   * Retrieve all exam results from SQLite, decrypting any encrypted entries.
+   */
+  async getAllResults(): Promise<ExamResults[]> {
+    const rawResults = await this.sqLite.getAllResultsRaw();
+    const results: ExamResults[] = [];
+    for (const raw of rawResults) {
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed.encrypted && parsed.testDateTime) {
+          const uuid = this.hostMetadata?.uuid;
+          if (uuid) {
+            const decrypted = await this.encryptResults.decryptFromStorage(parsed.testDateTime, uuid, parsed.encrypted);
+            results.push(JSON.parse(decrypted));
+          }
+        } else {
+          results.push(parsed);
+        }
+      } catch (e) {
+        this.logger.error('Failed to parse/decrypt result: ' + e);
+      }
+    }
+    return results;
+  }
+
+  /**
+   * Retrieve a single exam result from SQLite by index, decrypting if necessary.
+   */
+  async getSingleResult(index: number): Promise<ExamResults | null> {
+    try {
+      const rawArr = await this.sqLite.getSingleResult(index);
+      const parsed = JSON.parse(rawArr[0]);
+      if (parsed.encrypted && parsed.testDateTime) {
+        const uuid = this.hostMetadata?.uuid;
+        if (uuid) {
+          const decrypted = await this.encryptResults.decryptFromStorage(parsed.testDateTime, uuid, parsed.encrypted);
+          return JSON.parse(decrypted);
+        }
+      }
+      return parsed;
+    } catch (e) {
+      this.logger.error('Failed to parse/decrypt single result: ' + e);
+      return null;
+    }
+  }
+
+  /**
    * Export an exam result to the tablet's local storage.
    * @summary Get the result from sqlite, write it to Android, remove
    * it from the sqlite database.
    * @param index number: index of the result
    */
   async exportSingleResult(index: number) {
-    const result = await this.sqLite.getSingleResult(index);
-    await this.writeResultToFile(JSON.parse(result[0]));
+    const result = await this.getSingleResult(index);
+    if (result) {
+      await this.writeResultToFile(result);
+    }
     await this.sqLite.deleteSingleResult(index);
   }
 
   /**
    * Write result to tablet's local storage.
-   * @summary Construct path and filename, write file to tablet, update disk upload summary.
+   * @summary Construct path and filename, write file(s) to tablet, update disk upload summary.
+   * If the active protocol has a publicKey, encrypts the result and writes a .json.enc file
+   * alongside a .json.key.enc file containing the RSA-encrypted AES key.
    * @models disk
    * @param result exam result
    */
   async writeResultToFile(result: ExamResults) {
-    const filename = constructFilename(
-      this.hostMetadata?.uuid?.slice(-6) ?? '',
-      this.protocol.activeProtocol?.resultFilename,
-      result.testDateTime,
-      '.json'
-    );
-    let dir = this.disk.preferences.servers.localServer.resultsDir ? this.disk.preferences.servers.localServer.resultsDir : 'tabsint-results';
-    dir = dir + '/' + this.protocol.activeProtocol?.name + '/';
-    await this.fileService.writeFile(dir + filename, JSON.stringify(result));
+    const dir =
+      (this.disk.preferences.servers.localServer.resultsDir ?? 'tabsint-results') +
+      '/' +
+      this.protocol.activeProtocol?.name +
+      '/';
+
+    const publicKey = this.protocol.activeProtocol?.publicKey;
+    const uuid = this.hostMetadata?.uuid;
+
+    if (publicKey && uuid && result.testDateTime) {
+      const [encryptedResult, encryptedAESKey] = await this.encryptResults.encryptForUpload(
+        result.testDateTime,
+        uuid,
+        publicKey,
+        JSON.stringify(result)
+      );
+      const encFilename = constructFilename(
+        this.hostMetadata?.uuid?.slice(-6) ?? '',
+        this.protocol.activeProtocol?.resultFilename,
+        result.testDateTime,
+        '.json.enc'
+      );
+      const keyFilename = constructFilename(
+        this.hostMetadata?.uuid?.slice(-6) ?? '',
+        this.protocol.activeProtocol?.resultFilename,
+        result.testDateTime,
+        '.json.key.enc'
+      );
+      await this.fileService.writeFile(dir + encFilename, encryptedResult);
+      await this.fileService.writeFile(dir + keyFilename, encryptedAESKey);
+    } else {
+      const filename = constructFilename(
+        this.hostMetadata?.uuid?.slice(-6) ?? '',
+        this.protocol.activeProtocol?.resultFilename,
+        result.testDateTime,
+        '.json'
+      );
+      await this.fileService.writeFile(dir + filename, JSON.stringify(result));
+    }
+
     this.diskModel.updateSummary(result);
   }
 }

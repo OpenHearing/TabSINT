@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { CapacitorHttp, HttpOptions } from '@capacitor/core';
 import { DiskModel } from '../models/disk/disk.service';
 import { Logger } from '../services/logger.service';
@@ -7,6 +7,7 @@ import { ExamResults } from '../models/results/results.interface';
 import { Device } from '@capacitor/device';
 import { DiskInterface } from '../models/disk/disk.interface';
 import { Subscription } from 'rxjs';
+import { EncryptResultsService } from '../utilities/encrypt-results.service';
 
 @Injectable({
   providedIn: 'root',
@@ -14,11 +15,13 @@ import { Subscription } from 'rxjs';
 export class ResultsUploadService {
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
-  constructor(
-    private readonly diskModel: DiskModel,
-    private readonly logger: Logger
-  ) {
-    this.disk = diskModel.getDisk();
+
+  private readonly diskModel = inject(DiskModel);
+  private readonly encryptResults = inject(EncryptResultsService);
+  private readonly logger = inject(Logger);
+
+  constructor() {
+    this.disk = this.diskModel.getDisk();
     this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
     });
@@ -134,23 +137,48 @@ export class ResultsUploadService {
       const info = await Device.getId();
       const fileUuid = info.identifier;
       const timeStamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const fileName = `${fileUuid}-${timeStamp}.json`;
-      const fullPath = encodeURIComponent(`${folderName}/${fileName}`);
-      const fileUrl = `${this.removeTrailingSlashes(gitlabHost)}/api/v4/projects/${resultsRepoId}/repository/files/${fullPath}`;
-      const commitMessage = `Add result for exam: ${singleExamResult.protocol.name}`;
-      const body = {
-        branch: resultsRepoDefaultBranch,
-        commit_message: commitMessage,
-        content: JSON.stringify(singleExamResult, null, 2), // pretty-print JSON
-      };
-      const createFileOptions = this.gitlabHttpOptions(gitlabToken, fileUrl, JSON.stringify(body));
-      const createFileResp = await CapacitorHttp.post(createFileOptions);
-      if (createFileResp.status < 200 || createFileResp.status >= 300) {
-        if (createFileResp.status === 401) {
-          throw new Error('Unauthorized: Check your GitLab credentials.');
-        }
-        throw new Error(`Failed to create file in results repo: ${createFileResp.status}`);
+      const publicKey = protocol.publicKey;
+
+      if (publicKey && singleExamResult.testDateTime) {
+        const [encryptedResult, encryptedAESKey] = await this.encryptResults.encryptForUpload(
+          singleExamResult.testDateTime,
+          fileUuid,
+          publicKey,
+          JSON.stringify(singleExamResult)
+        );
+        await this.uploadFileToGitlab(
+          gitlabToken,
+          gitlabHost,
+          resultsRepoId,
+          resultsRepoDefaultBranch,
+          folderName,
+          `${fileUuid}-${timeStamp}.json.enc`,
+          encryptedResult,
+          singleExamResult
+        );
+        await this.uploadFileToGitlab(
+          gitlabToken,
+          gitlabHost,
+          resultsRepoId,
+          resultsRepoDefaultBranch,
+          folderName,
+          `${fileUuid}-${timeStamp}.json.key.enc`,
+          encryptedAESKey,
+          singleExamResult
+        );
+      } else {
+        await this.uploadFileToGitlab(
+          gitlabToken,
+          gitlabHost,
+          resultsRepoId,
+          resultsRepoDefaultBranch,
+          folderName,
+          `${fileUuid}-${timeStamp}.json`,
+          JSON.stringify(singleExamResult, null, 2),
+          singleExamResult
+        );
       }
+
       const uploadSummaryEntry = {
         protocolId: singleExamResult.protocol.protocolId,
         protocolName: singleExamResult.protocol.name,
@@ -165,13 +193,39 @@ export class ResultsUploadService {
       this.diskModel.updateDiskModel({ uploadSummary: this.disk.uploadSummary });
 
       this.logger.debug('Successfully uploaded to upload summary in disk ');
+      this.logger.debug(`Successfully uploaded exam result to '${folderName}'.`);
 
-      this.logger.debug(`Successfully uploaded exam result to '${folderName}' as ${fileName}.`);
-
-      return { success: true, message: `Successfully uploaded ${fileName} to GitLab at ${gitlabGroup}/results` };
+      return { success: true, message: `Successfully uploaded result to GitLab at ${gitlabGroup}/results` };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       this.logger.error('Upload failed: ' + error);
       return { success: false, message: error.message };
+    }
+  }
+
+  private async uploadFileToGitlab(
+    gitlabToken: string,
+    gitlabHost: string,
+    resultsRepoId: number,
+    branch: string,
+    folderName: string | undefined,
+    fileName: string,
+    content: string,
+    singleExamResult: ExamResults
+  ): Promise<void> {
+    const fullPath = encodeURIComponent(`${folderName}/${fileName}`);
+    const fileUrl = `${this.removeTrailingSlashes(gitlabHost)}/api/v4/projects/${resultsRepoId}/repository/files/${fullPath}`;
+    const body = {
+      branch,
+      commit_message: `Add result for exam: ${singleExamResult.protocol.name}`,
+      content,
+    };
+    const resp = await CapacitorHttp.post(this.gitlabHttpOptions(gitlabToken, fileUrl, JSON.stringify(body)));
+    if (resp.status < 200 || resp.status >= 300) {
+      if (resp.status === 401) {
+        throw new Error('Unauthorized: Check your GitLab credentials.');
+      }
+      throw new Error(`Failed to create file in results repo: ${resp.status}`);
     }
   }
 }

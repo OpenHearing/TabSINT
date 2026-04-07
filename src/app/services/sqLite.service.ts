@@ -45,7 +45,7 @@ export class SqLite {
     await this.initializeWeb();
     await this.open();
     const logs = await this.getAllLogs();
-    const results = await this.getAllResults();
+    const results = await this.getAllResultsRaw();
     this.count = {
       logs: logs?.length ?? 0,
       results: results?.length ?? 0,
@@ -74,6 +74,11 @@ export class SqLite {
   async getAllResults() {
     const sql = 'SELECT data FROM results';
     return (await this.db.query(sql)).values?.map(res => JSON.parse(res.data));
+  }
+
+  async getAllResultsRaw(): Promise<string[]> {
+    const sql = 'SELECT data FROM results';
+    return (await this.db.query(sql)).values?.map(res => res.data) ?? [];
   }
 
   async getAllLogs() {
