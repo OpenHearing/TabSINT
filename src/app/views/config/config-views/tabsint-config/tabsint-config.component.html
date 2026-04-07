@@ -53,12 +53,12 @@
 <div class="row showhideSection">
     <div class="col-12 text-center">
         <a href="javascript:" (click)="state.isPaneOpen.advanced = !state.isPaneOpen.advanced">
-            <span *ngIf="state.isPaneOpen.advanced" translate>
-                Hide Advanced Settings 
+            <span *ngIf="state.isPaneOpen.advanced">
+                {{ "Hide Advanced Settings" | transloco }}
                 <i class="ion-chevron-up"></i>
             </span>
-            <span *ngIf="!state.isPaneOpen.advanced" translate>
-                Show Advanced Settings 
+            <span *ngIf="!state.isPaneOpen.advanced">
+                {{ "Show Advanced Settings" | transloco }}
                 <i class="ion-chevron-down"></i>
             </span>
         </a>
@@ -75,10 +75,10 @@
 
   <!-- Admin Mode -->
   <div class="row pad-top">
-    <div class="col-6"><label translate for="adminMode">Admin Mode:</label></div>
+    <div class="col-6"><label for="adminMode">{{ "Admin Mode:" | transloco }}</label></div>
     <div class="col-2"><input id="adminMode" type="checkbox" [ngModel]="disk.preferences.debugMode" (change)="toggleDebugMode()" /></div>
     <div class="col-2"></div>
-    <div class="col-1" title="{{ 'Admin Mode Help' | translate }}">
+    <div class="col-1" title="{{ 'Admin Mode Help' | transloco }}">
       <i [matMenuTriggerFor]="adminHelpMenu" class="ion-help-circled"></i>
     </div>
     <mat-menu #adminHelpMenu="matMenu">
@@ -93,11 +93,11 @@
     <div class="col-2">{{ disk.preferences.pin }}</div>
 
     <div class="col-1">
-      <a href="javascript:" title="{{ 'Admin PIN Edit' | translate }}" (click)="editAdminPin()"><i class="ion-edit"></i></a>
+      <a href="javascript:" title="{{ 'Admin PIN Edit' | transloco }}" (click)="editAdminPin()"><i class="ion-edit"></i></a>
     </div>
 
     <div class="col-1"></div>
-    <div class="col-1" title="{{ 'Admin PIN Help' | translate }}">
+    <div class="col-1" title="{{ 'Admin PIN Help' | transloco }}">
       <i [matMenuTriggerFor]="adminPinMenu" class="ion-help-circled"></i>
     </div>
     <mat-menu #adminPinMenu="matMenu">
@@ -109,10 +109,10 @@
 
   <!-- Disable Logs -->
   <div class="row pad-top">
-    <div class="col-6"><label translate for="disableLogs">Disable Logs:</label></div>
+    <div class="col-6"><label for="disableLogs">{{ "Disable Logs:" | transloco }}</label></div>
     <div class="col-2"><input id="disableLogsID" type="checkbox" [ngModel]="disk.preferences.disableLogs" (change)="toggleDisableLogs()" /></div>
     <div class="col-2"></div>
-    <div class="col-1" title="{{ 'Disable Logs Help' | translate }}">
+    <div class="col-1" title="{{ 'Disable Logs Help' | transloco }}">
       <i [matMenuTriggerFor]="disableLogsMenu" class="ion-help-circled"></i>
     </div>
     <mat-menu #disableLogsMenu="matMenu">
@@ -124,15 +124,15 @@
 
   <!-- Set the Maximum number of log records -->
   <div class="row pad-top">
-    <div class="col-6" translate>Max Log Length:</div>
+    <div class="col-6">{{ "Max Log Length:" | transloco }}</div>
     <div class="col-2">{{ disk.preferences.maxLogRows }}</div>
 
     <div class="col-1">
-      <a href="javascript:" title="{{ 'Max Log Length Edit' | translate }}" (click)="editMaxLogRows()"><i class="ion-edit"></i></a>
+      <a href="javascript:" title="{{ 'Max Log Length Edit' | transloco }}" (click)="editMaxLogRows()"><i class="ion-edit"></i></a>
     </div>
 
     <div class="col-1"></div>
-    <div class="col-1" href="javascript:" title="{{ 'Max Log Length Help' | translate }}">
+    <div class="col-1" href="javascript:" title="{{ 'Max Log Length Help' | transloco }}">
       <i [matMenuTriggerFor]="setMaxLogRowsMenu" class="ion-help-circled"></i>
     </div>
     <mat-menu #setMaxLogRowsMenu="matMenu">

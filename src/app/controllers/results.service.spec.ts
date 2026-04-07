@@ -7,7 +7,7 @@ import { TranslocoTestingModule } from '@jsverse/transloco';
 describe('ResultsService', () => {
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      providers: [ResultsService, { provide: TranslateService, useValue: TranslateService }],
+      providers: [ResultsService],
     });
   });
 

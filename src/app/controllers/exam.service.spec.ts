@@ -13,7 +13,7 @@ import { PageInterface } from '../models/page/page.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { ResultsInterface } from '../models/results/results.interface';
 import { ProtocolStack } from '../models/protocol/protocol-stack';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 
 describe('ExamService', () => {
   let examService: ExamService;
@@ -256,7 +256,7 @@ describe('ExamService', () => {
     mockLogger = jasmine.createSpyObj('Logger', ['debug']);
 
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
+      imports: [TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true })],
       providers: [
         ExamService,
         { provide: ResultsService, useValue: mockResultsService },

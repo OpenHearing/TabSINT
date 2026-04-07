@@ -5,13 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class EncryptResultsService {
   private async deriveKey(testDateTime: string, uuid: string): Promise<CryptoKey> {
-    const keyMaterial = await crypto.subtle.importKey(
-      'raw',
-      new TextEncoder().encode(testDateTime),
-      'PBKDF2',
-      false,
-      ['deriveKey']
-    );
+    const keyMaterial = await crypto.subtle.importKey('raw', new TextEncoder().encode(testDateTime), 'PBKDF2', false, ['deriveKey']);
     return crypto.subtle.deriveKey(
       {
         name: 'PBKDF2',
