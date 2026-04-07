@@ -75,6 +75,9 @@
                 "id": "Image"
               },
               {
+                "id": "Multiple Choice"
+              },
+              {
                 "id": "Advanced Protocol Logic"
               },
               {
@@ -82,6 +85,9 @@
               },
               {
                 "id": "Scan QR Code"
+              },
+              {
+                "id": "Dosimetry"
               },
               {
                 "id": "End All"
@@ -192,6 +198,12 @@
               }
             },
             {
+              "conditional": "result.response=='Multiple Choice'",
+              "target": {
+                "reference": "multipleChoice"
+              }
+            },
+            {
               "conditional": "result.response=='Advanced Protocol Logic'",
               "target": {
                 "reference": "advancedProtocolLogic"
@@ -207,6 +219,12 @@
               "conditional": "result.response=='Scan QR Code'",
               "target": {
                 "reference": "qrCodeResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='Dosimetry'",
+              "target": {
+                "reference": "dosimetryResponseArea"
               }
             },
             {
@@ -914,7 +932,9 @@
                   }
                 ]
               }
-            ]
+            ],
+            "verticalSpacing": 50,
+            "delayEnable": 3000
           }
         },
         {
@@ -963,6 +983,49 @@
                     "id":"9"
                   }
                 ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "multipleChoice",
+      "pages": [
+        {
+          "id": "multipleChoice_001",
+          "title": "Multiple Choice delayEnable testing",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "choices": [
+              {
+                "id": "one"
+              },
+              {
+                "id": "two"
+              }
+            ],
+            "verticalSpacing": 50,
+            "delayEnable": 1000
+          }
+        },
+        {
+          "id": "multipleChoice_002",
+          "title": "Multiple Choice feedback testing",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "feedback": "gradeResponse",
+            "choices": [
+              {
+                "id": "one",
+                "correct": true
+              },
+              {
+                "id": "two"
               }
             ]
           }
@@ -1060,6 +1123,25 @@
             "type": "qrCodeResponseArea",
             "scope": "page"
           }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "dosimetryResponseArea",
+      "pages": [
+        {
+          "id": "dosimetryResponseArea",
+          "title": "Dosimetry testing",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": false
+          },
+          "dosimetry": {}
         },
         {
           "id": "backtomain",

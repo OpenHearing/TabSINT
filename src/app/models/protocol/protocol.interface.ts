@@ -19,6 +19,7 @@ export interface ProtocolMetaInterface {
   admin: boolean;
   contentURI?: string | null;
   gitlabConfig?: GitlabConfigInterface;
+  publicKey?: string;
 }
 
 export interface ProtocolModelInterface {
@@ -28,7 +29,6 @@ export interface ProtocolModelInterface {
   activeProtocolFollowOnsDictionary?: FollowOnsDictionary;
 }
 export interface ProtocolInterface extends ProtocolSchemaInterface, ProtocolMetaInterface {
-  key?: string;
   commonRepo?: MediaReposInterface;
   cCommon?: CalibrationFileInterface;
   protocolTabsintOutdated?: boolean;
@@ -42,9 +42,7 @@ export interface ProtocolInterface extends ProtocolSchemaInterface, ProtocolMeta
   _missingWavCalList?: string[];
   _missingCommonWavCalList?: string[];
   _missingControllerList?: string[];
-  _missingHtmlList?: string[];
   _missingCommonMediaRepo?: boolean;
-  _hasSubjectIdResponseArea?: boolean;
   _customHtmlList?: {
     name: string;
     path: string;

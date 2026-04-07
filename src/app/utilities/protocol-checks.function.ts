@@ -55,16 +55,5 @@ export function checkControllers(activeProtocol: ProtocolInterface): Array<Proto
     });
   }
 
-  if (activeProtocol._missingHtmlList!.length > 0) {
-    msg =
-      'The protocol references the following html pages that could not be loaded:  ' +
-      activeProtocol._missingHtmlList +
-      '.  Please make sure each html page exists and is referenced properly.';
-    errors.push({
-      type: 'Protocol',
-      error: msg,
-    });
-  }
-
   return errors;
 }

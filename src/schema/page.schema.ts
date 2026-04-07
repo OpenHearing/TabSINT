@@ -36,7 +36,6 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
     navMenu: { type: 'array', items: navMenuSchema, nullable: true },
     title: { type: 'string', nullable: true },
     subtitle: { type: 'string', nullable: true },
-    spacing: { type: 'string', nullable: true },
     questionPreMainText: { type: 'string', nullable: true },
     questionMainText: { type: 'string', nullable: true },
     questionSubText: { type: 'string', nullable: true },
@@ -61,7 +60,6 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
       required: ['filepath', 'function'],
       nullable: true,
     },
-    wavfileStartDelayTime: { type: 'number', nullable: true, minimum: 0, default: 1000 },
     wavfiles: { type: 'array', items: pageWavfileSchema, nullable: true },
     chaWavFiles: {
       type: 'array',
@@ -120,6 +118,13 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
     followOns: { type: 'array', items: followOnSchema, nullable: true },
     setFlags: { type: 'array', items: setFlagSchema, nullable: true },
     progressBarVal: { type: ['string', 'number'], nullable: true },
+    dosimetry: {
+      type: 'object',
+      properties: {
+        tabsintId: { type: 'array', items: { type: 'string' }, default: [], nullable: true },
+      },
+      nullable: true,
+    },
   },
   required: ['id'],
   additionalProperties: true,

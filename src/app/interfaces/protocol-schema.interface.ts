@@ -15,14 +15,12 @@ export interface ProtocolSchemaInterface {
   headset?: Headset;
   chaStream?: boolean;
   randomization?: 'WithoutReplacement';
-  minTabsintVersion?: string;
   commonMediaRepository?: string;
   calibration?: ProtocolCalibrationInterface[];
   timeout?: TimeoutInterface;
   hideProgressBar?: boolean;
   enableBackButton?: boolean;
   navMenu?: NavMenuInterface[];
-  js?: string[];
   pages: PageTypes[];
   subProtocols?: ProtocolSchemaInterface[];
 }

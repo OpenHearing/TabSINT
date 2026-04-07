@@ -21,26 +21,21 @@ import { PageModel } from '../models/page/page.service';
 import { WINDOW } from '../utilities/window';
 import { FileService } from '../services/file.service';
 import { DiskModel } from '../models/disk/disk.service';
-import { DialogType, ExamState, AppState } from '../utilities/constants';
+import { DialogType, ExamState, AppState, DeviceType } from '../utilities/constants';
 import { Notifications } from '../services/notifications.service';
 import { Logger } from '../services/logger.service';
 import { calculateElapsedTime, checkForSpecialReference, getDefaultResponseRequired } from '../utilities/exam-helper-functions';
 import { ProtocolStackItem } from '../models/protocol/protocol-stack';
 import { ChoiceInterface } from '../interfaces/choice.interface';
 import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
+import { DevicesService } from '../services/devices/devices.service';
+import { IDevice } from '../interfaces/devices/device.interface';
+import { DosimeterResultsInterface } from '../interfaces/dosimeter-results.interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ExamService {
-  protocol: ProtocolModelInterface;
-  results: ResultsInterface;
-  state: StateInterface;
-
-  pageSubscription: Subscription | undefined;
-  stateSubscription: Subscription | undefined;
-  resultsSubscription: Subscription | undefined;
-
   private readonly logger = inject(Logger);
   private readonly resultsService = inject(ResultsService);
   private readonly resultsModel = inject(ResultsModel);
@@ -51,12 +46,28 @@ export class ExamService {
   private readonly window = inject(WINDOW);
   private readonly fileService = inject(FileService);
   private readonly diskModel = inject(DiskModel);
+  private readonly devicesService = inject(DevicesService);
+
+  protocol: ProtocolModelInterface;
+  results: ResultsInterface;
+  state: StateInterface;
+
+  pageSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
+  resultsSubscription: Subscription | undefined;
+
+  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
+  dosimeterResultsPoll: { [name: string]: ReturnType<typeof setInterval> } = {};
 
   constructor() {
     this.results = this.resultsModel.getResults();
     this.state = this.stateModel.getState();
     this.protocol = this.protocolModel.getProtocolModel();
     this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
+      // Stop dosimetry if examState changes
+      if (this.state.examState !== updatedState.examState) {
+        this.stopDosimetry();
+      }
       this.state = updatedState;
     });
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
@@ -313,9 +324,12 @@ export class ExamService {
   /**
    * Proceed to next page in the exam with handling of pre-processing and post-processing.
    */
-  private advancePage() {
+  private async advancePage() {
     // Reset everything to defaults on the start of each new page
     this.resetFunctionsToDefaults();
+
+    // Stop any dosimeters that might be running
+    this.stopDosimetry();
 
     const currentProtocol = this.protocol.activeProtocolStack.peek();
     if (currentProtocol === undefined) {
@@ -412,6 +426,7 @@ export class ExamService {
    * @summary Resets the protocol stack to an empty array and the exam index to 0.
    */
   private resetProtocolStack() {
+    this.stopDosimetry();
     this.protocol.activeProtocolStack.clear();
   }
 
@@ -498,6 +513,7 @@ export class ExamService {
     this.stateModel.setPageSubmittable();
     this.resultsService.initializePageResults(page);
     this.window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.activateDosimeters(page);
     this.handleAutoSubmitDelay(page);
   }
 
@@ -550,6 +566,82 @@ export class ExamService {
       setTimeout(() => {
         this.submit();
       }, page.autoSubmitDelay);
+    }
+  }
+
+  /**
+   * Activate dosimeters if called for. If dosimetry is called for and none are specified with a tabsintID
+   * then all currently connected dosimeters will be triggered. Otherwise, only the dosimeters specified
+   * with a tabsintID will be be triggered. If dosimetry is called for and not available, and error will
+   * be logged but tabsint will proceed without a device error.
+   * @param page The page to use for navigation.
+   */
+  private async activateDosimeters(page: PageDefinition) {
+    let dosimeters: IDevice[];
+    if (page?.dosimetry === undefined) {
+      return;
+    } else if (page.dosimetry.tabsintId === undefined) {
+      dosimeters = await this.devicesService.getDeviceOrDefault(undefined, [DeviceType.Duodose]);
+    } else {
+      dosimeters = [];
+      page.dosimetry.tabsintId.forEach(async tabsintId => {
+        const devices = await this.devicesService.getDeviceOrDefault(tabsintId, []);
+        if (devices.length === 1) {
+          dosimeters.push(devices[0]);
+        }
+      });
+    }
+    if (dosimeters.length === 0) {
+      this.logger.error('Failed to start dosimetry: No dosimeter was available.');
+    }
+    this.logger.debug('Starting Dosimetry');
+    this.resultsModel.updateCurrentPage({ dosimetry: [] });
+    dosimeters.forEach(async dosimeter => {
+      await this.devicesService.abortExams(dosimeter);
+      this.resultsModel.updateCurrentPage({ response: [] });
+      const queueResp = await this.devicesService.queueExam(dosimeter, 'DosimeterRecord', {});
+      // TODO: add error handling for above line?
+      if (queueResp!.msg[1] != 'ERROR') {
+        this.dosimeterResultsPoll[dosimeter.tabsintId] = setInterval(this.pollForDosimeterResults.bind(this), 500, dosimeter);
+      }
+    });
+  }
+
+  /**
+   * Stop polling results for all dosimeters.
+   */
+  stopDosimetry() {
+    Object.keys(this.dosimeterResultsPoll).forEach(key => {
+      this.logger.debug('Stopping dosimetry for: ' + key);
+      clearInterval(this.dosimeterResultsPoll[key]);
+      delete this.dosimeterResultsPoll[key];
+    });
+  }
+
+  /**
+   * Polling function to get results from dosimeter.
+   * @param dosimeter The dosimeter to get results from.
+   */
+  async pollForDosimeterResults(dosimeter: IDevice) {
+    try {
+      const resp = await this.devicesService.requestResults(dosimeter);
+      const res = resp?.msg[1] as any;
+      const time = new Date().toJSON();
+      const dosimeterResults: DosimeterResultsInterface = {
+        time: time,
+        status: res.State,
+        Leq: undefined,
+        Frequencies: [
+          20, 25, 31.5, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500, 3150, 4000, 5000, 6300, 8000,
+          10000,
+        ],
+        LeqA: res.Channel_2,
+        LeqB: res.Channel_3,
+        LeqC: res.Channel_4,
+      };
+      this.resultsModel.pushDosimeterData(structuredClone(dosimeterResults));
+    } catch {
+      this.logger.debug('Failed requesting results during dosimetry for device: ' + dosimeter.tabsintId);
     }
   }
 }

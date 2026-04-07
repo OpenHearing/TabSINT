@@ -10,7 +10,6 @@ import { StateInterface } from '../../../../models/state/state.interface';
 import { StateModel } from '../../../../models/state/state.service';
 import { ExamService } from '../../../../controllers/exam.service';
 import { ChoiceInterface } from '../../../../interfaces/choice.interface';
-import { Logger } from '../../../../services/logger.service';
 import { RowInterface } from '../../../../interfaces/row.interface';
 import { choiceSchema } from '../../../../../schema/definitions/choice.schema';
 import { choiceBtnClassHelper } from '../../../../utilities/response-area-helper-functions';
@@ -25,17 +24,20 @@ export class ButtonGridComponent implements OnInit, OnDestroy {
   private readonly resultsModel = inject(ResultsModel);
   private readonly pageModel = inject(PageModel);
   private readonly stateModel = inject(StateModel);
-  private readonly logger = inject(Logger);
 
   results: ResultsInterface;
   state: StateInterface;
-  rows: RowInterface[];
-  feedback: string;
-  verticalSpacing: number;
-  horizontalSpacing: number;
-  delayEnable: number;
+  rows: RowInterface[] = buttonGridSchema.properties.rows.default;
+  feedback: string = buttonGridSchema.properties.feedback.default;
+  verticalSpacing: number = buttonGridSchema.properties.verticalSpacing.default;
+  horizontalSpacing: number = buttonGridSchema.properties.horizontalSpacing.default;
+  delayEnable: number = buttonGridSchema.properties.delayEnable.default;
   choices: ChoiceInterface[] = [];
   submitted = false;
+  disableButtons = true;
+  paddingBottom: string = '1px';
+  paddingLeft: string = '1px';
+  paddingRight: string = '1px';
 
   pageSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
@@ -44,11 +46,6 @@ export class ButtonGridComponent implements OnInit, OnDestroy {
   constructor() {
     this.results = this.resultsModel.getResults();
     this.state = this.stateModel.getState();
-    this.rows = buttonGridSchema.properties.rows.default;
-    this.feedback = buttonGridSchema.properties.feedback.default;
-    this.verticalSpacing = buttonGridSchema.properties.verticalSpacing.default;
-    this.horizontalSpacing = buttonGridSchema.properties.horizontalSpacing.default;
-    this.delayEnable = buttonGridSchema.properties.delayEnable.default;
   }
 
   ngOnInit(): void {
@@ -81,11 +78,18 @@ export class ButtonGridComponent implements OnInit, OnDestroy {
               this.choices.push(choice);
             });
           });
-          this.feedback = updatedButtonGridResponseArea.feedback ?? this.feedback;
-          this.verticalSpacing = updatedButtonGridResponseArea.verticalSpacing ?? this.verticalSpacing;
-          this.horizontalSpacing = updatedButtonGridResponseArea.horizontalSpacing ?? this.horizontalSpacing;
-          this.horizontalSpacing = updatedButtonGridResponseArea.horizontalSpacing ?? this.horizontalSpacing;
-          this.delayEnable = updatedButtonGridResponseArea.delayEnable ?? this.delayEnable;
+          this.feedback = updatedButtonGridResponseArea.feedback ?? buttonGridSchema.properties.feedback.default;
+          this.verticalSpacing = updatedButtonGridResponseArea.verticalSpacing ?? buttonGridSchema.properties.verticalSpacing.default;
+          this.horizontalSpacing = updatedButtonGridResponseArea.horizontalSpacing ?? buttonGridSchema.properties.horizontalSpacing.default;
+          this.delayEnable = updatedButtonGridResponseArea.delayEnable ?? buttonGridSchema.properties.delayEnable.default;
+
+          this.paddingBottom = this.verticalSpacing.toString() + 'px';
+          this.paddingLeft = (this.horizontalSpacing / 2).toString() + 'px';
+          this.paddingRight = (this.horizontalSpacing / 2).toString() + 'px';
+
+          setTimeout(() => {
+            this.disableButtons = false;
+          }, this.delayEnable);
 
           // delay 100ms to allow results and exam defaults to be set before we override them
           setTimeout(() => {
@@ -142,6 +146,7 @@ export class ButtonGridComponent implements OnInit, OnDestroy {
   buttonGridBtnClass(choice: ChoiceInterface) {
     const options = {
       feedback: this.submitted ? this.feedback : undefined,
+      disableButton: this.disableButtons,
     };
     return choiceBtnClassHelper(choice, this.results.currentPage.response, options);
   }

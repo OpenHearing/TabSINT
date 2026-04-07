@@ -49,74 +49,98 @@
   </mat-menu>
 </div>
 
-<!-- Admin Mode -->
-<div class="row pad-top">
-  <div class="col-6"><label for="adminMode">{{ "Admin Mode:" | transloco }}</label></div>
-  <div class="col-2"><input id="adminMode" type="checkbox" [ngModel]="disk.preferences.debugMode" (change)="toggleDebugMode()" /></div>
-  <div class="col-2"></div>
-  <div class="col-1" title="{{ 'Admin Mode Help' | transloco }}">
-    <i [matMenuTriggerFor]="adminHelpMenu" class="ion-help-circled"></i>
-  </div>
-  <mat-menu #adminHelpMenu="matMenu">
-    <button mat-menu-item>
-      <div [innerHTML]="adminPopover"></div>
-    </button>
-  </mat-menu>
+<!-- Show Advanced -->
+<div class="row showhideSection">
+    <div class="col-12 text-center">
+        <a href="javascript:" (click)="state.isPaneOpen.advanced = !state.isPaneOpen.advanced">
+            <span *ngIf="state.isPaneOpen.advanced" translate>
+                Hide Advanced Settings 
+                <i class="ion-chevron-up"></i>
+            </span>
+            <span *ngIf="!state.isPaneOpen.advanced" translate>
+                Show Advanced Settings 
+                <i class="ion-chevron-down"></i>
+            </span>
+        </a>
+    </div>
 </div>
 
-<div class="row pad-top">
-  <div class="col-6">Admin PIN:</div>
-  <div class="col-2">{{ disk.preferences.pin }}</div>
-
-  <div class="col-1">
-    <a href="javascript:" title="{{ 'Admin PIN Edit' | transloco }}" (click)="editAdminPin()"><i class="ion-edit"></i></a>
+ <div #collapse="ngbCollapse" [ngbCollapse]="!state.isPaneOpen.advanced"> 
+    
+  <div class="row pad-top">
+    <div class="col-12">
+      <h5>Preferences</h5>
+    </div>
   </div>
 
-  <div class="col-1"></div>
-  <div class="col-1" title="{{ 'Admin PIN Help' | transloco }}">
-    <i [matMenuTriggerFor]="adminPinMenu" class="ion-help-circled"></i>
-  </div>
-  <mat-menu #adminPinMenu="matMenu">
-    <button mat-menu-item>
-      <div [innerHTML]="adminPinPopover"></div>
-    </button>
-  </mat-menu>
-</div>
-
-<!-- Disable Logs -->
-<div class="row pad-top">
-  <div class="col-6"><label for="disableLogs">{{ "Disable Logs:" | transloco }}</label></div>
-  <div class="col-2"><input id="disableLogsID" type="checkbox" [ngModel]="disk.preferences.disableLogs" (change)="toggleDisableLogs()" /></div>
-  <div class="col-2"></div>
-  <div class="col-1" title="{{ 'Disable Logs Help' | transloco }}">
-    <i [matMenuTriggerFor]="disableLogsMenu" class="ion-help-circled"></i>
-  </div>
-  <mat-menu #disableLogsMenu="matMenu">
-    <button mat-menu-item>
-      <div [innerHTML]="disableLogsPopover"></div>
-    </button>
-  </mat-menu>
-</div>
-
-<!-- Set the Maximum number of log records -->
-<div class="row pad-top">
-  <div class="col-6">{{ "Max Log Length:" | transloco }}</div>
-  <div class="col-2">{{ disk.preferences.maxLogRows }}</div>
-
-  <div class="col-1">
-    <a href="javascript:" title="{{ 'Max Log Length Edit' | transloco }}" (click)="editMaxLogRows()"><i class="ion-edit"></i></a>
+  <!-- Admin Mode -->
+  <div class="row pad-top">
+    <div class="col-6"><label translate for="adminMode">Admin Mode:</label></div>
+    <div class="col-2"><input id="adminMode" type="checkbox" [ngModel]="disk.preferences.debugMode" (change)="toggleDebugMode()" /></div>
+    <div class="col-2"></div>
+    <div class="col-1" title="{{ 'Admin Mode Help' | translate }}">
+      <i [matMenuTriggerFor]="adminHelpMenu" class="ion-help-circled"></i>
+    </div>
+    <mat-menu #adminHelpMenu="matMenu">
+      <button mat-menu-item>
+        <div [innerHTML]="adminPopover"></div>
+      </button>
+    </mat-menu>
   </div>
 
-  <div class="col-1"></div>
-  <div class="col-1" href="javascript:" title="{{ 'Max Log Length Help' | transloco }}">
-    <i [matMenuTriggerFor]="setMaxLogRowsMenu" class="ion-help-circled"></i>
+  <div class="row pad-top">
+    <div class="col-6">Admin PIN:</div>
+    <div class="col-2">{{ disk.preferences.pin }}</div>
+
+    <div class="col-1">
+      <a href="javascript:" title="{{ 'Admin PIN Edit' | translate }}" (click)="editAdminPin()"><i class="ion-edit"></i></a>
+    </div>
+
+    <div class="col-1"></div>
+    <div class="col-1" title="{{ 'Admin PIN Help' | translate }}">
+      <i [matMenuTriggerFor]="adminPinMenu" class="ion-help-circled"></i>
+    </div>
+    <mat-menu #adminPinMenu="matMenu">
+      <button mat-menu-item>
+        <div [innerHTML]="adminPinPopover"></div>
+      </button>
+    </mat-menu>
   </div>
-  <mat-menu #setMaxLogRowsMenu="matMenu">
-    <button mat-menu-item>
-      <div [innerHTML]="setMaxLogRowsPopover"></div>
-    </button>
-  </mat-menu>
-</div>
+
+  <!-- Disable Logs -->
+  <div class="row pad-top">
+    <div class="col-6"><label translate for="disableLogs">Disable Logs:</label></div>
+    <div class="col-2"><input id="disableLogsID" type="checkbox" [ngModel]="disk.preferences.disableLogs" (change)="toggleDisableLogs()" /></div>
+    <div class="col-2"></div>
+    <div class="col-1" title="{{ 'Disable Logs Help' | translate }}">
+      <i [matMenuTriggerFor]="disableLogsMenu" class="ion-help-circled"></i>
+    </div>
+    <mat-menu #disableLogsMenu="matMenu">
+      <button mat-menu-item>
+        <div [innerHTML]="disableLogsPopover"></div>
+      </button>
+    </mat-menu>
+  </div>
+
+  <!-- Set the Maximum number of log records -->
+  <div class="row pad-top">
+    <div class="col-6" translate>Max Log Length:</div>
+    <div class="col-2">{{ disk.preferences.maxLogRows }}</div>
+
+    <div class="col-1">
+      <a href="javascript:" title="{{ 'Max Log Length Edit' | translate }}" (click)="editMaxLogRows()"><i class="ion-edit"></i></a>
+    </div>
+
+    <div class="col-1"></div>
+    <div class="col-1" href="javascript:" title="{{ 'Max Log Length Help' | translate }}">
+      <i [matMenuTriggerFor]="setMaxLogRowsMenu" class="ion-help-circled"></i>
+    </div>
+    <mat-menu #setMaxLogRowsMenu="matMenu">
+      <button mat-menu-item>
+        <div [innerHTML]="setMaxLogRowsPopover"></div>
+      </button>
+    </mat-menu>
+  </div>
 
 <!-- Disable Automatic Volume Control -->
 <!-- <div class="row pad-top">
@@ -208,7 +232,6 @@
         alt="{{ 'Generated QR Code' | transloco }}" />
     </div>
   </div>
-</div>
 
 <!-- Reset -->
 <div class="row pad-top">
@@ -226,12 +249,12 @@
   </mat-menu>
 </div>
 
-<!-- <br />
-<div class="row pad-top">
-  <div class="col-12">
-    <h5>Results Preferences</h5>
+  <br />
+  <div class="row pad-top">
+    <div class="col-12">
+      <h5>Results Preferences</h5>
+    </div>
   </div>
-</div> -->
 
 <!-- Automatically Output Test Results -->
 <div class="row pad-top">
@@ -264,23 +287,29 @@
         </div>
     </div> -->
 
-<!-- Local Results Directory -->
-<div class="row pad-top">
-  <div class="col-6">
-    <label for="localResultsDir">{{ "Local Results Directory" | transloco }}:</label>
+  <!-- Local Results Directory -->
+  <div class="row pad-top">
+    <div class="col-6">
+      <label for="localResultsDir">{{ "Local Results Directory" | transloco }}:</label>
+    </div>
+    <div class="col-5">
+      <em>{{ disk.preferences.servers.localServer.resultsDir }}</em>
+    </div>
   </div>
-  <div class="col-5">
-    <em>{{ disk.preferences.servers.localServer.resultsDir }}</em>
+  <div class="row pad-top">
+    <div class="col-6"></div>
+    <div class="col-6">
+      <button id="localResultsDir" class="btn btn-default btn-block" (click)="changeLocalResultsDir()">{{ "Change Directory" | transloco }}</button>
+    </div>
   </div>
-  <!-- <div class="col-5"><em><input type="text" [(ngModel)]="disk.preferences.servers.localServer.resultsDir" disabled></em></div> -->
-</div>
-<div class="row pad-top">
-  <div class="col-6"></div>
-  <div class="col-6">
-    <!-- <button id="localResultsDir" class="btn btn-default btn-block" (click)="localServer.changeResultsDirectory()">{{'Change Directory' | transloco}}</button> -->
-    <button id="localResultsDir" class="btn btn-default btn-block" (click)="changeLocalResultsDir()">{{ "Change Directory" | transloco }}</button>
+
+  <div class="row pad-top">
+    <div class="col-6">
+      <label for="rootDir">{{ "Root Directory" | transloco }}:</label>
+    </div>
+    <div class="col-5" style="overflow-wrap: break-word;">
+      <em>{{ disk.contentURI }}</em>
   </div>
-</div>
 
 <!-- <br />
     <br /> -->
@@ -338,4 +367,4 @@
         </div>
     </div> -->
 
-<!-- </div> -->
+</div>

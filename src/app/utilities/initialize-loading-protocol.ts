@@ -18,7 +18,6 @@ export async function initializeLoadingProtocol(
 
   initializeVariables();
   checkPublicKeyError();
-  checkTabsintVersion();
   confirmEPHD1IsConnectedWhenHeadsetIsEPHD1();
   setProtocolCalibrationData();
   await setMediaRepo();
@@ -30,7 +29,6 @@ export async function initializeLoadingProtocol(
     loading.protocol._protocolIdDict = {};
     loading.protocol._missingControllerList = [];
     loading.protocol._customHtmlList = [];
-    loading.protocol._missingHtmlList = [];
     loading.protocol._missingWavCalList = [];
     loading.protocol._missingCommonWavCalList = [];
     loading.protocol._requiresCha = false;
@@ -47,45 +45,6 @@ export async function initializeLoadingProtocol(
             'Results will not be recorded from this protocol while the "Require Encryption" setting is enabled.'
         ),
       });
-    }
-  }
-
-  // TODO: Fix this function
-  function checkTabsintVersion() {
-    loading.protocol.protocolTabsintOutdated = false;
-    if (loading.protocol.minTabsintVersion) {
-      /*
-       const mtv = _.map(loading.protocol.minTabsintVersion.split("."), function(s) {
-           return parseInt(s);
-       }); 
-       const ctv = _.map(version.dm.tabsint.split("-")[0].split("."), function(s) {
-           return parseInt(s);
-       });
-
-      if (
-        mtv[0] < ctv[0] ||
-        (mtv[0] === ctv[0] && mtv[1] < ctv[1]) ||
-        (mtv[0] === ctv[0] && mtv[1] === ctv[1] && mtv[2] <= ctv[2])
-      ) {
-        logger.debug(
-          'Tabsint version ' +
-            // version.dm.tabsint +
-            ', Protocol requires tabsint version ' +
-            loading.protocol.minTabsintVersion
-        );
-      */
-
-      msg =
-        translate.instant('Protocol requires tabsint version ') +
-        loading.protocol.minTabsintVersion +
-        translate.instant(', but current Tabsint version is ');
-      // version.dm.tabsint;
-      logger.error(msg);
-      loading.protocol.errors!.push({
-        type: translate.instant('TabSINT Version'),
-        error: msg,
-      });
-      loading.protocol.protocolTabsintOutdated = true;
     }
   }
 

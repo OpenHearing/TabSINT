@@ -24,7 +24,6 @@ const protocolSchemaBase: JSONSchemaType<ProtocolSchemaInterface> = {
     headset: { type: 'string', enum: Object.values(Headset), nullable: true },
     chaStream: { type: 'boolean', default: false, nullable: true },
     randomization: { type: 'string', enum: ['WithoutReplacement'], nullable: true },
-    minTabsintVersion: { type: 'string', nullable: true },
     commonMediaRepository: { type: 'string', nullable: true },
     calibration: { type: 'array', items: protocolCalibrationSchema, nullable: true },
     timeout: {
@@ -39,7 +38,6 @@ const protocolSchemaBase: JSONSchemaType<ProtocolSchemaInterface> = {
     hideProgressBar: { type: 'boolean', default: false, nullable: true },
     enableBackButton: { type: 'boolean', default: false, nullable: true },
     navMenu: { type: 'array', items: navMenuSchema, nullable: true },
-    js: { type: 'array', items: { type: 'string' }, nullable: true },
     pages: {
       oneOf: [
         { type: 'array', items: pageSchema },

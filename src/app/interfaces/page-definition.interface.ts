@@ -36,7 +36,6 @@ export interface PageDefinition {
   helpText?: string;
   repeatPage?: RepeatPageInterface;
   preProcessFunction?: PreProcessFunctionInterface;
-  wavfileStartDelayTime?: number;
   wavfiles?: PageWavfileInterface[];
   chaWavFiles?: ChaWavfileInterface[];
   chaStream?: boolean;
@@ -47,6 +46,7 @@ export interface PageDefinition {
   followOns?: FollowOnInterface[];
   setFlags?: SetFlagInterface[];
   progressBarVal?: number | string;
+  dosimetry?: DosimetryInterface;
 }
 
 export interface NavMenuInterface {
@@ -90,6 +90,10 @@ export interface VideoInterface {
   width?: string;
   autoplay?: boolean;
   noSkip?: boolean;
+}
+
+export interface DosimetryInterface {
+  tabsintId?: string[];
 }
 
 export interface FollowOnInterface {

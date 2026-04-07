@@ -6,7 +6,6 @@ import { DiskInterface } from '../../../models/disk/disk.interface';
 import { ExamResults } from '../../../models/results/results.interface';
 import { DiskModel } from '../../../models/disk/disk.service';
 import { ResultsService } from '../../../controllers/results.service';
-import { SqLite } from '../../../services/sqLite.service';
 import { Notifications } from '../../../services/notifications.service';
 import { Logger } from '../../../services/logger.service';
 import { DialogType } from '../../../utilities/constants';
@@ -26,7 +25,6 @@ export class SingleResultModalComponent implements OnInit, OnDestroy {
     public dialog: MatDialog,
     public diskModel: DiskModel,
     public resultsService: ResultsService,
-    public sqLite: SqLite,
     private readonly resultsUploadService: ResultsUploadService,
     private readonly notifications: Notifications,
     private readonly logger: Logger,
@@ -50,7 +48,7 @@ export class SingleResultModalComponent implements OnInit, OnDestroy {
    * Function to be called by ngOnIit to handle any asynchronous operations.
    */
   private async asyncNgOnInit(): Promise<void> {
-    this.singleExamResult = JSON.parse(await this.sqLite.getSingleResult(this.index));
+    this.singleExamResult = await this.resultsService.getSingleResult(this.index) ?? undefined;
   }
 
   async upload() {
