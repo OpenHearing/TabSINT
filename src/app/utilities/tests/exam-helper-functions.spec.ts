@@ -1,4 +1,11 @@
-import { calculateElapsedTime, checkForSpecialReference, handleOutputCalibration, checkIfCanGoBack } from '../exam-helper-functions';
+import {
+  calculateElapsedTime,
+  checkForSpecialReference,
+  handleOutputCalibration,
+  checkIfCanGoBack,
+  getDefaultResponseRequired,
+  getCurrentDatetime,
+} from '../exam-helper-functions';
 
 describe('exam-helper-functions', () => {
   describe('checkIfCanGoBack', () => {
@@ -56,6 +63,37 @@ describe('exam-helper-functions', () => {
 
     it('returns the channel unchanged for other calibration types', () => {
       expect(handleOutputCalibration('LEFT', 'OTHER')).toBe('LEFT');
+    });
+  });
+
+  describe('getDefaultResponseRequired', () => {
+    it('returns true for textboxResponseArea', () => {
+      expect(getDefaultResponseRequired('textboxResponseArea')).toBeTrue();
+    });
+
+    it('returns false for textboxResponseAreaResultViewer', () => {
+      expect(getDefaultResponseRequired('textboxResponseAreaResultViewer')).toBeFalse();
+    });
+
+    it('returns true for multipleChoiceResponseArea', () => {
+      expect(getDefaultResponseRequired('multipleChoiceResponseArea')).toBeTrue();
+    });
+  });
+
+  describe('getCurrentDatetime', () => {
+    it('returns a string matching YYYY_MM_DD_HH_MM_SS format', () => {
+      expect(getCurrentDatetime()).toMatch(/^\d{4}_\d{2}_\d{2}_\d{2}_\d{2}_\d{2}$/);
+    });
+
+    it('returns a value close to the current UTC time', () => {
+      const before = new Date();
+      const result = getCurrentDatetime();
+      const after = new Date();
+      const [year, month, day] = result.split('_').map(Number);
+      expect(year).toBe(before.getUTCFullYear());
+      expect(month).toBe(before.getUTCMonth() + 1);
+      expect(day).toBeGreaterThanOrEqual(before.getUTCDate());
+      expect(day).toBeLessThanOrEqual(after.getUTCDate());
     });
   });
 });
