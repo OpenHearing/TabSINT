@@ -17,7 +17,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-import { provideTransloco, TranslocoModule } from '@jsverse/transloco';
+import { provideTransloco, TranslocoModule, TranslocoPipe } from '@jsverse/transloco';
 import { HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http';
 import { TranslocoHttpLoader } from './transloco-loader';
 
@@ -185,6 +185,7 @@ import { QRCodeModule } from 'angularx-qrcode';
     NgbModule,
     NgxJsonViewerModule,
     TranslocoModule,
+    TranslocoPipe,
     QRCodeModule,
   ],
   providers: [

@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output, OnInit, OnDestroy, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { Logger } from '../../services/logger.service';
@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   templateUrl: './change-pin.component.html',
   styleUrl: './change-pin.component.css',
-  imports: [CommonModule, FormsModule, TranslocoModule],
+  imports: [CommonModule, FormsModule, TranslocoPipe],
 })
 export class ChangePinComponent implements OnInit, OnDestroy {
   private readonly logger = inject(Logger);

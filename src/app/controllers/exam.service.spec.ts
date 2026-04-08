@@ -12,8 +12,9 @@ import { BehaviorSubject, of } from 'rxjs';
 import { PageInterface } from '../models/page/page.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { ResultsInterface } from '../models/results/results.interface';
-import { ProtocolStack } from '../models/protocol/protocol-stack';
-import { TranslocoTestingModule } from '@jsverse/transloco';
+import { ProtocolStack, ProtocolStackItem } from '../models/protocol/protocol-stack';
+import { PageTypes } from '../types/custom-types';
+import { DevicesService } from '../services/devices/devices.service';
 
 describe('ExamService', () => {
   let examService: ExamService;
@@ -24,6 +25,7 @@ describe('ExamService', () => {
   let mockStateModel: jasmine.SpyObj<StateModel>;
   let mockNotifications: jasmine.SpyObj<Notifications>;
   let mockLogger: jasmine.SpyObj<Logger>;
+  let mockDevicesService: jasmine.SpyObj<DevicesService>;
 
   beforeEach(() => {
     const mockPage = {
@@ -254,11 +256,9 @@ describe('ExamService', () => {
     mockNotifications = jasmine.createSpyObj('Notifications', ['alert']);
     mockNotifications.alert.and.returnValue(of('OK'));
     mockLogger = jasmine.createSpyObj('Logger', ['debug']);
+    mockDevicesService = jasmine.createSpyObj('DevicesService', ['getDeviceOrDefault', 'abortExams', 'queueExam', 'requestResults']);
 
     TestBed.configureTestingModule({
-      imports: [
-        TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
-      ],
       providers: [
         ExamService,
         { provide: ResultsService, useValue: mockResultsService },
@@ -268,6 +268,7 @@ describe('ExamService', () => {
         { provide: StateModel, useValue: mockStateModel },
         { provide: Notifications, useValue: mockNotifications },
         { provide: Logger, useValue: mockLogger },
+        { provide: DevicesService, useValue: mockDevicesService },
       ],
     });
 
@@ -342,5 +343,97 @@ describe('ExamService', () => {
     spyOn(examService, 'isPageResponseRequired').and.callThrough();
 
     expect(examService.isPageResponseRequired(mockPage)).toBeDefined();
+  });
+
+  describe('switchToExamView', () => {
+    it('shows an alert when no protocol is loaded', () => {
+      examService.protocol.activeProtocol = undefined;
+      examService.switchToExamView();
+      expect(mockNotifications.alert).toHaveBeenCalled();
+    });
+
+    it('sets exam state to Ready when protocol is loaded but stack is empty', () => {
+      examService.protocol.activeProtocolStack.clear();
+      examService.switchToExamView();
+      expect(mockStateModel.updateState).toHaveBeenCalledWith({ examState: ExamState.Ready });
+    });
+  });
+
+  describe('gradeResponsesDefault', () => {
+    it('leaves correct undefined when response area has no choices', () => {
+      examService.results.currentPage.page = { responseArea: { type: 'textboxResponseArea' } };
+      examService.gradeResponsesDefault();
+      expect(examService.results.currentPage.correct).toBeUndefined();
+    });
+
+    it('sets correct to true when response matches the correct choice', () => {
+      examService.results.currentPage.page = {
+        responseArea: { type: 'multipleChoiceResponseArea', choices: [{ id: 'a', correct: true }] },
+      };
+      examService.results.currentPage.response = { selected: ['a'] };
+      examService.gradeResponsesDefault();
+      expect(examService.results.currentPage.correct).toBeTrue();
+    });
+
+    it('sets correct to false when response does not match the correct choice', () => {
+      examService.results.currentPage.page = {
+        responseArea: { type: 'multipleChoiceResponseArea', choices: [{ id: 'a', correct: true }] },
+      };
+      examService.results.currentPage.response = { selected: ['b'] };
+      examService.gradeResponsesDefault();
+      expect(examService.results.currentPage.correct).toBeFalse();
+    });
+  });
+
+  describe('isPageResponseRequired', () => {
+    it('returns false when the page has no responseArea', () => {
+      expect(examService.isPageResponseRequired({} as PageInterface)).toBeFalse();
+    });
+
+    it('returns true when responseRequired is explicitly true', () => {
+      const page = { responseArea: { responseRequired: true, type: 'textboxResponseArea' } } as PageInterface;
+      expect(examService.isPageResponseRequired(page)).toBeTrue();
+    });
+
+    it('returns false when responseRequired is explicitly false', () => {
+      const page = { responseArea: { responseRequired: false, type: 'textboxResponseArea' } } as PageInterface;
+      expect(examService.isPageResponseRequired(page)).toBeFalse();
+    });
+  });
+
+  describe('updateExamProgress', () => {
+    it('sets progress to 0 when protocol is undefined', () => {
+      examService.updateExamProgress(undefined);
+      expect(mockStateModel.updateState).toHaveBeenCalledWith({ examProgress: 0 });
+    });
+
+    it('sets progress to 0 when protocol has not started (pageIndex is -1)', () => {
+      const notStarted: ProtocolStackItem = {
+        protocolId: '',
+        pageQueue: [{}] as PageTypes[],
+        pageIndex: -1,
+        maxPages: 10,
+        maxSeconds: 60,
+        startTime: new Date(),
+      };
+      examService.updateExamProgress(notStarted);
+      expect(mockStateModel.updateState).toHaveBeenCalledWith({ examProgress: 0 });
+    });
+
+    it('calculates progress as a percentage when protocol is active', () => {
+      const protocol: ProtocolStackItem = {
+        protocolId: '',
+        pageQueue: [{ id: 'p1' }, { id: 'p2' }, { id: 'p3' }] as PageTypes[],
+        pageIndex: 0,
+        maxPages: Number.MAX_SAFE_INTEGER,
+        maxSeconds: Number.MAX_SAFE_INTEGER,
+        startTime: new Date(),
+      };
+      examService.updateExamProgress(protocol);
+      const call = mockStateModel.updateState.calls.mostRecent();
+      const progress = (call.args[0] as Partial<StateInterface>).examProgress;
+      expect(progress).toBeGreaterThan(0);
+      expect(progress).toBeLessThanOrEqual(100);
+    });
   });
 });
