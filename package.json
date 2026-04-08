@@ -5,7 +5,7 @@
     "ng": "ng",
     "clean": "rm -rf dist && rm -rf .angular/cache",
     "start": "ng serve",
-    "prepare": "ts-node ./bin/write-version.ts && ts-node ./bin/update-copyright-year.ts",
+    "prepare": "ts-node --project ./bin/tsconfig.json ./bin/write-version.ts && ts-node --project ./bin/tsconfig.json ./bin/update-copyright-year.ts",
     "build:plugin.tabsintfs": "cd tabsintfs && rm -rf node_modules && npm i && npm run prepare --suffix dev && ng build && cd .. && npm i ./tabsintfs",
     "build:plugin.tabsintcha": "cd tabsintcha && rm -rf node_modules && npm i && npm run prepare --suffix dev && ng build && cd .. && npm i ./tabsintcha",
     "build:plugins": "npm run build.plugin.tabsintfs && npm run build.plugin.tabsintcha",
