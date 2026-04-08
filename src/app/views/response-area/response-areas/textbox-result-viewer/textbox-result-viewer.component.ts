@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { ResultsInterface } from '../../../../models/results/results.interface';
@@ -10,19 +10,19 @@ import { TextBoxResultViewerInterface } from './textbox-result-viewer.interface'
 import { ResultViewResponsesInterface } from '../../../../interfaces/result-view-responses.interface';
 
 @Component({
-  selector: 'textbox-result-viewer-view',
+  selector: 'app-textbox-result-viewer-view',
   templateUrl: './textbox-result-viewer.component.html',
 })
 export class TextboxResultViewerComponent implements OnInit, OnDestroy {
+  private readonly resultsModel = inject(ResultsModel);
+  private readonly pageModel = inject(PageModel);
+
   currentPage: PageInterface;
   results: ResultsInterface;
   responses?: ResultViewResponsesInterface[];
   pageSubscription: Subscription | undefined;
 
-  constructor(
-    private readonly resultsModel: ResultsModel,
-    private readonly pageModel: PageModel
-  ) {
+  constructor() {
     this.results = this.resultsModel.getResults();
     this.currentPage = this.pageModel.getPage();
   }

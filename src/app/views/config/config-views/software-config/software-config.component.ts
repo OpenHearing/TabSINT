@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 
 import { DiskInterface } from '../../../../models/disk/disk.interface';
@@ -13,11 +13,17 @@ import { DevicesService } from '../../../../services/devices/devices.service';
 import { IDeviceMetadata } from '../../../../interfaces/devices/device-metadata.interface';
 
 @Component({
-  selector: 'software-config-view',
+  selector: 'app-software-config-view',
   templateUrl: './software-config.component.html',
   styleUrl: './software-config.component.css',
 })
 export class SoftwareConfigComponent implements OnInit, OnDestroy {
+  private readonly diskModel = inject(DiskModel);
+  private readonly logger = inject(Logger);
+  private readonly versionModel = inject(VersionModel);
+  private readonly stateModel = inject(StateModel);
+  private readonly devicesService = inject(DevicesService);
+
   state: StateInterface;
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
@@ -25,13 +31,7 @@ export class SoftwareConfigComponent implements OnInit, OnDestroy {
   hostMetadata: Observable<IDeviceMetadata>;
   version: VersionInterface;
 
-  constructor(
-    private readonly diskModel: DiskModel,
-    private readonly logger: Logger,
-    private readonly versionModel: VersionModel,
-    private readonly stateModel: StateModel,
-    private readonly devicesService: DevicesService
-  ) {
+  constructor() {
     this.disk = this.diskModel.getDisk();
     this.hostMetadata = this.devicesService.hostMetadata;
     this.state = this.stateModel.getState();

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
-import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { Logger } from '../logger.service';
 import { DevicesService } from '../devices/devices.service';
 import { StateModel } from '../../models/state/state.service';
@@ -30,12 +30,7 @@ describe('deviceService', () => {
 
     TestBed.configureTestingModule({
       imports: [
-        TranslateModule.forRoot({
-          loader: {
-            provide: TranslateLoader,
-            useClass: TranslateFakeLoader,
-          },
-        }),
+        TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
       ],
       providers: [
         AppModel,
@@ -44,8 +39,6 @@ describe('deviceService', () => {
         StateModel,
         Notifications,
         Logger,
-        TranslateService,
-        TranslateStore,
         { provide: MatDialog, useValue: mockMatDialog },
         { provide: Notifications, useValue: mockNotifications },
         { provide: Tasks, useValue: mockTasks },

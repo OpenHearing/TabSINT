@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { DiskInterface } from '../../models/disk/disk.interface';
@@ -10,11 +10,16 @@ import { ResultsInterface } from '../../models/results/results.interface';
 import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
 @Component({
-  selector: 'debug-view',
+  selector: 'app-debug-view',
   templateUrl: './debug.component.html',
   styleUrl: './debug.component.css',
 })
 export class DebugComponent implements OnInit, OnDestroy {
+  private readonly diskModel = inject(DiskModel);
+  private readonly pageModel = inject(PageModel);
+  private readonly resultsModel = inject(ResultsModel);
+  private readonly stateModel = inject(StateModel);
+
   disk: DiskInterface;
   currentPage: PageInterface;
   results: ResultsInterface;
@@ -35,12 +40,7 @@ export class DebugComponent implements OnInit, OnDestroy {
   resultsSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
 
-  constructor(
-    private readonly diskModel: DiskModel,
-    private readonly pageModel: PageModel,
-    private readonly resultsModel: ResultsModel,
-    private readonly stateModel: StateModel
-  ) {
+  constructor() {
     this.disk = this.diskModel.getDisk();
     this.currentPage = this.pageModel.getPage();
     this.results = this.resultsModel.getResults();

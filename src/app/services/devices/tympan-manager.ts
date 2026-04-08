@@ -7,7 +7,7 @@ import { Logger } from '../logger.service';
 import { DeviceState, DialogType, ExamState } from '../../utilities/constants';
 import { StateModel } from '../../models/state/state.service';
 import { Notifications } from '../notifications.service';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { Tasks } from '../tasks.service';
 import { inject, NgZone } from '@angular/core';
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
@@ -23,7 +23,7 @@ export class TympanManager implements IDeviceManager {
   private readonly stateModel = inject(StateModel);
   private readonly zone = inject(NgZone);
   private readonly notifications = inject(Notifications);
-  private readonly translate = inject(TranslateService);
+  private readonly transloco = inject(TranslocoService);
   private readonly tasks = inject(Tasks);
 
   /**
@@ -88,7 +88,7 @@ export class TympanManager implements IDeviceManager {
       if (!this.requestedDisconnectionIds.has(deviceId)) {
         this.notifications.alert({
           title: 'Alert',
-          content: this.translate.instant("The tympan device's connection has timed out."),
+          content: this.transloco.translate("The tympan device's connection has timed out."),
           type: DialogType.Alert,
         });
       }

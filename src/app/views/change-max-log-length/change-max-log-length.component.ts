@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 
 import { DiskInterface } from '../../models/disk/disk.interface';
@@ -9,22 +9,22 @@ import { Logger } from '../../services/logger.service';
 import { DiskModel } from '../../models/disk/disk.service';
 
 @Component({
-  selector: 'change-max-log-length-view',
+  selector: 'app-change-max-log-length-view',
   standalone: true,
   templateUrl: './change-max-log-length.component.html',
   styleUrl: './change-max-log-length.component.css',
-  imports: [FormsModule, TranslateModule],
+  imports: [FormsModule, TranslocoPipe],
 })
-export class ChangeMaxLogLengthComponent {
+export class ChangeMaxLogLengthComponent implements OnInit, OnDestroy {
+  private readonly logger = inject(Logger);
+  private readonly dialog = inject(MatDialog);
+  private readonly diskModel = inject(DiskModel);
+
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
   maxLogLength: number | undefined;
 
-  constructor(
-    private readonly logger: Logger,
-    private readonly dialog: MatDialog,
-    private readonly diskModel: DiskModel
-  ) {
+  constructor() {
     this.disk = this.diskModel.getDisk();
     this.maxLogLength = this.disk.preferences.maxLogRows; // Initialize with the current max log length
   }

@@ -10,18 +10,18 @@
 <br /><br />
 
 <!-- View and manage connected devices -->
-<connected-devices></connected-devices>
+<app-connected-devices></app-connected-devices>
 
 <!-- Show Advanced -->
 <div class="row showhideSection">
   <div class="col-12 text-center">
     <a href="javascript:" (click)="state.isPaneOpen.deviceAdvanced = !state.isPaneOpen.deviceAdvanced">
-      <span *ngIf="state.isPaneOpen.deviceAdvanced" translate>
-        Hide Advanced Settings
+      <span *ngIf="state.isPaneOpen.deviceAdvanced">
+        {{ "Hide Advanced Settings" | transloco }}
         <i class="ion-chevron-up"></i>
       </span>
-      <span *ngIf="!state.isPaneOpen.deviceAdvanced" translate>
-        Show Advanced Settings
+      <span *ngIf="!state.isPaneOpen.deviceAdvanced">
+        {{ "Show Advanced Settings" | transloco }}
         <i class="ion-chevron-down"></i>
       </span>
     </a>
@@ -35,7 +35,7 @@
 
       <!-- WAHTS Connection Type -->
       <div class="row pad-top">
-        <div class="col-6"><label translate for="wahtsConnectionType">WAHTS Connection Type:</label></div>
+        <div class="col-6"><label for="wahtsConnectionType">{{ "WAHTS Connection Type:" | transloco }}</label></div>
         <div ngbDropdown class="col-2 dropdown-width" display="dynamic">
           <button type="button" class="btn btn-default btn-block dropdown-toggle" id="wahtsConnectionType" ngbDropdownToggle>
             {{ disk.preferences.wahtsConnectionType }}
@@ -47,7 +47,7 @@
           </div>
         </div>
         <div class="col-2"></div>
-        <div class="col-1" title="{{ 'WAHTS Communication Help' | translate }}">
+        <div class="col-1" title="{{ 'WAHTS Communication Help' | transloco }}">
           <i [matMenuTriggerFor]="wahtsCommunicationHelpMenu" class="ion-help-circled"></i>
         </div>
         <mat-menu #wahtsCommunicationHelpMenu="matMenu">
@@ -59,7 +59,7 @@
 
       <!-- Ignore Firmware Updates -->
       <div class="row pad-top">
-        <div class="col-6"><label translate for="ignoreFirmwareUpdates">Ignore Firmware Updates:</label></div>
+        <div class="col-6"><label for="ignoreFirmwareUpdates">{{ "Ignore Firmware Updates:" | transloco }}</label></div>
         <div class="col-2">
           <input
             id="ignoreFirmwareUpdatesID"
@@ -68,7 +68,7 @@
             (change)="toggleIgnoreFirmwareUpdates()" />
         </div>
         <div class="col-2"></div>
-        <div class="col-1" title="{{ 'Ignore Firmware Updates Help' | translate }}">
+        <div class="col-1" title="{{ 'Ignore Firmware Updates Help' | transloco }}">
           <i [matMenuTriggerFor]="ignoreFirmwareUpdatesHelpMenu" class="ion-help-circled"></i>
         </div>
         <mat-menu #ignoreFirmwareUpdatesHelpMenu="matMenu">
@@ -89,7 +89,7 @@
         <div class="col-6">WAHTS Firmware Tag:</div>
         <div class="col-4">{{ (wahtsFirmwareAsset | async)?.version ?? "--" }}</div>
         <div class="col-1"></div>
-        <div class="col-1" title="{{ 'WAHTS Firmware Help' | translate }}">
+        <div class="col-1" title="{{ 'WAHTS Firmware Help' | transloco }}">
           <i [matMenuTriggerFor]="wahtsFirmwareHelpMenu" class="ion-help-circled"></i>
         </div>
         <mat-menu #wahtsFirmwareHelpMenu="matMenu">
@@ -103,7 +103,7 @@
         <div class="col-6">WAHTS Firmware Build Time:</div>
         <div class="col-4">{{ (wahtsFirmwareAsset | async)?.buildDatetime ?? "--" }}</div>
         <div class="col-1"></div>
-        <div class="col-1" title="{{ 'WAHTS Firmware Help' | translate }}">
+        <div class="col-1" title="{{ 'WAHTS Firmware Help' | transloco }}">
           <i [matMenuTriggerFor]="wahtsFirmwareHelpMenu" class="ion-help-circled"></i>
         </div>
         <mat-menu #wahtsFirmwareHelpMenu="matMenu">

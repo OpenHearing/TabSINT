@@ -4,7 +4,7 @@ import { LikertComponent } from './likert.component';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { PageModel } from '../../../../../models/page/page.service';
 import { StateModel } from '../../../../../models/state/state.service';
-import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 
 describe('LikertComponent', () => {
   let component: LikertComponent;
@@ -29,14 +29,9 @@ describe('LikertComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [LikertComponent],
       imports: [
-        TranslateModule.forRoot({
-          loader: {
-            provide: TranslateLoader,
-            useClass: TranslateFakeLoader,
-          },
-        }),
+        TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
       ],
-      providers: [TranslateService, TranslateStore, ResultsModel, StateModel, { provide: PageModel, useValue: mockPageModel }],
+      providers: [ResultsModel, StateModel, { provide: PageModel, useValue: mockPageModel }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(LikertComponent);

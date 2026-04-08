@@ -7,7 +7,7 @@
     (closed)="setPanelState(entry.key, false)">
     <mat-expansion-panel-header>
       <mat-panel-title>
-        {{ entry.key | translate }}
+        {{ entry.key | transloco }}
       </mat-panel-title>
     </mat-expansion-panel-header>
 
@@ -65,7 +65,7 @@
           </div>
 
           <div #collapse="ngbCollapse" [ngbCollapse]="!expanded.get(device.deviceId)">
-            <device-info-view [device]="device"></device-info-view>
+            <app-device-info-view [device]="device"></app-device-info-view>
           </div>
         </div>
       </ng-container>

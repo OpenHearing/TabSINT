@@ -15,6 +15,4 @@ export interface AudiogramDatumNoNullInterface {
   masking: boolean;
 }
 
-export interface RetsplsInterface {
-  [key: string]: number;
-}
+export type RetsplsInterface = Record<string, number>;

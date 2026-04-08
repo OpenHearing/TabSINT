@@ -4,7 +4,7 @@ import { Logger } from '../logger.service';
 import { BluetoothType, ChaDeviceType, DeviceState, DialogType, ExamState } from '../../utilities/constants';
 import { StateModel } from '../../models/state/state.service';
 import { Notifications } from '../notifications.service';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { Tasks } from '../tasks.service';
 import { inject, NgZone } from '@angular/core';
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
@@ -24,7 +24,7 @@ export abstract class ChaManager implements IDeviceManager {
   protected readonly diskModel = inject(DiskModel);
   protected readonly zone = inject(NgZone);
   protected readonly notifications = inject(Notifications);
-  protected readonly translate = inject(TranslateService);
+  protected readonly transloco = inject(TranslocoService);
   protected readonly tasks = inject(Tasks);
 
   /**
@@ -93,7 +93,7 @@ export abstract class ChaManager implements IDeviceManager {
       if (!this.requestedDisconnectionIds.has(deviceId)) {
         this.notifications.alert({
           title: 'Alert',
-          content: this.translate.instant("The CHA device's connection has timed out."),
+          content: this.transloco.translate("The CHA device's connection has timed out."),
           type: DialogType.Alert,
         });
       }

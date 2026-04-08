@@ -54,7 +54,7 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
   normativeData: NormativeDataInterface[] = sweptDpoaeSchema.properties.normativeData.default;
   autoSubmit: boolean = sweptDpoaeSchema.properties.autoSubmit.default;
   showResults: boolean = sweptDpoaeSchema.properties.showResults.default;
-  
+
   results: ResultsInterface;
   pageSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
@@ -78,16 +78,24 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
   constructor() {
     this.results = this.resultsModel.getResults();
     this.examService.submit = () => {
-      return !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.nextStep();
+      }
     };
     this.examService.reset = () => {
-      return !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.examService.resetDefault();
+      }
     };
     this.examService.submitPartial = () => {
-      return !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.examService.submitPartialDefault();
+      }
     };
     this.examService.navigateToTarget = subProtocolId => {
-      return !this.devicesService.isDeviceMessagePending(this.device) && this.examService.navigateToTargetDefault(subProtocolId);
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.examService.navigateToTargetDefault(subProtocolId);
+      }
     };
   }
 

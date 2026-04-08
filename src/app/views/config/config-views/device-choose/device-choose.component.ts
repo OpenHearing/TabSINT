@@ -1,8 +1,8 @@
-import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { NgFor, NgClass, CommonModule } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { map, Observable, Subscription } from 'rxjs';
 
 import { DiskInterface } from '../../../../models/disk/disk.interface';
@@ -12,27 +12,27 @@ import { IDevice } from '../../../../interfaces/devices/device.interface';
 import { DeviceState, DeviceType } from '../../../../utilities/constants';
 
 @Component({
-  selector: 'device-choose-view',
+  selector: 'app-device-choose-view',
   standalone: true,
   templateUrl: './device-choose.component.html',
-  imports: [FormsModule, TranslateModule, NgFor, NgClass, CommonModule],
+  imports: [FormsModule, TranslocoModule, NgFor, NgClass, CommonModule],
 })
 export class DeviceChooseComponent implements OnInit, OnDestroy {
+  private readonly changeDetection = inject(ChangeDetectorRef);
+  private readonly dialogRef = inject(MatDialogRef<DeviceChooseComponent>);
+  private readonly diskModel = inject(DiskModel);
+  private readonly devicesService = inject(DevicesService);
+  readonly deviceType = inject<DeviceType>(MAT_DIALOG_DATA);
+
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
   discoveredDevices: Observable<IDevice[]>;
   selectedDevice: IDevice | undefined;
 
-  constructor(
-    private readonly changeDetection: ChangeDetectorRef,
-    private readonly dialogRef: MatDialogRef<DeviceChooseComponent>,
-    private readonly diskModel: DiskModel,
-    private readonly devicesService: DevicesService,
-    @Inject(MAT_DIALOG_DATA) public deviceType: DeviceType
-  ) {
+  constructor() {
     this.disk = this.diskModel.getDisk();
     this.discoveredDevices = this.devicesService.devices.pipe(
-      map(devices => devices.filter((device: IDevice) => device.type === deviceType && device.state == DeviceState.Discovery))
+      map(devices => devices.filter((device: IDevice) => device.type === this.deviceType && device.state == DeviceState.Discovery))
     );
   }
 

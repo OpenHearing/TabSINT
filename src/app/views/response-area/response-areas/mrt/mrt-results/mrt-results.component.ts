@@ -1,20 +1,22 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { MrtResultsInterface } from '../mrt-exam/mrt-exam.interface';
 import { StateModel } from '../../../../../models/state/state.service';
 import { StateInterface } from '../../../../../models/state/state.interface';
 import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
-  selector: 'mrt-results',
+  selector: 'app-mrt-results',
   templateUrl: './mrt-results.component.html',
   styleUrl: './mrt-results.component.css',
 })
 export class MrtResultsComponent implements OnInit, OnDestroy {
+  private readonly stateModel = inject(StateModel);
+
   @Input() mrtResults!: MrtResultsInterface[];
   state: StateInterface;
   stateSubscription: Subscription | undefined;
 
-  constructor(private readonly stateModel: StateModel) {
+  constructor() {
     this.state = this.stateModel.getState();
     this.stateModel.updateState({ isSubmittable: true });
   }

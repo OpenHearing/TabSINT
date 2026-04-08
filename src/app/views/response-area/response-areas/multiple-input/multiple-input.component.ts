@@ -25,8 +25,8 @@ export class MultipleInputComponent implements OnInit, OnDestroy {
   // Configuration variables
   today: string = new Date().toISOString().slice(0, 10);
   reviewDisabled: boolean = false;
-  multiDropdownModel: { [key: number]: any[] } = {};
-  multiDropdownJson: { [key: number]: any[] } = [];
+  multiDropdownModel: Record<number, any[]> = {};
+  multiDropdownJson: Record<number, any[]> = [];
   verticalSpacing: number = multipleInputSchema.properties.verticalSpacing.default;
   textAlign: string = multipleInputSchema.properties.textAlign.default;
   review: boolean = multipleInputSchema.properties.review.default;

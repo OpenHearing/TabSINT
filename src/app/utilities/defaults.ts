@@ -21,7 +21,7 @@ export const partialMetaDefaults = {
 };
 
 export function loadingProtocolDefaults(disk: DiskInterface): LoadingProtocolInterface {
-  let loadingProtocol: LoadingProtocolInterface = {
+  const loadingProtocol: LoadingProtocolInterface = {
     protocol: protocolDefaults,
     calibration: undefined,
     requiresValidation: disk.preferences.validateProtocols,

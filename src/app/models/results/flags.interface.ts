@@ -1,3 +1,1 @@
-export interface FlagsInterface {
-  [key: string]: any;
-}
+export type FlagsInterface = Record<string, any>;

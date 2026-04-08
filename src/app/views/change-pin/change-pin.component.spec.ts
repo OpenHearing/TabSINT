@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 
 import { ChangePinComponent } from './change-pin.component';
 
@@ -11,14 +11,8 @@ describe('ChangePinComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         ChangePinComponent,
-        TranslateModule.forRoot({
-          loader: {
-            provide: TranslateLoader,
-            useClass: TranslateFakeLoader,
-          },
-        }),
+        TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
       ],
-      providers: [TranslateService, TranslateStore],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ChangePinComponent);

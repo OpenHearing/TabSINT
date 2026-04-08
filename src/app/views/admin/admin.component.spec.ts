@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 
 import { AdminComponent } from './admin.component';
 import { HeaderComponent } from '../header/header.component';
@@ -43,14 +43,8 @@ describe('AdminComponent', () => {
         MatExpansionModule,
         BrowserAnimationsModule,
         QRCodeModule,
-        TranslateModule.forRoot({
-          loader: {
-            provide: TranslateLoader,
-            useClass: TranslateFakeLoader,
-          },
-        }),
+        TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
       ],
-      providers: [TranslateService, TranslateStore],
     }).compileComponents();
 
     fixture = TestBed.createComponent(AdminComponent);

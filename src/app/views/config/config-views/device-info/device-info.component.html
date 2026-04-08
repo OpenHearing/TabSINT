@@ -10,10 +10,10 @@
       <div class="text-line-truncate">{{ device.tabsintId }}</div>
     </div>
     <div class="col-1">
-      <a href="javascript:" title="{{ 'TabSINT ID Edit' | translate }}" (click)="editTabsintId(device)"><i class="ion-edit"></i></a>
+      <a href="javascript:" title="{{ 'TabSINT ID Edit' | transloco }}" (click)="editTabsintId(device)"><i class="ion-edit"></i></a>
     </div>
     <div class="col-1"></div>
-    <div class="col-1" href="javascript:" title="{{ 'TabSINT ID Edit Help' | translate }}">
+    <div class="col-1" href="javascript:" title="{{ 'TabSINT ID Edit Help' | transloco }}">
       <i [matMenuTriggerFor]="setTabsintIdMenu" class="ion-help-circled"></i>
     </div>
     <mat-menu #setTabsintIdMenu="matMenu">
@@ -39,13 +39,13 @@
       <a
         *ngIf="firmwareMatch === false && device.state === DeviceState.Connected"
         href="javascript:"
-        title="{{ 'Update Firmware' | translate }}"
+        title="{{ 'Update Firmware' | transloco }}"
         (click)="reprogramFirmware(device)"
         ><i class="ion-refresh"></i
       ></a>
     </div>
     <div class="col-1"></div>
-    <div class="col-1" href="javascript:" title="{{ 'Update Firmware Help' | translate }}">
+    <div class="col-1" href="javascript:" title="{{ 'Update Firmware Help' | transloco }}">
       <i [matMenuTriggerFor]="firmwareMenu" class="ion-help-circled"></i>
     </div>
     <mat-menu #firmwareMenu="matMenu">

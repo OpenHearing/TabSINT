@@ -119,7 +119,7 @@ export const DeveloperProtocolsCalibration: Record<string, CalibrationFileInterf
   'wahts-device-test': WahtsDeviceTestCalibration as unknown as CalibrationFileInterface,
 };
 
-export const bluetoothTimeout: number = 5000;
+export const bluetoothTimeout = 5000;
 
 export const listOfTabsintDirectories: string[] = [
   '.tabsint-results-backup',

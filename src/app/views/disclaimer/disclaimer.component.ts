@@ -1,7 +1,7 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 
 import { DiskInterface } from '../../models/disk/disk.interface';
@@ -12,7 +12,7 @@ import { DiskModel } from '../../models/disk/disk.service';
   standalone: true,
   templateUrl: './disclaimer.component.html',
   styleUrl: './disclaimer.component.css',
-  imports: [FormsModule, TranslateModule],
+  imports: [FormsModule, TranslocoModule],
 })
 export class DisclaimerComponent implements OnInit, OnDestroy {
   private readonly dialog = inject(MatDialog);

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { PageModel } from '../../../../../models/page/page.service';
 import { DevicesService } from '../../../../../services/devices/devices.service';
@@ -16,11 +16,18 @@ import { handleOutputCalibration, getCurrentDatetime } from '../../../../../util
 import { DeviceType } from '../../../../../utilities/constants';
 
 @Component({
-  selector: 'wai-exam',
+  selector: 'app-wai-exam',
   templateUrl: './wai-exam.component.html',
   styleUrl: './wai-exam.component.css',
 })
 export class WAIExamComponent implements OnInit, OnDestroy {
+  private readonly pageModel = inject(PageModel);
+  private readonly devicesService = inject(DevicesService);
+  private readonly logger = inject(Logger);
+  private readonly resultsModel = inject(ResultsModel);
+  private readonly examService = inject(ExamService);
+  private readonly buttonTextService = inject(ButtonTextService);
+
   tabsintId: string = waiSchema.properties.tabsintId.default;
   outputCalibrationType: string = waiSchema.properties.outputCalibrationType.default;
   fStart: number = waiSchema.properties.fStart.default;
@@ -52,7 +59,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
     State: 'READY',
     PctComplete: 0,
   };
-  inputParameterMap: Map<string, string> = new Map(); // Parameter map to display the user input parameters
+  inputParameterMap = new Map<string, string>(); // Parameter map to display the user input parameters
   allowableDevices = [DeviceType.Tympan];
 
   // Set default dimensions and margins
@@ -61,26 +68,27 @@ export class WAIExamComponent implements OnInit, OnDestroy {
   height = 700 - this.margin.top - this.margin.bottom - this.margin.spacerH;
   xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000];
 
-  constructor(
-    private readonly pageModel: PageModel,
-    private readonly devicesService: DevicesService,
-    private readonly logger: Logger,
-    private readonly resultsModel: ResultsModel,
-    private readonly examService: ExamService,
-    private readonly buttonTextService: ButtonTextService
-  ) {
+  constructor() {
     this.results = this.resultsModel.getResults();
     this.examService.submit = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.nextStep();
+      }
     };
     this.examService.reset = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.examService.resetDefault();
+      }
     };
     this.examService.submitPartial = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.examService.submitPartialDefault();
+      }
     };
     this.examService.navigateToTarget = subProtocolId => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.navigateToTargetDefault(subProtocolId);
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.examService.navigateToTargetDefault(subProtocolId);
+      }
     };
   }
 

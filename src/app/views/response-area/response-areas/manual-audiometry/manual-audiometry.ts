@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
 
@@ -24,11 +24,21 @@ import { manualAudiometrySchema } from '../../../../../schema/response-areas/man
 import { IDevice } from '../../../../interfaces/devices/device.interface';
 
 @Component({
-  selector: 'manual-audiometry-view',
+  selector: 'app-manual-audiometry-view',
   templateUrl: './manual-audiometry.html',
   styleUrl: './manual-audiometry.css',
 })
 export class ManualAudiometryComponent implements OnInit, OnDestroy {
+  readonly examService = inject(ExamService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly resultsModel = inject(ResultsModel);
+  private readonly pageModel = inject(PageModel);
+  private readonly protocolModel = inject(ProtocolModel);
+  private readonly stateModel = inject(StateModel);
+  private readonly devicesService = inject(DevicesService);
+  private readonly logger = inject(Logger);
+  private readonly notifications = inject(Notifications);
+
   // Configuration Variables
   allowableDevices = [DeviceType.Tympan];
   retspls?: RetsplsInterface;
@@ -70,31 +80,29 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
   resultsSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
 
-  constructor(
-    readonly examService: ExamService,
-    private readonly cdr: ChangeDetectorRef,
-    private readonly resultsModel: ResultsModel,
-    private readonly pageModel: PageModel,
-    private readonly protocolModel: ProtocolModel,
-    private readonly stateModel: StateModel,
-    private readonly devicesService: DevicesService,
-    private readonly logger: Logger,
-    private readonly notifications: Notifications
-  ) {
+  constructor() {
     this.results = this.resultsModel.getResults();
     this.protocol = this.protocolModel.getProtocolModel();
     this.state = this.stateModel.getState();
     this.examService.submit = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitDefault();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.examService.submitDefault();
+      }
     };
     this.examService.reset = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.examService.resetDefault();
+      }
     };
     this.examService.submitPartial = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.examService.submitPartialDefault();
+      }
     };
     this.examService.navigateToTarget = subProtocolId => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.navigateToTargetDefault(subProtocolId);
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.examService.navigateToTargetDefault(subProtocolId);
+      }
     };
   }
 

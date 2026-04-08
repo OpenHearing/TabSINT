@@ -5,7 +5,7 @@ import { KeyValue } from '@angular/common';
  * Component for displaying parameters to the user in a tabulated format.
  */
 @Component({
-  selector: 'input-parameters',
+  selector: 'app-input-parameters',
   templateUrl: './input-parameters.component.html',
   styleUrl: './input-parameters.component.css',
 })

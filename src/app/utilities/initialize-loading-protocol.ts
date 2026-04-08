@@ -1,4 +1,4 @@
-import { TranslateService } from '@ngx-translate/core';
+import { TranslocoService } from '@jsverse/transloco';
 import _ from 'lodash';
 
 import { LoadingProtocolInterface } from '../interfaces/loading-protocol-object.interface';
@@ -10,11 +10,11 @@ import { CalibrationFileInterface } from '../interfaces/calibration-file.interfa
 export async function initializeLoadingProtocol(
   loading: LoadingProtocolInterface,
   logger: Logger,
-  translate: TranslateService,
+  transloco: TranslocoService,
   disk: DiskInterface,
   fileService: FileService
 ): Promise<LoadingProtocolInterface> {
-  let msg: string = '';
+  let msg = '';
 
   initializeVariables();
   checkPublicKeyError();
@@ -39,8 +39,8 @@ export async function initializeLoadingProtocol(
   function checkPublicKeyError() {
     if (disk.preferences.requireEncryptedResults && !loading.protocol.publicKey) {
       loading.protocol.errors!.push({
-        type: translate.instant('Public Key'),
-        error: translate.instant(
+        type: transloco.translate('Public Key'),
+        error: transloco.translate(
           'No public encryption key is defined in the protocol. ' +
             'Results will not be recorded from this protocol while the "Require Encryption" setting is enabled.'
         ),

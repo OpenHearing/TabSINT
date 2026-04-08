@@ -5,7 +5,7 @@ import { WAIResultsInterface, WAIResultsPlotInterface } from '../wai-exam/wai-ex
 import { createWAIResultsChartSvg, createNormativeDataPath } from '../../../../../utilities/d3-plot-functions';
 
 @Component({
-  selector: 'wai-results',
+  selector: 'app-wai-results',
   templateUrl: './wai-results.component.html',
   styleUrl: './wai-results.component.css',
 })
@@ -24,7 +24,7 @@ export class WAIResultsComponent implements AfterViewInit {
   }
 
   private createResultsPlot() {
-    let xRange = [Math.min(...this.waiResults.Frequency!), Math.max(...this.waiResults.Frequency!)];
+    const xRange = [Math.min(...this.waiResults.Frequency!), Math.max(...this.waiResults.Frequency!)];
     let svg = d3
       .select('#wai-results-plot')
       .append('svg')
@@ -105,8 +105,8 @@ export class WAIResultsComponent implements AfterViewInit {
         .append('g')
         .attr('id', id)
         .attr('transform', `translate(${this.margin.left + x}, ${this.margin.top + y})`);
-      let yAxisName = id;
-      let plotData: WAIResultsPlotInterface = {
+      const yAxisName = id;
+      const plotData: WAIResultsPlotInterface = {
         svg: svg,
         chartX: x,
         chartY: y,
@@ -170,8 +170,8 @@ export class WAIResultsComponent implements AfterViewInit {
   }
 
   private getImpedanceMagnitudeYAxisLimits(): [number, number] {
-    let yMin: number = Math.min(...this.waiResults.ImpedanceAmp!);
-    let yMax: number = Math.max(...this.waiResults.ImpedanceAmp!);
+    const yMin: number = Math.min(...this.waiResults.ImpedanceAmp!);
+    const yMax: number = Math.max(...this.waiResults.ImpedanceAmp!);
     return [yMin, yMax];
   }
 }

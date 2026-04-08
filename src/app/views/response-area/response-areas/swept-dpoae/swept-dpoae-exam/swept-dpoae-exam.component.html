@@ -1,7 +1,7 @@
 <div [ngSwitch]="currentStep">
-  <input-parameters *ngSwitchCase="'input-parameters'" instruction="Press submit to start the exam." [parameterMap]="inputParameterMap">
-  </input-parameters>
-  <swept-dpoae-in-progress
+  <app-input-parameters *ngSwitchCase="'input-parameters'" instruction="Press submit to start the exam." [parameterMap]="inputParameterMap">
+  </app-input-parameters>
+  <app-swept-dpoae-in-progress
     *ngSwitchCase="'in-progress'"
     [f2Start]="f2Start"
     [f2End]="f2End"
@@ -13,9 +13,9 @@
     [xTicks]="xTicks"
     [margin]="margin"
     (sweptDPOAEResultsEvent)="saveResults($event)">
-  </swept-dpoae-in-progress>
+  </app-swept-dpoae-in-progress>
 
-  <swept-dpoae-results
+  <app-swept-dpoae-results
     *ngSwitchCase="'results'"
     [f2Start]="f2Start"
     [f2End]="f2End"
@@ -26,5 +26,5 @@
     [margin]="margin"
     [sweptDPOAEResults]="sweptDPOAEResults"
     [normativeData]="normativeData">
-  </swept-dpoae-results>
+  </app-swept-dpoae-results>
 </div>

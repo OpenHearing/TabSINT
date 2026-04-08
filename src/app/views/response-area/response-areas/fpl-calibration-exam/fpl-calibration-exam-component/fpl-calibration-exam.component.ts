@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, inject } from '@angular/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
 import { PageModel } from '../../../../../models/page/page.service';
@@ -26,6 +26,15 @@ import { DeviceType } from '../../../../../utilities/constants';
   styleUrls: ['./fpl-calibration-exam.component.css'],
 })
 export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
+  private readonly pageModel = inject(PageModel);
+  private readonly devicesService = inject(DevicesService);
+  private readonly logger = inject(Logger);
+  private readonly resultsModel = inject(ResultsModel);
+  private readonly examService = inject(ExamService);
+  private readonly buttonTextService = inject(ButtonTextService);
+  private readonly stateModel = inject(StateModel);
+
   allowableDevices = [DeviceType.Tympan];
   currentStep: string = 'landing';
   device: IDevice | undefined;
@@ -74,31 +83,32 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   writeFPLCalibration: boolean = true;
   returnResultData: boolean = false;
 
-  constructor(
-    private readonly changeDetectorRef: ChangeDetectorRef,
-    private readonly pageModel: PageModel,
-    private readonly devicesService: DevicesService,
-    private readonly logger: Logger,
-    private readonly resultsModel: ResultsModel,
-    private readonly examService: ExamService,
-    private readonly buttonTextService: ButtonTextService,
-    private readonly stateModel: StateModel
-  ) {
+  constructor() {
     this.results = this.resultsModel.getResults();
     this.examService.submit = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.nextStep();
+      }
     };
     this.examService.back = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.previousStep();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.previousStep();
+      }
     };
     this.examService.reset = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.resetDefault();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.examService.resetDefault();
+      }
     };
     this.examService.submitPartial = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.submitPartialDefault();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.examService.submitPartialDefault();
+      }
     };
     this.examService.navigateToTarget = subProtocolId => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.examService.navigateToTargetDefault(subProtocolId);
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.examService.navigateToTargetDefault(subProtocolId);
+      }
     };
     this.state = this.stateModel.getState();
     this.stateModel.updateState({ isSubmittable: true });
@@ -256,9 +266,8 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
     if (this.currentStep === 'landing') {
       this.buttonTextService.updateButtonText('Begin');
     } else if (this.currentStep === 'calibration') {
-      this.outputChannelIndex < this.outputChannels.length - 1
-        ? this.buttonTextService.updateButtonText('Next')
-        : this.buttonTextService.updateButtonText('Submit');
+      const label = this.outputChannelIndex < this.outputChannels.length - 1 ? 'Next' : 'Submit';
+      this.buttonTextService.updateButtonText(label);
     }
   }
 
@@ -291,13 +300,17 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
     this.examService.submit =
       this.outputChannelIndex < this.outputChannels.length - 1
         ? () => {
-            !this.devicesService.isDeviceMessagePending(this.device) && this.nextStep();
+            if (!this.devicesService.isDeviceMessagePending(this.device)) {
+              this.nextStep();
+            }
           }
         : () => {
             this.examService.submitDefault();
           };
     this.examService.back = () => {
-      !this.devicesService.isDeviceMessagePending(this.device) && this.previousStep();
+      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        this.previousStep();
+      }
     };
     this.shouldAbort = false;
     this.stateModel.updateState({ isSubmittable: false });

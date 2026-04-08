@@ -1,28 +1,28 @@
-<h1>{{ "Exam Complete" | translate }}</h1>
+<h1>{{ "Exam Complete" | transloco }}</h1>
 
 <h2 *ngIf="title">{{ title }}</h2>
 <p>
-  {{ "Press" | translate }} <strong>{{ "New Exam" | translate }}</strong> {{ "to restart" | translate }}
+  {{ "Press" | transloco }} <strong>{{ "New Exam" | transloco }}</strong> {{ "to restart" | transloco }}
 </p>
 <div class="spacer"></div>
 
 <div class="panel panel-default">
   <div class="panel-heading panel-title" id="examDetails">
-    {{ "Exam Details" | translate }}
+    {{ "Exam Details" | transloco }}
   </div>
   <div class="panel-body">
     <table class="table" aria-labelledby="examDetails">
       <tbody>
         <tr>
-          <th class="align-right width-50">{{ "Protocol" | translate }}:</th>
+          <th class="align-right width-50">{{ "Protocol" | transloco }}:</th>
           <td>{{ currentExam.protocol.name }}</td>
         </tr>
         <tr>
-          <th class="align-right width-50">{{ "Started at" | translate }}:</th>
+          <th class="align-right width-50">{{ "Started at" | transloco }}:</th>
           <td>{{ currentExam.testDateTime | date: "yyyy-M-dd H:mm:ss" }}</td>
         </tr>
         <tr>
-          <th class="align-right width-50">{{ "Elapsed Time" | translate }}:</th>
+          <th class="align-right width-50">{{ "Elapsed Time" | transloco }}:</th>
           <td>{{ currentExam.elapsedTime }}</td>
         </tr>
       </tbody>
@@ -37,8 +37,8 @@
     <thead>
       <tr>
         <th scope="col">#</th>
-        <th scope="col">{{ "Page ID" | translate }}</th>
-        <th scope="col">{{ "Response" | translate }}</th>
+        <th scope="col">{{ "Page ID" | transloco }}</th>
+        <th scope="col">{{ "Response" | transloco }}</th>
         <th></th>
       </tr>
     </thead>

@@ -9,16 +9,16 @@
     </mat-expansion-panel-header>
 
     <div class="panel-body text-left">
-      <small> {{ "Press a result in the table below to see more details." | translate }} </small>
+      <small> {{ "Press a result in the table below to see more details." | transloco }} </small>
 
       <br /><br />
 
       <table class="table fixed table-striped">
         <thead>
           <tr>
-            <th scope="col" class="row-Name">{{ "Protocol" | translate }}</th>
-            <th scope="col" class="row-Date results">{{ "Started" | translate }}</th>
-            <th scope="col" class="row-Date results">{{ "Duration" | translate }}</th>
+            <th scope="col" class="row-Name">{{ "Protocol" | transloco }}</th>
+            <th scope="col" class="row-Date results">{{ "Started" | transloco }}</th>
+            <th scope="col" class="row-Date results">{{ "Duration" | transloco }}</th>
           </tr>
         </thead>
         <tbody>
@@ -37,7 +37,7 @@
       <div class="row pad-top">
         <div class="col-12 button-group">
           <button type="button" class="btn btn-success upload-btn" (click)="bulkUpload()">
-            <i class="ion-upload"></i> {{ "Upload" | translate }}
+            <i class="ion-upload"></i> {{ "Upload" | transloco }}
           </button>
 
           <button
@@ -46,7 +46,7 @@
             [disabled]="sqLite.count['results'] === 0"
             class="btn btn-primary"
             (click)="exportAll()">
-            <span class="glyphicon glyphicon-floppy-disk"></span> {{ "Export" | translate }}
+            <span class="glyphicon glyphicon-floppy-disk"></span> {{ "Export" | transloco }}
           </button>
 
           <button
@@ -55,7 +55,7 @@
             [disabled]="sqLite.count['results'] === 0"
             class="btn btn-danger"
             (click)="deleteAll()">
-            <i class="ion-trash-a"></i> {{ "Delete" | translate }}
+            <i class="ion-trash-a"></i> {{ "Delete" | transloco }}
           </button>
         </div>
       </div>
@@ -72,10 +72,10 @@
       <table class="table table-striped">
         <thead>
           <tr>
-            <th scope="col">{{ "Protocol" | translate }}</th>
-            <th scope="col">{{ "Started" | translate }}</th>
-            <th scope="col">{{ "Uploaded" | translate }}</th>
-            <th scope="col">{{ "Storage" | translate }}</th>
+            <th scope="col">{{ "Protocol" | transloco }}</th>
+            <th scope="col">{{ "Started" | transloco }}</th>
+            <th scope="col">{{ "Uploaded" | transloco }}</th>
+            <th scope="col">{{ "Storage" | transloco }}</th>
           </tr>
         </thead>
         <tbody>
@@ -93,7 +93,7 @@
       </table>
 
       <small
-        ><i>{{ "Only the last 30 exported results are shown." | translate }}</i></small
+        ><i>{{ "Only the last 30 exported results are shown." | transloco }}</i></small
       >
     </div>
   </mat-expansion-panel>
