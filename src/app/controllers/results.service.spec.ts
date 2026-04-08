@@ -2,12 +2,15 @@ import { TestBed } from '@angular/core/testing';
 import { ResultsService } from './results.service';
 import { ResultsInterface } from '../models/results/results.interface';
 import { DeveloperProtocols } from '../utilities/constants';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 
 describe('ResultsService', () => {
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      providers: [ResultsService, { provide: TranslateService, useValue: TranslateService }],
+      imports: [
+        TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
+      ],
+      providers: [ResultsService],
     });
   });
 

@@ -5,11 +5,11 @@
       <div class="graphs-container">
         <!-- Right Audiogram -->
         <div class="audiogram-right" [ngClass]="{'red-border': selectedEar === 'Right'}">
-          <audiogram
+          <app-audiogram
             *ngIf="refreshGraph"
             [dataStruct]="getEarData('Right')"
             [selectedEar]="selectedEar === 'Right' ? 'Right' : null"
-            [isManualExam]="true"></audiogram>
+            [isManualExam]="true"></app-audiogram>
         </div>
 
         <!-- Response Buttons -->
@@ -21,11 +21,11 @@
 
         <!-- Left Audiogram -->
         <div class="audiogram-left" [ngClass]="{'blue-border': selectedEar === 'Left'}">
-          <audiogram
+          <app-audiogram
             *ngIf="refreshGraph"
             [dataStruct]="getEarData('Left')"
             [selectedEar]="selectedEar === 'Left' ? 'Left' : null"
-            [isManualExam]="true"></audiogram>
+            [isManualExam]="true"></app-audiogram>
         </div>
       </div>
 

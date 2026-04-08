@@ -1,5 +1,3 @@
 import { ProtocolSchemaInterface } from './protocol-schema.interface';
 
-export interface ProtocolDictionary {
-  [Key: string]: ProtocolSchemaInterface;
-}
+export type ProtocolDictionary = Record<string, ProtocolSchemaInterface>;

@@ -6,7 +6,7 @@ import { PageModel } from '../../../../models/page/page.service';
 import { QrCodeResponseAreaComponent } from './qr-code.component';
 import { QrService } from '../../../../services/qr.service';
 import { Notifications } from '../../../../services/notifications.service';
-import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 
 describe('QrCodeResponseAreaComponent', () => {
   let component: QrCodeResponseAreaComponent;
@@ -16,14 +16,9 @@ describe('QrCodeResponseAreaComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [QrCodeResponseAreaComponent],
       imports: [
-        TranslateModule.forRoot({
-          loader: {
-            provide: TranslateLoader,
-            useClass: TranslateFakeLoader,
-          },
-        }),
+        TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
       ],
-      providers: [TranslateService, TranslateStore, StateModel, ResultsModel, PageModel, QrService, Notifications],
+      providers: [StateModel, ResultsModel, PageModel, QrService, Notifications],
     }).compileComponents();
 
     fixture = TestBed.createComponent(QrCodeResponseAreaComponent);

@@ -1,18 +1,18 @@
 <div class="row">
-  <div class="col-12">{{ "Number of log messages" | translate }}: {{ logsCount }}</div>
+  <div class="col-12">{{ "Number of log messages" | transloco }}: {{ logsCount }}</div>
 </div>
 <div class="row pad-top">
   <div class="col-4">
     <!-- <button class="btn btn-block btn-success"
             (click)="logExportUpload()"><i class="ion-upload"></i> 
-            {{'Upload' | translate}}</button> -->
+            {{'Upload' | transloco}}</button> -->
   </div>
   <div class="col-4">
-    <button class="btn btn-block btn-primary" (click)="logExportSave()"><span class="ion-document"></span> {{ "Export" | translate }}</button>
+    <button class="btn btn-block btn-primary" (click)="logExportSave()"><span class="ion-document"></span> {{ "Export" | transloco }}</button>
   </div>
   <div class="col-4">
     <button class="btn btn-block btn-default" (click)="displayLogs()">
-      <i class="ion-document-text"></i> {{ showLogs ? "Hide" : ("Display" | translate) }}
+      <i class="ion-document-text"></i> {{ showLogs ? "Hide" : ("Display" | transloco) }}
     </button>
   </div>
 </div>

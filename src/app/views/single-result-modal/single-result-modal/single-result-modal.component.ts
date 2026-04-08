@@ -1,4 +1,4 @@
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 
@@ -17,20 +17,20 @@ import { ResultsUploadService } from '../../../controllers/results-upload.servic
   styleUrl: './single-result-modal.component.css',
 })
 export class SingleResultModalComponent implements OnInit, OnDestroy {
+  readonly dialog = inject(MatDialog);
+  readonly diskModel = inject(DiskModel);
+  readonly resultsService = inject(ResultsService);
+  private readonly resultsUploadService = inject(ResultsUploadService);
+  private readonly notifications = inject(Notifications);
+  private readonly logger = inject(Logger);
+  readonly index = inject<number>(MAT_DIALOG_DATA);
+
   singleExamResult?: ExamResults;
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
 
-  constructor(
-    public dialog: MatDialog,
-    public diskModel: DiskModel,
-    public resultsService: ResultsService,
-    private readonly resultsUploadService: ResultsUploadService,
-    private readonly notifications: Notifications,
-    private readonly logger: Logger,
-    @Inject(MAT_DIALOG_DATA) public index: number
-  ) {
-    this.disk = diskModel.getDisk();
+  constructor() {
+    this.disk = this.diskModel.getDisk();
   }
 
   ngOnInit(): void {
@@ -48,7 +48,7 @@ export class SingleResultModalComponent implements OnInit, OnDestroy {
    * Function to be called by ngOnIit to handle any asynchronous operations.
    */
   private async asyncNgOnInit(): Promise<void> {
-    this.singleExamResult = await this.resultsService.getSingleResult(this.index) ?? undefined;
+    this.singleExamResult = (await this.resultsService.getSingleResult(this.index)) ?? undefined;
   }
 
   async upload() {

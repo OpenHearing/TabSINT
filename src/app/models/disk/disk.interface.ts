@@ -19,9 +19,7 @@ export interface DiskInterface {
   activeProtocolMeta?: ProtocolMetaInterface;
   appDeveloperModeCount: number;
   audhere: string;
-  availableProtocolsMeta: {
-    [Key: string]: ProtocolMetaInterface;
-  };
+  availableProtocolsMeta: Record<string, ProtocolMetaInterface>;
   contentURI: string | null;
   downloadInProgress: boolean;
   interApp: {

@@ -9,24 +9,24 @@
         <!-- Change which template we show based on what "mode" the exam is in. -->
         <div [ngSwitch]="state.examState">
           <div *ngSwitchCase="ExamState.Ready">
-            <exam-ready-view></exam-ready-view>
+            <app-exam-ready-view></app-exam-ready-view>
           </div>
           <div *ngSwitchCase="ExamState.NotReady">
-            <exam-not-ready-view></exam-not-ready-view>
+            <app-exam-not-ready-view></app-exam-not-ready-view>
           </div>
           <div *ngSwitchCase="ExamState.DeviceError">
-            <exam-device-error-view></exam-device-error-view>
+            <app-exam-device-error-view></app-exam-device-error-view>
           </div>
           <div *ngSwitchCase="ExamState.Testing">
             <app-exam-testing-view></app-exam-testing-view>
           </div>
           <div *ngSwitchCase="ExamState.Finalized">
-            <exam-finalized-view></exam-finalized-view>
+            <app-exam-finalized-view></app-exam-finalized-view>
           </div>
         </div>
 
         <!-- Debugging display. -->
-        <debug-view></debug-view>
+        <app-debug-view></app-debug-view>
 
         <!-- add space for keyboard -->
         <div class="keyboard-spacer"></div>
@@ -46,7 +46,7 @@
           class="btn btn-block btn-lg btn-default btn-centered"
           [ngClass]="currentPage.helpText ? '' : 'disabled custom-disabled'"
           (click)="help()">
-          <span class="ion-help-circled"></span> {{ "Help" | translate }}
+          <span class="ion-help-circled"></span> {{ "Help" | transloco }}
         </button>
       </div>
       <div class="col-6">
@@ -56,7 +56,7 @@
           class="btn btn-block btn-lg btn-primary btn-centered"
           (click)="begin()"
           *ngIf="state.examState === ExamState.Ready">
-          {{ "Begin" | translate }}
+          {{ "Begin" | transloco }}
         </button>
       </div>
     </div>
@@ -72,7 +72,7 @@
             [ngClass]="currentPage.helpText ? '' : 'disabled custom-disabled'"
             *ngIf="!currentPage.enableBackButton"
             (click)="help()">
-            <span class="ion-help-circled"></span> {{ "Help" | translate }}
+            <span class="ion-help-circled"></span> {{ "Help" | transloco }}
           </button>
           <button
             id="back-btn"
@@ -81,12 +81,12 @@
             [ngClass]="state.canGoBack() ? '' : 'disabled custom-disabled'"
             *ngIf="currentPage.enableBackButton"
             (click)="back()">
-            <span class="ion-arrow-left"></span> {{ "Back" | translate }}
+            <span class="ion-arrow-left"></span> {{ "Back" | transloco }}
           </button>
         </div>
         <div class="col-4">
           <button id="submit-btn" type="button" class="btn btn-block btn-lg btn-primary btn-centered" (click)="skip()">
-            <span class="ion-arrow-right"></span> {{ "Skip" | translate }}
+            <span class="ion-arrow-right"></span> {{ "Skip" | transloco }}
           </button>
         </div>
         <div class="col-4">
@@ -98,7 +98,7 @@
             [disabled]="!state.isSubmittable"
             (click)="submit()">
             <div *ngIf="currentPage.submitText">{{ currentPage.submitText }}</div>
-            <div *ngIf="!currentPage.submitText">{{ buttonText || "Submit" | translate }}</div>
+            <div *ngIf="!currentPage.submitText">{{ buttonText || "Submit" | transloco }}</div>
           </button>
         </div>
       </div>
@@ -113,7 +113,7 @@
             [ngClass]="currentPage.helpText ? '' : 'disabled custom-disabled'"
             *ngIf="!currentPage.enableBackButton"
             (click)="help()">
-            <span class="ion-help-circled"></span> {{ "Help" | translate }}
+            <span class="ion-help-circled"></span> {{ "Help" | transloco }}
           </button>
           <button
             id="back-btn"
@@ -121,7 +121,7 @@
             class="btn btn-block btn-lg btn-default btn-centered"
             *ngIf="currentPage.enableBackButton"
             (click)="back()">
-            <span class="ion-arrow-left"></span> {{ "Back" | translate }}
+            <span class="ion-arrow-left"></span> {{ "Back" | transloco }}
           </button>
         </div>
         <div class="col-6">
@@ -133,7 +133,7 @@
             [disabled]="!state.isSubmittable"
             (click)="submit()">
             <div *ngIf="currentPage.submitText">{{ currentPage.submitText }}</div>
-            <div *ngIf="!currentPage.submitText">{{ buttonText || "Submit" | translate }}</div>
+            <div *ngIf="!currentPage.submitText">{{ buttonText || "Submit" | transloco }}</div>
           </button>
         </div>
       </div>
@@ -146,12 +146,12 @@
           class="btn btn-block btn-lg btn-default btn-centered"
           [ngClass]="currentPage.helpText ? '' : 'disabled custom-disabled'"
           (click)="help()">
-          <span class="ion-help-circled"></span> {{ "Help" | translate }}
+          <span class="ion-help-circled"></span> {{ "Help" | transloco }}
         </button>
       </div>
       <div class="col-6">
         <button id="reset-btn" type="button" class="btn btn-block btn-lg btn-success btn-centered" (click)="reset()">
-          {{ "New Exam" | translate }}
+          {{ "New Exam" | transloco }}
         </button>
       </div>
     </div>

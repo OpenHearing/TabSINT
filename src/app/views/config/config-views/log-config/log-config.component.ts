@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { SqLite } from '../../../../services/sqLite.service';
 import { StateModel } from '../../../../models/state/state.service';
 import { StateInterface } from '../../../../models/state/state.interface';
@@ -11,11 +11,18 @@ import { Logger } from '../../../../services/logger.service';
 import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
-  selector: 'log-config-view',
+  selector: 'app-log-config-view',
   templateUrl: './log-config.component.html',
   styleUrl: './log-config.component.css',
 })
 export class LogConfigComponent implements OnInit, OnDestroy {
+  readonly transloco = inject(TranslocoService);
+  readonly stateModel = inject(StateModel);
+  readonly logger = inject(Logger);
+  private readonly sqLite = inject(SqLite);
+  private readonly fileService = inject(FileService);
+  private readonly notifications = inject(Notifications);
+
   state: StateInterface;
   showLogs: boolean;
   logs?: string[] = [];
@@ -25,14 +32,7 @@ export class LogConfigComponent implements OnInit, OnDestroy {
   logsCountSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
 
-  constructor(
-    public translate: TranslateService,
-    public stateModel: StateModel,
-    public logger: Logger,
-    private readonly sqLite: SqLite,
-    private readonly fileService: FileService,
-    private readonly notifications: Notifications
-  ) {
+  constructor() {
     this.state = this.stateModel.getState();
     this.showLogs = this.state.isPaneOpen.appLog;
   }
@@ -65,7 +65,7 @@ export class LogConfigComponent implements OnInit, OnDestroy {
     if (!this.logs || this.logs.length == 0) {
       return;
     }
-    let msg: DialogDataInterface = {
+    const msg: DialogDataInterface = {
       title: 'Confirm Export',
       content: 'Are you sure you want to export the logs to tabsint-logs?',
       type: DialogType.Confirm,

@@ -3,7 +3,7 @@ import { DeviceState, DeviceStatus, DeviceType, DialogType, ExamState } from '..
 import { IDeviceManager } from '../../interfaces/devices/device-manager.interface';
 import { StateModel } from '../../models/state/state.service';
 import { Notifications } from '../notifications.service';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { TympanManager } from './tympan-manager';
 import { Device } from '@capacitor/device';
 import { Logger } from '../logger.service';
@@ -31,7 +31,7 @@ export class DevicesService {
   private readonly stateModel = inject(StateModel);
   private readonly zone = inject(NgZone);
   private readonly notifications = inject(Notifications);
-  private readonly translate = inject(TranslateService);
+  private readonly transloco = inject(TranslocoService);
   private readonly tasks = inject(Tasks);
   private readonly diskModel = inject(DiskModel);
   private readonly dialog = inject(MatDialog);
@@ -185,7 +185,7 @@ export class DevicesService {
         }
         this.notifications.alert({
           title: 'Alert',
-          content: this.translate.instant(completionResponse),
+          content: this.transloco.translate(completionResponse),
           type: DialogType.Alert,
         });
       }

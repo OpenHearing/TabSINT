@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { ExamResponse } from '../calibration-exam-component/calibration-exam.interface';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { IDevice } from '../../../../../interfaces/devices/device.interface';
@@ -15,12 +15,12 @@ interface CalibrationResults {
   styleUrls: ['./calibration-results-viewer.component.css'],
 })
 export class CalibrationResultsViewerComponent implements OnInit {
+  private readonly resultsModel = inject(ResultsModel);
+
   @Input() device: IDevice | undefined;
   @Output() entryClicked = new EventEmitter<{ frequency: string; ear: string; step: string }>();
   DeviceStatus = DeviceStatus;
   results: CalibrationResults | undefined;
-
-  constructor(private readonly resultsModel: ResultsModel) {}
 
   ngOnInit(): void {
     const calibrationResult = this.resultsModel

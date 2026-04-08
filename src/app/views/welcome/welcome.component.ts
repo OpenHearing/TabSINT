@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -23,6 +23,16 @@ import { Notifications } from '../../services/notifications.service';
   styleUrl: './welcome.component.css',
 })
 export class WelcomeComponent implements OnInit, OnDestroy {
+  private readonly appModel = inject(AppModel);
+  private readonly dialog = inject(MatDialog);
+  private readonly diskModel = inject(DiskModel);
+  private readonly stateModel = inject(StateModel);
+  private readonly router = inject(Router);
+  private readonly tasks = inject(Tasks);
+  readonly adminService = inject(AdminService);
+  private readonly qrService = inject(QrService);
+  private readonly notifications = inject(Notifications);
+
   disk: DiskInterface;
   app: AppInterface;
   state: StateInterface;
@@ -30,17 +40,7 @@ export class WelcomeComponent implements OnInit, OnDestroy {
   diskSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
 
-  constructor(
-    private readonly appModel: AppModel,
-    private readonly dialog: MatDialog,
-    private readonly diskModel: DiskModel,
-    private readonly stateModel: StateModel,
-    private readonly router: Router,
-    private readonly tasks: Tasks,
-    public adminService: AdminService,
-    private readonly qrService: QrService,
-    private readonly notifications: Notifications
-  ) {
+  constructor() {
     this.disk = this.diskModel.getDisk();
     this.app = this.appModel.getApp();
     this.state = this.stateModel.getState();

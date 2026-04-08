@@ -240,11 +240,7 @@ export class ResultsService {
    * @param result exam result
    */
   async writeResultToFile(result: ExamResults) {
-    const dir =
-      (this.disk.preferences.servers.localServer.resultsDir ?? 'tabsint-results') +
-      '/' +
-      this.protocol.activeProtocol?.name +
-      '/';
+    const dir = (this.disk.preferences.servers.localServer.resultsDir ?? 'tabsint-results') + '/' + this.protocol.activeProtocol?.name + '/';
 
     const publicKey = this.protocol.activeProtocol?.publicKey;
     const uuid = this.hostMetadata?.uuid;

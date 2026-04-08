@@ -17,10 +17,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-// import ngx-translate and the http loader
-import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { HttpClient, HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http';
+import { provideTransloco, TranslocoModule } from '@jsverse/transloco';
+import { HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http';
+import { TranslocoHttpLoader } from './transloco-loader';
 
 // Views
 import { ConfigComponent } from './views/config/config.component';
@@ -105,10 +104,6 @@ import { ButtonGridComponent } from './views/response-area/response-areas/button
 import { QrService } from './services/qr.service';
 import { QRCodeModule } from 'angularx-qrcode';
 
-// required for AOT compilation
-export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
-  return new TranslateHttpLoader(http);
-}
 @NgModule({
   declarations: [
     AppComponent,
@@ -189,13 +184,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     MatSelectModule,
     NgbModule,
     NgxJsonViewerModule,
-    TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: HttpLoaderFactory,
-        deps: [HttpClient],
-      },
-    }),
+    TranslocoModule,
     QRCodeModule,
   ],
   providers: [
@@ -217,7 +206,16 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     ResultsService,
     ExamService,
     AdminService,
-    TranslateService,
+    provideTransloco({
+      config: {
+        availableLangs: ['en', 'fr', 'ja', 'es'],
+        defaultLang: 'en',
+        fallbackLang: 'en',
+        reRenderOnLangChange: true,
+        prodMode: false,
+      },
+      loader: TranslocoHttpLoader,
+    }),
     DevicesService,
     NetworkService,
     QrService,

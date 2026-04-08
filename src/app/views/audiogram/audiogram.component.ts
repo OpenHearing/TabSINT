@@ -1,15 +1,15 @@
-import { Component, ElementRef, OnInit, Input, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, OnInit, Input, SimpleChanges, OnChanges, inject } from '@angular/core';
 import * as d3 from 'd3';
 import { AudiogramDatumNoNullInterface, AudiometryResultsInterface } from '../../interfaces/audiometry-results.interface';
 import { LevelUnits, ResultType } from '../../utilities/constants';
 
 // See https://www.asha.org/policy/GL1990-00006/ for audiogram specifications
 @Component({
-  selector: 'audiogram',
+  selector: 'app-audiogram',
   templateUrl: './audiogram.component.html',
   styleUrl: './audiogram.component.css',
 })
-export class AudiogramComponent implements OnInit {
+export class AudiogramComponent implements OnInit, OnChanges {
   @Input()
   dataStruct!: AudiometryResultsInterface;
 
@@ -20,7 +20,8 @@ export class AudiogramComponent implements OnInit {
   @Input() isManualExam: boolean = false;
 
   @Input() levelUnits: string = 'dB HL';
-  constructor(private readonly elementRef: ElementRef) {}
+
+  private readonly elementRef = inject(ElementRef);
 
   ngOnInit(): void {
     if (this.dataStruct) {
@@ -225,13 +226,13 @@ export class AudiogramComponent implements OnInit {
     data.sort((a, b) => a.channel.localeCompare(b.channel) || a.frequency - b.frequency);
 
     // draw lines between symbols
-    let dline = svg.selectAll('.dline').data(data);
+    const dline = svg.selectAll('.dline').data(data);
 
     // r is the buffer radius around symbols in pixels
-    let r = 12;
+    const r = 12;
     for (let k = 0; k < data.length - 1; k++) {
       // Calculate the angle (theta) for buffer adjustment
-      let theta = Math.atan(
+      const theta = Math.atan(
         (yScale(data[k + 1].threshold) - yScale(data[k].threshold)) / (xScale(data[k + 1].frequency) - xScale(data[k].frequency))
       );
 

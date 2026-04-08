@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ResultsComponent } from './results.component';
-import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -15,14 +15,8 @@ describe('ResultsComponent', () => {
       imports: [
         MatExpansionModule,
         BrowserAnimationsModule,
-        TranslateModule.forRoot({
-          loader: {
-            provide: TranslateLoader,
-            useClass: TranslateFakeLoader,
-          },
-        }),
+        TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
       ],
-      providers: [TranslateService, TranslateStore],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ResultsComponent);

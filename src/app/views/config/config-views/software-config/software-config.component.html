@@ -1,4 +1,4 @@
-<div class="row pad-top" translate>
+<div class="row pad-top">
   <div class="col-12">
     TabSINT is developed by <a href="https://www.creare.com/">Creare</a> and is available open source on
     <a href="https://gitlab.com/creare-com/tabsint">gitlab.com/creare-com/tabsint</a>.
@@ -9,7 +9,7 @@
 
 <div class="row">
   <div class="col-12">
-    <h5>{{ "Version" | translate }}</h5>
+    <h5>{{ "Version" | transloco }}</h5>
   </div>
 </div>
 
@@ -23,7 +23,7 @@
     <span>{{ version.rev }}</span>
   </li>
   <!-- <li (click)="toggleAppDeveloperMode()">
-        <b>{{'Build Name' | translate}}:</b>
+        <b>{{'Build Name' | transloco}}:</b>
         <span>
             <span *ngIf="disk.preferences.appDeveloperMode">
                 - App-Developer Mode is on <button class="btn btn-default"
@@ -35,7 +35,7 @@
         </span>
     </li> -->
   <li>
-    <b>{{ "Build Date" | translate }}:</b>
+    <b>{{ "Build Date" | transloco }}:</b>
     <span>{{ version.date | date: "yyyy-MM-dd HH:mm:ss" }}</span>
   </li>
 </ul>
@@ -44,36 +44,36 @@
 
 <div class="row">
   <div class="col-12">
-    <h5>{{ "Device" | translate }}</h5>
+    <h5>{{ "Device" | transloco }}</h5>
   </div>
 </div>
 <ul class="admin-info">
   <ng-container *ngIf="hostMetadata | async as metadata">
     <li>
-      <b>{{ "Device UUID" | translate }}:</b>
+      <b>{{ "Device UUID" | transloco }}:</b>
       <span>{{ metadata.uuid }}</span>
     </li>
     <!-- <li>
-        <b>{{'TabSINT UUID' | translate}}:</b>
+        <b>{{'TabSINT UUID' | transloco}}:</b>
         <span>{{devices.tabsintUUID}}</span>
     </li> -->
     <li>
-      <b>{{ "Device Model" | translate }}:</b>
+      <b>{{ "Device Model" | transloco }}:</b>
       <span>{{ metadata.model }}</span>
     </li>
     <li>
-      <b>{{ "Operating System" | translate }}:</b>
+      <b>{{ "Operating System" | transloco }}:</b>
       <span>{{ metadata.platform }} {{ metadata.version }}</span>
     </li>
     <li>
-      <b>{{ "Free Disk Space" | translate }}:</b>
+      <b>{{ "Free Disk Space" | transloco }}:</b>
       <span>{{ metadata.diskSpace }} MB</span>
     </li>
   </ng-container>
   <li>
-    <b>{{ "Network Status" | translate }}:</b>
-    <span *ngIf="state.wifiConnected">{{ "Online" | translate }}</span>
-    <span *ngIf="!state.wifiConnected">{{ "Offline" | translate }}</span>
+    <b>{{ "Network Status" | transloco }}:</b>
+    <span *ngIf="state.wifiConnected">{{ "Online" | transloco }}</span>
+    <span *ngIf="!state.wifiConnected">{{ "Offline" | transloco }}</span>
   </li>
 </ul>
 
@@ -81,7 +81,7 @@
 
 <!-- <div class="row">
     <div class="col-12">
-        <h5>{{'Plugins' | translate}}</h5>
+        <h5>{{'Plugins' | transloco}}</h5>
     </div>
 </div> -->
 <!-- <ul class="admin-info">
@@ -96,20 +96,20 @@
 
 <div class="row">
   <div class="col-12">
-    <h5>{{ "Build Details" | translate }}</h5>
+    <h5>{{ "Build Details" | transloco }}</h5>
   </div>
 </div>
 <ul class="admin-info">
   <li>
-    <b>{{ "Capacitor Version" | translate }}:</b>
+    <b>{{ "Capacitor Version" | transloco }}:</b>
     <span>{{ version.deps.capacitor }}</span>
   </li>
   <li>
-    <b>{{ "Node Version" | translate }}:</b>
+    <b>{{ "Node Version" | transloco }}:</b>
     <span>{{ version.deps.node }}</span>
   </li>
   <li>
-    <b>{{ "Build System" | translate }}:</b>
+    <b>{{ "Build System" | transloco }}:</b>
     <span>{{ version.deps.user_agent }}</span>
   </li>
 </ul>

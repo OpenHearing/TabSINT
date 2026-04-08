@@ -13,9 +13,9 @@
 
 <div class="modal-footer">
   <button type="button" class="btn btn-primary action-btn" (click)="select()" [ngClass]="!selectedDevice ? 'disabled custom-disabled' : ''">
-    {{ "Select" | translate }}
+    {{ "Select" | transloco }}
   </button>
-  <button type="button" class="btn btn-secondary action-btn" (click)="cancel()">{{ "Cancel" | translate }}</button>
+  <button type="button" class="btn btn-secondary action-btn" (click)="cancel()">{{ "Cancel" | transloco }}</button>
 </div>
 
 <style>

@@ -1,11 +1,11 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { StateInterface } from '../../../../models/state/state.interface';
 import { StateModel } from '../../../../models/state/state.service';
 import { IDevice } from '../../../../interfaces/devices/device.interface';
 import { DeviceState, DeviceType, DialogType } from '../../../../utilities/constants';
 import { DevicesService } from '../../../../services/devices/devices.service';
 import { Logger } from '../../../../services/logger.service';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { map, Observable } from 'rxjs';
 import { DiskInterface } from '../../../../models/disk/disk.interface';
@@ -14,10 +14,17 @@ import { Notifications } from '../../../../services/notifications.service';
 import { DialogDataInterface } from '../../../../interfaces/dialog-data.interface';
 
 @Component({
-  selector: 'connected-devices',
+  selector: 'app-connected-devices',
   templateUrl: './connected-devices.component.html',
 })
 export class ConnectedDevicesComponent implements OnInit, OnDestroy {
+  private readonly stateModel = inject(StateModel);
+  private readonly devicesService = inject(DevicesService);
+  private readonly logger = inject(Logger);
+  private readonly transloco = inject(TranslocoService);
+  private readonly diskModel = inject(DiskModel);
+  private readonly notifications = inject(Notifications);
+
   DeviceType = DeviceType;
   disk: DiskInterface;
   connectedDevicesMap: Observable<Map<DeviceType, IDevice[]>>;
@@ -29,14 +36,7 @@ export class ConnectedDevicesComponent implements OnInit, OnDestroy {
   stateSubscription: Subscription | undefined;
   diskSubscription: Subscription | undefined;
 
-  constructor(
-    private readonly stateModel: StateModel,
-    private readonly devicesService: DevicesService,
-    private readonly logger: Logger,
-    private readonly translate: TranslateService,
-    private readonly diskModel: DiskModel,
-    private readonly notifications: Notifications
-  ) {
+  constructor() {
     this.disk = this.diskModel.getDisk();
     this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;

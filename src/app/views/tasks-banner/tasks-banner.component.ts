@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Tasks } from '../../services/tasks.service';
 import { Subscription } from 'rxjs';
 
@@ -8,11 +8,11 @@ import { Subscription } from 'rxjs';
   styleUrl: './tasks-banner.component.css',
 })
 export class TasksBannerComponent implements OnInit, OnDestroy {
+  private readonly tasks = inject(Tasks);
+
   isVisible = false;
   taskSubscription!: Subscription;
-  taskList: { [key: string]: string } = {};
-
-  constructor(private readonly tasks: Tasks) {}
+  taskList: Record<string, string> = {};
 
   ngOnInit(): void {
     this.taskSubscription = this.tasks.tasks$.subscribe(tasks => {
