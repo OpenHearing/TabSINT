@@ -31,7 +31,7 @@ describe('LikertComponent', () => {
       imports: [
         TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
       ],
-      providers: [, ResultsModel, StateModel, { provide: PageModel, useValue: mockPageModel }],
+      providers: [ResultsModel, StateModel, { provide: PageModel, useValue: mockPageModel }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(LikertComponent);

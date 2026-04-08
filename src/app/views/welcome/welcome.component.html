@@ -6,23 +6,23 @@
   <div class="spacer"></div>
 
   <div class="container">
-    <a class="welcome-row" (click)="scanQrCodeandAutoConfig()">
+    <a class="welcome-row" tabindex="0" (click)="scanQrCodeandAutoConfig()" (keyup.enter)="scanQrCodeandAutoConfig()">
       <span><img src="assets/img/QR_code.png" class="qrCode-logo-size" alt="{{ 'QR code logo' }}" /></span>
-      <span i18n class="welcome">Scan Configuration</span>
+      <span class="welcome">{{ "Scan Configuration" | transloco }}</span>
     </a>
     <a routerLink="/exam" class="welcome-row">
       <span><mat-icon>edit</mat-icon></span>
-      <span class="welcome" i18n>Exam View</span>
+      <span class="welcome">{{ "Exam View" | transloco }}</span>
     </a>
 
-    <a (click)="adminService.onAdminViewClick()" class="welcome-row">
+    <a class="welcome-row" tabindex="0" (click)="adminService.onAdminViewClick()" (keyup.enter)="adminService.onAdminViewClick()">
       <span><mat-icon>settings</mat-icon></span>
-      <span class="welcome" i18n>Admin View</span>
+      <span class="welcome">{{ "Admin View" | transloco }}</span>
     </a>
 
     <a href="https://tabsint.org/" class="welcome-row">
       <span><mat-icon>help_outline</mat-icon></span>
-      <span class="welcome" i18n>Documentation</span>
+      <span class="welcome">{{ "Documentation" | transloco }}</span>
     </a>
 
     <app-build-details></app-build-details>

@@ -6,7 +6,7 @@
   <div class="questionbox admin-page">
     <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
       <li [ngbNavItem]="1">
-        <button ngbNavLink>Setup</button>
+        <button ngbNavLink>{{ "Setup" | transloco }}</button>
         <ng-template ngbNavContent>
           <p>
             <app-config-view></app-config-view>
@@ -14,7 +14,7 @@
         </ng-template>
       </li>
       <li [ngbNavItem]="2">
-        <button ngbNavLink>Protocols</button>
+        <button ngbNavLink>{{ "Protocols" | transloco }}</button>
         <ng-template ngbNavContent>
           <p>
             <app-protocols-view></app-protocols-view>
@@ -22,7 +22,7 @@
         </ng-template>
       </li>
       <li [ngbNavItem]="3">
-        <button ngbNavLink>Results</button>
+        <button ngbNavLink>{{ "Results" | transloco }}</button>
         <ng-template ngbNavContent>
           <p>
             <app-results-view></app-results-view>
@@ -30,7 +30,7 @@
         </ng-template>
       </li>
       <li [ngbNavItem]="4">
-        <button routerLink="/exam" ngbNavLink>Exam View</button>
+        <button routerLink="/exam" ngbNavLink>{{ "Exam View" | transloco }}</button>
         <ng-template ngbNavContent>
           <p>
             <!-- <app-exam-view></app-exam-view> -->

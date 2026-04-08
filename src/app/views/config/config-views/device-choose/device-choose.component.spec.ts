@@ -15,7 +15,10 @@ describe('DeviceChooseComponent', () => {
         MatDialogModule,
         TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
       ],
-      providers: [, { provide: MatDialogRef, useValue: {} }, { provide: MAT_DIALOG_DATA, useValue: {} }],
+      providers: [
+        { provide: MatDialogRef, useValue: {} },
+        { provide: MAT_DIALOG_DATA, useValue: {} },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DeviceChooseComponent);

@@ -18,7 +18,7 @@ describe('QrCodeResponseAreaComponent', () => {
       imports: [
         TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
       ],
-      providers: [, StateModel, ResultsModel, PageModel, QrService, Notifications],
+      providers: [StateModel, ResultsModel, PageModel, QrService, Notifications],
     }).compileComponents();
 
     fixture = TestBed.createComponent(QrCodeResponseAreaComponent);

@@ -1,5 +1,12 @@
 {
   "Abort": "Abandonner",
+  "Admin View": "Vue Administrateur",
+  "Documentation": "Documentation",
+  "Exam View": "Vue Examen",
+  "Protocols": "Protocoles",
+  "Results": "Résultats",
+  "Scan Configuration": "Scanner la Configuration",
+  "Setup": "Configuration",
   "Admin Mode:": "Mode Administrateur:",
   "Admin PIN Edit": "Modifier le PIN administrateur",
   "Application Log": "Journaux de l'application",

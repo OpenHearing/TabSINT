@@ -1,5 +1,12 @@
 {
   "Abort": "中止",
+  "Admin View": "管理者画面",
+  "Documentation": "ドキュメント",
+  "Exam View": "測定画面",
+  "Protocols": "プロトコル",
+  "Results": "結果",
+  "Scan Configuration": "設定をスキャン",
+  "Setup": "設定",
   "Admin Mode:": "管理者:",
   "Admin PIN Edit": "管理者PINを編集",
   "Application Log": "Application Log",

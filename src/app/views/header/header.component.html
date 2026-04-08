@@ -3,7 +3,6 @@
 <!-- Header -->
 <nav class="navbar navbar-default navbar-fixed-top sticky-top tablet-interface">
   <div class="container-fluid">
-    <!-- <div class="row"> -->
 
     <!-- Exam Header -->
     <div *ngIf="state.appState === AppState.Exam">
@@ -15,8 +14,7 @@
     <!-- Admin Header -->
     <div *ngIf="state.appState !== AppState.Exam">
       <h1 class="surveytitle truncate">
-        <!-- <ng-transclude></ng-transclude> -->
-        Admin View
+        {{ "Admin View" | transloco }}
       </h1>
     </div>
 
@@ -24,10 +22,6 @@
       <!-- resource indicators -->
       <app-indicator-view></app-indicator-view>
 
-      <!-- task list -->
-      <!-- <a href="#" class="surveytitle task-toggle" *ngIf="tasks.numOngoing() > 0 && tasks.hidden">
-            <span (click)="tasks.unhide()"><i class="ion-clipboard"></i></span>
-          </a> -->
 
       <div class="col">
         <div ngbDropdown display="dynamic" class="d-inline-block">
@@ -35,10 +29,9 @@
             <i class="bi bi-justify"></i>
           </button>
           <div ngbDropdownMenu aria-labelledby="header-dropdown-menu">
-            <!--  NOT YET IMPLEMENTED, DO NOT DELETE    <button ngbDropdownItem>Scan Configuration</button> -->
-            <button routerLink="/exam" ngbDropdownItem>Exam View</button>
-            <button (click)="adminService.onAdminViewClick()" ngbDropdownItem>Admin View</button>
-            <a href="https://tabsint.org/"><button ngbDropdownItem>Documentation</button></a>
+            <button routerLink="/exam" ngbDropdownItem>{{ "Exam View" | transloco }}</button>
+            <button (click)="adminService.onAdminViewClick()" ngbDropdownItem>{{ "Admin View" | transloco }}</button>
+            <a href="https://tabsint.org/"><button ngbDropdownItem>{{ "Documentation" | transloco }}</button></a>
             <div *ngIf="(state.examState === ExamState.Testing || state.examState === ExamState.DeviceError) && state.appState === AppState.Exam">
               <div class="dropdown-divider"></div>
               <button (click)="resetExam()" ngbDropdownItem><i class="ion-close"></i> {{ "Reset Exam and Discard Results" | transloco }}</button>
@@ -57,8 +50,6 @@
           </div>
         </div>
       </div>
-
-      <!-- </div> -->
     </div>
   </div>
 </nav>

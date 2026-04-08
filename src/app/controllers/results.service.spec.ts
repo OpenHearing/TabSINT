@@ -7,6 +7,9 @@ import { TranslocoTestingModule } from '@jsverse/transloco';
 describe('ResultsService', () => {
   beforeEach(async () => {
     TestBed.configureTestingModule({
+      imports: [
+        TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
+      ],
       providers: [ResultsService],
     });
   });

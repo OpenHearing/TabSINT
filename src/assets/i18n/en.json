@@ -1,5 +1,12 @@
 {
   "Abort": "Abort",
+  "Admin View": "Admin View",
+  "Documentation": "Documentation",
+  "Exam View": "Exam View",
+  "Protocols": "Protocols",
+  "Results": "Results",
+  "Scan Configuration": "Scan Configuration",
+  "Setup": "Setup",
   "Admin Mode Help": "Includes additional configuration options, displays expandable debug menus showing program state at the bottom of exam pages, and suppresses Admin Password prompts.",
   "Admin Mode:": "Admin Mode:",
   "Admin PIN Edit": "Edit Admin PIN",

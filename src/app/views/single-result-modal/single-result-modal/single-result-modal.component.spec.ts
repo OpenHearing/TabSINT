@@ -20,7 +20,7 @@ describe('SingleResultModalComponent', () => {
       imports: [MatDialogModule, NgxJsonViewerModule],
       providers: [
         DiskModel,
-        { provide: MAT_DIALOG_DATA, useValue: {} },
+        { provide: MAT_DIALOG_DATA, useValue: 0 },
         { provide: MatDialogRef, useValue: {} },
         { provide: ResultsService, useValue: {} },
         { provide: SqLite, useValue: {} },
@@ -32,7 +32,6 @@ describe('SingleResultModalComponent', () => {
 
     fixture = TestBed.createComponent(SingleResultModalComponent);
     component = fixture.componentInstance;
-    component.index = 0;
     fixture.detectChanges();
   });
 
