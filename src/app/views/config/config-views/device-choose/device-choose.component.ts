@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angula
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { NgFor, NgClass, CommonModule } from '@angular/common';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { map, Observable, Subscription } from 'rxjs';
 
 import { DiskInterface } from '../../../../models/disk/disk.interface';
@@ -15,7 +15,7 @@ import { DeviceState, DeviceType } from '../../../../utilities/constants';
   selector: 'app-device-choose-view',
   standalone: true,
   templateUrl: './device-choose.component.html',
-  imports: [FormsModule, TranslocoModule, NgFor, NgClass, CommonModule],
+  imports: [FormsModule, TranslocoPipe, NgFor, NgClass, CommonModule],
 })
 export class DeviceChooseComponent implements OnInit, OnDestroy {
   private readonly changeDetection = inject(ChangeDetectorRef);
