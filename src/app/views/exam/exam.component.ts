@@ -61,6 +61,7 @@ export class ExamComponent implements OnInit, OnDestroy {
       this.state = updatedState;
     });
     this.examService.switchToExamView();
+    // TOOD: Should this try to auto-connect?
     this.stateModel.updateState({ appState: AppState.Exam });
     this.buttonTextSubscription = this.buttonTextService.buttonText$.subscribe((newText: string) => {
       this.buttonText = newText;

@@ -51,6 +51,7 @@ export enum Headset {
   VicFirth = 'VicFirth',
   VicFirthS2 = 'VicFirthS2',
   WAHTS = 'WAHTS',
+  Tympan = 'Tympan',
 }
 
 export enum ResultsMode {

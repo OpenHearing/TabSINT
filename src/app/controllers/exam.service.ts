@@ -97,6 +97,7 @@ export class ExamService {
     }
 
     if (!this.protocol.activeProtocolStack.peek()) {
+      // TOOD: Should this try to auto-connect?
       this.stateModel.updateState({ examState: ExamState.Ready });
     }
   }
