@@ -1,0 +1,45 @@
+.buttonReleased {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 10px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #000;
+  background-color: #ff0000;
+  border: none;
+  border-radius: 30px;
+  box-shadow: 0 7px #ffffff;
+}
+
+.buttonPressed {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 10px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #000;
+  border: none;
+  border-radius: 30px;
+
+  background-color: #970202;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+
+.button {
+  border: none;
+  color: white;
+  padding: 0px;
+  width: 400px;
+  height: 243px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 31px;
+  margin: 4px 4px;
+  cursor: pointer;
+}

@@ -101,6 +101,7 @@ import { NetworkService } from './controllers/network.service';
 import { SubjectIdComponent } from './views/response-area/response-areas/subject-id/subject-id.component';
 import { CheckboxComponent } from './views/response-area/response-areas/checkbox/checkbox.component';
 import { ButtonGridComponent } from './views/response-area/response-areas/button-grid/button-grid.component';
+import { BekesyComponent } from './views/response-area/response-areas/bekesy/bekesy.component';
 import { QrService } from './services/qr.service';
 import { QRCodeModule } from 'angularx-qrcode';
 
@@ -163,6 +164,7 @@ import { QRCodeModule } from 'angularx-qrcode';
     MemrExamComponent,
     InputParametersComponent,
     TabsintConfigComponent,
+    BekesyComponent,
   ],
   imports: [
     BrowserModule,

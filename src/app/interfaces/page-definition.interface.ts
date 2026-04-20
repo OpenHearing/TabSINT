@@ -18,6 +18,7 @@ import { PreProcessFunctionInterface } from './preProcessFunction.interface';
 import { Headset, PlaybackMethod, WavfileWeighting } from '../utilities/constants';
 import { ButtonGridInterface } from '../views/response-area/response-areas/button-grid/button-grid.interface';
 import { QrCodeResponseAreaInterface } from '../views/response-area/response-areas/qr-code/qr-code.interface';
+import { BekesyResponseAreaInterface } from '../views/response-area/response-areas/bekesy/bekesy.interface';
 
 export interface PageDefinition {
   id: string;
@@ -36,6 +37,7 @@ export interface PageDefinition {
   helpText?: string;
   repeatPage?: RepeatPageInterface;
   preProcessFunction?: PreProcessFunctionInterface;
+  wavfileStartDelayTime?: number;
   wavfiles?: PageWavfileInterface[];
   chaWavFiles?: ChaWavfileInterface[];
   chaStream?: boolean;
@@ -60,9 +62,36 @@ export interface RepeatPageInterface {
   repeatIf?: string;
 }
 
+export interface PageWavfileCalInterface {
+  /**
+   * Tablet version for the calibration.
+   */
+  tablet?: string;
+
+  /**
+   * The playback method reference type.
+   */
+  refType?: PlaybackMethod;
+
+  /**
+   * Real world root mean square Z value.
+   */
+  realWorldRMSZ?: number;
+
+  /**
+   * Scale factor for the wav file.
+   */
+  scaleFactor?: number;
+
+  /**
+   * Wav root mean square Z value.
+   */
+  wavRMSZ?: number;
+}
+
 export interface PageWavfileInterface {
   path: string;
-  cal?: object;
+  cal?: PageWavfileCalInterface;
   useCommonRepo?: boolean;
   playbackMethod?: PlaybackMethod;
   targetSPL?: number | string;
@@ -135,4 +164,5 @@ export type ResponseArea =
   | MrtExamInterface
   | MemrExamInterface
   | CustomResponseAreaInterface
-  | QrCodeResponseAreaInterface;
+  | QrCodeResponseAreaInterface
+  | BekesyResponseAreaInterface;
