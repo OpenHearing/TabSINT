@@ -19,6 +19,7 @@ import { QrService } from '../../../../services/qr.service';
 import { FileService } from '../../../../services/file.service';
 import { TabsintFs } from 'tabsintfs';
 import { Notifications } from '../../../../services/notifications.service';
+import { AudioService } from '../../../../services/audio.service';
 
 @Component({
   selector: 'app-tabsint-config-view',
@@ -36,6 +37,7 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   private readonly qrService = inject(QrService);
   private readonly fileService = inject(FileService);
   private readonly notifications = inject(Notifications);
+  private readonly audioService = inject(AudioService);
 
   disk: DiskInterface;
   state: StateInterface;
@@ -184,6 +186,27 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
     }
 
     this.cdr.detectChanges();
+  }
+
+  /**
+   * Play the 1KHz 94dB wav file from the admin panel.
+   */
+  async play1kHz94dB() {
+    await this.audioService.play1kHz94dB();
+  }
+
+  /**
+   * Play the comp audio wav file from the admin panel.
+   */
+  async playCompAudio() {
+    await this.audioService.playCompAudio();
+  }
+
+  /**
+   * Play the comp audio linear wav file from the admin panel.
+   */
+  async playCompAudioLinear() {
+    await this.audioService.playCompAudioLinear();
   }
 
   // Popovers

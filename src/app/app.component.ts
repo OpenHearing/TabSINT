@@ -24,6 +24,7 @@ import { NetworkService } from './controllers/network.service';
 import { Notifications } from './services/notifications.service';
 import { DialogType } from './utilities/constants';
 import { DevicesService } from './services/devices/devices.service';
+import { AudioService } from './services/audio.service';
 
 @Component({
   selector: 'app-root',
@@ -44,6 +45,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private readonly stateModel = inject(StateModel);
   private readonly networkService = inject(NetworkService);
   private readonly notifications = inject(Notifications);
+  private readonly audioService = inject(AudioService);
 
   title = 'tabsint';
   app: AppInterface;
@@ -106,6 +108,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
     await this.devicesService.initialize();
     this.setupNetworkListener();
+    await this.audioService.setSystemVolume(100);
   }
 
   openDisclaimer() {

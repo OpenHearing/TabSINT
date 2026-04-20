@@ -31,6 +31,8 @@ import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface
 import { DevicesService } from '../services/devices/devices.service';
 import { IDevice } from '../interfaces/devices/device.interface';
 import { DosimeterResultsInterface } from '../interfaces/dosimeter-results.interface';
+import { pageSchema } from '../../schema/page.schema';
+import { AudioService } from '../services/audio.service';
 
 @Injectable({
   providedIn: 'root',
@@ -47,6 +49,7 @@ export class ExamService {
   private readonly fileService = inject(FileService);
   private readonly diskModel = inject(DiskModel);
   private readonly devicesService = inject(DevicesService);
+  private readonly audioService = inject(AudioService);
 
   protocol: ProtocolModelInterface;
   results: ResultsInterface;
@@ -67,6 +70,7 @@ export class ExamService {
       // Stop dosimetry if examState changes
       if (this.state.examState !== updatedState.examState) {
         this.stopDosimetry();
+        this.audioService.stopAudio();
       }
       this.state = updatedState;
     });
@@ -110,6 +114,7 @@ export class ExamService {
     this.resultsService.initializeExamResults();
     this.stateModel.updateState({ examState: ExamState.Testing });
     this.protocol.activeProtocolStack.addProtocol(this.protocol.activeProtocol!);
+    this.audioService.setSystemVolume(100);
     this.advancePage();
   }
 
@@ -331,6 +336,9 @@ export class ExamService {
     // Stop any dosimeters that might be running
     this.stopDosimetry();
 
+    // Stop any running audio
+    this.audioService.stopAudio();
+
     const currentProtocol = this.protocol.activeProtocolStack.peek();
     if (currentProtocol === undefined) {
       this.endExam();
@@ -427,6 +435,7 @@ export class ExamService {
    */
   private resetProtocolStack() {
     this.stopDosimetry();
+    this.audioService.stopAudio();
     this.protocol.activeProtocolStack.clear();
   }
 
@@ -447,11 +456,19 @@ export class ExamService {
     this.stateModel.updateState({ appState: AppState.Admin });
   }
 
-  // Ignore the below functions for now
-
-  finishActivateMedia() {
-    // TODO: We may want to implement this when we add streaming, playSound, and/or video.
+  /**
+   * Activate media for a page, currently supports activation for audio only.
+   * @param page The page for media activation.
+   */
+  async activateMedia(page: PageDefinition) {
+    this.audioService.stopAudio();
+    if (page.wavfiles) {
+      const startDelayTime = page.wavfileStartDelayTime ? page.wavfileStartDelayTime : pageSchema.properties.wavfileStartDelayTime.default;
+      await this.audioService.playWav(page.wavfiles, startDelayTime);
+    }
   }
+
+  // Ignore the below functions for now
 
   help() {
     // TODO: Implement this!
@@ -514,6 +531,7 @@ export class ExamService {
     this.resultsService.initializePageResults(page);
     this.window.scrollTo({ top: 0, behavior: 'smooth' });
     this.activateDosimeters(page);
+    this.activateMedia(page);
     this.handleAutoSubmitDelay(page);
   }
 
