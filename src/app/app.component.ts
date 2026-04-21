@@ -108,7 +108,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
     await this.devicesService.initialize();
     this.setupNetworkListener();
-    await this.audioService.setSystemVolume(100);
+    await this.audioService.setSystemVolume(1.0);
   }
 
   openDisclaimer() {

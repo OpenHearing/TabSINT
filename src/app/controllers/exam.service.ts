@@ -114,7 +114,7 @@ export class ExamService {
     this.resultsService.initializeExamResults();
     this.stateModel.updateState({ examState: ExamState.Testing });
     this.protocol.activeProtocolStack.addProtocol(this.protocol.activeProtocol!);
-    this.audioService.setSystemVolume(100);
+    this.audioService.setSystemVolume(1.0);
     this.advancePage();
   }
 

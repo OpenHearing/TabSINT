@@ -1,6 +1,5 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { interval, Subscription, timer } from 'rxjs';
-import { TranslocoPipe } from '@jsverse/transloco';
 import { PageModel } from '../../../../models/page/page.service';
 import { StateModel } from '../../../../models/state/state.service';
 import { ExamService } from '../../../../controllers/exam.service';
@@ -19,7 +18,6 @@ type BekesyRequirements = Required<Omit<BekesyResponseAreaInterface, keyof Commo
   selector: 'app-bekesy-response-area',
   templateUrl: './bekesy.component.html',
   styleUrl: './bekesy.component.css',
-  imports: [TranslocoPipe],
 })
 export class BekesyComponent implements OnInit, OnDestroy {
   private readonly resultsModel = inject(ResultsModel);
@@ -254,8 +252,8 @@ export class BekesyComponent implements OnInit, OnDestroy {
       return undefined;
     }
 
-    const method = wavfile.playbackMethod || PlaybackMethod.Arbitrary;
-    const weighting = wavfile.weighting || WavfileWeighting.Z;
+    const method = wavfile.playbackMethod ?? PlaybackMethod.Arbitrary;
+    const weighting = wavfile.weighting ?? WavfileWeighting.Z;
     let level: number | undefined = undefined;
 
     if (method === PlaybackMethod.Arbitrary) {

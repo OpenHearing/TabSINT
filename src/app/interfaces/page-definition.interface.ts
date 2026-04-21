@@ -15,7 +15,7 @@ import { CustomResponseAreaInterface } from '../views/response-area/response-are
 import { SubjectIdInterface } from '../views/response-area/response-areas/subject-id/subject-id.interface';
 import { CheckboxInterface } from '../views/response-area/response-areas/checkbox/checkbox.interface';
 import { PreProcessFunctionInterface } from './preProcessFunction.interface';
-import { Headset, PlaybackMethod, WavfileWeighting } from '../utilities/constants';
+import { CalibrationFilter, Headset, PlaybackMethod, WavfileWeighting } from '../utilities/constants';
 import { ButtonGridInterface } from '../views/response-area/response-areas/button-grid/button-grid.interface';
 import { QrCodeResponseAreaInterface } from '../views/response-area/response-areas/qr-code/qr-code.interface';
 import { BekesyResponseAreaInterface } from '../views/response-area/response-areas/bekesy/bekesy.interface';
@@ -79,14 +79,49 @@ export interface PageWavfileCalInterface {
   realWorldRMSZ?: number;
 
   /**
+   * Calibration filter for the file.
+   */
+  calibrationFilter?: CalibrationFilter;
+
+  /**
    * Scale factor for the wav file.
    */
   scaleFactor?: number;
 
   /**
+   * Normal factor for the wav file.
+   */
+  normFactor?: number;
+
+  /**
+   * Wav root mean square A value.
+   */
+  wavRMSA?: number;
+
+  /**
+   * Wav root mean square C value.
+   */
+  wavRMSC?: number;
+
+  /**
    * Wav root mean square Z value.
    */
   wavRMSZ?: number;
+
+  /**
+   * Root mean square A value.
+   */
+  RMSA?: number;
+
+  /**
+   * Root mean square C value.
+   */
+  RMSC?: number;
+
+  /**
+   * Root mean square Z value.
+   */
+  RMSZ?: number;
 }
 
 export interface PageWavfileInterface {

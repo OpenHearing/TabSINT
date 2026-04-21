@@ -340,7 +340,7 @@ public class TabsintAudioPlugin extends Plugin implements AudioManager.OnAudioFo
     try {
       double volume = call.getDouble(VOLUME);
       int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-      int sysVolume = Math.round(((float) volume) * (maxVolume / 100f));
+      int sysVolume = Math.round(((float) volume) * (maxVolume));
       if (sysVolume > maxVolume) {
           sysVolume = maxVolume;
       }

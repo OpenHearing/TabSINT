@@ -1,5 +1,4 @@
 import { inject, Injectable } from '@angular/core';
-import { Directory, Filesystem } from '@capacitor/filesystem';
 import { TabsintAudio } from 'tabsintaudio';
 import { Logger } from './logger.service';
 import { PageWavfileCalInterface, PageWavfileInterface } from '../interfaces/page-definition.interface';
@@ -22,6 +21,7 @@ export class AudioService {
   private readonly devicesService = inject(DevicesService);
   private hostMetadata: IDeviceMetadata | undefined;
   private headset: Headset | undefined;
+  tabsintAudioPlugin = TabsintAudio;
 
   /** The active asset paths for audio which are currently loaded and playing.*/
   private activeAssetPaths = new Set<string>();
@@ -51,6 +51,13 @@ export class AudioService {
   constructor() {
     this.devicesService.hostMetadata.subscribe(data => (this.hostMetadata = data));
     this.disk.diskSubject.subscribe(disk => (this.headset = disk.preferences.headset));
+  }
+  /**
+   * Get the currently active assets which are loaded.
+   * @returns The active loaded assets.
+   */
+  getActiveAssets() {
+    return structuredClone(this.activeAssetPaths);
   }
 
   /**
@@ -153,7 +160,7 @@ export class AudioService {
   }
 
   /**
-   * Play wavfiles to the device.
+   * Play wav files to the device.
    * The expected file path is an asset or file with content:// format.
    * @param wavfiles The array of wav files to play.
    * @param startDelay The start delay before starting any audio.
@@ -197,12 +204,15 @@ export class AudioService {
         const volumeRight = Array.isArray(wav.volume) ? wav.volume[1] : wav.volume;
         await this.startPlaying(wav.src, volumeLeft, volumeRight);
         if (wav.startTime && wav.startTime > 0) {
-          await TabsintAudio.seekTo({ assetId: wav.src, time: wav.startTime });
-          if (wav.endTime && wav.endTime > 0 && wav.endTime > wav.startTime) {
-            setTimeout(async () => {
-              await TabsintAudio.pause({ assetId: wav.src });
-            }, wav.endTime - wav.startTime);
-          }
+          await this.tabsintAudioPlugin.seekTo({ assetId: wav.src, time: wav.startTime });
+        }
+        if (wav.endTime && wav.endTime > 0) {
+          setTimeout(
+            async () => {
+              await this.tabsintAudioPlugin.pause({ assetId: wav.src });
+            },
+            wav.endTime - (wav.startTime ?? 0)
+          );
         }
         this.logger.debug(`Playing ${wav.src} at Volume ${wav.volume}`);
       }
@@ -215,16 +225,16 @@ export class AudioService {
    */
   async setAllVolume(volume: number | number[]) {
     for (const activeAsset of this.activeAssetPaths) {
-      await TabsintAudio.setVolume({ assetId: activeAsset, volume: volume });
+      await this.tabsintAudioPlugin.setVolume({ assetId: activeAsset, volume: volume });
     }
   }
 
   /**
-   * Set the volume level for the system/device from (0 to 100).
+   * Set the volume level for the system/device from (0 to 1).
    * @param vol The volume for the system/device.
    */
   async setSystemVolume(volume: number) {
-    await TabsintAudio.setSystemVolume({ volume: volume });
+    await this.tabsintAudioPlugin.setSystemVolume({ volume: volume });
   }
 
   /**
@@ -232,8 +242,8 @@ export class AudioService {
    */
   private async stopPlaying(): Promise<void> {
     for (const asset of this.activeAssetPaths) {
-      await TabsintAudio.stop({ assetId: asset });
-      await TabsintAudio.unload({ assetId: asset });
+      await this.tabsintAudioPlugin.stop({ assetId: asset });
+      await this.tabsintAudioPlugin.unload({ assetId: asset });
       this.logger.debug(`Stopping audio asset: ${asset}`);
     }
     this.activeAssetPaths = new Set();
@@ -247,9 +257,9 @@ export class AudioService {
    * @param volumeLeft The left channel volume to play at.
    * @param volumeRight The right channel volume to play at.
    */
-  private async startPlaying(path: string, volumeLeft: number, volumeRight: number): Promise<void> {
+  async startPlaying(path: string, volumeLeft: number, volumeRight: number): Promise<void> {
     try {
-      await TabsintAudio.preload({
+      await this.tabsintAudioPlugin.preload({
         assetId: path,
         assetPath: path,
         audioChannelNum: 1,
@@ -263,7 +273,7 @@ export class AudioService {
         throw error;
       }
     }
-    await TabsintAudio.play({ assetId: path });
+    await this.tabsintAudioPlugin.play({ assetId: path });
     this.activeAssetPaths.add(path);
     this.logger.debug(`Starting audio playback: ${path}`);
   }
@@ -290,8 +300,8 @@ export class AudioService {
     wavfile.targetSPL = typeof wavfile.targetSPL === 'string' ? parseFloat(wavfile.targetSPL) : wavfile.targetSPL;
     let level = wavfile.targetSPL ? wavfile.targetSPL : 65.0;
     level = level + gain;
-    const method = wavfile.playbackMethod || PlaybackMethod.Arbitrary;
-    const weighting = wavfile.weighting || WavfileWeighting.Z;
+    const method = wavfile.playbackMethod ?? PlaybackMethod.Arbitrary;
+    const weighting = wavfile.weighting ?? WavfileWeighting.Z;
 
     if (PlaybackMethod.Arbitrary && wavfile.cal.scaleFactor !== undefined) {
       const specifiedPaRMS = 20e-6 * Math.pow(10, level / 20.0);
@@ -361,7 +371,7 @@ export class AudioService {
    * @returns The gain value for the tablet type.
    */
   getTabletGain(calibration: PageWavfileCalInterface): number {
-    let tabletGain: number;
+    let tabletGain = 0;
     let gainMap = undefined;
     const hostData = this.hostMetadata;
 
