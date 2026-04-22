@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
+import { App } from '@capacitor/app';
 import _ from 'lodash';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
@@ -48,6 +49,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private readonly audioService = inject(AudioService);
 
   title = 'tabsint';
+  userVolume: number | undefined;
   app: AppInterface;
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
@@ -67,10 +69,13 @@ export class AppComponent implements OnInit, OnDestroy {
     this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
     });
+    App.addListener('pause', () => this.appLifecycleListener('pause'));
+    App.addListener('resume', () => this.appLifecycleListener('resume'));
   }
 
   ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
+    App.removeAllListeners();
   }
 
   /**
@@ -108,7 +113,6 @@ export class AppComponent implements OnInit, OnDestroy {
     }
     await this.devicesService.initialize();
     this.setupNetworkListener();
-    await this.audioService.setSystemVolume(1.0);
   }
 
   openDisclaimer() {
@@ -125,5 +129,23 @@ export class AppComponent implements OnInit, OnDestroy {
     this.networkService.addListener(true, (status: { connectionType: string }) => {
       this.stateModel.updateWifiStatus(status.connectionType === 'wifi');
     });
+  }
+
+  /**
+   * Listener for application lifecycle events.
+   * Handles resetting the user's volume when the application is not active.
+   * @param eventName The event name for the application lifecycle state.
+   */
+  private async appLifecycleListener(eventName: 'resume' | 'pause'): Promise<void> {
+    try {
+      if (eventName === 'resume') {
+        this.userVolume = await this.audioService.getSystemVolume();
+        await this.audioService.setSystemVolume(1.0);
+      } else if (this.userVolume) {
+        await this.audioService.setSystemVolume(this.userVolume);
+      }
+    } catch (error) {
+      this.logger.error('Failed system volume updates on application state change:' + JSON.stringify(error));
+    }
   }
 }
