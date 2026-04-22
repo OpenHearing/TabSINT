@@ -140,7 +140,7 @@ describe('AudioService', () => {
     expect(volume).toEqual(0);
   });
 
-  it('calculate volume returns a position value for arbitrary playback method', () => {
+  it('calculate volume returns a positive value for arbitrary playback method', () => {
     const volume = audioService.calculateVolume(wavFile);
     expect(volume).toBeGreaterThan(0.0);
   });
@@ -150,7 +150,7 @@ describe('AudioService', () => {
     expect(gain).toEqual(0.0);
   });
 
-  it(`should call plugin set system volume`, async () => {
+  it(`set system volume calls plugin set system volume`, async () => {
     await audioService.setSystemVolume(1.0);
     expect(mockTabsintAudio.setSystemVolume).toHaveBeenCalledWith({ volume: 1.0 });
   });
