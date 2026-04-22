@@ -4,13 +4,14 @@ import { PageModel } from '../../../../models/page/page.service';
 import { StateModel } from '../../../../models/state/state.service';
 import { ExamService } from '../../../../controllers/exam.service';
 import { ResultsModel } from '../../../../models/results/results-model.service';
-import { BekesyResponseAreaInterface } from './bekesy.interface';
+import { BekesyResponseAreaInterface, BekesyResultsInterface } from './bekesy.interface';
 import { bekesyResponseAreaSchema } from '../../../../../schema/response-areas/bekesy.schema';
 import { PageInterface } from '../../../../models/page/page.interface';
 import { CommonResponseAreaInterface, PageWavfileInterface } from '../../../../interfaces/page-definition.interface';
 import { AudioChannel, PlaybackMethod, WavfileWeighting } from '../../../../utilities/constants';
 import { AudioService } from '../../../../services/audio.service';
 import { Logger } from '../../../../services/logger.service';
+import { getCurrentDatetime } from '../../../../utilities/exam-helper-functions';
 
 type BekesyRequirements = Required<Omit<BekesyResponseAreaInterface, keyof CommonResponseAreaInterface>>;
 
@@ -31,7 +32,7 @@ export class BekesyComponent implements OnInit, OnDestroy {
   private activeInterval: Subscription | undefined = undefined;
   private bekesyTimeoutTimer: Subscription | undefined = undefined;
 
-  private readonly bekesyResponse: string[] = [];
+  private readonly bekesyResponse: BekesyResultsInterface[] = [];
   private readonly bekesyRefreshInterval = 25;
   buttonPressed: boolean = false;
   buttonText: string = bekesyResponseAreaSchema.properties.buttonText.default;
@@ -179,13 +180,13 @@ export class BekesyComponent implements OnInit, OnDestroy {
    * Setup subscriptions for timers and intervals.
    * @param bekesyResponseArea The parameters for the response area.
    */
-  initializeTimers(bekestResponseArea: BekesyRequirements) {
+  initializeTimers(bekesyResponseArea: BekesyRequirements) {
     // Reset subscriptions
     this.bekesyTimeoutTimer?.unsubscribe();
     this.activeInterval?.unsubscribe();
 
     // Activate new subscriptions
-    this.bekesyTimeoutTimer = timer(1000 * bekestResponseArea.timeout).subscribe(() => {
+    this.bekesyTimeoutTimer = timer(1000 * bekesyResponseArea.timeout).subscribe(() => {
       this.pushResponse(-1);
       this.finishExam();
     });
@@ -200,26 +201,22 @@ export class BekesyComponent implements OnInit, OnDestroy {
    */
   pushResponse(button: number) {
     if (this.saturatedFlag) {
-      this.bekesyResponse.push(
-        JSON.stringify({
-          splLevel: this.bekesySPL,
-          splLevelRequested: this.bekesyRequestedSPL,
-          splLevelFixed: this.bekesyFixedSaturatedSPL,
-          time: this.getTimeStr(),
-          button: button,
-          lookUpCorrection: this.lookUpCorrection,
-        })
-      );
+      this.bekesyResponse.push({
+        splLevel: this.bekesySPL,
+        splLevelRequested: this.bekesyRequestedSPL,
+        splLevelFixed: this.bekesyFixedSaturatedSPL,
+        time: getCurrentDatetime(),
+        button: button,
+        lookUpCorrection: this.lookUpCorrection,
+      });
     } else {
-      this.bekesyResponse.push(
-        JSON.stringify({
-          splLevel: this.bekesySPL,
-          splLevelFixed: this.bekesyFixedSPL,
-          time: this.getTimeStr(),
-          button: button,
-          lookUpCorrection: this.lookUpCorrection,
-        })
-      );
+      this.bekesyResponse.push({
+        splLevel: this.bekesySPL,
+        splLevelFixed: this.bekesyFixedSPL,
+        time: getCurrentDatetime(),
+        button: button,
+        lookUpCorrection: this.lookUpCorrection,
+      });
     }
   }
 
@@ -328,19 +325,6 @@ export class BekesyComponent implements OnInit, OnDestroy {
     }
 
     this.pushResponse(0);
-  }
-
-  /**
-   * Create a time string formatted for a exam response.
-   * @returns The time string.
-   */
-  getTimeStr(): string {
-    const time = new Date();
-    const hh = time.getHours();
-    const mm = time.getMinutes();
-    const ss = time.getSeconds();
-    const ff = time.getMilliseconds();
-    return hh + ':' + mm + ':' + ss + ':' + ff;
   }
 
   /**

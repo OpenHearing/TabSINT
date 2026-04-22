@@ -20,3 +20,12 @@ export interface BekesyResponseAreaInterface extends CommonResponseAreaInterface
   levelRate?: number;
   numberReversals?: number;
 }
+
+export interface BekesyResultsInterface {
+  splLevel: number;
+  splLevelRequested?: number;
+  splLevelFixed?: number;
+  time: string;
+  button: number;
+  lookUpCorrection: number;
+}
