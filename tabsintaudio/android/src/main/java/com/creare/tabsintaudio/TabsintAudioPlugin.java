@@ -352,6 +352,18 @@ public class TabsintAudioPlugin extends Plugin implements AudioManager.OnAudioFo
   }
 
   @PluginMethod
+  public void getSystemVolume(PluginCall call) {
+    try {
+      int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+      int currSystemVol = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+      float volLevel = (float) currSystemVol / maxVolume;
+      call.resolve(new JSObject().put("volume", volLevel));
+    } catch (Exception ex) {
+      call.reject(ex.getMessage());
+    }
+  }
+
+  @PluginMethod
   public void seekTo(PluginCall call) {
     try {
       initSoundPool();

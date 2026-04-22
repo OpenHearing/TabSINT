@@ -24,6 +24,7 @@ npx cap sync
 * [`unload(...)`](#unload)
 * [`setVolume(...)`](#setvolume)
 * [`setSystemVolume(...)`](#setsystemvolume)
+* [`getSystemVolume()`](#getsystemvolume)
 * [`seekTo(...)`](#seekto)
 * [`getCurrentTime(...)`](#getcurrenttime)
 * [`getDuration(...)`](#getduration)
@@ -162,6 +163,17 @@ setSystemVolume(options: { volume: number; }) => Promise<void>
 | Param         | Type                             |
 | ------------- | -------------------------------- |
 | **`options`** | <code>{ volume: number; }</code> |
+
+--------------------
+
+
+### getSystemVolume()
+
+```typescript
+getSystemVolume() => Promise<{ volume: number; }>
+```
+
+**Returns:** <code>Promise&lt;{ volume: number; }&gt;</code>
 
 --------------------
 

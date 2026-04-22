@@ -103,6 +103,10 @@ export class TabsintAudioWeb extends WebPlugin implements TabsintAudioPlugin {
     throw `setSystemVolume is not supported for web: ${JSON.stringify(options)}`;
   }
 
+  async getSystemVolume(): Promise<{ volume: number }> {
+    throw 'getSystemVolume is not supported for web';
+  }
+
   async seekTo(options: { assetId: string; time: number }): Promise<void> {
     const audio: HTMLAudioElement = this.getAudioAsset(options.assetId).audio;
     audio.currentTime = options.time;
