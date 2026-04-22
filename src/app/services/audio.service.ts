@@ -166,57 +166,56 @@ export class AudioService {
    * @param startDelay The start delay before starting any audio.
    */
   async playWav(wavfiles: PageWavfileInterface[], startDelay: number | undefined = 1000) {
-    const wavList: {
-      src: string;
-      volume: number | number[];
-      startTime: number | undefined;
-      endTime: number | undefined;
-    }[] = [];
-
     for (const wavfile of wavfiles) {
-      if (wavfile.path) {
-        let volume;
-        if (!wavfile.cal) {
-          this.logger.warning('No calibration for wavfile ' + wavfile.path + ' ... playing at 25%.');
-          volume = 0.25;
-        } else if (Array.isArray(wavfile.targetSPL)) {
-          volume = [];
-          const targetStereoSPL = wavfile.targetSPL;
-          for (const target of targetStereoSPL) {
-            wavfile.targetSPL = target;
-            volume.push(this.calculateVolume(wavfile));
-          }
-        } else {
-          volume = this.calculateVolume(wavfile);
-        }
-        wavList.push({
-          src: wavfile.path,
-          volume: volume,
-          startTime: wavfile.startTime,
-          endTime: wavfile.endTime,
-        });
+      if (!wavfile.path) {
+        this.logger.warning('No path found for playing audio.');
+        continue;
       }
-    }
 
-    setTimeout(async () => {
-      for (const wav of wavList) {
-        const volumeLeft = Array.isArray(wav.volume) ? wav.volume[0] : wav.volume;
-        const volumeRight = Array.isArray(wav.volume) ? wav.volume[1] : wav.volume;
-        await this.startPlaying(wav.src, volumeLeft, volumeRight);
-        if (wav.startTime && wav.startTime > 0) {
-          await this.tabsintAudioPlugin.seekTo({ assetId: wav.src, time: wav.startTime });
+      let volume;
+      if (!wavfile.cal) {
+        this.logger.warning('No calibration for wavfile ' + wavfile.path + ' ... playing at 25%.');
+        volume = 0.25;
+      } else if (Array.isArray(wavfile.targetSPL)) {
+        volume = [];
+        const targetStereoSPL = wavfile.targetSPL;
+        for (const target of targetStereoSPL) {
+          wavfile.targetSPL = target;
+          volume.push(this.calculateVolume(wavfile));
         }
-        if (wav.endTime && wav.endTime > 0) {
-          setTimeout(
-            async () => {
-              await this.tabsintAudioPlugin.pause({ assetId: wav.src });
-            },
-            wav.endTime - (wav.startTime ?? 0)
-          );
-        }
-        this.logger.debug(`Playing ${wav.src} at Volume ${wav.volume}`);
+      } else {
+        volume = this.calculateVolume(wavfile);
       }
-    }, startDelay);
+
+      // Preload the wav file so it can be tracked for cancellation before playing
+      const volumeLeft = Array.isArray(volume) ? volume[0] : volume;
+      const volumeRight = Array.isArray(volume) ? volume[1] : volume;
+      await this.preload(wavfile.path, volumeLeft, volumeRight);
+
+      // Set a timeout which starts the active wav file after a delay
+      setTimeout(async () => {
+        if (this.activeAssetPaths.has(wavfile.path)) {
+          await this.tabsintAudioPlugin.play({ assetId: wavfile.path });
+          this.logger.debug(`Starting audio playback: ${wavfile.path}`);
+          if (wavfile.startTime && wavfile.startTime > 0) {
+            await this.tabsintAudioPlugin.seekTo({ assetId: wavfile.path, time: wavfile.startTime });
+          }
+          if (wavfile.endTime && wavfile.endTime > 0) {
+            setTimeout(
+              async () => {
+                if (this.activeAssetPaths.has(wavfile.path)) {
+                  await this.tabsintAudioPlugin.pause({ assetId: wavfile.path });
+                }
+              },
+              wavfile.endTime - (wavfile.startTime ?? 0)
+            );
+          }
+          this.logger.debug(`Playing ${wavfile.path} at Volume [${volumeLeft}, ${volumeRight}]`);
+        } else {
+          this.logger.debug(`Wav file ${wavfile.path} was cancelled before start delay reached`);
+        }
+      }, startDelay);
+    }
   }
 
   /**
@@ -250,14 +249,14 @@ export class AudioService {
   }
 
   /**
-   * Start playing new audio and add it to the active assets.
-   * This function should be used by to play all audio as it catches errors during preload and handles active audio tracking.
+   * Preload new audio and add it to the active assets.
+   * This function should be used before playing all audio as it catches errors during preload and handles active audio tracking.
    * The expected file path is an asset or file with content:// format.
    * @param path The path to the audio file.
    * @param volumeLeft The left channel volume to play at.
    * @param volumeRight The right channel volume to play at.
    */
-  async startPlaying(path: string, volumeLeft: number, volumeRight: number): Promise<void> {
+  private async preload(path: string, volumeLeft: number, volumeRight: number): Promise<void> {
     try {
       await this.tabsintAudioPlugin.preload({
         assetId: path,
@@ -273,8 +272,20 @@ export class AudioService {
         throw error;
       }
     }
-    await this.tabsintAudioPlugin.play({ assetId: path });
     this.activeAssetPaths.add(path);
+    this.logger.debug(`Preloaded audio: ${path}`);
+  }
+
+  /**
+   * Start playing new audio with preloading included.
+   * The expected file path is an asset or file with content:// format.
+   * @param path The path to the audio file.
+   * @param volumeLeft The left channel volume to play at.
+   * @param volumeRight The right channel volume to play at.
+   */
+  async startPlaying(path: string, volumeLeft: number, volumeRight: number): Promise<void> {
+    await this.preload(path, volumeLeft, volumeRight);
+    await this.tabsintAudioPlugin.play({ assetId: path });
     this.logger.debug(`Starting audio playback: ${path}`);
   }
 
