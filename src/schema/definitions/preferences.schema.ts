@@ -13,7 +13,7 @@ export const preferencesSchema: JSONSchemaType<Preferences> = {
     debugMode: { type: 'boolean', default: false },
     disableAudioStreaming: nullable({ type: 'boolean', default: true }),
     disableLogs: { type: 'boolean', default: false },
-    disableVolume: nullable({ type: 'boolean' }),
+    disableVolume: { type: 'boolean', default: false },
     externalMode: { type: 'boolean', default: false },
     gitlab: {
       type: 'object',
@@ -93,6 +93,7 @@ export const preferencesSchema: JSONSchemaType<Preferences> = {
     'autoUpload',
     'debugMode',
     'disableLogs',
+    'disableVolume',
     'externalMode',
     'gitlab',
     'gitlabConfig',

@@ -21,6 +21,7 @@ export class AudioService {
   private readonly devicesService = inject(DevicesService);
   private hostMetadata: IDeviceMetadata | undefined;
   private headset: Headset | undefined;
+  private systemVolumeControlEnabled: boolean = false;
   tabsintAudioPlugin = TabsintAudio;
 
   /** The active asset paths for audio which are currently loaded and playing.*/
@@ -50,7 +51,10 @@ export class AudioService {
 
   constructor() {
     this.devicesService.hostMetadata.subscribe(data => (this.hostMetadata = data));
-    this.disk.diskSubject.subscribe(disk => (this.headset = disk.preferences.headset));
+    this.disk.diskSubject.subscribe(disk => {
+      this.headset = disk.preferences.headset;
+      this.systemVolumeControlEnabled = !disk.preferences.disableVolume;
+    });
   }
   /**
    * Get the currently active assets which are loaded.
@@ -233,7 +237,26 @@ export class AudioService {
    * @param vol The volume for the system/device.
    */
   async setSystemVolume(volume: number) {
-    await this.tabsintAudioPlugin.setSystemVolume({ volume: volume });
+    if (this.systemVolumeControlEnabled) {
+      try {
+        await this.tabsintAudioPlugin.setSystemVolume({ volume: volume });
+      } catch (error) {
+        this.notifications.alert({
+          title: 'Alert',
+          content: `Failed to set system volume for the device, please manually adjust system volume to ${volume * 100}%.`,
+          type: DialogType.Alert,
+        });
+        this.logger.debug(`Failed to set system volume to ${volume * 100}%`, error);
+      }
+    }
+  }
+
+  /**
+   * Get the volume level for the system/device from (0 to 1).
+   * @returns The volume of the system/device.
+   */
+  async getSystemVolume(): Promise<number> {
+    return (await this.tabsintAudioPlugin.getSystemVolume()).volume;
   }
 
   /**

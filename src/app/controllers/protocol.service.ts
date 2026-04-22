@@ -201,7 +201,7 @@ export class ProtocolService {
       const calibrationErrors = JSON.stringify(calibrationValidationResult.error) ?? '';
       const errorType =
         (protocolErrors ? 'Protocol Schema' : '') +
-        (protocolErrors && calibrationErrors ? 'and ' : '') +
+        (protocolErrors && calibrationErrors ? ' and ' : '') +
         (calibrationErrors ? 'Calibration Schema' : '');
       const error: ProtocolErrorInterface = {
         type: errorType,

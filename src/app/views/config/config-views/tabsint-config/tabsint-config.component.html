@@ -146,20 +146,21 @@
   </div>
 
   <!-- Disable Automatic Volume Control -->
-  <!-- <div class="row pad-top">
-        <div class="col-6"><label translate for="automaticVolControl"> Disable Automatic Volume Control:</label>
-        </div>
-        <div class="col-2"><input id="automaticVolControl" type="checkbox" [(ngModel)]="disk.disableVolume" (change)="adminService.toggleDisableVolume()"/></div>
-        <div class="col-2"></div>
-        <div class="col-1" href="javascript:" title="{{'Automatic Volume Control Help' | transloco}}">
-            <i [matMenuTriggerFor]= "disableVolumeMenu" class="ion-help-circled"></i>
-        </div>
-        <mat-menu #disableVolumeMenu="matMenu">
-            <button mat-menu-item>
-                <div [innerHTML]="disableVolumePopover"></div>
-            </button>
-        </mat-menu>
-    </div> -->
+  <div class="row pad-top">
+    <div class="col-6">{{ "Disable Automatic Volume Control:" | transloco }}</div>
+    <div class="col-2">
+      <input id="automaticVolControl" type="checkbox" [ngModel]="disk.preferences.disableVolume" (change)="toggleDisableVolume()" />
+    </div>
+    <div class="col-2"></div>
+    <div class="col-1" href="javascript:" title="{{ 'Automatic Volume Control Help' | transloco }}">
+      <i [matMenuTriggerFor]="disableVolumeMenu" class="ion-help-circled"></i>
+    </div>
+    <mat-menu #disableVolumeMenu="matMenu">
+      <button mat-menu-item>
+        <div [innerHTML]="disableVolumePopover"></div>
+      </button>
+    </mat-menu>
+  </div>
 
   <!-- Enable Admin Skip -->
   <!-- <div class="row pad-top">
@@ -317,18 +318,10 @@
       <div class="col-5" style="overflow-wrap: break-word">
         <em>{{ disk.contentURI }}</em>
       </div>
+    </div>
 
-      <!-- <br />
-    <br /> -->
-
-      <!-- <div class="row pad-top">
-        <div class="col-12">
-            <h5>Calibration</h5>
-        </div>
-    </div> -->
-
-      <!-- Tablet Gain -->
-      <!-- <div class="row pad-top">
+    <!-- Tablet Gain -->
+    <!-- <div class="row pad-top">
         <div class="col-6"><label translate for="tabletGain">Tablet Gain</label></div>
         <div class="col-2"><input id="tabletGain" type="number" enter-close class="form-control" [(ngModel)]="disk.preferences.tabletGain" /></div>
         <div class="col-1">
@@ -350,10 +343,18 @@
                 <div [innerHTML]="gainPopover"></div>
             </button>
         </mat-menu>
-    </div> -->
+      </div> -->
 
-      <!-- Calibration -->
-      <div class="row pad-top" *ngIf="disk.preferences.debugMode">
+    <!-- Calibration -->
+    <div *ngIf="disk.preferences.debugMode">
+      <br />
+      <div class="row pad-top">
+        <div class="col-12">
+          <h5>Calibration</h5>
+        </div>
+      </div>
+
+      <div class="row pad-top">
         <div class="col-4">
           <button type="button" class="btn btn-block btn-primary" (click)="play1kHz94dB()">1 kHz <wbr /> 94 dB</button>
         </div>

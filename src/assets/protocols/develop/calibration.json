@@ -5,7 +5,7 @@
   "calibrationPyManualReleaseDate": 20150702,
   "audioProfileVersion": "30-Mar-2015 14:40:31",
   "Background sounds inside crowded cafeteria _AOS01244.wav": {
-    "refType": "none",
+    "refType": "arbitrary",
     "RMSC": 0.06749857115910148,
     "calibrationFilter": "full",
     "wavRMSC": 0.1197166893251347,
