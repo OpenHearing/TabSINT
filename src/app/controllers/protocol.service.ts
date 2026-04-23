@@ -201,7 +201,7 @@ export class ProtocolService {
       const calibrationErrors = JSON.stringify(calibrationValidationResult.error) ?? '';
       const errorType =
         (protocolErrors ? 'Protocol Schema' : '') +
-        (protocolErrors && calibrationErrors ? 'and ' : '') +
+        (protocolErrors && calibrationErrors ? ' and ' : '') +
         (calibrationErrors ? 'Calibration Schema' : '');
       const error: ProtocolErrorInterface = {
         type: errorType,
@@ -297,6 +297,7 @@ export class ProtocolService {
     let calibration;
     if (this.loading.meta.server === ProtocolServer.Developer) {
       calibration = DeveloperProtocolsCalibration[this.loading.meta.name];
+      this.loading.calibration = calibration;
     } else {
       // The loaded calibration file is validated as necessary in validateIfCalledFor
       const calibrationFile = await this.fileService.readFile('calibration.json', this.loading.meta.contentURI);

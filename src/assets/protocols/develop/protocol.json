@@ -90,6 +90,9 @@
                 "id": "Dosimetry"
               },
               {
+                "id": "Bekesy"
+              },
+              {
                 "id": "End All"
               }
             ]
@@ -225,6 +228,12 @@
               "conditional": "result.response=='Dosimetry'",
               "target": {
                 "reference": "dosimetryResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='Bekesy'",
+              "target": {
+                "reference": "bekesyResponseArea"
               }
             },
             {
@@ -1142,6 +1151,36 @@
             "responseRequired": false
           },
           "dosimetry": {}
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "bekesyResponseArea",
+      "pages": [
+        {
+          "id": "bekesyResponseArea",
+          "title": "Bekesy",
+          "wavfiles": [
+            {
+              "weighting": "A",
+              "path": "Background sounds inside crowded cafeteria _AOS01244.wav",
+              "targetSPL": 65
+            }
+          ],
+          "responseArea": {
+            "type": "bekesyResponseArea",
+            "numberReversals": 6,
+            "startSPL": 65,
+            "minTargetLevel": 40,
+            "maxTargetLevel": 75,
+            "timeout": 30,
+            "levelRate": 2,
+            "isSubmittable": true
+          }
         },
         {
           "id": "backtomain",

@@ -11,7 +11,7 @@ export interface Preferences {
   debugMode: boolean;
   disableAudioStreaming?: boolean;
   disableLogs: boolean;
-  disableVolume?: boolean;
+  disableVolume: boolean;
   externalMode: boolean;
   gitlab: {
     repos: string[];
