@@ -22,6 +22,7 @@ import { CustomResponseAreaSchema } from './response-areas/custom-response-area.
 import { Headset } from '../app/utilities/constants';
 import { buttonGridSchema } from './response-areas/button-grid.schema';
 import { qrCodeResponseAreaSchema } from './response-areas/qr-code.schema';
+import { duodoseDownloadSchema } from './response-areas/duodose-download.schema';
 
 export const pageSchema: JSONSchemaType<PageDefinition> = {
   $id: 'page_base',
@@ -97,6 +98,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
         textBoxResultViewerSchema,
         subjectIdSchema,
         checkboxSchema,
+        duodoseDownloadSchema,
         buttonGridSchema,
         multipleChoiceSchema,
         multipleInputSchema,

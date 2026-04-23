@@ -7,6 +7,7 @@ import { BehaviorSubject, catchError, filter, firstValueFrom, of, skip, Subject,
 import { FirmwareAsset } from '../../interfaces/firmware-asset.interface';
 import { isValidDeviceResponse } from '../../guards/type.guard';
 import { inject } from '@angular/core';
+import { Directory, Filesystem, Encoding } from '@capacitor/filesystem';
 
 /**
  * CHA base device adapter.
@@ -313,5 +314,119 @@ export class ChaAdapter implements IDeviceAdapter {
     } else {
       this.responseSubject.next({ deviceId: response.name, msg: typeof response.res === 'string' ? [response.res] : response.res });
     }
+  }
+
+  /**
+   * Request free space on a device.
+   * @param device The device to request free space from.
+   */
+  async requestSdBytesFree(device: ChaDeviceType): Promise<IDeviceResponse> {
+    const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
+      const nameOptions = { name: device.deviceId };
+      const waitForResponse = this.waitForResponse(device, 'SdBytesFreeReceived');
+      await TabsintCha.requestSdBytesFree(nameOptions);
+      return (await waitForResponse) ?? this.defaultInvalidResponse(device);
+    });
+    return response;
+  }
+
+  /**
+   * List all files in directory on a device.
+   * @param device The device to list directory from.
+   * @param dirName The directory to list files from.
+   */
+  async getDirectory(device: ChaDeviceType, dirName: string): Promise<IDeviceResponse> {
+    const dirs: string[] = [];
+    function dirCallback(response: IDeviceResponse) {
+      dirs.push((response as any)['msg'][1]['Path']);
+    }
+    const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
+      const requestDirectoryOptions = {
+        name: device.deviceId,
+        remotePath: dirName,
+        flags: undefined,
+      };
+      const fileOperationPromise = this.waitForResponseWithStatusUpdates(device, 'FileOperationComplete', 'DirEntry', dirCallback);
+      await TabsintCha.requestDirectory(requestDirectoryOptions);
+      await fileOperationPromise;
+
+      const resp = { deviceId: device.deviceId, msg: ['Success', dirs] };
+      return resp ?? this.defaultInvalidResponse(device);
+    });
+    return response;
+  }
+
+  /**
+   * Get long name of file from short name.
+   * @param device The device to get long file name from.
+   * @param shortName The shortName of the file.
+   */
+  async getChaLongName(device: ChaDeviceType, shortName: string): Promise<IDeviceResponse> {
+    const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
+      const getLfnFromSfnOptions = {
+        name: device.deviceId,
+        fullPath: shortName,
+      };
+      const longFnResp = await TabsintCha.getLfnFromSfn(getLfnFromSfnOptions);
+      const resp = { deviceId: device.deviceId, msg: [longFnResp.value] };
+      return resp ?? this.defaultInvalidResponse(device);
+    });
+    return response;
+  }
+
+  async copyChaFileToLocalStorageAndReadFile(device: ChaDeviceType, filename: string): Promise<IDeviceResponse> {
+    const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
+      const fname = filename.split('/').at(-1)!;
+      const remoteFilePath = filename;
+
+      await this.deleteIfExists(fname);
+
+      const uri = await Filesystem.getUri({
+        path: fname,
+        directory: Directory.Data,
+      });
+
+      const startFileReadOptions = {
+        name: device.deviceId,
+        localFile: uri.uri.replace('file://', ''),
+        remoteFile: remoteFilePath,
+      };
+
+      const waitForResponse = this.waitForResponse(device, 'FileOperationComplete');
+      console.log('start');
+      await TabsintCha.startFileRead(startFileReadOptions);
+      await waitForResponse;
+      console.log('done');
+
+      const fileContents = await this.readFromAppStorage(fname);
+      console.log('done2');
+      const resp = { deviceId: device.deviceId, msg: [fileContents] };
+      return resp ?? this.defaultInvalidResponse(device);
+    });
+    return response;
+  }
+
+  private async deleteIfExists(filename: string): Promise<void> {
+    try {
+      await Filesystem.stat({
+        path: filename,
+        directory: Directory.Data,
+      });
+      await Filesystem.deleteFile({
+        path: filename,
+        directory: Directory.Data,
+      });
+    } catch {
+      // file does not exist, nothing to delete
+    }
+  }
+
+  private async readFromAppStorage(filename: string): Promise<string> {
+    const result = await Filesystem.readFile({
+      path: filename,
+      directory: Directory.Data,
+      encoding: Encoding.UTF8,
+    });
+    return result.data as string;
   }
 }

@@ -593,6 +593,7 @@ export class ExamService {
     }
     if (dosimeters.length === 0) {
       this.logger.error('Failed to start dosimetry: No dosimeter was available.');
+      return;
     }
     this.logger.debug('Starting Dosimetry');
     this.resultsModel.updateCurrentPage({ dosimetry: [] });

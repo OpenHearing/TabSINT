@@ -90,6 +90,9 @@
                 "id": "Dosimetry"
               },
               {
+                "id": "Duodose Data Download"
+              },
+              {
                 "id": "End All"
               }
             ]
@@ -225,6 +228,12 @@
               "conditional": "result.response=='Dosimetry'",
               "target": {
                 "reference": "dosimetryResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='Duodose Data Download'",
+              "target": {
+                "reference": "duodoseDownloadResponseArea"
               }
             },
             {
@@ -1142,6 +1151,24 @@
             "responseRequired": false
           },
           "dosimetry": {}
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "duodoseDownloadResponseArea",
+      "pages": [
+        {
+          "id": "duodoseDownloadResponseArea",
+          "title": "Duodose Data Download",
+          "responseArea": {
+            "type": "duodoseDownloadResponseArea",
+            "test": "test",
+            "responseRequired": false
+          }
         },
         {
           "id": "backtomain",

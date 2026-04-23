@@ -422,4 +422,43 @@ export class DevicesService {
   async getApplicationFirmware(deviceType: DeviceType): Promise<FirmwareAsset | undefined> {
     return this.getManager(deviceType).getApplicationFirmware?.();
   }
+
+  /**
+   * Get the available space for a device (DuoDose only?).
+   * @param device The device to get available remaining space from.
+   * @returns The amount of space remaining on the device.
+   */
+  async requestSdBytesFree(device: IDevice): Promise<IDeviceResponse | undefined> {
+    return this.getManager(device.type).requestSdBytesFree?.(device);
+  }
+
+  /**
+   * Get the directory long names from a device (DuoDose only?).
+   * @param device The device to get the directory long names from.
+   * @param baseDir The dir to get the directory long names from.
+   * @returns The directory long names from the device.
+   */
+  async getDirectoryLongNames(device: IDevice, baseDir: string): Promise<IDeviceResponse | undefined> {
+    return this.getManager(device.type).getDirectoryLongNames?.(device, baseDir);
+  }
+
+  /**
+   * Copy file from device onto tablet (DuoDose only?).
+   * @param device The device to copy the file from.
+   * @param fileToRead The file to copy.
+   * @returns Success or error.
+   */
+  async copyChaFileToLocalStorageAndReadFile(device: IDevice, fileToRead: string): Promise<IDeviceResponse | undefined> {
+    return this.getManager(device.type).copyChaFileToLocalStorageAndReadFile?.(device, fileToRead);
+  }
+
+  /**
+   * Read the file copied from a device (DuoDose only?).
+   * @param device The device to read the file from.
+   * @param fileToRead The file to read.
+   * @returns The text of the file.
+   */
+  async readCopiedChaFile(device: IDevice, fileToRead: string): Promise<IDeviceResponse | undefined> {
+    return this.getManager(device.type).readCopiedChaFile?.(device, fileToRead);
+  }
 }

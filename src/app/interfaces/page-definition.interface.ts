@@ -18,6 +18,7 @@ import { PreProcessFunctionInterface } from './preProcessFunction.interface';
 import { Headset, PlaybackMethod, WavfileWeighting } from '../utilities/constants';
 import { ButtonGridInterface } from '../views/response-area/response-areas/button-grid/button-grid.interface';
 import { QrCodeResponseAreaInterface } from '../views/response-area/response-areas/qr-code/qr-code.interface';
+import { DuodoseDownloadInterface } from '../views/response-area/response-areas/duodose-download/duodose-download.interface';
 
 export interface PageDefinition {
   id: string;
@@ -123,6 +124,7 @@ export type ResponseArea =
   | TextBoxResultViewerInterface
   | SubjectIdInterface
   | CheckboxInterface
+  | DuodoseDownloadInterface
   | ButtonGridInterface
   | MultipleChoiceInterface
   | ManualAudiometryInterface

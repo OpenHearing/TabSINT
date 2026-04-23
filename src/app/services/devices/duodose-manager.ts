@@ -3,6 +3,7 @@ import { SavedDevice } from '../../models/disk/disk.interface';
 import { ChaManager } from './cha-manager';
 import { BluetoothType, DeviceState } from '../../utilities/constants';
 import { DiscoveryResponse, TabsintCha } from 'tabsintcha';
+import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
 
 /**
  * DuoDose implementation of the CHA device manager.
