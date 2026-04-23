@@ -19,6 +19,8 @@ import { QrService } from '../../../../services/qr.service';
 import { FileService } from '../../../../services/file.service';
 import { TabsintFs } from 'tabsintfs';
 import { Notifications } from '../../../../services/notifications.service';
+import { AudioService } from '../../../../services/audio.service';
+import { DialogDataInterface } from '../../../../interfaces/dialog-data.interface';
 
 @Component({
   selector: 'app-tabsint-config-view',
@@ -36,6 +38,7 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   private readonly qrService = inject(QrService);
   private readonly fileService = inject(FileService);
   private readonly notifications = inject(Notifications);
+  private readonly audioService = inject(AudioService);
 
   disk: DiskInterface;
   state: StateInterface;
@@ -133,6 +136,31 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Toggle the setting for automatic system volume control.
+   * Show an alert only for disabling automatic volume control.
+   */
+  toggleDisableVolume() {
+    if (!this.disk.preferences.disableVolume) {
+      const msg: DialogDataInterface = {
+        title: 'Disable Automatic Volume Control',
+        content: `
+            Are you sure you want to disable Automatic Volume Control within TabSINT?
+            This feature is essential to providing calibrated audio during tests.
+            `,
+        type: DialogType.Confirm,
+      };
+      this.notifications.alert(msg).subscribe(async result => {
+        if (result === 'OK') {
+          this.diskModel.updatePreferences({ disableVolume: !this.disk.preferences.disableVolume });
+          this.logger.debug('Automatic Volume control is now disabled.');
+        }
+      });
+    } else {
+      this.diskModel.updatePreferences({ disableVolume: !this.disk.preferences.disableVolume });
+    }
+  }
+
+  /**
    * Reset the preferences to the default values.
    */
   resetConfig() {
@@ -186,6 +214,27 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
+  /**
+   * Play the 1KHz 94dB wav file from the admin panel.
+   */
+  async play1kHz94dB() {
+    await this.audioService.play1kHz94dB();
+  }
+
+  /**
+   * Play the comp audio wav file from the admin panel.
+   */
+  async playCompAudio() {
+    await this.audioService.playCompAudio();
+  }
+
+  /**
+   * Play the comp audio linear wav file from the admin panel.
+   */
+  async playCompAudioLinear() {
+    await this.audioService.playCompAudioLinear();
+  }
+
   // Popovers
 
   get headsetPopover() {
@@ -237,6 +286,13 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   get automaticallyOutputResultsPopover() {
     return this.transloco.translate(
       'Automatically upload or export the result when a test is finished. The result will be uploaded or exported on the <b>Exam Complete</b> page. <br /><br /> Once the result is uploaded to a server or exported to a local file, it will be removed from TabSINT.'
+    );
+  }
+
+  get disableVolumePopover() {
+    return this.transloco.translate(
+      'This option will disable TabSINT from setting the volume to 100% on every page. This feature is essential to the functionality of TabSINT while playing calibrated audio through the speaker.<br /><br />' +
+        'Check this box if you would like to set the volume of the app manually using the buttons on the side of the device. <br /><br />In almost all cases, this box should remain unchecked.'
     );
   }
 }

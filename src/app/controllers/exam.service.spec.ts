@@ -15,6 +15,7 @@ import { ResultsInterface } from '../models/results/results.interface';
 import { ProtocolStack, ProtocolStackItem } from '../models/protocol/protocol-stack';
 import { PageTypes } from '../types/custom-types';
 import { DevicesService } from '../services/devices/devices.service';
+import { AudioService } from '../services/audio.service';
 
 describe('ExamService', () => {
   let examService: ExamService;
@@ -26,6 +27,7 @@ describe('ExamService', () => {
   let mockNotifications: jasmine.SpyObj<Notifications>;
   let mockLogger: jasmine.SpyObj<Logger>;
   let mockDevicesService: jasmine.SpyObj<DevicesService>;
+  let mockAudioService: jasmine.SpyObj<AudioService>;
 
   beforeEach(() => {
     const mockPage = {
@@ -257,6 +259,7 @@ describe('ExamService', () => {
     mockNotifications.alert.and.returnValue(of('OK'));
     mockLogger = jasmine.createSpyObj('Logger', ['debug']);
     mockDevicesService = jasmine.createSpyObj('DevicesService', ['getDeviceOrDefault', 'abortExams', 'queueExam', 'requestResults']);
+    mockAudioService = jasmine.createSpyObj('AudioService', ['stopAudio', 'playWav', 'setSystemVolume']);
 
     TestBed.configureTestingModule({
       providers: [
@@ -269,6 +272,7 @@ describe('ExamService', () => {
         { provide: Notifications, useValue: mockNotifications },
         { provide: Logger, useValue: mockLogger },
         { provide: DevicesService, useValue: mockDevicesService },
+        { provide: AudioService, useValue: mockAudioService },
       ],
     });
 

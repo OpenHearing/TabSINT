@@ -81,6 +81,7 @@ export const diskSchema: JSONSchemaType<DiskInterface> = {
         disableAudioStreaming: preferencesSchema.properties.disableAudioStreaming.default,
         debugMode: preferencesSchema.properties.debugMode.default,
         disableLogs: preferencesSchema.properties.disableLogs.default,
+        disableVolume: preferencesSchema.properties.disableVolume.default,
         externalMode: preferencesSchema.properties.externalMode.default,
         gitlab: preferencesSchema.properties.gitlab.default,
         gitlabConfig: preferencesSchema.properties.gitlabConfig.default,

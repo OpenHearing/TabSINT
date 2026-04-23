@@ -1,0 +1,20 @@
+<div>
+  <br />
+  <br />
+  <br />
+  <br />
+  <div ng-style="div_style">
+    <button
+      id="bekesy_button"
+      class="button"
+      [ngClass]="buttonPressed ? 'buttonPressed' : 'buttonReleased'"
+      [ngStyle]="{ 'text-align': bekesyResponseParameter.buttonAlign }"
+      (touchstart)="touchstartFun()"
+      (touchmove)="touchmoveFun()"
+      (touchend)="touchendFun()"
+      (mousedown)="touchstartFun()"
+      (mouseup)="touchendFun()">
+      {{ buttonText | transloco }}
+    </button>
+  </div>
+</div>

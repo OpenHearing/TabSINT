@@ -3,7 +3,9 @@
 
 <!-- Admin Mode -->
 <div class="row pad-top">
-  <div class="col-6"><label for="adminMode">{{ "Admin Mode:" | transloco }}</label></div>
+  <div class="col-6">
+    <label for="adminMode">{{ "Admin Mode:" | transloco }}</label>
+  </div>
   <div class="col-2"><input id="adminMode" type="checkbox" [ngModel]="disk.preferences.debugMode" (change)="toggleDebugMode()" /></div>
   <div class="col-2"></div>
   <div class="col-1" title="{{ 'Admin Mode Help' | transloco }}">
@@ -18,22 +20,21 @@
 
 <!-- Show Advanced -->
 <div class="row showhideSection">
-    <div class="col-12 text-center">
-        <a href="javascript:" (click)="state.isPaneOpen.advanced = !state.isPaneOpen.advanced">
-            <span *ngIf="state.isPaneOpen.advanced">
-                {{ "Hide Advanced Settings" | transloco }}
-                <i class="ion-chevron-up"></i>
-            </span>
-            <span *ngIf="!state.isPaneOpen.advanced">
-                {{ "Show Advanced Settings" | transloco }}
-                <i class="ion-chevron-down"></i>
-            </span>
-        </a>
-    </div>
+  <div class="col-12 text-center">
+    <a href="javascript:" (click)="state.isPaneOpen.advanced = !state.isPaneOpen.advanced">
+      <span *ngIf="state.isPaneOpen.advanced">
+        {{ "Hide Advanced Settings" | transloco }}
+        <i class="ion-chevron-up"></i>
+      </span>
+      <span *ngIf="!state.isPaneOpen.advanced">
+        {{ "Show Advanced Settings" | transloco }}
+        <i class="ion-chevron-down"></i>
+      </span>
+    </a>
+  </div>
 </div>
 
- <div #collapse="ngbCollapse" [ngbCollapse]="!state.isPaneOpen.advanced"> 
-    
+<div #collapse="ngbCollapse" [ngbCollapse]="!state.isPaneOpen.advanced">
   <div class="row pad-top">
     <div class="col-12">
       <h5>Preferences</h5>
@@ -109,7 +110,9 @@
 
   <!-- Disable Logs -->
   <div class="row pad-top">
-    <div class="col-6"><label for="disableLogs">{{ "Disable Logs:" | transloco }}</label></div>
+    <div class="col-6">
+      <label for="disableLogs">{{ "Disable Logs:" | transloco }}</label>
+    </div>
     <div class="col-2"><input id="disableLogsID" type="checkbox" [ngModel]="disk.preferences.disableLogs" (change)="toggleDisableLogs()" /></div>
     <div class="col-2"></div>
     <div class="col-1" title="{{ 'Disable Logs Help' | transloco }}">
@@ -142,24 +145,25 @@
     </mat-menu>
   </div>
 
-<!-- Disable Automatic Volume Control -->
-<!-- <div class="row pad-top">
-        <div class="col-6"><label translate for="automaticVolControl"> Disable Automatic Volume Control:</label>
-        </div>
-        <div class="col-2"><input id="automaticVolControl" type="checkbox" [(ngModel)]="disk.disableVolume" (change)="adminService.toggleDisableVolume()"/></div>
-        <div class="col-2"></div>
-        <div class="col-1" href="javascript:" title="{{'Automatic Volume Control Help' | transloco}}">
-            <i [matMenuTriggerFor]= "disableVolumeMenu" class="ion-help-circled"></i>
-        </div>
-        <mat-menu #disableVolumeMenu="matMenu">
-            <button mat-menu-item>
-                <div [innerHTML]="disableVolumePopover"></div>
-            </button>
-        </mat-menu>
-    </div> -->
+  <!-- Disable Automatic Volume Control -->
+  <div class="row pad-top">
+    <div class="col-6">{{ "Disable Automatic Volume Control:" | transloco }}</div>
+    <div class="col-2">
+      <input id="automaticVolControl" type="checkbox" [ngModel]="disk.preferences.disableVolume" (change)="toggleDisableVolume()" />
+    </div>
+    <div class="col-2"></div>
+    <div class="col-1" href="javascript:" title="{{ 'Automatic Volume Control Help' | transloco }}">
+      <i [matMenuTriggerFor]="disableVolumeMenu" class="ion-help-circled"></i>
+    </div>
+    <mat-menu #disableVolumeMenu="matMenu">
+      <button mat-menu-item>
+        <div [innerHTML]="disableVolumePopover"></div>
+      </button>
+    </mat-menu>
+  </div>
 
-<!-- Enable Admin Skip -->
-<!-- <div class="row pad-top">
+  <!-- Enable Admin Skip -->
+  <!-- <div class="row pad-top">
         <div class="col-6"><label translate for="enableSkip">Enable Skip in Exams:</label></div>
         <div class="col-2"><input id="enableSkip" type="checkbox" [(ngModel)]="disk.preferences.adminSkipMode" (change)="adminService.toggleAdminSkipMode()"/></div>
         <div class="col-2"></div>
@@ -173,8 +177,8 @@
         </mat-menu>
     </div> -->
 
-<!-- Enforce Results Encryption -->
-<!-- <div class="row pad-top">
+  <!-- Enforce Results Encryption -->
+  <!-- <div class="row pad-top">
         <div class="col-6"><label translate for="requireEncryption">Require Encryption:</label></div>
         <div class="col-2"><input id="requireEncryption" type="checkbox" [(ngModel)]="disk.preferences.requireEncryptedResults" (change)="adminService.toggleRequireEncryptedResults()"/></div>
         <div class="col-2"></div>
@@ -188,8 +192,8 @@
         </mat-menu>
     </div> -->
 
-<!-- Record Test Location -->
-<!-- <div class="row pad-top">
+  <!-- Record Test Location -->
+  <!-- <div class="row pad-top">
         <div class="col-6"><label translate for="recordTestLocation">Record Test Location:</label></div>
         <div class="col-2"><input id="recordTestLocation" type="checkbox" [(ngModel)]="disk.recordTestLocation" (change)="adminService.toggleRecordTestLocation()"/></div>
         <div class="col-2"></div>
@@ -203,78 +207,82 @@
         </mat-menu>
     </div> -->
 
-<!-- QR Code Generation -->
-<div class="row pad-top">
-  <div class="col-6"><label for="QRCode">{{ "QR Code:" | transloco }}</label></div>
-  <div class="col-4">
-    <button id="QRCode" class="btn btn-default btn-block" (click)="generatePreferencesQrCode()">{{ "Generate" | transloco }}</button>
-  </div>
-  <div class="col-1" href="javascript:" title="{{ 'QR Code Help' | transloco }}">
-    <i [matMenuTriggerFor]="qrCodePopoverMenu" class="ion-help-circled"></i>
-  </div>
-  <mat-menu #qrCodePopoverMenu="matMenu">
-    <button mat-menu-item>
-      <div [innerHTML]="qrCodePopover"></div>
-    </button>
-  </mat-menu>
-</div>
-
-<!-- Display QR Code (Requires rendering the QR code for URL generation) -->
-<div *ngIf="qrPreferencesString">
+  <!-- QR Code Generation -->
   <div class="row pad-top">
-    <div class="col-11">
-      <qrcode
-        #qrCanvas
-        [qrdata]="qrPreferencesString"
-        [elementType]="'canvas'"
-        [hidden]="!displayPreferencesQrCode"
-        [errorCorrectionLevel]="'M'"
-        alt="{{ 'Generated QR Code' | transloco }}" />
+    <div class="col-6">
+      <label for="QRCode">{{ "QR Code:" | transloco }}</label>
     </div>
-  </div>
-
-<!-- Reset -->
-<div class="row pad-top">
-  <div class="col-6"><label for="resetConfig">{{ "Reset configuration:" | transloco }}</label></div>
-  <div class="col-4">
-    <button id="resetConfig" type="button" class="btn btn-block btn-danger" (click)="resetConfig()">Reset</button>
-  </div>
-  <div class="col-1" href="javascript:" title="{{ 'Reset configuration Help' | transloco }}">
-    <i [matMenuTriggerFor]="resetConfigurationPopoverMenu" class="ion-help-circled"></i>
-  </div>
-  <mat-menu #resetConfigurationPopoverMenu="matMenu">
-    <button mat-menu-item>
-      <div [innerHTML]="resetConfigurationPopover"></div>
-    </button>
-  </mat-menu>
-</div>
-
-  <br />
-  <div class="row pad-top">
-    <div class="col-12">
-      <h5>Results Preferences</h5>
+    <div class="col-4">
+      <button id="QRCode" class="btn btn-default btn-block" (click)="generatePreferencesQrCode()">{{ "Generate" | transloco }}</button>
     </div>
+    <div class="col-1" href="javascript:" title="{{ 'QR Code Help' | transloco }}">
+      <i [matMenuTriggerFor]="qrCodePopoverMenu" class="ion-help-circled"></i>
+    </div>
+    <mat-menu #qrCodePopoverMenu="matMenu">
+      <button mat-menu-item>
+        <div [innerHTML]="qrCodePopover"></div>
+      </button>
+    </mat-menu>
   </div>
 
-<!-- Automatically Output Test Results -->
-<div class="row pad-top">
-  <div class="col-6">
-    <label for="outputResults">{{ "Automatically Output Test Results" | transloco }}:</label>
-  </div>
-  <div class="col-2"><input id="outputResults" type="checkbox" [ngModel]="disk.preferences.autoUpload" (change)="toggleAutoUpload()" /></div>
-  <div class="col-2"></div>
-  <div class="col-1" href="javascript:" title="{{ 'Automatically Output Test Results Help' | transloco }}">
-    <i [matMenuTriggerFor]="automaticallyOutputResultsPopoverMenu" class="ion-help-circled"></i>
-  </div>
-  <mat-menu #automaticallyOutputResultsPopoverMenu="matMenu">
-    <button mat-menu-item>
-      <div [innerHTML]="automaticallyOutputResultsPopover"></div>
-    </button>
-  </mat-menu>
-</div>
+  <!-- Display QR Code (Requires rendering the QR code for URL generation) -->
+  <div *ngIf="qrPreferencesString">
+    <div class="row pad-top">
+      <div class="col-11">
+        <qrcode
+          #qrCanvas
+          [qrdata]="qrPreferencesString"
+          [elementType]="'canvas'"
+          [hidden]="!displayPreferencesQrCode"
+          [errorCorrectionLevel]="'M'"
+          alt="{{ 'Generated QR Code' | transloco }}" />
+      </div>
+    </div>
 
-<!-- Results Mode -->
-<!-- <div class="row pad-top">
+    <!-- Reset -->
+    <div class="row pad-top">
+      <div class="col-6">
+        <label for="resetConfig">{{ "Reset configuration:" | transloco }}</label>
+      </div>
+      <div class="col-4">
+        <button id="resetConfig" type="button" class="btn btn-block btn-danger" (click)="resetConfig()">Reset</button>
+      </div>
+      <div class="col-1" href="javascript:" title="{{ 'Reset configuration Help' | transloco }}">
+        <i [matMenuTriggerFor]="resetConfigurationPopoverMenu" class="ion-help-circled"></i>
+      </div>
+      <mat-menu #resetConfigurationPopoverMenu="matMenu">
+        <button mat-menu-item>
+          <div [innerHTML]="resetConfigurationPopover"></div>
+        </button>
+      </mat-menu>
+    </div>
+
+    <br />
+    <div class="row pad-top">
+      <div class="col-12">
+        <h5>Results Preferences</h5>
+      </div>
+    </div>
+
+    <!-- Automatically Output Test Results -->
+    <div class="row pad-top">
+      <div class="col-6">
+        <label for="outputResults">{{ "Automatically Output Test Results" | transloco }}:</label>
+      </div>
+      <div class="col-2"><input id="outputResults" type="checkbox" [ngModel]="disk.preferences.autoUpload" (change)="toggleAutoUpload()" /></div>
+      <div class="col-2"></div>
+      <div class="col-1" href="javascript:" title="{{ 'Automatically Output Test Results Help' | transloco }}">
+        <i [matMenuTriggerFor]="automaticallyOutputResultsPopoverMenu" class="ion-help-circled"></i>
+      </div>
+      <mat-menu #automaticallyOutputResultsPopoverMenu="matMenu">
+        <button mat-menu-item>
+          <div [innerHTML]="automaticallyOutputResultsPopover"></div>
+        </button>
+      </mat-menu>
+    </div>
+
+    <!-- Results Mode -->
+    <!-- <div class="row pad-top">
         <div class="col-6"><label for="resultsMode">Results Mode:</label></div>
         
         <div ngbDropdown class="col-6 dropdown-width" display="dynamic">                            
@@ -287,41 +295,33 @@
         </div>
     </div> -->
 
-  <!-- Local Results Directory -->
-  <div class="row pad-top">
-    <div class="col-6">
-      <label for="localResultsDir">{{ "Local Results Directory" | transloco }}:</label>
+    <!-- Local Results Directory -->
+    <div class="row pad-top">
+      <div class="col-6">
+        <label for="localResultsDir">{{ "Local Results Directory" | transloco }}:</label>
+      </div>
+      <div class="col-5">
+        <em>{{ disk.preferences.servers.localServer.resultsDir }}</em>
+      </div>
     </div>
-    <div class="col-5">
-      <em>{{ disk.preferences.servers.localServer.resultsDir }}</em>
+    <div class="row pad-top">
+      <div class="col-6"></div>
+      <div class="col-6">
+        <button id="localResultsDir" class="btn btn-default btn-block" (click)="changeLocalResultsDir()">{{ "Change Directory" | transloco }}</button>
+      </div>
     </div>
-  </div>
-  <div class="row pad-top">
-    <div class="col-6"></div>
-    <div class="col-6">
-      <button id="localResultsDir" class="btn btn-default btn-block" (click)="changeLocalResultsDir()">{{ "Change Directory" | transloco }}</button>
+
+    <div class="row pad-top">
+      <div class="col-6">
+        <label for="rootDir">{{ "Root Directory" | transloco }}:</label>
+      </div>
+      <div class="col-5" style="overflow-wrap: break-word">
+        <em>{{ disk.contentURI }}</em>
+      </div>
     </div>
-  </div>
 
-  <div class="row pad-top">
-    <div class="col-6">
-      <label for="rootDir">{{ "Root Directory" | transloco }}:</label>
-    </div>
-    <div class="col-5" style="overflow-wrap: break-word;">
-      <em>{{ disk.contentURI }}</em>
-  </div>
-
-<!-- <br />
-    <br /> -->
-
-<!-- <div class="row pad-top">
-        <div class="col-12">
-            <h5>Calibration</h5>
-        </div>
-    </div> -->
-
-<!-- Tablet Gain -->
-<!-- <div class="row pad-top">
+    <!-- Tablet Gain -->
+    <!-- <div class="row pad-top">
         <div class="col-6"><label translate for="tabletGain">Tablet Gain</label></div>
         <div class="col-2"><input id="tabletGain" type="number" enter-close class="form-control" [(ngModel)]="disk.preferences.tabletGain" /></div>
         <div class="col-1">
@@ -343,28 +343,28 @@
                 <div [innerHTML]="gainPopover"></div>
             </button>
         </mat-menu>
-    </div> -->
+      </div> -->
 
-<!-- Calibration -->
-<!-- <div class="row pad-top" *ngIf="disk.preferences.debugMode">
-        <div class="col-4">
-            <button type="button" class="btn btn-block btn-primary"
-                (click)="play1kHz94dB()">
-                1 kHz <wbr> 94 dB
-            </button>
+    <!-- Calibration -->
+    <div *ngIf="disk.preferences.debugMode">
+      <br />
+      <div class="row pad-top">
+        <div class="col-12">
+          <h5>Calibration</h5>
         </div>
-        <div class="col-4">
-            <button type="button" class="btn btn-block btn-primary"
-                (click)="playCompAudio()">
-                Comp. Log
-            </button>
-        </div>
-        <div class="col-4">
-            <button type="button" class="btn btn-block btn-primary"
-                (click)="playCompAudioLinear()">
-                Comp. Linear
-            </button>
-        </div>
-    </div> -->
+      </div>
 
+      <div class="row pad-top">
+        <div class="col-4">
+          <button type="button" class="btn btn-block btn-primary" (click)="play1kHz94dB()">1 kHz <wbr /> 94 dB</button>
+        </div>
+        <div class="col-4">
+          <button type="button" class="btn btn-block btn-primary" (click)="playCompAudio()">Comp. Log</button>
+        </div>
+        <div class="col-4">
+          <button type="button" class="btn btn-block btn-primary" (click)="playCompAudioLinear()">Comp. Linear</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

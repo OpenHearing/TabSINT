@@ -63,8 +63,4 @@ export class ExamTestingComponent implements OnInit, OnDestroy {
     }
     return styleObject;
   }
-
-  startExam() {
-    this.examService.finishActivateMedia();
-  }
 }
