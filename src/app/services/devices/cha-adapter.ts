@@ -234,12 +234,16 @@ export class ChaAdapter implements IDeviceAdapter {
    * @param identifier The message identifier for the expected response.
    * @returns The response from the device or undefined.
    */
-  private async waitForResponse(device: ChaDeviceType, identifier: string): Promise<IDeviceResponse | undefined> {
+  private async waitForResponse(
+    device: ChaDeviceType,
+    identifier: string,
+    timeoutTimeMs: number = this.defaultTimeoutTimeMs
+  ): Promise<IDeviceResponse | undefined> {
     const response = await firstValueFrom(
       this.responseSubject.pipe(
         skip(1),
         filter(response => response?.deviceId === device.deviceId && (response.msg[0] == identifier || response.msg[0] == 'Error')),
-        timeout(this.defaultTimeoutTimeMs),
+        timeout(timeoutTimeMs),
         catchError(() => of(undefined))
       )
     );
@@ -392,10 +396,11 @@ export class ChaAdapter implements IDeviceAdapter {
         remoteFile: remoteFilePath,
       };
 
-      const waitForResponse = this.waitForResponse(device, 'FileOperationComplete');
+      const waitForResponse = this.waitForResponse(device, 'FileOperationComplete', 30000);
       console.log('start');
       await TabsintCha.startFileRead(startFileReadOptions);
-      await waitForResponse;
+      const test = await waitForResponse;
+      console.log(test);
       console.log('done');
 
       const fileContents = await this.readFromAppStorage(fname);
