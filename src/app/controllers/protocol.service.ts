@@ -297,6 +297,7 @@ export class ProtocolService {
     let calibration;
     if (this.loading.meta.server === ProtocolServer.Developer) {
       calibration = DeveloperProtocolsCalibration[this.loading.meta.name];
+      this.loading.calibration = calibration;
     } else {
       // The loaded calibration file is validated as necessary in validateIfCalledFor
       const calibrationFile = await this.fileService.readFile('calibration.json', this.loading.meta.contentURI);

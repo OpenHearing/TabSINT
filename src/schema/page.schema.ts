@@ -23,6 +23,7 @@ import { Headset } from '../app/utilities/constants';
 import { buttonGridSchema } from './response-areas/button-grid.schema';
 import { qrCodeResponseAreaSchema } from './response-areas/qr-code.schema';
 import { duodoseDownloadSchema } from './response-areas/duodose-download.schema';
+import { bekesyResponseAreaSchema } from './response-areas/bekesy.schema';
 
 export const pageSchema: JSONSchemaType<PageDefinition> = {
   $id: 'page_base',
@@ -59,6 +60,13 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
         js: { type: 'string', nullable: true },
       },
       required: ['filepath', 'function'],
+      nullable: true,
+    },
+    wavfileStartDelayTime: {
+      type: 'number',
+      description: 'Time delay before wavfiles start playing on the page.',
+      default: 1000,
+      minimum: 0,
       nullable: true,
     },
     wavfiles: { type: 'array', items: pageWavfileSchema, nullable: true },
@@ -112,6 +120,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
         memrSchema,
         CustomResponseAreaSchema,
         qrCodeResponseAreaSchema,
+        bekesyResponseAreaSchema,
       ],
       required: ['type'],
       nullable: true,

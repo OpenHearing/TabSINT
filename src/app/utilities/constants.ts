@@ -114,9 +114,11 @@ export const DeveloperProtocols: Record<string, ProtocolSchemaInterface> = {
 };
 
 import WahtsDeviceTestCalibration from '../../assets/protocols/wahts-device-test/calibration.json';
+import DevelopCalibration from '../../assets/protocols/develop/calibration.json';
 import { CalibrationFileInterface } from '../interfaces/calibration-file.interface';
 export const DeveloperProtocolsCalibration: Record<string, CalibrationFileInterface> = {
   'wahts-device-test': WahtsDeviceTestCalibration as unknown as CalibrationFileInterface,
+  develop: DevelopCalibration as unknown as CalibrationFileInterface,
 };
 
 export const bluetoothTimeout = 5000;
@@ -147,4 +149,19 @@ export enum ResultType {
   Threshold = 'Threshold',
   Better = 'Hearing Potentially Better the Calibrated Range',
   Beyond = 'Hearing Potentially Beyond the Calibrated Range',
+}
+
+export enum AudioChannel {
+  Left = 'left',
+  Right = 'right',
+  Mono = 'mono',
+}
+
+export enum ButtonAlignment {
+  Left = 'left',
+  Right = 'right',
+  Center = 'center',
+  Justify = 'justify',
+  Start = 'start',
+  End = 'end',
 }

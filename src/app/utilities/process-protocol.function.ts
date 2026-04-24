@@ -32,7 +32,7 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
   const rootProtocol = loading.protocol;
   const protocolDict: ProtocolDictionary = {};
   const followOnsDict: FollowOnsDictionary = {};
-  const prefix = loading.meta.server == ProtocolServer.Developer ? 'assets/' + loading.meta.path! + '/' : loading.meta.contentURI + '/';
+  const prefix = loading.meta.server == ProtocolServer.Developer ? 'public/assets/' + loading.meta.path! + '/' : loading.meta.contentURI + '/';
 
   await iterateThroughPages(rootProtocol.pages);
 
@@ -137,6 +137,9 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
    */
   function updatePageWavProperties(page: PageDefinition): void {
     for (const wavfile of page.wavfiles ?? []) {
+      // Get only the name for indexing in case the path has already been updated
+      const wavPath = wavfile.path.substring(wavfile.path.lastIndexOf('/') + 1);
+
       // Determine if a common calibration is available or if a custom calibration is available
       const missingCommonMediaRepo = !rootProtocol.commonRepo || !rootProtocol.cCommon;
       const missingCommonWavCalList = missingCommonMediaRepo || !rootProtocol.cCommon?.[wavfile.path];
@@ -144,23 +147,22 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
       // Update the page wav files with calibration data if possible, otherwise update error messaging
       if (wavfile.useCommonRepo) {
         if (!missingCommonMediaRepo && !missingCommonWavCalList) {
-          const wavProperties = rootProtocol.cCommon?.[wavfile.path] as CalibrationFileWavProperties;
+          const wavProperties = rootProtocol.cCommon?.[wavPath] as CalibrationFileWavProperties;
           wavfile.cal = wavProperties;
           rootProtocol._missingCommonMediaRepo = missingCommonMediaRepo;
         } else if (missingCommonWavCalList) {
-          rootProtocol._missingCommonWavCalList?.push(wavfile.path);
+          rootProtocol._missingCommonWavCalList?.push(wavPath);
         }
         rootProtocol._missingCommonMediaRepo = missingCommonMediaRepo;
       } else if (loading.calibration) {
-        const wavCalibrationProperties = loading.calibration[wavfile.path] as CalibrationFileWavProperties;
+        const wavCalibrationProperties = loading.calibration[wavPath] as CalibrationFileWavProperties;
         wavfile.cal = { ...wavCalibrationProperties, tablet: loading.calibration?.tablet };
       } else {
-        rootProtocol._missingWavCalList?.push(wavfile.path);
+        rootProtocol._missingWavCalList?.push(wavPath);
       }
-
       // Update the wav file path using calibration file prefix information after all indexing is complete
       const wavfilePath = wavfile.useCommonRepo ? rootProtocol.commonRepo?.path : prefix;
-      wavfile.path = wavfilePath + wavfile.path;
+      wavfile.path = wavfilePath + wavPath;
     }
   }
 

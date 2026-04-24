@@ -15,10 +15,11 @@ import { CustomResponseAreaInterface } from '../views/response-area/response-are
 import { SubjectIdInterface } from '../views/response-area/response-areas/subject-id/subject-id.interface';
 import { CheckboxInterface } from '../views/response-area/response-areas/checkbox/checkbox.interface';
 import { PreProcessFunctionInterface } from './preProcessFunction.interface';
-import { Headset, PlaybackMethod, WavfileWeighting } from '../utilities/constants';
+import { CalibrationFilter, Headset, PlaybackMethod, WavfileWeighting } from '../utilities/constants';
 import { ButtonGridInterface } from '../views/response-area/response-areas/button-grid/button-grid.interface';
 import { QrCodeResponseAreaInterface } from '../views/response-area/response-areas/qr-code/qr-code.interface';
 import { DuodoseDownloadInterface } from '../views/response-area/response-areas/duodose-download/duodose-download.interface';
+import { BekesyResponseAreaInterface } from '../views/response-area/response-areas/bekesy/bekesy.interface';
 
 export interface PageDefinition {
   id: string;
@@ -37,6 +38,7 @@ export interface PageDefinition {
   helpText?: string;
   repeatPage?: RepeatPageInterface;
   preProcessFunction?: PreProcessFunctionInterface;
+  wavfileStartDelayTime?: number;
   wavfiles?: PageWavfileInterface[];
   chaWavFiles?: ChaWavfileInterface[];
   chaStream?: boolean;
@@ -61,9 +63,71 @@ export interface RepeatPageInterface {
   repeatIf?: string;
 }
 
+export interface PageWavfileCalInterface {
+  /**
+   * Tablet version for the calibration.
+   */
+  tablet?: string;
+
+  /**
+   * The playback method reference type.
+   */
+  refType?: PlaybackMethod;
+
+  /**
+   * Real world root mean square Z value.
+   */
+  realWorldRMSZ?: number;
+
+  /**
+   * Calibration filter for the file.
+   */
+  calibrationFilter?: CalibrationFilter;
+
+  /**
+   * Scale factor for the wav file.
+   */
+  scaleFactor?: number;
+
+  /**
+   * Normal factor for the wav file.
+   */
+  normFactor?: number;
+
+  /**
+   * Wav root mean square A value.
+   */
+  wavRMSA?: number;
+
+  /**
+   * Wav root mean square C value.
+   */
+  wavRMSC?: number;
+
+  /**
+   * Wav root mean square Z value.
+   */
+  wavRMSZ?: number;
+
+  /**
+   * Root mean square A value.
+   */
+  RMSA?: number;
+
+  /**
+   * Root mean square C value.
+   */
+  RMSC?: number;
+
+  /**
+   * Root mean square Z value.
+   */
+  RMSZ?: number;
+}
+
 export interface PageWavfileInterface {
   path: string;
-  cal?: object;
+  cal?: PageWavfileCalInterface;
   useCommonRepo?: boolean;
   playbackMethod?: PlaybackMethod;
   targetSPL?: number | string;
@@ -137,4 +201,5 @@ export type ResponseArea =
   | MrtExamInterface
   | MemrExamInterface
   | CustomResponseAreaInterface
-  | QrCodeResponseAreaInterface;
+  | QrCodeResponseAreaInterface
+  | BekesyResponseAreaInterface;
