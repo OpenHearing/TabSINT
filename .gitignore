@@ -1,16 +1,17 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # Compiled output
-/dist
+dist
 /tmp
 /out-tsc
 /bazel-out
-/android/
+android/
+build/
 !/build/.npmkeep
 version.json
 
 # Node
-/node_modules
+node_modules
 npm-debug.log
 yarn-error.log
 
@@ -50,5 +51,4 @@ keystore.base64
 Thumbs.db
 .claude/settings.json
 tools/tabsint.pem
-.gitignore
 tools/tabsint.pub

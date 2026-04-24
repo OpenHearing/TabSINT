@@ -10,7 +10,7 @@ import { CheckboxInterface } from '../views/response-area/response-areas/checkbo
 import { MultipleChoiceInterface } from '../views/response-area/response-areas/multiple-choice/multiple-choice.interface';
 
 export function isChoiceResponseArea(responseArea?: ResponseArea): responseArea is ButtonGridInterface | MultipleChoiceInterface | CheckboxInterface {
-  return (responseArea as CheckboxInterface).choices !== undefined;
+  return (responseArea as CheckboxInterface)?.choices !== undefined;
 }
 
 export function isProtocolStarted(item?: ProtocolStackItem): item is ProtocolStackItem {

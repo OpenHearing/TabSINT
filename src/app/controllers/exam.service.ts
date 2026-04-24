@@ -424,9 +424,9 @@ export class ExamService {
    * @summary Handles and evaluates the logic from a protocol conditional.
    */
   private conditionalEvaluator(conditional: string) {
-    if (conditional.includes('result.response')) {
-      conditional = conditional.replace('result.response', 'this.results.currentPage.response');
-    }
+    // Change string text for flags and results to correctly grab the correct variables
+    conditional = conditional.replaceAll(/\bflags\b/g, 'this.resultsModel.getResults().currentExam.flags');
+    conditional = conditional.replaceAll(/\bresult\.response\b/g, 'this.results.currentPage.response');
     return eval(conditional);
   }
 
