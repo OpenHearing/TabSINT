@@ -127,7 +127,7 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
       return;
     }
 
-    for (const [key, value] of Object.entries(resp2.msg[1] as any) as any) {
+    for (const value of Object.entries(resp2.msg[1] as any) as any) {
       const re = /_\d{8}T\d{6}\.\d{3}Z_/;
       const ok = re.exec(value);
 
