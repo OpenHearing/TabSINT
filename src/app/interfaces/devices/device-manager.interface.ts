@@ -116,4 +116,28 @@ export interface IDeviceManager {
    * @returns The firmware asset provided by the application for the managed device type or undefined.
    */
   getApplicationFirmware?(): Promise<FirmwareAsset | undefined>;
+
+  /**
+   * Optional method to get available space on a device (DuoDose only?).
+   * @returns The available space remaining on the device.
+   */
+  requestSdBytesFree?(device: IDevice): Promise<IDeviceResponse | undefined>;
+
+  /**
+   * Optional method to get directory long names (DuoDose only?).
+   * @returns The directory long names on the device.
+   */
+  getDirectoryLongNames?(device: IDevice, baseDir: string): Promise<IDeviceResponse | undefined>;
+
+  /**
+   * Optional method to copy a file off a device onto the tablet (DuoDose only?).
+   * @returns Success or error.
+   */
+  copyChaFileToLocalStorageAndReadFile?(device: IDevice, fileToRead: string): Promise<IDeviceResponse | undefined>;
+
+  /**
+   * Optional method to read file copied from a device (DuoDose only?).
+   * @returns The text of the read file.
+   */
+  readCopiedChaFile?(device: IDevice, fileToRead: string): Promise<IDeviceResponse | undefined>;
 }

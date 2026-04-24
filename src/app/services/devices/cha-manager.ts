@@ -328,4 +328,44 @@ export abstract class ChaManager implements IDeviceManager {
     device.metadata.serialNumber = serialNumber.toString();
     this.updateDevice(device);
   }
+
+  /**
+   * Request amount of free space on a device.
+   * @param device The device to request the identifier from.
+   */
+  async requestSdBytesFree(device: ChaDeviceType): Promise<IDeviceResponse> {
+    const response = await this.adapter.requestSdBytesFree(device);
+    return response;
+  }
+
+  /**
+   * Request long file names from a directory on a device.
+   * @param device The device to request the long directory names from.
+   * @param baseDir The directory to request long directory names from.
+   */
+  async getDirectoryLongNames(device: ChaDeviceType, baseDir: string): Promise<IDeviceResponse> {
+    const longNames: string[] = [];
+    const getDirectoryResponse = await this.adapter.getDirectory(device, baseDir);
+    const shortNames: string[] = (getDirectoryResponse as any)['msg'][1];
+
+    for (const shortName of shortNames) {
+      const longNameResp: any = await this.adapter.getChaLongName(device, baseDir + shortName);
+      if (longNameResp['msg'][0] !== '') {
+        longNames.push(longNameResp['msg'][0]);
+      }
+    }
+
+    const resp = { deviceId: device.deviceId, msg: ['Success', longNames] };
+    return resp;
+  }
+
+  /**
+   * Copy file from device onto tablet and read it (DuoDose only?).
+   * @param device The device to copy and read the file from.
+   * @param fileToRead The file to copy and read.
+   */
+  async copyChaFileToLocalStorageAndReadFile(device: ChaDeviceType, fileToRead: string): Promise<IDeviceResponse | undefined> {
+    const response = await this.adapter.copyChaFileToLocalStorageAndReadFile(device, fileToRead);
+    return response;
+  }
 }

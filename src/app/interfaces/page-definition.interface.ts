@@ -18,6 +18,7 @@ import { PreProcessFunctionInterface } from './preProcessFunction.interface';
 import { CalibrationFilter, Headset, PlaybackMethod, WavfileWeighting } from '../utilities/constants';
 import { ButtonGridInterface } from '../views/response-area/response-areas/button-grid/button-grid.interface';
 import { QrCodeResponseAreaInterface } from '../views/response-area/response-areas/qr-code/qr-code.interface';
+import { DuodoseDownloadInterface } from '../views/response-area/response-areas/duodose-download/duodose-download.interface';
 import { BekesyResponseAreaInterface } from '../views/response-area/response-areas/bekesy/bekesy.interface';
 
 export interface PageDefinition {
@@ -187,6 +188,7 @@ export type ResponseArea =
   | TextBoxResultViewerInterface
   | SubjectIdInterface
   | CheckboxInterface
+  | DuodoseDownloadInterface
   | ButtonGridInterface
   | MultipleChoiceInterface
   | ManualAudiometryInterface

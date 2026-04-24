@@ -104,6 +104,7 @@ import { ButtonGridComponent } from './views/response-area/response-areas/button
 import { BekesyComponent } from './views/response-area/response-areas/bekesy/bekesy.component';
 import { QrService } from './services/qr.service';
 import { QRCodeModule } from 'angularx-qrcode';
+import { DuodoseDownloadComponent } from './views/response-area/response-areas/duodose-download/duodose-download.component';
 
 @NgModule({
   declarations: [
@@ -129,6 +130,7 @@ import { QRCodeModule } from 'angularx-qrcode';
     QrCodeResponseAreaComponent,
     SubjectIdComponent,
     CheckboxComponent,
+    DuodoseDownloadComponent,
     ButtonGridComponent,
     LikertComponent,
     TextboxResultViewerComponent,

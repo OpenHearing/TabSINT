@@ -1,0 +1,26 @@
+.tableDiv {
+  height:30vh; 
+  display:inline-block; 
+  overflow-y:scroll;
+}
+
+table {
+  /* Not required only for visualizing */
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table thead tr th {
+  position: sticky;
+  z-index: 1;
+  top: 0;
+  background: #fff; 
+}
+
+thead th {
+  z-index: 1000;
+}
+
+tbody {
+  z-index: 0;
+}
