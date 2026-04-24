@@ -47,8 +47,9 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
     'Start Time',
     // 'Stop Time'
   ];
-  resultsValues = ['', '', '', '', '', '', '', '', ''];
+  resultsValuesDefault = ['', '', '', '', '', '', '', '', ''];
 
+  resultsValues = this.resultsValuesDefault.slice();
   resultsFields = this.resultsFieldsDefault.slice();
   resultsList: any[] = [];
 
@@ -116,14 +117,13 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
     if (resp1?.msg && typeof resp1.msg[1] === 'object' && resp1.msg[1] !== null && 'BytesFree' in resp1.msg[1]) {
       [this.bytesFree, this.bytesFreeUnits] = this.parseFreeSpace(resp1.msg[1].BytesFree as string);
     } else {
-      this.logger.error('Error with duodose data download: ???');
+      this.logger.error('Error with duodose data download requesting free space.');
       return;
     }
 
     const resp2 = await this.devicesService.getDirectoryLongNames(this.dosimeter, this.baseDir);
-    console.log('getDirectoryLongNames resp', resp2);
     if (!(resp2?.msg && typeof resp2.msg[1] === 'object' && resp2.msg[1] !== null)) {
-      this.logger.error('Error with duodose data download: ???');
+      this.logger.error('Error with duodose data download getting directory names.');
       return;
     }
 
@@ -185,7 +185,8 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
   }
 
   async viewDoseData(): Promise<void> {
-    this.resultsFields = this.resultsFields.slice();
+    this.resultsFields = this.resultsFieldsDefault.slice();
+    this.resultsValues = this.resultsValuesDefault.slice();
     this.resultsList = [];
 
     if (this.isDosBusy) return;
@@ -235,18 +236,8 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
 
       this.resultsValues = this.combineResults(this.resultsList, this.resultsFields);
     } catch (error) {
-      this.resultsFields = [
-        'Channel 1',
-        'Channel 2',
-        'Channel 3',
-        'Channel 4',
-        'Peak Sounds Pressure Level (dBP)',
-        'Number of Impulses',
-        'Device ID',
-        'Duration',
-        'Start Time',
-      ];
-      this.resultsValues = ['', '', '', '', '', '', '', '', ''];
+      this.resultsFields = this.resultsFieldsDefault.slice();
+      this.resultsValues = this.resultsValuesDefault.slice();
       this.logger.debug(`Error viewing dose data: ${JSON.stringify(error)}`);
     } finally {
       this.isDosBusy = false;
@@ -382,7 +373,7 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
   }
 
   async addDoseDataToResults(): Promise<void> {
-    this.resultsFields = this.resultsFields.slice();
+    this.resultsFields = this.resultsFieldsDefault.slice();
     this.resultsList = [];
 
     if (this.isDosBusy) return;
@@ -406,7 +397,7 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
       const csvCommaInQuotes = /"(.*?)"/;
 
       for (const [index, entry] of selectedEntries.entries()) {
-        this.resultsList.push(this.resultsValues.slice());
+        this.resultsList.push(this.resultsValuesDefault.slice());
 
         const matchingLine = lines.find((line: string) => line.includes(this.parseDatetime(entry.datetime).toISOString()));
         if (!matchingLine) continue;

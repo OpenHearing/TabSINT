@@ -397,14 +397,11 @@ export class ChaAdapter implements IDeviceAdapter {
       };
 
       const waitForResponse = this.waitForResponse(device, 'FileOperationComplete', 30000);
-      console.log('start');
       await TabsintCha.startFileRead(startFileReadOptions);
-      const test = await waitForResponse;
-      console.log(test);
-      console.log('done');
+      await waitForResponse;
 
       const fileContents = await this.readFromAppStorage(fname);
-      console.log('done2');
+      console.log('fileContents', fileContents);
       const resp = { deviceId: device.deviceId, msg: [fileContents] };
       return resp ?? this.defaultInvalidResponse(device);
     });
