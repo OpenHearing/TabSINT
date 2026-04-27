@@ -1,5 +1,6 @@
 import { CalibrationFileVersionInformation } from '../../interfaces/calibration-file.interface';
 import { IDeviceMetadata } from '../../interfaces/devices/device-metadata.interface';
+import { IDevice } from '../../interfaces/devices/device.interface';
 import { DosimetryResultsInterface } from '../../interfaces/dosimeter-results.interface';
 import { ChaWavfileInterface, ImageInterface, VideoInterface, PageWavfileInterface, ResponseArea } from '../../interfaces/page-definition.interface';
 import { ProtocolServer } from '../../utilities/constants';
@@ -46,7 +47,7 @@ export interface ExamResults {
   };
   calibrationVersion: Partial<CalibrationFileVersionInformation>;
   hostMetadata: IDeviceMetadata;
-  devices: string[];
+  devices: Partial<IDevice>[];
   flags: FlagsInterface;
   qrString?: string;
 }

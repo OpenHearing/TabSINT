@@ -1,4 +1,6 @@
-import { constructFilename, getDateString } from '../results-helper-functions';
+import { WahtsDevice } from '../../models/devices/wahts-device';
+import { DeviceType } from '../constants';
+import { constructFilename, displayableDevice, getDateString } from '../results-helper-functions';
 
 describe('results-helper-functions', () => {
   describe('getDateString', () => {
@@ -27,6 +29,35 @@ describe('results-helper-functions', () => {
     it('appends suffix when provided', () => {
       const result = constructFilename('abc123', 'myProtocol', '2024-03-15T10:30:45.000Z', '.json');
       expect(result).toBe('myProtocol.2024-03-15T10-30-45.json');
+    });
+  });
+
+  describe('displayableDevice', () => {
+    it('removes status and state', () => {
+      const device = new WahtsDevice('mockId', 'mockName', 'mockTabsintId');
+      device.metadata = {};
+      const displayDevice = displayableDevice(device);
+
+      expect(Object.keys(displayDevice)).not.toContain('state');
+      expect(Object.keys(displayDevice)).not.toContain('status');
+    });
+
+    it('contains identifiers and metadata', () => {
+      const device = new WahtsDevice('mockId', 'mockName', 'mockTabsintId');
+      device.metadata = {};
+      const displayDevice = displayableDevice(device);
+
+      expect(Object.keys(displayDevice)).toContain('deviceId');
+      expect(Object.keys(displayDevice)).toContain('name');
+      expect(Object.keys(displayDevice)).toContain('tabsintId');
+      expect(Object.keys(displayDevice)).toContain('type');
+      expect(Object.keys(displayDevice)).toContain('metadata');
+
+      expect(displayDevice.deviceId).toEqual('mockId');
+      expect(displayDevice.name).toEqual('mockName');
+      expect(displayDevice.tabsintId).toEqual('mockTabsintId');
+      expect(displayDevice.type).toEqual(DeviceType.Wahts);
+      expect(displayDevice.metadata).toEqual({});
     });
   });
 });
