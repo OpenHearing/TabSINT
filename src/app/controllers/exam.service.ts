@@ -733,6 +733,7 @@ export class ExamService {
       await this.devicesService.queueExam(device, 'PlaySound', playSoundProperties);
       this.activeWavfileDevice = device.deviceId;
     } catch (err) {
+      this.activeWavfileDevice = undefined;
       this.logger.error('Failed to play CHA wav files', err);
       this.notifications
         .alert({

@@ -222,9 +222,11 @@ export class DevicesService {
     const devices = await firstValueFrom(this.devices);
     const availableDevices: IDevice[] = [];
     if (tabsintId !== undefined) {
-      const device = devices.find(device => device.tabsintId == tabsintId);
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      device !== undefined && availableDevices.push(structuredClone(device));
+      const foundDevices = devices.filter(device => defaultTypes.includes(device.type));
+      const device = foundDevices.find(device => device.tabsintId == tabsintId);
+      if (device) {
+        availableDevices.push(structuredClone(device));
+      }
     } else {
       const foundDevices = devices.filter(device => defaultTypes.includes(device.type));
       foundDevices.forEach(dev => {
