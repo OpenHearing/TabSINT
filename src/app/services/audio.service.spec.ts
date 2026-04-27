@@ -7,7 +7,7 @@ import { DiskInterface } from '../models/disk/disk.interface';
 import { DevicesService } from './devices/devices.service';
 import { Notifications } from './notifications.service';
 import { AudioService } from './audio.service';
-import { PageWavfileInterface } from '../interfaces/page-definition.interface';
+import { PageWavfileCalInterface, PageWavfileInterface } from '../interfaces/page-definition.interface';
 import { CalibrationFilter, DeveloperProtocolsCalibration, PlaybackMethod, WavfileWeighting } from '../utilities/constants';
 import { TabsintAudioPlugin } from 'tabsintaudio';
 
@@ -154,5 +154,12 @@ describe('AudioService', () => {
   it(`set system volume calls plugin set system volume`, async () => {
     await audioService.setSystemVolume(1.0);
     expect(mockTabsintAudio.setSystemVolume).toHaveBeenCalledWith({ volume: 1.0 });
+  });
+
+  it(`disk tablet gain overrides default gain value`, async () => {
+    const updatedDisk = structuredClone(disk);
+    updatedDisk.preferences.tabletGain = 10;
+    mockDiskModel.diskSubject.next(updatedDisk);
+    expect(audioService.getTabletGain({} as PageWavfileCalInterface)).toEqual(10);
   });
 });

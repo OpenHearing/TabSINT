@@ -22,6 +22,7 @@ export class AudioService {
   private hostMetadata: IDeviceMetadata | undefined;
   private headset: Headset | undefined;
   private systemVolumeControlEnabled: boolean = false;
+  private userTabletGain: number | undefined;
   tabsintAudioPlugin = TabsintAudio;
 
   /** The active asset paths for audio which are currently loaded and playing.*/
@@ -53,6 +54,7 @@ export class AudioService {
     this.devicesService.hostMetadata.subscribe(data => (this.hostMetadata = data));
     this.disk.diskSubject.subscribe(disk => {
       this.headset = disk.preferences.headset;
+      this.userTabletGain = disk.preferences.tabletGain;
       this.systemVolumeControlEnabled = !disk.preferences.disableVolume;
     });
   }
@@ -405,6 +407,11 @@ export class AudioService {
    * @returns The gain value for the tablet type.
    */
   getTabletGain(calibration: PageWavfileCalInterface): number {
+    // User tablet gain overrides default gain values
+    if (this.userTabletGain) {
+      return this.userTabletGain;
+    }
+
     let tabletGain = 0;
     let gainMap = undefined;
     const hostData = this.hostMetadata;

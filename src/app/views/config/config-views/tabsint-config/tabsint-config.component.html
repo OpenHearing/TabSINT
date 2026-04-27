@@ -348,31 +348,6 @@
       </div>
     </div>
 
-    <!-- Tablet Gain -->
-    <!-- <div class="row pad-top">
-        <div class="col-6"><label translate for="tabletGain">Tablet Gain</label></div>
-        <div class="col-2"><input id="tabletGain" type="number" enter-close class="form-control" [(ngModel)]="disk.preferences.tabletGain" /></div>
-        <div class="col-1">
-            <a href="javascript:" title="{{'Minus' | transloco}}" (click)="disk.preferences.tabletGain = -disk.preferences.tabletGain">
-                <i class="ion-minus"></i>
-            </a>
-        </div>
-        <div class="col-1">
-            <a href="javascript:" title="{{'Refresh' | transloco}}" (click)="gainReset()">
-                <i class="ion-refresh"></i>
-            </a>
-        </div>
-        
-        <div class="col-1" href="javascript:" title="{{'Tablet Gain Help' | transloco}}">
-            <i [matMenuTriggerFor]= "gainPopoverMenu" class="ion-help-circled"></i>
-        </div>
-        <mat-menu #gainPopoverMenu="matMenu">
-            <button mat-menu-item>
-                <div [innerHTML]="gainPopover"></div>
-            </button>
-        </mat-menu>
-      </div> -->
-
     <!-- Calibration -->
     <div *ngIf="disk.preferences.debugMode">
       <br />
@@ -380,6 +355,43 @@
         <div class="col-12">
           <h5>Calibration</h5>
         </div>
+      </div>
+
+      <!-- Tablet Gain -->
+      <div class="row pad-top">
+        <div class="col-6">
+          <label for="tabletGain">{{ "Tablet Gain" | transloco }}</label>
+        </div>
+        <div class="col-2">
+          <input
+            id="tabletGain"
+            type="number"
+            #inputElement
+            enter-close
+            class="form-control"
+            placeholder="{{ 'Default' | transloco }}"
+            [ngModel]="disk.preferences.tabletGain"
+            (change)="updateTabletGain(inputElement.value)" />
+        </div>
+        <div class="col-1">
+          <a *ngIf="disk.preferences.tabletGain !== undefined" href="javascript:" title="{{ 'Minus' | transloco }}" (click)="negateTabletGain()">
+            <i class="ion-minus"></i>
+          </a>
+        </div>
+        <div class="col-1">
+          <a href="javascript:" title="{{ 'Refresh' | transloco }}" (click)="resetTabletGain()">
+            <i class="ion-refresh"></i>
+          </a>
+        </div>
+
+        <div class="col-1" href="javascript:" title="{{ 'Tablet Gain Help' | transloco }}">
+          <i [matMenuTriggerFor]="gainPopoverMenu" class="ion-help-circled"></i>
+        </div>
+        <mat-menu #gainPopoverMenu="matMenu">
+          <button mat-menu-item>
+            <div [innerHTML]="gainPopover"></div>
+          </button>
+        </mat-menu>
       </div>
 
       <div class="row pad-top">
