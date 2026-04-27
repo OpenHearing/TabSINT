@@ -11,7 +11,7 @@ import { VersionInterface } from '../models/version/version.interface';
 import { ResultsModel } from '../models/results/results-model.service';
 import { DiskModel } from '../models/disk/disk.service';
 import { ProtocolModel } from '../models/protocol/protocol-model.service';
-import { constructFilename } from '../utilities/results-helper-functions';
+import { constructFilename, displayableDevice } from '../utilities/results-helper-functions';
 import { FileService } from '../services/file.service';
 import { Logger } from '../services/logger.service';
 import { SqLite } from '../services/sqLite.service';
@@ -41,7 +41,7 @@ export class ResultsService {
   hostMetadata: IDeviceMetadata;
   version: VersionInterface;
   disk: DiskInterface;
-  connectedDeviceNames: string[];
+  private connectedDevices: Partial<IDevice>[];
   diskSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
   hostMetadataSubscription: Subscription | undefined;
@@ -51,7 +51,7 @@ export class ResultsService {
     this.results = this.resultsModel.getResults();
     this.protocol = this.protocolM.getProtocolModel();
     this.hostMetadata = {};
-    this.connectedDeviceNames = [];
+    this.connectedDevices = [];
     this.version = this.versionModel.version;
     this.disk = this.diskModel.getDisk();
     this.hostMetadataSubscription = this.devicesService.hostMetadata.subscribe((hostMetadata: IDeviceMetadata) => {
@@ -59,8 +59,8 @@ export class ResultsService {
       this.resultsModel.updateCurrentExam({ hostMetadata: this.hostMetadata });
     });
     this.devicesSubscription = this.devicesService.devices.subscribe((devices: IDevice[]) => {
-      this.connectedDeviceNames = devices.filter(device => device.state == DeviceState.Connected).map(device => device.name);
-      this.resultsModel.updateCurrentExam({ devices: this.connectedDeviceNames });
+      this.connectedDevices = devices.filter(device => device.state == DeviceState.Connected).map(device => displayableDevice(device));
+      this.resultsModel.updateCurrentExam({ devices: this.connectedDevices });
     });
     this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;

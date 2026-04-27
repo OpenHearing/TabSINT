@@ -1,3 +1,5 @@
+import { IDevice } from '../interfaces/devices/device.interface';
+
 /**
  * Generate a standardized filename across results
  * @summary Create filename by concatenating resultFilename (if available in protocol,
@@ -34,4 +36,20 @@ export function getDateString(testDateTime?: string) {
   let dateString = testDateTime ?? new Date().toJSON();
   dateString = dateString.replace(':', '-').replace(':', '-').split('.')[0];
   return dateString;
+}
+
+/**
+ * Convert the device data into a partial for user display.
+ * Only exposes device information which the user is allowed to see.
+ * @param device The device to be converted for display.
+ * @returns The user displayable device partial.
+ */
+export function displayableDevice(device: IDevice): Partial<IDevice> {
+  return {
+    deviceId: device.deviceId,
+    name: device.name,
+    type: device.type,
+    tabsintId: device.tabsintId,
+    metadata: device.metadata,
+  };
 }
