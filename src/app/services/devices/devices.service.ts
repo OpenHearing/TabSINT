@@ -360,6 +360,14 @@ export class DevicesService {
   }
 
   /**
+   * Request the status of a device.
+   * @param device The device to request status from.
+   */
+  async requestStatus(device: IDevice): Promise<IDeviceResponse | undefined> {
+    return this.getManager(device.type).requestStatus?.(device);
+  }
+
+  /**
    * Queue an exam for a device.
    * @param device The device to queue the exam for.
    * @param examId The identifier of the exam to be queued.

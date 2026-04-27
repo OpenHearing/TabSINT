@@ -96,6 +96,9 @@
                 "id": "Bekesy"
               },
               {
+                "id": "CHA Wav Test"
+              },
+              {
                 "id": "End All"
               }
             ]
@@ -243,6 +246,12 @@
               "conditional": "result.response=='Bekesy'",
               "target": {
                 "reference": "bekesyResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='CHA Wav Test'",
+              "target": {
+                "reference": "PlayChaWavTest"
               }
             },
             {
@@ -911,42 +920,42 @@
             "type": "buttonGridResponseArea",
             "rows": [
               {
-                "choices":[
+                "choices": [
                   {
-                    "id":"One",
+                    "id": "One",
                     "correct": true
                   },
                   {
-                    "id":"Two"
+                    "id": "Two"
                   },
                   {
-                    "id":"Three"
+                    "id": "Three"
                   }
                 ]
               },
               {
                 "choices": [
                   {
-                    "id":"Four"
+                    "id": "Four"
                   },
                   {
-                    "id":"Five"
+                    "id": "Five"
                   },
                   {
-                    "id":"Six"
+                    "id": "Six"
                   }
                 ]
               },
               {
                 "choices": [
                   {
-                    "id":"Seven"
+                    "id": "Seven"
                   },
                   {
-                    "id":"Eight"
+                    "id": "Eight"
                   },
                   {
-                    "id":"Nine"
+                    "id": "Nine"
                   }
                 ]
               }
@@ -963,42 +972,42 @@
             "feedback": "gradeResponse",
             "rows": [
               {
-                "choices":[
+                "choices": [
                   {
-                    "id":"1",
+                    "id": "1",
                     "correct": true
                   },
                   {
-                    "id":"2"
+                    "id": "2"
                   },
                   {
-                    "id":"3"
+                    "id": "3"
                   }
                 ]
               },
               {
                 "choices": [
                   {
-                    "id":"4"
+                    "id": "4"
                   },
                   {
-                    "id":"5"
+                    "id": "5"
                   },
                   {
-                    "id":"6"
+                    "id": "6"
                   }
                 ]
               },
               {
                 "choices": [
                   {
-                    "id":"7"
+                    "id": "7"
                   },
                   {
-                    "id":"8"
+                    "id": "8"
                   },
                   {
-                    "id":"9"
+                    "id": "9"
                   }
                 ]
               }
@@ -1216,8 +1225,51 @@
       ]
     },
     {
-      "protocolId":"@PARTIAL",
-      "pages":[
+      "protocolId": "PlayChaWavTest",
+      "pages": [
+        {
+          "id": "chaWavMultiChoice",
+          "title": "Cha Wav Test",
+          "questionMainText": "This page plays a wav file stored on the CHA",
+          "chaWavFiles": {
+            "wavfiles": [
+              {
+                "path": "C:HINT/LIST1/TIS003.WAV",
+                "Leq": [0, 0, 0, 0]
+              },
+              {
+                "path": "C:HINT/LIST1/TIS004.WAV",
+                "Leq": [50, 0, 0, 0]
+              }
+            ]
+          },
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "choices": [
+              {
+                "id": "A",
+                "text": "Big dogs can be dangerous"
+              },
+              {
+                "id": "B",
+                "text": "Her shoes were very dirty"
+              },
+              {
+                "id": "C",
+                "text": "Two Sentences"
+              },
+              {
+                "id": "D",
+                "text": "Nothing or Something Else"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "protocolId": "@PARTIAL",
+      "pages": [
         {
           "id": "partial_test",
           "instructionText": "This should only be shown if a partial exam is submitted.",

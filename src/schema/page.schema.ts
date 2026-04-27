@@ -4,7 +4,7 @@ import { pageWavfileSchema } from './definitions/page-wavfile.schema';
 import { followOnSchema } from './definitions/follow-on.schema';
 import { setFlagSchema } from './definitions/set-flag.schema';
 import { PageDefinition } from '../app/interfaces/page-definition.interface';
-import { chaWavFileSchema } from './definitions/cha-wavfile.schema';
+import { chaWavFilesSchema } from './definitions/cha-wavfile.schema';
 import { textBoxResultViewerSchema, textBoxSchema } from './response-areas/textbox.schema';
 import { multipleChoiceSchema } from './response-areas/multiple-choice.schema';
 import { manualAudiometrySchema } from './response-areas/manual-audiometry.schema';
@@ -70,13 +70,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
       nullable: true,
     },
     wavfiles: { type: 'array', items: pageWavfileSchema, nullable: true },
-    chaWavFiles: {
-      type: 'array',
-      items: chaWavFileSchema,
-      minItems: 1,
-      maxItems: 2,
-      nullable: true,
-    },
+    chaWavFiles: { ...chaWavFilesSchema, nullable: true },
     chaStream: { type: 'boolean', nullable: true, default: false },
     image: {
       type: 'object',
