@@ -190,7 +190,7 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
    */
   negateTabletGain() {
     const currentUserGain = this.disk.preferences.tabletGain;
-    if (currentUserGain) {
+    if (currentUserGain !== undefined) {
       this.diskModel.updatePreferences({ tabletGain: -currentUserGain });
     } else {
       this.logger.debug('Cannot negate undefined user tablet gain.');

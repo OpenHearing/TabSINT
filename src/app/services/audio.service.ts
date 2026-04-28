@@ -408,7 +408,7 @@ export class AudioService {
    */
   getTabletGain(calibration: PageWavfileCalInterface): number {
     // User tablet gain overrides default gain values
-    if (this.userTabletGain) {
+    if (this.userTabletGain !== undefined) {
       return this.userTabletGain;
     }
 

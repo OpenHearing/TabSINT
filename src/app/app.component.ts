@@ -141,7 +141,7 @@ export class AppComponent implements OnInit, OnDestroy {
       if (eventName === 'resume') {
         this.userVolume = await this.audioService.getSystemVolume();
         await this.audioService.setSystemVolume(1.0);
-      } else if (this.userVolume) {
+      } else if (this.userVolume !== undefined) {
         await this.audioService.setSystemVolume(this.userVolume);
       }
     } catch (error) {
