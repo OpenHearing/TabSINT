@@ -34,7 +34,6 @@ import { IDevice } from '../interfaces/devices/device.interface';
 import { DosimeterResultsInterface } from '../interfaces/dosimeter-results.interface';
 import { pageSchema } from '../../schema/page.schema';
 import { AudioService } from '../services/audio.service';
-import { error } from 'console';
 
 @Injectable({
   providedIn: 'root',
