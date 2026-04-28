@@ -1,5 +1,5 @@
 import { IDeviceResponse } from '../interfaces/devices/device-response.interface';
-import { RequestIdResponse } from '../interfaces/devices/device-responses.interface';
+import { RequestIdResponse, StatusResponse } from '../interfaces/devices/device-responses.interface';
 import { PageDefinition, ProtocolReferenceInterface, ResponseArea } from '../interfaces/page-definition.interface';
 import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
 import { PageInterface } from '../models/page/page.interface';
@@ -44,4 +44,8 @@ export function isRequestIdResponse(response?: IDeviceResponse): response is Req
     (response as RequestIdResponse).msg[1].serialNumber !== undefined &&
     (response as RequestIdResponse).msg[1].buildDateTime !== undefined
   );
+}
+
+export function isStatusResponse(response?: IDeviceResponse): response is StatusResponse {
+  return isValidDeviceResponse(response) && response.msg.length >= 2 && (response as StatusResponse).msg[1].State !== undefined;
 }

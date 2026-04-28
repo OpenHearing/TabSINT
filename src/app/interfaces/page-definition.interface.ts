@@ -40,7 +40,7 @@ export interface PageDefinition {
   preProcessFunction?: PreProcessFunctionInterface;
   wavfileStartDelayTime?: number;
   wavfiles?: PageWavfileInterface[];
-  chaWavFiles?: ChaWavfileInterface[];
+  chaWavFiles?: ChaWavfilesInterface;
   chaStream?: boolean;
   image?: ImageInterface;
   video?: VideoInterface;
@@ -136,10 +136,13 @@ export interface PageWavfileInterface {
   endTime?: number;
 }
 
-export interface ChaWavfileInterface {
-  Leq?: number[];
-  path: string;
-  SoundFileName?: string;
+export interface ChaWavfilesInterface {
+  tabsintId?: string;
+  wavfiles: {
+    path: string;
+    Leq?: number[];
+    SoundFileName?: string;
+  }[];
   useMetaRMS?: boolean;
   UseMetaRMS?: boolean; // Alternate key
 }

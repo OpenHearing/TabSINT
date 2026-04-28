@@ -846,7 +846,7 @@ class TabsintCha {
         } else if (clazz == Double.class) {
           clazz = Float.TYPE; // Make float
           value = Float.valueOf(((Double) value).floatValue());
-        } else if (clazz == JSONObject.class) {
+        } else if (clazz == JSONArray.class) {
           value = handleJSArray(value, key, o);
 
           // Set the class of the resulting array:
