@@ -95,6 +95,20 @@ export class ChaAdapter implements IDeviceAdapter {
   }
 
   /**
+   * Request the status of a device.
+   * @param device The device to request status from.
+   */
+  async requestStatus(device: ChaDeviceType): Promise<IDeviceResponse> {
+    const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
+      const nameOptions = { name: device.deviceId };
+      const waitForResponse = this.waitForResponse(device, 'Status');
+      await TabsintCha.requestStatus(nameOptions);
+      return (await waitForResponse) ?? this.defaultInvalidResponse(device);
+    });
+    return response;
+  }
+
+  /**
    * Queue an exam for a device.
    * @param device The device to queue the exam for.
    * @param examId The identifier of the exam to be queued.

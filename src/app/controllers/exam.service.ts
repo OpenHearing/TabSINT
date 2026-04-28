@@ -1,14 +1,15 @@
 import { Injectable, inject } from '@angular/core';
-import { combineLatest, interval, Subscription } from 'rxjs';
+import { combineLatest, firstValueFrom, interval, Subscription } from 'rxjs';
 import {
   isChoiceResponseArea,
   isPageDefinition,
   isProtocolReferenceInterface,
   isProtocolSchemaInterface,
   isProtocolStarted,
+  isStatusResponse,
 } from '../guards/type.guard';
 import { PageTypes } from '../types/custom-types';
-import { FollowOnInterface, PageDefinition, ProtocolReferenceInterface } from '../interfaces/page-definition.interface';
+import { ChaWavfilesInterface, FollowOnInterface, PageDefinition, ProtocolReferenceInterface } from '../interfaces/page-definition.interface';
 import { ResultsInterface } from '../models/results/results.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
@@ -21,7 +22,7 @@ import { PageModel } from '../models/page/page.service';
 import { WINDOW } from '../utilities/window';
 import { FileService } from '../services/file.service';
 import { DiskModel } from '../models/disk/disk.service';
-import { DialogType, ExamState, AppState, DeviceType } from '../utilities/constants';
+import { DialogType, ExamState, AppState, DeviceType, DeviceState } from '../utilities/constants';
 import { Notifications } from '../services/notifications.service';
 import { Logger } from '../services/logger.service';
 import { calculateElapsedTime, checkForSpecialReference, getDefaultResponseRequired } from '../utilities/exam-helper-functions';
@@ -61,6 +62,7 @@ export class ExamService {
 
   // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
   dosimeterResultsPoll: { [name: string]: ReturnType<typeof setInterval> } = {};
+  private activeWavfileDevice: string | undefined = undefined;
 
   constructor() {
     this.results = this.resultsModel.getResults();
@@ -70,6 +72,7 @@ export class ExamService {
       // Stop dosimetry if examState changes
       if (this.state.examState !== updatedState.examState) {
         this.stopDosimetry();
+        this.stopChaWavfiles();
         this.audioService.stopAudio();
       }
       this.state = updatedState;
@@ -335,6 +338,7 @@ export class ExamService {
 
     // Stop any dosimeters that might be running
     this.stopDosimetry();
+    this.stopChaWavfiles();
 
     // Stop any running audio
     this.audioService.stopAudio();
@@ -435,6 +439,7 @@ export class ExamService {
    */
   private resetProtocolStack() {
     this.stopDosimetry();
+    this.stopChaWavfiles();
     this.audioService.stopAudio();
     this.protocol.activeProtocolStack.clear();
   }
@@ -461,10 +466,14 @@ export class ExamService {
    * @param page The page for media activation.
    */
   async activateMedia(page: PageDefinition) {
+    this.stopChaWavfiles();
     this.audioService.stopAudio();
     if (page.wavfiles) {
       const startDelayTime = page.wavfileStartDelayTime ? page.wavfileStartDelayTime : pageSchema.properties.wavfileStartDelayTime.default;
       await this.audioService.playWav(page.wavfiles, startDelayTime);
+    }
+    if (page.chaWavFiles) {
+      await this.playChaWavFile(page.chaWavFiles);
     }
   }
 
@@ -638,6 +647,23 @@ export class ExamService {
   }
 
   /**
+   * Stop all running wavfiles on a CHA device.
+   */
+  async stopChaWavfiles() {
+    if (this.activeWavfileDevice) {
+      const device = (await firstValueFrom(this.devicesService.devices)).find(device => device.deviceId === this.activeWavfileDevice);
+      if (device?.state === DeviceState.Connected) {
+        const response = await this.devicesService.requestStatus(device);
+        // Cancel any ongoing exams for the active wav file device
+        if (isStatusResponse(response) && response.msg[1].State === 2) {
+          this.devicesService.abortExams(device);
+        }
+      }
+      this.activeWavfileDevice = undefined;
+    }
+  }
+
+  /**
    * Polling function to get results from dosimeter.
    * @param dosimeter The dosimeter to get results from.
    */
@@ -662,5 +688,85 @@ export class ExamService {
     } catch {
       this.logger.debug('Failed requesting results during dosimetry for device: ' + dosimeter.tabsintId);
     }
+  }
+
+  /**
+   * Play CHA wav files on a device.
+   * @param chaWavfiles The CHA wav file object containing playback information.
+   */
+  async playChaWavFile(chaWavfiles: ChaWavfilesInterface) {
+    const allowableDevices = [DeviceType.Wahts];
+    const deviceList = await this.devicesService.getDeviceOrDefault(chaWavfiles.tabsintId, allowableDevices);
+    const device = await this.devicesService.confirmSingleDevice(deviceList);
+    if (!device) {
+      this.logger.error('Error playing CHA files, check the provided wav files and connected device.');
+      return;
+    }
+    try {
+      const status = await this.devicesService.requestStatus(device);
+      if (isStatusResponse(status)) {
+        if (status.msg[1].State === 2) {
+          this.logger.warning('CHA exam is still running while user queues an exam. Aborting exams...');
+          await this.devicesService.abortExams(device);
+        } else if (status.msg[1].State !== 1) {
+          this.logger.error('Unexpected device status, CHA wav files will not be played.');
+          return;
+        }
+      } else {
+        this.logger.error('Invalid device response, CHA wav files will not be played.');
+        return;
+      }
+
+      let playSoundProperties: Record<string, unknown> = {
+        UseMetaRMS: chaWavfiles.UseMetaRMS ?? chaWavfiles.useMetaRMS ?? false,
+        SoundFileName: this.prefixSoundFilePath(chaWavfiles.wavfiles[0].SoundFileName ?? chaWavfiles.wavfiles[0].path),
+        Leq: this.resizeLeq(chaWavfiles.wavfiles[0].Leq),
+      };
+      if (chaWavfiles.wavfiles.length > 1) {
+        playSoundProperties = {
+          ...playSoundProperties,
+          SecondSoundFileName: this.prefixSoundFilePath(chaWavfiles.wavfiles[1].SoundFileName ?? chaWavfiles.wavfiles[1].path),
+          SecondLeq: this.resizeLeq(chaWavfiles.wavfiles[1].Leq),
+        };
+      }
+      await this.devicesService.queueExam(device, 'PlaySound', playSoundProperties);
+      this.activeWavfileDevice = device.deviceId;
+    } catch (err) {
+      this.activeWavfileDevice = undefined;
+      this.logger.error('Failed to play CHA wav files', err);
+      this.notifications
+        .alert({
+          title: 'Alert',
+          content: 'Failed to play CHA wav files, check logging for more information.',
+          type: DialogType.Alert,
+        })
+        .subscribe();
+    }
+  }
+
+  /**
+   * Prefix a file path with the proper user directory.
+   * @param fileName The file path to prefix.
+   * @returns The prefixed path or an empty string if input is empty.
+   */
+  private prefixSoundFilePath(fileName: string): string {
+    if (!fileName) {
+      return String();
+    }
+    let prefixedFileName = fileName;
+    if (!prefixedFileName.startsWith('C:')) {
+      prefixedFileName = 'C:USER/' + prefixedFileName;
+    }
+    return prefixedFileName;
+  }
+
+  /**
+   * Resize an Leq array to a default size using zero fills.
+   * @param arr The array to resize.
+   * @param size The output size of the array.
+   * @returns The resized array filled with extra zeros.
+   */
+  private resizeLeq(arr: number[] | undefined = [72, 72, 0, 0], size: number = 4): number[] {
+    return (arr ?? []).slice(0, size).concat(Array(Math.max(0, size - (arr ?? []).length)).fill(0));
   }
 }

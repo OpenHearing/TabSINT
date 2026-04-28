@@ -69,6 +69,12 @@ export interface IDeviceManager {
   requestId?(device: IDevice): Promise<IDeviceResponse>;
 
   /**
+   * Optional method to request a device identifier.
+   * @param device The device to request the identifier from.
+   */
+  requestStatus?(device: IDevice): Promise<IDeviceResponse>;
+
+  /**
    * Optional method to queue an exam for a device.
    * @param device The device to queue the exam for.
    * @param examId The identifier of the exam to be queued.

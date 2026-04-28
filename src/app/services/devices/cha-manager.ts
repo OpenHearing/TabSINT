@@ -222,6 +222,16 @@ export abstract class ChaManager implements IDeviceManager {
   }
 
   /**
+   * Request the status of a device.
+   * @param device The device to request the status from.
+   */
+  async requestStatus(device: ChaDeviceType): Promise<IDeviceResponse> {
+    const response = await this.adapter.requestStatus(device);
+    await this.deviceErrorHandler(response);
+    return response;
+  }
+
+  /**
    * Request a device identifier.
    * @param device The device to request the identifier from.
    */

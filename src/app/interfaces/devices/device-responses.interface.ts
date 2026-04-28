@@ -8,6 +8,13 @@ export interface RequestIdResponse extends IDeviceResponse {
 }
 
 /**
+ * Generic status response for devices.
+ */
+export interface StatusResponse extends IDeviceResponse {
+  msg: [unknown, StatusObject];
+}
+
+/**
  * Object held in a request ID response.
  */
 export interface RequestIdObject {
@@ -25,4 +32,14 @@ export interface RequestIdObject {
    * Description of the device.
    */
   description?: string;
+}
+
+/**
+ * Object held in a status response.
+ */
+export interface StatusObject {
+  /**
+   * State of the device
+   */
+  State: number;
 }
