@@ -5,23 +5,7 @@
     <div class="col-10 text-warning"><em>Bluetooth radio disabled</em></div>
   </div>
 
-  <!-- New Connection / Scanning controls -->
   <ng-container *ngIf="devices$ | async as devices">
-
-    <div class="row pad-top" *ngIf="!scanning && devices.length < maxDevices">
-      <div class="col-12">
-        <button class="btn btn-primary" (click)="addNewConnection()">+ New Connection</button>
-      </div>
-    </div>
-
-    <div class="row pad-top" *ngIf="scanning">
-      <div class="col-6">
-        <em>Scanning for devices...</em>
-      </div>
-      <div class="col-4">
-        <button class="btn btn-primary btn-block" (click)="cancelNewConnection()">Cancel</button>
-      </div>
-    </div>
 
     <!-- Device cards -->
     <ng-container *ngFor="let device of devices">
@@ -83,6 +67,22 @@
 
       </div>
     </ng-container>
+
+    <!-- New Connection / Scanning controls — always below device cards -->
+    <div class="row device-new-connection-row" *ngIf="!scanning && devices.length < maxDevices">
+      <div class="col-12">
+        <button class="btn btn-primary" (click)="addNewConnection()">+ New Connection</button>
+      </div>
+    </div>
+
+    <div class="row device-new-connection-row" *ngIf="scanning">
+      <div class="col-6">
+        <em>Scanning for devices...</em>
+      </div>
+      <div class="col-4">
+        <button class="btn btn-primary btn-block" (click)="cancelNewConnection()">Cancel</button>
+      </div>
+    </div>
 
   </ng-container>
 
