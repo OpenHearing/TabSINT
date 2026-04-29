@@ -3,6 +3,7 @@ import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
 import { ExamService } from '../../controllers/exam.service';
 import { Subscription } from 'rxjs/internal/Subscription';
+import { DeviceType } from '../../utilities/constants';
 
 @Component({
   selector: 'app-config-view',
@@ -31,5 +32,6 @@ export class ConfigComponent implements OnInit, OnDestroy {
     this.stateSubscription?.unsubscribe();
   }
 
+  DeviceType = DeviceType;
   title = 'config';
 }
