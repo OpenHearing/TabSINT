@@ -30,6 +30,11 @@ export class NewConnectionComponent {
     this.newConnectionType = type;
   }
 
+  async selectAndScan(type: DeviceType) {
+    this.changeDeviceType(type);
+    await this.scanAndConnect();
+  }
+
   addNewConnection(): void {
     this.newDeviceConnection = true;
   }

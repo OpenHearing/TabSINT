@@ -2725,3 +2725,48 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {
   appearance: textfield;
 }
+
+/*-----------
+  * Device Cards (Connected Devices panel)
+  * -----------*/
+.device-card {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 12px 15px;
+  margin-bottom: 12px;
+  background-color: #fff;
+}
+
+.device-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.device-card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-top: 8px;
+  align-items: center;
+}
+
+.device-card-settings-toggle {
+  cursor: pointer;
+  color: #337ab7;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+  margin-top: 10px;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  user-select: none;
+}
+
+.device-card-settings-toggle:focus {
+  outline: 2px solid #337ab7;
+  border-radius: 3px;
+}

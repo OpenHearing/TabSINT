@@ -86,6 +86,9 @@ export const preferencesSchema: JSONSchemaType<Preferences> = {
     versionCheck: { type: 'boolean', default: false },
     wahtsConnectionType: { type: 'string', enum: Object.values(BluetoothType), default: BluetoothType.BLUETOOTH_LE },
     ignoreFirmwareUpdates: { type: 'boolean', default: false },
+    showTympanPanel: nullable({ type: 'boolean', default: true }),
+    showWahtsPanel: nullable({ type: 'boolean', default: true }),
+    showDuodosePanel: nullable({ type: 'boolean', default: true }),
   },
   required: [
     'adminSkipMode',

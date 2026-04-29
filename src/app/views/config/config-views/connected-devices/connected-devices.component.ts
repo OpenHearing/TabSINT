@@ -2,16 +2,18 @@ import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { StateInterface } from '../../../../models/state/state.interface';
 import { StateModel } from '../../../../models/state/state.service';
 import { IDevice } from '../../../../interfaces/devices/device.interface';
-import { DeviceState, DeviceType, DialogType } from '../../../../utilities/constants';
+import { BluetoothType, DeviceState, DeviceType, DialogType } from '../../../../utilities/constants';
 import { DevicesService } from '../../../../services/devices/devices.service';
 import { Logger } from '../../../../services/logger.service';
 import { TranslocoService } from '@jsverse/transloco';
 import { Subscription } from 'rxjs/internal/Subscription';
-import { map, Observable } from 'rxjs';
+import { firstValueFrom, map, Observable } from 'rxjs';
 import { DiskInterface } from '../../../../models/disk/disk.interface';
 import { DiskModel } from '../../../../models/disk/disk.service';
 import { Notifications } from '../../../../services/notifications.service';
 import { DialogDataInterface } from '../../../../interfaces/dialog-data.interface';
+import { IWahtsDevice } from '../../../../interfaces/devices/wahts-device.interface';
+import { FirmwareAsset } from '../../../../interfaces/firmware-asset.interface';
 
 @Component({
   selector: 'app-connected-devices',
@@ -26,13 +28,15 @@ export class ConnectedDevicesComponent implements OnInit, OnDestroy {
   private readonly notifications = inject(Notifications);
 
   DeviceType = DeviceType;
+  BluetoothType = BluetoothType;
   disk: DiskInterface;
   connectedDevicesMap: Observable<Map<DeviceType, IDevice[]>>;
   state: StateInterface;
   DeviceState = DeviceState;
-  expanded = new Map<string, boolean>();
+  settingsExpanded = new Map<string, boolean>();
+  advancedExpanded = new Map<DeviceType, boolean>();
+  wahtsFirmwareAsset = this.getWahtsFirmwareAsset();
 
-  // Subscriptions
   stateSubscription: Subscription | undefined;
   diskSubscription: Subscription | undefined;
 
@@ -89,10 +93,6 @@ export class ConnectedDevicesComponent implements OnInit, OnDestroy {
     await this.devicesService.removeSavedDevice(device);
   }
 
-  /**
-   * Check whether a firmware update is available and alert the user if necessary.
-   * @param device The device to check for a firmware update.
-   */
   async checkForFirmwareUpdate(device: IDevice) {
     const firmwareAsset = await this.devicesService.getApplicationFirmware(device.type);
     if (
@@ -104,8 +104,8 @@ export class ConnectedDevicesComponent implements OnInit, OnDestroy {
       const msg: DialogDataInterface = {
         title: 'Firmware Update',
         content: `
-        The firmware on device ${device.deviceId} is not supported by this TabSINT version. 
-        This TabSINT version supports ${firmwareAsset.version} firmware. 
+        The firmware on device ${device.deviceId} is not supported by this TabSINT version.
+        This TabSINT version supports ${firmwareAsset.version} firmware.
         Select 'OK' to update the firmware on ${device.deviceId}.
         The firmware can be also updated through the device information panel.
         `,
@@ -119,11 +119,6 @@ export class ConnectedDevicesComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Get the expanded state for a device type panel.
-   * @param deviceType The device type associated with the panel.
-   * @returns The current panel state.
-   */
   getPanelState(deviceType: DeviceType): boolean {
     let panel = false;
     switch (deviceType) {
@@ -143,11 +138,6 @@ export class ConnectedDevicesComponent implements OnInit, OnDestroy {
     return panel;
   }
 
-  /**
-   * Set the expanded state for a device type panel.
-   * @param deviceType The device type associated with the panel.
-   * @param state The new state for the panel.
-   */
   setPanelState(deviceType: DeviceType, state: boolean) {
     switch (deviceType) {
       case DeviceType.Tympan:
@@ -165,12 +155,49 @@ export class ConnectedDevicesComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Toggle the expanded state for a device information panel.
-   * @param device The device for panel toggling.
-   */
-  toggleDeviceExpanded(device: IDevice) {
-    const currentState = this.expanded.get(device.deviceId) ?? false;
-    this.expanded.set(device.deviceId, !currentState);
+  toggleSettingsExpanded(device: IDevice) {
+    const current = this.settingsExpanded.get(device.deviceId) ?? false;
+    this.settingsExpanded.set(device.deviceId, !current);
+  }
+
+  toggleAdvancedExpanded(deviceType: DeviceType) {
+    const current = this.advancedExpanded.get(deviceType) ?? false;
+    this.advancedExpanded.set(deviceType, !current);
+  }
+
+  shouldShowDevicePanel(deviceType: DeviceType): boolean {
+    switch (deviceType) {
+      case DeviceType.Tympan:
+        return this.disk.preferences.showTympanPanel ?? true;
+      case DeviceType.Wahts:
+        return this.disk.preferences.showWahtsPanel ?? true;
+      case DeviceType.Duodose:
+        return this.disk.preferences.showDuodosePanel ?? true;
+      default:
+        deviceType satisfies never;
+        return true;
+    }
+  }
+
+  toggleIgnoreFirmwareUpdates() {
+    this.diskModel.updatePreferences({ ignoreFirmwareUpdates: !this.disk.preferences.ignoreFirmwareUpdates });
+  }
+
+  async getWahtsFirmwareAsset(): Promise<FirmwareAsset | undefined> {
+    return this.devicesService.getApplicationFirmware(DeviceType.Wahts);
+  }
+
+  async changeWahtsConnectionType(connectionType: BluetoothType): Promise<void> {
+    const devices = await firstValueFrom(this.devicesService.devices);
+    const removableDevices = devices.filter(
+      device => device.type === DeviceType.Wahts && (device as IWahtsDevice).connectionType !== connectionType
+    );
+    for (const device of removableDevices) {
+      if (device.state !== DeviceState.Disconnected) {
+        await this.devicesService.disconnect(device);
+      }
+      await this.devicesService.removeSavedDevice(device);
+    }
+    this.diskModel.updatePreferences({ wahtsConnectionType: connectionType });
   }
 }

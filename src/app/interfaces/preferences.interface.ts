@@ -52,4 +52,7 @@ export interface Preferences {
   wahtsConnectionType: BluetoothType;
   recordTestLocation?: boolean;
   ignoreFirmwareUpdates: boolean;
+  showTympanPanel?: boolean;
+  showWahtsPanel?: boolean;
+  showDuodosePanel?: boolean;
 }

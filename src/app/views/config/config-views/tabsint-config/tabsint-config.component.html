@@ -207,6 +207,34 @@
         </mat-menu>
     </div> -->
 
+  <!-- Show Devices -->
+  <div class="row pad-top">
+    <div class="col-12">
+      <h5>Show Devices</h5>
+    </div>
+  </div>
+
+  <div class="row pad-top">
+    <div class="col-6"><label for="showTympan">{{ "Tympan:" | transloco }}</label></div>
+    <div class="col-2">
+      <input id="showTympan" type="checkbox" [ngModel]="disk.preferences.showTympanPanel ?? true" (change)="toggleShowTympanPanel()" />
+    </div>
+  </div>
+
+  <div class="row pad-top">
+    <div class="col-6"><label for="showWahts">{{ "WAHTS:" | transloco }}</label></div>
+    <div class="col-2">
+      <input id="showWahts" type="checkbox" [ngModel]="disk.preferences.showWahtsPanel ?? true" (change)="toggleShowWahtsPanel()" />
+    </div>
+  </div>
+
+  <div class="row pad-top">
+    <div class="col-6"><label for="showDuodose">{{ "Duodose:" | transloco }}</label></div>
+    <div class="col-2">
+      <input id="showDuodose" type="checkbox" [ngModel]="disk.preferences.showDuodosePanel ?? true" (change)="toggleShowDuodosePanel()" />
+    </div>
+  </div>
+
   <!-- QR Code Generation -->
   <div class="row pad-top">
     <div class="col-6">

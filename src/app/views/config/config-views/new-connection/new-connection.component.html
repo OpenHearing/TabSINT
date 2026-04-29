@@ -14,28 +14,22 @@
   </div>
 
   <div class="row pad-top">
-    <!-- Device Type -->
+    <!-- Device Type — selecting a type automatically starts the scan -->
     <div class="col-3">
-      <label for="deviceType">{{ "Device Type:" | transloco }}</label>
+      <label for="deviceTypeSelect">{{ "Device Type:" | transloco }}</label>
     </div>
     <div ngbDropdown class="col-2 dropdown-width" display="dynamic">
-      <button type="button" class="btn btn-default btn-block dropdown-toggle" id="deviceType" ngbDropdownToggle>
+      <button type="button" class="btn btn-default btn-block dropdown-toggle" id="deviceTypeSelect" ngbDropdownToggle>
         {{ newConnectionType ?? "Select One" }}
       </button>
-      <div ngbDropdownMenu aria-labelledby="deviceType">
-        <button *ngFor="let deviceType of deviceTypes" ngbDropdownItem (click)="changeDeviceType(deviceType)">{{ deviceType }}</button>
+      <div ngbDropdownMenu aria-labelledby="deviceTypeSelect">
+        <button *ngFor="let deviceType of deviceTypes" ngbDropdownItem (click)="selectAndScan(deviceType)">{{ deviceType }}</button>
       </div>
     </div>
     <div class="col-2"></div>
   </div>
 
-  <div class="row pad-top" *ngIf="newConnectionType">
-    <!-- Scan and connect -->
-    <div class="col-4">
-      <button class="btn btn-primary btn-block" (click)="scanAndConnect()">Scan</button>
-    </div>
-    <div class="col-2"></div>
-
+  <div class="row pad-top">
     <!-- Cancel -->
     <div class="col-4">
       <button class="btn btn-primary btn-block" (click)="cancel()">Cancel</button>

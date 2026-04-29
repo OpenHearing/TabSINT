@@ -1,75 +1,148 @@
 <!-- Devices -->
 <ng-container *ngFor="let entry of connectedDevicesMap | async | keyvalue">
-  <mat-expansion-panel
-    class="panel panel-default"
-    [expanded]="getPanelState(entry.key)"
-    (opened)="setPanelState(entry.key, true)"
-    (closed)="setPanelState(entry.key, false)">
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        {{ entry.key | transloco }}
-      </mat-panel-title>
-    </mat-expansion-panel-header>
+  <ng-container *ngIf="shouldShowDevicePanel(entry.key)">
+    <mat-expansion-panel
+      class="panel panel-default"
+      [expanded]="getPanelState(entry.key)"
+      (opened)="setPanelState(entry.key, true)"
+      (closed)="setPanelState(entry.key, false)">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{ entry.key | transloco }}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
 
-    <div class="panel-body text-left">
-      <ng-container *ngFor="let device of entry.value">
-        <!-- Select Devices-->
-        <div class="row pad-top">
-          <!-- Device ID -->
-          <div class="col-2 admin-labels text-scale">TabSINT ID:</div>
-          <div class="col-1 text-scale text-line-truncate">
-            <em>{{ device.tabsintId }}</em>
-          </div>
-          <div class="col-1 text-scale">
-            <em>
-              <span (click)="toggleDeviceExpanded(device)" (keydown.enter)="toggleDeviceExpanded(device)">
-                <i class="ion-information-circled"></i>
-              </span>
-            </em>
-          </div>
+      <div class="panel-body text-left">
 
-          <!-- Name -->
-          <div class="col-2 admin-labels text-scale">DeviceName:</div>
-          <div class="col-3 text-scale">
-            <em>{{ device.name }}</em>
-          </div>
-
-          <!-- State -->
-          <div class="col-1 admin-labels text-scale">State:</div>
-          <div class="col-2 text-scale" *ngIf="device.state === DeviceState.Connected"><em>Connected</em></div>
-          <div class="col-2 text-scale" *ngIf="device.state === DeviceState.Disconnected"><em>Not Connected</em></div>
-          <div class="col-2 text-scale" *ngIf="device.state !== DeviceState.Connected && device.state !== DeviceState.Disconnected">
-            <em>Connecting</em>
-          </div>
-
-          <!-- Connection Buttons-->
-          <div class="row pad-top">
-            <div class="col-4" [ngSwitch]="device.state">
-              <button *ngSwitchDefault class="btn btn-primary btn-block disabled custom-disabled">Connect</button>
-              <button
-                *ngSwitchCase="DeviceState.Disconnected"
-                class="btn btn-primary btn-block"
-                [disabled]="!state.bluetoothConnected"
-                [ngClass]="!state.bluetoothConnected ? 'disabled custom-disabled' : ''"
-                (click)="reconnect(device)">
-                Connect
-              </button>
+        <!-- WAHTS device-class advanced settings -->
+        <ng-container *ngIf="entry.key === DeviceType.Wahts">
+          <div class="row showhideSection">
+            <div class="col-12 text-center">
+              <a href="javascript:" (click)="toggleAdvancedExpanded(entry.key)">
+                <span *ngIf="advancedExpanded.get(entry.key)">
+                  {{ "Hide Advanced Settings" | transloco }}
+                  <i class="ion-chevron-up"></i>
+                </span>
+                <span *ngIf="!advancedExpanded.get(entry.key)">
+                  {{ "Show Advanced Settings" | transloco }}
+                  <i class="ion-chevron-down"></i>
+                </span>
+              </a>
             </div>
-            <div class="col-4" [ngSwitch]="device.state">
-              <button *ngSwitchDefault class="btn btn-primary btn-block disabled custom-disabled">Disconnect</button>
-              <button *ngSwitchCase="DeviceState.Connected" class="btn btn-primary btn-block" (click)="disconnect(device)">Disconnect</button>
+          </div>
+
+          <div [ngbCollapse]="!advancedExpanded.get(entry.key)">
+            <div class="row pad-top">
+              <div class="col-12">
+                <h5>Preferences</h5>
+
+                <!-- WAHTS Connection Type -->
+                <div class="row pad-top">
+                  <div class="col-6"><label for="wahtsConnectionType">{{ "WAHTS Connection Type:" | transloco }}</label></div>
+                  <div ngbDropdown class="col-2 dropdown-width" display="dynamic">
+                    <button type="button" class="btn btn-default btn-block dropdown-toggle" id="wahtsConnectionType" ngbDropdownToggle>
+                      {{ disk.preferences.wahtsConnectionType }}
+                    </button>
+                    <div ngbDropdownMenu aria-labelledby="wahtsConnectionType">
+                      <button *ngFor="let bluetoothType of BluetoothType | keyvalue" ngbDropdownItem (click)="changeWahtsConnectionType(bluetoothType.value)">
+                        {{ bluetoothType.value }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Ignore Firmware Updates -->
+                <div class="row pad-top">
+                  <div class="col-6"><label for="ignoreFirmwareUpdatesAdv">{{ "Ignore Firmware Updates:" | transloco }}</label></div>
+                  <div class="col-2">
+                    <input id="ignoreFirmwareUpdatesAdv" type="checkbox" [ngModel]="disk.preferences.ignoreFirmwareUpdates" (change)="toggleIgnoreFirmwareUpdates()" />
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="col-4">
+
+            <div class="row pad-top">
+              <div class="col-12">
+                <h5>Firmware</h5>
+                <div class="row pad-top">
+                  <div class="col-6">WAHTS Firmware Tag:</div>
+                  <div class="col-4">{{ (wahtsFirmwareAsset | async)?.version ?? "--" }}</div>
+                </div>
+                <div class="row pad-top">
+                  <div class="col-6">WAHTS Firmware Build Time:</div>
+                  <div class="col-4">{{ (wahtsFirmwareAsset | async)?.buildDatetime ?? "--" }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- Individual device cards -->
+        <ng-container *ngFor="let device of entry.value">
+          <div class="device-card">
+
+            <!-- Card header: name and TabSINT ID -->
+            <div class="device-card-header">
+              <div>
+                <span class="admin-labels">Device Name:</span>
+                <em>{{ device.name }}</em>
+              </div>
+              <div>
+                <span class="admin-labels">TabSINT ID:</span>
+                <em>{{ device.tabsintId }}</em>
+              </div>
+            </div>
+
+            <!-- Connection state -->
+            <div class="pad-top">
+              <span class="admin-labels">State:</span>
+              <em *ngIf="device.state === DeviceState.Connected"> Connected</em>
+              <em *ngIf="device.state === DeviceState.Disconnected"> Not Connected</em>
+              <em *ngIf="device.state !== DeviceState.Connected && device.state !== DeviceState.Disconnected"> Connecting...</em>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="device-card-actions">
+              <div [ngSwitch]="device.state">
+                <!-- Intermediate state: show Cancel -->
+                <button *ngSwitchDefault class="btn btn-primary btn-block" (click)="disconnect(device)">Cancel</button>
+                <!-- Disconnected: show Connect -->
+                <button
+                  *ngSwitchCase="DeviceState.Disconnected"
+                  class="btn btn-primary btn-block"
+                  [disabled]="!state.bluetoothConnected"
+                  [ngClass]="!state.bluetoothConnected ? 'disabled custom-disabled' : ''"
+                  (click)="reconnect(device)">
+                  Connect
+                </button>
+                <!-- Connected: show Disconnect -->
+                <button *ngSwitchCase="DeviceState.Connected" class="btn btn-primary btn-block" (click)="disconnect(device)">Disconnect</button>
+              </div>
               <button class="btn btn-primary btn-block" (click)="remove(device)">Remove</button>
             </div>
-          </div>
 
-          <div #collapse="ngbCollapse" [ngbCollapse]="!expanded.get(device.deviceId)">
-            <app-device-info-view [device]="device"></app-device-info-view>
+            <!-- Settings toggle -->
+            <div
+              class="device-card-settings-toggle"
+              (click)="toggleSettingsExpanded(device)"
+              (keydown.enter)="toggleSettingsExpanded(device)"
+              tabindex="0"
+              role="button"
+              [attr.aria-expanded]="settingsExpanded.get(device.deviceId) ?? false">
+              <i [class]="(settingsExpanded.get(device.deviceId) ?? false) ? 'ion-chevron-up' : 'ion-chevron-down'"></i>
+              <span>{{ "Settings" | transloco }}</span>
+            </div>
+
+            <!-- Collapsible settings content -->
+            <div [ngbCollapse]="!(settingsExpanded.get(device.deviceId) ?? false)">
+              <app-device-info-view [device]="device"></app-device-info-view>
+            </div>
+
           </div>
-        </div>
-      </ng-container>
-    </div>
-  </mat-expansion-panel>
-  <br />
+        </ng-container>
+
+      </div>
+    </mat-expansion-panel>
+    <br />
+  </ng-container>
 </ng-container>
