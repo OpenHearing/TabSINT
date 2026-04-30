@@ -48,14 +48,6 @@ export class DeviceChooseComponent implements OnInit, OnDestroy {
 
   choose(device: IDevice) {
     this.selectedDevice = device;
-    this.changeDetection.detectChanges();
-  }
-
-  select() {
     this.dialogRef.close(this.selectedDevice);
-  }
-
-  cancel() {
-    this.dialogRef.close();
   }
 }

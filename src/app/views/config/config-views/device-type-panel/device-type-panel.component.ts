@@ -52,9 +52,7 @@ export class DeviceTypePanelComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.devices$ = this.devicesService.devices.pipe(
-      map(devices =>
-        devices.filter(d => d.type === this.deviceType && d.state !== DeviceState.Discovery)
-      )
+      map(devices => devices.filter(d => d.type === this.deviceType && d.state !== DeviceState.Discovery))
     );
 
     if (this.deviceType === DeviceType.Wahts) {
@@ -146,9 +144,7 @@ export class DeviceTypePanelComponent implements OnInit, OnDestroy {
 
   async changeWahtsConnectionType(connectionType: BluetoothType): Promise<void> {
     const devices = await firstValueFrom(this.devicesService.devices);
-    const toRemove = devices.filter(
-      d => d.type === DeviceType.Wahts && (d as IWahtsDevice).connectionType !== connectionType
-    );
+    const toRemove = devices.filter(d => d.type === DeviceType.Wahts && (d as IWahtsDevice).connectionType !== connectionType);
     for (const device of toRemove) {
       if (device.state !== DeviceState.Disconnected) {
         await this.devicesService.disconnect(device);

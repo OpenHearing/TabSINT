@@ -122,13 +122,16 @@
             </div>
 
             <!-- Settings toggle -->
-            <button
+            <div
               class="device-card-settings-toggle"
               (click)="toggleSettingsExpanded(device)"
+              (keydown.enter)="toggleSettingsExpanded(device)"
+              tabindex="0"
+              role="button"
               [attr.aria-expanded]="settingsExpanded.get(device.deviceId) ?? false">
               <i [class]="(settingsExpanded.get(device.deviceId) ?? false) ? 'ion-chevron-up' : 'ion-chevron-down'"></i>
               <span>{{ "Settings" | transloco }}</span>
-            </button>
+            </div>
 
             <!-- Collapsible settings content -->
             <div [ngbCollapse]="!(settingsExpanded.get(device.deviceId) ?? false)">
