@@ -71,8 +71,8 @@ import { CustomResponseAreaComponent } from './views/response-area/response-area
 import { TasksBannerComponent } from './views/tasks-banner/tasks-banner.component';
 import { ManualAudiometryComponent } from './views/response-area/response-areas/manual-audiometry/manual-audiometry';
 import { DeviceTypePanelComponent } from './views/config/config-views/device-type-panel/device-type-panel.component';
+import { DeviceCardComponent } from './views/config/config-views/device-card/device-card.component';
 import { DeviceInfoComponent } from './views/config/config-views/device-info/device-info.component';
-import { ConnectedDevicesComponent } from './views/config/config-views/connected-devices/connected-devices.component';
 import { NewConnectionComponent } from './views/config/config-views/new-connection/new-connection.component';
 import { CalibrationExamComponent } from './views/response-area/response-areas/calibration-exam/calibration-exam-component/calibration-exam.component';
 import { CalibrationScreenComponent } from './views/response-area/response-areas/calibration-exam/calibration-screen/calibration-screen.component';
@@ -141,8 +141,8 @@ import { DuodoseDownloadComponent } from './views/response-area/response-areas/d
     CustomResponseAreaComponent,
     TasksBannerComponent,
     DeviceTypePanelComponent,
+    DeviceCardComponent,
     DeviceInfoComponent,
-    ConnectedDevicesComponent,
     NewConnectionComponent,
     AudiogramComponent,
     CalibrationExamComponent,

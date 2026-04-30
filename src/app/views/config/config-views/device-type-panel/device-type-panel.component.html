@@ -7,69 +7,14 @@
 
   <ng-container *ngIf="devices$ | async as devices">
 
-    <!-- New Connection / Scanning controls — always below device cards -->
     <div class="row device-new-connection-row" *ngIf="!scanning && devices.length < maxDevices">
       <div class="col-12">
         <button class="btn btn-primary" (click)="addNewConnection()">+ New Connection</button>
       </div>
     </div>
 
-    <!-- Device cards -->
     <ng-container *ngFor="let device of devices">
-      <div class="device-card">
-
-        <!-- Name and TabSINT ID -->
-        <div class="device-card-header">
-          <div>
-            <span class="admin-labels">Device Name:</span>
-            <em>{{ device.name }}</em>
-          </div>
-          <div>
-            <span class="admin-labels">TabSINT ID:</span>
-            <em>{{ device.tabsintId }}</em>
-          </div>
-        </div>
-
-        <!-- Connection state -->
-        <div class="pad-top">
-          <span class="admin-labels">State:</span>
-          <em *ngIf="device.state === DeviceState.Connected"> Connected</em>
-          <em *ngIf="device.state === DeviceState.Disconnected"> Not Connected</em>
-          <em *ngIf="device.state !== DeviceState.Connected && device.state !== DeviceState.Disconnected"> Connecting...</em>
-        </div>
-
-        <!-- Action buttons -->
-        <div class="device-card-actions">
-          <div [ngSwitch]="device.state">
-            <button *ngSwitchDefault class="btn btn-primary btn-block" (click)="disconnect(device)">Cancel</button>
-            <button
-              *ngSwitchCase="DeviceState.Disconnected"
-              class="btn btn-primary btn-block"
-              [disabled]="!state.bluetoothConnected"
-              [ngClass]="!state.bluetoothConnected ? 'disabled custom-disabled' : ''"
-              (click)="reconnect(device)">
-              Connect
-            </button>
-            <button *ngSwitchCase="DeviceState.Connected" class="btn btn-primary btn-block" (click)="disconnect(device)">Disconnect</button>
-          </div>
-          <button class="btn btn-primary btn-block" (click)="remove(device)">Remove</button>
-        </div>
-
-        <!-- Settings toggle -->
-        <button
-          class="device-card-settings-toggle"
-          (click)="toggleSettings(device)"
-          [attr.aria-expanded]="settingsExpanded.get(device.deviceId) ?? false">
-          <i [class]="(settingsExpanded.get(device.deviceId) ?? false) ? 'ion-chevron-up' : 'ion-chevron-down'"></i>
-          <span>Settings</span>
-        </button>
-
-        <!-- Collapsible settings -->
-        <div [ngbCollapse]="!(settingsExpanded.get(device.deviceId) ?? false)">
-          <app-device-info-view [device]="device"></app-device-info-view>
-        </div>
-
-      </div>
+      <app-device-card [device]="device" [bluetoothConnected]="state.bluetoothConnected"></app-device-card>
     </ng-container>
 
     <div class="row device-new-connection-row" *ngIf="scanning">
@@ -83,7 +28,7 @@
 
   </ng-container>
 
-  <!-- WAHTS-only advanced settings at panel bottom -->
+  <!-- WAHTS-only advanced settings -->
   <ng-container *ngIf="deviceType === DeviceType.Wahts">
 
     <div class="row showhideSection">
@@ -106,7 +51,6 @@
         <div class="col-12">
           <h5>Preferences</h5>
 
-          <!-- WAHTS Connection Type -->
           <div class="row pad-top">
             <div class="col-6">
               <label for="wahtsConnectionType">WAHTS Connection Type:</label>
@@ -123,7 +67,6 @@
             </div>
           </div>
 
-          <!-- Ignore Firmware Updates -->
           <div class="row pad-top">
             <div class="col-6">
               <label for="ignoreFirmwareUpdates">Ignore Firmware Updates:</label>

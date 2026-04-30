@@ -1,5 +1,5 @@
 import { inject, Injectable, NgZone } from '@angular/core';
-import { DeviceState, DeviceStatus, DeviceType, DialogType, ExamState } from '../../utilities/constants';
+import { BluetoothType, DeviceState, DeviceStatus, DeviceType, DialogType, ExamState } from '../../utilities/constants';
 import { IDeviceManager } from '../../interfaces/devices/device-manager.interface';
 import { StateModel } from '../../models/state/state.service';
 import { Notifications } from '../notifications.service';
@@ -13,6 +13,7 @@ import { DiskModel } from '../../models/disk/disk.service';
 import { SavedDevice } from '../../models/disk/disk.interface';
 import { BehaviorSubject, combineLatest, concatMap, firstValueFrom, map, Observable } from 'rxjs';
 import { IDevice } from '../../interfaces/devices/device.interface';
+import { IWahtsDevice } from '../../interfaces/devices/wahts-device.interface';
 import { IDeviceMetadata } from '../../interfaces/devices/device-metadata.interface';
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
 import { DeviceChooseComponent } from '../../views/config/config-views/device-choose/device-choose.component';
@@ -470,5 +471,52 @@ export class DevicesService {
    */
   async readCopiedChaFile(device: IDevice, fileToRead: string): Promise<IDeviceResponse | undefined> {
     return this.getManager(device.type).readCopiedChaFile?.(device, fileToRead);
+  }
+
+  /**
+   * Prompt the user to update firmware on a device if the bundled version differs from the device's version.
+   * @param device The device to check firmware for.
+   */
+  async checkForFirmwareUpdate(device: IDevice): Promise<void> {
+    const disk = await firstValueFrom(this.diskModel.diskSubject);
+    const firmwareAsset = await this.getApplicationFirmware(device.type);
+    if (
+      !disk.preferences.ignoreFirmwareUpdates &&
+      device.metadata.buildDateTime &&
+      firmwareAsset?.buildDatetime &&
+      Date.parse(device.metadata.buildDateTime) !== Date.parse(firmwareAsset.buildDatetime)
+    ) {
+      const msg: DialogDataInterface = {
+        title: 'Firmware Update',
+        content: `
+          The firmware on device ${device.deviceId} is not supported by this TabSINT version.
+          This TabSINT version supports ${firmwareAsset.version} firmware.
+          Select 'OK' to update the firmware on ${device.deviceId}.
+          The firmware can also be updated through the device information panel.
+        `,
+        type: DialogType.Confirm,
+      };
+      this.notifications.alert(msg).subscribe(async result => {
+        if (result === 'OK') {
+          await this.reprogramFirmwareDialog(device);
+        }
+      });
+    }
+  }
+
+  /**
+   * Remove all WAHTS devices that don't match the new connection type, then update the preference.
+   * @param connectionType The new WAHTS connection type to switch to.
+   */
+  async changeWahtsConnectionType(connectionType: BluetoothType): Promise<void> {
+    const devices = await firstValueFrom(this.devices);
+    const toRemove = devices.filter(d => d.type === DeviceType.Wahts && (d as IWahtsDevice).connectionType !== connectionType);
+    for (const device of toRemove) {
+      if (device.state !== DeviceState.Disconnected) {
+        await this.disconnect(device);
+      }
+      await this.removeSavedDevice(device);
+    }
+    this.diskModel.updatePreferences({ wahtsConnectionType: connectionType });
   }
 }
