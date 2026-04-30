@@ -70,7 +70,6 @@ import { SingleResultModalComponent } from './views/single-result-modal/single-r
 import { CustomResponseAreaComponent } from './views/response-area/response-areas/custom-response-area/custom-response-area.component';
 import { TasksBannerComponent } from './views/tasks-banner/tasks-banner.component';
 import { ManualAudiometryComponent } from './views/response-area/response-areas/manual-audiometry/manual-audiometry';
-import { DeviceConfigComponent } from './views/config/config-views/device-config/device-config.component';
 import { DeviceTypePanelComponent } from './views/config/config-views/device-type-panel/device-type-panel.component';
 import { DeviceInfoComponent } from './views/config/config-views/device-info/device-info.component';
 import { ConnectedDevicesComponent } from './views/config/config-views/connected-devices/connected-devices.component';
@@ -141,7 +140,6 @@ import { DuodoseDownloadComponent } from './views/response-area/response-areas/d
     SingleResultModalComponent,
     CustomResponseAreaComponent,
     TasksBannerComponent,
-    DeviceConfigComponent,
     DeviceTypePanelComponent,
     DeviceInfoComponent,
     ConnectedDevicesComponent,
