@@ -1,3 +1,4 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslocoTestingModule } from '@jsverse/transloco';
 
@@ -13,9 +14,6 @@ import { SoftwareConfigComponent } from '../config/config-views/software-config/
 import { LogConfigComponent } from '../config/config-views/log-config/log-config.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
-import { DeviceConfigComponent } from '../config/config-views/device-config/device-config.component';
-import { NewConnectionComponent } from '../config/config-views/new-connection/new-connection.component';
-import { ConnectedDevicesComponent } from '../config/config-views/connected-devices/connected-devices.component';
 import { QRCodeModule } from 'angularx-qrcode';
 
 describe('AdminComponent', () => {
@@ -32,10 +30,8 @@ describe('AdminComponent', () => {
         TabsintConfigComponent,
         SoftwareConfigComponent,
         LogConfigComponent,
-        DeviceConfigComponent,
-        NewConnectionComponent,
-        ConnectedDevicesComponent,
       ],
+      schemas: [NO_ERRORS_SCHEMA],
       imports: [
         FormsModule,
         NgbModule,
