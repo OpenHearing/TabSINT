@@ -1,6 +1,5 @@
 import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
-import { map, Observable, Subscription } from 'rxjs';
-import { firstValueFrom } from 'rxjs';
+import { map, Observable, Subscription, firstValueFrom } from 'rxjs';
 
 import { BluetoothType, DeviceState, DeviceType, DialogType } from '../../../../utilities/constants';
 import { IDevice } from '../../../../interfaces/devices/device.interface';
@@ -19,7 +18,6 @@ import { Notifications } from '../../../../services/notifications.service';
 @Component({
   selector: 'app-device-type-panel',
   templateUrl: './device-type-panel.component.html',
-  styleUrl: './device-type-panel.component.css',
 })
 export class DeviceTypePanelComponent implements OnInit, OnDestroy {
   @Input() deviceType!: DeviceType;
