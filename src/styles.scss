@@ -2754,11 +2754,16 @@ input[type="number"] {
 }
 
 .device-card-settings-toggle {
-  cursor: pointer;
-  color: #337ab7;
-  padding-top: 10px;
+  background: none;
+  border: none;
   border-top: 1px solid #eee;
-  margin-top: 10px;
+  padding: 10px 0 0;
+  margin: 10px 0 0;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  color: #337ab7;
   font-size: 0.95rem;
   display: flex;
   align-items: center;
