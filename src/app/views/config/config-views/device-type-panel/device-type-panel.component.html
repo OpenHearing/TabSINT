@@ -7,6 +7,13 @@
 
   <ng-container *ngIf="devices$ | async as devices">
 
+    <!-- New Connection / Scanning controls — always below device cards -->
+    <div class="row device-new-connection-row" *ngIf="!scanning && devices.length < maxDevices">
+      <div class="col-12">
+        <button class="btn btn-primary" (click)="addNewConnection()">+ New Connection</button>
+      </div>
+    </div>
+
     <!-- Device cards -->
     <ng-container *ngFor="let device of devices">
       <div class="device-card">
@@ -67,13 +74,6 @@
 
       </div>
     </ng-container>
-
-    <!-- New Connection / Scanning controls — always below device cards -->
-    <div class="row device-new-connection-row" *ngIf="!scanning && devices.length < maxDevices">
-      <div class="col-12">
-        <button class="btn btn-primary" (click)="addNewConnection()">+ New Connection</button>
-      </div>
-    </div>
 
     <div class="row device-new-connection-row" *ngIf="scanning">
       <div class="col-6">
