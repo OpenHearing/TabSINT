@@ -87,9 +87,15 @@ export class ChaAdapter implements IDeviceAdapter {
   async requestId(device: ChaDeviceType): Promise<IDeviceResponse> {
     const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
       const nameOptions = { name: device.deviceId };
-      const waitForResponse = this.waitForResponse(device, 'Id');
-      await TabsintCha.requestId(nameOptions);
-      return (await waitForResponse) ?? this.defaultInvalidResponse(device);
+      let deviceResponse = this.defaultInvalidResponse(device);
+      try {
+        const waitForResponse = this.waitForResponse(device, 'Id');
+        await TabsintCha.requestId(nameOptions);
+        deviceResponse = (await waitForResponse) ?? deviceResponse;
+      } catch (err) {
+        this.logger.error('Failed to write to CHA', err);
+      }
+      return deviceResponse;
     });
     return response;
   }
@@ -101,9 +107,15 @@ export class ChaAdapter implements IDeviceAdapter {
   async requestStatus(device: ChaDeviceType): Promise<IDeviceResponse> {
     const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
       const nameOptions = { name: device.deviceId };
-      const waitForResponse = this.waitForResponse(device, 'Status');
-      await TabsintCha.requestStatus(nameOptions);
-      return (await waitForResponse) ?? this.defaultInvalidResponse(device);
+      let deviceResponse = this.defaultInvalidResponse(device);
+      try {
+        const waitForResponse = this.waitForResponse(device, 'Status');
+        await TabsintCha.requestStatus(nameOptions);
+        deviceResponse = (await waitForResponse) ?? deviceResponse;
+      } catch (err) {
+        this.logger.error('Failed to write to CHA', err);
+      }
+      return deviceResponse;
     });
     return response;
   }
@@ -117,9 +129,14 @@ export class ChaAdapter implements IDeviceAdapter {
   async queueExam(device: ChaDeviceType, examType: string, examProperties: object): Promise<IDeviceResponse> {
     const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
       const queueExamOptions = { name: device.deviceId, examName: examType, params: examProperties };
-      const msg = await TabsintCha.queueExam(queueExamOptions);
-      const resp: IDeviceResponse = { deviceId: device.deviceId, msg: [msg] };
-      return resp;
+      let deviceResponse = this.defaultInvalidResponse(device);
+      try {
+        const msg = await TabsintCha.queueExam(queueExamOptions);
+        deviceResponse = { deviceId: device.deviceId, msg: ['QueueExam', msg] };
+      } catch (err) {
+        this.logger.error('Failed to write to CHA', err);
+      }
+      return deviceResponse;
     });
     return response;
   }
@@ -133,9 +150,14 @@ export class ChaAdapter implements IDeviceAdapter {
   async examSubmission(device: ChaDeviceType, examProperties: object, ignoreErrors: string[]): Promise<IDeviceResponse> {
     const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
       const examSubmissionOptions = { name: device.deviceId, submissionName: (examProperties as { name: string }).name, params: examProperties };
-      const msg = await TabsintCha.examSubmission(examSubmissionOptions);
-      const resp: IDeviceResponse = { deviceId: device.deviceId, msg: [msg] };
-      return resp;
+      let deviceResponse = this.defaultInvalidResponse(device);
+      try {
+        const msg = await TabsintCha.examSubmission(examSubmissionOptions);
+        deviceResponse = { deviceId: device.deviceId, msg: ['ExamSubmission', msg] };
+      } catch (err) {
+        this.logger.error('Failed to write to CHA', err);
+      }
+      return deviceResponse;
     });
     return response;
   }
@@ -147,9 +169,14 @@ export class ChaAdapter implements IDeviceAdapter {
   async abortExams(device: ChaDeviceType): Promise<IDeviceResponse> {
     const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
       const nameOptions = { name: device.deviceId };
-      const msg = await TabsintCha.abortExams(nameOptions);
-      const resp: IDeviceResponse = { deviceId: device.deviceId, msg: [msg] };
-      return resp;
+      let deviceResponse = this.defaultInvalidResponse(device);
+      try {
+        const msg = await TabsintCha.abortExams(nameOptions);
+        deviceResponse = { deviceId: device.deviceId, msg: ['AbortExams', msg] };
+      } catch (err) {
+        this.logger.error('Failed to write to CHA', err);
+      }
+      return deviceResponse;
     });
     return response;
   }
@@ -162,9 +189,15 @@ export class ChaAdapter implements IDeviceAdapter {
   async requestResults(device: ChaDeviceType, timeoutTimeMs: number = this.defaultTimeoutTimeMs): Promise<IDeviceResponse> {
     const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
       const nameOptions = { name: device.deviceId };
-      const waitForResponse = this.waitForResponse(device, 'Result');
-      await TabsintCha.requestResults(nameOptions);
-      return (await waitForResponse) ?? this.defaultInvalidResponse(device);
+      let deviceResponse = this.defaultInvalidResponse(device);
+      try {
+        const waitForResponse = this.waitForResponse(device, 'Result');
+        await TabsintCha.requestResults(nameOptions);
+        deviceResponse = (await waitForResponse) ?? deviceResponse;
+      } catch (err) {
+        this.logger.error('Failed to write to CHA', err);
+      }
+      return deviceResponse;
     });
     return response;
   }
@@ -183,17 +216,23 @@ export class ChaAdapter implements IDeviceAdapter {
   ): Promise<IDeviceResponse> {
     const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
       const startFirmwareWriteOptions = { name: device.deviceId, localFile: firmwareAsset.filePath, remoteFile: 'CHA_PROG.dat', flags: 0 };
-      const writeResponsePromise = this.waitForResponseWithStatusUpdates(device, 'FileOperationComplete', 'FileProgress', progressCallback, 10000);
-      await TabsintCha.startFileWrite(startFirmwareWriteOptions);
-      const writeResponse = await writeResponsePromise;
+      let deviceResponse = this.defaultInvalidResponse(device);
+      try {
+        const writeResponsePromise = this.waitForResponseWithStatusUpdates(device, 'FileOperationComplete', 'FileProgress', progressCallback, 10000);
+        await TabsintCha.startFileWrite(startFirmwareWriteOptions);
+        const writeResponse = await writeResponsePromise;
 
-      let reprogramResponse: IDeviceResponse | undefined = undefined;
-      if (isValidDeviceResponse(writeResponse)) {
-        const reprogramOptions = { name: device.deviceId, crc32: firmwareAsset.checksum };
-        const msg = await TabsintCha.reprogram(reprogramOptions);
-        reprogramResponse = { deviceId: device.deviceId, msg: [msg] };
+        let reprogramResponse: IDeviceResponse | undefined = undefined;
+        if (isValidDeviceResponse(writeResponse)) {
+          const reprogramOptions = { name: device.deviceId, crc32: firmwareAsset.checksum };
+          const msg = await TabsintCha.reprogram(reprogramOptions);
+          reprogramResponse = { deviceId: device.deviceId, msg: [msg] };
+        }
+        deviceResponse = reprogramResponse ?? deviceResponse;
+      } catch (err) {
+        this.logger.error('Failed to write to CHA', err);
       }
-      return reprogramResponse ?? this.defaultInvalidResponse(device);
+      return deviceResponse;
     });
     return response;
   }
@@ -206,9 +245,14 @@ export class ChaAdapter implements IDeviceAdapter {
   async reboot(device: ChaDeviceType): Promise<IDeviceResponse> {
     const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
       const rebootOptions = { name: device.deviceId };
-      const msg = await TabsintCha.reboot(rebootOptions);
-      const resp: IDeviceResponse = { deviceId: device.deviceId, msg: [msg] };
-      return resp;
+      let deviceResponse = this.defaultInvalidResponse(device);
+      try {
+        const msg = await TabsintCha.reboot(rebootOptions);
+        deviceResponse = { deviceId: device.deviceId, msg: ['Reboot', msg] };
+      } catch (err) {
+        this.logger.error('Failed to write to CHA', err);
+      }
+      return deviceResponse;
     });
     return response;
   }
@@ -318,7 +362,10 @@ export class ChaAdapter implements IDeviceAdapter {
    * @returns The invalid response for the device.
    */
   private defaultInvalidResponse(device: ChaDeviceType) {
-    const response: IDeviceResponse = { deviceId: device.deviceId, msg: ['ERROR'] };
+    const response: IDeviceResponse = {
+      deviceId: device.deviceId,
+      msg: ['0', 'ERROR', 'Failed to write message to CHA. Make sure CHA is connected and try again.'],
+    };
     return response;
   }
 
@@ -341,9 +388,15 @@ export class ChaAdapter implements IDeviceAdapter {
   async requestSdBytesFree(device: ChaDeviceType): Promise<IDeviceResponse> {
     const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
       const nameOptions = { name: device.deviceId };
-      const waitForResponse = this.waitForResponse(device, 'SdBytesFreeReceived');
-      await TabsintCha.requestSdBytesFree(nameOptions);
-      return (await waitForResponse) ?? this.defaultInvalidResponse(device);
+      let deviceResponse = this.defaultInvalidResponse(device);
+      try {
+        const waitForResponse = this.waitForResponse(device, 'SdBytesFreeReceived');
+        await TabsintCha.requestSdBytesFree(nameOptions);
+        deviceResponse = (await waitForResponse) ?? deviceResponse;
+      } catch (err) {
+        this.logger.error('Failed to write to CHA', err);
+      }
+      return deviceResponse;
     });
     return response;
   }
@@ -364,12 +417,16 @@ export class ChaAdapter implements IDeviceAdapter {
         remotePath: dirName,
         flags: undefined,
       };
-      const fileOperationPromise = this.waitForResponseWithStatusUpdates(device, 'FileOperationComplete', 'DirEntry', dirCallback);
-      await TabsintCha.requestDirectory(requestDirectoryOptions);
-      await fileOperationPromise;
-
-      const resp = { deviceId: device.deviceId, msg: ['Success', dirs] };
-      return resp ?? this.defaultInvalidResponse(device);
+      let deviceResponse = this.defaultInvalidResponse(device);
+      try {
+        const fileOperationPromise = this.waitForResponseWithStatusUpdates(device, 'FileOperationComplete', 'DirEntry', dirCallback);
+        await TabsintCha.requestDirectory(requestDirectoryOptions);
+        await fileOperationPromise;
+        deviceResponse = { deviceId: device.deviceId, msg: ['Success', dirs] };
+      } catch (err) {
+        this.logger.error('Failed to write to CHA', err);
+      }
+      return deviceResponse;
     });
     return response;
   }
@@ -385,9 +442,14 @@ export class ChaAdapter implements IDeviceAdapter {
         name: device.deviceId,
         fullPath: shortName,
       };
-      const longFnResp = await TabsintCha.getLfnFromSfn(getLfnFromSfnOptions);
-      const resp = { deviceId: device.deviceId, msg: [longFnResp.value] };
-      return resp ?? this.defaultInvalidResponse(device);
+      let deviceResponse = this.defaultInvalidResponse(device);
+      try {
+        const longFnResp = await TabsintCha.getLfnFromSfn(getLfnFromSfnOptions);
+        deviceResponse = { deviceId: device.deviceId, msg: [longFnResp.value] };
+      } catch (err) {
+        this.logger.error('Failed to write to CHA', err);
+      }
+      return deviceResponse;
     });
     return response;
   }
@@ -397,27 +459,32 @@ export class ChaAdapter implements IDeviceAdapter {
       const fname = filename.split('/').at(-1)!;
       const remoteFilePath = filename;
 
-      await this.deleteIfExists(fname);
+      let deviceResponse = this.defaultInvalidResponse(device);
+      try {
+        await this.deleteIfExists(fname);
 
-      const uri = await Filesystem.getUri({
-        path: fname,
-        directory: Directory.Data,
-      });
+        const uri = await Filesystem.getUri({
+          path: fname,
+          directory: Directory.Data,
+        });
 
-      const startFileReadOptions = {
-        name: device.deviceId,
-        localFile: uri.uri.replace('file://', ''),
-        remoteFile: remoteFilePath,
-      };
+        const startFileReadOptions = {
+          name: device.deviceId,
+          localFile: uri.uri.replace('file://', ''),
+          remoteFile: remoteFilePath,
+        };
 
-      const waitForResponse = this.waitForResponse(device, 'FileOperationComplete', 30000);
-      await TabsintCha.startFileRead(startFileReadOptions);
-      await waitForResponse;
+        const waitForResponse = this.waitForResponse(device, 'FileOperationComplete', 30000);
+        await TabsintCha.startFileRead(startFileReadOptions);
+        await waitForResponse;
 
-      const fileContents = await this.readFromAppStorage(fname);
-      console.log('fileContents', fileContents);
-      const resp = { deviceId: device.deviceId, msg: [fileContents] };
-      return resp ?? this.defaultInvalidResponse(device);
+        const fileContents = await this.readFromAppStorage(fname);
+        console.log('fileContents', fileContents);
+        deviceResponse = { deviceId: device.deviceId, msg: [fileContents] };
+      } catch (err) {
+        this.logger.error('Failed to write to CHA', err);
+      }
+      return deviceResponse;
     });
     return response;
   }
