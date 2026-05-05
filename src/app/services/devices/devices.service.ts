@@ -213,7 +213,7 @@ export class DevicesService {
   }
 
   /**
-   * Get a device from the managed devices which has a tabsint identifier matching the provided input.
+   * Get a connected device from the managed devices which has a tabsint identifier matching the provided input.
    * @param tabsintId The tabsint identifier of the device to find or undefined.
    * @param defaultTypes The types to find a default from.
    * @returns A promise resolving to the found device or first available device. If no devices available returns undefined.
@@ -222,13 +222,13 @@ export class DevicesService {
     const devices = await firstValueFrom(this.devices);
     const availableDevices: IDevice[] = [];
     if (tabsintId !== undefined) {
-      const foundDevices = devices.filter(device => defaultTypes.includes(device.type));
+      const foundDevices = devices.filter(device => defaultTypes.includes(device.type) && device.state === DeviceState.Connected);
       const device = foundDevices.find(device => device.tabsintId == tabsintId);
       if (device) {
         availableDevices.push(structuredClone(device));
       }
     } else {
-      const foundDevices = devices.filter(device => defaultTypes.includes(device.type));
+      const foundDevices = devices.filter(device => defaultTypes.includes(device.type) && device.state === DeviceState.Connected);
       foundDevices.forEach(dev => {
         availableDevices.push(structuredClone(dev));
       });

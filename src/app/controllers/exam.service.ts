@@ -69,12 +69,6 @@ export class ExamService {
     this.state = this.stateModel.getState();
     this.protocol = this.protocolModel.getProtocolModel();
     this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
-      // Stop dosimetry if examState changes
-      if (this.state.examState !== updatedState.examState) {
-        this.stopDosimetry();
-        this.stopChaWavfiles();
-        this.audioService.stopAudio();
-      }
       this.state = updatedState;
     });
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
@@ -225,6 +219,29 @@ export class ExamService {
     this.navigateToTargetDefault(subProtocolID);
   }
 
+  /**
+   * Restart the active page by decrementing the current page index and re-advancing.
+   */
+  async restartActivePage() {
+    const currentProtocol = this.protocol.activeProtocolStack.peek();
+    const currentPageIndex = currentProtocol?.pageIndex;
+    if (currentPageIndex === undefined) {
+      this.logger.debug('Failed to reset active page, no active page available.');
+    } else {
+      this.protocol.activeProtocolStack.updateCurrentProtocol({ pageIndex: Math.max(currentPageIndex - 1, -1) });
+      await this.advancePage();
+    }
+  }
+
+  /**
+   * Cancel background processes which are related to an active exam.
+   */
+  cancelBackgroundProcesses() {
+    this.stopDosimetry();
+    this.stopChaWavfiles();
+    this.audioService.stopAudio();
+  }
+
   /** Checks if a page response is required.
    * @summary Checks if a page response is required and returns a boolean
    * @returns boolean if page response is required
@@ -335,13 +352,7 @@ export class ExamService {
   private async advancePage() {
     // Reset everything to defaults on the start of each new page
     this.resetFunctionsToDefaults();
-
-    // Stop any dosimeters that might be running
-    this.stopDosimetry();
-    this.stopChaWavfiles();
-
-    // Stop any running audio
-    this.audioService.stopAudio();
+    this.cancelBackgroundProcesses();
 
     const currentProtocol = this.protocol.activeProtocolStack.peek();
     if (currentProtocol === undefined) {
@@ -438,9 +449,7 @@ export class ExamService {
    * @summary Resets the protocol stack to an empty array and the exam index to 0.
    */
   private resetProtocolStack() {
-    this.stopDosimetry();
-    this.stopChaWavfiles();
-    this.audioService.stopAudio();
+    this.cancelBackgroundProcesses();
     this.protocol.activeProtocolStack.clear();
   }
 
