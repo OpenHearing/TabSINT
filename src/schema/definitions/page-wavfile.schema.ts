@@ -33,6 +33,7 @@ export const pageWavfileSchema: JSONSchemaType<PageWavfileInterface> = {
     startTime: { type: 'number', nullable: true, default: 0 },
     endTime: { type: 'number', nullable: true },
     _resolvedPath: { type: 'string', nullable: true },
+    _tabletGain: { type: 'number', nullable: true },
   },
   required: ['path'],
 };

@@ -135,6 +135,7 @@ export interface PageWavfileInterface {
   startTime?: number;
   endTime?: number;
   _resolvedPath?: string;
+  _tabletGain?: number;
 }
 
 export interface ChaWavfilesInterface {

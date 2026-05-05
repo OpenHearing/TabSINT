@@ -190,8 +190,10 @@ export class AudioService {
         wavfile.targetSPL = target;
         volume.push(this.calculateVolume(wavfile));
       }
+      wavfile._tabletGain = this.getTabletGain(wavfile.cal);
     } else {
       volume = this.calculateVolume(wavfile);
+      wavfile._tabletGain = this.getTabletGain(wavfile.cal);
     }
 
     // Preload the wav file so it can be tracked for cancellation before playing
