@@ -226,7 +226,7 @@ export class ChaAdapter implements IDeviceAdapter {
         if (isValidDeviceResponse(writeResponse)) {
           const reprogramOptions = { name: device.deviceId, crc32: firmwareAsset.checksum };
           const msg = await TabsintCha.reprogram(reprogramOptions);
-          reprogramResponse = { deviceId: device.deviceId, msg: [msg] };
+          reprogramResponse = { deviceId: device.deviceId, msg: ['Reprogram', msg] };
         }
         deviceResponse = reprogramResponse ?? deviceResponse;
       } catch (err) {
