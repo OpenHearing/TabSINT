@@ -46,9 +46,11 @@ export class ExamTestingComponent implements OnInit, OnDestroy {
         this.imageWidth = '100%';
       }
     });
+    this.examService.restartActivePage();
   }
 
   ngOnDestroy(): void {
+    this.examService.cancelBackgroundProcesses();
     this.pageSubscription?.unsubscribe();
   }
 
