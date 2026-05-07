@@ -49,6 +49,7 @@ describe('AudioService', () => {
       weighting: WavfileWeighting.A,
       startTime: 0,
       endTime: 0,
+      _contentURI: 'test',
     };
     mockDiskModel = jasmine.createSpyObj('DiskModel', ['getDisk']);
     mockDiskModel.diskSubject = new BehaviorSubject<DiskInterface>(disk);

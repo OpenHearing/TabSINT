@@ -171,7 +171,8 @@ export class AudioService {
    */
   async playWav(wavfiles: PageWavfileInterface[], startDelay: number | undefined = 1000) {
     for (const wavfile of wavfiles) {
-      if (!wavfile.path) {
+      const contentURI = wavfile._contentURI;
+      if (!contentURI) {
         this.logger.warning('No path found for playing audio.');
         continue;
       }
@@ -194,21 +195,21 @@ export class AudioService {
       // Preload the wav file so it can be tracked for cancellation before playing
       const volumeLeft = Array.isArray(volume) ? volume[0] : volume;
       const volumeRight = Array.isArray(volume) ? volume[1] : volume;
-      await this.preload(wavfile.path, volumeLeft, volumeRight);
+      await this.preload(contentURI, volumeLeft, volumeRight);
 
       // Set a timeout which starts the active wav file after a delay
       setTimeout(async () => {
-        if (this.activeAssetPaths.has(wavfile.path)) {
-          await this.tabsintAudioPlugin.play({ assetId: wavfile.path });
+        if (this.activeAssetPaths.has(contentURI)) {
+          await this.tabsintAudioPlugin.play({ assetId: contentURI });
           this.logger.debug(`Starting audio playback: ${wavfile.path}`);
           if (wavfile.startTime && wavfile.startTime > 0) {
-            await this.tabsintAudioPlugin.seekTo({ assetId: wavfile.path, time: wavfile.startTime });
+            await this.tabsintAudioPlugin.seekTo({ assetId: contentURI, time: wavfile.startTime });
           }
           if (wavfile.endTime && wavfile.endTime > 0) {
             setTimeout(
               async () => {
-                if (this.activeAssetPaths.has(wavfile.path)) {
-                  await this.tabsintAudioPlugin.pause({ assetId: wavfile.path });
+                if (this.activeAssetPaths.has(contentURI)) {
+                  await this.tabsintAudioPlugin.pause({ assetId: contentURI });
                 }
               },
               wavfile.endTime - (wavfile.startTime ?? 0)
@@ -337,7 +338,7 @@ export class AudioService {
     const method = wavfile.playbackMethod ?? PlaybackMethod.Arbitrary;
     const weighting = wavfile.weighting ?? WavfileWeighting.Z;
 
-    if (PlaybackMethod.Arbitrary && wavfile.cal.scaleFactor !== undefined) {
+    if (method === PlaybackMethod.Arbitrary && wavfile.cal.scaleFactor !== undefined) {
       const specifiedPaRMS = 20e-6 * Math.pow(10, level / 20.0);
       const waveformRMS = specifiedPaRMS * wavfile.cal.scaleFactor;
       volume = waveformRMS / (wavfile.cal[('wavRMS' + weighting) as keyof typeof wavfile.cal] as number);

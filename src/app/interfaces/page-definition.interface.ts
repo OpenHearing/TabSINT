@@ -134,6 +134,7 @@ export interface PageWavfileInterface {
   weighting?: WavfileWeighting;
   startTime?: number;
   endTime?: number;
+  _contentURI?: string;
 }
 
 export interface ChaWavfilesInterface {
@@ -158,6 +159,7 @@ export interface VideoInterface {
   width?: string;
   autoplay?: boolean;
   noSkip?: boolean;
+  _contentURI?: string;
 }
 
 export interface DosimetryInterface {

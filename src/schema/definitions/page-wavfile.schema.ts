@@ -32,6 +32,7 @@ export const pageWavfileSchema: JSONSchemaType<PageWavfileInterface> = {
     weighting: { type: 'string', enum: Object.values(WavfileWeighting), nullable: true, default: WavfileWeighting.Z },
     startTime: { type: 'number', nullable: true, default: 0 },
     endTime: { type: 'number', nullable: true },
+    _contentURI: { type: 'string', nullable: true },
   },
   required: ['path'],
 };

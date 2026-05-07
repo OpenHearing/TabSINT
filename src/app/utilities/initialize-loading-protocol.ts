@@ -79,7 +79,7 @@ export async function initializeLoadingProtocol(
       });
       if (midx !== -1) {
         loading.protocol.commonRepo = disk.mediaRepos[midx];
-        const cCommonFile = await fileService.readFile(loading.protocol.commonRepo.path + 'calibration.json');
+        const cCommonFile = await fileService.readFile('calibration.json', loading.protocol.commonRepo.path);
         const cCommon = cCommonFile ? JSON.parse(cCommonFile.content) : undefined;
         loading.protocol.cCommon = cCommon as CalibrationFileInterface | undefined;
       } else {
