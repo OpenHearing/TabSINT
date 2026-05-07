@@ -89,7 +89,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
         width: { type: 'string', nullable: true, default: '100%' },
         autoplay: { type: 'boolean', nullable: true, default: false },
         noSkip: { type: 'boolean', nullable: true, default: false },
-        _contentURI: { type: 'string', nullable: true },
+        _resolvedPath: { type: 'string', nullable: true },
       },
       nullable: true,
       required: ['path'],

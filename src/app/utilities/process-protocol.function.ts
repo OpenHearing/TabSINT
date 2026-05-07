@@ -70,6 +70,10 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
     }
   }
 
+  async function resolveFilePath(rootUri: string, filePath: string): Promise<string | undefined> {
+    return (await TabsintFs.getFileContentURI({ rootUri: rootUri, filePath: filePath }).catch(() => undefined))?.contentUri;
+  }
+
   async function processPage(page: PageDefinition) {
     if (page.preProcessFunction) {
       page.preProcessFunction.js = await loadFile(page.preProcessFunction.filepath, loading.meta);
@@ -83,9 +87,9 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
 
     if (page.video) {
       if (loading.meta.server == ProtocolServer.Developer) {
-        page.video._contentURI = 'assets/' + loading.meta.path! + '/' + page.video.path;
-      } else {
-        page.video._contentURI = (await TabsintFs.readFile({ rootUri: loading.meta.contentURI, filePath: page.video.path })).contentUri;
+        page.video._resolvedPath = 'assets/' + loading.meta.path! + '/' + page.video.path;
+      } else if (loading.meta.contentURI) {
+        page.video._resolvedPath = await resolveFilePath(loading.meta.contentURI, page.video.path);
       }
     }
 
@@ -160,15 +164,21 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
       } else {
         rootProtocol._missingWavCalList?.push(wavfile.path);
       }
-
-      if (wavfile.useCommonRepo) {
-        wavfile._contentURI = (await TabsintFs.readFile({ rootUri: loading.protocol.commonRepo?.path, filePath: wavfile.path })).contentUri;
-      } else if (loading.meta.server == ProtocolServer.Developer) {
-        wavfile._contentURI = 'public/assets/' + loading.meta.path! + '/' + wavfile.path;
-      } else {
-        wavfile._contentURI = (await TabsintFs.readFile({ rootUri: loading.meta.contentURI, filePath: wavfile.path })).contentUri;
-      }
     }
+
+    await Promise.all(
+      (page.wavfiles ?? []).map(async wavfile => {
+        if (wavfile.useCommonRepo) {
+          if (rootProtocol.commonRepo?.path) {
+            wavfile._resolvedPath = await resolveFilePath(rootProtocol.commonRepo?.path, wavfile.path);
+          }
+        } else if (loading.meta.server == ProtocolServer.Developer) {
+          wavfile._resolvedPath = 'public/assets/' + loading.meta.path! + '/' + wavfile.path;
+        } else if (loading.meta.contentURI) {
+          wavfile._resolvedPath = await resolveFilePath(loading.meta.contentURI, wavfile.path);
+        }
+      })
+    );
   }
 
   function getId(target: PageTypes): string {

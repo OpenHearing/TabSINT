@@ -9,7 +9,13 @@ import {
   isStatusResponse,
 } from '../guards/type.guard';
 import { PageTypes } from '../types/custom-types';
-import { ChaWavfilesInterface, FollowOnInterface, PageDefinition, ProtocolReferenceInterface } from '../interfaces/page-definition.interface';
+import {
+  ChaWavfilesInterface,
+  FollowOnInterface,
+  PageDefinition,
+  PageWavfileInterface,
+  ProtocolReferenceInterface,
+} from '../interfaces/page-definition.interface';
 import { ResultsInterface } from '../models/results/results.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
@@ -479,7 +485,7 @@ export class ExamService {
     this.audioService.stopAudio();
     if (page.wavfiles) {
       const startDelayTime = page.wavfileStartDelayTime ? page.wavfileStartDelayTime : pageSchema.properties.wavfileStartDelayTime.default;
-      await this.audioService.playWav(page.wavfiles, startDelayTime);
+      await this.playWavFile(page.wavfiles, startDelayTime);
     }
     if (page.chaWavFiles) {
       await this.playChaWavFile(page.chaWavFiles);
@@ -747,6 +753,30 @@ export class ExamService {
         .alert({
           title: 'Alert',
           content: 'Failed to play CHA wav files, check logging for more information.',
+          type: DialogType.Alert,
+        })
+        .subscribe();
+    }
+  }
+
+  /**
+   * Play wav files on a device.
+   * @param wavfiles The wav file objects containing playback information.
+   * @param startDelayMs The time to delay the initial play by in milliseconds.
+   */
+  async playWavFile(wavfiles: PageWavfileInterface[], startDelayMs: number) {
+    try {
+      await Promise.all(
+        wavfiles.map(async wavfile => {
+          await this.audioService.playWav(wavfile, startDelayMs);
+        })
+      );
+    } catch (err) {
+      this.logger.error('Failed to play wav files', err);
+      this.notifications
+        .alert({
+          title: 'Alert',
+          content: 'Failed to play wav files, check logging for more information.',
           type: DialogType.Alert,
         })
         .subscribe();
