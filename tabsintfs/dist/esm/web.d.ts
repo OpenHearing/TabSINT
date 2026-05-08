@@ -39,6 +39,12 @@ export declare class TabsintFsWeb extends WebPlugin implements TabsintFsPlugin {
         size: number;
         content: string;
     }>;
+    getFileContentURI(options: {
+        rootUri: string;
+        filePath: string;
+    }): Promise<{
+        contentUri: string;
+    }>;
     deletePath(_options: {
         rootUri: string | undefined;
         path: string;

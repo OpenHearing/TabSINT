@@ -49,6 +49,7 @@ describe('AudioService', () => {
       weighting: WavfileWeighting.A,
       startTime: 0,
       endTime: 0,
+      _resolvedPath: 'test',
     };
     mockDiskModel = jasmine.createSpyObj('DiskModel', ['getDisk']);
     mockDiskModel.diskSubject = new BehaviorSubject<DiskInterface>(disk);
@@ -108,7 +109,7 @@ describe('AudioService', () => {
   });
 
   it('play wav starts playing after delay', fakeAsync(() => {
-    audioService.playWav([wavFile], 5000);
+    audioService.playWav(wavFile, 5000);
 
     tick(4999);
     expect(mockTabsintAudio.play).not.toHaveBeenCalled();
@@ -118,7 +119,7 @@ describe('AudioService', () => {
 
   it('play wav seeks to start time', fakeAsync(() => {
     wavFile.startTime = 1000;
-    audioService.playWav([wavFile], 0);
+    audioService.playWav(wavFile, 0);
 
     tick(0);
     expect(mockTabsintAudio.seekTo).toHaveBeenCalledWith({ assetId: 'test', time: wavFile.startTime });
@@ -126,7 +127,7 @@ describe('AudioService', () => {
 
   it('play wav ends at end time', fakeAsync(() => {
     wavFile.endTime = 5000;
-    audioService.playWav([wavFile], 0);
+    audioService.playWav(wavFile, 0);
 
     tick(4999);
     expect(mockTabsintAudio.pause).not.toHaveBeenCalled();

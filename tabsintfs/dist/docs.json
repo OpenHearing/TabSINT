@@ -80,6 +80,22 @@
         "slug": "readfile"
       },
       {
+        "name": "getFileContentURI",
+        "signature": "(options: { rootUri: string; filePath: string; }) => Promise<{ contentUri: string; }>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ rootUri: string; filePath: string; }"
+          }
+        ],
+        "returns": "Promise<{ contentUri: string; }>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "getfilecontenturi"
+      },
+      {
         "name": "deletePath",
         "signature": "(options: { rootUri: string | undefined; path: string; }) => Promise<{ success: boolean; message: string; }>",
         "parameters": [

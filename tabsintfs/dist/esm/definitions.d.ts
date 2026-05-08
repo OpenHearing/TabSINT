@@ -37,6 +37,12 @@ export interface TabsintFsPlugin {
         size: number;
         content: string;
     }>;
+    getFileContentURI(options: {
+        rootUri: string;
+        filePath: string;
+    }): Promise<{
+        contentUri: string;
+    }>;
     deletePath(options: {
         rootUri: string | null;
         path: string;

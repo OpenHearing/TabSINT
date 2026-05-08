@@ -20,6 +20,10 @@ export class TabsintFsWeb extends WebPlugin {
         console.log('readFile not implemented for web', options);
         return { contentUri: '', mimeType: '', name: '', size: 0, content: '' };
     }
+    async getFileContentURI(options) {
+        console.log('getFileContentURI not implemented for web', options);
+        return { contentUri: '' };
+    }
     async deletePath(_options) {
         console.log('deletePath not implemented for web');
         return { success: false, message: 'Not implemented on web' };

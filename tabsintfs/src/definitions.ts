@@ -1,15 +1,7 @@
 export interface TabsintFsPlugin {
   chooseFolder(): Promise<{ uri: string; name: string }>;
-  createPath(options: {
-    rootUri: string | undefined;
-    path: string;
-    content?: string;
-    asBase64?: boolean;
-  }): Promise<{ uri: string }>;
-  getDirectoryStructure(options: {
-    rootUri: string | undefined;
-    path?: string;
-  }): Promise<{ structure: any }>;
+  createPath(options: { rootUri: string | undefined; path: string; content?: string; asBase64?: boolean }): Promise<{ uri: string }>;
+  getDirectoryStructure(options: { rootUri: string | undefined; path?: string }): Promise<{ structure: any }>;
   copyFileOrFolder(options: {
     rootUri: string | undefined;
     sourcePath: string;
@@ -27,15 +19,9 @@ export interface TabsintFsPlugin {
     size: number;
     content: string;
   }>;
-  deletePath(options: {
-    rootUri: string | undefined;
-    path: string;
-  }): Promise<{ success: boolean; message: string }>;
-  listFilesInDirectory(options: {
-    rootUri?: string | undefined;
-    folderPath?: string | undefined;
-    folderUri?: string | undefined;
-  }): Promise<{
+  getFileContentURI(options: { rootUri: string; filePath: string }): Promise<{ contentUri: string }>;
+  deletePath(options: { rootUri: string | undefined; path: string }): Promise<{ success: boolean; message: string }>;
+  listFilesInDirectory(options: { rootUri?: string | undefined; folderPath?: string | undefined; folderUri?: string | undefined }): Promise<{
     files: {
       name: string;
       uri: string;
