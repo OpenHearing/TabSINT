@@ -5,6 +5,7 @@ FROM eclipse-temurin:17-jdk
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Install necessary dependencies
+# hadolint ignore=DL3008
 RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     git \
