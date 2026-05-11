@@ -7,13 +7,13 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # Install necessary dependencies
 # hadolint ignore=DL3008
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    wget \
-    git \
-    unzip \
     build-essential \
-    lib32z1 \
+    git \
     lib32stdc++6 \
+    lib32z1 \
     subversion \
+    unzip \
+    wget \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Google Chrome

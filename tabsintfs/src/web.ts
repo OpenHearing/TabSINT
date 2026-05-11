@@ -51,6 +51,11 @@ export class TabsintFsWeb extends WebPlugin implements TabsintFsPlugin {
     return { contentUri: '', mimeType: '', name: '', size: 0, content: '' };
   }
 
+  async getFileContentURI(options: { rootUri: string; filePath: string }): Promise<{ contentUri: string }> {
+    console.log('getFileContentURI not implemented for web', options);
+    return { contentUri: '' };
+  }
+
   async deletePath(_options: {
     rootUri: string | undefined;
     path: string;

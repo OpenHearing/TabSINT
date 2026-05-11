@@ -157,6 +157,38 @@ public class TabsintFsPlugin extends Plugin {
       result.put("content", content);
       call.resolve(result);
   }
+
+  @PluginMethod
+  public void getFileContentURI(PluginCall call) {
+      String rootUri = call.getString("rootUri");
+      String filePath = call.getString("filePath");
+  
+      DocumentFile file = null;
+  
+      if (rootUri != null && filePath != null) {
+        Log.d(TAG,"Reading via file path");
+        filePath = filePath.replaceAll("^/+|/+$", "");
+        Uri uri = Uri.parse(rootUri);
+        DocumentFile rootDir = DocumentFile.fromTreeUri(getContext(), uri);
+        if (rootDir == null) {
+            call.reject("Invalid root URI");
+            return;
+        }
+        file = getFileFromPath(rootDir, filePath);
+      } else {
+          call.reject("Must provide rootUri and filePath");
+          return;
+      }
+  
+      if (file == null || !file.isFile()) {
+          call.reject("File not found or is not a regular file");
+          return;
+      }
+
+      JSObject result = new JSObject();
+      result.put("contentUri", file.getUri().toString());
+      call.resolve(result);
+  }
   
 
   @PermissionCallback

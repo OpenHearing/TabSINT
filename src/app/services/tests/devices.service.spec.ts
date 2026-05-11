@@ -9,7 +9,7 @@ import { SavedDevice } from '../../models/disk/disk.interface';
 import { Tasks } from '../tasks.service';
 import { DiskModel } from '../../models/disk/disk.service';
 import { firstValueFrom, of } from 'rxjs';
-import { DeviceType } from '../../utilities/constants';
+import { DeviceState, DeviceType } from '../../utilities/constants';
 import { SqLite } from '../sqLite.service';
 import { AppModel } from '../../models/app/app.service';
 import { TympanDevice } from '../../models/devices/tympan-device';
@@ -72,10 +72,21 @@ describe('deviceService', () => {
   it('getting device from TabSINT identifier', async () => {
     // @ts-expect-error - Private method access
     const tympanManager = devicesService.managerRegistry[DeviceType.Tympan];
-    tympanManager.addDevice(new TympanDevice(savedDevice.deviceId, savedDevice.name, savedDevice.tabsintId));
+    const tympanDevice = new TympanDevice(savedDevice.deviceId, savedDevice.name, savedDevice.tabsintId);
+    tympanDevice.state = DeviceState.Connected;
+    tympanManager.addDevice(tympanDevice);
     const deviceList = await devicesService.getDeviceOrDefault(savedDevice.tabsintId, [DeviceType.Tympan]);
     const device = await devicesService.confirmSingleDevice(deviceList);
     expect(device?.deviceId).toEqual(savedDevice.deviceId);
+  });
+
+  it('getting unconnected device from TabSINT identifier should return empty', async () => {
+    // @ts-expect-error - Private method access
+    const tympanManager = devicesService.managerRegistry[DeviceType.Tympan];
+    const tympanDevice = new TympanDevice(savedDevice.deviceId, savedDevice.name, savedDevice.tabsintId);
+    tympanManager.addDevice(tympanDevice);
+    const deviceList = await devicesService.getDeviceOrDefault(savedDevice.tabsintId, [DeviceType.Tympan]);
+    expect(deviceList.length).toBe(0);
   });
 
   it('setting TabSINT identifier to available value', async () => {

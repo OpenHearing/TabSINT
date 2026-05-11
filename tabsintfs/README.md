@@ -18,6 +18,7 @@ npx cap sync
 * [`getDirectoryStructure(...)`](#getdirectorystructure)
 * [`copyFileOrFolder(...)`](#copyfileorfolder)
 * [`readFile(...)`](#readfile)
+* [`getFileContentURI(...)`](#getfilecontenturi)
 * [`deletePath(...)`](#deletepath)
 * [`listFilesInDirectory(...)`](#listfilesindirectory)
 
@@ -93,6 +94,21 @@ readFile(options: { rootUri?: string | undefined; filePath?: string | undefined;
 | **`options`** | <code>{ rootUri?: string; filePath?: string; fileUri?: string; asBase64?: boolean; }</code> |
 
 **Returns:** <code>Promise&lt;{ contentUri: string; mimeType: string; name: string; size: number; content: string; }&gt;</code>
+
+--------------------
+
+
+### getFileContentURI(...)
+
+```typescript
+getFileContentURI(options: { rootUri: string; filePath: string; }) => Promise<{ contentUri: string; }>
+```
+
+| Param         | Type                                                |
+| ------------- | --------------------------------------------------- |
+| **`options`** | <code>{ rootUri: string; filePath: string; }</code> |
+
+**Returns:** <code>Promise&lt;{ contentUri: string; }&gt;</code>
 
 --------------------
 

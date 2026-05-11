@@ -9,7 +9,13 @@ import {
   isStatusResponse,
 } from '../guards/type.guard';
 import { PageTypes } from '../types/custom-types';
-import { ChaWavfilesInterface, FollowOnInterface, PageDefinition, ProtocolReferenceInterface } from '../interfaces/page-definition.interface';
+import {
+  ChaWavfilesInterface,
+  FollowOnInterface,
+  PageDefinition,
+  PageWavfileInterface,
+  ProtocolReferenceInterface,
+} from '../interfaces/page-definition.interface';
 import { ResultsInterface } from '../models/results/results.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
@@ -69,12 +75,6 @@ export class ExamService {
     this.state = this.stateModel.getState();
     this.protocol = this.protocolModel.getProtocolModel();
     this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
-      // Stop dosimetry if examState changes
-      if (this.state.examState !== updatedState.examState) {
-        this.stopDosimetry();
-        this.stopChaWavfiles();
-        this.audioService.stopAudio();
-      }
       this.state = updatedState;
     });
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
@@ -225,6 +225,29 @@ export class ExamService {
     this.navigateToTargetDefault(subProtocolID);
   }
 
+  /**
+   * Restart the active page by decrementing the current page index and re-advancing.
+   */
+  async restartActivePage() {
+    const currentProtocol = this.protocol.activeProtocolStack.peek();
+    const currentPageIndex = currentProtocol?.pageIndex;
+    if (currentPageIndex === undefined) {
+      this.logger.debug('Failed to reset active page, no active page available.');
+    } else {
+      this.protocol.activeProtocolStack.updateCurrentProtocol({ pageIndex: Math.max(currentPageIndex - 1, -1) });
+      await this.advancePage();
+    }
+  }
+
+  /**
+   * Cancel background processes which are related to an active exam.
+   */
+  cancelBackgroundProcesses() {
+    this.stopDosimetry();
+    this.stopChaWavfiles();
+    this.audioService.stopAudio();
+  }
+
   /** Checks if a page response is required.
    * @summary Checks if a page response is required and returns a boolean
    * @returns boolean if page response is required
@@ -335,13 +358,7 @@ export class ExamService {
   private async advancePage() {
     // Reset everything to defaults on the start of each new page
     this.resetFunctionsToDefaults();
-
-    // Stop any dosimeters that might be running
-    this.stopDosimetry();
-    this.stopChaWavfiles();
-
-    // Stop any running audio
-    this.audioService.stopAudio();
+    this.cancelBackgroundProcesses();
 
     const currentProtocol = this.protocol.activeProtocolStack.peek();
     if (currentProtocol === undefined) {
@@ -438,9 +455,7 @@ export class ExamService {
    * @summary Resets the protocol stack to an empty array and the exam index to 0.
    */
   private resetProtocolStack() {
-    this.stopDosimetry();
-    this.stopChaWavfiles();
-    this.audioService.stopAudio();
+    this.cancelBackgroundProcesses();
     this.protocol.activeProtocolStack.clear();
   }
 
@@ -470,7 +485,7 @@ export class ExamService {
     this.audioService.stopAudio();
     if (page.wavfiles) {
       const startDelayTime = page.wavfileStartDelayTime ? page.wavfileStartDelayTime : pageSchema.properties.wavfileStartDelayTime.default;
-      await this.audioService.playWav(page.wavfiles, startDelayTime);
+      await this.playWavFile(page.wavfiles, startDelayTime);
     }
     if (page.chaWavFiles) {
       await this.playChaWavFile(page.chaWavFiles);
@@ -738,6 +753,30 @@ export class ExamService {
         .alert({
           title: 'Alert',
           content: 'Failed to play CHA wav files, check logging for more information.',
+          type: DialogType.Alert,
+        })
+        .subscribe();
+    }
+  }
+
+  /**
+   * Play wav files on a device.
+   * @param wavfiles The wav file objects containing playback information.
+   * @param startDelayMs The time to delay the initial play by in milliseconds.
+   */
+  async playWavFile(wavfiles: PageWavfileInterface[], startDelayMs: number) {
+    try {
+      await Promise.all(
+        wavfiles.map(async wavfile => {
+          await this.audioService.playWav(wavfile, startDelayMs);
+        })
+      );
+    } catch (err) {
+      this.logger.error('Failed to play wav files', err);
+      this.notifications
+        .alert({
+          title: 'Alert',
+          content: 'Failed to play wav files, check logging for more information.',
           type: DialogType.Alert,
         })
         .subscribe();
