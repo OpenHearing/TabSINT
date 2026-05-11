@@ -6,16 +6,11 @@
       <em>{{ device.name }}</em>
     </div>
     <div>
-      <span class="admin-labels">TabSINT ID:</span>
-      <em>{{ device.tabsintId }}</em>
+      <span class="admin-labels">State:</span>
+      <em *ngIf="device.state === DeviceState.Connected"> Connected</em>
+      <em *ngIf="device.state === DeviceState.Disconnected"> Not Connected</em>
+      <em *ngIf="device.state !== DeviceState.Connected && device.state !== DeviceState.Disconnected"> Connecting...</em>
     </div>
-  </div>
-
-  <div class="pad-top">
-    <span class="admin-labels">State:</span>
-    <em *ngIf="device.state === DeviceState.Connected"> Connected</em>
-    <em *ngIf="device.state === DeviceState.Disconnected"> Not Connected</em>
-    <em *ngIf="device.state !== DeviceState.Connected && device.state !== DeviceState.Disconnected"> Connecting...</em>
   </div>
 
   <div class="device-card-actions">
