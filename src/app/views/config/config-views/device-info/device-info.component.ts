@@ -8,8 +8,9 @@ import { StateInterface } from '../../../../models/state/state.interface';
 import { DiskModel } from '../../../../models/disk/disk.service';
 import { StateModel } from '../../../../models/state/state.service';
 
-import { AppState, DeviceState } from '../../../../utilities/constants';
+import { AppState, DeviceState, DeviceType } from '../../../../utilities/constants';
 import { IDevice } from '../../../../interfaces/devices/device.interface';
+import { IWahtsDevice } from '../../../../interfaces/devices/wahts-device.interface';
 import { ChangeTabsintIdComponent } from '../../../change-tabsint-id/change-tabsint-id.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DevicesService } from '../../../../services/devices/devices.service';
@@ -30,6 +31,11 @@ export class DeviceInfoComponent implements OnInit, OnDestroy, OnChanges {
 
   @Input() device!: IDevice;
   DeviceState = DeviceState;
+  DeviceType = DeviceType;
+
+  get wahtsDevice(): IWahtsDevice | undefined {
+    return this.device.type === DeviceType.Wahts ? (this.device as IWahtsDevice) : undefined;
+  }
   disk: DiskInterface;
   state: StateInterface;
   firmwareMatch: boolean | undefined = undefined;

@@ -31,22 +31,20 @@
   <!-- WAHTS-only advanced settings -->
   <ng-container *ngIf="deviceType === DeviceType.Wahts">
 
-    <div class="row showhideSection">
-      <div class="col-12 text-center">
-        <a href="javascript:" (click)="advancedExpanded = !advancedExpanded">
-          <span *ngIf="advancedExpanded">
-            Hide Advanced Settings
-            <i class="ion-chevron-up"></i>
-          </span>
-          <span *ngIf="!advancedExpanded">
-            Show Advanced Settings
-            <i class="ion-chevron-down"></i>
-          </span>
-        </a>
-      </div>
+    <div class="text-center" style="margin-top: 15px; padding: 10px 0 0;">
+      <a href="javascript:" (click)="advancedExpanded = !advancedExpanded">
+        <span *ngIf="advancedExpanded">
+          Hide Advanced Settings
+          <i class="ion-chevron-up"></i>
+        </span>
+        <span *ngIf="!advancedExpanded">
+          Show Advanced Settings
+          <i class="ion-chevron-down"></i>
+        </span>
+      </a>
     </div>
 
-    <div [ngbCollapse]="!advancedExpanded">
+    <div *ngIf="advancedExpanded">
       <div class="row pad-top">
         <div class="col-12">
           <h5>Preferences</h5>

@@ -55,4 +55,5 @@ export interface Preferences {
   showTympanPanel?: boolean;
   showWahtsPanel?: boolean;
   showDuodosePanel?: boolean;
+  enableHeadsetMediaManagement?: boolean;
 }

@@ -60,4 +60,59 @@
     <div class="col-4">Serial number:</div>
     <div class="col-8">{{ device.metadata.serialNumber ?? "N/A" }}</div>
   </div>
+
+  <!-- WAHTS-specific fields -->
+  <ng-container *ngIf="device.type === DeviceType.Wahts">
+
+    <!-- Description -->
+    <div class="row pad-top">
+      <div class="col-4">Description:</div>
+      <div class="col-8">{{ wahtsDevice?.metadata?.description ?? "N/A" }}</div>
+    </div>
+
+    <!-- Calibration Date -->
+    <div class="row pad-top">
+      <div class="col-4">Calibration Date:</div>
+      <div class="col-8">{{ wahtsDevice?.metadata?.calibrationDate ?? "N/A" }}</div>
+    </div>
+
+    <!-- Battery Level -->
+    <div class="row pad-top">
+      <div class="col-4">Battery Level:</div>
+      <ng-container *ngIf="wahtsDevice?.metadata?.batteryLevel != null; else batteryNA">
+        <div class="col-6">
+          <div class="progress">
+            <div
+              class="progress-bar bg-warning"
+              role="progressbar"
+              [style.width.%]="wahtsDevice!.metadata!.batteryLevel"
+              [attr.aria-valuenow]="wahtsDevice!.metadata!.batteryLevel"
+              aria-valuemin="0"
+              aria-valuemax="100">
+            </div>
+          </div>
+        </div>
+        <div class="col-2">{{ wahtsDevice!.metadata!.batteryLevel }}%</div>
+      </ng-container>
+      <ng-template #batteryNA>
+        <div class="col-8">N/A</div>
+      </ng-template>
+    </div>
+
+    <!-- Auto Shutdown Time -->
+    <div class="row pad-top">
+      <div class="col-4">Auto Shutdown Time:</div>
+      <div class="col-4">{{ wahtsDevice?.metadata?.autoShutdownTime != null ? (wahtsDevice?.metadata?.autoShutdownTime + ' mins') : 'N/A' }}</div>
+      <div class="col-1"></div>
+      <div class="col-1" title="{{ 'Auto Shutdown Time Help' | transloco }}">
+        <i [matMenuTriggerFor]="shutdownTimerMenu" class="ion-help-circled"></i>
+      </div>
+      <mat-menu #shutdownTimerMenu="matMenu">
+        <button mat-menu-item>
+          <div [innerHTML]="setShutdownTimerPopover"></div>
+        </button>
+      </mat-menu>
+    </div>
+
+  </ng-container>
 </div>

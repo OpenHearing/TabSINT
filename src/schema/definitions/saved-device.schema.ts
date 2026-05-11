@@ -4,6 +4,7 @@ import { BluetoothType, DeviceState, DeviceStatus, DeviceType } from '../../app/
 import { IWahtsDevice } from '../../app/interfaces/devices/wahts-device.interface';
 import { ITympanDevice } from '../../app/interfaces/devices/tympan-device.interface';
 import { IDeviceMetadata } from '../../app/interfaces/devices/device-metadata.interface';
+import { IWahtsDeviceMetadata } from '../../app/interfaces/devices/wahts-device-metadata.interface';
 
 /**
  * Schema for device metadata used by device schemas.
@@ -27,6 +28,30 @@ const deviceMetadataSchema: JSONSchemaType<IDeviceMetadata> = {
 };
 
 /**
+ * Schema for WAHTS device metadata.
+ */
+const wahtsDeviceMetadataSchema: JSONSchemaType<IWahtsDeviceMetadata> = {
+  type: 'object',
+  properties: {
+    description: { type: 'string', nullable: true },
+    uuid: { type: 'string', nullable: true },
+    buildDateTime: { type: 'string', nullable: true },
+    serialNumber: { type: 'string', nullable: true },
+    build: { type: 'string', nullable: true },
+    version: { type: 'string', nullable: true },
+    platform: { type: 'string', nullable: true },
+    model: { type: 'string', nullable: true },
+    os: { type: 'string', nullable: true },
+    diskSpace: { type: 'string', nullable: true },
+    other: { type: 'string', nullable: true },
+    calibrationDate: { type: 'string', nullable: true },
+    batteryLevel: { type: 'number', nullable: true },
+    autoShutdownTime: { type: 'number', nullable: true },
+  },
+  required: [],
+};
+
+/**
  * Schema for WAHTS device to store as a saved device.
  */
 const wahtsDeviceSchema: JSONSchemaType<IWahtsDevice> = {
@@ -40,7 +65,7 @@ const wahtsDeviceSchema: JSONSchemaType<IWahtsDevice> = {
     connectionType: { type: 'string', enum: Object.values(BluetoothType) },
     state: { type: 'string', enum: Object.values(DeviceState) },
     status: { type: 'string', enum: Object.values(DeviceStatus) },
-    metadata: deviceMetadataSchema,
+    metadata: wahtsDeviceMetadataSchema,
   },
   required: ['tabsintId', 'name', 'deviceId', 'type', 'msgId', 'connectionType', 'state', 'status', 'metadata'],
 };
