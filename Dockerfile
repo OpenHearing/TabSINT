@@ -6,13 +6,13 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Install necessary dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    wget=1.21.4-1ubuntu4.1 \
-    git=1:2.43.0-1ubuntu7.3 \
-    unzip=6.0-28ubuntu4.1 \
-    build-essential=12.10ubuntu1 \
-    lib32z1=1:1.3.dfsg-3.1ubuntu2.1 \
-    lib32stdc++6=14.2.0-4ubuntu2~24.04.1 \
-    subversion=1.14.3-1build4 \
+    wget \
+    git \
+    unzip \
+    build-essential \
+    lib32z1 \
+    lib32stdc++6 \
+    subversion \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Google Chrome
