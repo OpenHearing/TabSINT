@@ -170,6 +170,6 @@ describe('ProtocolService', () => {
       /* empty */
     }
     expect(protocolService.protocolModel.activeProtocol).toBeUndefined();
-    protocolService.delete(badTestProtocol);
+    protocolService.delete(protocol);
   });
 });
