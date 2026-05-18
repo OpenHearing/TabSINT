@@ -91,23 +91,10 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
     }
 
     await updatePageWavProperties(page);
+    await updatePageVideoProperties(page);
 
     if (isPageDefinition(page) && page.image) {
       page.image.b64 = await readImageFileAsBytes(loading, page.image.path);
-    }
-
-    if (page.video) {
-      if (loading.meta.server == ProtocolServer.Developer) {
-        page.video._resolvedPath = 'assets/' + loading.meta.path! + '/' + page.video.path;
-        if (!(await assetPathExists(page.video._resolvedPath))) {
-          rootProtocol._unresolvedFilePathList?.push(page.video.path);
-        }
-      } else if (loading.meta.contentURI) {
-        page.video._resolvedPath = await resolveFilePath(loading.meta.contentURI, page.video.path);
-        if (page.video._resolvedPath === undefined) {
-          rootProtocol._unresolvedFilePathList?.push(page.video.path);
-        }
-      }
     }
 
     if (page.responseArea) {
@@ -206,6 +193,26 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
         }
       })
     );
+  }
+
+  /**
+   * Update the page video properties with resolved paths.
+   * @param page The page with video to be processed and updated.
+   */
+  async function updatePageVideoProperties(page: PageDefinition): Promise<void> {
+    if (page.video) {
+      if (loading.meta.server == ProtocolServer.Developer) {
+        page.video._resolvedPath = 'assets/' + loading.meta.path! + '/' + page.video.path;
+        if (!(await assetPathExists(page.video._resolvedPath))) {
+          rootProtocol._unresolvedFilePathList?.push(page.video.path);
+        }
+      } else if (loading.meta.contentURI) {
+        page.video._resolvedPath = await resolveFilePath(loading.meta.contentURI, page.video.path);
+        if (page.video._resolvedPath === undefined) {
+          rootProtocol._unresolvedFilePathList?.push(page.video.path);
+        }
+      }
+    }
   }
 
   function getId(target: PageTypes): string {
