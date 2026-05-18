@@ -23,7 +23,7 @@ import { Logger } from '../services/logger.service';
 import { Tasks } from '../services/tasks.service';
 import { Notifications } from '../services/notifications.service';
 import { loadingProtocolDefaults } from '../utilities/defaults';
-import { checkCalibrationFiles, checkControllers } from '../utilities/protocol-checks.function';
+import { checkCalibrationFiles, checkControllers, checkUnresolvedFilePaths } from '../utilities/protocol-checks.function';
 import { processProtocol } from '../utilities/process-protocol.function';
 import { initializeLoadingProtocol } from '../utilities/initialize-loading-protocol';
 
@@ -86,13 +86,14 @@ export class ProtocolService {
         await this.initializeProtocol();
         const validationError = await this.validateIfCalledFor();
         this.handleLoadErrors([validationError]);
-      } else {
+      } else if (!this.disk.preferences.validateProtocols) {
         this.notifyProtocolDidntLoadProperly();
+      } else {
+        throw new Error('Failed to initialize protocol');
       }
     } catch (error: unknown) {
       const err = error instanceof Error ? error.message : error;
-      // delete the protocol if it does not load properly
-      this.delete(this.loading.meta);
+      this.protocolModel.activeProtocol = undefined;
       this.logger.error(`Could not load protocol. ${err}`);
       this.notifications
         .alert({
@@ -236,20 +237,29 @@ export class ProtocolService {
       this.protocolModel.activeProtocol!.errors!.push(e);
     });
 
+    checkUnresolvedFilePaths(this.protocolModel.activeProtocol!).forEach((e: ProtocolErrorInterface) => {
+      this.protocolModel.activeProtocol!.errors!.push(e);
+    });
+
     if (this.protocolModel.activeProtocol!.errors!.length > 0) {
       msg = 'The protocol contains the following errors and may not function properly.' + ' \n\n';
       for (const err of this.protocolModel.activeProtocol!.errors!) {
         msg += err.type + ':\n';
         msg += ' - ' + err.error + '\n';
       }
-      this.logger.error(' Protocol contains the following errors: ' + JSON.stringify(this.protocolModel.activeProtocol!.errors));
-      this.notifications
-        .alert({
-          title: 'Alert',
-          content: msg,
-          type: DialogType.Alert,
-        })
-        .subscribe();
+      if (this.disk.preferences.validateProtocols) {
+        this.tasks.deregister('Handle Load Errors');
+        throw new Error(msg);
+      } else {
+        this.logger.error('Protocol contains the following errors: ' + JSON.stringify(this.protocolModel.activeProtocol!.errors));
+        this.notifications
+          .alert({
+            title: 'Alert',
+            content: msg,
+            type: DialogType.Alert,
+          })
+          .subscribe();
+      }
     } else if (this.loading.notify) {
       msg = 'Successfully loaded protocol: ' + this.loading.meta.name;
       this.notifications

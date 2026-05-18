@@ -140,4 +140,36 @@ describe('ProtocolService', () => {
     expect(protocolService.protocolModel.activeProtocol).toBeUndefined();
     protocolService.delete(badTestProtocol);
   });
+
+  it('puts validation error on active protocol if the protocol has calibration errors', async () => {
+    const protocolService = TestBed.inject(ProtocolService);
+    const protocol = testProtocol;
+    const badPages = [
+      {
+        id: 'textbox',
+        title: 'Text Box',
+        instructionText: 'Test Cases',
+        wavfiles: [
+          {
+            weighting: 'A',
+            path: 'path.wav',
+            targetSPL: 65,
+          },
+        ],
+        responseArea: {
+          type: 'textboxResponseArea',
+        },
+      },
+    ];
+    protocol.pages = badPages;
+    protocolService.disk.availableProtocolsMeta['badTest'] = protocol;
+
+    try {
+      await protocolService.load(protocolService.disk.availableProtocolsMeta['badTest']);
+    } catch {
+      /* empty */
+    }
+    expect(protocolService.protocolModel.activeProtocol).toBeUndefined();
+    protocolService.delete(badTestProtocol);
+  });
 });

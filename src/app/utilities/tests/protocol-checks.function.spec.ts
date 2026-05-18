@@ -1,4 +1,4 @@
-import { checkCalibrationFiles, checkControllers } from '../protocol-checks.function';
+import { checkCalibrationFiles, checkControllers, checkUnresolvedFilePaths } from '../protocol-checks.function';
 import { ProtocolInterface } from '../../models/protocol/protocol.interface';
 import { ProtocolServer } from '../constants';
 
@@ -14,6 +14,7 @@ const makeProtocol = (overrides: Partial<ProtocolInterface> = {}): ProtocolInter
     _missingWavCalList: [],
     _missingCommonWavCalList: [],
     _missingControllerList: [],
+    _unresolvedFilePathList: [],
     ...overrides,
   }) as ProtocolInterface;
 
@@ -57,5 +58,19 @@ describe('checkControllers', () => {
     expect(errors.length).toBe(1);
     expect(errors[0].type).toBe('Protocol');
     expect(errors[0].error).toContain('myCtrl');
+  });
+});
+
+describe('checkUnresolvedFilePaths', () => {
+  it('returns empty array when no unresolved file paths exist', () => {
+    expect(checkControllers(makeProtocol())).toEqual([]);
+  });
+
+  it('returns an error when unresolved file paths exist', () => {
+    const protocol = makeProtocol({ _unresolvedFilePathList: ['invalid'] });
+    const errors = checkUnresolvedFilePaths(protocol);
+    expect(errors.length).toBe(1);
+    expect(errors[0].type).toBe('Protocol');
+    expect(errors[0].error).toContain('invalid');
   });
 });

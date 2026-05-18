@@ -1,8 +1,8 @@
 import { ProtocolErrorInterface } from '../interfaces/protocol-error.interface';
 import { ProtocolInterface } from '../models/protocol/protocol.interface';
 
-export function checkCalibrationFiles(activeProtocol: ProtocolInterface): string | void {
-  let msg;
+export function checkCalibrationFiles(activeProtocol: ProtocolInterface): string | undefined {
+  let msg = undefined;
   const missingWavCalListLength = activeProtocol._missingWavCalList!.length;
   const missingCommonWavCalListLength = activeProtocol._missingCommonWavCalList!.length;
 
@@ -49,6 +49,26 @@ export function checkControllers(activeProtocol: ProtocolInterface): ProtocolErr
       'The protocol contains custom html pages that reference the following undefined controllers: ' +
       activeProtocol._missingControllerList +
       '.  Please make sure each controller is defined properly in the customJs.js file.';
+    errors.push({
+      type: 'Protocol',
+      error: msg,
+    });
+  }
+
+  return errors;
+}
+
+/**
+ * Check for unresolved file paths in the provided protocol.
+ * @param activeProtocol The protocol to check for unresolved file paths.
+ * @returns An array of protocol errors based on unresolved file paths.
+ */
+export function checkUnresolvedFilePaths(activeProtocol: ProtocolInterface): ProtocolErrorInterface[] {
+  const errors = [];
+  const unresolvedFilePathLength = activeProtocol._unresolvedFilePathList?.length ?? 0;
+
+  if (unresolvedFilePathLength > 0) {
+    const msg = 'Unable to resolve the file path(s) for the following file(s): ' + activeProtocol._unresolvedFilePathList;
     errors.push({
       type: 'Protocol',
       error: msg,

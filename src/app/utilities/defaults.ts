@@ -24,7 +24,6 @@ export function loadingProtocolDefaults(disk: DiskInterface): LoadingProtocolInt
   const loadingProtocol: LoadingProtocolInterface = {
     protocol: protocolDefaults,
     calibration: undefined,
-    requiresValidation: disk.preferences.validateProtocols,
     meta: { ...metaDefaults, ...{ contentURI: disk.contentURI } },
     overwrite: false,
     notify: false,

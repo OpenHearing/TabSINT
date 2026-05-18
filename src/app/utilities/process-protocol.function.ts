@@ -74,6 +74,17 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
     return (await TabsintFs.getFileContentURI({ rootUri: rootUri, filePath: filePath }).catch(() => undefined))?.contentUri;
   }
 
+  /**
+   * Check whether an asset exists.
+   * @param assetPath The path to check.
+   * @returns True if the asset exists, False otherwise.
+   */
+  async function assetPathExists(assetPath: string): Promise<boolean> {
+    return await fetch(assetPath, { method: 'HEAD' })
+      .then(response => response.ok)
+      .catch(() => false);
+  }
+
   async function processPage(page: PageDefinition) {
     if (page.preProcessFunction) {
       page.preProcessFunction.js = await loadFile(page.preProcessFunction.filepath, loading.meta);
@@ -88,8 +99,14 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
     if (page.video) {
       if (loading.meta.server == ProtocolServer.Developer) {
         page.video._resolvedPath = 'assets/' + loading.meta.path! + '/' + page.video.path;
+        if (!(await assetPathExists(page.video._resolvedPath))) {
+          rootProtocol._unresolvedFilePathList?.push(page.video.path);
+        }
       } else if (loading.meta.contentURI) {
         page.video._resolvedPath = await resolveFilePath(loading.meta.contentURI, page.video.path);
+        if (page.video._resolvedPath === undefined) {
+          rootProtocol._unresolvedFilePathList?.push(page.video.path);
+        }
       }
     }
 
@@ -171,11 +188,21 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
         if (wavfile.useCommonRepo) {
           if (rootProtocol.commonRepo?.path) {
             wavfile._resolvedPath = await resolveFilePath(rootProtocol.commonRepo?.path, wavfile.path);
+            if (wavfile._resolvedPath === undefined) {
+              rootProtocol._unresolvedFilePathList?.push(wavfile.path);
+            }
           }
         } else if (loading.meta.server == ProtocolServer.Developer) {
           wavfile._resolvedPath = 'public/assets/' + loading.meta.path! + '/' + wavfile.path;
+          // The asset path check needs to check a different path than the resolved path, as the resolved path is for Java use.
+          if (!(await assetPathExists('assets/' + loading.meta.path! + '/' + wavfile.path))) {
+            rootProtocol._unresolvedFilePathList?.push(wavfile.path);
+          }
         } else if (loading.meta.contentURI) {
           wavfile._resolvedPath = await resolveFilePath(loading.meta.contentURI, wavfile.path);
+          if (wavfile._resolvedPath === undefined) {
+            rootProtocol._unresolvedFilePathList?.push(wavfile.path);
+          }
         }
       })
     );
