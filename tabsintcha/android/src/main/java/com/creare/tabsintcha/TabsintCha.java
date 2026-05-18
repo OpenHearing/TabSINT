@@ -934,13 +934,7 @@ class TabsintCha {
     }
 
     public void statusReceived(CHA cha, Status s) {
-      try {
-        // Create a JSON object from the fields in the ID:
-        JSONObject obj = new JSONObject("{" + s.toString().replace('\n', ',') + "}");
-        sendResultToListener("Status", obj);
-      } catch (JSONException e) {
-        handleJsonException(e);
-      }
+      handleResponse("Status", s);
     }
 
     public void errorReceived(CHA cha, ChaError err) {
