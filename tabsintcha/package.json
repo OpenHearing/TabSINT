@@ -44,7 +44,8 @@
     "build": "npm run clean && npm run docgen && tsc && rollup -c rollup.config.mjs",
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "prepare": "npm run build"
   },
   "devDependencies": {
     "@capacitor/cli": "^7.4.4",
