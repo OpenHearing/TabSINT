@@ -70,15 +70,14 @@ Playback is defined by “wavfiles” blocks within the exam pages in which the 
 
 For arbitrary playback, targetSPL and weighting apply directly to the audio output. For as-recorded, they apply to the reference file.
 
-| Input Field       | Default | Arbitrary | As-recorded |
-| ----------------- | ------- | --------- | ----------- |
-| path              | --      | Required  | Required    |
-| playbackMethod    | --      | Required  | Required    |
-| targetSPL         | --      | Required  | Disallowed  |
-| weighting         | Z       | Optional  | Disallowed  |
-| numReplaysAllowed | 0       | Optional  | Optional    |
-| startTime         | 0       | Optional  | Optional    |
-| endTime           | inf     | Optional  | Optional    |
+| Input Field    | Default | Arbitrary | As-recorded |
+| -------------- | ------- | --------- | ----------- |
+| path           | --      | Required  | Required    |
+| playbackMethod | --      | Required  | Required    |
+| targetSPL      | --      | Required  | Disallowed  |
+| weighting      | Z       | Optional  | Disallowed  |
+| startTime      | 0       | Optional  | Optional    |
+| endTime        | inf     | Optional  | Optional    |
 
 ### Example Wavfile Blocks
 
