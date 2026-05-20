@@ -47,5 +47,5 @@ export function isRequestIdResponse(response?: IDeviceResponse): response is Req
 }
 
 export function isStatusResponse(response?: IDeviceResponse): response is StatusResponse {
-  return isValidDeviceResponse(response) && response.msg.length >= 2 && (response as StatusResponse).msg[1].State !== undefined;
+  return isValidDeviceResponse(response) && response.msg.length >= 2 && (response as StatusResponse).msg[1].state !== undefined;
 }
