@@ -43,6 +43,7 @@ export interface ProtocolInterface extends ProtocolSchemaInterface, ProtocolMeta
   _missingCommonWavCalList?: string[];
   _missingControllerList?: string[];
   _missingCommonMediaRepo?: boolean;
+  _unresolvedFilePathList?: string[];
   _customHtmlList?: {
     name: string;
     path: string;

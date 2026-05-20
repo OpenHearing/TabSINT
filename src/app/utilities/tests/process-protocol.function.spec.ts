@@ -152,7 +152,6 @@ const testProtocol: ProtocolInterface = {
 const loadingProtocol: LoadingProtocolInterface = {
   protocol: testProtocol,
   calibration: undefined,
-  requiresValidation: false,
   meta: {
     group: '',
     name: 'test',
