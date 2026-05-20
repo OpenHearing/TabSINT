@@ -6,6 +6,5 @@ export interface LoadingProtocolInterface {
   calibration?: CalibrationFileInterface;
   meta: ProtocolMetaInterface;
   notify: boolean;
-  requiresValidation: boolean;
   overwrite: boolean;
 }
