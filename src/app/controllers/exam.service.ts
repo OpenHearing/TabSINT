@@ -670,7 +670,7 @@ export class ExamService {
       if (device?.state === DeviceState.Connected) {
         const response = await this.devicesService.requestStatus(device);
         // Cancel any ongoing exams for the active wav file device
-        if (isStatusResponse(response) && response.msg[1].State === 2) {
+        if (isStatusResponse(response) && response.msg[1].state === 2) {
           this.devicesService.abortExams(device);
         }
       }
@@ -720,10 +720,10 @@ export class ExamService {
     try {
       const status = await this.devicesService.requestStatus(device);
       if (isStatusResponse(status)) {
-        if (status.msg[1].State === 2) {
+        if (status.msg[1].state === 2) {
           this.logger.warning('CHA exam is still running while user queues an exam. Aborting exams...');
           await this.devicesService.abortExams(device);
-        } else if (status.msg[1].State !== 1) {
+        } else if (status.msg[1].state !== 1) {
           this.logger.error('Unexpected device status, CHA wav files will not be played.');
           return;
         }

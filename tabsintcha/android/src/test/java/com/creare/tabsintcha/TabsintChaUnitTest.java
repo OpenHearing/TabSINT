@@ -993,7 +993,7 @@ public class TabsintChaUnitTest {
       chaState.chaListener = tabsintCha.new WrappedChaListener(chaState);
       com.creare.cha.CalibrationEntry calibrationEntry = mock(com.creare.cha.CalibrationEntry.class);
 
-      chaState.chaListener.calibrationEntryReceived(0, calibrationEntry);
+      chaState.chaListener.calibrationEntryReceived(cha, 0, calibrationEntry);
 
       verify(deviceListenerCallback, atLeastOnce()).onEvent(
         argThat(json -> {
@@ -1022,7 +1022,7 @@ public class TabsintChaUnitTest {
       chaState.chaListener = tabsintCha.new WrappedChaListener(chaState);
       com.creare.cha.CalibrationList calibrationList = mock(com.creare.cha.CalibrationList.class);
 
-      chaState.chaListener.calibrationListReceived(calibrationList);
+      chaState.chaListener.calibrationListReceived(cha, calibrationList);
 
       verify(deviceListenerCallback, atLeastOnce()).onEvent(
         argThat(json -> {
@@ -1051,7 +1051,7 @@ public class TabsintChaUnitTest {
       chaState.chaListener = tabsintCha.new WrappedChaListener(chaState);
       com.creare.cha.Id2 id2 = mock(com.creare.cha.Id2.class);
 
-      chaState.chaListener.idReceived(id2);
+      chaState.chaListener.idReceived(cha, id2);
 
       verify(deviceListenerCallback, atLeastOnce()).onEvent(
         argThat(json -> {
@@ -1080,7 +1080,7 @@ public class TabsintChaUnitTest {
       chaState.chaListener = tabsintCha.new WrappedChaListener(chaState);
       com.creare.cha.ProbeId probeId = mock(com.creare.cha.ProbeId.class);
 
-      chaState.chaListener.probeIdReceived(probeId);
+      chaState.chaListener.probeIdReceived(cha, probeId);
 
       verify(deviceListenerCallback, atLeastOnce()).onEvent(
         argThat(json -> {
@@ -1110,7 +1110,7 @@ public class TabsintChaUnitTest {
       com.creare.cha.Status status = mock(com.creare.cha.Status.class);
       when(status.toString()).thenReturn("");
 
-      chaState.chaListener.statusReceived(status);
+      chaState.chaListener.statusReceived(cha, status);
 
       verify(deviceListenerCallback, atLeastOnce()).onEvent(
         argThat(json -> {
@@ -1139,7 +1139,7 @@ public class TabsintChaUnitTest {
       chaState.chaListener = tabsintCha.new WrappedChaListener(chaState);
       com.creare.cha.ChaError error = mock(com.creare.cha.ChaError.class);
 
-      chaState.chaListener.errorReceived(error);
+      chaState.chaListener.errorReceived(cha, error);
 
       verify(deviceListenerCallback, atLeastOnce()).onEvent(
         argThat(json -> {
@@ -1168,7 +1168,7 @@ public class TabsintChaUnitTest {
       chaState.chaListener = tabsintCha.new WrappedChaListener(chaState);
       com.creare.cha.Results results = mock(com.creare.cha.Results.class);
 
-      chaState.chaListener.resultsReceived(results);
+      chaState.chaListener.resultsReceived(cha, results);
 
       verify(deviceListenerCallback, atLeastOnce()).onEvent(
         argThat(json -> {
@@ -1196,7 +1196,7 @@ public class TabsintChaUnitTest {
       tabsintCha.setDeviceListenerCallback(deviceListenerCallback);
       chaState.chaListener = tabsintCha.new WrappedChaListener(chaState);
 
-      chaState.chaListener.settingReceived(0, 1f);
+      chaState.chaListener.settingReceived(cha, 0, 1f);
 
       verify(deviceListenerCallback, atLeastOnce()).onEvent(
         argThat(json -> {
@@ -1215,6 +1215,34 @@ public class TabsintChaUnitTest {
   }
 
   @Test
+  public void testWrappedChaListenerConnectedCallsEventListener() throws Exception {
+    try (MockedStatic<TabsintCha> mocked = mockStatic(TabsintCha.class)) {
+      mocked.when(() -> TabsintCha.createJsonViaIntrospection(any())).thenReturn(new JSONObject());
+      TabsintCha.ChaState chaState = new TabsintCha.ChaState(cha);
+      when(cha.toString()).thenReturn("Mock");
+      tabsintCha.chaMap.put("Mock", chaState);
+      tabsintCha.setDeviceListenerCallback(deviceListenerCallback);
+      chaState.chaListener = tabsintCha.new WrappedChaListener(chaState);
+
+      chaState.chaListener.connected(cha);
+
+      verify(deviceListenerCallback, atLeastOnce()).onEvent(
+        argThat(json -> {
+          try {
+            if (!json.getString("name").equals("Mock")) {
+              return false;
+            }
+            JSONArray array = json.getJSONArray("res");
+            return array.getString(0).equals("Connected");
+          } catch (Exception e) {
+            throw new RuntimeException(e);
+          }
+        })
+      );
+    }
+  }
+
+  @Test
   public void testWrappedChaListenerDisconnectedCallsEventListener() throws Exception {
     try (MockedStatic<TabsintCha> mocked = mockStatic(TabsintCha.class)) {
       mocked.when(() -> TabsintCha.createJsonViaIntrospection(any())).thenReturn(new JSONObject());
@@ -1224,7 +1252,7 @@ public class TabsintChaUnitTest {
       tabsintCha.setDeviceListenerCallback(deviceListenerCallback);
       chaState.chaListener = tabsintCha.new WrappedChaListener(chaState);
 
-      chaState.chaListener.disconnected();
+      chaState.chaListener.disconnected(cha);
 
       verify(deviceListenerCallback, atLeastOnce()).onEvent(
         argThat(json -> {
@@ -1252,7 +1280,7 @@ public class TabsintChaUnitTest {
       tabsintCha.setDeviceListenerCallback(deviceListenerCallback);
       chaState.chaListener = tabsintCha.new WrappedChaListener(chaState);
 
-      chaState.chaListener.fileProgress(0, 0);
+      chaState.chaListener.fileProgress(cha, 0, 0);
 
       verify(deviceListenerCallback, atLeastOnce()).onEvent(
         argThat(json -> {
@@ -1279,9 +1307,9 @@ public class TabsintChaUnitTest {
       tabsintCha.chaMap.put("Mock", chaState);
       tabsintCha.setDeviceListenerCallback(deviceListenerCallback);
       chaState.chaListener = tabsintCha.new WrappedChaListener(chaState);
-      com.creare.cha.FileDesc fileDesc = mock(com.creare.cha.FileDesc.class);
+      com.creare.cha.FileDescOut fileDesc = mock(com.creare.cha.FileDescOut.class);
 
-      chaState.chaListener.dirEntryReceived(fileDesc);
+      chaState.chaListener.dirEntryReceived(cha, fileDesc);
 
       verify(deviceListenerCallback, atLeastOnce()).onEvent(
         argThat(json -> {
@@ -1309,7 +1337,7 @@ public class TabsintChaUnitTest {
       tabsintCha.setDeviceListenerCallback(deviceListenerCallback);
       chaState.chaListener = tabsintCha.new WrappedChaListener(chaState);
 
-      chaState.chaListener.fileOperationComplete("Success");
+      chaState.chaListener.fileOperationComplete(cha, "Success");
 
       verify(deviceListenerCallback, atLeastOnce()).onEvent(
         argThat(json -> {
@@ -1337,7 +1365,7 @@ public class TabsintChaUnitTest {
       tabsintCha.setDeviceListenerCallback(deviceListenerCallback);
       chaState.chaListener = tabsintCha.new WrappedChaListener(chaState);
 
-      chaState.chaListener.sdBytesFreeReceived(0);
+      chaState.chaListener.sdBytesFreeReceived(cha, 0);
 
       verify(deviceListenerCallback, atLeastOnce()).onEvent(
         argThat(json -> {
@@ -1365,7 +1393,7 @@ public class TabsintChaUnitTest {
       tabsintCha.setDeviceListenerCallback(deviceListenerCallback);
       chaState.chaListener = tabsintCha.new WrappedChaListener(chaState);
 
-      chaState.chaListener.formatComplete(0);
+      chaState.chaListener.formatComplete(cha, 0);
 
       verify(deviceListenerCallback, atLeastOnce()).onEvent(
         argThat(json -> {
@@ -1393,7 +1421,7 @@ public class TabsintChaUnitTest {
       tabsintCha.setDeviceListenerCallback(deviceListenerCallback);
       chaState.chaListener = tabsintCha.new WrappedChaListener(chaState);
 
-      chaState.chaListener.associatedA2dpDiscovered(a2dpCha);
+      chaState.chaListener.associatedA2dpDiscovered(cha, a2dpCha);
 
       verify(deviceListenerCallback, atLeastOnce()).onEvent(
         argThat(json -> {
@@ -1421,7 +1449,7 @@ public class TabsintChaUnitTest {
       tabsintCha.setDeviceListenerCallback(deviceListenerCallback);
       chaState.chaListener = tabsintCha.new WrappedChaListener(chaState);
 
-      chaState.chaListener.examCountReceived(0);
+      chaState.chaListener.examCountReceived(cha, 0);
 
       verify(deviceListenerCallback, atLeastOnce()).onEvent(
         argThat(json -> {
@@ -1450,7 +1478,7 @@ public class TabsintChaUnitTest {
       chaState.chaListener = tabsintCha.new WrappedChaListener(chaState);
       com.creare.cha.Exam exam = mock(com.creare.cha.Exam.class);
 
-      chaState.chaListener.currentExamReceived(exam);
+      chaState.chaListener.currentExamReceived(cha, exam);
 
       verify(deviceListenerCallback, atLeastOnce()).onEvent(
         argThat(json -> {

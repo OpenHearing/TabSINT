@@ -8,6 +8,7 @@ import com.creare.cha.CalibrationList;
 import com.creare.cha.CalibrationListEntry;
 import com.creare.cha.ChaError;
 import com.creare.cha.Exam;
+import com.creare.cha.FileDescOut;
 import com.creare.cha.Id2;
 import com.creare.cha.NoiseFeature;
 import com.creare.cha.Results;
@@ -199,11 +200,12 @@ class TabsintCha {
       String name = inputData.getString("name");
 
       ChaState chaState = getChaState(name);
+      CHA cha = chaState.cha;
       A2DP_CHA a2dpCha = chaState.cha.requestAssociatedA2DP();
 
       if (a2dpCha != null && chaState.chaListener != null) {
         // We have an immediate result. Invoke the listener:
-        chaState.chaListener.associatedA2dpDiscovered(a2dpCha);
+        chaState.chaListener.associatedA2dpDiscovered(cha, a2dpCha);
       } else {
         // Will be discovered.
       }
@@ -911,37 +913,31 @@ class TabsintCha {
       listenerIsSet();
     }
 
-    public void calibrationEntryReceived(int index, CalibrationEntry calEntry) {
+    public void calibrationEntryReceived(CHA cha, int index, CalibrationEntry calEntry) {
       handleResponse("CalibrationEntry #" + index, calEntry);
     }
 
-    public void calibrationListReceived(CalibrationList list) {
+    public void calibrationListReceived(CHA cha, CalibrationList list) {
       handleResponse("CalibrationList", list);
     }
 
-    public void idReceived(Id2 id) {
+    public void idReceived(CHA cha, Id2 id) {
       handleResponse("Id", id);
     }
 
-    public void probeIdReceived(com.creare.cha.ProbeId id) {
+    public void probeIdReceived(CHA cha, com.creare.cha.ProbeId id) {
       handleResponse("ProbeId", id);
     }
 
-    public void dateTimeReceived(long time) {
+    public void dateTimeReceived(CHA cha, long time) {
       // NOOP
     }
 
-    public void statusReceived(Status s) {
-      try {
-        // Create a JSON object from the fields in the ID:
-        JSONObject obj = new JSONObject("{" + s.toString().replace('\n', ',') + "}");
-        sendResultToListener("Status", obj);
-      } catch (JSONException e) {
-        handleJsonException(e);
-      }
+    public void statusReceived(CHA cha, Status s) {
+      handleResponse("Status", s);
     }
 
-    public void errorReceived(ChaError err) {
+    public void errorReceived(CHA cha, ChaError err) {
       try {
         // Create a JSON object:
         JSONObject obj = new JSONObject();
@@ -955,12 +951,12 @@ class TabsintCha {
       }
     }
 
-    public void resultsReceived(Results r) {
+    public void resultsReceived(CHA cha, Results r) {
       android.util.Log.d(TAG, "Results = " + r);
       handleResponse("Result", r);
     }
 
-    public void settingReceived(int index, float value) {
+    public void settingReceived(CHA cha, int index, float value) {
       try {
         // Create a JSON object:
         JSONObject obj = new JSONObject();
@@ -974,7 +970,15 @@ class TabsintCha {
       }
     }
 
-    public void disconnected() {
+    public void connected(CHA cha) {
+      try {
+        sendResultToListener("Connected", null);
+      } catch (JSONException e) {
+        handleJsonException(e);
+      }
+    }
+
+    public void disconnected(CHA cha) {
       try {
         sendResultToListener("Disconnected", null);
       } catch (JSONException e) {
@@ -985,7 +989,7 @@ class TabsintCha {
     /**
      * Progress indicator callback.
      */
-    public void fileProgress(int bytesTransferred, int totalBytes) {
+    public void fileProgress(CHA cha, int bytesTransferred, int totalBytes) {
       try {
         // Create a JSON object:
         JSONObject obj = new JSONObject();
@@ -1002,7 +1006,7 @@ class TabsintCha {
     /**
      * Indicates receipt of a directory entry.
      */
-    public void dirEntryReceived(com.creare.cha.FileDesc entry) {
+    public void dirEntryReceived(CHA cha, FileDescOut entry) {
       try {
         // Create a JSON object:
         JSONObject obj = new JSONObject();
@@ -1020,7 +1024,7 @@ class TabsintCha {
     /**
      * Notification that a file operation has completed.
      */
-    public void fileOperationComplete(String outcome) {
+    public void fileOperationComplete(CHA cha, String outcome) {
       try {
         JSONObject obj = new JSONObject();
         obj.put("Outcome", outcome);
@@ -1034,7 +1038,7 @@ class TabsintCha {
      * Notification that the number of bytes available on the CHA's
      * SD card has been received.
      */
-    public void sdBytesFreeReceived(long nBytes) {
+    public void sdBytesFreeReceived(CHA cha, long nBytes) {
       try {
         JSONObject obj = new JSONObject();
         obj.put("BytesFree", nBytes);
@@ -1044,7 +1048,7 @@ class TabsintCha {
       }
     }
 
-    public void formatComplete(int resultCode) {
+    public void formatComplete(CHA cha, int resultCode) {
       try {
         JSONObject obj = new JSONObject();
         obj.put("ResultCode", resultCode);
@@ -1054,7 +1058,7 @@ class TabsintCha {
       }
     }
 
-    public void associatedA2dpDiscovered(A2DP_CHA a2dpCha) {
+    public void associatedA2dpDiscovered(CHA cha, A2DP_CHA a2dpCha) {
       if (a2dpCha != null) {
         // Add it to the map:
         a2dpMap.put(a2dpCha.toString(), a2dpCha);
@@ -1071,7 +1075,7 @@ class TabsintCha {
       }
     }
 
-    public void examCountReceived(int count) {
+    public void examCountReceived(CHA cha, int count) {
       try {
         JSONObject obj = new JSONObject();
         obj.put("ExamCount", count);
@@ -1081,7 +1085,7 @@ class TabsintCha {
       }
     }
 
-    public void currentExamReceived(Exam exam) {
+    public void currentExamReceived(CHA cha, Exam exam) {
       // Replace the active exam with this one:
       parentState.activeExam = exam;
       handleResponse("ExamReceived", exam);
