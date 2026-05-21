@@ -114,6 +114,130 @@ For arbitrary playback, targetSPL and weighting apply directly to the audio outp
 ]
 ```
 
+# Calibration Specifications
+
+The generated calibration file is made up of two main parts: general calibration metadata and wavfile specific calibration information. Each wavfile will have a wavfile specific calibration portion which uses the relative wavfile path as a key.
+
+## General Calibration Metadata
+
+The general calibration metadata portion of the file contains the following properties.
+
+### Properties
+
+- tablet: The tablet for which the calibration was generated.
+
+- headset: The headset for which the calibration was generated.
+
+- calibrationPySVNRevision: The SVN revision number, or Git commit hash, associated with the calibration repository.
+
+- calibrationPyManualReleaseDate: The release date of the calibration repository following major code changes.
+
+- audioProfileVersion: The release date of the hardware (tablet and headset) profile used to generate the calibration.
+
+## Wavfile Specific Information
+
+The wavfile specific portions of the file contain the following properties depending on playback method.
+
+### Properties
+
+- refType: The reference type for the wavfile. The reference type of 'as-recorded' can be used for as-recorded or arbitrary playback, while the reference type of 'none' can only be used for arbitrary playback.
+
+- calibrationFilter: The filtering mode which the calibration used. In a "full" calibration, the sound file is filtered for the frequency response of the specified headset. In a “flat” calibration, the sound file is not filtered, and levels are calculated based on the hardware response at 1 kHz. The default calibration filter is "full".
+
+- normFactor: The cumulative normalization factor for all scaling.
+
+- scaleFactor: RMS output for a 1 kHz full scale input (Pa^-1).
+
+- RMSA: A-weighted RMS of input signal.
+
+- RMSC: C-weighted RMS of input signal.
+
+- RMSZ: Z-weighted RMS of input signal.
+
+- wavRMSA: A-weighted RMS of input signal multiplied by the norm factor.
+
+- wavRMSC: C-weighted RMS of input signal multiplied by the norm factor.
+
+- wavRMSZ: Z-weighted RMS of input signal multiplied by the norm factor.
+
+- realWorldRMSA: A-weighted RMS of input signal multiplied by a calibration factor based on the reference file.
+
+- realWorldRMSC: C-weighted RMS of input signal multiplied by a calibration factor based on the reference file.
+
+- realWorldRMSZ: Z-weighted RMS of input signal multiplied by a calibration factor based on the reference file.
+
+### Output Properties for each Playback Method
+
+| Output Property   | Arbitrary                        | As-recorded               |
+| ----------------- | -------------------------------- | ------------------------- |
+| refType           | String ('none' or 'as-recorded') | String ('as-recorded')    |
+| calibrationFilter | String ('full' or 'flat')        | String ('full' or 'flat') |
+| normFactor        | Number                           | Number                    |
+| scaleFactor       | Number                           | Number                    |
+| RMSA              | Number                           | Number                    |
+| RMSC              | Number                           | Number                    |
+| RMSZ              | Number                           | Number                    |
+| wavRMSA           | Number                           | Number                    |
+| wavRMSC           | Number                           | Number                    |
+| wavRMSZ           | Number                           | Number                    |
+| realWorldRMSA     | --                               | Number                    |
+| realWorldRMSC     | --                               | Number                    |
+| realWorldRMSZ     | --                               | Number                    |
+
+## Example Calibration File
+
+```
+{
+  "tablet": "TabE",
+  "headset": "VicFirth",
+  "calibrationPySVNRevision": "unavailable",
+  "calibrationPyManualReleaseDate": 20150702,
+  "audioProfileVersion": "07-Feb-2017 12:49:51",
+  "arbitrarySound1.wav": {
+    "refType": "none",
+    "RMSC": 0.007071481196889967,
+    "calibrationFilter": "full",
+    "wavRMSC": 0.7324163161077805,
+    "wavRMSA": 0.7316058261454568,
+    "RMSA": 0.0070636559144613914,
+    "wavRMSZ": 0.7324048259020318,
+    "RMSZ": 0.007071370258927345,
+    "normFactor": 103.57325370954769,
+    "scaleFactor": 0.6002726824369483
+  },
+  "soundfiles/asRec/sound1.wav": {
+    "refType": "as-recorded",
+    "RMSC": 0.004632523322653096,
+    "realWorldRMSA": 0.04818818618743877,
+    "RMSA": 0.0042850703538235635,
+    "wavRMSC": 0.10563137909380696,
+    "wavRMSA": 0.09770871282503113,
+    "calibrationFilter": "full",
+    "wavRMSZ": 0.11098459357806292,
+    "normFactor": 22.802125696220077,
+    "RMSZ": 0.004867291543632746,
+    "realWorldRMSZ": 0.05473561266592412,
+    "realWorldRMSC": 0.05209550321395992,
+    "scaleFactor": 0.13519823071552697
+  },
+  "soundfiles/asRec/sound2.wav": {
+    "refType": "as-recorded",
+    "RMSC": 0.017235183834142038,
+    "realWorldRMSA": 0.15586262558051883,
+    "RMSA": 0.013859876641679463,
+    "wavRMSC": 0.09837269415436932,
+    "wavRMSA": 0.07910756386527934,
+    "calibrationFilter": "full",
+    "wavRMSZ": 0.10403545692222917,
+    "normFactor": 5.7076672405140192,
+    "RMSZ": 0.018227316439151764,
+    "realWorldRMSZ": 0.2049771055645482,
+    "realWorldRMSC": 0.19381997936936746,
+    "scaleFactor": 0.13519823071552697
+  }
+}
+```
+
 # Tabsint Calculation
 
 At playback, TabSINT interprets the information given in the wav files object on the protocol page and the corresponding scaling information in the calibration.json file in order to calculate the correct playback volume to achieve the desired output level.
