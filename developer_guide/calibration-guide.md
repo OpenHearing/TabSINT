@@ -114,6 +114,6 @@ For arbitrary playback, targetSPL and weighting apply directly to the audio outp
 ]
 ```
 
-# Tabsint Calulcation
+# Tabsint Calculation
 
 At playback, TabSINT interprets the information given in the wav files object on the protocol page and the corresponding scaling information in the calibration.json file in order to calculate the correct playback volume to achieve the desired output level.
