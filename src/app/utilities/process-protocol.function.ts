@@ -32,7 +32,6 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
   const rootProtocol = loading.protocol;
   const protocolDict: ProtocolDictionary = {};
   const followOnsDict: FollowOnsDictionary = {};
-  const prefix = loading.meta.server == ProtocolServer.Developer ? 'public/assets/' + loading.meta.path! + '/' : loading.meta.contentURI + '/';
 
   await iterateThroughPages(rootProtocol.pages);
 
@@ -71,19 +70,31 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
     }
   }
 
+  async function resolveFilePath(rootUri: string, filePath: string): Promise<string | undefined> {
+    return (await TabsintFs.getFileContentURI({ rootUri: rootUri, filePath: filePath }).catch(() => undefined))?.contentUri;
+  }
+
+  /**
+   * Check whether an asset exists.
+   * @param assetPath The path to check.
+   * @returns True if the asset exists, False otherwise.
+   */
+  async function assetPathExists(assetPath: string): Promise<boolean> {
+    return await fetch(assetPath, { method: 'HEAD' })
+      .then(response => response.ok)
+      .catch(() => false);
+  }
+
   async function processPage(page: PageDefinition) {
     if (page.preProcessFunction) {
       page.preProcessFunction.js = await loadFile(page.preProcessFunction.filepath, loading.meta);
     }
 
-    updatePageWavProperties(page);
+    await updatePageWavProperties(page);
+    await updatePageVideoProperties(page);
 
     if (isPageDefinition(page) && page.image) {
       page.image.b64 = await readImageFileAsBytes(loading, page.image.path);
-    }
-
-    if (page.video) {
-      page.video.path = prefix + page.video.path;
     }
 
     if (page.responseArea) {
@@ -135,11 +146,8 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
    * Process the data from a calibration file add properties to the wav file object held in the page.
    * @param page The page with wav files to be processed and updated.
    */
-  function updatePageWavProperties(page: PageDefinition): void {
+  async function updatePageWavProperties(page: PageDefinition): Promise<void> {
     for (const wavfile of page.wavfiles ?? []) {
-      // Get only the name for indexing in case the path has already been updated
-      const wavPath = wavfile.path.substring(wavfile.path.lastIndexOf('/') + 1);
-
       // Determine if a common calibration is available or if a custom calibration is available
       const missingCommonMediaRepo = !rootProtocol.commonRepo || !rootProtocol.cCommon;
       const missingCommonWavCalList = missingCommonMediaRepo || !rootProtocol.cCommon?.[wavfile.path];
@@ -147,22 +155,63 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
       // Update the page wav files with calibration data if possible, otherwise update error messaging
       if (wavfile.useCommonRepo) {
         if (!missingCommonMediaRepo && !missingCommonWavCalList) {
-          const wavProperties = rootProtocol.cCommon?.[wavPath] as CalibrationFileWavProperties;
+          const wavProperties = rootProtocol.cCommon?.[wavfile.path] as CalibrationFileWavProperties;
           wavfile.cal = wavProperties;
           rootProtocol._missingCommonMediaRepo = missingCommonMediaRepo;
         } else if (missingCommonWavCalList) {
-          rootProtocol._missingCommonWavCalList?.push(wavPath);
+          rootProtocol._missingCommonWavCalList?.push(wavfile.path);
         }
         rootProtocol._missingCommonMediaRepo = missingCommonMediaRepo;
       } else if (loading.calibration) {
-        const wavCalibrationProperties = loading.calibration[wavPath] as CalibrationFileWavProperties;
+        const wavCalibrationProperties = loading.calibration[wavfile.path] as CalibrationFileWavProperties;
         wavfile.cal = { ...wavCalibrationProperties, tablet: loading.calibration?.tablet };
       } else {
-        rootProtocol._missingWavCalList?.push(wavPath);
+        rootProtocol._missingWavCalList?.push(wavfile.path);
       }
-      // Update the wav file path using calibration file prefix information after all indexing is complete
-      const wavfilePath = wavfile.useCommonRepo ? rootProtocol.commonRepo?.path : prefix;
-      wavfile.path = wavfilePath + wavPath;
+    }
+
+    await Promise.all(
+      (page.wavfiles ?? []).map(async wavfile => {
+        if (wavfile.useCommonRepo) {
+          if (rootProtocol.commonRepo?.path) {
+            wavfile._resolvedPath = await resolveFilePath(rootProtocol.commonRepo?.path, wavfile.path);
+            if (wavfile._resolvedPath === undefined) {
+              rootProtocol._unresolvedFilePathList?.push(wavfile.path);
+            }
+          }
+        } else if (loading.meta.server == ProtocolServer.Developer) {
+          wavfile._resolvedPath = 'public/assets/' + loading.meta.path! + '/' + wavfile.path;
+          // The asset path check needs to check a different path than the resolved path, as the resolved path is for Java use.
+          if (!(await assetPathExists('assets/' + loading.meta.path! + '/' + wavfile.path))) {
+            rootProtocol._unresolvedFilePathList?.push(wavfile.path);
+          }
+        } else if (loading.meta.contentURI) {
+          wavfile._resolvedPath = await resolveFilePath(loading.meta.contentURI, wavfile.path);
+          if (wavfile._resolvedPath === undefined) {
+            rootProtocol._unresolvedFilePathList?.push(wavfile.path);
+          }
+        }
+      })
+    );
+  }
+
+  /**
+   * Update the page video properties with resolved paths.
+   * @param page The page with video to be processed and updated.
+   */
+  async function updatePageVideoProperties(page: PageDefinition): Promise<void> {
+    if (page.video) {
+      if (loading.meta.server == ProtocolServer.Developer) {
+        page.video._resolvedPath = 'assets/' + loading.meta.path! + '/' + page.video.path;
+        if (!(await assetPathExists(page.video._resolvedPath))) {
+          rootProtocol._unresolvedFilePathList?.push(page.video.path);
+        }
+      } else if (loading.meta.contentURI) {
+        page.video._resolvedPath = await resolveFilePath(loading.meta.contentURI, page.video.path);
+        if (page.video._resolvedPath === undefined) {
+          rootProtocol._unresolvedFilePathList?.push(page.video.path);
+        }
+      }
     }
   }
 

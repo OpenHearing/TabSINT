@@ -22,6 +22,7 @@ export const chaWavFilesSchema: JSONSchemaType<ChaWavfilesInterface> = {
             default: [72, 72],
           },
           SoundFileName: { type: 'string', nullable: true },
+          _resolvedPath: { type: 'string', nullable: true },
         },
         required: ['path'],
       },

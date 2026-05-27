@@ -41,5 +41,5 @@ export interface StatusObject {
   /**
    * State of the device
    */
-  State: number;
+  state: number;
 }

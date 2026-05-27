@@ -345,6 +345,7 @@ export abstract class ChaManager implements IDeviceManager {
    */
   async requestSdBytesFree(device: ChaDeviceType): Promise<IDeviceResponse> {
     const response = await this.adapter.requestSdBytesFree(device);
+    await this.deviceErrorHandler(response);
     return response;
   }
 
@@ -363,6 +364,7 @@ export abstract class ChaManager implements IDeviceManager {
       if (longNameResp['msg'][0] !== '') {
         longNames.push(longNameResp['msg'][0]);
       }
+      await this.deviceErrorHandler(longNameResp);
     }
 
     const resp = { deviceId: device.deviceId, msg: ['Success', longNames] };
@@ -376,6 +378,7 @@ export abstract class ChaManager implements IDeviceManager {
    */
   async copyChaFileToLocalStorageAndReadFile(device: ChaDeviceType, fileToRead: string): Promise<IDeviceResponse | undefined> {
     const response = await this.adapter.copyChaFileToLocalStorageAndReadFile(device, fileToRead);
+    await this.deviceErrorHandler(response);
     return response;
   }
 }
