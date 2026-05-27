@@ -15,11 +15,12 @@ import { CustomResponseAreaInterface } from '../views/response-area/response-are
 import { SubjectIdInterface } from '../views/response-area/response-areas/subject-id/subject-id.interface';
 import { CheckboxInterface } from '../views/response-area/response-areas/checkbox/checkbox.interface';
 import { PreProcessFunctionInterface } from './preProcessFunction.interface';
-import { CalibrationFilter, Headset, PlaybackMethod, WavfileWeighting } from '../utilities/constants';
+import { Headset, PlaybackMethod, Tablet, WavfileWeighting } from '../utilities/constants';
 import { ButtonGridInterface } from '../views/response-area/response-areas/button-grid/button-grid.interface';
 import { QrCodeResponseAreaInterface } from '../views/response-area/response-areas/qr-code/qr-code.interface';
 import { DuodoseDownloadInterface } from '../views/response-area/response-areas/duodose-download/duodose-download.interface';
 import { BekesyResponseAreaInterface } from '../views/response-area/response-areas/bekesy/bekesy.interface';
+import { CalibrationFileWavProperties } from './calibration-file.interface';
 
 export interface PageDefinition {
   id: string;
@@ -63,66 +64,16 @@ export interface RepeatPageInterface {
   repeatIf?: string;
 }
 
-export interface PageWavfileCalInterface {
+export interface PageWavfileCalInterface extends CalibrationFileWavProperties {
   /**
    * Tablet version for the calibration.
    */
-  tablet?: string;
+  _tablet?: Tablet;
 
   /**
-   * The playback method reference type.
+   * Headset version for the calibration.
    */
-  refType?: PlaybackMethod;
-
-  /**
-   * Real world root mean square Z value.
-   */
-  realWorldRMSZ?: number;
-
-  /**
-   * Calibration filter for the file.
-   */
-  calibrationFilter?: CalibrationFilter;
-
-  /**
-   * Scale factor for the wav file.
-   */
-  scaleFactor?: number;
-
-  /**
-   * Normal factor for the wav file.
-   */
-  normFactor?: number;
-
-  /**
-   * Wav root mean square A value.
-   */
-  wavRMSA?: number;
-
-  /**
-   * Wav root mean square C value.
-   */
-  wavRMSC?: number;
-
-  /**
-   * Wav root mean square Z value.
-   */
-  wavRMSZ?: number;
-
-  /**
-   * Root mean square A value.
-   */
-  RMSA?: number;
-
-  /**
-   * Root mean square C value.
-   */
-  RMSC?: number;
-
-  /**
-   * Root mean square Z value.
-   */
-  RMSZ?: number;
+  _headset?: Headset;
 }
 
 export interface PageWavfileInterface {

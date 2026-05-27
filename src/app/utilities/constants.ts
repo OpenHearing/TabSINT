@@ -53,6 +53,11 @@ export enum Headset {
   WAHTS = 'WAHTS',
 }
 
+export enum Tablet {
+  Nexus7 = 'Nexus 7',
+  TabE = 'TabE',
+}
+
 export enum ResultsMode {
   UploadOnly = 'Upload Only',
   ExportOnly = 'Export Only',

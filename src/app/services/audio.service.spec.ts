@@ -147,7 +147,10 @@ describe('AudioService', () => {
   });
 
   it('get tablet gain returns zero for nexus 7', () => {
-    const gain = audioService.getTabletGain(DeveloperProtocolsCalibration['develop']);
+    const gain = audioService.getTabletGain({
+      _tablet: DeveloperProtocolsCalibration['develop'].tablet,
+      _headset: DeveloperProtocolsCalibration['develop'].headset,
+    });
     expect(gain).toEqual(0.0);
   });
 
@@ -160,6 +163,6 @@ describe('AudioService', () => {
     const updatedDisk = structuredClone(disk);
     updatedDisk.preferences.tabletGain = 10;
     mockDiskModel.diskSubject.next(updatedDisk);
-    expect(audioService.getTabletGain({} as PageWavfileCalInterface)).toEqual(10);
+    expect(audioService.getTabletGain({})).toEqual(10);
   });
 });

@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { TabsintAudio } from 'tabsintaudio';
 import { Logger } from './logger.service';
 import { PageWavfileCalInterface, PageWavfileInterface } from '../interfaces/page-definition.interface';
-import { DialogType, Headset, PlaybackMethod, WavfileWeighting } from '../utilities/constants';
+import { DialogType, Headset, PlaybackMethod, Tablet, WavfileWeighting } from '../utilities/constants';
 import { Notifications } from './notifications.service';
 import { DevicesService } from './devices/devices.service';
 import { IDeviceMetadata } from '../interfaces/devices/device-metadata.interface';
@@ -20,7 +20,7 @@ export class AudioService {
   private readonly disk = inject(DiskModel);
   private readonly devicesService = inject(DevicesService);
   private hostMetadata: IDeviceMetadata | undefined;
-  private headset: Headset | undefined;
+  private userHeadset: Headset | undefined;
   private systemVolumeControlEnabled: boolean = false;
   private userTabletGain: number | undefined;
   tabsintAudioPlugin = TabsintAudio;
@@ -53,7 +53,7 @@ export class AudioService {
   constructor() {
     this.devicesService.hostMetadata.subscribe(data => (this.hostMetadata = data));
     this.disk.diskSubject.subscribe(disk => {
-      this.headset = disk.preferences.headset;
+      this.userHeadset = disk.preferences.headset;
       this.userTabletGain = disk.preferences.tabletGain;
       this.systemVolumeControlEnabled = !disk.preferences.disableVolume;
     });
@@ -117,25 +117,41 @@ export class AudioService {
     // The RMSs always have these values - a function of the wav file.
     // The scaleFactor is hardware dependent and can be found in the
     // tablet_headset-audio_profile.json file.
-    switch (this.headset) {
+    switch (this.userHeadset) {
       case Headset.VicFirth:
-        calibration = { wavRMSZ: 0.70231, realWorldRMSZ: 0.70231, scaleFactor: 0.60027 };
+        calibration = {
+          wavRMSZ: 0.70231,
+          realWorldRMSZ: 0.70231,
+          scaleFactor: 0.60027,
+          _headset: Headset.VicFirth,
+          _tablet: Tablet.Nexus7,
+        };
         break;
       case Headset.VicFirthS2:
         calibration = {
           wavRMSZ: 0.70231,
           realWorldRMSZ: 0.70231,
           scaleFactor: 0.2330724734026138,
+          _headset: Headset.VicFirthS2,
+          _tablet: Tablet.Nexus7,
         };
         break;
       case Headset.HDA200:
-        calibration = { wavRMSZ: 0.70231, realWorldRMSZ: 0.70231, scaleFactor: 0.2774 };
+        calibration = {
+          wavRMSZ: 0.70231,
+          realWorldRMSZ: 0.70231,
+          scaleFactor: 0.2774,
+          _headset: Headset.HDA200,
+          _tablet: Tablet.Nexus7,
+        };
         break;
       case Headset.WAHTS:
         calibration = {
           wavRMSZ: 0.70231,
           realWorldRMSZ: 0.70231,
           scaleFactor: 0.13519823071552697,
+          _headset: Headset.WAHTS,
+          _tablet: Tablet.Nexus7,
         };
         break;
       case Headset.EPHD1:
@@ -143,10 +159,18 @@ export class AudioService {
           wavRMSZ: 0.70231,
           realWorldRMSZ: 0.70231,
           scaleFactor: 0.09404459105486002,
+          _headset: Headset.EPHD1,
+          _tablet: Tablet.Nexus7,
         };
         break;
       case Headset.Audiometer:
-        calibration = { wavRMSZ: 1, realWorldRMSZ: 1, scaleFactor: 1 };
+        calibration = {
+          wavRMSZ: 1,
+          realWorldRMSZ: 1,
+          scaleFactor: 1,
+          _headset: Headset.Audiometer,
+          _tablet: Tablet.Nexus7,
+        };
         break;
       default:
         break;
@@ -419,16 +443,16 @@ export class AudioService {
     const hostData = this.hostMetadata;
 
     // Determine the map based on tablet type
-    if (calibration.tablet && calibration.tablet == 'TabE') {
+    if (calibration._tablet && calibration._tablet == Tablet.TabE) {
       gainMap = this.tabletGainsTabE;
     } else {
       gainMap = this.tabletGainsNexus7;
     }
 
     // Get the gain value based on headset type in the found tablet map.
-    if (this.headset === Headset.EPHD1) {
+    if (calibration._headset === Headset.EPHD1) {
       tabletGain = gainMap.EPHD1;
-    } else if (this.headset === Headset.WAHTS) {
+    } else if (calibration._headset === Headset.WAHTS) {
       tabletGain = gainMap.WAHTS;
     } else if (!hostData) {
       tabletGain = gainMap['Nexus 7'];
