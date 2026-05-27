@@ -31,6 +31,6 @@ export const calibrationFileSchema: JSONSchemaType<CalibrationFileInterface> = {
     calibrationPySVNRevision: { type: 'string' },
     calibrationPyManualReleaseDate: { type: ['string', 'number'] },
   },
-  required: ['headset', 'tablet'],
+  required: ['headset', 'tablet', 'audioProfileVersion', 'calibrationPySVNRevision', 'calibrationPyManualReleaseDate'],
   additionalProperties: CalibrationFileWavPropertiesSchema,
 };
