@@ -105,7 +105,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     this.fileService.createTabsintDirectoriesIfDontExist();
 
-    if (!_.isUndefined(this.disk.activeProtocolMeta) && this.disk.activeProtocolMeta.name != '')
+    if (!_.isUndefined(this.disk.activeProtocolMeta) && this.disk.activeProtocolMeta?.name != '')
       await this.protocolService.load(this.disk.activeProtocolMeta);
     if (this.disk.showDisclaimer || this.disk.showDisclaimer == undefined) {
       this.openDisclaimer();

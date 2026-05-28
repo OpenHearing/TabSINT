@@ -16,7 +16,7 @@ import {
   PageWavfileInterface,
   ProtocolReferenceInterface,
 } from '../interfaces/page-definition.interface';
-import { ResultsInterface } from '../models/results/results.interface';
+import { CurrentResults, ResultsInterface } from '../models/results/results.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
 import { PageInterface } from '../models/page/page.interface';
@@ -40,6 +40,7 @@ import { IDevice } from '../interfaces/devices/device.interface';
 import { DosimeterResultsInterface } from '../interfaces/dosimeter-results.interface';
 import { pageSchema } from '../../schema/page.schema';
 import { AudioService } from '../services/audio.service';
+import { Tasks } from '../services/tasks.service';
 
 @Injectable({
   providedIn: 'root',
@@ -57,6 +58,7 @@ export class ExamService {
   private readonly diskModel = inject(DiskModel);
   private readonly devicesService = inject(DevicesService);
   private readonly audioService = inject(AudioService);
+  private readonly tasks = inject(Tasks);
 
   protocol: ProtocolModelInterface;
   results: ResultsInterface;
@@ -92,14 +94,24 @@ export class ExamService {
    * will proceed where it left off. Otherwise examState gets changed to Ready.
    */
   switchToExamView() {
-    if (this.protocol.activeProtocol == undefined) {
-      this.notifications
-        .alert({
-          title: 'Alert',
-          content: 'No protocol has been loaded. Please scan your QR Code or navigate to the Admin View and load a protocol.',
-          type: DialogType.Alert,
-        })
-        .subscribe();
+    if (this.protocol.activeProtocol === undefined) {
+      if (this.tasks.isOngoing('Load Protocol')) {
+        this.notifications
+          .alert({
+            title: 'Alert',
+            content: 'Protocol is still loading. Please wait for loading to complete before proceeding.',
+            type: DialogType.Alert,
+          })
+          .subscribe();
+      } else {
+        this.notifications
+          .alert({
+            title: 'Alert',
+            content: 'No protocol has been loaded. Please scan your QR Code or navigate to the Admin View and load a protocol.',
+            type: DialogType.Alert,
+          })
+          .subscribe();
+      }
       return;
     }
 
@@ -128,6 +140,7 @@ export class ExamService {
   submitDefault() {
     this.gradeResponses();
     this.resultsService.pushResults(this.results.currentPage);
+    this.setFlags(this.results.currentPage);
     this.advancePage();
   }
 
@@ -193,6 +206,7 @@ export class ExamService {
   submitPartialDefault() {
     this.gradeResponses();
     this.resultsService.pushResults(this.results.currentPage);
+    this.setFlags(this.results.currentPage);
     this.resetProtocolStack();
     if (this.protocol.activeProtocolDictionary!['@PARTIAL'] === undefined) {
       this.endExam();
@@ -303,7 +317,8 @@ export class ExamService {
   /** Checks for flags and sets them
    * @summary TBD.
    */
-  private setFlags(page: PageInterface) {
+  private setFlags(pageResult: CurrentResults) {
+    const page: PageDefinition = pageResult.page;
     if (page.setFlags) {
       page.setFlags.forEach(flags => {
         if (this.conditionalEvaluator(flags.conditional)) {
@@ -544,7 +559,6 @@ export class ExamService {
    * @param page The new page to initialize.
    */
   private initializeCurrentPage(page: PageDefinition) {
-    this.setFlags(page);
     this.handlePreProcessFunctions(page);
     this.pageModel.updatePage(page);
     this.stateModel.updateState({

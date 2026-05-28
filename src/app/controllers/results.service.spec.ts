@@ -68,7 +68,9 @@ describe('ResultsService', () => {
     resultsService.pushResults({
       pageId: '01',
       response: 'test',
-      page: {},
+      page: {
+        id: 'test-page',
+      },
     });
     expect(returnedResults.currentExam.responses.length).toEqual(1);
   });
