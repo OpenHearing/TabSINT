@@ -46,7 +46,7 @@ export interface Preferences {
   };
   showUploadSummary: boolean;
   suppressAlerts: boolean;
-  tabletGain: number;
+  tabletGain?: number;
   validateProtocols: boolean;
   versionCheck: boolean;
   wahtsConnectionType: BluetoothType;

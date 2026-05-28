@@ -5,7 +5,7 @@ import { protocolCalibrationSchema } from './definitions/protocol-calibration.sc
 import { navMenuSchema } from './definitions/navMenu.schema';
 import { pageSchema } from './page.schema';
 import { protocolReferenceSchema } from './definitions/protocol-reference.schema';
-import { Headset } from '../app/utilities/constants';
+import { Headset, Tablet } from '../app/utilities/constants';
 
 const protocolSchemaBase: JSONSchemaType<ProtocolSchemaInterface> = {
   $id: 'schema_base',
@@ -20,7 +20,7 @@ const protocolSchemaBase: JSONSchemaType<ProtocolSchemaInterface> = {
     instructionText: { type: 'string', nullable: true },
     helpText: { type: 'string', nullable: true },
     submitText: { type: 'string', nullable: true },
-    tablet: { type: 'string', nullable: true },
+    tablet: { type: 'string', enum: Object.values(Tablet), nullable: true },
     headset: { type: 'string', enum: Object.values(Headset), nullable: true },
     chaStream: { type: 'boolean', default: false, nullable: true },
     randomization: { type: 'string', enum: ['WithoutReplacement'], nullable: true },
