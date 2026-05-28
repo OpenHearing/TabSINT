@@ -40,6 +40,7 @@ import { IDevice } from '../interfaces/devices/device.interface';
 import { DosimeterResultsInterface } from '../interfaces/dosimeter-results.interface';
 import { pageSchema } from '../../schema/page.schema';
 import { AudioService } from '../services/audio.service';
+import { Tasks } from '../services/tasks.service';
 
 @Injectable({
   providedIn: 'root',
@@ -57,6 +58,7 @@ export class ExamService {
   private readonly diskModel = inject(DiskModel);
   private readonly devicesService = inject(DevicesService);
   private readonly audioService = inject(AudioService);
+  private readonly tasks = inject(Tasks);
 
   protocol: ProtocolModelInterface;
   results: ResultsInterface;
@@ -92,14 +94,24 @@ export class ExamService {
    * will proceed where it left off. Otherwise examState gets changed to Ready.
    */
   switchToExamView() {
-    if (this.protocol.activeProtocol == undefined) {
-      this.notifications
-        .alert({
-          title: 'Alert',
-          content: 'No protocol has been loaded. Please scan your QR Code or navigate to the Admin View and load a protocol.',
-          type: DialogType.Alert,
-        })
-        .subscribe();
+    if (this.protocol.activeProtocol === undefined) {
+      if (this.tasks.isOngoing('Load Protocol')) {
+        this.notifications
+          .alert({
+            title: 'Alert',
+            content: 'Protocol is still loading. Please wait for loading to complete before proceeding.',
+            type: DialogType.Alert,
+          })
+          .subscribe();
+      } else {
+        this.notifications
+          .alert({
+            title: 'Alert',
+            content: 'No protocol has been loaded. Please scan your QR Code or navigate to the Admin View and load a protocol.',
+            type: DialogType.Alert,
+          })
+          .subscribe();
+      }
       return;
     }
 
