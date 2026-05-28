@@ -164,7 +164,7 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
         rootProtocol._missingCommonMediaRepo = missingCommonMediaRepo;
       } else if (loading.calibration) {
         const wavCalibrationProperties = loading.calibration[wavfile.path] as CalibrationFileWavProperties;
-        wavfile.cal = { ...wavCalibrationProperties, tablet: loading.calibration?.tablet };
+        wavfile.cal = { ...wavCalibrationProperties, _tablet: loading.calibration?.tablet, _headset: loading.calibration?.headset };
       } else {
         rootProtocol._missingWavCalList?.push(wavfile.path);
       }
