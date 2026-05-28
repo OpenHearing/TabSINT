@@ -16,7 +16,7 @@ import {
   PageWavfileInterface,
   ProtocolReferenceInterface,
 } from '../interfaces/page-definition.interface';
-import { ResultsInterface } from '../models/results/results.interface';
+import { CurrentResults, ResultsInterface } from '../models/results/results.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
 import { PageInterface } from '../models/page/page.interface';
@@ -128,6 +128,7 @@ export class ExamService {
   submitDefault() {
     this.gradeResponses();
     this.resultsService.pushResults(this.results.currentPage);
+    this.setFlags(this.results.currentPage);
     this.advancePage();
   }
 
@@ -193,6 +194,7 @@ export class ExamService {
   submitPartialDefault() {
     this.gradeResponses();
     this.resultsService.pushResults(this.results.currentPage);
+    this.setFlags(this.results.currentPage);
     this.resetProtocolStack();
     if (this.protocol.activeProtocolDictionary!['@PARTIAL'] === undefined) {
       this.endExam();
@@ -303,7 +305,8 @@ export class ExamService {
   /** Checks for flags and sets them
    * @summary TBD.
    */
-  private setFlags(page: PageInterface) {
+  private setFlags(pageResult: CurrentResults) {
+    const page: PageDefinition = pageResult.page;
     if (page.setFlags) {
       page.setFlags.forEach(flags => {
         if (this.conditionalEvaluator(flags.conditional)) {
@@ -544,7 +547,6 @@ export class ExamService {
    * @param page The new page to initialize.
    */
   private initializeCurrentPage(page: PageDefinition) {
-    this.setFlags(page);
     this.handlePreProcessFunctions(page);
     this.pageModel.updatePage(page);
     this.stateModel.updateState({

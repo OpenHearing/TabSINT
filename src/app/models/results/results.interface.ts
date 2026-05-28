@@ -23,6 +23,7 @@ export interface CurrentResults {
   isSkipped?: boolean;
   responseArea?: string;
   page: {
+    id: string;
     wavfiles?: PageWavfileInterface[];
     chaWavFiles?: ChaWavfilesInterface;
     image?: ImageInterface;
