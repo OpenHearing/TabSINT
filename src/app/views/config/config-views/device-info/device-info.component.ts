@@ -74,6 +74,10 @@ export class DeviceInfoComponent implements OnInit, OnDestroy, OnChanges {
     this.dialog.open(ChangeTabsintIdComponent, { data: device });
   }
 
+  changeAutoShutdownTime(device: IDevice): void {
+    console.log('This will change auto shutdown time but is not yet implemented');
+  }
+
   /**
    * Open the dialog for reprogramming a device.
    * @param device The device to reprogram.

@@ -40,42 +40,13 @@
   <div [ngbCollapse]="!settingsExpanded">
     <app-device-info-view [device]="device"></app-device-info-view>
 
-    <div *ngIf="device.type === DeviceType.Wahts" class="text-center" style="margin-top: 15px; padding: 10px 0 0;">
-      <a href="javascript:" (click)="toggleAdvancedSettings()">
-        <span *ngIf="advancedExpanded">
-          Hide Advanced Settings
-          <i class="ion-chevron-up"></i>
-        </span>
-        <span *ngIf="!advancedExpanded">
-          Show Advanced Settings
-          <i class="ion-chevron-down"></i>
-        </span>
-      </a>
-    </div>
-
-    <div *ngIf="advancedExpanded">
+    <div *ngIf="device.type === DeviceType.Wahts">
       <div class="cha-info-space-fix">
 
       <!-- Preferences -->
       <div class="row pad-top">
         <div class="col-12">
           <h5>Preferences</h5>
-
-          <div class="row pad-top">
-            <div class="col-6">
-              <label [for]="'wahtsConnectionType-' + device.deviceId">Type:</label>
-            </div>
-            <div ngbDropdown class="col-2 dropdown-width" display="dynamic">
-              <button type="button" class="btn btn-default btn-block dropdown-toggle" [id]="'wahtsConnectionType-' + device.deviceId" ngbDropdownToggle>
-                {{ disk.preferences.wahtsConnectionType }}
-              </button>
-              <div ngbDropdownMenu [attr.aria-labelledby]="'wahtsConnectionType-' + device.deviceId">
-                <button *ngFor="let bt of BluetoothType | keyvalue" ngbDropdownItem (click)="changeWahtsConnectionType(bt.value)">
-                  {{ bt.value }}
-                </button>
-              </div>
-            </div>
-          </div>
 
           <div class="row pad-top">
             <div class="col-6">
@@ -90,49 +61,6 @@
             </div>
           </div>
 
-          <div class="row pad-top">
-            <div class="col-6">
-              <label [for]="'ignoreFirmwareUpdates-' + device.deviceId">Ignore Firmware Update Message:</label>
-            </div>
-            <div class="col-2">
-              <input
-                [id]="'ignoreFirmwareUpdates-' + device.deviceId"
-                type="checkbox"
-                [ngModel]="disk.preferences.ignoreFirmwareUpdates"
-                (change)="toggleIgnoreFirmwareUpdates()" />
-            </div>
-          </div>
-
-          <div class="row pad-top">
-            <div class="col-6">Auto Shutdown Time:</div>
-            <div class="col-4">
-              {{ wahtsDevice?.metadata?.autoShutdownTime != null ? (wahtsDevice?.metadata?.autoShutdownTime + ' mins') : 'N/A' }}
-              <a href="javascript:" (click)="editAutoShutdownTime()"><i class="ion-edit"></i></a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Firmware -->
-      <div class="row pad-top">
-        <div class="col-12">
-          <h5>Firmware</h5>
-
-          <div class="row pad-top">
-            <div class="col-6">Firmware:</div>
-            <div class="col-4">{{ (wahtsFirmwareAsset | async)?.buildDatetime ?? "--" }}</div>
-          </div>
-
-          <div class="row pad-top">
-            <div class="col-6">Tag:</div>
-            <div class="col-4">{{ (wahtsFirmwareAsset | async)?.version ?? "--" }}</div>
-          </div>
-
-          <div class="row pad-top">
-            <div class="col-12">
-              <button class="btn btn-primary" (click)="reprogramFirmware()">Update</button>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -151,55 +79,6 @@
                 type="checkbox"
                 [ngModel]="disk.preferences.enableHeadsetMediaManagement"
                 (change)="toggleEnableHeadsetMediaManagement()" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Test -->
-      <div class="row pad-top">
-        <div class="col-12">
-          <h5>Test</h5>
-
-          <div class="row pad-top">
-            <div class="col-12">Fit Tones</div>
-          </div>
-          <div class="row pad-top">
-            <div class="col-4">
-              <button class="btn btn-primary btn-block" (click)="fitTonesLeft()">Left</button>
-            </div>
-            <div class="col-4">
-              <button class="btn btn-primary btn-block" (click)="fitTonesRight()">Right</button>
-            </div>
-            <div class="col-4">
-              <button class="btn btn-default btn-block" (click)="fitTonesStop()">Stop</button>
-            </div>
-          </div>
-
-          <div class="row pad-top">
-            <div class="col-12">Audio Streaming</div>
-          </div>
-          <div class="row pad-top">
-            <div class="col-3">
-              <button class="btn btn-primary btn-block" (click)="audioStreamingOn()">On</button>
-            </div>
-            <div class="col-3">
-              <button class="btn btn-default btn-block" (click)="audioStreamingPhrase()">Phrase</button>
-            </div>
-            <div class="col-3">
-              <button class="btn btn-default btn-block" (click)="audioStreamingCompAudio()">CompAudio</button>
-            </div>
-            <div class="col-3">
-              <button class="btn btn-default btn-block" (click)="audioStreamingStop()">Stop</button>
-            </div>
-          </div>
-
-          <div class="row pad-top">
-            <div class="col-12">Play Wav Files on WAHTS</div>
-          </div>
-          <div class="row pad-top">
-            <div class="col-12">
-              <button class="btn btn-primary btn-block" (click)="testSounds()">Test Sounds</button>
             </div>
           </div>
         </div>

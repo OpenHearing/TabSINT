@@ -1,6 +1,8 @@
 <div class="cha-info cha-info-space-fix">
-  <div class="row">
-    <div class="col-12"></div>
+  <br />
+
+  <div class="col-12">
+    <h5>Device Details</h5>
   </div>
 
   <!-- Connected Device Tabsint ID -->
@@ -103,6 +105,9 @@
     <div class="row pad-top">
       <div class="col-4">Auto Shutdown Time:</div>
       <div class="col-4">{{ wahtsDevice?.metadata?.autoShutdownTime != null ? (wahtsDevice?.metadata?.autoShutdownTime + ' mins') : 'N/A' }}</div>
+      <div class="col-1">
+        <a href="javascript:" title="{{ 'Change Auto Shutdown Time' | transloco }}" (click)="changeAutoShutdownTime(device)"><i class="ion-edit"></i></a>
+      </div>
       <div class="col-1"></div>
       <div class="col-1" title="{{ 'Auto Shutdown Time Help' | transloco }}">
         <i [matMenuTriggerFor]="shutdownTimerMenu" class="ion-help-circled"></i>

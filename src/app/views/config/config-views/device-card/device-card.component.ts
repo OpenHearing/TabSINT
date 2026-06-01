@@ -25,7 +25,6 @@ export class DeviceCardComponent implements OnInit, OnDestroy {
   DeviceState = DeviceState;
   DeviceType = DeviceType;
   settingsExpanded = false;
-  advancedExpanded = false;
   disk: DiskInterface;
   wahtsFirmwareAsset!: Promise<FirmwareAsset | undefined>;
 
@@ -75,14 +74,6 @@ export class DeviceCardComponent implements OnInit, OnDestroy {
     this.settingsExpanded = !this.settingsExpanded;
   }
 
-  toggleAdvancedSettings(): void {
-    this.advancedExpanded = !this.advancedExpanded;
-  }
-
-  toggleIgnoreFirmwareUpdates(): void {
-    this.diskModel.updatePreferences({ ignoreFirmwareUpdates: !this.disk.preferences.ignoreFirmwareUpdates });
-  }
-
   toggleDisableAudioStreaming(): void {
     this.diskModel.updatePreferences({ disableAudioStreaming: !this.disk.preferences.disableAudioStreaming });
   }
@@ -90,25 +81,4 @@ export class DeviceCardComponent implements OnInit, OnDestroy {
   toggleEnableHeadsetMediaManagement(): void {
     this.diskModel.updatePreferences({ enableHeadsetMediaManagement: !this.disk.preferences.enableHeadsetMediaManagement });
   }
-
-  async changeWahtsConnectionType(connectionType: BluetoothType): Promise<void> {
-    await this.devicesService.changeWahtsConnectionType(connectionType);
-  }
-
-  reprogramFirmware(): void {
-    this.devicesService.reprogramFirmwareDialog(this.device);
-  }
-
-  editAutoShutdownTime(): void {
-    console.log('Edit Auto Shutdown Time pressed');
-  }
-
-  fitTonesLeft(): void { console.log('Fit Tones Left pressed'); }
-  fitTonesRight(): void { console.log('Fit Tones Right pressed'); }
-  fitTonesStop(): void { console.log('Fit Tones Stop pressed'); }
-  audioStreamingOn(): void { console.log('Audio Streaming On pressed'); }
-  audioStreamingPhrase(): void { console.log('Audio Streaming Phrase pressed'); }
-  audioStreamingCompAudio(): void { console.log('Audio Streaming CompAudio pressed'); }
-  audioStreamingStop(): void { console.log('Audio Streaming Stop pressed'); }
-  testSounds(): void { console.log('Test Sounds pressed'); }
 }
