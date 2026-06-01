@@ -14,7 +14,7 @@
   <br />
 
   <!-- Tympan -->
-  <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.tympans">
+  <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.tympans" *ngIf=disk.preferences.showTympanPanel>
     <mat-expansion-panel-header>
       <mat-panel-title>
         {{ "Tympan" | transloco }}
@@ -23,10 +23,10 @@
     <app-device-type-panel [deviceType]="DeviceType.Tympan"></app-device-type-panel>
   </mat-expansion-panel>
 
-  <br />
+  <br *ngIf=disk.preferences.showTympanPanel/>
 
   <!-- WAHTS -->
-  <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.wahts">
+  <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.wahts" *ngIf=disk.preferences.showWahtsPanel>
     <mat-expansion-panel-header>
       <mat-panel-title>
         {{ "WAHTS" | transloco }}
@@ -35,10 +35,10 @@
     <app-device-type-panel [deviceType]="DeviceType.Wahts"></app-device-type-panel>
   </mat-expansion-panel>
 
-  <br />
+  <br *ngIf=disk.preferences.showWahtsPanel/>
 
   <!-- DuoDose Dosimeter -->
-  <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.duodose">
+  <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.duodose" *ngIf=disk.preferences.showDuodosePanel>
     <mat-expansion-panel-header>
       <mat-panel-title>
         {{ "DuoDose Dosimeter" | transloco }}
@@ -47,7 +47,7 @@
     <app-device-type-panel [deviceType]="DeviceType.Duodose"></app-device-type-panel>
   </mat-expansion-panel>
 
-  <br />
+  <br *ngIf=disk.preferences.showDuodosePanel/>
 
   <!-- Software and Hardware Status -->
   <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.softwareHardware">
