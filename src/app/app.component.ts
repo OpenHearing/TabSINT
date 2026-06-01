@@ -105,7 +105,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     this.fileService.createTabsintDirectoriesIfDontExist();
 
-    if (!_.isUndefined(this.disk.activeProtocolMeta) && this.disk.activeProtocolMeta.name != '')
+    if (!_.isUndefined(this.disk.activeProtocolMeta) && this.disk.activeProtocolMeta?.name != '')
       await this.protocolService.load(this.disk.activeProtocolMeta);
     if (this.disk.showDisclaimer || this.disk.showDisclaimer == undefined) {
       this.openDisclaimer();
@@ -141,7 +141,7 @@ export class AppComponent implements OnInit, OnDestroy {
       if (eventName === 'resume') {
         this.userVolume = await this.audioService.getSystemVolume();
         await this.audioService.setSystemVolume(1.0);
-      } else if (this.userVolume) {
+      } else if (this.userVolume !== undefined) {
         await this.audioService.setSystemVolume(this.userVolume);
       }
     } catch (error) {

@@ -205,7 +205,9 @@ describe('ExamService', () => {
     mockResultsModel.getResults.and.returnValue({
       currentPage: {
         pageId: 'test-page',
-        page: {},
+        page: {
+          id: 'test-page',
+        },
       },
       currentExam: {
         protocol: {
@@ -365,13 +367,14 @@ describe('ExamService', () => {
 
   describe('gradeResponsesDefault', () => {
     it('leaves correct undefined when response area has no choices', () => {
-      examService.results.currentPage.page = { responseArea: { type: 'textboxResponseArea' } };
+      examService.results.currentPage.page = { id: 'test-page', responseArea: { type: 'textboxResponseArea' } };
       examService.gradeResponsesDefault();
       expect(examService.results.currentPage.correct).toBeUndefined();
     });
 
     it('sets correct to true when response matches the correct choice', () => {
       examService.results.currentPage.page = {
+        id: 'test-page',
         responseArea: { type: 'multipleChoiceResponseArea', choices: [{ id: 'a', correct: true }] },
       };
       examService.results.currentPage.response = { selected: ['a'] };
@@ -381,6 +384,7 @@ describe('ExamService', () => {
 
     it('sets correct to false when response does not match the correct choice', () => {
       examService.results.currentPage.page = {
+        id: 'test-page',
         responseArea: { type: 'multipleChoiceResponseArea', choices: [{ id: 'a', correct: true }] },
       };
       examService.results.currentPage.response = { selected: ['b'] };

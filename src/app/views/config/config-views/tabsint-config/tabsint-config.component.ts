@@ -173,6 +173,38 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Update the tablet gain preference.
+   * @param gain The new tablet gain value.
+   */
+  updateTabletGain(gain: number | string) {
+    const gainNumber = Number(gain);
+    if (isNaN(gainNumber)) {
+      this.logger.debug('Invalid user tablet gain value entered.');
+    } else {
+      this.diskModel.updatePreferences({ tabletGain: gainNumber });
+    }
+  }
+
+  /**
+   * Negate the current user defined tablet gain if available.
+   */
+  negateTabletGain() {
+    const currentUserGain = this.disk.preferences.tabletGain;
+    if (currentUserGain !== undefined) {
+      this.diskModel.updatePreferences({ tabletGain: -currentUserGain });
+    } else {
+      this.logger.debug('Cannot negate undefined user tablet gain.');
+    }
+  }
+
+  /**
+   * Reset the tablet gain value to be undefined.
+   */
+  resetTabletGain() {
+    this.diskModel.updatePreferences({ tabletGain: undefined });
+  }
+
+  /**
    * Reset the preferences to the default values.
    */
   resetConfig() {
@@ -305,6 +337,13 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
     return this.transloco.translate(
       'This option will disable TabSINT from setting the volume to 100% on every page. This feature is essential to the functionality of TabSINT while playing calibrated audio through the speaker.<br /><br />' +
         'Check this box if you would like to set the volume of the app manually using the buttons on the side of the device. <br /><br />In almost all cases, this box should remain unchecked.'
+    );
+  }
+
+  get gainPopover() {
+    return this.transloco.translate(
+      'Apply a special gain in dB to the audio level output through TabSINT. ' +
+        'This can be used to calibrate the audio jack output to a specified level for all audio played through the tablet.'
     );
   }
 }
