@@ -218,6 +218,9 @@ import { DuodoseDownloadComponent } from './views/response-area/response-areas/d
         fallbackLang: 'en',
         reRenderOnLangChange: true,
         prodMode: false,
+        missingHandler: {
+          logMissingKey: false,
+        },
       },
       loader: TranslocoHttpLoader,
     }),
