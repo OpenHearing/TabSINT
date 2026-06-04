@@ -87,6 +87,7 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
     { code: 'fr', label: 'French' },
     { code: 'ja', label: 'Japanese' },
     { code: 'es', label: 'Spanish' },
+    { code: 'sw', label: 'Swahili' },
   ];
 
   // Functions
