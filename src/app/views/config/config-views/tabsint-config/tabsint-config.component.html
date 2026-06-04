@@ -37,7 +37,7 @@
 <div #collapse="ngbCollapse" [ngbCollapse]="!state.isPaneOpen.advanced">
   <div class="row pad-top">
     <div class="col-12">
-      <h5>Preferences</h5>
+      <h5>{{ "Preferences" | transloco }}</h5>
     </div>
   </div>
 
@@ -273,7 +273,7 @@
         <label for="resetConfig">{{ "Reset configuration:" | transloco }}</label>
       </div>
       <div class="col-4">
-        <button id="resetConfig" type="button" class="btn btn-block btn-danger" (click)="resetConfig()">Reset</button>
+        <button id="resetConfig" type="button" class="btn btn-block btn-danger" (click)="resetConfig()">{{ "Reset" | transloco }}</button>
       </div>
       <div class="col-1" href="javascript:" title="{{ 'Reset configuration Help' | transloco }}">
         <i [matMenuTriggerFor]="resetConfigurationPopoverMenu" class="ion-help-circled"></i>

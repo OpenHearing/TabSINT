@@ -55,11 +55,11 @@
 
       <div class="row pad-top">
         <div class="col-4">
-          <button [disabled]="isButtonDisabled()" *ngIf="!isProtocolActive()" class="btn btn-primary btn-block" (click)="loadProtocol()" i18n>
-            <i class="ion-compose"></i> Load
+          <button [disabled]="isButtonDisabled()" *ngIf="!isProtocolActive()" class="btn btn-primary btn-block" (click)="loadProtocol()">
+            <i class="ion-compose"></i> {{ "Load" | transloco }}
           </button>
-          <button [disabled]="isButtonDisabled()" *ngIf="isProtocolActive()" class="btn btn-default btn-block" (click)="loadProtocol()" i18n>
-            <i class="ion-refresh"></i> Reload
+          <button [disabled]="isButtonDisabled()" *ngIf="isProtocolActive()" class="btn btn-default btn-block" (click)="loadProtocol()">
+            <i class="ion-refresh"></i> {{ "Reload" | transloco }}
           </button>
         </div>
         <div class="col-4">
@@ -138,7 +138,7 @@
         </div>
         <div class="col-3">
           <button class="btn btn-primary w-100" [ngClass]="{ active: selectedSource === 'device' }" (click)="setSource('device')">
-            Device Storage
+            {{ "Device Storage" | transloco }}
           </button>
         </div>
       </div>
@@ -246,16 +246,16 @@
         </div>
         <div class="row pad-top">
           <div class="col-5">
-            <button class="btn btn-default btn-block" (click)="fetchGitlabProtocol()"><i class="ion-plus-round"></i> Add</button>
+            <button class="btn btn-default btn-block" (click)="fetchGitlabProtocol()"><i class="ion-plus-round"></i> {{ "Add" | transloco }}</button>
           </div>
         </div>
       </div>
 
       <div *ngIf="selectedSource === 'device'">
         <div class="row pad-top">
-          <div class="col-3"><label for="directory">Directory:</label></div>
+          <div class="col-3"><label for="directory">{{ "Directory:" | transloco }}</label></div>
           <div class="col-4">
-            <button class="btn btn-default btn-block" (click)="addProtocols()"><i class="ion-plus-round"></i> Add</button>
+            <button class="btn btn-default btn-block" (click)="addProtocols()"><i class="ion-plus-round"></i> {{ "Add" | transloco }}</button>
           </div>
         </div>
       </div>

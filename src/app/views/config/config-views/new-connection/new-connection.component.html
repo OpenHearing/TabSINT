@@ -1,7 +1,7 @@
 <!-- Add new connection (hardcoded to accept one device at a time) -->
 <div class="row pad-top" *ngIf="!newDeviceConnection && ((connectedDevices | async)?.length ?? 0) < maxConnectedDevices">
   <div class="col-12">
-    <button (click)="addNewConnection()">+ New Connection</button>
+    <button (click)="addNewConnection()">+ {{ "New Connection" | transloco }}</button>
   </div>
 </div>
 
@@ -9,7 +9,7 @@
 <ng-container *ngIf="newDeviceConnection">
   <div class="row pad-top">
     <div class="col-12">
-      <h5>Add New Connection</h5>
+      <h5>{{ "Add New Connection" | transloco }}</h5>
     </div>
   </div>
 
@@ -20,7 +20,7 @@
     </div>
     <div ngbDropdown class="col-2 dropdown-width" display="dynamic">
       <button type="button" class="btn btn-default btn-block dropdown-toggle" id="deviceTypeSelect" ngbDropdownToggle>
-        {{ newConnectionType ?? "Select One" }}
+        {{ newConnectionType ?? ("Select One" | transloco) }}
       </button>
       <div ngbDropdownMenu aria-labelledby="deviceTypeSelect">
         <button *ngFor="let deviceType of deviceTypes" ngbDropdownItem (click)="selectAndScan(deviceType)">{{ deviceType }}</button>
@@ -32,7 +32,7 @@
   <div class="row pad-top">
     <!-- Cancel -->
     <div class="col-4">
-      <button class="btn btn-primary btn-block" (click)="cancel()">Cancel</button>
+      <button class="btn btn-primary btn-block" (click)="cancel()">{{ "Cancel" | transloco }}</button>
     </div>
     <div class="col-2"></div>
   </div>

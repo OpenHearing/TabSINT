@@ -2,14 +2,14 @@
 
   <!-- Bluetooth warning -->
   <div class="row pad-top" *ngIf="!state.bluetoothConnected">
-    <div class="col-10 text-warning"><em>Bluetooth radio disabled</em></div>
+    <div class="col-10 text-warning"><em>{{ "Bluetooth radio disabled" | transloco }}</em></div>
   </div>
 
   <ng-container *ngIf="devices$ | async as devices">
 
     <div class="row device-new-connection-row" *ngIf="!scanning && devices.length < maxDevices">
       <div class="col-12">
-        <button class="btn btn-primary" (click)="addNewConnection()">+ New Connection</button>
+        <button class="btn btn-primary" (click)="addNewConnection()">+ {{ "New Connection" | transloco }}</button>
       </div>
     </div>
 
@@ -19,10 +19,10 @@
 
     <div class="row device-new-connection-row" *ngIf="scanning">
       <div class="col-6">
-        <em>Scanning for devices...</em>
+        <em>{{ "Scanning for devices..." | transloco }}</em>
       </div>
       <div class="col-4">
-        <button class="btn btn-primary btn-block" (click)="cancelNewConnection()">Cancel</button>
+        <button class="btn btn-primary btn-block" (click)="cancelNewConnection()">{{ "Cancel" | transloco }}</button>
       </div>
     </div>
 
@@ -35,11 +35,11 @@
       <div class="col-12 text-center">
         <a href="javascript:" (click)="advancedExpanded = !advancedExpanded">
           <span *ngIf="advancedExpanded">
-            Hide Advanced Settings
+            {{ "Hide Advanced Settings" | transloco }}
             <i class="ion-chevron-up"></i>
           </span>
           <span *ngIf="!advancedExpanded">
-            Show Advanced Settings
+            {{ "Show Advanced Settings" | transloco }}
             <i class="ion-chevron-down"></i>
           </span>
         </a>
@@ -49,11 +49,11 @@
     <div [ngbCollapse]="!advancedExpanded">
       <div class="row pad-top">
         <div class="col-12">
-          <h5>Preferences</h5>
+          <h5>{{ "Preferences" | transloco }}</h5>
 
           <div class="row pad-top">
             <div class="col-6">
-              <label for="wahtsConnectionType">WAHTS Connection Type:</label>
+              <label for="wahtsConnectionType">{{ "WAHTS Connection Type:" | transloco }}</label>
             </div>
             <div ngbDropdown class="col-2 dropdown-width" display="dynamic">
               <button type="button" class="btn btn-default btn-block dropdown-toggle" id="wahtsConnectionType" ngbDropdownToggle>
@@ -69,7 +69,7 @@
 
           <div class="row pad-top">
             <div class="col-6">
-              <label for="ignoreFirmwareUpdates">Ignore Firmware Updates:</label>
+              <label for="ignoreFirmwareUpdates">{{ "Ignore Firmware Updates:" | transloco }}</label>
             </div>
             <div class="col-2">
               <input
@@ -84,15 +84,15 @@
 
       <div class="row pad-top">
         <div class="col-12">
-          <h5>Firmware</h5>
+          <h5>{{ "Firmware" | transloco }}</h5>
 
           <div class="row pad-top">
-            <div class="col-6">WAHTS Firmware Tag:</div>
+            <div class="col-6">{{ "WAHTS Firmware Tag:" | transloco }}</div>
             <div class="col-4">{{ (wahtsFirmwareAsset | async)?.version ?? "--" }}</div>
           </div>
 
           <div class="row pad-top">
-            <div class="col-6">WAHTS Firmware Build Time:</div>
+            <div class="col-6">{{ "WAHTS Firmware Build Time:" | transloco }}</div>
             <div class="col-4">{{ (wahtsFirmwareAsset | async)?.buildDatetime ?? "--" }}</div>
           </div>
         </div>
