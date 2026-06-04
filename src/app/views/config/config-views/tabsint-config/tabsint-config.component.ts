@@ -283,35 +283,23 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   // Popovers
 
   get headsetPopover() {
-    return this.transloco.translate(
-      'Select the default headset used to administer hearing tests. ' +
-        'This selection is overridden by the <code>headset</code> parameter in protocols. <br /><br /> If the protocol does not specify a <code>headset</code>, ' +
-        "this value must match the value in the protocol's <code>calibration.json</code> file."
-    );
+    return this.transloco.translate('Default Headset Popover');
   }
 
   get languagePopover() {
-    return this.transloco.translate(
-      'Select preferred language for the application. This language will be used where supported. Otherwise, English will be used. Note this cannot change any text configured in protocols.'
-    );
+    return this.transloco.translate('Select Language Help');
   }
 
   get adminPopover() {
-    return this.transloco.translate(
-      'Includes additional configuration options, displays expandable <b>debug</b> menus showing program state at the bottom of exam pages, and suppresses Admin Password prompts.'
-    );
+    return this.transloco.translate('Admin Mode Popover');
   }
 
   get adminPinPopover() {
-    return this.transloco.translate(
-      'Change the Admin PIN to any numerical value.  This PIN is required to switch to Admin View and to reset exams when Admin Mode is off.'
-    );
+    return this.transloco.translate('Admin PIN Popover');
   }
 
   get disableLogsPopover() {
-    return this.transloco.translate(
-      'Disable log messages from being stored and uploaded. <br /><br />Logs are useful for investigating software bugs, but may introduce privacy concerns. Disable logging anytime sensitive data is being collected.'
-    );
+    return this.transloco.translate('Disable Logs Popover');
   }
 
   get setMaxLogRowsPopover() {
@@ -319,9 +307,7 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   }
 
   get qrCodePopover() {
-    return this.transloco.translate(
-      'Generate a QR Code containing all the current configuration settings. Select the local directory to save the QR Code for future use.'
-    );
+    return this.transloco.translate('QR Code Help');
   }
 
   get resetConfigurationPopover() {
@@ -329,22 +315,14 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   }
 
   get automaticallyOutputResultsPopover() {
-    return this.transloco.translate(
-      'Automatically upload or export the result when a test is finished. The result will be uploaded or exported on the <b>Exam Complete</b> page. <br /><br /> Once the result is uploaded to a server or exported to a local file, it will be removed from TabSINT.'
-    );
+    return this.transloco.translate('Automatically Output Test Results Popover');
   }
 
   get disableVolumePopover() {
-    return this.transloco.translate(
-      'This option will disable TabSINT from setting the volume to 100% on every page. This feature is essential to the functionality of TabSINT while playing calibrated audio through the speaker.<br /><br />' +
-        'Check this box if you would like to set the volume of the app manually using the buttons on the side of the device. <br /><br />In almost all cases, this box should remain unchecked.'
-    );
+    return this.transloco.translate('Automatic Volume Control Popover');
   }
 
   get gainPopover() {
-    return this.transloco.translate(
-      'Apply a special gain in dB to the audio level output through TabSINT. ' +
-        'This can be used to calibrate the audio jack output to a specified level for all audio played through the tablet.'
-    );
+    return this.transloco.translate('Tablet Gain Popover');
   }
 }
