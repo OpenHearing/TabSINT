@@ -12,7 +12,7 @@
   </div>
   <div class="col-4">
     <button class="btn btn-block btn-default" (click)="displayLogs()">
-      <i class="ion-document-text"></i> {{ showLogs ? "Hide" : ("Display" | transloco) }}
+      <i class="ion-document-text"></i> {{ showLogs ? ("Hide" | transloco) : ("Display" | transloco) }}
     </button>
   </div>
 </div>

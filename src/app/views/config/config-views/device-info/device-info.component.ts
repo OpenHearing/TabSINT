@@ -96,8 +96,6 @@ export class DeviceInfoComponent implements OnInit, OnDestroy, OnChanges {
     return this.transloco.translate('Set the unique TabSINT ID for the device.');
   }
   get firmwarePopover() {
-    return this.transloco.translate(
-      'The firmware currently running on the device. If the firmware is listed in red, the firmware on the device is not supported by this version of TabSINT and should be updated.'
-    );
+    return this.transloco.translate('Update Firmware Help');
   }
 }
