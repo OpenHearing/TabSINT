@@ -527,7 +527,7 @@ export class DevicesService {
    * Remove all WAHTS devices that don't match the new connection type, then update the preference.
    * @param connectionType The new WAHTS connection type to switch to.
    */
-  async changeWahtsConnectionType(connectionType: BluetoothType): Promise<void> {
+  async changeChaConnectionType(connectionType: BluetoothType): Promise<void> {
     const devices = await firstValueFrom(this.devices);
     const toRemove = devices.filter(d => d.type === DeviceType.Wahts && (d as IWahtsDevice).connectionType !== connectionType);
     for (const device of toRemove) {

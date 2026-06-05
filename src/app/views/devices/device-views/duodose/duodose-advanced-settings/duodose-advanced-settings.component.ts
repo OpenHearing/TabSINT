@@ -19,7 +19,7 @@ export class DuodoseAdvancedSettingsComponent implements OnInit, OnDestroy {
   BluetoothType = BluetoothType;
   disk: DiskInterface;
   advancedExpanded = false;
-  wahtsFirmwareAsset!: Promise<FirmwareAsset | undefined>;
+  duodoseFirmwareAsset!: Promise<FirmwareAsset | undefined>;
 
   private diskSubscription: Subscription | undefined;
 
@@ -28,7 +28,7 @@ export class DuodoseAdvancedSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.wahtsFirmwareAsset = this.devicesService.getApplicationFirmware(DeviceType.Wahts);
+    this.duodoseFirmwareAsset = this.devicesService.getApplicationFirmware(DeviceType.Duodose);
 
     this.diskSubscription = this.diskModel.diskSubject.subscribe(updated => {
       this.disk = updated;
@@ -43,7 +43,7 @@ export class DuodoseAdvancedSettingsComponent implements OnInit, OnDestroy {
     this.diskModel.updatePreferences({ ignoreFirmwareUpdates: !this.disk.preferences.ignoreFirmwareUpdates });
   }
 
-  async changeWahtsConnectionType(connectionType: BluetoothType): Promise<void> {
-    await this.devicesService.changeWahtsConnectionType(connectionType);
+  async changeDuodoseConnectionType(connectionType: BluetoothType): Promise<void> {
+    await this.devicesService.changeChaConnectionType(connectionType);
   }
 }

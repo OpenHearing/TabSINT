@@ -43,7 +43,7 @@ export class WahtsAdvancedSettingsComponent implements OnInit, OnDestroy {
     this.diskModel.updatePreferences({ ignoreFirmwareUpdates: !this.disk.preferences.ignoreFirmwareUpdates });
   }
 
-  async changeWahtsConnectionType(connectionType: BluetoothType): Promise<void> {
-    await this.devicesService.changeWahtsConnectionType(connectionType);
+  async changeChaConnectionType(connectionType: BluetoothType): Promise<void> {
+    await this.devicesService.changeChaConnectionType(connectionType);
   }
 }

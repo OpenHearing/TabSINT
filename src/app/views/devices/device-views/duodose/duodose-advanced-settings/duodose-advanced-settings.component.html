@@ -18,14 +18,14 @@
 
         <div class="row pad-top">
         <div class="col-6">
-            <label for="wahtsConnectionType">WAHTS Connection Type:</label>
+            <label for="duodoseConnectionType">Duodose Connection Type:</label>
         </div>
         <div ngbDropdown class="col-2 dropdown-width" display="dynamic">
-            <button type="button" class="btn btn-default btn-block dropdown-toggle" id="wahtsConnectionType" ngbDropdownToggle>
-            {{ disk.preferences.wahtsConnectionType }}
+            <button type="button" class="btn btn-default btn-block dropdown-toggle" id="duodoseConnectionType" ngbDropdownToggle>
+            {{ disk.preferences.duodoseConnectionType }}
             </button>
-            <div ngbDropdownMenu aria-labelledby="wahtsConnectionType">
-            <button *ngFor="let bt of BluetoothType | keyvalue" ngbDropdownItem (click)="changeWahtsConnectionType(bt.value)">
+            <div ngbDropdownMenu aria-labelledby="duodoseConnectionType">
+            <button *ngFor="let bt of BluetoothType | keyvalue" ngbDropdownItem (click)="changeDuodoseConnectionType(bt.value)">
                 {{ bt.value }}
             </button>
             </div>
@@ -52,13 +52,13 @@
         <h5>Firmware</h5>
 
         <div class="row pad-top">
-        <div class="col-6">WAHTS Firmware Tag:</div>
-        <div class="col-4">{{ (wahtsFirmwareAsset | async)?.version ?? "--" }}</div>
+        <div class="col-6">Duodose Firmware Tag:</div>
+        <div class="col-4">{{ (duodoseFirmwareAsset | async)?.version ?? "--" }}</div>
         </div>
 
         <div class="row pad-top">
-        <div class="col-6">WAHTS Firmware Build Time:</div>
-        <div class="col-4">{{ (wahtsFirmwareAsset | async)?.buildDatetime ?? "--" }}</div>
+        <div class="col-6">Duodose Firmware Build Time:</div>
+        <div class="col-4">{{ (duodoseFirmwareAsset | async)?.buildDatetime ?? "--" }}</div>
         </div>
     </div>
     </div>

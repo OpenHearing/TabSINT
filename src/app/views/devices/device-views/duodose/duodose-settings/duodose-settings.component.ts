@@ -1,5 +1,4 @@
 import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
-import { TranslocoService } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 
 import { DiskInterface } from '../../../../../models/disk/disk.interface';
@@ -9,8 +8,6 @@ import { DiskModel } from '../../../../../models/disk/disk.service';
 import { StateModel } from '../../../../../models/state/state.service';
 
 import { AppState, DeviceState } from '../../../../../utilities/constants';
-import { MatDialog } from '@angular/material/dialog';
-import { DevicesService } from '../../../../../services/devices/devices.service';
 import { IDuodoseDevice } from '../../../../../interfaces/devices/duodose-device.interface';
 
 @Component({
@@ -20,9 +17,6 @@ import { IDuodoseDevice } from '../../../../../interfaces/devices/duodose-device
 export class DuodoseSettingsComponent implements OnInit, OnDestroy {
   private readonly diskModel = inject(DiskModel);
   private readonly stateModel = inject(StateModel);
-  private readonly transloco = inject(TranslocoService);
-  private readonly dialog = inject(MatDialog);
-  private readonly devicesService = inject(DevicesService);
 
   @Input() device!: IDuodoseDevice;
   DeviceState = DeviceState;
