@@ -2,8 +2,6 @@ import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { BluetoothType, DeviceState, DeviceType } from '../../../../utilities/constants';
 import { IDevice } from '../../../../interfaces/devices/device.interface';
-import { IWahtsDevice } from '../../../../interfaces/devices/wahts-device.interface';
-import { FirmwareAsset } from '../../../../interfaces/firmware-asset.interface';
 import { DiskInterface } from '../../../../models/disk/disk.interface';
 import { DiskModel } from '../../../../models/disk/disk.service';
 import { DevicesService } from '../../../../services/devices/devices.service';
@@ -15,7 +13,7 @@ import { Logger } from '../../../../services/logger.service';
 })
 export class DeviceCardComponent implements OnInit, OnDestroy {
   @Input() device!: IDevice;
-  @Input() bluetoothConnected = false;
+  @Input() connected = false;
 
   private readonly devicesService = inject(DevicesService);
   private readonly diskModel = inject(DiskModel);
@@ -26,7 +24,6 @@ export class DeviceCardComponent implements OnInit, OnDestroy {
   DeviceType = DeviceType;
   settingsExpanded = false;
   disk: DiskInterface;
-  wahtsFirmwareAsset!: Promise<FirmwareAsset | undefined>;
 
   private diskSubscription: Subscription | undefined;
 
@@ -34,17 +31,10 @@ export class DeviceCardComponent implements OnInit, OnDestroy {
     this.disk = this.diskModel.getDisk();
   }
 
-  get wahtsDevice(): IWahtsDevice | undefined {
-    return this.device.type === DeviceType.Wahts ? (this.device as IWahtsDevice) : undefined;
-  }
-
   ngOnInit(): void {
     this.diskSubscription = this.diskModel.diskSubject.subscribe(updated => {
       this.disk = updated;
     });
-    if (this.device.type === DeviceType.Wahts) {
-      this.wahtsFirmwareAsset = this.devicesService.getApplicationFirmware(DeviceType.Wahts);
-    }
   }
 
   ngOnDestroy(): void {
@@ -72,13 +62,5 @@ export class DeviceCardComponent implements OnInit, OnDestroy {
 
   toggleSettings(): void {
     this.settingsExpanded = !this.settingsExpanded;
-  }
-
-  toggleDisableAudioStreaming(): void {
-    this.diskModel.updatePreferences({ disableAudioStreaming: !this.disk.preferences.disableAudioStreaming });
-  }
-
-  toggleEnableHeadsetMediaManagement(): void {
-    this.diskModel.updatePreferences({ enableHeadsetMediaManagement: !this.disk.preferences.enableHeadsetMediaManagement });
   }
 }

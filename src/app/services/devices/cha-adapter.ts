@@ -8,6 +8,7 @@ import { FirmwareAsset } from '../../interfaces/firmware-asset.interface';
 import { isValidDeviceResponse } from '../../guards/type.guard';
 import { inject } from '@angular/core';
 import { Directory, Filesystem, Encoding } from '@capacitor/filesystem';
+import { Dictionary } from 'lodash';
 
 /**
  * CHA base device adapter.
@@ -402,6 +403,49 @@ export class ChaAdapter implements IDeviceAdapter {
   }
 
   /**
+   * Request setting on a device.
+   * @param device The device to request setting from.
+   * @param setting The setting to be requested.
+   */
+  async requestSetting(device: ChaDeviceType, setting: string): Promise<IDeviceResponse> {
+    const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
+      const nameOptions = { name: device.deviceId, settingName: setting };
+      let deviceResponse = this.defaultInvalidResponse(device);
+      try {
+        const waitForResponse = this.waitForResponse(device, 'Setting');
+        await TabsintCha.requestSetting(nameOptions);
+        deviceResponse = (await waitForResponse) ?? deviceResponse;
+      } catch (err) {
+        this.logger.error('Failed to write to CHA', err);
+      }
+      return deviceResponse;
+    });
+    return response;
+  }
+
+  /**
+   * write setting on a device.
+   * @param device The device to write setting to.
+   * @param setting The setting to be written.
+   * @param value The setting value to be written.
+   */
+  async writeSetting(device: ChaDeviceType, setting: string, value: number): Promise<IDeviceResponse> {
+    const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
+      const nameOptions = { name: device.deviceId, settingName: setting, value: value };
+      let deviceResponse = this.defaultInvalidResponse(device);
+      try {
+        const waitForResponse = this.waitForResponse(device, 'Setting');
+        await TabsintCha.writeSetting(nameOptions);
+        deviceResponse = (await waitForResponse) ?? deviceResponse;
+      } catch (err) {
+        this.logger.error('Failed to write to CHA', err);
+      }
+      return deviceResponse;
+    });
+    return response;
+  }
+
+  /**
    * List all files in directory on a device.
    * @param device The device to list directory from.
    * @param dirName The directory to list files from.
@@ -409,7 +453,7 @@ export class ChaAdapter implements IDeviceAdapter {
   async getDirectory(device: ChaDeviceType, dirName: string): Promise<IDeviceResponse> {
     const dirs: string[] = [];
     function dirCallback(response: IDeviceResponse) {
-      dirs.push((response as any)['msg'][1]['Path']);
+      dirs.push((response['msg'][1] as Dictionary<string>)['Path']);
     }
     const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
       const requestDirectoryOptions = {

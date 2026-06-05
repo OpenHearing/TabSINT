@@ -16,7 +16,7 @@ import { IDevice } from '../../interfaces/devices/device.interface';
 import { IWahtsDevice } from '../../interfaces/devices/wahts-device.interface';
 import { IDeviceMetadata } from '../../interfaces/devices/device-metadata.interface';
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
-import { DeviceChooseComponent } from '../../views/config/config-views/device-choose/device-choose.component';
+import { DeviceChooseComponent } from '../../views/devices/device-views/device-choose/device-choose.component';
 import { MatDialog } from '@angular/material/dialog';
 import { WahtsManager } from './wahts-manager';
 import { FirmwareAsset } from '../../interfaces/firmware-asset.interface';
@@ -368,6 +368,25 @@ export class DevicesService {
    */
   async requestStatus(device: IDevice): Promise<IDeviceResponse | undefined> {
     return this.getManager(device.type).requestStatus?.(device);
+  }
+
+  /**
+   * Request the setting of a device.
+   * @param device The device to request the setting from.
+   * @param setting The setting to be requested.
+   */
+  async requestSetting(device: IDevice, setting: string): Promise<IDeviceResponse | undefined> {
+    return this.getManager(device.type).requestSetting?.(device, setting);
+  }
+
+  /**
+   * Write the setting of a device.
+   * @param device The device to request the setting from.
+   * @param setting The setting to be written.
+   * @param value The value of the setting to be written
+   */
+  async writeSetting(device: IDevice, setting: string, value: number): Promise<IDeviceResponse | undefined> {
+    return this.getManager(device.type).writeSetting?.(device, setting, value);
   }
 
   /**

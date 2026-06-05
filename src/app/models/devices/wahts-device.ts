@@ -1,13 +1,13 @@
 import { DeviceType } from '../../utilities/constants';
-import { IWahtsDeviceMetadata } from '../../interfaces/devices/wahts-device-metadata.interface';
 import { IWahtsDevice } from '../../interfaces/devices/wahts-device.interface';
 import { ChaDevice } from './cha-device';
+import { IChaDeviceMetadata } from '../../interfaces/devices/cha-device-metadata';
 
 /**
  * WAHTS implementation of the device interface.
  */
 export class WahtsDevice extends ChaDevice implements IWahtsDevice {
-  declare metadata: IWahtsDeviceMetadata;
+  declare metadata: IChaDeviceMetadata;
 
   /**
    * Initialize the device with the needed properties.

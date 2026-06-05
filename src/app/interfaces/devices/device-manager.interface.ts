@@ -146,4 +146,16 @@ export interface IDeviceManager {
    * @returns The text of the read file.
    */
   readCopiedChaFile?(device: IDevice, fileToRead: string): Promise<IDeviceResponse | undefined>;
+
+  /**
+   * Optional method to request setting (cha devices only).
+   * @returns The requested setting.
+   */
+  requestSetting?(device: IDevice, setting: string): Promise<IDeviceResponse | undefined>;
+
+  /**
+   * Optional method to write setting (cha devices only).
+   * @returns Success or error.
+   */
+  writeSetting?(device: IDevice, setting: string, value: number): Promise<IDeviceResponse | undefined>;
 }

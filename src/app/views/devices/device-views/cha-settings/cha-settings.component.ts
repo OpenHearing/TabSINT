@@ -8,34 +8,26 @@ import { StateInterface } from '../../../../models/state/state.interface';
 import { DiskModel } from '../../../../models/disk/disk.service';
 import { StateModel } from '../../../../models/state/state.service';
 
-import { AppState, DeviceState, DeviceType } from '../../../../utilities/constants';
-import { IDevice } from '../../../../interfaces/devices/device.interface';
-import { IWahtsDevice } from '../../../../interfaces/devices/wahts-device.interface';
+import { AppState, DeviceState, ChaDeviceType } from '../../../../utilities/constants';
 import { ChangeTabsintIdComponent } from '../../../change-tabsint-id/change-tabsint-id.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DevicesService } from '../../../../services/devices/devices.service';
-import { Notifications } from '../../../../services/notifications.service';
+import { isRequestSettingResponse } from '../../../../guards/type.guard';
 
 @Component({
-  selector: 'app-device-info-view',
-  templateUrl: './device-info.component.html',
-  styleUrl: './device-info.component.css',
+  selector: 'app-cha-settings',
+  templateUrl: './cha-settings.component.html',
 })
-export class DeviceInfoComponent implements OnInit, OnDestroy, OnChanges {
+export class ChaSettingsComponent implements OnInit, OnDestroy, OnChanges {
   private readonly diskModel = inject(DiskModel);
   private readonly stateModel = inject(StateModel);
   private readonly transloco = inject(TranslocoService);
   private readonly dialog = inject(MatDialog);
   private readonly devicesService = inject(DevicesService);
-  private readonly notifications = inject(Notifications);
 
-  @Input() device!: IDevice;
+  @Input() device!: ChaDeviceType;
   DeviceState = DeviceState;
-  DeviceType = DeviceType;
 
-  get wahtsDevice(): IWahtsDevice | undefined {
-    return this.device.type === DeviceType.Wahts ? (this.device as IWahtsDevice) : undefined;
-  }
   disk: DiskInterface;
   state: StateInterface;
   firmwareMatch: boolean | undefined = undefined;
@@ -70,19 +62,25 @@ export class DeviceInfoComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  editTabsintId(device: IDevice): void {
+  editTabsintId(device: ChaDeviceType): void {
     this.dialog.open(ChangeTabsintIdComponent, { data: device });
   }
 
-  changeAutoShutdownTime(device: IDevice): void {
-    console.log('This will change auto shutdown time but is not yet implemented');
+  async changeAutoShutdownTime(device: ChaDeviceType): Promise<void> {
+    await this.devicesService.writeSetting(device, 'auto_shutdown_time', 15);
+
+    const requestSettingResp = await this.devicesService.requestSetting(device, 'auto_shutdown_time');
+    if (!isRequestSettingResponse(requestSettingResp)) {
+      await this.devicesService.disconnect(device);
+      throw new Error('Connection failed.');
+    }
   }
 
   /**
    * Open the dialog for reprogramming a device.
    * @param device The device to reprogram.
    */
-  reprogramFirmware(device: IDevice) {
+  reprogramFirmware(device: ChaDeviceType) {
     this.devicesService.reprogramFirmwareDialog(device);
   }
 

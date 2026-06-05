@@ -1,0 +1,27 @@
+<div class="panel-body text-left">
+
+  <!-- Bluetooth warning -->
+  <div class="row pad-top" *ngIf="!state.bluetoothConnected">
+    <div class="col-10 text-warning"><em>Bluetooth radio disabled</em></div>
+  </div>
+
+  <ng-container *ngIf="devices$ | async as devices">
+    <div class="row device-new-connection-row" *ngIf="!scanning && devices.length < maxDevices">
+    <div class="col-12">
+      <button class="btn btn-primary" (click)="addNewConnection()">+ New Connection</button>
+    </div>
+  </div>
+
+  <div class="row device-new-connection-row" *ngIf="scanning">
+    <div class="col-6">
+      <em>Scanning for devices...</em>
+    </div>
+    <div class="col-4">
+      <button class="btn btn-primary btn-block" (click)="cancelNewConnection()">Cancel</button>
+    </div>
+  </div>
+  </ng-container>
+
+  <ng-content></ng-content>
+  
+</div>

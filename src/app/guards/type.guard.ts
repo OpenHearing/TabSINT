@@ -1,5 +1,5 @@
 import { IDeviceResponse } from '../interfaces/devices/device-response.interface';
-import { RequestIdResponse, StatusResponse } from '../interfaces/devices/device-responses.interface';
+import { RequestIdResponse, RequestSettingResponse, StatusResponse } from '../interfaces/devices/device-responses.interface';
 import { PageDefinition, ProtocolReferenceInterface, ResponseArea } from '../interfaces/page-definition.interface';
 import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
 import { PageInterface } from '../models/page/page.interface';
@@ -46,6 +46,27 @@ export function isRequestIdResponse(response?: IDeviceResponse): response is Req
   );
 }
 
+export function isRequestSettingResponse(response?: IDeviceResponse): response is RequestSettingResponse {
+  return (
+    isValidDeviceResponse(response) &&
+    response.msg.length >= 2 &&
+    (response as RequestSettingResponse).msg[1].Index !== undefined &&
+    (response as RequestSettingResponse).msg[1].Value !== undefined
+  );
+}
+
 export function isStatusResponse(response?: IDeviceResponse): response is StatusResponse {
   return isValidDeviceResponse(response) && response.msg.length >= 2 && (response as StatusResponse).msg[1].state !== undefined;
+}
+
+export function isGetDirectoryResponse(response?: IDeviceResponse): response is IDeviceResponse {
+  return isValidDeviceResponse(response) && response.msg.length >= 2 && Array.isArray(response.msg[1]);
+}
+
+export function isLongNameResponse(response?: IDeviceResponse): response is IDeviceResponse {
+  return (
+    isValidDeviceResponse(response) &&
+    response.msg.length >= 2 &&
+    Array.isArray(response.msg[1] && response.msg.length === 1 && typeof response.msg[0] === 'string')
+  );
 }

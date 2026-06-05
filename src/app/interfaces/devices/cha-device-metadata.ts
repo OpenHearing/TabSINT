@@ -3,7 +3,7 @@ import { IDeviceMetadata } from './device-metadata.interface';
 /**
  * Additional metadata specific to WAHTS devices, populated on device connect.
  */
-export interface IWahtsDeviceMetadata extends IDeviceMetadata {
+export interface IChaDeviceMetadata extends IDeviceMetadata {
   /**
    * The date the device was last calibrated.
    */

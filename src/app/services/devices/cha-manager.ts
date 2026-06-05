@@ -12,8 +12,9 @@ import { ChaAdapter } from './cha-adapter';
 import { DiscoveryResponse, TabsintCha } from 'tabsintcha';
 import { SavedDevice } from '../../models/disk/disk.interface';
 import { DiskModel } from '../../models/disk/disk.service';
-import { isRequestIdResponse } from '../../guards/type.guard';
-import { RequestIdObject } from '../../interfaces/devices/device-responses.interface';
+
+import { RequestIdObject, RequestSettingObject, StatusObject } from '../../interfaces/devices/device-responses.interface';
+import { isGetDirectoryResponse, isLongNameResponse, isRequestIdResponse, isRequestSettingResponse, isStatusResponse } from '../../guards/type.guard';
 
 /**
  * CHA base device manager.
@@ -193,12 +194,26 @@ export abstract class ChaManager implements IDeviceManager {
       this.tasks.register('Connect Device', 'Connecting to Device...');
       await connectWithRetry();
       await this.adapter.abortExams(device);
-      const resp = await this.adapter.requestId(device);
-      if (!isRequestIdResponse(resp)) {
+
+      const requestIdResp = await this.requestId(device);
+      if (!isRequestIdResponse(requestIdResp)) {
         await this.disconnect(device);
-        throw new Error('Reconnection failed.');
+        throw new Error('Connection failed.');
       }
-      this.updateDeviceMetadata(device, resp.msg[1]);
+      this.updateDeviceMetadata(device, requestIdResp.msg[1]);
+
+      const requestStatusResp = await this.requestStatus(device);
+      if (!isStatusResponse(requestStatusResp)) {
+        await this.disconnect(device);
+        throw new Error('Connection failed.');
+      }
+
+      const requestSettingResp = await this.requestSetting(device, 'auto_shutdown_time');
+      if (!isRequestSettingResponse(requestSettingResp)) {
+        await this.disconnect(device);
+        throw new Error('Connection failed.');
+      }
+
       this.tasks.deregister('Connect Device');
       device.state = DeviceState.Connected;
       this.updateDevice(device);
@@ -228,6 +243,7 @@ export abstract class ChaManager implements IDeviceManager {
   async requestStatus(device: ChaDeviceType): Promise<IDeviceResponse> {
     const response = await this.adapter.requestStatus(device);
     await this.deviceErrorHandler(response);
+    this.updateBatteryInformation(device, response.msg[1] as StatusObject);
     return response;
   }
 
@@ -336,8 +352,27 @@ export abstract class ChaManager implements IDeviceManager {
       serialNumber = serialNumber + 0xffffffff + 1;
     }
     device.metadata.serialNumber = serialNumber.toString();
+    const dateRegex = /.*(([0-9]{4})-?(1[0-2]|0[1-9])-?(3[01]|0[1-9]|[12][0-9])).*$/;
+    device.metadata.calibrationDate = dateRegex.exec(idResponse.description!)?.[1] ?? 'N/A';
     this.updateDevice(device);
   }
+
+  /**
+   * Update the auto shutdown time for a device with request setting information.
+   * @param device The device to update.
+   * @param settingResponse Request Setting information.
+   */
+  protected updateAutoShutdownTime(device: ChaDeviceType, settingResponse: RequestSettingObject) {
+    device.metadata.autoShutdownTime = settingResponse.Value;
+    this.updateDevice(device);
+  }
+
+  /**
+   * Update the battery level information for a device with request status information.
+   * @param device The device to update.
+   * @param statusResponse Request Status information.
+   */
+  abstract updateBatteryInformation(device: ChaDeviceType, statusResponse: StatusObject): void;
 
   /**
    * Request amount of free space on a device.
@@ -350,21 +385,51 @@ export abstract class ChaManager implements IDeviceManager {
   }
 
   /**
+   * Request Setting.
+   * @param device The device to request the setting from.
+   * @param setting The setting to request.
+   */
+  async requestSetting(device: ChaDeviceType, setting: string): Promise<IDeviceResponse> {
+    const response = await this.adapter.requestSetting(device, setting);
+    await this.deviceErrorHandler(response);
+    if (isRequestSettingResponse(response)) {
+      this.updateAutoShutdownTime(device, response.msg[1]);
+    }
+    return response;
+  }
+
+  /**
+   * Write Setting.
+   * @param device The device to write the setting to.
+   * @param setting The setting to be written.
+   * @param value The value of the setting to be written.
+   */
+  async writeSetting(device: ChaDeviceType, setting: string, value: number): Promise<IDeviceResponse> {
+    const response = await this.adapter.writeSetting(device, setting, value);
+    await this.deviceErrorHandler(response);
+    return response;
+  }
+
+  /**
    * Request long file names from a directory on a device.
    * @param device The device to request the long directory names from.
    * @param baseDir The directory to request long directory names from.
    */
   async getDirectoryLongNames(device: ChaDeviceType, baseDir: string): Promise<IDeviceResponse> {
     const longNames: string[] = [];
+    let shortNames: string[] = [];
     const getDirectoryResponse = await this.adapter.getDirectory(device, baseDir);
-    const shortNames: string[] = (getDirectoryResponse as any)['msg'][1];
+    await this.deviceErrorHandler(getDirectoryResponse);
+    if (isGetDirectoryResponse(getDirectoryResponse)) {
+      shortNames = getDirectoryResponse['msg'][1] as string[];
+    }
 
     for (const shortName of shortNames) {
-      const longNameResp: any = await this.adapter.getChaLongName(device, baseDir + shortName);
-      if (longNameResp['msg'][0] !== '') {
-        longNames.push(longNameResp['msg'][0]);
+      const longNameResponse = await this.adapter.getChaLongName(device, baseDir + shortName);
+      await this.deviceErrorHandler(longNameResponse);
+      if (isLongNameResponse(longNameResponse) && longNameResponse['msg'][0] !== '') {
+        longNames.push(longNameResponse['msg'][0] as string);
       }
-      await this.deviceErrorHandler(longNameResp);
     }
 
     const resp = { deviceId: device.deviceId, msg: ['Success', longNames] };
