@@ -22,7 +22,7 @@
         </div>
         <div ngbDropdown class="col-2 dropdown-width" display="dynamic">
             <button type="button" class="btn btn-default btn-block dropdown-toggle" id="duodoseConnectionType" ngbDropdownToggle>
-            {{ disk.preferences.duodoseConnectionType }}
+            {{ disk.preferences.wahtsConnectionType }}
             </button>
             <div ngbDropdownMenu aria-labelledby="duodoseConnectionType">
             <button *ngFor="let bt of BluetoothType | keyvalue" ngbDropdownItem (click)="changeDuodoseConnectionType(bt.value)">
