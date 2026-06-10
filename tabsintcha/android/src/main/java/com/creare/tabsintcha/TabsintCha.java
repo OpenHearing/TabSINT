@@ -190,7 +190,7 @@ class TabsintCha {
       ChaState chaState = getChaState(name);
       chaState.cha.disconnect(); // this will remove all listeners
       chaConnectedSet.remove(chaState.cha.toString());
-      chaState.chaListener = null;
+      
       return createValueObject("Disconnected from " + name);
     }
   };
