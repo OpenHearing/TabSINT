@@ -215,5 +215,15 @@
   "Duodose:": "Duodose:",
   "Disable Automatic Volume Control:": "Deshabilitar el control automático de volumen:",
   "Tablet Gain": "Ganancia de la tableta",
-  "Default": "Predeterminado"
+  "Default": "Predeterminado",
+  "Source": "Fuente",
+  "Name": "Nombre",
+  "Date": "Fecha",
+  "Validate protocols:": "Validar protocolos:",
+  "Developed By Creare Notice": "TabSINT está desarrollado por <a href=\"https://www.creare.com/\">Creare</a> y está disponible como código abierto en <a href=\"https://gitlab.com/creare-com/tabsint\">gitlab.com/creare-com/tabsint</a>.",
+  "Devices": "Dispositivos",
+  "Tympan": "Tympan",
+  "WAHTS": "WAHTS",
+  "DuoDose Dosimeter": "DuoDose Dosimeter",
+  "No public encryption key is defined in the protocol. ": "No se ha definido ninguna clave de cifrado pública en el protocolo. "
 }

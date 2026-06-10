@@ -215,5 +215,15 @@
   "Duodose:": "Duodose：",
   "Disable Automatic Volume Control:": "自動音量制御を無効にする：",
   "Tablet Gain": "タブレットゲイン",
-  "Default": "デフォルト"
+  "Default": "デフォルト",
+  "Source": "ソース",
+  "Name": "名前",
+  "Date": "日付",
+  "Validate protocols:": "プロトコルを検証：",
+  "Developed By Creare Notice": "TabSINTは <a href=\"https://www.creare.com/\">Creare</a> によって開発され、<a href=\"https://gitlab.com/creare-com/tabsint\">gitlab.com/creare-com/tabsint</a> でオープンソースとして利用できます。",
+  "Devices": "デバイス",
+  "Tympan": "Tympan",
+  "WAHTS": "WAHTS",
+  "DuoDose Dosimeter": "DuoDose Dosimeter",
+  "No public encryption key is defined in the protocol. ": "プロトコルに公開暗号鍵が定義されていません。 "
 }

@@ -3,7 +3,7 @@
 <div mat-accordion multi>
   <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.protocols">
     <mat-expansion-panel-header>
-      <mat-panel-title>Protocols</mat-panel-title>
+      <mat-panel-title>{{ "Protocols" | transloco }}</mat-panel-title>
     </mat-expansion-panel-header>
 
     <div class="panel-body text-left">
@@ -15,10 +15,10 @@
       <table class="table fixed">
         <thead>
           <tr>
-            <th scope="col" class="row-Name" i18n>Name</th>
-            <th scope="col" class="row-Server" i18n>Source</th>
-            <th scope="col" class="row-Version" i18n>Version</th>
-            <th scope="col" class="row-Date" i18n>Date</th>
+            <th scope="col" class="row-Name">{{ "Name" | transloco }}</th>
+            <th scope="col" class="row-Server">{{ "Source" | transloco }}</th>
+            <th scope="col" class="row-Version">{{ "Version" | transloco }}</th>
+            <th scope="col" class="row-Date">{{ "Date" | transloco }}</th>
           </tr>
         </thead>
         <tbody>
@@ -38,7 +38,7 @@
       <br />
 
       <div class="row pad-top">
-        <div class="col-6"><label for="validateProtocols" i18n>Validate protocols:</label></div>
+        <div class="col-6"><label for="validateProtocols">{{ "Validate protocols:" | transloco }}</label></div>
         <div class="col-2">
           <input id="validateProtocols" type="checkbox" [ngModel]="disk.preferences.validateProtocols" (change)="toggleValidateProtocols()" />
         </div>
@@ -86,9 +86,9 @@
         <thead>
           <tr>
             <th></th>
-            <th scope="col" i18n>Name</th>
-            <th scope="col" i18n>Version</th>
-            <th scope="col" i18n>Date</th>
+            <th scope="col">{{ "Name" | transloco }}</th>
+            <th scope="col">{{ "Version" | transloco }}</th>
+            <th scope="col">{{ "Date" | transloco }}</th>
             <th scope="col"><a title="Media help" uib-popover-html="mediaTablePopover" popover-placement="left" popover-trigger="'outsideClick'" i18n><i class="ion-help-circled"></i></a></th>
           </tr>
         </thead>
@@ -115,7 +115,7 @@
 
   <mat-expansion-panel class="protocol-source" class="panel panel-default" [(expanded)]="state.isPaneOpen.protocolsSource">
     <mat-expansion-panel-header>
-      <mat-panel-title>Source</mat-panel-title>
+      <mat-panel-title>{{ "Source" | transloco }}</mat-panel-title>
     </mat-expansion-panel-header>
 
     <div class="panel-body text-left">

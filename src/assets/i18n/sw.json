@@ -2,7 +2,7 @@
   "Abort": "Sitisha",
   "Admin View": "Mwonekano wa Msimamizi",
   "Documentation": "Nyaraka",
-  "Exam View": "Mwonekano wa Mtihani",
+  "Exam View": "Mtihani",
   "Protocols": "Itifaki",
   "Results": "Matokeo",
   "Scan Configuration": "Changanua Usanidi",
@@ -215,5 +215,15 @@
   "Duodose:": "Duodose:",
   "Disable Automatic Volume Control:": "Zima Udhibiti wa Sauti Kiotomatiki:",
   "Tablet Gain": "Faida ya Kompyuta Kibao",
-  "Default": "Chaguo-msingi"
+  "Default": "Chaguo-msingi",
+  "Source": "Chanzo",
+  "Name": "Jina",
+  "Date": "Tarehe",
+  "Validate protocols:": "Thibitisha itifaki:",
+  "Developed By Creare Notice": "TabSINT imetengenezwa na <a href=\"https://www.creare.com/\">Creare</a> na inapatikana kama chanzo huria kwenye <a href=\"https://gitlab.com/creare-com/tabsint\">gitlab.com/creare-com/tabsint</a>.",
+  "Devices": "Vifaa",
+  "Tympan": "Tympan",
+  "WAHTS": "WAHTS",
+  "DuoDose Dosimeter": "DuoDose Dosimeter",
+  "No public encryption key is defined in the protocol. ": "Hakuna ufunguo wa umma wa usimbaji uliobainishwa katika itifaki. "
 }
