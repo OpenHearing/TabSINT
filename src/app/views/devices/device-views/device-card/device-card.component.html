@@ -2,21 +2,21 @@
 
   <div class="device-card-header">
     <div>
-      <span class="admin-labels">Device Name:</span>
+      <span class="admin-labels">{{ "Device Name:" | transloco }}</span>
       <em>{{ device.name }}</em>
     </div>
     <div>
-      <span class="admin-labels">State:</span>
-      <em *ngIf="device.state === DeviceState.Connected"> Connected</em>
-      <em *ngIf="device.state === DeviceState.Disconnected"> Not Connected</em>
-      <em *ngIf="device.state !== DeviceState.Connected && device.state !== DeviceState.Disconnected"> Connecting...</em>
+      <span class="admin-labels">{{ "State:" | transloco }}</span>
+      <em *ngIf="device.state === DeviceState.Connected"> {{ "Connected" | transloco }}</em>
+      <em *ngIf="device.state === DeviceState.Disconnected"> {{ "Not Connected" | transloco }}</em>
+      <em *ngIf="device.state !== DeviceState.Connected && device.state !== DeviceState.Disconnected"> {{ "Connecting..." | transloco }}</em>
     </div>
   </div>
 
   <div class="row pad-top">
     <div class="col-6">
       <div [ngSwitch]="device.state">
-        <button *ngSwitchDefault class="btn btn-block btn-primary" (click)="disconnect()" style="display:flex;align-items:center;justify-content:center;">Cancel</button>
+        <button *ngSwitchDefault class="btn btn-block btn-primary" (click)="disconnect()" style="display:flex;align-items:center;justify-content:center;">{{ "Cancel" | transloco }}</button>
         <button
           *ngSwitchCase="DeviceState.Disconnected"
           class="btn btn-block btn-primary"
@@ -24,13 +24,13 @@
           [ngClass]="!connected ? 'disabled custom-disabled' : ''"
           (click)="reconnect()"
           style="display:flex;align-items:center;justify-content:center;">
-          Connect
+          {{ "Connect" | transloco }}
         </button>
-        <button *ngSwitchCase="DeviceState.Connected" class="btn btn-block btn-primary" (click)="disconnect()" style="display:flex;align-items:center;justify-content:center;">Disconnect</button>
+        <button *ngSwitchCase="DeviceState.Connected" class="btn btn-block btn-primary" (click)="disconnect()" style="display:flex;align-items:center;justify-content:center;">{{ "Disconnect" | transloco }}</button>
       </div>
     </div>
     <div class="col-6">
-      <button class="btn btn-block btn-primary" (click)="remove()" style="display:flex;align-items:center;justify-content: center;">Remove</button>
+      <button class="btn btn-block btn-primary" (click)="remove()" style="display:flex;align-items:center;justify-content: center;">{{ "Remove" | transloco }}</button>
     </div>
   </div>
 
@@ -40,7 +40,7 @@
     (click)="toggleSettings()"
     [attr.aria-expanded]="settingsExpanded">
     <i [class]="settingsExpanded ? 'ion-chevron-up' : 'ion-chevron-down'"></i>
-    <span>Settings</span>
+    <span>{{ "Settings" | transloco }}</span>
   </button>
 
   <div [ngbCollapse]="!settingsExpanded">

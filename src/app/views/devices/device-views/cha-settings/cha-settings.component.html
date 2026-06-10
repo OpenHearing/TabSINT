@@ -4,13 +4,13 @@
 
     <div class="row">
         <div class="col-12">
-            <h5>Device Details</h5>
+            <h5>{{ "Device Details" | transloco }}</h5>
         </div>
     </div>
         
     <!-- Connected Device Tabsint ID -->
     <div class="row pad-top">
-        <div class="col-4">TabSINT ID:</div>
+        <div class="col-4">{{ "TabSINT ID:" | transloco }}</div>
         <div class="col-4" style="min-width: 0">
             <div class="text-line-truncate">{{ device.tabsintId }}</div>
         </div>
@@ -36,7 +36,7 @@
 
     <!-- Connected Device Firmware-->
     <div class="row pad-top">
-        <div class="col-4">Firmware:</div>
+        <div class="col-4">{{ "Firmware:" | transloco }}</div>
         <div class="col-4" [ngStyle]="{ color: firmwareMatch === undefined ? 'black' : firmwareMatch ? 'green' : 'red' }">
             {{ device.metadata.buildDateTime ?? "N/A" }}
         </div>
@@ -62,18 +62,18 @@
 
     <!-- Connected Device Serial-->
     <div class="row pad-top">
-        <div class="col-4">Serial number:</div>
+        <div class="col-4">{{ "Serial number:" | transloco }}</div>
         <div class="col-8">{{ device.metadata.serialNumber ?? "N/A" }}</div>
     </div>
 
     <!-- Calibration Date -->
     <div class="row pad-top">
-        <div class="col-4">Calibration Date:</div>
+        <div class="col-4">{{ "Calibration Date:" | transloco }}</div>
         <div class="col-8">{{ device?.metadata?.calibrationDate ?? "N/A" }}</div>
     </div>
 
     <div class="row pad-top">
-        <div class="col-4">Battery Level:</div>
+        <div class="col-4">{{ "Battery Level:" | transloco }}</div>
         <div class="col-4">
             <span class="cha-battery-border" [style.width.%]="100">
                 <div *ngIf="device?.metadata?.batteryLevel! >= 66" class="cha-battery-status" [ngStyle]="{'width': device?.metadata?.batteryLevel!+'%', 'background-color': 'green'}"></div>
@@ -86,7 +86,7 @@
 
     <!-- Auto Shutdown Time -->
     <div class="row pad-top">
-        <div class="col-4">Auto Shutdown Time:</div>
+        <div class="col-4">{{ "Auto Shutdown Time:" | transloco }}</div>
         <div class="col-4">{{ device?.metadata?.autoShutdownTime != null ? (device?.metadata?.autoShutdownTime + ' mins') : 'N/A' }}</div>
         <div class="col-1">
             <a href="javascript:" title="{{ 'Change Auto Shutdown Time' | transloco }}" (click)="changeAutoShutdownTime(device)"><i class="ion-edit"></i></a>
