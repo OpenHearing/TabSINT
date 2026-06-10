@@ -9,6 +9,7 @@ import { DiscoveryResponse, TabsintCha } from 'tabsintcha';
 import { FirmwareAsset } from '../../interfaces/firmware-asset.interface';
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
 import { StatusObject } from '../../interfaces/devices/device-responses.interface';
+import { isFileProgressResponse } from '../../guards/type.guard';
 
 /**
  * WAHTS implementation of the CHA device manager.
@@ -101,9 +102,16 @@ export class WahtsManager extends ChaManager {
    * @returns The device response for the reprogram request.
    */
   async reprogramFirmware(device: WahtsDevice): Promise<IDeviceResponse> {
-    const firmwareTask = 'Transfer Firmware';
+    const firmwareTask = `Transfer Firmware: ${device.deviceId}`;
     this.tasks.register(firmwareTask, 'Transferring Firmware to the Device...');
     const firmwareErrorResponse = { deviceId: device.deviceId, msg: ['Error', 'Failed to create firmware asset'] };
+    const progressCallback = (progress: IDeviceResponse) => {
+      if (isFileProgressResponse(progress)) {
+        this.tasks.register(firmwareTask, `Transferring Firmware: ${progress.msg[1].BytesTransferred}/${progress.msg[1].TotalBytes} bytes`);
+      } else {
+        this.tasks.register(firmwareTask, `Transferring Firmware to the Device...`);
+      }
+    };
     try {
       if (!this.firmwareAsset) {
         this.firmwareAsset = await this.loadFirmwareAsset();
@@ -113,7 +121,7 @@ export class WahtsManager extends ChaManager {
           return firmwareErrorResponse;
         }
       }
-      const response = await this.adapter.reprogramFirmware(device, this.firmwareAsset);
+      const response = await this.adapter.reprogramFirmware(device, this.firmwareAsset, progressCallback);
       this.tasks.deregister(firmwareTask);
       await this.deviceErrorHandler(response);
       return response;
