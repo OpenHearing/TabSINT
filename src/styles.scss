@@ -1966,6 +1966,21 @@ table.fixed .row-Server.results {
   padding-right: 5px;
 }
 
+.col-6 {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.col-8 {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.col-12 {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
 .admin-labels {
   padding-left: 15px;
   padding-right: 5px;
@@ -2433,14 +2448,8 @@ button.btn.cha-selected {
   border: 1px solid black;
 }
 
-.cha-info-space-fix {
-  padding: 0 5px 0 18px;
-}
-.cha-info-space-fix > div {
-  margin: 0 -10px;
-}
-.cha-info-space-fix > div > div {
-  padding: 0 7px;
+.cha-info {
+  padding: 0 15px;
 }
 
 .cal-check-title {
