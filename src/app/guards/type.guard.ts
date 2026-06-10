@@ -1,5 +1,5 @@
 import { IDeviceResponse } from '../interfaces/devices/device-response.interface';
-import { RequestIdResponse, RequestSettingResponse, StatusResponse } from '../interfaces/devices/device-responses.interface';
+import { FileProgressResponse, RequestIdResponse, RequestSettingResponse, StatusResponse } from '../interfaces/devices/device-responses.interface';
 import { PageDefinition, ProtocolReferenceInterface, ResponseArea } from '../interfaces/page-definition.interface';
 import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
 import { PageInterface } from '../models/page/page.interface';
@@ -68,5 +68,13 @@ export function isLongNameResponse(response?: IDeviceResponse): response is IDev
     isValidDeviceResponse(response) &&
     response.msg.length >= 2 &&
     Array.isArray(response.msg[1] && response.msg.length === 1 && typeof response.msg[0] === 'string')
+  );
+}
+
+export function isFileProgressResponse(response?: IDeviceResponse): response is FileProgressResponse {
+  return (
+    isValidDeviceResponse(response) &&
+    (response as FileProgressResponse).msg[1].BytesTransferred !== undefined &&
+    (response as FileProgressResponse).msg[1].TotalBytes !== undefined
   );
 }

@@ -19,6 +19,13 @@ export interface StatusResponse extends IDeviceResponse {
 }
 
 /**
+ * Generic file progress response for devices.
+ */
+export interface FileProgressResponse extends IDeviceResponse {
+  msg: [unknown, FileProgressObject];
+}
+
+/**
  * Object held in a request ID response.
  */
 export interface RequestIdObject {
@@ -67,4 +74,19 @@ export interface StatusObject {
   state: number;
   vBattery: number;
   vUsb: number;
+}
+
+/**
+ * Object held in a file progress response.
+ */
+export interface FileProgressObject {
+  /**
+   * The bytes that have been transferred.
+   */
+  BytesTransferred: number;
+
+  /**
+   * The total bytes to transfer.
+   */
+  TotalBytes: number;
 }

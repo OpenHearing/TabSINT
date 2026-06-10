@@ -180,8 +180,10 @@ export class DevicesService {
         if (device.state === DeviceState.Connected && device.status !== DeviceStatus.Busy) {
           const response = await this.reprogramFirmware(device);
           if (isValidDeviceResponse(response)) {
-            await this.reboot(device);
-            completionResponse = 'The device will now reboot. Reconnect the device to verify firmware was updated.';
+            const rebootResponse = await this.reboot(device);
+            if (isValidDeviceResponse(rebootResponse)) {
+              completionResponse = 'The device will now reboot. Reconnect the device to verify firmware was updated.';
+            }
           }
         }
         this.notifications.alert({
