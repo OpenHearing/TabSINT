@@ -1,0 +1,65 @@
+<div class="text-center" style="margin-top: 15px; padding: 10px 0 0;">
+    <a href="javascript:" (click)="advancedExpanded = !advancedExpanded">
+    <span *ngIf="advancedExpanded">
+        Hide Advanced Settings
+        <i class="ion-chevron-up"></i>
+    </span>
+    <span *ngIf="!advancedExpanded">
+        Show Advanced Settings
+        <i class="ion-chevron-down"></i>
+    </span>
+    </a>
+</div>
+
+<div *ngIf="advancedExpanded">
+    <div class="row pad-top">
+    <div class="col-12">
+        <h5>Preferences</h5>
+
+        <div class="row pad-top">
+        <div class="col-6">
+            <label for="duodoseConnectionType">Duodose Connection Type:</label>
+        </div>
+        <div ngbDropdown class="col-2 dropdown-width" display="dynamic">
+            <button type="button" class="btn btn-default btn-block dropdown-toggle" id="duodoseConnectionType" ngbDropdownToggle>
+            {{ disk.preferences.wahtsConnectionType }}
+            </button>
+            <div ngbDropdownMenu aria-labelledby="duodoseConnectionType">
+            <button *ngFor="let bt of BluetoothType | keyvalue" ngbDropdownItem (click)="changeDuodoseConnectionType(bt.value)">
+                {{ bt.value }}
+            </button>
+            </div>
+        </div>
+        </div>
+
+        <div class="row pad-top">
+        <div class="col-6">
+            <label for="ignoreFirmwareUpdates">Ignore Firmware Updates:</label>
+        </div>
+        <div class="col-2">
+            <input
+            id="ignoreFirmwareUpdates"
+            type="checkbox"
+            [ngModel]="disk.preferences.ignoreFirmwareUpdates"
+            (change)="toggleIgnoreFirmwareUpdates()" />
+        </div>
+        </div>
+    </div>
+    </div>
+
+    <div class="row pad-top">
+    <div class="col-12">
+        <h5>Firmware</h5>
+
+        <div class="row pad-top">
+        <div class="col-6">Duodose Firmware Tag:</div>
+        <div class="col-4">{{ (duodoseFirmwareAsset | async)?.version ?? "--" }}</div>
+        </div>
+
+        <div class="row pad-top">
+        <div class="col-6">Duodose Firmware Build Time:</div>
+        <div class="col-4">{{ (duodoseFirmwareAsset | async)?.buildDatetime ?? "--" }}</div>
+        </div>
+    </div>
+    </div>
+</div>

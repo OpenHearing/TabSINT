@@ -1,3 +1,4 @@
+import { IChaDeviceMetadata } from '../../interfaces/devices/cha-device-metadata';
 import { DeviceType } from '../../utilities/constants';
 import { ChaDevice } from './cha-device';
 
@@ -5,6 +6,7 @@ import { ChaDevice } from './cha-device';
  * DuoDose implementation of the device interface.
  */
 export class DuodoseDevice extends ChaDevice {
+  declare metadata: IChaDeviceMetadata;
   /**
    * Initialize the device with the needed properties.
    * @param deviceId The identifier for the device.

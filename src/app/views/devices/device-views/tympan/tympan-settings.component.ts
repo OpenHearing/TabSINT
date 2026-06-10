@@ -13,23 +13,22 @@ import { IDevice } from '../../../../interfaces/devices/device.interface';
 import { ChangeTabsintIdComponent } from '../../../change-tabsint-id/change-tabsint-id.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DevicesService } from '../../../../services/devices/devices.service';
-import { Notifications } from '../../../../services/notifications.service';
+import { ITympanDevice } from '../../../../interfaces/devices/tympan-device.interface';
 
 @Component({
-  selector: 'app-device-info-view',
-  templateUrl: './device-info.component.html',
-  styleUrl: './device-info.component.css',
+  selector: 'app-tympan-settings',
+  templateUrl: './tympan-settings.component.html',
 })
-export class DeviceInfoComponent implements OnInit, OnDestroy, OnChanges {
+export class TympanSettingsComponent implements OnInit, OnDestroy, OnChanges {
   private readonly diskModel = inject(DiskModel);
   private readonly stateModel = inject(StateModel);
   private readonly transloco = inject(TranslocoService);
   private readonly dialog = inject(MatDialog);
   private readonly devicesService = inject(DevicesService);
-  private readonly notifications = inject(Notifications);
 
-  @Input() device!: IDevice;
+  @Input() device!: ITympanDevice;
   DeviceState = DeviceState;
+
   disk: DiskInterface;
   state: StateInterface;
   firmwareMatch: boolean | undefined = undefined;
@@ -89,9 +88,6 @@ export class DeviceInfoComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  get setShutdownTimerPopover() {
-    return this.transloco.translate('Auto shutdown time (in minutes) for the WAHTS headset.');
-  }
   get setTabsintIdPopover() {
     return this.transloco.translate('Set the unique TabSINT ID for the device.');
   }

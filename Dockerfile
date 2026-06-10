@@ -5,14 +5,15 @@ FROM eclipse-temurin:17-jdk
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Install necessary dependencies
+# hadolint ignore=DL3008
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential=12.12ubuntu2 \
-    git=1:2.53.0-1ubuntu1 \
-    lib32stdc++6=16-20260322-1ubuntu1 \
-    lib32z1=1:1.3.dfsg+really1.3.1-1ubuntu3 \
-    subversion=1.14.5-6build1 \
-    unzip=6.0-29ubuntu1 \
-    wget=1.25.0-2ubuntu4 \
+    build-essential \
+    git \
+    lib32stdc++6 \
+    lib32z1 \
+    subversion \
+    unzip \
+    wget \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Google Chrome

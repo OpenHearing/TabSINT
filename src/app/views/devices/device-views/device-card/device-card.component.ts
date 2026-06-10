@@ -1,6 +1,9 @@
-import { Component, Input, inject } from '@angular/core';
-import { DeviceState } from '../../../../utilities/constants';
+import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { BluetoothType, DeviceState, DeviceType } from '../../../../utilities/constants';
 import { IDevice } from '../../../../interfaces/devices/device.interface';
+import { DiskInterface } from '../../../../models/disk/disk.interface';
+import { DiskModel } from '../../../../models/disk/disk.service';
 import { DevicesService } from '../../../../services/devices/devices.service';
 import { Logger } from '../../../../services/logger.service';
 
@@ -8,15 +11,35 @@ import { Logger } from '../../../../services/logger.service';
   selector: 'app-device-card',
   templateUrl: './device-card.component.html',
 })
-export class DeviceCardComponent {
+export class DeviceCardComponent implements OnInit, OnDestroy {
   @Input() device!: IDevice;
-  @Input() bluetoothConnected = false;
+  @Input() connected = false;
 
   private readonly devicesService = inject(DevicesService);
+  private readonly diskModel = inject(DiskModel);
   private readonly logger = inject(Logger);
 
+  BluetoothType = BluetoothType;
   DeviceState = DeviceState;
+  DeviceType = DeviceType;
   settingsExpanded = false;
+  disk: DiskInterface;
+
+  private diskSubscription: Subscription | undefined;
+
+  constructor() {
+    this.disk = this.diskModel.getDisk();
+  }
+
+  ngOnInit(): void {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe(updated => {
+      this.disk = updated;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.diskSubscription?.unsubscribe();
+  }
 
   async reconnect(): Promise<void> {
     this.logger.debug('reconnecting to device: ' + this.device.deviceId);

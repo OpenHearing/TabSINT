@@ -4,10 +4,11 @@ import { firstValueFrom } from 'rxjs';
 import { WahtsDevice } from '../../models/devices/wahts-device';
 import { SavedDevice } from '../../models/disk/disk.interface';
 import { ChaManager } from './cha-manager';
-import { DeviceState } from '../../utilities/constants';
+import { ChaDeviceType, DeviceState } from '../../utilities/constants';
 import { DiscoveryResponse, TabsintCha } from 'tabsintcha';
 import { FirmwareAsset } from '../../interfaces/firmware-asset.interface';
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
+import { StatusObject } from '../../interfaces/devices/device-responses.interface';
 
 /**
  * WAHTS implementation of the CHA device manager.
@@ -71,6 +72,27 @@ export class WahtsManager extends ChaManager {
       this.scanning = false;
       throw new Error('Error starting BLE scan: ' + JSON.stringify(error));
     }
+  }
+
+  /**
+   * Update the battery level information for a device with request status information.
+   * @param device The device to update.
+   * @param statusResponse Request Status information.
+   */
+  override updateBatteryInformation(device: ChaDeviceType, statusResponse: StatusObject) {
+    let batteryLevel: number;
+    const minBatteryVoltage = 3.4;
+    const maxBatteryVoltage = 4;
+    const diff = maxBatteryVoltage - minBatteryVoltage;
+    if (statusResponse.vBattery >= maxBatteryVoltage) {
+      batteryLevel = 100;
+    } else if (statusResponse.vBattery < maxBatteryVoltage && statusResponse.vBattery > minBatteryVoltage) {
+      batteryLevel = Math.round(((statusResponse.vBattery - minBatteryVoltage) / diff) * 100);
+    } else {
+      batteryLevel = 1;
+    }
+    device.metadata.batteryLevel = batteryLevel;
+    this.updateDevice(device);
   }
 
   /**

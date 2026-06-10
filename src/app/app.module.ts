@@ -23,6 +23,7 @@ import { TranslocoHttpLoader } from './transloco-loader';
 
 // Views
 import { ConfigComponent } from './views/config/config.component';
+import { DevicesComponent } from './views/devices/devices.component';
 import { WelcomeComponent } from './views/welcome/welcome.component';
 import { AdminComponent } from './views/admin/admin.component';
 import { ProtocolsComponent } from './views/protocols/protocols.component';
@@ -70,9 +71,14 @@ import { SingleResultModalComponent } from './views/single-result-modal/single-r
 import { CustomResponseAreaComponent } from './views/response-area/response-areas/custom-response-area/custom-response-area.component';
 import { TasksBannerComponent } from './views/tasks-banner/tasks-banner.component';
 import { ManualAudiometryComponent } from './views/response-area/response-areas/manual-audiometry/manual-audiometry';
-import { DeviceTypePanelComponent } from './views/config/config-views/device-type-panel/device-type-panel.component';
-import { DeviceCardComponent } from './views/config/config-views/device-card/device-card.component';
-import { DeviceInfoComponent } from './views/config/config-views/device-info/device-info.component';
+import { DevicePanelComponent } from './views/devices/device-views/device-panel/device-panel.component';
+import { DeviceCardComponent } from './views/devices/device-views/device-card/device-card.component';
+import { WahtsAdvancedSettingsComponent } from './views/devices/device-views/wahts/wahts-advanced-settings/wahts-advanced-settings.component';
+import { ChaSettingsComponent } from './views/devices/device-views/cha-settings/cha-settings.component';
+import { WahtsSettingsComponent } from './views/devices/device-views/wahts/wahts-settings/wahts-settings.component';
+import { DuodoseAdvancedSettingsComponent } from './views/devices/device-views/duodose/duodose-advanced-settings/duodose-advanced-settings.component';
+import { DuodoseSettingsComponent } from './views/devices/device-views/duodose/duodose-settings/duodose-settings.component';
+import { TympanSettingsComponent } from './views/devices/device-views/tympan/tympan-settings.component';
 import { NewConnectionComponent } from './views/config/config-views/new-connection/new-connection.component';
 import { CalibrationExamComponent } from './views/response-area/response-areas/calibration-exam/calibration-exam-component/calibration-exam.component';
 import { CalibrationScreenComponent } from './views/response-area/response-areas/calibration-exam/calibration-screen/calibration-screen.component';
@@ -111,6 +117,7 @@ import { DuodoseDownloadComponent } from './views/response-area/response-areas/d
     AppComponent,
     WelcomeComponent,
     ConfigComponent,
+    DevicesComponent,
     AdminComponent,
     ProtocolsComponent,
     ResultsComponent,
@@ -140,9 +147,14 @@ import { DuodoseDownloadComponent } from './views/response-area/response-areas/d
     SingleResultModalComponent,
     CustomResponseAreaComponent,
     TasksBannerComponent,
-    DeviceTypePanelComponent,
+    DevicePanelComponent,
     DeviceCardComponent,
-    DeviceInfoComponent,
+    WahtsAdvancedSettingsComponent,
+    ChaSettingsComponent,
+    WahtsSettingsComponent,
+    DuodoseAdvancedSettingsComponent,
+    DuodoseSettingsComponent,
+    TympanSettingsComponent,
     NewConnectionComponent,
     AudiogramComponent,
     CalibrationExamComponent,
@@ -218,6 +230,9 @@ import { DuodoseDownloadComponent } from './views/response-area/response-areas/d
         fallbackLang: 'en',
         reRenderOnLangChange: true,
         prodMode: false,
+        missingHandler: {
+          logMissingKey: false,
+        },
       },
       loader: TranslocoHttpLoader,
     }),

@@ -1,0 +1,45 @@
+<div class="cha-info">
+
+    <app-cha-settings [device]="device"></app-cha-settings>
+
+    <!-- Preferences -->
+    <!-- <div class="row pad-top">
+        <div class="col-12">
+            <h5>Preferences</h5>
+        </div>
+
+        <div class="row pad-top">
+            <div class="col-6">
+                <label [for]="'disableAudioStreaming-' + device.deviceId">Disable Audio Streaming:</label>
+            </div>
+            <div class="col-2">
+                <input
+                [id]="'disableAudioStreaming-' + device.deviceId"
+                type="checkbox"
+                [ngModel]="disk.preferences.disableAudioStreaming"
+                (change)="toggleDisableAudioStreaming()" />
+            </div>
+        </div>
+    </div> -->
+
+    <!-- Headset Media -->
+    <div class="row pad-top">
+        <div class="col-12">
+            <h5>Headset Media</h5>
+        </div>
+
+        <div class="row pad-top">
+            <div class="col-6">
+                <label [for]="'enableHeadsetMediaManagement-' + device.deviceId">Enable Headset Media Management:</label>
+            </div>
+            <div class="col-2">
+                <input
+                [id]="'enableHeadsetMediaManagement-' + device.deviceId"
+                type="checkbox"
+                [ngModel]="disk.preferences.enableHeadsetMediaManagement"
+                (change)="toggleEnableHeadsetMediaManagement()" />
+            </div>
+        </div>
+    </div>
+
+</div>

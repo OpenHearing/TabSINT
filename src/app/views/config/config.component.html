@@ -13,42 +13,6 @@
 
   <br />
 
-  <!-- Tympan -->
-  <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.tympans">
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        {{ "Tympan" | transloco }}
-      </mat-panel-title>
-    </mat-expansion-panel-header>
-    <app-device-type-panel [deviceType]="DeviceType.Tympan"></app-device-type-panel>
-  </mat-expansion-panel>
-
-  <br />
-
-  <!-- WAHTS -->
-  <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.wahts">
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        {{ "WAHTS" | transloco }}
-      </mat-panel-title>
-    </mat-expansion-panel-header>
-    <app-device-type-panel [deviceType]="DeviceType.Wahts"></app-device-type-panel>
-  </mat-expansion-panel>
-
-  <br />
-
-  <!-- DuoDose Dosimeter -->
-  <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.duodose">
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        {{ "DuoDose Dosimeter" | transloco }}
-      </mat-panel-title>
-    </mat-expansion-panel-header>
-    <app-device-type-panel [deviceType]="DeviceType.Duodose"></app-device-type-panel>
-  </mat-expansion-panel>
-
-  <br />
-
   <!-- Software and Hardware Status -->
   <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.softwareHardware">
     <mat-expansion-panel-header>

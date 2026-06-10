@@ -1,25 +1,25 @@
 <div class="row">
-  <div class="col-xs-12">
+  <div class="col-12">
     <span class="manual-audiometry-level-text"> DuoDose Download </span>
   </div>
 </div>
 
 <div class="row">
-  <div class="col-xs-12">
+  <div class="col-12">
     <span *ngIf="bytesFree==='calculating...'"> Available Space on DuoDose: {{bytesFree}} </span>
     <span *ngIf="bytesFree!=='calculating...'"> Available Space on DuoDose: {{bytesFree}} {{bytesFreeUnits}} </span>
   </div>
 </div>
 
 <div class="row" *ngIf="isDosBusy">
-  <div class="col-xs-12">
+  <div class="col-12">
     <span style="color:red" > Action in Progress </span>
     <span style="color:red" *ngIf="downloadInProgress"> <br /> Download Progress {{downloadProgressPercent}}% </span>
   </div>
 </div>
 
 <div class="row">
-  <div class="col-xs-12">
+  <div class="col-12">
     <div class="tableDiv">
       <table class="table table-striped table-audiometry">
         
@@ -48,7 +48,7 @@
 </div>
 
 <div class="row">
-  <div class="col-xs-12">
+  <div class="col-12">
     <button style="height: 64px; width: 200px; text-align: center;" (click)="viewDoseData()" [disabled]="isDosBusy">
       <span>{{'View'}}</span>
     </button>
@@ -58,7 +58,7 @@
 </div>
 
 <div class="row" *ngIf="viewingFile">
-  <div class="col-xs-12">
+  <div class="col-12">
     <div class="panel-body">
       <table class="table table-striped table-audiometry table-layout-fixed">
         <tbody>

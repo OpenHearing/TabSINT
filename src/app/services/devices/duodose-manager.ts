@@ -1,8 +1,9 @@
 import { DuodoseDevice } from '../../models/devices/duodose-device';
 import { SavedDevice } from '../../models/disk/disk.interface';
 import { ChaManager } from './cha-manager';
-import { BluetoothType, DeviceState } from '../../utilities/constants';
+import { BluetoothType, ChaDeviceType, DeviceState } from '../../utilities/constants';
 import { DiscoveryResponse, TabsintCha } from 'tabsintcha';
+import { StatusObject } from '../../interfaces/devices/device-responses.interface';
 
 /**
  * DuoDose implementation of the CHA device manager.
@@ -47,5 +48,15 @@ export class DuodoseManager extends ChaManager {
       this.scanning = false;
       throw new Error('Error starting BLE scan: ' + JSON.stringify(error));
     }
+  }
+
+  /**
+   * Update the battery level information for a device with request status information.
+   * @param device The device to update.
+   * @param statusResponse Request Status information.
+   */
+  override updateBatteryInformation(device: ChaDeviceType, statusResponse: StatusObject) {
+    device.metadata.batteryLevel = Math.round(statusResponse.soc_pct);
+    this.updateDevice(device);
   }
 }

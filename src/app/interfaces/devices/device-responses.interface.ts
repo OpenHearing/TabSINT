@@ -7,6 +7,10 @@ export interface RequestIdResponse extends IDeviceResponse {
   msg: [unknown, RequestIdObject];
 }
 
+export interface RequestSettingResponse extends IDeviceResponse {
+  msg: [unknown, RequestSettingObject];
+}
+
 /**
  * Generic status response for devices.
  */
@@ -35,11 +39,32 @@ export interface RequestIdObject {
 }
 
 /**
+ * Object held in a request setting response.
+ */
+export interface RequestSettingObject {
+  /**
+   * Index.
+   */
+  Index: number;
+
+  /**
+   * The build datetime for the device firmware.
+   */
+  Value: number;
+}
+
+/**
  * Object held in a status response.
  */
 export interface StatusObject {
   /**
    * State of the device
    */
+  flags: number;
+  iCharge: number;
+  lastCtrlError: number;
+  soc_pct: number;
   state: number;
+  vBattery: number;
+  vUsb: number;
 }

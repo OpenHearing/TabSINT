@@ -16,7 +16,7 @@ import { IDevice } from '../../interfaces/devices/device.interface';
 import { IWahtsDevice } from '../../interfaces/devices/wahts-device.interface';
 import { IDeviceMetadata } from '../../interfaces/devices/device-metadata.interface';
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
-import { DeviceChooseComponent } from '../../views/config/config-views/device-choose/device-choose.component';
+import { DeviceChooseComponent } from '../../views/devices/device-views/device-choose/device-choose.component';
 import { MatDialog } from '@angular/material/dialog';
 import { WahtsManager } from './wahts-manager';
 import { FirmwareAsset } from '../../interfaces/firmware-asset.interface';
@@ -371,6 +371,25 @@ export class DevicesService {
   }
 
   /**
+   * Request the setting of a device.
+   * @param device The device to request the setting from.
+   * @param setting The setting to be requested.
+   */
+  async requestSetting(device: IDevice, setting: string): Promise<IDeviceResponse | undefined> {
+    return this.getManager(device.type).requestSetting?.(device, setting);
+  }
+
+  /**
+   * Write the setting of a device.
+   * @param device The device to request the setting from.
+   * @param setting The setting to be written.
+   * @param value The value of the setting to be written
+   */
+  async writeSetting(device: IDevice, setting: string, value: number): Promise<IDeviceResponse | undefined> {
+    return this.getManager(device.type).writeSetting?.(device, setting, value);
+  }
+
+  /**
    * Queue an exam for a device.
    * @param device The device to queue the exam for.
    * @param examId The identifier of the exam to be queued.
@@ -508,7 +527,7 @@ export class DevicesService {
    * Remove all WAHTS devices that don't match the new connection type, then update the preference.
    * @param connectionType The new WAHTS connection type to switch to.
    */
-  async changeWahtsConnectionType(connectionType: BluetoothType): Promise<void> {
+  async changeChaConnectionType(connectionType: BluetoothType): Promise<void> {
     const devices = await firstValueFrom(this.devices);
     const toRemove = devices.filter(d => d.type === DeviceType.Wahts && (d as IWahtsDevice).connectionType !== connectionType);
     for (const device of toRemove) {
