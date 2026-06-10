@@ -56,7 +56,7 @@ export class DuodoseManager extends ChaManager {
    * @param statusResponse Request Status information.
    */
   override updateBatteryInformation(device: ChaDeviceType, statusResponse: StatusObject) {
-    device.metadata.batteryLevel = statusResponse.soc_pct;
+    device.metadata.batteryLevel = Math.round(statusResponse.soc_pct);
     this.updateDevice(device);
   }
 }
