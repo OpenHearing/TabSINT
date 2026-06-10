@@ -225,7 +225,7 @@ import { DuodoseDownloadComponent } from './views/response-area/response-areas/d
     AdminService,
     provideTransloco({
       config: {
-        availableLangs: ['en', 'fr', 'ja', 'es'],
+        availableLangs: ['en', 'fr', 'ja', 'es', 'sw'],
         defaultLang: 'en',
         fallbackLang: 'en',
         reRenderOnLangChange: true,
