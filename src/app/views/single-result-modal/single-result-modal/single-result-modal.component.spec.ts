@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 
 import { SingleResultModalComponent } from './single-result-modal.component';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
@@ -17,7 +18,11 @@ describe('SingleResultModalComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [SingleResultModalComponent],
-      imports: [MatDialogModule, NgxJsonViewerModule],
+      imports: [
+        MatDialogModule,
+        NgxJsonViewerModule,
+        TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
+      ],
       providers: [
         DiskModel,
         { provide: MAT_DIALOG_DATA, useValue: 0 },

@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 
 import { ExamDeviceErrorComponent } from './exam-device-error.component';
 
@@ -9,6 +10,9 @@ describe('ExamDeviceErrorComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ExamDeviceErrorComponent],
+      imports: [
+        TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ExamDeviceErrorComponent);

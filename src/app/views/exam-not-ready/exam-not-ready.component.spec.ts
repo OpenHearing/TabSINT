@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 
 import { ExamNotReadyComponent } from './exam-not-ready.component';
 
@@ -9,6 +10,9 @@ describe('ExamNotReadyComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ExamNotReadyComponent],
+      imports: [
+        TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ExamNotReadyComponent);

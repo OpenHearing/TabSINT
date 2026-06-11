@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { CalibrationScreenComponent } from './calibration-screen.component';
 
 describe('CalibrationScreenComponent', () => {
@@ -9,7 +10,10 @@ describe('CalibrationScreenComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [CalibrationScreenComponent],
-      imports: [FormsModule],
+      imports: [
+        FormsModule,
+        TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(CalibrationScreenComponent);
