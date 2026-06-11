@@ -22,8 +22,8 @@ export class ChangeAutoShutdownTimeComponent {
 
   async save() {
     const shutdownTime = this.shutdownTime ?? 0;
-    if (!Number.isInteger(this.shutdownTime) || shutdownTime < 5 || shutdownTime > 60) {
-      alert('Please enter a valid positive integer between 5 and 60 for the shutdown time.');
+    if (!Number.isInteger(this.shutdownTime) || shutdownTime < 5 || shutdownTime > 600) {
+      alert('Please enter a valid positive integer between 5 and 600 for the shutdown time (minutes).');
       return;
     }
     await this.devicesService.writeSetting(this.device, 'auto_shutdown_time', shutdownTime);
