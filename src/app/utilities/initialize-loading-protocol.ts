@@ -32,7 +32,6 @@ export async function initializeLoadingProtocol(
     loading.protocol._missingWavCalList = [];
     loading.protocol._missingCommonWavCalList = [];
     loading.protocol._unresolvedFilePathList = [];
-    loading.protocol._requiresCha = false;
     loading.protocol.errors = [];
     loading.protocol.cCommon = undefined;
   }

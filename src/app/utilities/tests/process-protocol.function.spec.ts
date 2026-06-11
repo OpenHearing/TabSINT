@@ -200,10 +200,6 @@ describe('processProtocol', () => {
     //unimplemented
   });
 
-  it('adds _requiresCha=true if a cha response area exists', () => {
-    //unimplemented
-  });
-
   it('adds _exportToCSV if it exits', () => {
     //unimplemented
   });
