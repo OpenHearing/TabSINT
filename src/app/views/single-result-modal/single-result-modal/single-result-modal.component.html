@@ -2,15 +2,15 @@
   <div class="modal-content">
     <div class="modal-header">
       <div class="left-buttons">
-        <button type="button" class="btn btn-sm btn-success action-btn upload-btn" (click)="upload()"><i class="ion-upload"></i> Upload</button>
+        <button type="button" class="btn btn-sm btn-success action-btn upload-btn" (click)="upload()"><i class="ion-upload"></i> {{ "Upload" | transloco }}</button>
         <button type="button" *ngIf="!disk.preferences.preventExports" class="btn btn-sm btn-primary action-btn" (click)="export()">
-          <span class="glyphicon glyphicon-floppy-disk"></span> Export
+          <span class="glyphicon glyphicon-floppy-disk"></span> {{ "Export" | transloco }}
         </button>
         <button type="button" class="btn btn-sm btn-danger action-btn" (click)="delete()">
-          <span class="glyphicon glyphicon-remove"></span> Delete
+          <span class="glyphicon glyphicon-remove"></span> {{ "Delete" | transloco }}
         </button>
       </div>
-      <button type="button" class="btn btn-default close-btn" (click)="close()"><i class="ion ion-ios-close-outline"></i> Close</button>
+      <button type="button" class="btn btn-default close-btn" (click)="close()"><i class="ion ion-ios-close-outline"></i> {{ "Close" | transloco }}</button>
     </div>
 
     <div class="modal-body">

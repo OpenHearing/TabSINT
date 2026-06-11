@@ -1,12 +1,12 @@
-<h2 mat-dialog-title>{{ data.title }}</h2>
+<h2 mat-dialog-title>{{ data.title | transloco }}</h2>
 
 <mat-dialog-content>
-  <div [innerHTML]="data.content"></div>
+  <div [innerHTML]="data.content | transloco"></div>
 </mat-dialog-content>
 
 <mat-dialog-actions>
   <div *ngIf="data.type === dialogTypeConfirm">
-    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-button mat-dialog-close>{{ "Cancel" | transloco }}</button>
   </div>
-  <button mat-button [mat-dialog-close]="'OK'" cdkFocusInitial>OK</button>
+  <button mat-button [mat-dialog-close]="'OK'" cdkFocusInitial>{{ "OK" | transloco }}</button>
 </mat-dialog-actions>

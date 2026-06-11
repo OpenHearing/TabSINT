@@ -1,11 +1,11 @@
 <div class="modal-header">
-  <span *ngIf="isValidationMode">Enter Admin PIN</span>
-  <span *ngIf="!isValidationMode">Change Admin PIN</span>
+  <span *ngIf="isValidationMode">{{ "Enter Admin PIN" | transloco }}</span>
+  <span *ngIf="!isValidationMode">{{ "Change Admin PIN" | transloco }}</span>
 </div>
 <div class="modal-body">
   <label for="pin">
-    <span *ngIf="isValidationMode">Please enter your PIN:</span>
-    <span *ngIf="!isValidationMode">Please enter a new numerical PIN:</span>
+    <span *ngIf="isValidationMode">{{ "Please enter your PIN:" | transloco }}</span>
+    <span *ngIf="!isValidationMode">{{ "Please enter a new numerical PIN:" | transloco }}</span>
   </label>
   <input id="pin" type="number" [(ngModel)]="pin" pattern="[0-9]*" autofocus="true" />
 </div>

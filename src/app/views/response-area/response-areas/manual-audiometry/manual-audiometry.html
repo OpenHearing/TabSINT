@@ -14,9 +14,9 @@
 
         <!-- Response Buttons -->
         <div class="response-panel-vertical">
-          <button class="response-btn no-response" [disabled]="!isNoResponseEnabled" (click)="noResponse()">No Response</button>
-          <button class="response-btn delete-threshold" (click)="deleteThreshold()">Delete Threshold</button>
-          <button class="response-btn record-threshold" (click)="recordThreshold()">Record Threshold</button>
+          <button class="response-btn no-response" [disabled]="!isNoResponseEnabled" (click)="noResponse()">{{ "No Response" | transloco }}</button>
+          <button class="response-btn delete-threshold" (click)="deleteThreshold()">{{ "Delete Threshold" | transloco }}</button>
+          <button class="response-btn record-threshold" (click)="recordThreshold()">{{ "Record Threshold" | transloco }}</button>
         </div>
 
         <!-- Left Audiogram -->
@@ -37,17 +37,17 @@
               class="ear-btn"
               [ngStyle]="{'background-color': selectedEar === 'Right' ? '#dc3545' : 'transparent', 'color': selectedEar === 'Right' ? 'white' : 'black'}"
               (click)="selectEar('Right')">
-              Right
+              {{ "Right" | transloco }}
             </button>
             <button
               class="ear-btn"
               [ngStyle]="{'background-color': selectedEar === 'Left' ? '#007bff' : 'transparent', 'color': selectedEar === 'Left' ? 'white' : 'black'}"
               (click)="selectEar('Left')">
-              Left
+              {{ "Left" | transloco }}
             </button>
           </div>
 
-          <button class="response-btn submit-results" (click)="examService.submit()">Submit Results</button>
+          <button class="response-btn submit-results" (click)="examService.submit()">{{ "Submit Results" | transloco }}</button>
         </div>
       </div>
 
@@ -55,7 +55,7 @@
       <div class="control-boxes-container">
         <!-- Tone -->
         <div class="control-box tone-box">
-          <div class="box-label">Tone</div>
+          <div class="box-label">{{ "Tone" | transloco }}</div>
           <div class="adjustment-buttons">
             <button class="adjust-btn" *ngFor="let adjustment of adjustments" (click)="adjustTone(adjustment)">
               {{ adjustment > 0 ? '+' + adjustment : adjustment }}
@@ -82,7 +82,7 @@
 
         <!-- Frequency -->
         <div class="control-box frequency-box">
-          <div class="box-label">Frequency</div>
+          <div class="box-label">{{ "Frequency" | transloco }}</div>
           <button class="adjust-btn frequency-btn" (click)="adjustFrequency(-1)">◀</button>
           <div class="frequency-display">
             <div class="frequency-value">{{ selectedFrequency }}</div>
@@ -93,7 +93,7 @@
 
         <!-- Masking -->
         <div class="control-box masking-box disabled">
-          <div class="box-label">Masking</div>
+          <div class="box-label">{{ "Masking" | transloco }}</div>
           <div class="play-button-container">
             <button class="play-btn" disabled>
               <span>▶</span>

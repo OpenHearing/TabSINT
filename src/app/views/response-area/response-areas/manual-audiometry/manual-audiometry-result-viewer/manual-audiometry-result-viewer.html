@@ -4,11 +4,11 @@
   <!-- Results Table Section -->
   <!-- Left Ear Table -->
   <div class="ear-table left-ear">
-    <h3 class="ear-title">Left</h3>
+    <h3 class="ear-title">{{ "Left" | transloco }}</h3>
     <table class="results-table">
       <thead>
         <tr>
-          <th>Frequency (Hz)</th>
+          <th>{{ "Frequency (Hz)" | transloco }}</th>
           <ng-container *ngFor="let freq of audiogramData.frequencies; let k=index">
             <th *ngIf="audiogramData.channels[k]==='left'">{{ freq }}</th>
           </ng-container>
@@ -16,7 +16,7 @@
       </thead>
       <tbody>
         <tr>
-          <td>Threshold ({{audiogramData.levelUnits}})</td>
+          <td>{{ "Threshold" | transloco }} ({{audiogramData.levelUnits}})</td>
           <ng-container *ngFor="let threshold of audiogramData.thresholds; let k=index">
             <td *ngIf="audiogramData.channels[k]==='left'">
               <ng-container [ngSwitch]="audiogramData.resultTypes[k]">
@@ -33,11 +33,11 @@
 
   <!-- Right Ear Table -->
   <div class="ear-table right-ear">
-    <h3 class="ear-title">Right</h3>
+    <h3 class="ear-title">{{ "Right" | transloco }}</h3>
     <table class="results-table">
       <thead>
         <tr>
-          <th>Frequency (Hz)</th>
+          <th>{{ "Frequency (Hz)" | transloco }}</th>
           <ng-container *ngFor="let freq of audiogramData.frequencies; let k=index">
             <th *ngIf="audiogramData.channels[k]==='right'">{{ freq }}</th>
           </ng-container>
@@ -45,7 +45,7 @@
       </thead>
       <tbody>
         <tr>
-          <td>Threshold ({{audiogramData.levelUnits}})</td>
+          <td>{{ "Threshold" | transloco }} ({{audiogramData.levelUnits}})</td>
 
           <ng-container *ngFor="let threshold of audiogramData.thresholds; let k=index">
             <td *ngIf="audiogramData.channels[k]==='right'">
@@ -63,13 +63,13 @@
 
   <!-- Legend Section -->
   <div class="legend">
-    <p><strong>Legend:</strong></p>
-    <p>DNC = Did not converge</p>
-    <p>(x+) = Hearing potentially beyond the calibrated range</p>
-    <p>(-x) = Hearing potentially better than the calibrated range</p>
+    <p><strong>{{ "Legend:" | transloco }}</strong></p>
+    <p>{{ "DNC = Did not converge" | transloco }}</p>
+    <p>{{ "(x+) = Hearing potentially beyond the calibrated range" | transloco }}</p>
+    <p>{{ "(-x) = Hearing potentially better than the calibrated range" | transloco }}</p>
   </div>
 
   <div class="submit-container">
-    <button class="submit-btn" (click)="submitResults()">Submit</button>
+    <button class="submit-btn" (click)="submitResults()">{{ "Submit" | transloco }}</button>
   </div>
 </div>

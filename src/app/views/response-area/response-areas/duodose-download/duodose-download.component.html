@@ -1,20 +1,20 @@
 <div class="row">
   <div class="col-12">
-    <span class="manual-audiometry-level-text"> DuoDose Download </span>
+    <span class="manual-audiometry-level-text"> {{ "DuoDose Download" | transloco }} </span>
   </div>
 </div>
 
 <div class="row">
   <div class="col-12">
-    <span *ngIf="bytesFree==='calculating...'"> Available Space on DuoDose: {{bytesFree}} </span>
-    <span *ngIf="bytesFree!=='calculating...'"> Available Space on DuoDose: {{bytesFree}} {{bytesFreeUnits}} </span>
+    <span *ngIf="bytesFree==='calculating...'"> {{ "Available Space on DuoDose:" | transloco }} {{bytesFree}} </span>
+    <span *ngIf="bytesFree!=='calculating...'"> {{ "Available Space on DuoDose:" | transloco }} {{bytesFree}} {{bytesFreeUnits}} </span>
   </div>
 </div>
 
 <div class="row" *ngIf="isDosBusy">
   <div class="col-12">
-    <span style="color:red" > Action in Progress </span>
-    <span style="color:red" *ngIf="downloadInProgress"> <br /> Download Progress {{downloadProgressPercent}}% </span>
+    <span style="color:red" > {{ "Action in Progress" | transloco }} </span>
+    <span style="color:red" *ngIf="downloadInProgress"> <br /> {{ "Download Progress" | transloco }} {{downloadProgressPercent}}% </span>
   </div>
 </div>
 
@@ -26,9 +26,9 @@
         <thead>
           <tr>
             <!-- Headers -->
-            <th scope="row"> Selected </th>
-            <th style="font-weight: bold;"> Device </th>
-            <th style="font-weight: bold;"> Date Recorded (UTC) </th>
+            <th scope="row"> {{ "Selected" | transloco }} </th>
+            <th style="font-weight: bold;"> {{ "Device" | transloco }} </th>
+            <th style="font-weight: bold;"> {{ "Date Recorded (UTC)" | transloco }} </th>
           </tr>
         </thead>
 
@@ -50,10 +50,10 @@
 <div class="row">
   <div class="col-12">
     <button style="height: 64px; width: 200px; text-align: center;" (click)="viewDoseData()" [disabled]="isDosBusy">
-      <span>{{'View'}}</span>
+      <span>{{ 'View' | transloco }}</span>
     </button>
     <button style="height: 64px; width: 200px; text-align: center;" (click)="addDoseDataToResults()" [disabled]="isDosBusy">
-      <span>{{'Add to Results'}}</span>
+      <span>{{ 'Add to Results' | transloco }}</span>
     </button>
 </div>
 
@@ -64,7 +64,7 @@
         <tbody>
 
           <tr>
-            <th scope="row" colspan="2"> Results </th>
+            <th scope="row" colspan="2"> {{ "Results" | transloco }} </th>
           </tr>
 
           <tr *ngFor="let field of resultsFields; let i = index;">

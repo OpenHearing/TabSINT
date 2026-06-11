@@ -1,5 +1,5 @@
 <div>
-  <button class="btn btn-block btn-default" (click)="scanCode()">Scan Code</button>
+  <button class="btn btn-block btn-default" (click)="scanCode()">{{ "Scan Code" | transloco }}</button>
   <br /><br />
   <pre *ngIf="qrData">{{ qrData }}</pre>
 </div>

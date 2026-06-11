@@ -16,7 +16,7 @@
 
         <!-- Dropdown -->
         <mat-form-field appearance="fill" *ngIf="item.inputType === 'dropdown'" [ngClass]="{ 'wide-dropdown': isWideDropdown(item.options!) }">
-          <mat-label>Select an option</mat-label>
+          <mat-label>{{ "Select an option" | transloco }}</mat-label>
           <mat-select
             [(ngModel)]="results.currentPage.response[itemIdx]"
             (selectionChange)="selectResponse(itemIdx, $event.value)"
@@ -49,7 +49,7 @@
 
         <!-- Multi-dropdown -->
         <mat-form-field *ngIf="item.inputType === 'multi-dropdown'" [ngClass]="{ 'wide-dropdown': isWideMultiDropdown(multiDropdownJson[itemIdx]) }">
-          <mat-label>Select options</mat-label>
+          <mat-label>{{ "Select options" | transloco }}</mat-label>
           <mat-select
             [id]="'itemID' + itemIdx"
             [(ngModel)]="multiDropdownModel[itemIdx]"
@@ -70,8 +70,8 @@
 
   <div class="row" *ngIf="review">
     <div class="col-12">
-      <button *ngIf="!reviewDisabled" class="btn btn-secondary" type="button" id="review" (click)="enableReview(true)">Review</button>
-      <button *ngIf="reviewDisabled" class="btn btn-secondary" type="button" id="edit" (click)="enableReview(false)">Edit</button>
+      <button *ngIf="!reviewDisabled" class="btn btn-secondary" type="button" id="review" (click)="enableReview(true)">{{ "Review" | transloco }}</button>
+      <button *ngIf="reviewDisabled" class="btn btn-secondary" type="button" id="edit" (click)="enableReview(false)">{{ "Edit" | transloco }}</button>
     </div>
   </div>
 </div>

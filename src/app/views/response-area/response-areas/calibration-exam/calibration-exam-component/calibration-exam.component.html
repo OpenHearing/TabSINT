@@ -28,7 +28,7 @@
   </app-max-output-screen>
 
   <div *ngSwitchCase="'finished'">
-    <h3 *ngIf="!showResults" style="color: #0369ad">Calibration Exam Finished!!</h3>
+    <h3 *ngIf="!showResults" style="color: #0369ad">{{ "Calibration Exam Finished!!" | transloco }}</h3>
     <app-calibration-results-viewer
       *ngIf="showResults"
       [device]="device"
@@ -36,6 +36,6 @@
   </div>
 
   <div class="skip-button-container">
-    <button class="skip-to-results" (click)="skip()" *ngIf="showSkipButton">Skip to Results</button>
+    <button class="skip-to-results" (click)="skip()" *ngIf="showSkipButton">{{ "Skip to Results" | transloco }}</button>
   </div>
 </div>

@@ -134,7 +134,7 @@
 
       <div class="row pad-top">
         <div class="col-3">
-          <button class="btn btn-primary w-100" [ngClass]="{ active: selectedSource === 'gitlab' }" (click)="setSource('gitlab')">Gitlab</button>
+          <button class="btn btn-primary w-100" [ngClass]="{ active: selectedSource === 'gitlab' }" (click)="setSource('gitlab')">{{ "Gitlab" | transloco }}</button>
         </div>
         <div class="col-3">
           <button class="btn btn-primary w-100" [ngClass]="{ active: selectedSource === 'device' }" (click)="setSource('device')">
@@ -145,7 +145,7 @@
 
       <div *ngIf="selectedSource === 'gitlab'" class="gitlab-config">
         <div class="row pad-top">
-          <div class="col-3"><label for="repository">Repository:</label></div>
+          <div class="col-3"><label for="repository">{{ "Repository:" | transloco }}</label></div>
           <div class="col-6">
             <input
               id="repository"
@@ -165,7 +165,7 @@
           </mat-menu>
         </div>
         <div class="row pad-top">
-          <div class="col-3"><label for="tag">Tag:</label></div>
+          <div class="col-3"><label for="tag">{{ "Tag:" | transloco }}</label></div>
           <div class="col-6">
             <input
               id="version"
@@ -185,7 +185,7 @@
           </mat-menu>
         </div>
         <div class="row pad-top">
-          <div class="col-3"><label for="host">Host:</label></div>
+          <div class="col-3"><label for="host">{{ "Host:" | transloco }}</label></div>
           <div class="col-6">
             <input
               id="host"
@@ -205,7 +205,7 @@
           </mat-menu>
         </div>
         <div class="row pad-top">
-          <div class="col-3"><label for="token">Token:</label></div>
+          <div class="col-3"><label for="token">{{ "Token:" | transloco }}</label></div>
           <div class="col-6">
             <input
               id="token"
@@ -225,7 +225,7 @@
           </mat-menu>
         </div>
         <div class="row pad-top">
-          <div class="col-3"><label for="group">Group:</label></div>
+          <div class="col-3"><label for="group">{{ "Group:" | transloco }}</label></div>
           <div class="col-6">
             <input
               id="group"
