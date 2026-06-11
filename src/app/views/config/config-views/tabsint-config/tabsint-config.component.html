@@ -317,6 +317,30 @@
       </div>
     </div>
 
+    <!-- Select Headset for Calibration -->
+    <div class="row pad-top">
+      <div class="col-6">
+        <label translate for="selectHeadset">{{ "Select Headset:" | transloco }}</label>
+      </div>
+      <div ngbDropdown class="col-4 dropdown-width" display="dynamic">
+        <button type="button" class="btn btn-default btn-block dropdown-toggle" id="selectHeadset" ngbDropdownToggle>
+          {{ headset }}
+        </button>
+        <div ngbDropdownMenu aria-labelledby="selectHeadset">
+          <button *ngFor="let headset of headsets" ngbDropdownItem (click)="changeHeadset(headset)">{{ headset }}</button>
+        </div>
+      </div>
+      <div class="col-1" href="javascript:" title="{{ 'Select Headset Help' | transloco }}">
+        <i [matMenuTriggerFor]="headsetMenu" class="ion-help-circled"></i>
+      </div>
+      <mat-menu #headsetMenu="matMenu">
+        <button mat-menu-item>
+          <div [innerHTML]="headsetPopover"></div>
+        </button>
+      </mat-menu>
+    </div>
+
+
     <!-- Tablet Gain -->
     <div class="row pad-top">
       <div class="col-6">

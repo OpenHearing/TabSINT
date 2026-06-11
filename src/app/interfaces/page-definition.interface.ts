@@ -24,7 +24,6 @@ import { CalibrationFileWavProperties } from './calibration-file.interface';
 
 export interface PageDefinition {
   id: string;
-  headset?: Headset;
   skipIf?: string;
   hideProgressBar?: boolean;
   autoSubmitDelay?: number;

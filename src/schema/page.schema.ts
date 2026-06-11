@@ -19,7 +19,6 @@ import { memrSchema } from './response-areas/memr.schema';
 import { subjectIdSchema } from './response-areas/subject-id.schema';
 import { checkboxSchema } from './response-areas/checkbox.schema';
 import { CustomResponseAreaSchema } from './response-areas/custom-response-area.schema';
-import { Headset } from '../app/utilities/constants';
 import { buttonGridSchema } from './response-areas/button-grid.schema';
 import { qrCodeResponseAreaSchema } from './response-areas/qr-code.schema';
 import { duodoseDownloadSchema } from './response-areas/duodose-download.schema';
@@ -30,7 +29,6 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
   type: 'object',
   properties: {
     id: { type: 'string' },
-    headset: { type: 'string', enum: Object.values(Headset), nullable: true },
     skipIf: { type: 'string', nullable: true },
     hideProgressBar: { type: 'boolean', nullable: true, default: false },
     autoSubmitDelay: { type: 'number', nullable: true, minimum: 50 },

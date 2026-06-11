@@ -44,6 +44,7 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   state: StateInterface;
   version!: VersionInterface;
   headsets = Object.values(Headset);
+  headset = Headset.None;
   qrPreferencesString?: string = undefined;
   displayPreferencesQrCode: boolean = false;
 
@@ -91,6 +92,16 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   ];
 
   // Functions
+
+  /**
+   * Change the default headset for the application.
+   * @param headset The new headset enumeration value to be stored.
+   */
+  changeHeadset(headset: Headset) {
+    this.headset = headset;
+    this.logger.debug('Headset changed to: ' + headset);
+  }
+
   get currentLanguageLabel() {
     return this.languages.find(l => l.code === this.disk.preferences.language)?.label ?? 'English';
   }
@@ -253,7 +264,7 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
    * Play the 1KHz 94dB wav file from the admin panel.
    */
   async play1kHz94dB() {
-    await this.audioService.play1kHz94dB();
+    await this.audioService.play1kHz94dB(this.headset);
   }
 
   /**
@@ -273,7 +284,7 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   // Popovers
 
   get headsetPopover() {
-    return this.transloco.translate('Default Headset Popover');
+    return this.transloco.translate('Select Headset Popover');
   }
 
   get languagePopover() {

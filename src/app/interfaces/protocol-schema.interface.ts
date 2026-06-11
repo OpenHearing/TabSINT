@@ -1,5 +1,5 @@
 import { PageTypes } from '../types/custom-types';
-import { CalibrationFilter, Headset } from '../utilities/constants';
+import { CalibrationFilter } from '../utilities/constants';
 import { NavMenuInterface } from './page-definition.interface';
 
 export interface ProtocolSchemaInterface {
@@ -12,7 +12,6 @@ export interface ProtocolSchemaInterface {
   instructionText?: string;
   helpText?: string;
   submitText?: string;
-  headset?: Headset;
   chaStream?: boolean;
   randomization?: 'WithoutReplacement';
   commonMediaRepository?: string;

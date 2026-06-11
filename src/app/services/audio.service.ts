@@ -20,7 +20,6 @@ export class AudioService {
   private readonly disk = inject(DiskModel);
   private readonly devicesService = inject(DevicesService);
   private hostMetadata: IDeviceMetadata | undefined;
-  private userHeadset: Headset | undefined;
   private systemVolumeControlEnabled: boolean = false;
   private userTabletGain: number | undefined;
   tabsintAudioPlugin = TabsintAudio;
@@ -33,7 +32,6 @@ export class AudioService {
     Browser: -1,
     'Nexus 7': 0,
     SamsungTabE: -8.5868,
-    EPHD1: 0,
     WAHTS: 0,
     SamsungTabA: -4.0596,
     SamsungTabA7Lite: -4.05,
@@ -44,7 +42,6 @@ export class AudioService {
     Browser: -1,
     'Nexus 7': 8.5868,
     SamsungTabE: 0,
-    EPHD1: 0,
     WAHTS: 0,
     SamsungTabA: 4.5272,
     SamsungTabA7Lite: 4.5368,
@@ -102,7 +99,7 @@ export class AudioService {
   /**
    * Play the 1KHz 94dB audio from the assets directory.
    */
-  async play1kHz94dB(): Promise<void> {
+  async play1kHz94dB(headset: Headset): Promise<void> {
     const wavfile: PageWavfileInterface = {
       path: 'public/assets/wavs/1kHz_cal_tone.wav',
       playbackMethod: PlaybackMethod.Arbitrary,
@@ -116,7 +113,7 @@ export class AudioService {
     // The RMSs always have these values - a function of the wav file.
     // The scaleFactor is hardware dependent and can be found in the
     // tablet_headset-audio_profile.json file.
-    switch (this.userHeadset) {
+    switch (headset) {
       case Headset.VicFirth:
         calibration = {
           wavRMSZ: 0.70231,
@@ -150,15 +147,6 @@ export class AudioService {
           realWorldRMSZ: 0.70231,
           scaleFactor: 0.13519823071552697,
           _headset: Headset.WAHTS,
-          _tablet: Tablet.Nexus7,
-        };
-        break;
-      case Headset.EPHD1:
-        calibration = {
-          wavRMSZ: 0.70231,
-          realWorldRMSZ: 0.70231,
-          scaleFactor: 0.09404459105486002,
-          _headset: Headset.EPHD1,
           _tablet: Tablet.Nexus7,
         };
         break;
@@ -449,9 +437,7 @@ export class AudioService {
     }
 
     // Get the gain value based on headset type in the found tablet map.
-    if (calibration._headset === Headset.EPHD1) {
-      tabletGain = gainMap.EPHD1;
-    } else if (calibration._headset === Headset.WAHTS) {
+    if (calibration._headset === Headset.WAHTS) {
       tabletGain = gainMap.WAHTS;
     } else if (!hostData) {
       tabletGain = gainMap['Nexus 7'];
