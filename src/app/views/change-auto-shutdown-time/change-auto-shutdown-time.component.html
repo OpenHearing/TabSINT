@@ -1,0 +1,21 @@
+<div class="modal-header">
+  <span>Change Auto Shutdown Time</span>
+</div>
+<div class="modal-body">
+  <label for="shutdownTime">
+    <span>Enter new auto shutdown time (minutes):</span>
+  </label>
+  <input id="shutdownTime" type="number" min="1" step="1"
+         [(ngModel)]="shutdownTime"
+         [placeholder]="device?.metadata?.autoShutdownTime ?? ''"
+         autofocus="true" />
+</div>
+<br />
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary btn-block" (click)="save()">
+    {{ "Confirm" | transloco }}
+  </button>
+  <button type="button" class="btn btn-warning" (click)="cancel()">
+    {{ "Cancel" | transloco }}
+  </button>
+</div>

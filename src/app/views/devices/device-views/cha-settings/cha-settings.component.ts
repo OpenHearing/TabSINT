@@ -10,9 +10,9 @@ import { StateModel } from '../../../../models/state/state.service';
 
 import { AppState, DeviceState, ChaDeviceType } from '../../../../utilities/constants';
 import { ChangeTabsintIdComponent } from '../../../change-tabsint-id/change-tabsint-id.component';
+import { ChangeAutoShutdownTimeComponent } from '../../../change-auto-shutdown-time/change-auto-shutdown-time.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DevicesService } from '../../../../services/devices/devices.service';
-import { isRequestSettingResponse } from '../../../../guards/type.guard';
 
 @Component({
   selector: 'app-cha-settings',
@@ -66,14 +66,8 @@ export class ChaSettingsComponent implements OnInit, OnDestroy, OnChanges {
     this.dialog.open(ChangeTabsintIdComponent, { data: device });
   }
 
-  async changeAutoShutdownTime(device: ChaDeviceType): Promise<void> {
-    await this.devicesService.writeSetting(device, 'auto_shutdown_time', 15);
-
-    const requestSettingResp = await this.devicesService.requestSetting(device, 'auto_shutdown_time');
-    if (!isRequestSettingResponse(requestSettingResp)) {
-      await this.devicesService.disconnect(device);
-      throw new Error('Connection failed.');
-    }
+  changeAutoShutdownTime(device: ChaDeviceType): void {
+    this.dialog.open(ChangeAutoShutdownTimeComponent, { data: device });
   }
 
   /**
