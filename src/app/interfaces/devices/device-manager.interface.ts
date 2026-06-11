@@ -3,6 +3,7 @@ import { IDevice } from './device.interface';
 import { IDeviceResponse } from './device-response.interface';
 import { SavedDevice } from '../../models/disk/disk.interface';
 import { FirmwareAsset } from '../firmware-asset.interface';
+import { BluetoothType } from '../../utilities/constants';
 
 /**
  * Device Manager Interface.
@@ -39,6 +40,13 @@ export interface IDeviceManager {
    * @param id The new TabSINT identifier for the device.
    */
   setTabsintId(device: IDevice, id: string): void;
+
+  /**
+   * Set the connectionType identifier for the provided device in the device list.
+   * @param device The device whose matching reference in the device list should be updated.
+   * @param connectionType The new connectionType identifier for the device.
+   */
+  updateDeviceConnectionType?(device: IDevice, connectionType: BluetoothType): void;
 
   /**
    * Connect to the device.

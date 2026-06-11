@@ -152,6 +152,7 @@ export class DevicesService {
               try {
                 await this.getManager(deviceType).connect(device);
                 await this.saveDevice(device);
+                await this.checkForFirmwareUpdate(device);
               } catch (err) {
                 this.logger.debug('Device connection failed', err);
               }
@@ -526,18 +527,29 @@ export class DevicesService {
   }
 
   /**
-   * Remove all WAHTS devices that don't match the new connection type, then update the preference.
+   * Disconnect all WAHTS devices that don't match the new connection type, then update the preference.
    * @param connectionType The new WAHTS connection type to switch to.
    */
   async changeChaConnectionType(connectionType: BluetoothType): Promise<void> {
     const devices = await firstValueFrom(this.devices);
-    const toRemove = devices.filter(d => d.type === DeviceType.Wahts && (d as IWahtsDevice).connectionType !== connectionType);
-    for (const device of toRemove) {
+    const toDisconnect = devices.filter(d => d.type === DeviceType.Wahts && (d as IWahtsDevice).connectionType !== connectionType);
+    for (const device of toDisconnect) {
       if (device.state !== DeviceState.Disconnected) {
         await this.disconnect(device);
       }
-      await this.removeSavedDevice(device);
+      await this.updateDeviceConnectionType(device, connectionType);
     }
     this.diskModel.updatePreferences({ wahtsConnectionType: connectionType });
+  }
+
+  /**
+   * Function to change device values.
+   * @param device The device with property changes to be updated.
+   */
+  async updateDeviceConnectionType(device: IDevice, connectionType: BluetoothType): Promise<void> {
+    this.getManager(device.type).updateDeviceConnectionType?.(device, connectionType);
+    let savedDevices = structuredClone((await firstValueFrom(this.diskModel.diskSubject)).savedDevices);
+    savedDevices = savedDevices.map(dev => (dev.deviceId === device.deviceId ? { ...dev, connectionType } : dev));
+    this.diskModel.updateDiskModel({ savedDevices });
   }
 }

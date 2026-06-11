@@ -82,9 +82,8 @@ export enum SvantekState {
 }
 
 export enum BluetoothType {
-  BLUETOOTH = 'Bluetooth 2.0',
-  BLUETOOTH_LE = 'Bluetooth 3.0',
-  USB = 'USB Host',
+  BLUETOOTH_LE = 'BLE',
+  USB = 'USB',
 }
 
 export enum CalibrationFilter {
