@@ -53,7 +53,6 @@ export class AudioService {
   constructor() {
     this.devicesService.hostMetadata.subscribe(data => (this.hostMetadata = data));
     this.disk.diskSubject.subscribe(disk => {
-      this.userHeadset = disk.preferences.headset;
       this.userTabletGain = disk.preferences.tabletGain;
       this.systemVolumeControlEnabled = !disk.preferences.disableVolume;
     });

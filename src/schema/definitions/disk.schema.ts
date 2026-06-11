@@ -85,7 +85,6 @@ export const diskSchema: JSONSchemaType<DiskInterface> = {
         externalMode: preferencesSchema.properties.externalMode.default,
         gitlab: preferencesSchema.properties.gitlab.default,
         gitlabConfig: preferencesSchema.properties.gitlabConfig.default,
-        headset: preferencesSchema.properties.headset.default,
         language: preferencesSchema.properties.language.default,
         maxLogRows: preferencesSchema.properties.maxLogRows.default,
         pin: preferencesSchema.properties.pin.default,

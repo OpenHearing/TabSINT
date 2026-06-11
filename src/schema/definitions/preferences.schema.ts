@@ -1,6 +1,6 @@
 import { JSONSchemaType } from 'ajv';
 import { gitlabConfigSchema } from './gitlab-config.schema';
-import { BluetoothType, Headset, ProtocolServer, ResultsMode } from '../../app/utilities/constants';
+import { BluetoothType, ProtocolServer, ResultsMode } from '../../app/utilities/constants';
 import { nullable } from '../../app/utilities/safe-parsing';
 import { Preferences } from '../../app/interfaces/preferences.interface';
 
@@ -35,7 +35,6 @@ export const preferencesSchema: JSONSchemaType<Preferences> = {
         group: gitlabConfigSchema.properties.group.default,
       },
     },
-    headset: { type: 'string', enum: Object.values(Headset), default: Headset.None },
     language: { type: 'string', default: 'en' },
     maxLogRows: { type: 'integer', default: 1000 },
     pin: { type: 'string', default: '7114' },
@@ -101,7 +100,6 @@ export const preferencesSchema: JSONSchemaType<Preferences> = {
     'externalMode',
     'gitlab',
     'gitlabConfig',
-    'headset',
     'language',
     'maxLogRows',
     'pin',

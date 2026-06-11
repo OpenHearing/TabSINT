@@ -1,5 +1,5 @@
 import { GitlabConfigInterface } from '../models/disk/disk.interface';
-import { BluetoothType, Headset, ProtocolServer, ResultsMode } from '../utilities/constants';
+import { BluetoothType, ProtocolServer, ResultsMode } from '../utilities/constants';
 
 /**
  * Preferences which are stored on a device and shareable between users.
@@ -19,7 +19,6 @@ export interface Preferences {
     useTagsOnly: boolean;
   };
   gitlabConfig: GitlabConfigInterface;
-  headset: Headset;
   language: string;
   maxLogRows: number;
   pin: string;

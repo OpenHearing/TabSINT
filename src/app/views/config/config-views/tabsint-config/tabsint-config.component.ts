@@ -91,16 +91,6 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   ];
 
   // Functions
-
-  /**
-   * Change the default headset for the application.
-   * @param headset The new headset enumeration value to be stored.
-   */
-  changeHeadset(headset: Headset) {
-    this.diskModel.updatePreferences({ headset: headset });
-    this.logger.debug('Headset changed to: ' + headset);
-  }
-
   get currentLanguageLabel() {
     return this.languages.find(l => l.code === this.disk.preferences.language)?.label ?? 'English';
   }
