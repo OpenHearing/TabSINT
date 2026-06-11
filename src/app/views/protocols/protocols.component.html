@@ -119,9 +119,22 @@
     </mat-expansion-panel-header>
 
     <div class="panel-body text-left">
-      <div class="row pad-top">
+      <div class="row pad-top align-items-center">
         <div class="col-4 admin-labels">{{ "Server:" | transloco }}</div>
-        <div class="col-6"></div>
+        <div class="col-6">
+          <div class="row">
+            <div class="col-6">
+              <button class="btn btn-primary w-100" [ngClass]="{ active: selectedSource === 'gitlab' }" (click)="setSource('gitlab')">
+                {{ "Gitlab" | transloco }}
+              </button>
+            </div>
+            <div class="col-6">
+              <button class="btn btn-primary w-100" [ngClass]="{ active: selectedSource === 'device' }" (click)="setSource('device')">
+                {{ "Device Storage" | transloco }}
+              </button>
+            </div>
+          </div>
+        </div>
         <div class="col-1">
           <i [matMenuTriggerFor]="protocolServerMenu" class="ion-help-circled"></i>
         </div>
@@ -130,17 +143,6 @@
             <div [innerHTML]="protocolServerPopover"></div>
           </button>
         </mat-menu>
-      </div>
-
-      <div class="row pad-top">
-        <div class="col-3">
-          <button class="btn btn-primary w-100" [ngClass]="{ active: selectedSource === 'gitlab' }" (click)="setSource('gitlab')">{{ "Gitlab" | transloco }}</button>
-        </div>
-        <div class="col-3">
-          <button class="btn btn-primary w-100" [ngClass]="{ active: selectedSource === 'device' }" (click)="setSource('device')">
-            {{ "Device Storage" | transloco }}
-          </button>
-        </div>
       </div>
 
       <div *ngIf="selectedSource === 'gitlab'" class="gitlab-config">
