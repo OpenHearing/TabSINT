@@ -163,6 +163,17 @@ export abstract class ChaManager implements IDeviceManager {
   }
 
   /**
+   * Set the connectionType identifier for the provided device in the device list.
+   * @param device The device whose matching reference in the device list should be updated.
+   * @param connectionType The new connectionType identifier for the device.
+   */
+  updateDeviceConnectionType(device: ChaDeviceType, connectionType: BluetoothType): void {
+    const devices = structuredClone(this.devicesSubject.getValue());
+    const updatedDevices = devices.map(dev => (dev.deviceId === device.deviceId ? { ...dev, connectionType } : dev));
+    this.devicesSubject.next(updatedDevices);
+  }
+
+  /**
    * Connect to the device.
    * @param device The device to be connected to.
    */
