@@ -1,18 +1,18 @@
 <p class="instructions">
-  <span> Press Play/Stop to start/stop the tone. Then enter the level reported by the flat plate. </span>
+  <span> {{ "Press Play/Stop to start/stop the tone. Then enter the level reported by the flat plate." | transloco }} </span>
 </p>
 
 <div class="max-output-container">
-  <h2 class="max-output-title">Max Output: {{ currentFrequency }} Hz</h2>
+  <h2 class="max-output-title">{{ "Max Output:" | transloco }} {{ currentFrequency }} Hz</h2>
 
   <div class="max-output-info">
-    <p class="info-item">Frequency: {{ currentFrequency }} Hz</p>
-    <p class="info-item">Ear Cup: {{ earCup }}</p>
+    <p class="info-item">{{ "Frequency:" | transloco }} {{ currentFrequency }} Hz</p>
+    <p class="info-item">{{ "Ear Cup:" | transloco }} {{ earCup }}</p>
   </div>
 
   <div class="max-output-box">
     <div class="input-group">
-      <label for="maxOutputInput" class="input-label">Flat Plate Measured Level:</label>
+      <label for="maxOutputInput" class="input-label">{{ "Flat Plate Measured Level:" | transloco }}</label>
       <input
         id="maxOutputInput"
         type="number"

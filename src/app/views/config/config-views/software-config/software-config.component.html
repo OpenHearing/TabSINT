@@ -1,8 +1,5 @@
 <div class="row pad-top">
-  <div class="col-12">
-    TabSINT is developed by <a href="https://www.creare.com/">Creare</a> and is available open source on
-    <a href="https://gitlab.com/creare-com/tabsint">gitlab.com/creare-com/tabsint</a>.
-  </div>
+  <div class="col-12" [innerHTML]="'Developed By Creare Notice' | transloco"></div>
 </div>
 
 <br />
@@ -15,11 +12,11 @@
 
 <ul class="admin-info">
   <li>
-    <b>TabSINT:</b>
+    <b>{{ "TabSINT" | transloco }}:</b>
     <span>{{ version.tabsint }}</span>
   </li>
   <li>
-    <b>Rev:</b>
+    <b>{{ "Rev" | transloco }}:</b>
     <span>{{ version.rev }}</span>
   </li>
   <!-- <li (click)="toggleAppDeveloperMode()">

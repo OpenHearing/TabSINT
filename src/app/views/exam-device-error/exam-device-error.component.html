@@ -1,7 +1,7 @@
-<p>Device Error</p>
+<p>{{ "Device Error" | transloco }}</p>
 
 <div>
-  <div>Error Message(s):</div>
+  <div>{{ "Error Message(s):" | transloco }}</div>
   <div *ngFor="let error of deviceErrors">
     {{ error }}
   </div>
@@ -9,4 +9,4 @@
 
 &nbsp; &nbsp; &nbsp;
 
-<button (click)="retry()">Retry</button>
+<button (click)="retry()">{{ "Retry" | transloco }}</button>

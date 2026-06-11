@@ -1,9 +1,9 @@
 <div class="modal-header">
-  <span>Enter new TabSINT ID</span>
+  <span>{{ "Enter new TabSINT ID" | transloco }}</span>
 </div>
 <div class="modal-body">
   <label for="tabsintId">
-    <span>Please enter a new TabSINT ID:</span>
+    <span>{{ "Please enter a new TabSINT ID:" | transloco }}</span>
   </label>
   <input id="tabsintId" type="text" [(ngModel)]="tabsintId" [placeholder]="device.tabsintId" autofocus="true" />
 </div>

@@ -3,13 +3,13 @@
 
     <div class="row">
         <div class="col-12">
-            <h5>Device Details</h5>
+            <h5>{{ "Device Details" | transloco }}</h5>
         </div>
     </div>
 
     <!-- Connected Device Tabsint ID -->
     <div class="row pad-top">
-        <div class="col-4">TabSINT ID:</div>
+        <div class="col-4">{{ "TabSINT ID:" | transloco }}</div>
         <div class="col-4" style="min-width: 0">
             <div class="text-line-truncate">{{ device.tabsintId }}</div>
         </div>
@@ -29,7 +29,7 @@
 
     <!-- Connected Device Firmware-->
     <div class="row pad-top">
-        <div class="col-4">Firmware:</div>
+        <div class="col-4">{{ "Firmware:" | transloco }}</div>
         <div class="col-4" [ngStyle]="{ color: firmwareMatch === undefined ? 'black' : firmwareMatch ? 'green' : 'red' }">
             {{ device.metadata.buildDateTime ?? "N/A" }}
         </div>
@@ -55,7 +55,7 @@
 
     <!-- Connected Device Serial-->
     <div class="row pad-top">
-        <div class="col-4">Serial number:</div>
+        <div class="col-4">{{ "Serial number:" | transloco }}</div>
         <div class="col-8">{{ device.metadata.serialNumber ?? "N/A" }}</div>
     </div>
 
