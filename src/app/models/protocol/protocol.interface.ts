@@ -49,6 +49,5 @@ export interface ProtocolInterface extends ProtocolSchemaInterface, ProtocolMeta
     path: string;
     id: string;
   }[];
-  _requiresCha?: boolean;
   errors?: ProtocolErrorInterface[];
 }

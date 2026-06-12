@@ -18,7 +18,6 @@ export async function initializeLoadingProtocol(
 
   initializeVariables();
   checkPublicKeyError();
-  confirmEPHD1IsConnectedWhenHeadsetIsEPHD1();
   setProtocolCalibrationData();
   await setMediaRepo();
 
@@ -32,7 +31,6 @@ export async function initializeLoadingProtocol(
     loading.protocol._missingWavCalList = [];
     loading.protocol._missingCommonWavCalList = [];
     loading.protocol._unresolvedFilePathList = [];
-    loading.protocol._requiresCha = false;
     loading.protocol.errors = [];
     loading.protocol.cCommon = undefined;
   }
@@ -49,28 +47,17 @@ export async function initializeLoadingProtocol(
     }
   }
 
-  function confirmEPHD1IsConnectedWhenHeadsetIsEPHD1() {
-    loading.protocol.protocolUsbCMissing = false; // default/reset to false.
-    // if (loading.protocol.headset === "EPHD1") {
-    // loading.protocol.protocolUsbCMissing = !tabsintNative.isUsbConnected;
-    // tabsintNative.registerUsbDeviceListener(api.usbEventCallback);
-    // } else {
-    // tabsintNative.unregisterUsbDeviceListener(api.usbEventCallback);
-    // }
-  }
-
   /**
    * Set the calibration information at the protocol level based on the calibration.json file.
    */
   function setProtocolCalibrationData() {
     const calibration = structuredClone(loading.calibration);
     if (calibration) {
-      loading.protocol.headset = calibration.headset;
+      loading.protocol.currentCalibration = calibration.headset;
       loading.protocol._audioProfileVersion = calibration.audioProfileVersion;
       loading.protocol._calibrationPySVNRevision = calibration.calibrationPySVNRevision;
       loading.protocol._calibrationPyManualReleaseDate = String(calibration.calibrationPyManualReleaseDate);
     }
-    loading.protocol.currentCalibration = loading.protocol.headset;
   }
 
   async function setMediaRepo(): Promise<void> {

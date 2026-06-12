@@ -46,7 +46,6 @@ export type ChaDeviceType = WahtsDevice | DuodoseDevice;
 export enum Headset {
   None = 'None',
   Audiometer = 'Audiometer',
-  EPHD1 = 'EPHD1',
   HDA200 = 'HDA200',
   VicFirth = 'VicFirth',
   VicFirthS2 = 'VicFirthS2',
