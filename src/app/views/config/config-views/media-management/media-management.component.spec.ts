@@ -21,8 +21,6 @@ describe('MediaManagementComponent', () => {
 
     fixture = TestBed.createComponent(MediaManagementComponent);
     component = fixture.componentInstance;
-    component.device = new TympanDevice('1', 'Device', 'UUID');
-    fixture.detectChanges();
   });
 
   it('should create', () => {

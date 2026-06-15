@@ -12,7 +12,7 @@ import { DiskModel } from '../../models/disk/disk.service';
 import { Tasks } from '../tasks.service';
 
 /**
- * CHA supporting class which handles logic for media transferring device adapter.
+ * CHA supporting class which handles logic for media transferring with device adapter.
  */
 export class ChaMediaHandler {
   private readonly logger = inject(Logger);
