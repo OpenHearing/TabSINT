@@ -26,6 +26,13 @@ export interface FileProgressResponse extends IDeviceResponse {
 }
 
 /**
+ * Generic file operation complete response for devices.
+ */
+export interface FileOperationCompleteResponse extends IDeviceResponse {
+  msg: [unknown, FileOperationCompleteObject];
+}
+
+/**
  * Object held in a request ID response.
  */
 export interface RequestIdObject {
@@ -89,4 +96,14 @@ export interface FileProgressObject {
    * The total bytes to transfer.
    */
   TotalBytes: number;
+}
+
+/**
+ * Object held in a file operation complete response.
+ */
+export interface FileOperationCompleteObject {
+  /**
+   * The outcome of the operation.
+   */
+  Outcome: string;
 }

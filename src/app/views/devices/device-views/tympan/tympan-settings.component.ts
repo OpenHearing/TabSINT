@@ -8,7 +8,7 @@ import { StateInterface } from '../../../../models/state/state.interface';
 import { DiskModel } from '../../../../models/disk/disk.service';
 import { StateModel } from '../../../../models/state/state.service';
 
-import { AppState, DeviceState } from '../../../../utilities/constants';
+import { AppState, DeviceState, DeviceType } from '../../../../utilities/constants';
 import { IDevice } from '../../../../interfaces/devices/device.interface';
 import { ChangeTabsintIdComponent } from '../../../change-tabsint-id/change-tabsint-id.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -28,7 +28,6 @@ export class TympanSettingsComponent implements OnInit, OnDestroy, OnChanges {
 
   @Input() device!: ITympanDevice;
   DeviceState = DeviceState;
-
   disk: DiskInterface;
   state: StateInterface;
   firmwareMatch: boolean | undefined = undefined;

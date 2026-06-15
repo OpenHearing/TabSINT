@@ -552,4 +552,23 @@ export class DevicesService {
     savedDevices = savedDevices.map(dev => (dev.deviceId === device.deviceId ? { ...dev, connectionType } : dev));
     this.diskModel.updateDiskModel({ savedDevices });
   }
+
+  /**
+   * Transfer directory content to a device.
+   * @param device The device to transfer files to.
+   * @param localDirectory The directory to transfer files from recursively.
+   * @param remoteDirectory The directory to transfer the files to.
+   * @returns The device response for the request or undefined.
+   */
+  async transferDirectory(device: IDevice, localDirectory: string, remoteDirectory: string): Promise<IDeviceResponse | undefined> {
+    return this.getManager(device.type).transferDirectory?.(device, localDirectory, remoteDirectory);
+  }
+  /**
+   * Cancel any ongoing file operation.
+   * @param device The device to cancel the file operation on.
+   * @returns The device response for the request or undefined.
+   */
+  async cancelFileOperation(device: IDevice): Promise<IDeviceResponse | undefined> {
+    return this.getManager(device.type).cancelFileOperation?.(device);
+  }
 }

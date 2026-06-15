@@ -1,65 +1,62 @@
 <div id="devices">
-
   <!-- Tympan -->
-  <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.tympans" *ngIf=disk.preferences.showTympanPanel>
+  <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.tympans" *ngIf="disk.preferences.showTympanPanel">
     <mat-expansion-panel-header>
       <mat-panel-title>
         {{ "Tympan" | transloco }}
       </mat-panel-title>
     </mat-expansion-panel-header>
-    
+
     <app-device-panel [deviceType]="DeviceType.Tympan">
-      <ng-container *ngFor="let tympanDevice of tympanDevices$ | async">
+      <ng-container *ngFor="let tympanDevice of tympanDevices$ | async; trackBy: trackByDeviceId">
         <app-device-card [device]="tympanDevice" [connected]="state.bluetoothConnected">
           <app-tympan-settings [device]="tympanDevice"></app-tympan-settings>
         </app-device-card>
       </ng-container>
     </app-device-panel>
-
   </mat-expansion-panel>
 
-  <br *ngIf=disk.preferences.showTympanPanel/>
+  <br *ngIf="disk.preferences.showTympanPanel" />
 
   <!-- WAHTS -->
-  <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.wahts" *ngIf=disk.preferences.showWahtsPanel>
+  <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.wahts" *ngIf="disk.preferences.showWahtsPanel">
     <mat-expansion-panel-header>
       <mat-panel-title>
         {{ "WAHTS" | transloco }}
       </mat-panel-title>
     </mat-expansion-panel-header>
-    
+
     <app-device-panel [deviceType]="DeviceType.Wahts">
-      <ng-container *ngFor="let wahtsDevice of wahtsDevices$ | async">
+      <ng-container *ngFor="let wahtsDevice of wahtsDevices$ | async; trackBy: trackByDeviceId">
         <app-device-card [device]="wahtsDevice" [connected]="state.bluetoothConnected">
           <app-wahts-settings [device]="wahtsDevice"></app-wahts-settings>
         </app-device-card>
+        <!-- Media Management -->
+        <app-media-management-view [device]="wahtsDevice"></app-media-management-view>
       </ng-container>
       <app-wahts-advanced-settings></app-wahts-advanced-settings>
     </app-device-panel>
-
   </mat-expansion-panel>
 
-  <br *ngIf=disk.preferences.showWahtsPanel/>
+  <br *ngIf="disk.preferences.showWahtsPanel" />
 
   <!-- DuoDose Dosimeter -->
-  <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.duodose" *ngIf=disk.preferences.showDuodosePanel>
+  <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.duodose" *ngIf="disk.preferences.showDuodosePanel">
     <mat-expansion-panel-header>
       <mat-panel-title>
         {{ "DuoDose Dosimeter" | transloco }}
       </mat-panel-title>
     </mat-expansion-panel-header>
-    
+
     <app-device-panel [deviceType]="DeviceType.Duodose">
-      <ng-container *ngFor="let duodoseDevice of duodoseDevices$ | async">
+      <ng-container *ngFor="let duodoseDevice of duodoseDevices$ | async; trackBy: trackByDeviceId">
         <app-device-card [device]="duodoseDevice" [connected]="state.bluetoothConnected">
           <app-duodose-settings [device]="duodoseDevice"></app-duodose-settings>
         </app-device-card>
       </ng-container>
       <!-- <app-duodose-advanced-settings></app-duodose-advanced-settings> -->
     </app-device-panel>
-
   </mat-expansion-panel>
-  
-  <br *ngIf=disk.preferences.showDuodosePanel/>
 
+  <br *ngIf="disk.preferences.showDuodosePanel" />
 </div>

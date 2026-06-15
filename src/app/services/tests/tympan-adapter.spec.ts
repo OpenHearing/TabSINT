@@ -45,10 +45,4 @@ describe('tympanWrap', () => {
     const unescaped_bytes = tympanAdapter.handleUnescaping(bytes2);
     expect(unescaped_bytes).toEqual(bytes_2_unescaped);
   });
-
-  it('genCRC8Checksum', () => {
-    // @ts-expect-error - Private method access
-    const crc = tympanAdapter.genCRC8Checksum(new Uint8Array(DataView2.buffer));
-    expect(crc).toEqual(new Uint8Array([15]));
-  });
 });

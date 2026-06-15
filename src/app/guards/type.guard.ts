@@ -1,5 +1,11 @@
 import { IDeviceResponse } from '../interfaces/devices/device-response.interface';
-import { FileProgressResponse, RequestIdResponse, RequestSettingResponse, StatusResponse } from '../interfaces/devices/device-responses.interface';
+import {
+  FileOperationCompleteResponse,
+  FileProgressResponse,
+  RequestIdResponse,
+  RequestSettingResponse,
+  StatusResponse,
+} from '../interfaces/devices/device-responses.interface';
 import { PageDefinition, ProtocolReferenceInterface, ResponseArea } from '../interfaces/page-definition.interface';
 import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
 import { PageInterface } from '../models/page/page.interface';
@@ -35,6 +41,10 @@ export function isManualAudiometryResponseArea(page: PageInterface): boolean {
 
 export function isValidDeviceResponse(response?: IDeviceResponse): response is IDeviceResponse {
   return response?.msg !== undefined && Array.isArray(response?.msg) && !response.msg.includes('ERROR') && !response.msg.includes('error');
+}
+
+export function isSuccessfulFileOperation(response?: IDeviceResponse): response is IDeviceResponse {
+  return isValidDeviceResponse(response) && response?.msg.length >= 2 && (response as FileOperationCompleteResponse).msg[1].Outcome === 'success';
 }
 
 export function isRequestIdResponse(response?: IDeviceResponse): response is RequestIdResponse {

@@ -5,7 +5,7 @@ import { IDeviceResponse } from '../../interfaces/devices/device-response.interf
 import { DeviceResponse, TabsintCha } from 'tabsintcha';
 import { BehaviorSubject, catchError, filter, firstValueFrom, of, skip, Subject, timeout } from 'rxjs';
 import { FirmwareAsset } from '../../interfaces/firmware-asset.interface';
-import { isValidDeviceResponse } from '../../guards/type.guard';
+import { isStatusResponse, isSuccessfulFileOperation } from '../../guards/type.guard';
 import { inject } from '@angular/core';
 import { Directory, Filesystem, Encoding } from '@capacitor/filesystem';
 import { Dictionary } from 'lodash';
@@ -224,7 +224,7 @@ export class ChaAdapter implements IDeviceAdapter {
         const writeResponse = await writeResponsePromise;
 
         let reprogramResponse: IDeviceResponse | undefined = undefined;
-        if (isValidDeviceResponse(writeResponse)) {
+        if (isSuccessfulFileOperation(writeResponse)) {
           const reprogramOptions = { name: device.deviceId, crc32: firmwareAsset.checksum };
           const msg = await TabsintCha.reprogram(reprogramOptions);
           reprogramResponse = { deviceId: device.deviceId, msg: ['Reprogram', msg] };
@@ -250,6 +250,129 @@ export class ChaAdapter implements IDeviceAdapter {
       try {
         const msg = await TabsintCha.reboot(rebootOptions);
         deviceResponse = { deviceId: device.deviceId, msg: ['Reboot', msg] };
+      } catch (err) {
+        this.logger.error('Failed to write to CHA', err);
+      }
+      return deviceResponse;
+    });
+    return response;
+  }
+
+  /**
+   * Cancel any ongoing file operation.
+   * @param device The device to cancel the file operation on.
+   * @returns The device response for the request.
+   */
+  async cancelFileOperation(device: ChaDeviceType): Promise<IDeviceResponse> {
+    const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
+      const nameOptions = { name: device.deviceId };
+      let deviceResponse = this.defaultInvalidResponse(device);
+      try {
+        const msg = await TabsintCha.cancelFileOperation(nameOptions);
+        deviceResponse = { deviceId: device.deviceId, msg: ['CancelFileOperation', msg] };
+      } catch (err) {
+        this.logger.error('Failed to write to CHA', err);
+      }
+      return deviceResponse;
+    });
+    return response;
+  }
+
+  /**
+   * Write file to the device.
+   * @param device The device to write the file to.
+   * @param localFile The local file to write.
+   * @param remoteFile The remote file to write to.
+   * @param flags Optional flags to pass to the write request.
+   * @param progressCallback A callback which takes IDeviceResponse values for FileProgress response updates.
+   * @returns The device response for the request.
+   */
+  async fileWrite(
+    device: ChaDeviceType,
+    localFile: string,
+    remoteFile: string,
+    flags: number | undefined = undefined,
+    progressCallback?: (progress: IDeviceResponse) => void
+  ): Promise<IDeviceResponse> {
+    const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
+      const startFileWriteOptions = { name: device.deviceId, localFile: localFile, remoteFile: remoteFile, flags: flags };
+      let deviceResponse = this.defaultInvalidResponse(device);
+      try {
+        const writeResponsePromise = this.waitForResponseWithStatusUpdates(device, 'FileOperationComplete', 'FileProgress', progressCallback, 10000);
+        await TabsintCha.startFileWrite(startFileWriteOptions);
+        const writeResponse = await writeResponsePromise;
+        if (isSuccessfulFileOperation(writeResponse)) {
+          deviceResponse = writeResponse;
+        }
+      } catch (err) {
+        this.logger.error('Failed to write to CHA', err);
+      }
+      return deviceResponse;
+    });
+    return response;
+  }
+
+  /**
+   * Delete a file from the device.
+   * @param device The device to delete the file from.
+   * @param fileName The file to delete.
+   * @param flags Optional flags to pass to the delete request.
+   * @returns The device response for the request.
+   */
+  async deleteFile(device: ChaDeviceType, fileName: string, flags: number | undefined = undefined): Promise<IDeviceResponse> {
+    const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
+      const nameOptions = { name: device.deviceId };
+      const deleteFileOptions = {
+        name: device.deviceId,
+        remoteFile: fileName,
+        flags: flags,
+      };
+      let deviceResponse = this.defaultInvalidResponse(device);
+      try {
+        await TabsintCha.deleteFile(deleteFileOptions);
+
+        // Check status which determines success or failure
+        const waitForResponse = this.waitForResponse(device, 'Status');
+        await TabsintCha.requestStatus(nameOptions);
+        const statusResponse = (await waitForResponse) ?? deviceResponse;
+        if (isStatusResponse(statusResponse)) {
+          // 0 lastCtrlError signals the deletion request went through properly so return that as the device response
+          if (statusResponse.msg[1].lastCtrlError === 0) {
+            deviceResponse = { deviceId: device.deviceId, msg: ['Success', fileName] };
+          }
+        }
+      } catch (err) {
+        this.logger.error('Failed to write to CHA', err);
+      }
+      return deviceResponse;
+    });
+    return response;
+  }
+
+  /**
+   * Make a directory on the device.
+   * @param device The device to make a directory on.
+   * @param remotePath The remote directory path on the device to be created.
+   * @param flags Optional flags to pass to the directory request.
+   */
+  async makeDirectory(device: ChaDeviceType, remotePath: string, flags: number = 0): Promise<IDeviceResponse> {
+    const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
+      const nameOptions = { name: device.deviceId };
+      const makeDirectoryOptions = { name: device.deviceId, remotePath: remotePath, flags: flags };
+      let deviceResponse = this.defaultInvalidResponse(device);
+      try {
+        await TabsintCha.makeDirectory(makeDirectoryOptions);
+
+        // Check status which determines success or failure
+        const waitForResponse = this.waitForResponse(device, 'Status');
+        await TabsintCha.requestStatus(nameOptions);
+        const statusResponse = (await waitForResponse) ?? deviceResponse;
+        if (isStatusResponse(statusResponse)) {
+          // 0 lastCtrlError signals the directory request went through properly so return that as the device response
+          if (statusResponse.msg[1].lastCtrlError === 0) {
+            deviceResponse = { deviceId: device.deviceId, msg: ['Success', remotePath] };
+          }
+        }
       } catch (err) {
         this.logger.error('Failed to write to CHA', err);
       }
@@ -362,7 +485,7 @@ export class ChaAdapter implements IDeviceAdapter {
    * @param device The device to create the response for.
    * @returns The invalid response for the device.
    */
-  private defaultInvalidResponse(device: ChaDeviceType) {
+  defaultInvalidResponse(device: ChaDeviceType) {
     const response: IDeviceResponse = {
       deviceId: device.deviceId,
       msg: ['0', 'ERROR', 'Failed to write message to CHA. Make sure CHA is connected and try again.'],
@@ -449,24 +572,33 @@ export class ChaAdapter implements IDeviceAdapter {
    * List all files in directory on a device.
    * @param device The device to list directory from.
    * @param dirName The directory to list files from.
+   * @param flags Optional flags to pass to the directory request.
    */
-  async getDirectory(device: ChaDeviceType, dirName: string): Promise<IDeviceResponse> {
-    const dirs: string[] = [];
+  async getDirectory(device: ChaDeviceType, dirName: string, flags: number | undefined = undefined): Promise<IDeviceResponse> {
+    const dirs: { path: string; attributes: number }[] = [];
     function dirCallback(response: IDeviceResponse) {
-      dirs.push((response['msg'][1] as Dictionary<string>)['Path']);
+      const data = (response as any)['msg'][1];
+      dirs.push({ path: data['Path'], attributes: data['Attributes'] });
     }
     const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
+      let fixedDirName = dirName;
+      if (dirName.endsWith('/')) {
+        // weird cha behavior - returns all '00000000's for crcs if trailing '/'
+        fixedDirName = dirName.slice(0, dirName.length - 1);
+      }
       const requestDirectoryOptions = {
         name: device.deviceId,
-        remotePath: dirName,
-        flags: undefined,
+        remotePath: fixedDirName,
+        flags: flags,
       };
       let deviceResponse = this.defaultInvalidResponse(device);
       try {
-        const fileOperationPromise = this.waitForResponseWithStatusUpdates(device, 'FileOperationComplete', 'DirEntry', dirCallback);
+        const fileOperationPromise = this.waitForResponseWithStatusUpdates(device, 'FileOperationComplete', 'DirEntry', dirCallback, 10000);
         await TabsintCha.requestDirectory(requestDirectoryOptions);
-        await fileOperationPromise;
-        deviceResponse = { deviceId: device.deviceId, msg: ['Success', dirs] };
+        const writeResponse = await fileOperationPromise;
+        if (isSuccessfulFileOperation(writeResponse)) {
+          deviceResponse = { deviceId: device.deviceId, msg: ['Success', dirs] };
+        }
       } catch (err) {
         this.logger.error('Failed to write to CHA', err);
       }

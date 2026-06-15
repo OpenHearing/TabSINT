@@ -1,0 +1,133 @@
+<div *ngIf="disk.preferences.debugMode">
+  <div *ngIf="device.metadata.diskSpace !== undefined && Number(device.metadata.diskSpace) < 200">
+    <span class="glyphicon glyphicon-exclamation-sign warn-red"></span>
+    {{ "The device has less than 200 MB of disk space left. Please make more disk space available before adding more media." | transloco }}
+  </div>
+
+  <br />
+
+  <div class="row pad-top">
+    <div class="col-12">
+      <h5>{{ "Media Management" | transloco }}</h5>
+    </div>
+  </div>
+
+  <!-- Enable headset media -->
+  <div class="row pad-top">
+    <div class="col-6">
+      <label translate for="enableHeadsetMedia">{{ "Enable Media Management:" | transloco }}</label>
+    </div>
+    <div class="col-4">
+      <input id="enableHeadsetMedia" type="checkbox" [(ngModel)]="enableMediaManagement" />
+    </div>
+    <div class="col-1" href="javascript:" title="{{ 'Enable Media Management Help' | transloco }}">
+      <i [matMenuTriggerFor]="headsetMediaTableHelpMenu" class="ion-help-circled"></i>
+    </div>
+    <mat-menu #headsetMediaTableHelpMenu="matMenu">
+      <button mat-menu-item>
+        <div [innerHTML]="headsetMediaTablePopover"></div>
+      </button>
+    </mat-menu>
+  </div>
+
+  <div *ngIf="enableMediaManagement" class="pad-top pad-bottom">
+    <!-- Enable headset media -->
+    <div class="row pad-top">
+      <div class="col-6">
+        <label translate for="useRootDirectory">{{ "Use Root Directory:" | transloco }}</label>
+      </div>
+      <div class="col-4">
+        <input id="useRootDirectory" type="checkbox" [(ngModel)]="useRootDirectory" />
+      </div>
+      <div class="col-1" href="javascript:" title="{{ 'Use Root Directory Help' | transloco }}">
+        <i [matMenuTriggerFor]="useRootDirectoryHelpMenu" class="ion-help-circled"></i>
+      </div>
+      <mat-menu #useRootDirectoryHelpMenu="matMenu">
+        <button mat-menu-item>
+          <div [innerHTML]="useRootDirectoryPopover"></div>
+        </button>
+      </mat-menu>
+    </div>
+
+    <table class="table fixed">
+      <thead>
+        <tr>
+          <th scope="col">{{ "Group" | transloco }}</th>
+          <th scope="col">{{ "Name" | transloco }}</th>
+          <th scope="col">{{ "Version" | transloco }}</th>
+          <th scope="col">{{ "Date" | transloco }}</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let mediaRepo of mediaRepos; let i = index" (click)="selectedMediaRepo = mediaRepo.repository">
+          <td [ngClass]="{ 'table-selected': selectedMediaRepo === mediaRepo.repository }">{{ mediaRepo.group }}</td>
+          <td [ngClass]="{ 'table-selected': selectedMediaRepo === mediaRepo.repository }">{{ mediaRepo.repository }}</td>
+          <td [ngClass]="{ 'table-selected': selectedMediaRepo === mediaRepo.repository }">{{ mediaRepo.tag }}</td>
+          <td [ngClass]="{ 'table-selected': selectedMediaRepo === mediaRepo.repository }">{{ mediaRepo.date.replace("T", " ").split(".")[0] }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <br />
+
+    <div class="row pad-top">
+      <div class="col-4 justify-content-center">
+        <button
+          *ngIf="!syncingMedia"
+          [disabled]="!selectedMediaRepo || device.state !== DeviceState.Connected"
+          class="btn btn-primary btn-block"
+          (click)="syncRepositoryToDevice(selectedMediaRepo)">
+          <i class="ion-compose"></i>{{ "Sync To Device" | transloco }}
+        </button>
+        <button *ngIf="syncingMedia" class="btn btn-primary btn-block" (click)="cancelMediaSync()">
+          <i class="ion-compose"></i>{{ "Cancel Sync" | transloco }}
+        </button>
+      </div>
+      <div class="col-4 justify-content-center">
+        <button [disabled]="!selectedMediaRepo" class="btn btn-success btn-block" (click)="updateLocalRepository(selectedMediaRepo)">
+          <i class="ion-android-sync"></i>{{ "Update" | transloco }}
+        </button>
+      </div>
+      <div class="col-4 justify-content-center">
+        <button [disabled]="!selectedMediaRepo" class="btn btn-danger btn-block" (click)="deleteLocalRepository(selectedMediaRepo)">
+          <i class="ion-trash-a"></i>{{ "Delete" | transloco }}
+        </button>
+      </div>
+    </div>
+
+    <br />
+
+    <div class="row pad-top">
+      <div class="col-10">
+        <strong>{{ "Download Media from Gitlab" | transloco }}</strong>
+      </div>
+      <div class="col-1" href="javascript:" title="{{ 'Download Media from Gitlab Help' | transloco }}">
+        <i [matMenuTriggerFor]="headsetMediaDownloadHelpMenu" class="ion-help-circled"></i>
+      </div>
+      <mat-menu #headsetMediaDownloadHelpMenu="matMenu">
+        <button mat-menu-item>
+          <div [innerHTML]="headsetMediaDownloadPopover"></div>
+        </button>
+      </mat-menu>
+    </div>
+
+    <!-- Repository -->
+    <app-gitlab-form-view (submitConfig)="addRemoteRepository($event)"></app-gitlab-form-view>
+
+    <div class="row pad-top" *ngIf="disk.preferences.appDeveloperMode">
+      <div class="col-8">
+        <label for="useCreareRepo">{{ "Use Creare Repository:" | transloco }}</label>
+      </div>
+      <div class="col-2"><input id="useCreareRepo" type="checkbox" [(ngModel)]="mediaRepoAdmin" /></div>
+      <div class="col-1" href="javascript:" title="{{ 'Use Creare Repository Help' | transloco }}">
+        <i [matMenuTriggerFor]="addCreareMediaRepoHelpMenu" class="ion-help-circled"></i>
+      </div>
+      <mat-menu #addCreareMediaRepoHelpMenu="matMenu">
+        <button mat-menu-item>
+          <div [innerHTML]="addCreareMediaRepoPopover"></div>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+</div>

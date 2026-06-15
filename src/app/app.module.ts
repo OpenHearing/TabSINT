@@ -32,6 +32,7 @@ import { HeaderComponent } from './views/header/header.component';
 import { ExamComponent } from './views/exam/exam.component';
 import { IndicatorComponent } from './views/indicator/indicator.component';
 import { NotificationsComponent } from './views/notifications/notifications.component';
+import { GitlabFormComponent } from './views/gitlab-form/gitlab-form.component';
 
 // Models
 import { AppModel } from './models/app/app.service';
@@ -80,6 +81,7 @@ import { DuodoseAdvancedSettingsComponent } from './views/devices/device-views/d
 import { DuodoseSettingsComponent } from './views/devices/device-views/duodose/duodose-settings/duodose-settings.component';
 import { TympanSettingsComponent } from './views/devices/device-views/tympan/tympan-settings.component';
 import { NewConnectionComponent } from './views/config/config-views/new-connection/new-connection.component';
+import { MediaManagementComponent } from './views/config/config-views/media-management/media-management.component';
 import { CalibrationExamComponent } from './views/response-area/response-areas/calibration-exam/calibration-exam-component/calibration-exam.component';
 import { CalibrationScreenComponent } from './views/response-area/response-areas/calibration-exam/calibration-screen/calibration-screen.component';
 import { MaxOutputScreenComponent } from './views/response-area/response-areas/calibration-exam/max-output-screen/max-output-screen.component';
@@ -156,6 +158,7 @@ import { DuodoseDownloadComponent } from './views/response-area/response-areas/d
     DuodoseSettingsComponent,
     TympanSettingsComponent,
     NewConnectionComponent,
+    MediaManagementComponent,
     AudiogramComponent,
     CalibrationExamComponent,
     CalibrationScreenComponent,
@@ -179,6 +182,7 @@ import { DuodoseDownloadComponent } from './views/response-area/response-areas/d
     InputParametersComponent,
     TabsintConfigComponent,
     BekesyComponent,
+    GitlabFormComponent,
   ],
   imports: [
     BrowserModule,

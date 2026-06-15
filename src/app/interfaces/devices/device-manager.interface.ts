@@ -166,4 +166,20 @@ export interface IDeviceManager {
    * @returns Success or error.
    */
   writeSetting?(device: IDevice, setting: string, value: number): Promise<IDeviceResponse | undefined>;
+
+  /**
+   * Optional method to transfer directory content to a device.
+   * @param device The device to transfer directory content to.
+   * @param localDirectory The directory to transfer from recursively.
+   * @param remoteDirectory The directory to transfer to.
+   * @returns The device response for the request or undefined.
+   */
+  transferDirectory?(device: IDevice, localDirectory: string, remoteDirectory: string): Promise<IDeviceResponse | undefined>;
+
+  /**
+   * Optional method to cancel any ongoing file operation.
+   * @param device The device to cancel the file operation on.
+   * @returns The device response for the request or undefined.
+   */
+  cancelFileOperation?(device: IDevice): Promise<IDeviceResponse | undefined>;
 }

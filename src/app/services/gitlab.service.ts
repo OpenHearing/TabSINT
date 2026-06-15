@@ -1,0 +1,294 @@
+import { Injectable, inject } from '@angular/core';
+import { CapacitorHttp, HttpOptions, HttpResponseType } from '@capacitor/core';
+
+import { GitlabConfigInterface } from '../models/disk/disk.interface';
+import { FileService } from './file.service';
+import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
+import { Logger } from './logger.service';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class GitlabService {
+  private readonly fileService = inject(FileService);
+  private readonly logger = inject(Logger);
+
+  /**
+   * Fetch a gitlab repository and download the files to a specified local directory.
+   * This deletes any existing data at the provided location.
+   * @param config Gitlab configuration to access a repository.
+   * @param localDirectory The local directory to save the repository.
+   * @param saveExternal Whether the download should be saved to internal or external storage.
+   * @returns The content URI for the created local directory.
+   */
+  async downloadGitlabRepository(config: GitlabConfigInterface, localDirectory: string, saveExternal: boolean): Promise<string | undefined> {
+    let folderUri = undefined;
+    const headers = {
+      Authorization: `Bearer ${config.token}`,
+    };
+    const projectId = await this._getGitlabProjectId(config.host, config.repository, config.group, headers);
+    const ref = config.tag ? config.tag : await this._getLatestCommitHash(config.host, projectId, headers);
+    if (saveExternal) {
+      folderUri = await this.downloadAndSaveFilesExternal(projectId, ref, config.host, headers, localDirectory);
+    } else {
+      folderUri = await this.downloadAndSaveFilesInternal(projectId, ref, config.host, headers, localDirectory);
+    }
+    return folderUri;
+  }
+
+  /**
+   * Determine the Gitlab pointer/reference in a repository.
+   * @param config Gitlab configuration to access a repository.
+   * @returns The tag if available, otherwise the latest commit hash.
+   */
+  async getGitlabReference(config: GitlabConfigInterface): Promise<string | undefined> {
+    if (config.tag) {
+      return config.tag;
+    }
+
+    const headers = {
+      Authorization: `Bearer ${config.token}`,
+    };
+    const projectId = await this._getGitlabProjectId(config.host, config.repository, config.group, headers);
+    const ref = await this._getLatestCommitHash(config.host, projectId, headers);
+    return ref;
+  }
+
+  /**
+   * Determine the latest Gitlab commit hash for a repository.
+   * @param config Gitlab configuration to access a repository.
+   * @returns The latest commit hash.
+   */
+  async getLatestCommitHash(config: GitlabConfigInterface): Promise<string> {
+    const headers = {
+      Authorization: `Bearer ${config.token}`,
+    };
+    const projectId = await this._getGitlabProjectId(config.host, config.repository, config.group, headers);
+    const commitHash = await this._getLatestCommitHash(config.host, projectId, headers);
+    return commitHash;
+  }
+
+  /**
+   * Fetch a single file from a gitlab repository.
+   * @param gitlabConfig Gitlab configuration to access a repository.
+   * @param relativeFilePath The relative path to the requested file.
+   * @returns The response data if successful.
+   */
+  async fetchLatestGitlabFile(gitlabConfig: GitlabConfigInterface, relativeFilePath: string): Promise<any> {
+    const headers = {
+      Authorization: `Bearer ${gitlabConfig.token}`,
+    };
+    const projectId = await this._getGitlabProjectId(gitlabConfig.host, gitlabConfig.repository, gitlabConfig.group, headers);
+    const commitHash = await this._getLatestCommitHash(gitlabConfig.host, projectId, headers);
+    const fileUrl = `${gitlabConfig.host}/api/v4/projects/${projectId}/repository/files/${relativeFilePath}/raw?ref=${commitHash}`;
+    const data = this._fetchGitlabData({ url: fileUrl, headers: headers }, `Failed to fetch ${relativeFilePath}`);
+    return data;
+  }
+
+  /**
+   * Fetch data from Gitlab using a URL and return the response if successful.
+   * @param options The http options for the fetch.
+   * @param errorMessagePrefix Message to prefix errors with on failure.
+   * @returns The response data if successful.
+   */
+  private async _fetchGitlabData(options: HttpOptions, errorMessagePrefix: string) {
+    const response = await CapacitorHttp.get(options);
+    if (response.status < 200 || response.status >= 300) {
+      if (response.status === 401) {
+        throw new Error('Unauthorized: Check your GitLab credentials.');
+      }
+      throw new Error(`${errorMessagePrefix} ${response.status}`);
+    }
+
+    return response.data;
+  }
+
+  /**
+   * Fetch a gitlab repository and download the files to a specified local external directory.
+   * This deletes any existing data at the provided location.
+   * @param projectId The project identifier for the repository.
+   * @param ref The Gitlab pointer/reference in the repository.
+   * @param host The host of the Gitlab repository
+   * @param headers Authorization headers for the request.
+   * @param localDir The local directory to save the repository.
+   * @returns The content URI for the created local directory.
+   */
+  private async downloadAndSaveFilesExternal(
+    projectId: number,
+    ref: string,
+    host: string,
+    headers: { Authorization: string },
+    localDir: string
+  ): Promise<string | undefined> {
+    const repoFiles = await this._fetchGitlabData(
+      { url: `${host}/api/v4/projects/${projectId}/repository/tree?ref=${ref}&recursive=true`, headers: headers },
+      'Failed to fetch repository files: '
+    );
+
+    if (!repoFiles || repoFiles.length === 0) {
+      throw new Error('No files found in the repository.');
+    }
+
+    await this.fileService.deleteDirectory(localDir);
+    const fileServiceResult = await this.fileService.createDirectory(localDir);
+
+    for (const file of repoFiles) {
+      // Skip any directories, only loop over files, directories will be created when the file is saved
+      if (file.type !== 'blob') {
+        continue;
+      }
+
+      const filePath = encodeURIComponent(file.path);
+      const fileUrl = `${host}/api/v4/projects/${projectId}/repository/files/${filePath}/raw?ref=${ref}`;
+
+      const options = {
+        url: fileUrl,
+        responseType: (file.name.includes('.json') ? 'json' : 'blob') as HttpResponseType,
+        headers: headers,
+      };
+      const data = await this._fetchGitlabData(options, `Error loading repo file ${filePath}`);
+
+      try {
+        if (file.name.includes('.json')) {
+          await this.fileService.writeFile(`${localDir}/${file.path}`, JSON.stringify(data));
+        } else {
+          await this.fileService.writeBinaryFile(`${localDir}/${file.path}`, data);
+        }
+      } catch {
+        throw new Error(`Error writing file: ${file.name}`);
+      }
+    }
+
+    return fileServiceResult?.uri;
+  }
+
+  /**
+   * Fetch a gitlab repository and download the files to a specified local internal directory.
+   * This deletes any existing data at the provided location.
+   * @param projectId The project identifier for the repository.
+   * @param ref The Gitlab pointer/reference in the repository.
+   * @param host The host of the Gitlab repository
+   * @param headers Authorization headers for the request.
+   * @param localDir The local directory to save the repository.
+   * @returns The content URI for the created local directory.
+   */
+  private async downloadAndSaveFilesInternal(
+    projectId: number,
+    ref: string,
+    host: string,
+    headers: { Authorization: string },
+    localDir: string
+  ): Promise<string | undefined> {
+    const repoFiles = await this._fetchGitlabData(
+      {
+        url: `${host}/api/v4/projects/${projectId}/repository/tree?ref=${ref}&recursive=true`,
+        headers: headers,
+      },
+      'Failed to fetch repository files: '
+    );
+
+    if (!repoFiles || repoFiles.length === 0) {
+      throw new Error('No files found in the repository.');
+    }
+
+    if (await Filesystem.readdir({ path: localDir, directory: Directory.Data }).catch(() => null)) {
+      await Filesystem.rmdir({ path: localDir, directory: Directory.Data, recursive: true });
+    }
+    await Filesystem.mkdir({ path: localDir, directory: Directory.Data, recursive: true });
+    const fileServiceResult = await Filesystem.getUri({ path: localDir, directory: Directory.Data });
+
+    for (const file of repoFiles) {
+      // Skip any directories, only loop over files, directories will be created when the file is saved
+      if (file.type !== 'blob') {
+        continue;
+      }
+
+      const filePath = encodeURIComponent(file.path);
+      const fileUrl = `${host}/api/v4/projects/${projectId}/repository/files/${filePath}/raw?ref=${ref}`;
+
+      const options = {
+        url: fileUrl,
+        responseType: (file.name.includes('.json') ? 'json' : 'blob') as HttpResponseType,
+        headers: headers,
+      };
+      const data = await this._fetchGitlabData(options, `Error loading repo file ${filePath}`);
+
+      try {
+        if (file.name.includes('.json')) {
+          await Filesystem.writeFile({
+            path: `${localDir}/${file.path}`,
+            directory: Directory.Data,
+            data: JSON.stringify(data),
+            encoding: 'utf8' as Encoding,
+            recursive: true,
+          });
+        } else {
+          const blob = new Blob([data as BlobPart]);
+          const base64 = await this.fileService.blobToBase64(blob);
+          await Filesystem.writeFile({
+            path: `${localDir}/${file.path}`,
+            directory: Directory.Data,
+            data: base64,
+            recursive: true,
+          });
+        }
+      } catch (e) {
+        throw new Error(`Error writing file: ${JSON.stringify(e)} ${file.name}`);
+      }
+    }
+
+    return fileServiceResult?.uri;
+  }
+
+  /**
+   * Private method for determining the latest Gitlab commit hash for a repository.
+   * @param host The host of the Gitlab repository.
+   * @param projectId The project identifier for the repository.
+   * @param headers Authorization headers for the request.
+   * @returns The latest commit hash.
+   */
+  private async _getLatestCommitHash(host: string, projectId: number, headers: { Authorization: string }): Promise<string> {
+    const commits = await this._fetchGitlabData(
+      { url: `${host}/api/v4/projects/${projectId}/repository/commits?per_page=1`, headers: headers },
+      'Failed to fetch latest commit: '
+    );
+
+    if (!commits.length) throw new Error('No commits found in repository.');
+    return commits[0].id.substring(0, 8);
+  }
+
+  /**
+   * Private method for determining the project identifier for a gitlab reference.
+   * @param host The host of the Gitlab repository.
+   * @param repository The repository name.
+   * @param group The group containing the repository.
+   * @param headers Authorization headers for the request.
+   * @returns The project identifier for the repository.
+   */
+  private async _getGitlabProjectId(host: string, repository: string, group: string, headers: { Authorization: string }): Promise<number> {
+    let projects: { id: number; name: string; namespace: { full_path: string } }[] = [];
+
+    try {
+      // First try the users own repositories to limit the search space on common names.
+      projects = await this._fetchGitlabData(
+        { url: `${host}/api/v4/projects?search=${repository}&membership=true`, headers: headers },
+        'Failed to fetch project list: '
+      );
+    } catch (err) {
+      // Fallback on all repositories. If there are too many with similar names this may fail.
+      this.logger.error('Failed Gitlab search with membership trying without', err);
+      projects = await this._fetchGitlabData(
+        { url: `${host}/api/v4/projects?search=${repository}`, headers: headers },
+        'Failed to fetch project list: '
+      );
+    }
+
+    const matchedProject = projects.find(project => project.name === repository && project.namespace.full_path.toLowerCase() === group.toLowerCase());
+
+    if (!matchedProject) {
+      throw new Error('Project not found. Check the repository name and group.');
+    }
+
+    return matchedProject.id;
+  }
+}
