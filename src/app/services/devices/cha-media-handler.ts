@@ -542,7 +542,7 @@ export class ChaMediaHandler {
       .map((part, i, arr) => {
         if (i === 0) return part.replace(/\/+$/, '');
         if (i === arr.length - 1) return part.replace(/^\/+/, '');
-        return part.replace(/^\/+|\/+$/g, '');
+        return part.replace(/(^\/+|\/+$)/g, '');
       })
       .join('/');
   }
