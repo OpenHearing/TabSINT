@@ -1,7 +1,9 @@
 import { IDeviceResponse } from '../interfaces/devices/device-response.interface';
 import {
+  DirectoryEntryResponse,
   FileOperationCompleteResponse,
   FileProgressResponse,
+  GetDirectoryResponse,
   RequestIdResponse,
   RequestSettingResponse,
   StatusResponse,
@@ -69,10 +71,6 @@ export function isStatusResponse(response?: IDeviceResponse): response is Status
   return isValidDeviceResponse(response) && response.msg.length >= 2 && (response as StatusResponse).msg[1].state !== undefined;
 }
 
-export function isGetDirectoryResponse(response?: IDeviceResponse): response is IDeviceResponse {
-  return isValidDeviceResponse(response) && response.msg.length >= 2 && Array.isArray(response.msg[1]);
-}
-
 export function isLongNameResponse(response?: IDeviceResponse): response is IDeviceResponse {
   return (
     isValidDeviceResponse(response) &&
@@ -86,5 +84,22 @@ export function isFileProgressResponse(response?: IDeviceResponse): response is 
     isValidDeviceResponse(response) &&
     (response as FileProgressResponse).msg[1].BytesTransferred !== undefined &&
     (response as FileProgressResponse).msg[1].TotalBytes !== undefined
+  );
+}
+
+export function isDirectoryEntryResponse(response?: IDeviceResponse): response is DirectoryEntryResponse {
+  return (
+    isValidDeviceResponse(response) &&
+    (response as DirectoryEntryResponse).msg[1].path !== undefined &&
+    (response as DirectoryEntryResponse).msg[1].attributes !== undefined
+  );
+}
+
+export function isGetDirectoryResponse(response?: IDeviceResponse): response is GetDirectoryResponse {
+  return (
+    isValidDeviceResponse(response) &&
+    response.msg.length >= 2 &&
+    Array.isArray(response.msg[1]) &&
+    response.msg[1].every(entry => isDirectoryEntryResponse(entry))
   );
 }

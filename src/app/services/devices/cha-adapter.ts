@@ -5,10 +5,10 @@ import { IDeviceResponse } from '../../interfaces/devices/device-response.interf
 import { DeviceResponse, TabsintCha } from 'tabsintcha';
 import { BehaviorSubject, catchError, filter, firstValueFrom, of, skip, Subject, timeout } from 'rxjs';
 import { FirmwareAsset } from '../../interfaces/firmware-asset.interface';
-import { isStatusResponse, isSuccessfulFileOperation } from '../../guards/type.guard';
+import { isDirectoryEntryResponse, isStatusResponse, isSuccessfulFileOperation } from '../../guards/type.guard';
 import { inject } from '@angular/core';
 import { Directory, Filesystem, Encoding } from '@capacitor/filesystem';
-import { Dictionary } from 'lodash';
+import { DirectoryEntryObject } from '../../interfaces/devices/device-responses.interface';
 
 /**
  * CHA base device adapter.
@@ -575,10 +575,11 @@ export class ChaAdapter implements IDeviceAdapter {
    * @param flags Optional flags to pass to the directory request.
    */
   async getDirectory(device: ChaDeviceType, dirName: string, flags: number | undefined = undefined): Promise<IDeviceResponse> {
-    const dirs: { path: string; attributes: number }[] = [];
+    const dirs: DirectoryEntryObject[] = [];
     function dirCallback(response: IDeviceResponse) {
-      const data = (response as any)['msg'][1];
-      dirs.push({ path: data['Path'], attributes: data['Attributes'] });
+      if (isDirectoryEntryResponse(response)) {
+        dirs.push(response['msg'][1]);
+      }
     }
     const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
       let fixedDirName = dirName;

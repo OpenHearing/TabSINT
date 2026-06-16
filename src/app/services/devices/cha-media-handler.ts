@@ -1,7 +1,7 @@
 import { BluetoothType, ChaDeviceType, DialogType } from '../../utilities/constants';
 import { Logger } from '../logger.service';
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
-import { isValidDeviceResponse } from '../../guards/type.guard';
+import { isGetDirectoryResponse, isValidDeviceResponse } from '../../guards/type.guard';
 import { inject } from '@angular/core';
 import { Directory, FileInfo, Filesystem } from '@capacitor/filesystem';
 import { ChaAdapter } from './cha-adapter';
@@ -10,6 +10,7 @@ import { Notifications } from '../notifications.service';
 import { TranslocoService } from '@jsverse/transloco';
 import { DiskModel } from '../../models/disk/disk.service';
 import { Tasks } from '../tasks.service';
+import { DirectoryEntryObject } from '../../interfaces/devices/device-responses.interface';
 
 /**
  * CHA supporting class which handles logic for media transferring with device adapter.
@@ -121,10 +122,10 @@ export class ChaMediaHandler {
     }
 
     const isAdmin = !remoteDirectory.toUpperCase().includes('USER');
-    let chaDirectories: { path: string; attributes: number }[] = [];
-    let chaFiles: { path: string; attributes: number }[] = [];
-    let chaDirCrcs: { path: string; attributes: number }[] = [];
-    let chaCrcs: { path: string; attributes: number }[] = [];
+    let chaDirectories: DirectoryEntryObject[] = [];
+    let chaFiles: DirectoryEntryObject[] = [];
+    let chaDirCrcs: DirectoryEntryObject[] = [];
+    let chaCrcs: DirectoryEntryObject[] = [];
     const tabletDirectories = [];
 
     // Replace the tablet portion of path with the remote portion, transition to upper case so everything matches the cha directory structure
@@ -133,19 +134,19 @@ export class ChaMediaHandler {
 
     const response = await this.adapter.getDirectory(device, chaDirectoryName, 0x6000); // root level, CRC flags
 
-    if (!isValidDeviceResponse(response)) {
+    if (!isGetDirectoryResponse(response)) {
       this.logger.debug('Failed to get the current directory.');
       return false;
     }
 
     // Make the directories and file CRC lists at the current level
-    const entries: { path: string; attributes: number }[] = (response as any)['msg'][1];
+    const entries: DirectoryEntryObject[] = response['msg'][1];
     if (entries.length > 0) {
       chaCrcs = entries.filter(function (entry) {
-        return entry.attributes !== undefined && !(entry.attributes & 16);
+        return !(entry.attributes & 16);
       });
       chaDirCrcs = entries.filter(function (entry) {
-        return entry.attributes !== undefined && entry.attributes & 16;
+        return entry.attributes & 16;
       });
     } else {
       const response = await this.adapter.makeDirectory(device, chaDirectoryName, 0x2000);
@@ -161,14 +162,14 @@ export class ChaMediaHandler {
     const isAdminDirectory = isAdmin && !chaDirectoryName.toUpperCase().includes('USER');
     if (!isAdminDirectory && !isUserDirectory) {
       const response = await this.adapter.getDirectory(device, userRelativeDirectory); // user level
-      if (isValidDeviceResponse(response)) {
-        const entries: { path: string; attributes: number }[] = (response as any)['msg'][1];
+      if (isGetDirectoryResponse(response)) {
+        const entries = response['msg'][1];
         if (entries.length > 0) {
           chaFiles = entries.filter(function (entry) {
-            return entry.attributes !== undefined && !(entry.attributes & 16);
+            return !(entry.attributes & 16);
           });
           chaDirectories = entries.filter(function (entry) {
-            return entry.attributes !== undefined && entry.attributes & 16;
+            return entry.attributes & 16;
           });
         } else {
           chaDirectories = [];
@@ -414,18 +415,18 @@ export class ChaMediaHandler {
       }
 
       const response = await this.adapter.getDirectory(device, currentDirectory);
-      if (isValidDeviceResponse(response)) {
-        const entries: { path: string; attributes: number }[] = (response as any)['msg'][1];
+      if (isGetDirectoryResponse(response)) {
+        const entries: DirectoryEntryObject[] = response['msg'][1];
         if (entries.length > 0) {
           const files = entries.filter(function (entry) {
-            return entry.attributes !== undefined && !(entry.attributes & 16);
+            return !(entry.attributes & 16);
           });
           for (const file of files) {
             const fullFilePath = this.joinPath(currentDirectory, file.path);
             await this.adapter.deleteFile(device, fullFilePath);
           }
           const dirs = entries.filter(function (entry) {
-            return entry.attributes !== undefined && entry.attributes & 16;
+            return entry.attributes & 16;
           });
           for (const dir of dirs) {
             const fullDirectoryPath = this.joinPath(currentDirectory, dir.path);

@@ -13,7 +13,7 @@ import { DiscoveryResponse, TabsintCha } from 'tabsintcha';
 import { SavedDevice } from '../../models/disk/disk.interface';
 import { DiskModel } from '../../models/disk/disk.service';
 
-import { RequestIdObject, RequestSettingObject, StatusObject } from '../../interfaces/devices/device-responses.interface';
+import { DirectoryEntryObject, RequestIdObject, RequestSettingObject, StatusObject } from '../../interfaces/devices/device-responses.interface';
 import { isGetDirectoryResponse, isLongNameResponse, isRequestIdResponse, isRequestSettingResponse, isStatusResponse } from '../../guards/type.guard';
 import { ChaMediaHandler } from './cha-media-handler';
 
@@ -434,11 +434,11 @@ export abstract class ChaManager implements IDeviceManager {
    */
   async getDirectoryLongNames(device: ChaDeviceType, baseDir: string): Promise<IDeviceResponse> {
     const longNames: string[] = [];
-    let entries: { path: string; attributes: number }[] = [];
+    let entries: DirectoryEntryObject[] = [];
     const getDirectoryResponse = await this.adapter.getDirectory(device, baseDir);
     await this.deviceErrorHandler(getDirectoryResponse);
     if (isGetDirectoryResponse(getDirectoryResponse)) {
-      entries = getDirectoryResponse['msg'][1] as { path: string; attributes: number }[];
+      entries = getDirectoryResponse['msg'][1];
     }
 
     for (const entry of entries) {
