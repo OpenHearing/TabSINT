@@ -471,17 +471,7 @@ export class ChaMediaHandler {
    * @returns The file/directory list from the directory.
    */
   private async getDirectoryShallow(path: string): Promise<FileInfo[]> {
-    // Handle relative and absolute path
-    const dataFolderInfo = await Filesystem.getUri({
-      path: '',
-      directory: Directory.Data,
-    });
-    const dataFolderRoot = dataFolderInfo.uri;
-    let relativePath = path;
-    if (path.startsWith(dataFolderRoot)) {
-      relativePath = path.replace(dataFolderRoot, '');
-    }
-
+    const relativePath = await this.resolveRelativePath(path);
     const result = await Filesystem.readdir({
       path: relativePath,
       directory: Directory.Data,
@@ -496,17 +486,7 @@ export class ChaMediaHandler {
    * @returns The size of the file/directory in bytes.
    */
   private async getFileSize(path: string): Promise<number> {
-    // Handle relative and absolute path
-    const dataFolderInfo = await Filesystem.getUri({
-      path: '',
-      directory: Directory.Data,
-    });
-    const dataFolderRoot = dataFolderInfo.uri;
-    let relativePath = path;
-    if (path.startsWith(dataFolderRoot)) {
-      relativePath = path.replace(dataFolderRoot, '');
-    }
-
+    const relativePath = await this.resolveRelativePath(path);
     const stat = await Filesystem.stat({
       path: relativePath,
       directory: Directory.Data,
@@ -521,6 +501,21 @@ export class ChaMediaHandler {
    * @returns The file buffer.
    */
   private async getBufferFromFile(path: string): Promise<ArrayBuffer> {
+    const relativePath = await this.resolveRelativePath(path);
+    const file = await Filesystem.readFile({
+      path: relativePath,
+      directory: Directory.Data,
+    });
+
+    return Buffer.from(file.data as string, 'base64').buffer;
+  }
+
+  /**
+   * Find a relative path within Directory.Data.
+   * @param path The relative or absolute path.
+   * @returns The relative path.
+   */
+  private async resolveRelativePath(path: string): Promise<string> {
     // Handle relative and absolute path
     const dataFolderInfo = await Filesystem.getUri({
       path: '',
@@ -531,13 +526,7 @@ export class ChaMediaHandler {
     if (path.startsWith(dataFolderRoot)) {
       relativePath = path.replace(dataFolderRoot, '');
     }
-
-    const file = await Filesystem.readFile({
-      path: relativePath,
-      directory: Directory.Data,
-    });
-
-    return Buffer.from(file.data as string, 'base64').buffer;
+    return relativePath;
   }
 
   /**
