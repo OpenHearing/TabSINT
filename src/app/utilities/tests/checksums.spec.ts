@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { calculateCRC32, calculateCRC8, numberToHex, str2arr } from '../checksums';
+import { calculateCRC32, calculateCRC8, numberToHex, stringToUint8Array } from '../checksums';
 
 describe('checkums', () => {
   beforeEach(async () => {
@@ -14,7 +14,7 @@ describe('checkums', () => {
 
   it('calculateCRC32', () => {
     const value = 'TEST';
-    const crc = calculateCRC32(str2arr(value));
+    const crc = calculateCRC32(stringToUint8Array(value));
     expect(crc).toEqual(4008350648);
   });
 

@@ -56,12 +56,17 @@ export function numberToHex(num: number, width: number | undefined = 8): string 
 }
 
 /**
- * Convert a string to a uint8 array.
+ * Convert a string to a uint8 array of the characters.
  * @param str The string to convert.
  * @returns The uint8 array.
  */
-export function str2arr(str: string): Uint8Array {
-  return new TextEncoder().encode(str);
+export function stringToUint8Array(str: string): Uint8Array {
+  const buf = new ArrayBuffer(str.length); // 1 bytes for each char
+  const bufView = new Uint8Array(buf);
+  for (let i = 0; i < str.length; i++) {
+    bufView[i] = str.charCodeAt(i);
+  }
+  return new Uint8Array(buf);
 }
 
 /**

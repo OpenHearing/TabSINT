@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer';
 import { BluetoothType, ChaDeviceType, DialogType } from '../../utilities/constants';
 import { Logger } from '../logger.service';
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
@@ -5,7 +6,7 @@ import { isGetDirectoryResponse, isValidDeviceResponse } from '../../guards/type
 import { inject } from '@angular/core';
 import { Directory, FileInfo, Filesystem } from '@capacitor/filesystem';
 import { ChaAdapter } from './cha-adapter';
-import { calculateCRC32, str2arr } from '../../utilities/checksums';
+import { calculateCRC32, numberToHex, stringToUint8Array } from '../../utilities/checksums';
 import { Notifications } from '../notifications.service';
 import { TranslocoService } from '@jsverse/transloco';
 import { DiskModel } from '../../models/disk/disk.service';
@@ -184,10 +185,11 @@ export class ChaMediaHandler {
     const fileInfos = await this.getDirectoryShallow(currentPath);
     for (const info of fileInfos) {
       // this is why we needed the root definition
-      const chaTarget = this.joinPath(chaDirectoryName, info.name);
+      const fileNameUpper = info.name.toUpperCase(); // convert to all upper case for uniformity
+      const chaTarget = this.joinPath(chaDirectoryName, fileNameUpper);
       if (info.type === 'directory') {
-        const targetBuffer = str2arr(chaTarget.toUpperCase());
-        const dirCrc = numberToHex(calculateCRC32(targetBuffer));
+        const nameArray = stringToUint8Array(fileNameUpper);
+        const dirCrc = numberToHex(calculateCRC32(nameArray));
         tabletDirectories.push(info.uri); // save this for recursion later
 
         // is the directory already on the cha?
@@ -201,7 +203,7 @@ export class ChaMediaHandler {
 
           // messy, but have to build a human-readable path list separately - can't recurse into a dir to delete files using the crc because we don't know the actual name!
           const tmpIndDir = chaDirectories.findIndex(function (chaDir) {
-            return chaDir.Path === info.name.toUpperCase();
+            return chaDir.Path === fileNameUpper;
           });
           if (tmpIndDir >= 0) {
             chaDirectories.splice(tmpIndDir, 1); // remove from the list it is already on device
@@ -214,13 +216,12 @@ export class ChaMediaHandler {
           }
         }
       } else if (info.type === 'file') {
-        const nameUpper = info.name.toUpperCase(); // convert to all upper case for uniformity
-        const nameArray = str2arr(nameUpper);
-        const fileData = await this.getFileData(this.joinPath(currentPath, info.name));
-        const dataArray = str2arr(fileData);
-        const combinedArray = new Uint8Array(dataArray.byteLength + nameArray.byteLength);
+        const nameArray = stringToUint8Array(fileNameUpper);
+        const buffer = await this.getBufferFromFile(this.joinPath(currentPath, info.name));
+        const fileArray = new Uint8Array(buffer);
+        const combinedArray = new Uint8Array(nameArray.byteLength + fileArray.byteLength);
         combinedArray.set(nameArray);
-        combinedArray.set(dataArray, nameArray.byteLength);
+        combinedArray.set(fileArray, nameArray.byteLength);
         const fileCrc = numberToHex(calculateCRC32(combinedArray));
         const fileSize = await this.getFileSize(this.joinPath(currentPath, info.name));
         // Find out if this file is on the cha already
@@ -245,20 +246,20 @@ export class ChaMediaHandler {
             fileSize: fileSize,
           }); // it's not on the cha - add to transfer list
         }
-        }
       }
-      // Build delete action lists - any remaining crcs/dirCrcs/directories should be deleted
-      if (isAdminDirectory || isUserDirectory) {
-        this.logger.debug('CHA media sync: not deleting - this is a user directory: ' + chaDirectoryName);
-        // don't delete files here - they are in the main user directory - things like mediaver.txt and cha_prog.dat, plus users can have more than one media repo, and they'd all go in USER!
-      } else {
-        for (const chaFile of chaFiles) {
-          // all remaining chaFiles did not match a file in the tablet-based repo.  delete these files
-          mutableLists.deleteList.push(this.joinPath(userRelativeDirectory, chaFile.Path));
-        }
-        for (const chaDir of chaDirectories) {
-          // all remaining chaDirs did not match a dir in the tablet-based repo.  delete these dirs
-          mutableLists.deleteDirectoryList.push(this.joinPath(userRelativeDirectory, chaDir.Path));
+    }
+    // Build delete action lists - any remaining crcs/dirCrcs/directories should be deleted
+    if (isAdminDirectory || isUserDirectory) {
+      this.logger.debug('CHA media sync: not deleting - this is a user directory: ' + chaDirectoryName);
+      // don't delete files here - they are in the main user directory - things like mediaver.txt and cha_prog.dat, plus users can have more than one media repo, and they'd all go in USER!
+    } else {
+      for (const chaFile of chaFiles) {
+        // all remaining chaFiles did not match a file in the tablet-based repo.  delete these files
+        mutableLists.deleteList.push(this.joinPath(userRelativeDirectory, chaFile.Path));
+      }
+      for (const chaDir of chaDirectories) {
+        // all remaining chaDirs did not match a dir in the tablet-based repo.  delete these dirs
+        mutableLists.deleteDirectoryList.push(this.joinPath(userRelativeDirectory, chaDir.Path));
       }
     }
     // recurse using the saved tabletDirectories
@@ -507,11 +508,11 @@ export class ChaMediaHandler {
   }
 
   /**
-   * Get the data of a file.
+   * Get the data of a file as a buffer.
    * @param path The file path.
-   * @returns The file data as base64.
+   * @returns The file buffer.
    */
-  private async getFileData(path: string): Promise<string> {
+  private async getBufferFromFile(path: string): Promise<ArrayBuffer> {
     // Handle relative and absolute path
     const dataFolderInfo = await Filesystem.getUri({
       path: '',
@@ -528,7 +529,7 @@ export class ChaMediaHandler {
       directory: Directory.Data,
     });
 
-    return file.data as string;
+    return Buffer.from(file.data as string, 'base64').buffer;
   }
 
   /**
