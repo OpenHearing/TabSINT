@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { CapacitorHttp, HttpOptions, HttpResponseType } from '@capacitor/core';
+import { CapacitorHttp, HttpOptions, HttpResponseType, HttpResponse } from '@capacitor/core';
 
 import { GitlabConfigInterface } from '../models/disk/disk.interface';
 import { FileService } from './file.service';
@@ -81,17 +81,17 @@ export class GitlabService {
     const projectId = await this._getGitlabProjectId(gitlabConfig.host, gitlabConfig.repository, gitlabConfig.group, headers);
     const commitHash = await this._getLatestCommitHash(gitlabConfig.host, projectId, headers);
     const fileUrl = `${gitlabConfig.host}/api/v4/projects/${projectId}/repository/files/${relativeFilePath}/raw?ref=${commitHash}`;
-    const data = this._fetchGitlabData({ url: fileUrl, headers: headers }, `Failed to fetch ${relativeFilePath}`);
+    const data = (await this._fetchGitlabResponse({ url: fileUrl, headers: headers }, `Failed to fetch ${relativeFilePath}`)).data;
     return data;
   }
 
   /**
-   * Fetch data from Gitlab using a URL and return the response if successful.
+   * Fetch response from Gitlab using a URL and return the response if successful.
    * @param options The http options for the fetch.
    * @param errorMessagePrefix Message to prefix errors with on failure.
-   * @returns The response data if successful.
+   * @returns The response if successful.
    */
-  private async _fetchGitlabData(options: HttpOptions, errorMessagePrefix: string) {
+  private async _fetchGitlabResponse(options: HttpOptions, errorMessagePrefix: string): Promise<HttpResponse> {
     const response = await CapacitorHttp.get(options);
     if (response.status < 200 || response.status >= 300) {
       if (response.status === 401) {
@@ -100,7 +100,7 @@ export class GitlabService {
       throw new Error(`${errorMessagePrefix} ${response.status}`);
     }
 
-    return response.data;
+    return response;
   }
 
   /**
@@ -120,10 +120,22 @@ export class GitlabService {
     headers: { Authorization: string },
     localDir: string
   ): Promise<string | undefined> {
-    const repoFiles = await this._fetchGitlabData(
-      { url: `${host}/api/v4/projects/${projectId}/repository/tree?ref=${ref}&recursive=true`, headers: headers },
-      'Failed to fetch repository files: '
-    );
+    let page = 1;
+    const repoFiles = [];
+
+    // Loop over each returned pages to retrieve all files
+    while (page) {
+      const response = await this._fetchGitlabResponse(
+        { url: `${host}/api/v4/projects/${projectId}/repository/tree?ref=${ref}&recursive=true&per_page=100&page=${page}`, headers: headers },
+        'Failed to fetch repository files: '
+      );
+
+      const items = await response.data;
+      repoFiles.push(...items);
+
+      const nextPage = response.headers['x-next-page'];
+      page = nextPage ? Number(nextPage) : 0;
+    }
 
     if (!repoFiles || repoFiles.length === 0) {
       throw new Error('No files found in the repository.');
@@ -146,7 +158,7 @@ export class GitlabService {
         responseType: (file.name.includes('.json') ? 'json' : 'blob') as HttpResponseType,
         headers: headers,
       };
-      const data = await this._fetchGitlabData(options, `Error loading repo file ${filePath}`);
+      const data = (await this._fetchGitlabResponse(options, `Error loading repo file ${filePath}`)).data;
 
       try {
         if (file.name.includes('.json')) {
@@ -179,13 +191,22 @@ export class GitlabService {
     headers: { Authorization: string },
     localDir: string
   ): Promise<string | undefined> {
-    const repoFiles = await this._fetchGitlabData(
-      {
-        url: `${host}/api/v4/projects/${projectId}/repository/tree?ref=${ref}&recursive=true`,
-        headers: headers,
-      },
-      'Failed to fetch repository files: '
-    );
+    let page = 1;
+    const repoFiles = [];
+
+    // Loop over each returned pages to retrieve all files
+    while (page) {
+      const response = await this._fetchGitlabResponse(
+        { url: `${host}/api/v4/projects/${projectId}/repository/tree?ref=${ref}&recursive=true&per_page=100&page=${page}`, headers: headers },
+        'Failed to fetch repository files: '
+      );
+
+      const items = await response.data;
+      repoFiles.push(...items);
+
+      const nextPage = response.headers['x-next-page'];
+      page = nextPage ? Number(nextPage) : 0;
+    }
 
     if (!repoFiles || repoFiles.length === 0) {
       throw new Error('No files found in the repository.');
@@ -211,7 +232,7 @@ export class GitlabService {
         responseType: (file.name.includes('.json') ? 'json' : 'blob') as HttpResponseType,
         headers: headers,
       };
-      const data = await this._fetchGitlabData(options, `Error loading repo file ${filePath}`);
+      const data = (await this._fetchGitlabResponse(options, `Error loading repo file ${filePath}`)).data;
 
       try {
         if (file.name.includes('.json')) {
@@ -248,10 +269,12 @@ export class GitlabService {
    * @returns The latest commit hash.
    */
   private async _getLatestCommitHash(host: string, projectId: number, headers: { Authorization: string }): Promise<string> {
-    const commits = await this._fetchGitlabData(
-      { url: `${host}/api/v4/projects/${projectId}/repository/commits?per_page=1`, headers: headers },
-      'Failed to fetch latest commit: '
-    );
+    const commits = (
+      await this._fetchGitlabResponse(
+        { url: `${host}/api/v4/projects/${projectId}/repository/commits?per_page=1`, headers: headers },
+        'Failed to fetch latest commit: '
+      )
+    ).data;
 
     if (!commits.length) throw new Error('No commits found in repository.');
     return commits[0].id.substring(0, 8);
@@ -270,17 +293,18 @@ export class GitlabService {
 
     try {
       // First try the users own repositories to limit the search space on common names.
-      projects = await this._fetchGitlabData(
-        { url: `${host}/api/v4/projects?search=${repository}&membership=true`, headers: headers },
-        'Failed to fetch project list: '
-      );
+      projects = (
+        await this._fetchGitlabResponse(
+          { url: `${host}/api/v4/projects?search=${repository}&membership=true`, headers: headers },
+          'Failed to fetch project list: '
+        )
+      ).data;
     } catch (err) {
       // Fallback on all repositories. If there are too many with similar names this may fail.
       this.logger.error('Failed Gitlab search with membership trying without', err);
-      projects = await this._fetchGitlabData(
-        { url: `${host}/api/v4/projects?search=${repository}`, headers: headers },
-        'Failed to fetch project list: '
-      );
+      projects = (
+        await this._fetchGitlabResponse({ url: `${host}/api/v4/projects?search=${repository}`, headers: headers }, 'Failed to fetch project list: ')
+      ).data;
     }
 
     const matchedProject = projects.find(project => project.name === repository && project.namespace.full_path.toLowerCase() === group.toLowerCase());

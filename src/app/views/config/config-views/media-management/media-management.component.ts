@@ -223,7 +223,7 @@ export class MediaManagementComponent implements OnInit, OnDestroy {
     const relativePath = `gitlab/${safeFolder}`;
     const taggedConfig = structuredClone(config);
     try {
-      this.tasks.register('Add Gitlab Media', 'Downloading media files.');
+      this.tasks.register('Add Gitlab Media', 'Downloading Media Files...');
       if (!config.tag) {
         taggedConfig.tag = (await this.gitlabService.getGitlabReference(config)) ?? '';
       }
