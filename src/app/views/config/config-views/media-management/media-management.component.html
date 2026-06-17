@@ -8,14 +8,14 @@
 
   <div class="row pad-top">
     <div class="col-12">
-      <h5>{{ "Media Management" | transloco }}</h5>
+      <h5>{{ "Headset Media" | transloco }}</h5>
     </div>
   </div>
 
   <!-- Enable headset media -->
   <div class="row pad-top">
     <div class="col-6">
-      <label translate for="enableHeadsetMedia">{{ "Enable Media Management:" | transloco }}</label>
+      <label translate for="enableHeadsetMedia">{{ "Enable Headset Media Management:" | transloco }}</label>
     </div>
     <div class="col-4">
       <input id="enableHeadsetMedia" type="checkbox" [(ngModel)]="enableMediaManagement" />
@@ -37,7 +37,7 @@
         <label translate for="useRootDirectory">{{ "Use Root Directory:" | transloco }}</label>
       </div>
       <div class="col-4">
-        <input id="useRootDirectory" type="checkbox" [(ngModel)]="useRootDirectory" />
+        <input id="useRootDirectory" type="checkbox" [ngModel]="useRootDirectory" (change)="useRootDirectoryToggle($event)" />
       </div>
       <div class="col-1" href="javascript:" title="{{ 'Use Root Directory Help' | transloco }}">
         <i [matMenuTriggerFor]="useRootDirectoryHelpMenu" class="ion-help-circled"></i>
@@ -114,20 +114,5 @@
 
     <!-- Repository -->
     <app-gitlab-form-view (submitConfig)="addRemoteRepository($event)"></app-gitlab-form-view>
-
-    <div class="row pad-top" *ngIf="disk.preferences.appDeveloperMode">
-      <div class="col-8">
-        <label for="useCreareRepo">{{ "Use Creare Repository:" | transloco }}</label>
-      </div>
-      <div class="col-2"><input id="useCreareRepo" type="checkbox" [(ngModel)]="mediaRepoAdmin" /></div>
-      <div class="col-1" href="javascript:" title="{{ 'Use Creare Repository Help' | transloco }}">
-        <i [matMenuTriggerFor]="addCreareMediaRepoHelpMenu" class="ion-help-circled"></i>
-      </div>
-      <mat-menu #addCreareMediaRepoHelpMenu="matMenu">
-        <button mat-menu-item>
-          <div [innerHTML]="addCreareMediaRepoPopover"></div>
-        </button>
-      </mat-menu>
-    </div>
   </div>
 </div>

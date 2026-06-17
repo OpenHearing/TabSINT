@@ -109,7 +109,7 @@
 <div class="row pad-top">
   <div class="col-6">{{ "Disable Automatic Volume Control:" | transloco }}</div>
   <div class="col-2">
-    <input id="automaticVolControl" type="checkbox" [ngModel]="disk.preferences.disableVolume" (change)="toggleDisableVolume()" />
+    <input id="automaticVolControl" type="checkbox" [ngModel]="disk.preferences.disableVolume" (change)="toggleDisableVolume($event)" />
   </div>
   <div class="col-2"></div>
   <div class="col-1" href="javascript:" title="{{ 'Automatic Volume Control Help' | transloco }}">
@@ -175,21 +175,27 @@
 </div>
 
 <div class="row pad-top">
-  <div class="col-6"><label for="showTympan">{{ "Tympan:" | transloco }}</label></div>
+  <div class="col-6">
+    <label for="showTympan">{{ "Tympan:" | transloco }}</label>
+  </div>
   <div class="col-2">
     <input id="showTympan" type="checkbox" [ngModel]="disk.preferences.showTympanPanel ?? true" (change)="toggleShowTympanPanel()" />
   </div>
 </div>
 
 <div class="row pad-top">
-  <div class="col-6"><label for="showWahts">{{ "WAHTS:" | transloco }}</label></div>
+  <div class="col-6">
+    <label for="showWahts">{{ "WAHTS:" | transloco }}</label>
+  </div>
   <div class="col-2">
     <input id="showWahts" type="checkbox" [ngModel]="disk.preferences.showWahtsPanel ?? true" (change)="toggleShowWahtsPanel()" />
   </div>
 </div>
 
 <div class="row pad-top">
-  <div class="col-6"><label for="showDuodose">{{ "Duodose:" | transloco }}</label></div>
+  <div class="col-6">
+    <label for="showDuodose">{{ "Duodose:" | transloco }}</label>
+  </div>
   <div class="col-2">
     <input id="showDuodose" type="checkbox" [ngModel]="disk.preferences.showDuodosePanel ?? true" (change)="toggleShowDuodosePanel()" />
   </div>
@@ -339,7 +345,6 @@
         </button>
       </mat-menu>
     </div>
-
 
     <!-- Tablet Gain -->
     <div class="row pad-top">

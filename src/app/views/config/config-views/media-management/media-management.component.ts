@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
-import { Subscription } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 
 import { DiskInterface, GitlabConfigInterface } from '../../../../models/disk/disk.interface';
 
@@ -16,6 +16,7 @@ import { getDateString } from '../../../../utilities/results-helper-functions';
 import { Tasks } from '../../../../services/tasks.service';
 import { Logger } from '../../../../services/logger.service';
 import { isValidDeviceResponse } from '../../../../guards/type.guard';
+import { DialogDataInterface } from '../../../../interfaces/dialog-data.interface';
 
 @Component({
   selector: 'app-media-management-view',
@@ -39,7 +40,6 @@ export class MediaManagementComponent implements OnInit, OnDestroy {
   mediaRepos: MediaReposInterface[] = [];
   selectedMediaRepo: string | undefined = undefined;
   syncingMedia: boolean = false;
-  mediaRepoAdmin: boolean = false;
   gitlabConfig: Partial<GitlabConfigInterface> = {};
   diskSubscription: Subscription | undefined;
   Number = Number;
@@ -165,6 +165,33 @@ export class MediaManagementComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Toggle the use root directory boolean and show a confirmation dialog before enabling.
+   * @param event The click event.
+   */
+  async useRootDirectoryToggle(event: Event) {
+    const checkbox = event.target as HTMLInputElement;
+    if (this.useRootDirectory) {
+      this.useRootDirectory = false;
+    } else {
+      const rootDirectoryMsg = this.transloco.translate(
+        'Are you sure you want to enable syncing to the root directory? ' +
+          'Syncing to the root directory could change the media used in all standard Creare CHA exams. ' +
+          'Only sync this repo if you know what you are doing!'
+      );
+      const msg: DialogDataInterface = {
+        title: 'Confirm Root Directory',
+        content: rootDirectoryMsg,
+        type: DialogType.Confirm,
+      };
+      const result = await firstValueFrom(this.notifications.alert(msg));
+      if (result === 'OK') {
+        this.useRootDirectory = true;
+      }
+    }
+    checkbox.checked = this.useRootDirectory;
+  }
+
+  /**
    * Handle error messages from Gitlab with a user notification.
    * @param error The error to be displayed.
    */
@@ -262,12 +289,6 @@ export class MediaManagementComponent implements OnInit, OnDestroy {
       '<strong>OPTIONAL:</strong> Type in the repository tag for the version of the repository you would like to download. Leave blank to download the latest tag/commit from the repository.'
     );
   }
-  get addCreareMediaRepoPopover() {
-    return this.transloco.translate(
-      'Select this box to download the standard CREARE media on the headset.  Syncing this repo to the headset could change the media used in all standard Creare CHA exams.  Only download and sync this repo if you know what you are doing!'
-    );
-  }
-
   get useRootDirectoryPopover() {
     return this.transloco.translate('Whether the transfer should move the files to the root directory on the device or to the user directory.');
   }
