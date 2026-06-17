@@ -90,8 +90,9 @@ export function isFileProgressResponse(response?: IDeviceResponse): response is 
 export function isDirectoryEntryResponse(response?: IDeviceResponse): response is DirectoryEntryResponse {
   return (
     isValidDeviceResponse(response) &&
-    (response as DirectoryEntryResponse).msg[1].path !== undefined &&
-    (response as DirectoryEntryResponse).msg[1].attributes !== undefined
+    (response as DirectoryEntryResponse).msg[1].Path !== undefined &&
+    (response as DirectoryEntryResponse).msg[1].SizeBytes !== undefined &&
+    (response as DirectoryEntryResponse).msg[1].Attributes !== undefined
   );
 }
 

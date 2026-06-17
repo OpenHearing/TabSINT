@@ -129,10 +129,15 @@ export interface DirectoryEntryObject {
   /**
    * The path for the entry.
    */
-  path: string;
+  Path: string;
+
+  /**
+   * The entry size in bytes.
+   */
+  SizeBytes: number;
 
   /**
    * The entry attributes.
    */
-  attributes: number;
+  Attributes: number;
 }

@@ -143,10 +143,10 @@ export class ChaMediaHandler {
     const entries: DirectoryEntryObject[] = response['msg'][1];
     if (entries.length > 0) {
       chaCrcs = entries.filter(function (entry) {
-        return !(entry.attributes & 16);
+        return !(entry.Attributes & 16);
       });
       chaDirCrcs = entries.filter(function (entry) {
-        return entry.attributes & 16;
+        return entry.Attributes & 16;
       });
     } else {
       const response = await this.adapter.makeDirectory(device, chaDirectoryName, 0x2000);
@@ -166,10 +166,10 @@ export class ChaMediaHandler {
         const entries = response['msg'][1];
         if (entries.length > 0) {
           chaFiles = entries.filter(function (entry) {
-            return !(entry.attributes & 16);
+            return !(entry.Attributes & 16);
           });
           chaDirectories = entries.filter(function (entry) {
-            return entry.attributes & 16;
+            return entry.Attributes & 16;
           });
         } else {
           chaDirectories = [];
@@ -192,7 +192,7 @@ export class ChaMediaHandler {
 
         // is the directory already on the cha?
         const tmpIndCrc = chaDirCrcs.findIndex(function (chaDirCrc) {
-          return chaDirCrc.path === dirCrc;
+          return chaDirCrc.Path === dirCrc;
         });
         if (tmpIndCrc >= 0) {
           mutableLists.equalDirList.push(chaTarget); // for debugging
@@ -201,7 +201,7 @@ export class ChaMediaHandler {
 
           // messy, but have to build a human-readable path list separately - can't recurse into a dir to delete files using the crc because we don't know the actual name!
           const tmpIndDir = chaDirectories.findIndex(function (chaDir) {
-            return chaDir.path === info.name.toUpperCase();
+            return chaDir.Path === info.name.toUpperCase();
           });
           if (tmpIndDir >= 0) {
             chaDirectories.splice(tmpIndDir, 1); // remove from the list it is already on device
@@ -225,7 +225,7 @@ export class ChaMediaHandler {
         const fileSize = await this.getFileSize(this.joinPath(currentPath, info.name));
         // Find out if this file is on the cha already
         const tmpInd = chaCrcs.findIndex(function (chaCrc) {
-          return chaCrc.path === fileCrc;
+          return chaCrc.Path === fileCrc;
         });
         if (tmpInd >= 0) {
           mutableLists.equalFileList.push(chaTarget); // for debugging
@@ -233,7 +233,7 @@ export class ChaMediaHandler {
 
           // messy, but have to build a human-readable path list separately
           const tmpIndFile = chaFiles.findIndex(function (chaFile) {
-            return chaFile.path === info.name.toUpperCase();
+            return chaFile.Path === info.name.toUpperCase();
           });
           if (tmpIndFile >= 0) {
             chaFiles.splice(tmpIndFile, 1); // remove from the list it is already on device
@@ -253,11 +253,11 @@ export class ChaMediaHandler {
       } else {
         for (const chaFile of chaFiles) {
           // all remaining chaFiles did not match a file in the tablet-based repo.  delete these files
-          mutableLists.deleteList.push(this.joinPath(userRelativeDirectory, chaFile.path));
+          mutableLists.deleteList.push(this.joinPath(userRelativeDirectory, chaFile.Path));
         }
         for (const chaDir of chaDirectories) {
           // all remaining chaDirs did not match a dir in the tablet-based repo.  delete these dirs
-          mutableLists.deleteDirectoryList.push(this.joinPath(userRelativeDirectory, chaDir.path));
+          mutableLists.deleteDirectoryList.push(this.joinPath(userRelativeDirectory, chaDir.Path));
         }
       }
     }
@@ -419,17 +419,17 @@ export class ChaMediaHandler {
         const entries: DirectoryEntryObject[] = response['msg'][1];
         if (entries.length > 0) {
           const files = entries.filter(function (entry) {
-            return !(entry.attributes & 16);
+            return !(entry.Attributes & 16);
           });
           for (const file of files) {
-            const fullFilePath = this.joinPath(currentDirectory, file.path);
+            const fullFilePath = this.joinPath(currentDirectory, file.Path);
             await this.adapter.deleteFile(device, fullFilePath);
           }
           const dirs = entries.filter(function (entry) {
-            return entry.attributes & 16;
+            return entry.Attributes & 16;
           });
           for (const dir of dirs) {
-            const fullDirectoryPath = this.joinPath(currentDirectory, dir.path);
+            const fullDirectoryPath = this.joinPath(currentDirectory, dir.Path);
             await deleteRecursively(fullDirectoryPath);
           }
         }

@@ -442,7 +442,7 @@ export abstract class ChaManager implements IDeviceManager {
     }
 
     for (const entry of entries) {
-      const longNameResponse = await this.adapter.getChaLongName(device, baseDir + entry.path);
+      const longNameResponse = await this.adapter.getChaLongName(device, baseDir + entry.Path);
       await this.deviceErrorHandler(longNameResponse);
       if (isLongNameResponse(longNameResponse) && longNameResponse['msg'][0] !== '') {
         longNames.push(longNameResponse['msg'][0] as string);
