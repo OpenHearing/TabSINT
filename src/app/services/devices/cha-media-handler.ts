@@ -187,7 +187,7 @@ export class ChaMediaHandler {
       const chaTarget = this.joinPath(chaDirectoryName, info.name);
       if (info.type === 'directory') {
         const targetBuffer = str2arr(chaTarget.toUpperCase());
-        const dirCrc = calculateCRC32(targetBuffer).toString(16).toUpperCase();
+        const dirCrc = numberToHex(calculateCRC32(targetBuffer));
         tabletDirectories.push(info.uri); // save this for recursion later
 
         // is the directory already on the cha?
@@ -221,7 +221,7 @@ export class ChaMediaHandler {
         const combinedArray = new Uint8Array(dataArray.byteLength + nameArray.byteLength);
         combinedArray.set(nameArray);
         combinedArray.set(dataArray, nameArray.byteLength);
-        const fileCrc = calculateCRC32(combinedArray).toString(16).toUpperCase();
+        const fileCrc = numberToHex(calculateCRC32(combinedArray));
         const fileSize = await this.getFileSize(this.joinPath(currentPath, info.name));
         // Find out if this file is on the cha already
         const tmpInd = chaCrcs.findIndex(function (chaCrc) {
