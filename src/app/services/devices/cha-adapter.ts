@@ -594,7 +594,8 @@ export class ChaAdapter implements IDeviceAdapter {
       };
       let deviceResponse = this.defaultInvalidResponse(device);
       try {
-        const fileOperationPromise = this.waitForResponseWithStatusUpdates(device, 'FileOperationComplete', 'DirEntry', dirCallback, 10000);
+        // Reading from directories can be very slow this function has a large timeout to get around this issue
+        const fileOperationPromise = this.waitForResponseWithStatusUpdates(device, 'FileOperationComplete', 'DirEntry', dirCallback, 20000);
         await TabsintCha.requestDirectory(requestDirectoryOptions);
         const writeResponse = await fileOperationPromise;
         if (isSuccessfulFileOperation(writeResponse)) {
