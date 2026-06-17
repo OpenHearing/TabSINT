@@ -114,7 +114,7 @@ export class MediaManagementComponent implements OnInit, OnDestroy {
     } finally {
       this.tasks.deregister('mediaSync');
       this.syncingMedia = false;
-      const completionMsg = transferSuccess ? 'Media successfully transferred.' : 'Media transfer failed, see logs for additional details.';
+      const completionMsg = transferSuccess ? 'Media successfully transferred.' : 'Media transfer cancelled, see logs for additional details.';
       this.notifications.alert({
         title: 'Alert',
         content: completionMsg,

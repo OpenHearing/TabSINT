@@ -472,7 +472,7 @@ export abstract class ChaManager implements IDeviceManager {
    * @returns The device response for the request or undefined.
    */
   async transferDirectory(device: ChaDeviceType, localDirectory: string, remoteDirectory: string): Promise<IDeviceResponse> {
-    const response = await this.mediaHandler.syncRemoteToLocalDirectory(device, localDirectory, remoteDirectory);
+    const response = await this.mediaHandler.transferDirectory(device, localDirectory, remoteDirectory);
     await this.deviceErrorHandler(response);
     return response;
   }
@@ -483,6 +483,7 @@ export abstract class ChaManager implements IDeviceManager {
    * @returns The device response for the request or undefined.
    */
   async cancelFileOperation(device: ChaDeviceType): Promise<IDeviceResponse> {
+    this.mediaHandler.cancelDirectoryTransfer(device); // Cancel any transfers to ensure additional file operations do not continue
     const response = await this.adapter.cancelFileOperation(device);
     await this.deviceErrorHandler(response);
     return response;

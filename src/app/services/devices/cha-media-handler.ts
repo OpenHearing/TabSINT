@@ -42,7 +42,7 @@ export class ChaMediaHandler {
    * @param remoteDirectory The directory to sync to.
    * @returns The device response for the request or undefined.
    */
-  async syncRemoteToLocalDirectory(device: ChaDeviceType, localDirectory: string, remoteDirectory: string): Promise<IDeviceResponse> {
+  async transferDirectory(device: ChaDeviceType, localDirectory: string, remoteDirectory: string): Promise<IDeviceResponse> {
     const mutableLists = {
       equalDirList: [] as string[],
       equalFileList: [] as string[],
@@ -88,6 +88,14 @@ export class ChaMediaHandler {
       this.fileTransferDevices.delete(device.deviceId);
     }
     return deviceResponse;
+  }
+
+  /**
+   * Cancel any ongoing directory transfer processes.
+   * @param device The device to cancel the transfer for.
+   */
+  cancelDirectoryTransfer(device: ChaDeviceType) {
+    this.fileTransferDevices.delete(device.deviceId);
   }
 
   /**
