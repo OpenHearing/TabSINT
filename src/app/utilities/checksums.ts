@@ -43,6 +43,19 @@ export function calculateCRC32(byteArray: Uint8Array): number {
 }
 
 /**
+ * Convert number to upper case hexadecimal string.
+ * @param num The number to convert.
+ * @param width The optional fixed width, defaults to 8.
+ * @returns The hexadecimal string in upper case.
+ */
+export function numberToHex(num: number, width: number | undefined = 8): string {
+  return num
+    .toString(16)
+    .padStart(width ?? 0, '0')
+    .toUpperCase();
+}
+
+/**
  * Convert a string to a uint8 array.
  * @param str The string to convert.
  * @returns The uint8 array.
