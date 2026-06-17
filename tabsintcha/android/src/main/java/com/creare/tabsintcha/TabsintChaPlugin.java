@@ -240,11 +240,6 @@ public class TabsintChaPlugin extends Plugin {
   }
 
   @PluginMethod
-  public void requestDirectoryCrc(PluginCall pluginCall) {
-    execute(pluginCall, implementation.requestDirectoryAction);
-  }
-
-  @PluginMethod
   public void getLfnFromSfn(PluginCall pluginCall) {
     execute(pluginCall, implementation.getLfnFromSfnAction);
   }
