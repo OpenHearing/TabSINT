@@ -101,6 +101,6 @@ export function isGetDirectoryResponse(response?: IDeviceResponse): response is 
     isValidDeviceResponse(response) &&
     response.msg.length >= 2 &&
     Array.isArray(response.msg[1]) &&
-    response.msg[1].every(entry => isDirectoryEntryResponse(entry))
+    response.msg[1].every(entry => entry.Path !== undefined && entry.SizeBytes !== undefined && entry.Attributes !== undefined)
   );
 }
