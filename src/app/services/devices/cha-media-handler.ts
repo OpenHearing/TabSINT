@@ -167,7 +167,7 @@ export class ChaMediaHandler {
 
     // Grab all directories and files which aren't in the media repository for deletion. We need names not CRCs for this.
     // These should be deleted unless at the USER level or ROOT level.
-    const isUserDirectory = chaDirectoryName.toUpperCase().endsWith('USER') || chaDirectoryName.toUpperCase().endsWith('USER/');
+    const isUserDirectory = userRelativeDirectory.length == 0;
     const isAdminDirectory = isAdmin && !chaDirectoryName.toUpperCase().includes('USER');
     if (!isAdminDirectory && !isUserDirectory) {
       const response = await this.adapter.getDirectory(device, userRelativeDirectory); // user level
