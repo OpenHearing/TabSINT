@@ -139,7 +139,7 @@ export class ChaMediaHandler {
 
     // Replace the tablet portion of path with the remote portion, transition to upper case so everything matches the cha directory structure
     const chaDirectoryName = currentPath.replace(localDirectory, remoteDirectory).toUpperCase().replace(/\/+/g, '/');
-    const userRelativeDirectory = chaDirectoryName.replace(/^USER\//i, '');
+    const userRelativeDirectory = chaDirectoryName.replace(/^\/?USER(\/|$)/i, ''); // Match /USER, /USER/, USER, etc.
 
     const response = await this.adapter.getDirectory(device, chaDirectoryName, 0x6000); // root level, CRC flags
 
