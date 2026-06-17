@@ -245,6 +245,7 @@ export class ChaMediaHandler {
             fileSize: fileSize,
           }); // it's not on the cha - add to transfer list
         }
+        }
       }
       // Build delete action lists - any remaining crcs/dirCrcs/directories should be deleted
       if (isAdminDirectory || isUserDirectory) {
@@ -258,7 +259,6 @@ export class ChaMediaHandler {
         for (const chaDir of chaDirectories) {
           // all remaining chaDirs did not match a dir in the tablet-based repo.  delete these dirs
           mutableLists.deleteDirectoryList.push(this.joinPath(userRelativeDirectory, chaDir.Path));
-        }
       }
     }
     // recurse using the saved tabletDirectories
