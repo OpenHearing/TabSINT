@@ -16,9 +16,11 @@ Because the calibration is hardware-specific, each hardware combination (headset
 To generate a calibrated protocol, a protocol developer would:
 
 1. Write the protocol.json file for TabSINT, including the calibration block that defines the calibration to be completed.
-2. Add the correct hardware options (tablet and headset) to the protocol.json file.
-3. Pass the protocol.json along with the raw wav files to the MATLAB processor in a zip format.
-4. Generate the calibrated protocol. The response will contain the original protocol.json file, calibrated wav files, and a new calibration.json file that contains scale and playback information for each of the wav files.
+2. Pass the protocol.json along with the raw wav files in a zip format to the MATLAB processor and specify hardware arguments.
+
+- Hardware options (tablet and headset) should no longer be defined in the protocol.json and instead should be passed as arguments to the calibration function.
+
+3. Generate the calibrated protocol. The response will contain the original protocol.json file, calibrated wav files, and a new calibration.json file that contains scale and playback information for each of the wav files.
 
 The MATLAB processor can be found in the Calibration repository in the MATLAB Server branch. The repository provides a detailed instruction set for calibration generation in the README.txt file.
 
@@ -43,11 +45,9 @@ The way a sound file is calibrated is inferred from the accompanying data in the
 | 1                | None                                   | arbitrary                  |
 | 2                | referenceFile, referenceLevel (db SPL) | arbitrary, as-recorded     |
 
-### Example Calibration Block with Headset and Tablet
+### Example Calibration Block
 
 ```
-"Tablet": "TabE",
-"headset": "VicFirth",
 "calibration": [
    {
      "wavfiles": ["arbitrarySound1.wav"]
