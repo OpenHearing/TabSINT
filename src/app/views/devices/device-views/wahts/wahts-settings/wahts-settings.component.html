@@ -1,9 +1,8 @@
 <div class="cha-info">
+  <app-cha-settings [device]="device"></app-cha-settings>
 
-    <app-cha-settings [device]="device"></app-cha-settings>
-
-    <!-- Preferences -->
-    <!-- <div class="row pad-top">
+  <!-- Preferences -->
+  <!-- <div class="row pad-top">
         <div class="col-12">
             <h5>Preferences</h5>
         </div>
@@ -22,24 +21,6 @@
         </div>
     </div> -->
 
-    <!-- Headset Media -->
-    <div class="row pad-top">
-        <div class="col-12">
-            <h5>{{ "Headset Media" | transloco }}</h5>
-        </div>
-
-        <div class="row pad-top">
-            <div class="col-6">
-                <label [for]="'enableHeadsetMediaManagement-' + device.deviceId">{{ "Enable Headset Media Management:" | transloco }}</label>
-            </div>
-            <div class="col-2">
-                <input
-                [id]="'enableHeadsetMediaManagement-' + device.deviceId"
-                type="checkbox"
-                [ngModel]="disk.preferences.enableHeadsetMediaManagement"
-                (change)="toggleEnableHeadsetMediaManagement()" />
-            </div>
-        </div>
-    </div>
-
+  <!-- Headset Media -->
+  <app-media-management-view [device]="device"></app-media-management-view>
 </div>

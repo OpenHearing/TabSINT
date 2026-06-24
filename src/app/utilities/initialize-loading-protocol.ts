@@ -63,7 +63,7 @@ export async function initializeLoadingProtocol(
   async function setMediaRepo(): Promise<void> {
     if (loading.protocol.commonMediaRepository) {
       const midx = _.findIndex(disk.mediaRepos, {
-        name: loading.protocol.commonMediaRepository,
+        repository: loading.protocol.commonMediaRepository,
       });
       if (midx !== -1) {
         loading.protocol.commonRepo = disk.mediaRepos[midx];

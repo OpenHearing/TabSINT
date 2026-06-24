@@ -235,17 +235,7 @@ public class TabsintChaPlugin extends Plugin {
   }
 
   @PluginMethod
-  public void startFileWriteRoot(PluginCall pluginCall) {
-    execute(pluginCall, implementation.startFileWriteAction);
-  }
-
-  @PluginMethod
   public void requestDirectory(PluginCall pluginCall) {
-    execute(pluginCall, implementation.requestDirectoryAction);
-  }
-
-  @PluginMethod
-  public void requestDirectoryCrc(PluginCall pluginCall) {
     execute(pluginCall, implementation.requestDirectoryAction);
   }
 
@@ -256,11 +246,6 @@ public class TabsintChaPlugin extends Plugin {
 
   @PluginMethod
   public void makeDirectory(PluginCall pluginCall) {
-    execute(pluginCall, implementation.makeDirectoryAction);
-  }
-
-  @PluginMethod
-  public void makeDirectoryRoot(PluginCall pluginCall) {
     execute(pluginCall, implementation.makeDirectoryAction);
   }
 

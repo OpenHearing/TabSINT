@@ -1,6 +1,6 @@
-export interface MediaReposInterface {
-  name: string;
-  version: string;
+import { GitlabConfigInterface } from '../models/disk/disk.interface';
+
+export interface MediaReposInterface extends GitlabConfigInterface {
   date: string;
   path: string;
 }
