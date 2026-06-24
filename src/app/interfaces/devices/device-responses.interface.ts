@@ -26,6 +26,27 @@ export interface FileProgressResponse extends IDeviceResponse {
 }
 
 /**
+ * Generic file operation complete response for devices.
+ */
+export interface FileOperationCompleteResponse extends IDeviceResponse {
+  msg: [unknown, FileOperationCompleteObject];
+}
+
+/**
+ * Generic directory entry response for devices.
+ */
+export interface DirectoryEntryResponse extends IDeviceResponse {
+  msg: [unknown, DirectoryEntryObject];
+}
+
+/**
+ * Generic get directory response for devices.
+ */
+export interface GetDirectoryResponse extends IDeviceResponse {
+  msg: [unknown, DirectoryEntryObject[]];
+}
+
+/**
  * Object held in a request ID response.
  */
 export interface RequestIdObject {
@@ -89,4 +110,34 @@ export interface FileProgressObject {
    * The total bytes to transfer.
    */
   TotalBytes: number;
+}
+
+/**
+ * Object held in a file operation complete response.
+ */
+export interface FileOperationCompleteObject {
+  /**
+   * The outcome of the operation.
+   */
+  Outcome: string;
+}
+
+/**
+ * Object held in a directory entry operation response.
+ */
+export interface DirectoryEntryObject {
+  /**
+   * The path for the entry.
+   */
+  Path: string;
+
+  /**
+   * The entry size in bytes.
+   */
+  SizeBytes: number;
+
+  /**
+   * The entry attributes.
+   */
+  Attributes: number;
 }

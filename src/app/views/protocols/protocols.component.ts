@@ -19,7 +19,7 @@ import { FileService } from '../../services/file.service';
 import { DialogType, ProtocolServer } from '../../utilities/constants';
 import { getProtocolMetaData } from '../../utilities/protocol-helper-functions';
 import { partialMetaDefaults } from '../../utilities/defaults';
-import { CapacitorHttp } from '@capacitor/core';
+import { GitlabService } from '../../services/gitlab.service';
 
 @Component({
   selector: 'app-protocols-view',
@@ -32,6 +32,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
   private readonly protocolM = inject(ProtocolModel);
   private readonly protocolService = inject(ProtocolService);
   private readonly fileService = inject(FileService);
+  private readonly gitlabService = inject(GitlabService);
   private readonly logger = inject(Logger);
   private readonly notifications = inject(Notifications);
   private readonly stateModel = inject(StateModel);
@@ -45,13 +46,11 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
   protocolModel: ProtocolModelInterface;
   state: StateInterface;
   selectedSource = 'device';
-  gitlabConfig: GitlabConfigInterface;
 
   constructor() {
     this.disk = this.diskModel.getDisk();
     this.protocolModel = this.protocolM.getProtocolModel();
     this.state = this.stateModel.getState();
-    this.gitlabConfig = this.disk.preferences.gitlabConfig;
   }
 
   ngOnInit(): void {
@@ -156,52 +155,32 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
     }
   }
 
-  async fetchGitlabProtocol() {
-    this.tasks.register('Add Gitlab Protocol', 'Checking Gitlab Protocol Configuration');
+  /**
+   * Fetch the remote repository and save it to the devices local storage.
+   * @param config The configuration used to download the repository.
+   */
+  async fetchGitlabProtocol(config: GitlabConfigInterface) {
     try {
-      if (!this.gitlabConfig.host || !this.gitlabConfig.token || !this.gitlabConfig.group || !this.gitlabConfig.repository) {
-        this.notifications
-          .alert({
-            title: 'Alert',
-            content: 'Missing required GitLab configuration. Please specify a GitLab host, token, group, and repository.',
-            type: DialogType.Alert,
-          })
-          .subscribe();
-        throw new Error('Missing required GitLab configuration. Please specify a GitLab host, token, group, and repository.');
-      }
-      // Detect if there "/" in the repository name and alert user
-      if (this.gitlabConfig.repository.includes('/')) {
-        this.notifications
-          .alert({
-            title: 'Alert',
-            content: "Repository name should not contain any '/'. If applicable, please move the parent directories to the group field.",
-            type: DialogType.Alert,
-          })
-          .subscribe();
-        // move the "/" to the group field and remove from repository field
-        this.fixGitlabRepositoryAndGroupSlashs();
-      }
-      // fix issue if a trailing "/" is in the group field
-      if (this.gitlabConfig.group.endsWith('/')) {
-        this.gitlabConfig.group = this.gitlabConfig.group.slice(0, -1);
-      }
-      const headers = {
-        Authorization: `Bearer ${this.gitlabConfig.token}`,
-      };
-      const projectId = await this.getGitlabProjectId(this.gitlabConfig.host, this.gitlabConfig.repository, this.gitlabConfig.group, headers);
-      const ref = await this.getGitlabRef(projectId, headers);
-      const localDir = `.tabsint-protocols/${this.gitlabConfig.repository}`;
+      const localDir = `.tabsint-protocols/${config.repository}`;
       this.tasks.register('Add Gitlab Protocol', 'Download protocol files');
-      const [protocolContent, folderUri] = await this.downloadAndSaveFiles(projectId, ref, this.gitlabConfig.host, headers, localDir);
+      const ref = await this.gitlabService.getGitlabReference(config);
+      const folderUri = await this.gitlabService.downloadGitlabRepository(config, localDir, true);
+      let protocolContent = undefined;
+      try {
+        const fileResponse = await this.fileService.readFile('protocol.json', localDir);
+        protocolContent = fileResponse?.content ? JSON.parse(fileResponse.content) : undefined;
+      } catch {
+        throw new Error('protocol.json not found in repository.');
+      }
 
       const protocol = {
         ...partialMetaDefaults,
         version: ref,
-        name: this.gitlabConfig.repository,
+        name: config.repository,
         server: ProtocolServer.Gitlab,
         contentURI: folderUri,
         admin: false,
-        gitlabConfig: { ...this.gitlabConfig, tag: ref },
+        gitlabConfig: { ...config, tag: ref },
         ...protocolContent,
       };
 
@@ -221,19 +200,27 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
     }
   }
 
-  fixGitlabRepositoryAndGroupSlashs() {
-    // handle edge cases related to "/"s
-    if (!this.gitlabConfig.group.endsWith('/')) {
-      this.gitlabConfig.group = this.gitlabConfig.group + '/';
+  /**
+   * Handle error messages from Gitlab with a user notification.
+   * @param error The error to be displayed.
+   */
+  handleGitlabError(error: unknown) {
+    const err = error instanceof Error ? error.message : error;
+    const errorMessage = String(err) || 'An error occurred while fetching the GitLab protocol.';
+
+    if (errorMessage.includes('Unauthorized')) {
+      this.notifications.alert({
+        title: 'Unauthorized',
+        content: 'Check your GitLab credentials.',
+        type: DialogType.Alert,
+      });
+    } else {
+      this.notifications.alert({
+        title: 'Error',
+        content: errorMessage,
+        type: DialogType.Alert,
+      });
     }
-    if (this.gitlabConfig.repository.endsWith('/')) {
-      this.gitlabConfig.repository = this.gitlabConfig.repository.slice(0, -1);
-    }
-    // move "/"s (directories) from repository to group
-    const tmpGroup = this.gitlabConfig.group + this.gitlabConfig.repository.split('/').slice(0, -1).join('/');
-    const tmpRepository = this.gitlabConfig.repository.split('/')[this.gitlabConfig.repository.split('/').length - 1];
-    this.gitlabConfig.repository = tmpRepository;
-    this.gitlabConfig.group = tmpGroup;
   }
 
   isProtocolActive(): boolean {
@@ -351,17 +338,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
       if (!selectedGitlabConfig.host || !selectedGitlabConfig.token || !selectedGitlabConfig.group || !selectedGitlabConfig.repository) {
         throw new Error('Missing required GitLab configuration. Please specify a GitLab host, token, group, and repository.');
       }
-      const headers = {
-        Authorization: `Bearer ${selectedGitlabConfig.token}`,
-      };
-      const projectId = await this.getGitlabProjectId(
-        selectedGitlabConfig.host,
-        selectedGitlabConfig.repository,
-        selectedGitlabConfig.group,
-        headers
-      );
-      this.logger.debug(`Project id is -- ${projectId}`);
-      const latestCommitHash = await this.getLatestCommitHash(selectedGitlabConfig.host, projectId, headers);
+      const latestCommitHash = await this.gitlabService.getLatestCommitHash(selectedGitlabConfig);
       this.logger.debug(`Latest commit hash: ${latestCommitHash}`);
 
       if (selectedGitlabConfig.tag === latestCommitHash) {
@@ -372,12 +349,9 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
         });
         return;
       }
-
-      const fileUrl = `${selectedGitlabConfig.host}/api/v4/projects/${projectId}/repository/files/protocol.json/raw?ref=${latestCommitHash}`;
-
-      const latestProtocolJson = await this.fetchGitlabData(fileUrl, headers, 'Failed to fetch protocol.json:');
+      const latestProtocolJson = await this.gitlabService.fetchLatestGitlabFile(selectedGitlabConfig, 'protocol.json');
       const localDir = `.tabsint-protocols/${selectedGitlabConfig.repository}`;
-      const localProtocolFile = await this.fileService.readFile(`${localDir}/protocol.json`);
+      const localProtocolFile = await this.fileService.readFile('protocol.json', localDir);
 
       if (localProtocolFile) {
         const localProtocolJson = JSON.parse(localProtocolFile.content);
@@ -394,20 +368,17 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
         throw new Error('Could not read local protocol.json file.');
       }
 
-      const [protocolContent, localDirUri] = await this.downloadAndSaveFiles(
-        projectId,
-        latestCommitHash,
-        selectedGitlabConfig.host,
-        headers,
-        localDir
-      );
+      const newGitlabConfig = { ...selectedGitlabConfig, tag: latestCommitHash };
+      const localDirUri = await this.gitlabService.downloadGitlabRepository(newGitlabConfig, localDir, true);
+      const fileResponse = await this.fileService.readFile('protocol.json', localDir);
+      const protocolContent = fileResponse?.content ? JSON.parse(fileResponse.content) : undefined;
       const updatedProtocol: ProtocolInterface = {
         ...partialMetaDefaults,
         name: selectedGitlabConfig.repository,
         server: ProtocolServer.Gitlab,
         contentURI: localDirUri,
         admin: false,
-        gitlabConfig: { ...selectedGitlabConfig, tag: latestCommitHash },
+        gitlabConfig: newGitlabConfig,
         ...protocolContent,
       };
 
@@ -427,19 +398,14 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
     }
   }
 
-  onGitlabConfigChange(event: any, value: string) {
-    if (value == 'host') {
-      this.disk.preferences.gitlabConfig.host = event.target.value;
-    } else if (value == 'repository') {
-      this.disk.preferences.gitlabConfig.repository = event.target.value;
-    } else if (value == 'token') {
-      this.disk.preferences.gitlabConfig.token = event.target.value;
-    } else if (value == 'group') {
-      this.disk.preferences.gitlabConfig.group = event.target.value;
-    } else if (value == 'tag') {
-      this.disk.preferences.gitlabConfig.tag = event.target.value;
-    }
+  /**
+   * Callback for gitlab configuration submission events.
+   * @param config The new validated configuration.
+   */
+  onGitlabConfigSubmit(config: GitlabConfigInterface) {
+    this.disk.preferences.gitlabConfig = { ...this.disk.preferences.gitlabConfig, ...config };
     this.diskModel.storeDisk();
+    this.fetchGitlabProtocol(config);
   }
 
   gitlabButtonClass(): string {
@@ -466,101 +432,6 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
         this.protocolModel.activeProtocol.path == p.path) ||
       false
     );
-  }
-
-  private async fetchGitlabData(url: string, headers: { Authorization: string }, errorMessagePrefix: string) {
-    const options = {
-      url: url,
-      headers: headers,
-    };
-
-    const response = await CapacitorHttp.get(options);
-    if (response.status < 200 || response.status >= 300) {
-      if (response.status === 401) {
-        throw new Error('Unauthorized: Check your GitLab credentials.');
-      }
-      throw new Error(`${errorMessagePrefix} ${response.status}`);
-    }
-
-    return response.data;
-  }
-
-  private async downloadAndSaveFiles(
-    projectId: number,
-    ref: string,
-    host: string,
-    headers: { Authorization: string },
-    localDir: string
-  ): Promise<[ProtocolSchemaInterface, string]> {
-    const repoFiles = await this.fetchGitlabData(
-      `${host}/api/v4/projects/${projectId}/repository/tree?ref=${ref}&recursive=true`,
-      headers,
-      'Failed to fetch repository files: '
-    );
-
-    if (!repoFiles.length) {
-      throw new Error('No files found in the repository.');
-    }
-
-    await this.fileService.deleteDirectory(localDir);
-    const fileServiceResult = await this.fileService.createDirectory(localDir);
-
-    let protocolContent: ProtocolSchemaInterface | null = null;
-
-    for (const file of repoFiles) {
-      const filePath = encodeURIComponent(file.path);
-      const fileUrl = `${host}/api/v4/projects/${projectId}/repository/files/${filePath}/raw?ref=${ref}`;
-
-      const options = {
-        url: fileUrl,
-        responseType: (file.name === 'protocol.json' ? 'json' : 'blob') as any,
-        headers: headers,
-      };
-      const response = await CapacitorHttp.get(options);
-
-      if (response.status < 200 || response.status >= 300) {
-        if (response.status === 401) {
-          throw new Error('Unauthorized: Check your GitLab credentials.');
-        }
-        throw new Error(`Error loading repo file ${filePath} ${response.status}`);
-      }
-
-      try {
-        if (file.name === 'protocol.json') {
-          protocolContent = await response.data;
-          await this.fileService.writeFile(`${localDir}/protocol.json`, JSON.stringify(protocolContent));
-        } else {
-          const blob = await response.data;
-          await this.fileService.writeBinaryFile(`${localDir}/${file.name}`, blob);
-        }
-      } catch (e) {
-        throw new Error(`Error writing file: ${file.name}`);
-      }
-    }
-
-    if (!protocolContent) {
-      throw new Error('protocol.json not found in repository.');
-    }
-
-    return [protocolContent, fileServiceResult?.uri!];
-  }
-
-  private async getLatestCommitHash(host: string, projectId: number, headers: { Authorization: string }): Promise<string> {
-    const commits = await this.fetchGitlabData(
-      `${host}/api/v4/projects/${projectId}/repository/commits?per_page=1`,
-      headers,
-      'Failed to fetch latest commit: '
-    );
-
-    if (!commits.length) throw new Error('No commits found in repository.');
-    return commits[0].id.substring(0, 8);
-  }
-
-  private async getGitlabRef(projectId: number, headers: { Authorization: string }): Promise<string> {
-    if (this.gitlabConfig.tag) {
-      return this.gitlabConfig.tag;
-    }
-    return this.getLatestCommitHash(this.gitlabConfig.host, projectId, headers);
   }
 
   private async updateDiskModel(protocol: ProtocolInterface): Promise<boolean> {
@@ -591,38 +462,6 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
     this.select(protocolMetaData);
     await this.loadProtocol();
     return true;
-  }
-
-  private handleGitlabError(error: any) {
-    const errorMessage = error.message || 'An error occurred while fetching the GitLab protocol.';
-
-    if (errorMessage.includes('Unauthorized')) {
-      this.notifications.alert({
-        title: 'Unauthorized',
-        content: 'Check your GitLab credentials.',
-        type: DialogType.Alert,
-      });
-    } else {
-      this.notifications.alert({
-        title: 'Error',
-        content: errorMessage,
-        type: DialogType.Alert,
-      });
-    }
-  }
-
-  private async getGitlabProjectId(host: string, repository: string, group: string, headers: { Authorization: string }): Promise<number> {
-    const projects = await this.fetchGitlabData(`${host}/api/v4/projects?search=${repository}`, headers, 'Failed to fetch project list: ');
-
-    const matchedProject = projects.find(
-      (p: { name: string; namespace: { full_path: string } }) => p.name === repository && p.namespace.full_path.toLowerCase() === group.toLowerCase()
-    );
-
-    if (!matchedProject) {
-      throw new Error('Project not found. Check the repository name and group.');
-    }
-
-    return matchedProject.id;
   }
 
   toggleValidateProtocols() {

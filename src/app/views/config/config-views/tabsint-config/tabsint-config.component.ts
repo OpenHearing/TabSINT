@@ -1,7 +1,7 @@
 import { Component, ChangeDetectorRef, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslocoService } from '@jsverse/transloco';
-import { Subscription } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 
 import { DiskInterface } from '../../../../models/disk/disk.interface';
 import { StateInterface } from '../../../../models/state/state.interface';
@@ -152,8 +152,10 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   /**
    * Toggle the setting for automatic system volume control.
    * Show an alert only for disabling automatic volume control.
+   * @param event The click event.
    */
-  toggleDisableVolume() {
+  async toggleDisableVolume(event: Event) {
+    const checkbox = event.target as HTMLInputElement;
     if (!this.disk.preferences.disableVolume) {
       const msg: DialogDataInterface = {
         title: 'Disable Automatic Volume Control',
@@ -163,12 +165,14 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
             `,
         type: DialogType.Confirm,
       };
-      this.notifications.alert(msg).subscribe(async result => {
-        if (result === 'OK') {
-          this.diskModel.updatePreferences({ disableVolume: !this.disk.preferences.disableVolume });
-          this.logger.debug('Automatic Volume control is now disabled.');
-        }
-      });
+      const result = await firstValueFrom(this.notifications.alert(msg));
+      if (result === 'OK') {
+        this.diskModel.updatePreferences({ disableVolume: !this.disk.preferences.disableVolume });
+        this.logger.debug('Automatic Volume control is now disabled.');
+      } else {
+        // Reset checkbox checked state for since we are aren't changing the value
+        checkbox.checked = this.disk.preferences.disableVolume;
+      }
     } else {
       this.diskModel.updatePreferences({ disableVolume: !this.disk.preferences.disableVolume });
     }

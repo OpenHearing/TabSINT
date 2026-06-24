@@ -13,8 +13,9 @@ import { DiscoveryResponse, TabsintCha } from 'tabsintcha';
 import { SavedDevice } from '../../models/disk/disk.interface';
 import { DiskModel } from '../../models/disk/disk.service';
 
-import { RequestIdObject, RequestSettingObject, StatusObject } from '../../interfaces/devices/device-responses.interface';
+import { DirectoryEntryObject, RequestIdObject, RequestSettingObject, StatusObject } from '../../interfaces/devices/device-responses.interface';
 import { isGetDirectoryResponse, isLongNameResponse, isRequestIdResponse, isRequestSettingResponse, isStatusResponse } from '../../guards/type.guard';
+import { ChaMediaHandler } from './cha-media-handler';
 
 /**
  * CHA base device manager.
@@ -42,6 +43,11 @@ export abstract class ChaManager implements IDeviceManager {
    * The adapter used for interacting with a device.
    */
   protected readonly adapter: ChaAdapter = new ChaAdapter();
+
+  /**
+   * The media handler used for interacting with a device.
+   */
+  protected readonly mediaHandler: ChaMediaHandler = new ChaMediaHandler(this.adapter);
 
   /**
    * Set of device identifiers for devices which have requested a disconnection.
@@ -428,15 +434,15 @@ export abstract class ChaManager implements IDeviceManager {
    */
   async getDirectoryLongNames(device: ChaDeviceType, baseDir: string): Promise<IDeviceResponse> {
     const longNames: string[] = [];
-    let shortNames: string[] = [];
+    let entries: DirectoryEntryObject[] = [];
     const getDirectoryResponse = await this.adapter.getDirectory(device, baseDir);
     await this.deviceErrorHandler(getDirectoryResponse);
     if (isGetDirectoryResponse(getDirectoryResponse)) {
-      shortNames = getDirectoryResponse['msg'][1] as string[];
+      entries = getDirectoryResponse['msg'][1];
     }
 
-    for (const shortName of shortNames) {
-      const longNameResponse = await this.adapter.getChaLongName(device, baseDir + shortName);
+    for (const entry of entries) {
+      const longNameResponse = await this.adapter.getChaLongName(device, baseDir + entry.Path);
       await this.deviceErrorHandler(longNameResponse);
       if (isLongNameResponse(longNameResponse) && longNameResponse['msg'][0] !== '') {
         longNames.push(longNameResponse['msg'][0] as string);
@@ -454,6 +460,31 @@ export abstract class ChaManager implements IDeviceManager {
    */
   async copyChaFileToLocalStorageAndReadFile(device: ChaDeviceType, fileToRead: string): Promise<IDeviceResponse | undefined> {
     const response = await this.adapter.copyChaFileToLocalStorageAndReadFile(device, fileToRead);
+    await this.deviceErrorHandler(response);
+    return response;
+  }
+
+  /**
+   * Transfer directory content to a device.
+   * @param device The device to transfer files to.
+   * @param localDirectory The directory to transfer files from recursively.
+   * @param remoteDirectory The directory to transfer the files to.
+   * @returns The device response for the request or undefined.
+   */
+  async transferDirectory(device: ChaDeviceType, localDirectory: string, remoteDirectory: string): Promise<IDeviceResponse> {
+    const response = await this.mediaHandler.transferDirectory(device, localDirectory, remoteDirectory);
+    await this.deviceErrorHandler(response);
+    return response;
+  }
+
+  /**
+   * Cancel any ongoing file operation.
+   * @param device The device to cancel the file operation on.
+   * @returns The device response for the request or undefined.
+   */
+  async cancelFileOperation(device: ChaDeviceType): Promise<IDeviceResponse> {
+    this.mediaHandler.cancelDirectoryTransfer(device); // Cancel any transfers to ensure additional file operations do not continue
+    const response = await this.adapter.cancelFileOperation(device);
     await this.deviceErrorHandler(response);
     return response;
   }

@@ -10,6 +10,7 @@ import { FirmwareAsset } from '../../interfaces/firmware-asset.interface';
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
 import { StatusObject } from '../../interfaces/devices/device-responses.interface';
 import { isFileProgressResponse } from '../../guards/type.guard';
+import { calculateCRC32 } from '../../utilities/checksums';
 
 /**
  * WAHTS implementation of the CHA device manager.
@@ -159,7 +160,7 @@ export class WahtsManager extends ChaManager {
     const metadataJSON = await metadataResponse.json();
 
     const base64Data = Buffer.from(buffer).toString('base64');
-    const checksum = this.calculateCRC32(new Uint8Array(buffer));
+    const checksum = calculateCRC32(new Uint8Array(buffer));
 
     const writeResponse = await Filesystem.writeFile({
       path: this.BINARY_FIRMWARE_FILENAME,
@@ -181,35 +182,5 @@ export class WahtsManager extends ChaManager {
       buildDatetime: String(metadataJSON.time),
       checksum: checksum,
     };
-  }
-
-  /**
-   * Calculate a CRC32 checksum for a byte array.
-   * @param byteArray The byte array for checksum calculation.
-   * @returns The CRC32 checksum.
-   */
-  private calculateCRC32(byteArray: Uint8Array): number {
-    const crcTable = new Uint32Array(256);
-    for (let index = 0; index <= 255; index++) {
-      let tableValue = index;
-      for (let k = 0; k <= 7; k++) {
-        const leastSignificantBit = tableValue & 1;
-        if (leastSignificantBit === 1) {
-          const reversedGeneratorPolynomial = 0xedb88320;
-          tableValue = reversedGeneratorPolynomial ^ (tableValue >>> 1);
-        } else {
-          tableValue = tableValue >>> 1;
-        }
-      }
-      crcTable[index] = tableValue >>> 0;
-    }
-    const maxInt32 = 0xffffffff;
-    let crcValue = maxInt32;
-    for (const byte of byteArray) {
-      const crcTableIndex = (crcValue ^ byte) & 255;
-      crcValue = crcTable[crcTableIndex] ^ (crcValue >>> 8);
-    }
-    crcValue = (crcValue ^ maxInt32) >>> 0;
-    return crcValue;
   }
 }

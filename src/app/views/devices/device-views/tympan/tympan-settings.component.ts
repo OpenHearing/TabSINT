@@ -28,7 +28,6 @@ export class TympanSettingsComponent implements OnInit, OnDestroy, OnChanges {
 
   @Input() device!: ITympanDevice;
   DeviceState = DeviceState;
-
   disk: DiskInterface;
   state: StateInterface;
   firmwareMatch: boolean | undefined = undefined;

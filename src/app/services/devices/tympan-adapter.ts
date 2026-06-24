@@ -8,6 +8,7 @@ import { IDeviceAdapter } from '../../interfaces/devices/device-adapter.interfac
 import { Logger } from '../logger.service';
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
 import { inject } from '@angular/core';
+import { calculateCRC8 } from '../../utilities/checksums';
 
 /**
  * Tympan implementation of the device adapter.
@@ -59,11 +60,6 @@ export class TympanAdapter implements IDeviceAdapter {
    * TODO: This value should be lowered to expect quicker responses.
    */
   private readonly defaultTimeoutTimeMs = 10000;
-
-  /**
-   * The CRC table for creating checksums.
-   */
-  private readonly CRC8_TABLE = this.genCRC8Table();
 
   /**
    * The default timeout for between byte responses (milliseconds).
@@ -505,7 +501,7 @@ export class TympanAdapter implements IDeviceAdapter {
     const start_byte = new Uint8Array([5]);
     const end_byte = new Uint8Array([2]);
     const buf = new TextEncoder().encode(str); // this is a uint8array!
-    const crc = this.genCRC8Checksum(buf);
+    const crc = calculateCRC8(buf);
     const msgToSend = new Uint8Array([...start_byte, ...this.handleEscaping(buf), ...this.handleEscaping(crc), ...end_byte]);
     return new DataView(msgToSend.buffer);
   }
@@ -561,7 +557,7 @@ export class TympanAdapter implements IDeviceAdapter {
     const tmp = new Uint8Array(dv.buffer.slice(0));
     const unescapedArray = this.handleUnescaping(tmp.slice(1, tmp.byteLength - 1));
     const crc = unescapedArray.slice(unescapedArray.byteLength - 1);
-    const expectedChecksum = this.genCRC8Checksum(unescapedArray.slice(0, unescapedArray.byteLength - 1));
+    const expectedChecksum = calculateCRC8(unescapedArray.slice(0, unescapedArray.byteLength - 1));
     if (crc[0] == expectedChecksum[0]) {
       const tmpDV = new DataView(unescapedArray.slice(0, unescapedArray.byteLength - 1).buffer);
       msg = JSON.parse(this.dataViewToString(tmpDV));
@@ -640,39 +636,6 @@ export class TympanAdapter implements IDeviceAdapter {
       }
     });
     return unescaped_byte_array;
-  }
-
-  /**
-   * Create a CRC checksum for a byte array.
-   * @param byte_array The byte array to create the CRC checksum for.
-   * @returns The CRC checksum.
-   */
-  private genCRC8Checksum(byte_array: Uint8Array) {
-    let c = 0;
-    byte_array.forEach(byte => {
-      c = this.CRC8_TABLE[(c ^ byte) % 256];
-    });
-    return new Uint8Array([c]);
-  }
-
-  /**
-   * Generate the checksum table for creating CRC checksums.
-   * @returns The checksum table.
-   */
-  private genCRC8Table() {
-    const csTable = []; // 256 max len byte array
-    for (let i = 0; i < 256; ++i) {
-      let curr = i;
-      for (let j = 0; j < 8; ++j) {
-        if ((curr & 0x80) !== 0) {
-          curr = ((curr << 1) ^ 0x07) % 256;
-        } else {
-          curr = (curr << 1) % 256;
-        }
-      }
-      csTable[i] = curr;
-    }
-    return csTable;
   }
 
   /**
