@@ -16,6 +16,7 @@ export interface StateInterface {
     tympans: boolean;
     wahts: boolean;
     duodose: boolean;
+    svantek: boolean;
     softwareHardware: boolean;
     appLog: boolean;
     protocols: boolean;

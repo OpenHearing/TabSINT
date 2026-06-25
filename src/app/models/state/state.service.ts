@@ -23,6 +23,7 @@ export class StateModel {
       tympans: true,
       wahts: true,
       duodose: true,
+      svantek: true,
       softwareHardware: false,
       appLog: false,
       protocols: true,

@@ -1,0 +1,25 @@
+<div class="svantek-info">
+  <br />
+
+  <div class="row">
+    <div class="col-12">
+      <h5>{{ "Device Details" | transloco }}</h5>
+    </div>
+  </div>
+
+  <div class="row pad-top">
+    <div class="col-4">{{ "Name:" | transloco }}</div>
+    <div class="col-8">{{ device.name }}</div>
+  </div>
+
+  <div class="row pad-top">
+    <div class="col-4">{{ "State:" | transloco }}</div>
+    <div class="col-8">
+      <ng-container [ngSwitch]="device.state">
+        <span *ngSwitchCase="DeviceState.Connected">{{ "Connected" | transloco }}</span>
+        <span *ngSwitchCase="DeviceState.Disconnected">{{ "Not Connected" | transloco }}</span>
+        <span *ngSwitchDefault>{{ "Connecting" | transloco }}</span>
+      </ng-container>
+    </div>
+  </div>
+</div>

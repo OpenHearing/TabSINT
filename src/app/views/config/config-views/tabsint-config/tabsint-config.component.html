@@ -201,6 +201,15 @@
   </div>
 </div>
 
+<div class="row pad-top">
+  <div class="col-6">
+    <label for="showSvantek">{{ "Svantek:" | transloco }}</label>
+  </div>
+  <div class="col-2">
+    <input id="showSvantek" type="checkbox" [ngModel]="disk.preferences.showSvantekPanel ?? true" (change)="toggleShowSvantekPanel()" />
+  </div>
+</div>
+
 <!-- QR Code Generation -->
 <div class="row pad-top">
   <div class="col-6">

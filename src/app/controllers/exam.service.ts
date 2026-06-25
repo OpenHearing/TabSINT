@@ -38,6 +38,7 @@ import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface
 import { DevicesService } from '../services/devices/devices.service';
 import { IDevice } from '../interfaces/devices/device.interface';
 import { DosimeterResultsInterface } from '../interfaces/dosimeter-results.interface';
+import { ISvantekDevice } from '../interfaces/devices/svantek-device.interface';
 import { pageSchema } from '../../schema/page.schema';
 import { AudioService } from '../services/audio.service';
 import { Tasks } from '../services/tasks.service';
@@ -71,6 +72,9 @@ export class ExamService {
   // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
   dosimeterResultsPoll: { [name: string]: ReturnType<typeof setInterval> } = {};
   private activeWavfileDevice: string | undefined = undefined;
+  private activeSvantekDevice: ISvantekDevice | undefined = undefined;
+  private svantekResultPoll: ReturnType<typeof setInterval> | undefined = undefined;
+  private svantekWarned = false;
 
   constructor() {
     this.results = this.resultsModel.getResults();
@@ -126,6 +130,7 @@ export class ExamService {
    */
   async begin() {
     this.resetProtocolStack();
+    this.svantekWarned = false;
     this.resultsService.initializeExamResults();
     this.stateModel.updateState({ examState: ExamState.Testing });
     this.protocol.activeProtocolStack.addProtocol(this.protocol.activeProtocol!);
@@ -258,6 +263,7 @@ export class ExamService {
    */
   cancelBackgroundProcesses() {
     this.stopDosimetry();
+    this.stopSvantek();
     this.stopChaWavfiles();
     this.audioService.stopAudio();
   }
@@ -569,6 +575,7 @@ export class ExamService {
     this.resultsService.initializePageResults(page);
     this.window.scrollTo({ top: 0, behavior: 'smooth' });
     this.activateDosimeters(page);
+    this.activateSvantek(page);
     this.activateMedia(page);
     this.handleAutoSubmitDelay(page);
   }
@@ -662,6 +669,61 @@ export class ExamService {
         this.dosimeterResultsPoll[dosimeter.tabsintId] = setInterval(this.pollForDosimeterResults.bind(this), 500, dosimeter);
       }
     });
+  }
+
+  /**
+   * Start recording from a Svantek dosimeter if the page has svantek: true.
+   * Warns once per exam if no Svantek is connected but does not block exam progression.
+   * @param page The page being initialized.
+   */
+  private async activateSvantek(page: PageDefinition) {
+    if (!page.svantek) {
+      return;
+    }
+    const devices = await this.devicesService.getDeviceOrDefault(undefined, [DeviceType.Svantek]);
+    if (devices.length === 0) {
+      this.logger.warn('A Svantek dosimeter is not connected, no Svantek data will be collected.');
+      if (!this.svantekWarned) {
+        this.notifications.alert({
+          title: 'Alert',
+          content: 'A Svantek dosimeter is not connected, no Svantek data will be collected.',
+          type: DialogType.Alert,
+        }).subscribe();
+        this.svantekWarned = true;
+      }
+      return;
+    }
+    this.activeSvantekDevice = devices[0] as ISvantekDevice;
+    try {
+      await this.devicesService.startRecording(this.activeSvantekDevice);
+      this.svantekResultPoll = setInterval(() => {
+        const result = this.devicesService.getSvantekResult(this.activeSvantekDevice!);
+        if (result) {
+          this.resultsModel.updateCurrentPage({ svantek: result });
+        }
+      }, 500);
+    } catch (err) {
+      this.logger.error('Failed to start Svantek recording', err);
+      this.activeSvantekDevice = undefined;
+    }
+  }
+
+  /**
+   * Stop the active Svantek recording and capture the latest measurement into currentPage results.
+   * Idempotent — safe to call when no Svantek recording is active.
+   */
+  stopSvantek() {
+    if (!this.activeSvantekDevice) {
+      return;
+    }
+    if (this.svantekResultPoll !== undefined) {
+      clearInterval(this.svantekResultPoll);
+      this.svantekResultPoll = undefined;
+    }
+    this.devicesService.stopRecording(this.activeSvantekDevice).catch(err => {
+      this.logger.error('Failed to stop Svantek recording', err);
+    });
+    this.activeSvantekDevice = undefined;
   }
 
   /**
