@@ -36,7 +36,7 @@ export enum DeviceType {
   Tympan = 'Tympan',
   Wahts = 'WAHTS',
   Duodose = 'DuoDose',
-  // Svantek,
+  Svantek = 'Svantek',
 }
 
 import { WahtsDevice } from '../models/devices/wahts-device';

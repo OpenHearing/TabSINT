@@ -6,6 +6,7 @@ import { ITympanDevice } from '../../app/interfaces/devices/tympan-device.interf
 import { IDeviceMetadata } from '../../app/interfaces/devices/device-metadata.interface';
 import { IChaDeviceMetadata } from '../../app/interfaces/devices/cha-device-metadata';
 import { IDuodoseDevice } from '../../app/interfaces/devices/duodose-device.interface';
+import { ISvantekDevice } from '../../app/interfaces/devices/svantek-device.interface';
 
 /**
  * Schema for device metadata used by device schemas.
@@ -107,8 +108,25 @@ const tympanDeviceSchema: JSONSchemaType<ITympanDevice> = {
 };
 
 /**
+ * Schema for Svantek device to store as a saved device.
+ */
+const svantekDeviceSchema: JSONSchemaType<ISvantekDevice> = {
+  type: 'object',
+  properties: {
+    tabsintId: { type: 'string' },
+    name: { type: 'string' },
+    deviceId: { type: 'string' },
+    type: { type: 'string', enum: Object.values(DeviceType) },
+    state: { type: 'string', enum: Object.values(DeviceState) },
+    status: { type: 'string', enum: Object.values(DeviceStatus) },
+    metadata: deviceMetadataSchema,
+  },
+  required: ['tabsintId', 'name', 'deviceId', 'type', 'state', 'status', 'metadata'],
+};
+
+/**
  * Saved device schema which can be any of the available devices.
  */
 export const savedDeviceSchema: JSONSchemaType<SavedDevice> = {
-  anyOf: [wahtsDeviceSchema, tympanDeviceSchema, duodoseDeviceSchema],
+  anyOf: [wahtsDeviceSchema, tympanDeviceSchema, duodoseDeviceSchema, svantekDeviceSchema],
 };

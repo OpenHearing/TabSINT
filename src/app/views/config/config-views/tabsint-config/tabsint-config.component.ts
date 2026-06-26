@@ -145,6 +145,10 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
     this.diskModel.updatePreferences({ showDuodosePanel: !(this.disk.preferences.showDuodosePanel ?? true) });
   }
 
+  toggleShowSvantekPanel() {
+    this.diskModel.updatePreferences({ showSvantekPanel: !(this.disk.preferences.showSvantekPanel ?? true) });
+  }
+
   toggleDisableLogs() {
     this.diskModel.updatePreferences({ disableLogs: !this.disk.preferences.disableLogs });
   }

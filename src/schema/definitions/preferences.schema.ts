@@ -88,6 +88,7 @@ export const preferencesSchema: JSONSchemaType<Preferences> = {
     showTympanPanel: nullable({ type: 'boolean', default: true }),
     showWahtsPanel: nullable({ type: 'boolean', default: false }),
     showDuodosePanel: nullable({ type: 'boolean', default: false }),
+    showSvantekPanel: nullable({ type: 'boolean', default: false }),
     enableHeadsetMediaManagement: nullable({ type: 'boolean', default: false }),
   },
   required: [

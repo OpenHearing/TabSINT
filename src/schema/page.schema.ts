@@ -129,6 +129,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
       },
       nullable: true,
     },
+    svantek: { type: 'boolean', nullable: true, default: false },
   },
   required: ['id'],
   additionalProperties: true,

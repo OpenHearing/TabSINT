@@ -182,4 +182,16 @@ export interface IDeviceManager {
    * @returns The device response for the request or undefined.
    */
   cancelFileOperation?(device: IDevice): Promise<IDeviceResponse | undefined>;
+
+  /**
+   * Optional method to start recording from a Svantek dosimeter.
+   * @param device The Svantek device to start recording on.
+   */
+  startRecording?(device: IDevice): Promise<void>;
+
+  /**
+   * Optional method to stop recording from a Svantek dosimeter.
+   * @param device The Svantek device to stop recording on.
+   */
+  stopRecording?(device: IDevice): Promise<void>;
 }

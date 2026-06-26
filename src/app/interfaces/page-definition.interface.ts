@@ -50,6 +50,7 @@ export interface PageDefinition {
   setFlags?: SetFlagInterface[];
   progressBarVal?: number | string;
   dosimetry?: DosimetryInterface;
+  svantek?: boolean;
 }
 
 export interface NavMenuInterface {

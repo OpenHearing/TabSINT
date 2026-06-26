@@ -11,6 +11,7 @@ import { DevicesService } from '../../services/devices/devices.service';
 import { IWahtsDevice } from '../../interfaces/devices/wahts-device.interface';
 import { ITympanDevice } from '../../interfaces/devices/tympan-device.interface';
 import { IDuodoseDevice } from '../../interfaces/devices/duodose-device.interface';
+import { ISvantekDevice } from '../../interfaces/devices/svantek-device.interface';
 import { IDevice } from '../../interfaces/devices/device.interface';
 
 @Component({
@@ -31,6 +32,7 @@ export class DevicesComponent implements OnInit, OnDestroy {
   tympanDevices$!: Observable<ITympanDevice[]>;
   wahtsDevices$!: Observable<IWahtsDevice[]>;
   duodoseDevices$!: Observable<IDuodoseDevice[]>;
+  svantekDevices$!: Observable<ISvantekDevice[]>;
 
   constructor() {
     this.state = this.stateModel.getState();
@@ -52,6 +54,9 @@ export class DevicesComponent implements OnInit, OnDestroy {
     );
     this.duodoseDevices$ = this.devicesService.devices.pipe(
       map(devices => devices.filter(d => d.type === DeviceType.Duodose && d.state !== DeviceState.Discovery).map(d => d as IDuodoseDevice))
+    );
+    this.svantekDevices$ = this.devicesService.devices.pipe(
+      map(devices => devices.filter(d => d.type === DeviceType.Svantek && d.state !== DeviceState.Discovery).map(d => d as ISvantekDevice))
     );
     this.examService.switchToAdminView();
   }

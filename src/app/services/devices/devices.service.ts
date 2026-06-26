@@ -23,6 +23,9 @@ import { FirmwareAsset } from '../../interfaces/firmware-asset.interface';
 import { DialogDataInterface } from '../../interfaces/dialog-data.interface';
 import { isValidDeviceResponse } from '../../guards/type.guard';
 import { DuodoseManager } from './duodose-manager';
+import { SvantekManager } from './svantek-manager';
+import { ISvantekDevice } from '../../interfaces/devices/svantek-device.interface';
+import { SvantekResultInterface } from '../../interfaces/svantek-result.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -63,6 +66,7 @@ export class DevicesService {
       [DeviceType.Tympan]: new TympanManager(),
       [DeviceType.Wahts]: new WahtsManager(),
       [DeviceType.Duodose]: new DuodoseManager(),
+      [DeviceType.Svantek]: new SvantekManager(),
     };
     this.devices = combineLatest(Object.values(this.managerRegistry).map(m => m.devices)).pipe(map(devices => devices.flat()));
   }
@@ -570,5 +574,29 @@ export class DevicesService {
    */
   async cancelFileOperation(device: IDevice): Promise<IDeviceResponse | undefined> {
     return this.getManager(device.type).cancelFileOperation?.(device);
+  }
+
+  /**
+   * Start recording from a Svantek dosimeter.
+   * @param device The Svantek device to start recording on.
+   */
+  async startRecording(device: ISvantekDevice): Promise<void> {
+    return this.getManager(device.type).startRecording?.(device);
+  }
+
+  /**
+   * Stop recording from a Svantek dosimeter.
+   * @param device The Svantek device to stop recording on.
+   */
+  async stopRecording(device: ISvantekDevice): Promise<void> {
+    return this.getManager(device.type).stopRecording?.(device);
+  }
+
+  /**
+   * Return the latest measurement result captured during the current recording session.
+   * @param device The Svantek device to retrieve the result for.
+   */
+  getSvantekResult(device: ISvantekDevice): SvantekResultInterface | undefined {
+    return (this.managerRegistry[DeviceType.Svantek] as SvantekManager).getSvantekResult(device);
   }
 }

@@ -57,4 +57,22 @@
   </mat-expansion-panel>
 
   <br *ngIf="disk.preferences.showDuodosePanel" />
+
+  <!-- Svantek Dosimeter -->
+  <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.svantek" *ngIf="disk.preferences.showSvantekPanel">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        {{ "Svantek Dosimeter" | transloco }}
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <app-device-panel [deviceType]="DeviceType.Svantek">
+      <ng-container *ngFor="let svantekDevice of svantekDevices$ | async; trackBy: trackByDeviceId">
+        <app-device-card [device]="svantekDevice" [connected]="state.bluetoothConnected">
+        </app-device-card>
+      </ng-container>
+    </app-device-panel>
+  </mat-expansion-panel>
+
+  <br *ngIf="disk.preferences.showSvantekPanel" />
 </div>

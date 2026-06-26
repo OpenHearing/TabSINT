@@ -35,7 +35,7 @@
   </div>
 
   <button
-    *ngIf="device.state === DeviceState.Connected"
+    *ngIf="device.state === DeviceState.Connected && device.type != DeviceType.Svantek"
     class="device-card-settings-toggle"
     (click)="toggleSettings()"
     [attr.aria-expanded]="settingsExpanded">

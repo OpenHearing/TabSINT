@@ -34,6 +34,8 @@ export class DevicePanelComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.maxDevices = this.deviceType === DeviceType.Svantek ? 1 : 3;
+
     this.devices$ = this.devicesService.devices.pipe(
       map(devices => devices.filter(d => d.type === this.deviceType && d.state !== DeviceState.Discovery))
     );

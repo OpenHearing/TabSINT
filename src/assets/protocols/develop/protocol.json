@@ -90,6 +90,9 @@
                 "id": "Dosimetry"
               },
               {
+                "id": "Svantek"
+              },
+              {
                 "id": "Duodose Data Download"
               },
               {
@@ -234,6 +237,12 @@
               "conditional": "result.response=='Dosimetry'",
               "target": {
                 "reference": "dosimetryResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='Svantek'",
+              "target": {
+                "reference": "textBoxResponseAreaWithSvantek"
               }
             },
             {
@@ -1169,6 +1178,25 @@
             "responseRequired": false
           },
           "dosimetry": {}
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "textBoxResponseAreaWithSvantek",
+      "pages": [
+        {
+          "id": "textBoxResponseAreaWithSvantek",
+          "title": "Svantek testing",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": false
+          },
+          "svantek": true
         },
         {
           "id": "backtomain",

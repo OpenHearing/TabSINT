@@ -2,6 +2,7 @@ import { CalibrationFileVersionInformation } from '../../interfaces/calibration-
 import { IDeviceMetadata } from '../../interfaces/devices/device-metadata.interface';
 import { IDevice } from '../../interfaces/devices/device.interface';
 import { DosimetryResultsInterface } from '../../interfaces/dosimeter-results.interface';
+import { SvantekResultInterface } from '../../interfaces/svantek-result.interface';
 import { ChaWavfilesInterface, ImageInterface, VideoInterface, PageWavfileInterface, ResponseArea } from '../../interfaces/page-definition.interface';
 import { ProtocolServer } from '../../utilities/constants';
 import { ProtocolInterface } from '../protocol/protocol.interface';
@@ -31,6 +32,7 @@ export interface CurrentResults {
     responseArea?: ResponseArea;
   };
   dosimetry?: DosimetryResultsInterface;
+  svantek?: SvantekResultInterface;
 }
 
 export interface ExamResults {
