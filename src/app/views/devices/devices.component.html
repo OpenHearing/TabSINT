@@ -69,7 +69,6 @@
     <app-device-panel [deviceType]="DeviceType.Svantek">
       <ng-container *ngFor="let svantekDevice of svantekDevices$ | async; trackBy: trackByDeviceId">
         <app-device-card [device]="svantekDevice" [connected]="state.bluetoothConnected">
-          <app-svantek-settings [device]="svantekDevice"></app-svantek-settings>
         </app-device-card>
       </ng-container>
     </app-device-panel>

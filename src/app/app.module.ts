@@ -80,7 +80,6 @@ import { WahtsSettingsComponent } from './views/devices/device-views/wahts/wahts
 import { DuodoseAdvancedSettingsComponent } from './views/devices/device-views/duodose/duodose-advanced-settings/duodose-advanced-settings.component';
 import { DuodoseSettingsComponent } from './views/devices/device-views/duodose/duodose-settings/duodose-settings.component';
 import { TympanSettingsComponent } from './views/devices/device-views/tympan/tympan-settings.component';
-import { SvantekSettingsComponent } from './views/devices/device-views/svantek/svantek-settings/svantek-settings.component';
 import { NewConnectionComponent } from './views/config/config-views/new-connection/new-connection.component';
 import { MediaManagementComponent } from './views/config/config-views/media-management/media-management.component';
 import { CalibrationExamComponent } from './views/response-area/response-areas/calibration-exam/calibration-exam-component/calibration-exam.component';
@@ -158,7 +157,6 @@ import { DuodoseDownloadComponent } from './views/response-area/response-areas/d
     DuodoseAdvancedSettingsComponent,
     DuodoseSettingsComponent,
     TympanSettingsComponent,
-    SvantekSettingsComponent,
     NewConnectionComponent,
     MediaManagementComponent,
     AudiogramComponent,
