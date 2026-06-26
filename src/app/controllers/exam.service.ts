@@ -682,13 +682,15 @@ export class ExamService {
     }
     const devices = await this.devicesService.getDeviceOrDefault(undefined, [DeviceType.Svantek]);
     if (devices.length === 0) {
-      this.logger.warn('A Svantek dosimeter is not connected, no Svantek data will be collected.');
+      this.logger.warning('A Svantek dosimeter is not connected, no Svantek data will be collected.');
       if (!this.svantekWarned) {
-        this.notifications.alert({
-          title: 'Alert',
-          content: 'A Svantek dosimeter is not connected, no Svantek data will be collected.',
-          type: DialogType.Alert,
-        }).subscribe();
+        this.notifications
+          .alert({
+            title: 'Alert',
+            content: 'A Svantek dosimeter is not connected, no Svantek data will be collected.',
+            type: DialogType.Alert,
+          })
+          .subscribe();
         this.svantekWarned = true;
       }
       return;

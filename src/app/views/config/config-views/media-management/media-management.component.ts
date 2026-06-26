@@ -262,6 +262,8 @@ export class MediaManagementComponent implements OnInit, OnDestroy {
         break;
       case DeviceType.Duodose:
         break;
+      case DeviceType.Svantek:
+        break;
       default:
         deviceType satisfies never;
         break;

@@ -181,7 +181,7 @@ export class SvantekManager implements IDeviceManager {
     try {
       await BleClient.disconnect(device.deviceId);
     } finally {
-      this.logger.info(`Disconnected from Svantek: ${device.deviceId}`);
+      this.logger.debug(`Disconnected from Svantek: ${device.deviceId}`);
     }
     const devices = this.devicesSubject.getValue();
     const liveDevice = devices.find(dev => dev.deviceId === device.deviceId);
@@ -277,7 +277,7 @@ export class SvantekManager implements IDeviceManager {
     const dataArray = msgBuff.slice(6);
 
     if (dataArray.length !== EXPECTED_DATA_BYTES) {
-      this.logger.warn(`Svantek ${deviceId}: unexpected data length ${dataArray.length}, expected ${EXPECTED_DATA_BYTES}`);
+      this.logger.warning(`Svantek ${deviceId}: unexpected data length ${dataArray.length}, expected ${EXPECTED_DATA_BYTES}`);
     } else {
       const Leq: number[] = [];
       for (let i = 0; i < dataArray.length - 1; i += 2) {
