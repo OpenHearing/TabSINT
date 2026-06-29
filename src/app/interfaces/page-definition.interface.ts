@@ -20,6 +20,7 @@ import { ButtonGridInterface } from '../views/response-area/response-areas/butto
 import { QrCodeResponseAreaInterface } from '../views/response-area/response-areas/qr-code/qr-code.interface';
 import { DuodoseDownloadInterface } from '../views/response-area/response-areas/duodose-download/duodose-download.interface';
 import { BekesyResponseAreaInterface } from '../views/response-area/response-areas/bekesy/bekesy.interface';
+import { HintResponseAreaInterface } from '../views/response-area/response-areas/hint/hint.interface';
 import { CalibrationFileWavProperties } from './calibration-file.interface';
 
 export interface PageDefinition {
@@ -159,4 +160,5 @@ export type ResponseArea =
   | MemrExamInterface
   | CustomResponseAreaInterface
   | QrCodeResponseAreaInterface
-  | BekesyResponseAreaInterface;
+  | BekesyResponseAreaInterface
+  | HintResponseAreaInterface;

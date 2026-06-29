@@ -99,6 +99,9 @@
                 "id": "Bekesy"
               },
               {
+                "id": "HINT"
+              },
+              {
                 "id": "CHA Wav Test"
               },
               {
@@ -255,6 +258,12 @@
               "conditional": "result.response=='Bekesy'",
               "target": {
                 "reference": "bekesyResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='HINT'",
+              "target": {
+                "reference": "hintResponseArea"
               }
             },
             {
@@ -1244,6 +1253,30 @@
             "timeout": 30,
             "levelRate": 2,
             "isSubmittable": true
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "hintResponseArea",
+      "pages": [
+        {
+          "id": "hintResponseArea",
+          "title": "HINT",
+          "questionMainText": "Hearing In Noise Test",
+          "instructionText": "Select all the words that the subject heard correctly.",
+          "responseArea": {
+            "type": "hintResponseArea",
+            "examInstructions": "Select all the words that the subject heard correctly.",
+            "examProperties": {
+              "Direction": "quiet",
+              "ListNumber": 2,
+              "NumberOfPresentations": 4
+            }
           }
         },
         {

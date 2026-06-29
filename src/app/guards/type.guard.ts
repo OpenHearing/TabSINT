@@ -41,6 +41,10 @@ export function isManualAudiometryResponseArea(page: PageInterface): boolean {
   return page?.responseArea?.type === 'manualAudiometryResponseArea';
 }
 
+export function isHintResponseArea(page: PageInterface): boolean {
+  return page?.responseArea?.type === 'hintResponseArea';
+}
+
 export function isValidDeviceResponse(response?: IDeviceResponse): response is IDeviceResponse {
   return response?.msg !== undefined && Array.isArray(response?.msg) && !response.msg.includes('ERROR') && !response.msg.includes('error');
 }

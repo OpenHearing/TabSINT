@@ -23,6 +23,7 @@ import { buttonGridSchema } from './response-areas/button-grid.schema';
 import { qrCodeResponseAreaSchema } from './response-areas/qr-code.schema';
 import { duodoseDownloadSchema } from './response-areas/duodose-download.schema';
 import { bekesyResponseAreaSchema } from './response-areas/bekesy.schema';
+import { hintSchema } from './response-areas/hint.schema';
 
 export const pageSchema: JSONSchemaType<PageDefinition> = {
   $id: 'page_base',
@@ -114,6 +115,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
         CustomResponseAreaSchema,
         qrCodeResponseAreaSchema,
         bekesyResponseAreaSchema,
+        hintSchema,
       ],
       required: ['type'],
       nullable: true,
