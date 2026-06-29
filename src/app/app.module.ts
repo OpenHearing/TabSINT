@@ -113,6 +113,7 @@ import { BekesyComponent } from './views/response-area/response-areas/bekesy/bek
 import { QrService } from './services/qr.service';
 import { QRCodeModule } from 'angularx-qrcode';
 import { DuodoseDownloadComponent } from './views/response-area/response-areas/duodose-download/duodose-download.component';
+import { ThreeDigitComponent } from './views/response-area/response-areas/three-digit/three-digit.component';
 
 @NgModule({
   declarations: [
@@ -182,6 +183,7 @@ import { DuodoseDownloadComponent } from './views/response-area/response-areas/d
     InputParametersComponent,
     TabsintConfigComponent,
     BekesyComponent,
+    ThreeDigitComponent,
     GitlabFormComponent,
   ],
   imports: [
