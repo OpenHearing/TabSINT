@@ -110,11 +110,17 @@ export const LevelUnits = {
 // import PurdueShakedown from '../../assets/protocols/purdue-shakedown/protocol.json';
 import develop from '../../assets/protocols/develop/protocol.json';
 import mini_pcc from '../../assets/protocols/mini_pcc/protocol.json';
+import pcc_spike from '../../assets/protocols/pcc_spike/protocol.json';
+import PCC_battery from '../../assets/protocols/PCC_battery/protocol.json';
+import pcc_runner from '../../assets/protocols/pcc_runner/protocol.json';
 import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
 export const DeveloperProtocols: Record<string, ProtocolSchemaInterface> = {
   // "Purdue Shakedown": PurdueShakedown,
   develop: develop as unknown as ProtocolSchemaInterface,
   mini_pcc: mini_pcc as unknown as ProtocolSchemaInterface,
+  pcc_spike: pcc_spike as unknown as ProtocolSchemaInterface,
+  PCC_battery: PCC_battery as unknown as ProtocolSchemaInterface,
+  pcc_runner: pcc_runner as unknown as ProtocolSchemaInterface,
 };
 
 import WahtsDeviceTestCalibration from '../../assets/protocols/wahts-device-test/calibration.json';

@@ -20,6 +20,9 @@ export const diskSchema: JSONSchemaType<DiskInterface> = {
       properties: {
         develop: protocolMetaSchema,
         mini_pcc: protocolMetaSchema,
+        pcc_spike: protocolMetaSchema,
+        PCC_battery: protocolMetaSchema,
+        pcc_runner: protocolMetaSchema,
       },
       default: {
         develop: {
@@ -39,6 +42,33 @@ export const diskSchema: JSONSchemaType<DiskInterface> = {
           creator: 'Creare',
           name: 'mini_pcc',
           path: 'protocols/mini_pcc',
+        },
+        pcc_spike: {
+          date: new Date().toJSON(),
+          version: '0.0',
+          server: ProtocolServer.Developer,
+          admin: true,
+          creator: 'Creare',
+          name: 'pcc_spike',
+          path: 'protocols/pcc_spike',
+        },
+        PCC_battery: {
+          date: new Date().toJSON(),
+          version: '0.0',
+          server: ProtocolServer.Developer,
+          admin: true,
+          creator: 'Creare',
+          name: 'PCC_battery',
+          path: 'protocols/PCC_battery',
+        },
+        pcc_runner: {
+          date: new Date().toJSON(),
+          version: '0.0',
+          server: ProtocolServer.Developer,
+          admin: true,
+          creator: 'Creare',
+          name: 'pcc_runner',
+          path: 'protocols/pcc_runner',
         },
       },
       required: ['develop', 'mini_pcc'],

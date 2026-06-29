@@ -1,0 +1,96 @@
+{
+  "title": "PCC Battery Spike",
+  "subtitle": "Phase 0 spike: validate ordered auto-run queue + selectable results dashboard",
+  "instructionText": "Pick tests in order, run them back-to-back, then choose which results to view.",
+  "hideProgressBar": true,
+  "enableBackButton": false,
+  "pages": [
+    {
+      "id": "pcc_select",
+      "title": "Select Test Battery",
+      "questionMainText": "Add tests in the order you want them to run, then press Start.",
+      "responseArea": {
+        "type": "customResponseArea",
+        "htmlFilePath": "custom-response-areas/select.html",
+        "jsFilePath": "custom-response-areas/select.js",
+        "responseRequired": false
+      }
+    }
+  ],
+  "subProtocols": [
+    {
+      "protocolId": "PccDispatcher",
+      "pages": [
+        {
+          "id": "pcc_dispatch",
+          "title": "Loading next test",
+          "responseArea": {
+            "type": "customResponseArea",
+            "htmlFilePath": "custom-response-areas/dispatch.html",
+            "jsFilePath": "custom-response-areas/dispatch.js",
+            "responseRequired": false
+          }
+        }
+      ]
+    },
+    {
+      "protocolId": "TestA",
+      "pages": [
+        {
+          "id": "TestA_q1",
+          "title": "Test A — Q1",
+          "questionMainText": "Test A, question 1: pick one.",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "choices": [{ "id": "A1" }, { "id": "A2" }, { "id": "A3" }],
+            "responseRequired": true
+          }
+        },
+        {
+          "id": "TestA_q2",
+          "title": "Test A — Q2",
+          "questionMainText": "Test A, question 2: pick one.",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "choices": [{ "id": "A1" }, { "id": "A2" }, { "id": "A3" }],
+            "responseRequired": true
+          }
+        },
+        { "id": "TestA_back", "reference": "PccDispatcher" }
+      ]
+    },
+    {
+      "protocolId": "TestB",
+      "pages": [
+        {
+          "id": "TestB_q1",
+          "title": "Test B — Q1",
+          "questionMainText": "Test B, question 1: pick one.",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "choices": [{ "id": "B1" }, { "id": "B2" }],
+            "responseRequired": true
+          }
+        },
+        { "id": "TestB_back", "reference": "PccDispatcher" }
+      ]
+    },
+    {
+      "protocolId": "PccResults",
+      "pages": [
+        {
+          "id": "pcc_results",
+          "title": "Results Dashboard",
+          "questionMainText": "Select which test results to display.",
+          "responseArea": {
+            "type": "customResponseArea",
+            "htmlFilePath": "custom-response-areas/results.html",
+            "jsFilePath": "custom-response-areas/results.js",
+            "responseRequired": false
+          }
+        },
+        { "id": "pcc_end", "reference": "@END_ALL" }
+      ]
+    }
+  ]
+}

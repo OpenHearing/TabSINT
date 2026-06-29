@@ -1,0 +1,169 @@
+{
+  "protocolId": "PCC_battery",
+  "title": "PCC Battery (reuse proof)",
+  "subtitle": "Battery-core: ordered auto-run + selectable results, reusing the real RAADS test",
+  "hideProgressBar": true,
+  "enableBackButton": false,
+  "navMenu": [
+    { "text": "Dashboard", "target": { "reference": "PccSelectMenu" }, "returnHereAfterward": false }
+  ],
+  "pages": [
+    {
+      "id": "pcc_select",
+      "title": "Select Test Battery",
+      "questionMainText": "Add tests in the order you want them to run, then press Start.",
+      "responseArea": {
+        "type": "customResponseArea",
+        "htmlFilePath": "custom-response-areas/select.html",
+        "jsFilePath": "custom-response-areas/select.js",
+        "responseRequired": false
+      }
+    }
+  ],
+  "subProtocols": [
+    {
+      "protocolId": "PccSelectMenu",
+      "pages": [
+        {
+          "id": "pcc_select_menu",
+          "title": "Select Test Battery",
+          "questionMainText": "Add tests in the order you want them to run, then press Start.",
+          "responseArea": {
+            "type": "customResponseArea",
+            "htmlFilePath": "custom-response-areas/select.html",
+            "jsFilePath": "custom-response-areas/select.js",
+            "responseRequired": false
+          }
+        }
+      ]
+    },
+    {
+      "protocolId": "PccDispatcher",
+      "pages": [
+        {
+          "id": "pcc_dispatch",
+          "title": "Loading next test",
+          "responseArea": {
+            "type": "customResponseArea",
+            "htmlFilePath": "custom-response-areas/dispatch.html",
+            "jsFilePath": "custom-response-areas/dispatch.js",
+            "responseRequired": false
+          }
+        }
+      ]
+    },
+    {
+      "protocolId": "RAADS",
+      "pages": [
+        {
+          "id": "RAADS_Inst",
+          "questionMainText": "For each of the following questions, choose: true now and when young; true only now; true only when young (≤16); or never true.",
+          "submitText": "Continue"
+        },
+        {
+          "id": "RAADS_Q1",
+          "questionMainText": "It is difficult for me to understand how other people are feeling when we are talking",
+          "responseArea": { "type": "multipleChoiceResponseArea", "choices": [
+            { "id": "1", "text": "True now and when I was young" },
+            { "id": "2", "text": "True only now" },
+            { "id": "3", "text": "True only when I was younger than 16" },
+            { "id": "4", "text": "Never true" } ] }
+        },
+        {
+          "id": "RAADS_Q2",
+          "questionMainText": "Some ordinary textures that do not bother others feel very offensive when they touch my skin",
+          "responseArea": { "type": "multipleChoiceResponseArea", "choices": [
+            { "id": "1", "text": "True now and when I was young" },
+            { "id": "2", "text": "True only now" },
+            { "id": "3", "text": "True only when I was younger than 16" },
+            { "id": "4", "text": "Never true" } ] }
+        },
+        {
+          "id": "RAADS_Q3",
+          "questionMainText": "It is very difficult for me to work and function in groups",
+          "responseArea": { "type": "multipleChoiceResponseArea", "choices": [
+            { "id": "1", "text": "True now and when I was young" },
+            { "id": "2", "text": "True only now" },
+            { "id": "3", "text": "True only when I was younger than 16" },
+            { "id": "4", "text": "Never true" } ] }
+        },
+        {
+          "id": "RAADS_Q4",
+          "questionMainText": "It is difficult to figure out what other people expect of me",
+          "responseArea": { "type": "multipleChoiceResponseArea", "choices": [
+            { "id": "1", "text": "True now and when I was young" },
+            { "id": "2", "text": "True only now" },
+            { "id": "3", "text": "True only when I was younger than 16" },
+            { "id": "4", "text": "Never true" } ] }
+        },
+        {
+          "id": "RAADS_Q5",
+          "questionMainText": "I often don't know how to act in social situations",
+          "responseArea": { "type": "multipleChoiceResponseArea", "choices": [
+            { "id": "1", "text": "True now and when I was young" },
+            { "id": "2", "text": "True only now" },
+            { "id": "3", "text": "True only when I was younger than 16" },
+            { "id": "4", "text": "Never true" } ] }
+        },
+        {
+          "id": "RAADS_Q6",
+          "questionMainText": "I can chat and make small talk with people",
+          "responseArea": { "type": "multipleChoiceResponseArea", "choices": [
+            { "id": "1", "text": "True now and when I was young" },
+            { "id": "2", "text": "True only now" },
+            { "id": "3", "text": "True only when I was younger than 16" },
+            { "id": "4", "text": "Never true" } ] }
+        },
+        {
+          "id": "RAADS_rslts",
+          "title": "RAADS Results",
+          "questionMainText": "RAADS Results",
+          "responseArea": {
+            "type": "customResponseArea",
+            "htmlFilePath": "custom-response-areas/raads_results.html",
+            "jsFilePath": "custom-response-areas/raads_results.js",
+            "responseRequired": false
+          }
+        },
+        { "id": "RAADS_back", "reference": "PccDispatcher" }
+      ]
+    },
+    {
+      "protocolId": "QuickQ",
+      "pages": [
+        {
+          "id": "QuickQ_q1",
+          "title": "Quick Questionnaire",
+          "questionMainText": "Q1: How are you feeling today?",
+          "responseArea": { "type": "multipleChoiceResponseArea", "choices": [
+            { "id": "Good" }, { "id": "OK" }, { "id": "Poor" } ], "responseRequired": true }
+        },
+        {
+          "id": "QuickQ_q2",
+          "title": "Quick Questionnaire",
+          "questionMainText": "Q2: Did you sleep well?",
+          "responseArea": { "type": "multipleChoiceResponseArea", "choices": [
+            { "id": "Yes" }, { "id": "No" } ], "responseRequired": true }
+        },
+        { "id": "QuickQ_back", "reference": "PccDispatcher" }
+      ]
+    },
+    {
+      "protocolId": "PccResults",
+      "pages": [
+        {
+          "id": "pcc_results",
+          "title": "Results Dashboard",
+          "questionMainText": "Select which test results to display.",
+          "responseArea": {
+            "type": "customResponseArea",
+            "htmlFilePath": "custom-response-areas/results.html",
+            "jsFilePath": "custom-response-areas/results.js",
+            "responseRequired": false
+          }
+        },
+        { "id": "pcc_end", "reference": "@END_ALL" }
+      ]
+    }
+  ]
+}

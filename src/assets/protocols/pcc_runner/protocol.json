@@ -1,0 +1,76 @@
+{
+  "protocolId": "pcc_runner",
+  "title": "PCC Runner (Option B verification)",
+  "subtitle": "Runner subprotocol drives unmodified test subprotocols — no per-test edits",
+  "hideProgressBar": true,
+  "enableBackButton": false,
+  "pages": [
+    {
+      "id": "pcc_select",
+      "title": "Select Test Battery",
+      "questionMainText": "Add tests in the order you want them to run, then press Start.",
+      "responseArea": {
+        "type": "customResponseArea",
+        "htmlFilePath": "custom-response-areas/select.html",
+        "jsFilePath": "custom-response-areas/select.js",
+        "responseRequired": false
+      }
+    }
+  ],
+  "subProtocols": [
+    {
+      "protocolId": "Runner",
+      "pages": [
+        { "id": "pcc_dispatch_0", "responseArea": { "type": "customResponseArea", "htmlFilePath": "custom-response-areas/dispatch.html", "jsFilePath": "custom-response-areas/dispatch.js", "responseRequired": false } },
+        { "id": "pcc_dispatch_1", "responseArea": { "type": "customResponseArea", "htmlFilePath": "custom-response-areas/dispatch.html", "jsFilePath": "custom-response-areas/dispatch.js", "responseRequired": false } },
+        { "id": "pcc_dispatch_2", "responseArea": { "type": "customResponseArea", "htmlFilePath": "custom-response-areas/dispatch.html", "jsFilePath": "custom-response-areas/dispatch.js", "responseRequired": false } },
+        { "id": "pcc_dispatch_3", "responseArea": { "type": "customResponseArea", "htmlFilePath": "custom-response-areas/dispatch.html", "jsFilePath": "custom-response-areas/dispatch.js", "responseRequired": false } }
+      ]
+    },
+    {
+      "protocolId": "TestX",
+      "pages": [
+        {
+          "id": "TestX_q1",
+          "title": "Test X — Q1",
+          "questionMainText": "Test X, question 1: pick one.",
+          "responseArea": { "type": "multipleChoiceResponseArea", "choices": [ { "id": "X1" }, { "id": "X2" }, { "id": "X3" } ], "responseRequired": true }
+        },
+        {
+          "id": "TestX_q2",
+          "title": "Test X — Q2",
+          "questionMainText": "Test X, question 2: pick one.",
+          "responseArea": { "type": "multipleChoiceResponseArea", "choices": [ { "id": "X1" }, { "id": "X2" }, { "id": "X3" } ], "responseRequired": true }
+        }
+      ]
+    },
+    {
+      "protocolId": "TestY",
+      "pages": [
+        {
+          "id": "TestY_q1",
+          "title": "Test Y — Q1",
+          "questionMainText": "Test Y, question 1: pick one.",
+          "responseArea": { "type": "multipleChoiceResponseArea", "choices": [ { "id": "Y1" }, { "id": "Y2" } ], "responseRequired": true }
+        }
+      ]
+    },
+    {
+      "protocolId": "PccResults",
+      "pages": [
+        {
+          "id": "pcc_results",
+          "title": "Results Dashboard",
+          "questionMainText": "Select which test results to display.",
+          "responseArea": {
+            "type": "customResponseArea",
+            "htmlFilePath": "custom-response-areas/results.html",
+            "jsFilePath": "custom-response-areas/results.js",
+            "responseRequired": false
+          }
+        },
+        { "id": "pcc_end", "reference": "@END_ALL" }
+      ]
+    }
+  ]
+}
