@@ -1,0 +1,51 @@
+.gap-container {
+  width: 100%;
+}
+
+.gap-canvas {
+  width: 90%;
+  display: block;
+  margin: 0 auto;
+}
+
+.gap-button-row {
+  display: flex;
+  justify-content: center;
+  padding-top: 1rem;
+}
+
+.gap-response-btn {
+  width: 100%;
+  min-height: 120px;
+  font-size: 1.5rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f5f5f5;
+}
+
+.gap-response-btn.button-pressed {
+  background-color: #4cae4c;
+  color: white;
+}
+
+.gap-response-btn:disabled {
+  opacity: 0.5;
+}
+
+.gap-training-row {
+  padding-top: 1rem;
+}
+
+.gap-lengths-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.gap-length-btn {
+  min-width: 60px;
+}
+
+.gap-results {
+  padding-top: 1rem;
+}

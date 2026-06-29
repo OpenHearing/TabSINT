@@ -1,0 +1,47 @@
+<div class="gap-container">
+  <canvas #gapCanvas class="gap-canvas"></canvas>
+
+  <!-- Software response button, shown while an exam (full or training trial) is running -->
+  <div *ngIf="gapState === 'exam' && useSoftwareButton" class="gap-button-row">
+    <button
+      class="gap-response-btn"
+      [class.button-pressed]="buttonPressed"
+      [disabled]="device?.status !== DeviceStatus.Ready"
+      (click)="tapSoftwareButton()">
+      {{ buttonText | transloco }}
+    </button>
+  </div>
+
+  <!-- Training selection, shown when training and not mid-trial -->
+  <div *ngIf="gapTraining && gapState !== 'exam'" class="gap-training">
+    <h2>{{ "Training" | transloco }}</h2>
+
+    <div class="gap-training-row">
+      <b>{{ "Gap Lengths (ms)" | transloco }}:</b>
+    </div>
+    <div class="gap-lengths-row">
+      <button class="btn btn-default gap-length-btn" type="button" *ngFor="let item of gapLengths" (click)="startTrainingTrial(item, noiseLevel)">
+        {{ item }}
+      </button>
+    </div>
+
+    <div class="gap-training-row">
+      <label for="noiseLevel">{{ "Noise Level" | transloco }} (0-85 dB):</label>
+      <input type="number" id="noiseLevel" name="noiseLevel" [(ngModel)]="noiseLevel" min="0" max="85" />
+    </div>
+
+    <hr />
+
+    <div class="gap-training-row">
+      <button class="btn btn-default gap-begin-btn" type="button" (click)="startFullExam()">
+        {{ "Begin Exam" | transloco }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div *ngIf="!gapTraining && gapState === 'results'" class="gap-results">
+    <div>{{ "Exam complete, press submit." | transloco }}</div>
+    <app-gap-results *ngIf="showResults && gapResultsData" [data]="gapResultsData"></app-gap-results>
+  </div>
+</div>

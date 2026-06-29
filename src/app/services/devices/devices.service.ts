@@ -434,6 +434,15 @@ export class DevicesService {
   }
 
   /**
+   * Set the state of the software response button for a device.
+   * @param device The device to set the software button state for.
+   * @param state The new state of the software button (0 or 1).
+   */
+  async setSoftwareButtonState(device: IDevice, state: number): Promise<IDeviceResponse | undefined> {
+    return this.getManager(device.type).setSoftwareButtonState?.(device, state);
+  }
+
+  /**
    * Reprogram the firmware for a device.
    * @param device The device to reprogram.
    * @returns The device response for the reprogram request or undefined.

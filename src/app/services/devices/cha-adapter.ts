@@ -259,6 +259,27 @@ export class ChaAdapter implements IDeviceAdapter {
   }
 
   /**
+   * Set the state of the software response button for a device.
+   * @param device The device to set the software button state for.
+   * @param state The new state of the software button (0 or 1).
+   * @returns The device response for the request.
+   */
+  async setSoftwareButtonState(device: ChaDeviceType, state: number): Promise<IDeviceResponse> {
+    const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
+      const setSoftwareButtonStateOptions = { name: device.deviceId, state: state };
+      let deviceResponse = this.defaultInvalidResponse(device);
+      try {
+        const msg = await TabsintCha.setSoftwareButtonState(setSoftwareButtonStateOptions);
+        deviceResponse = { deviceId: device.deviceId, msg: ['SetSoftwareButtonState', msg] };
+      } catch (err) {
+        this.logger.error('Failed to write to CHA', err);
+      }
+      return deviceResponse;
+    });
+    return response;
+  }
+
+  /**
    * Cancel any ongoing file operation.
    * @param device The device to cancel the file operation on.
    * @returns The device response for the request.

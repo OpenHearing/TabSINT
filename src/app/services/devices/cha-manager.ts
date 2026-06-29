@@ -320,6 +320,17 @@ export abstract class ChaManager implements IDeviceManager {
   }
 
   /**
+   * Set the state of the software response button for a device.
+   * @param device The device to set the software button state for.
+   * @param state The new state of the software button (0 or 1).
+   */
+  async setSoftwareButtonState(device: ChaDeviceType, state: number): Promise<IDeviceResponse> {
+    const response = await this.adapter.setSoftwareButtonState(device, state);
+    await this.deviceErrorHandler(response);
+    return response;
+  }
+
+  /**
    * Reboot a device.
    * @param device The device to reboot.
    * @param examId The device response for the reboot request.

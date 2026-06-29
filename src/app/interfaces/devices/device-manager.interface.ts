@@ -126,6 +126,14 @@ export interface IDeviceManager {
   reboot?(device: IDevice): Promise<IDeviceResponse | undefined>;
 
   /**
+   * Optional method to set the state of the software response button for a device.
+   * @param device The device to set the software button state for.
+   * @param state The new state of the software button (0 or 1).
+   * @returns The device response for the request or undefined.
+   */
+  setSoftwareButtonState?(device: IDevice, state: number): Promise<IDeviceResponse | undefined>;
+
+  /**
    * Optional method to retrieve the application firmware that is available.
    * @returns The firmware asset provided by the application for the managed device type or undefined.
    */
