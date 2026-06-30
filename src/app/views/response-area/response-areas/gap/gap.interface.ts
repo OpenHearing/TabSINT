@@ -23,7 +23,7 @@ export interface GapExamPropertiesInterface {
   NMiss?: number;
   NPresCheck?: number;
   MaxFreq?: number;
-  UseSoftwareButton?: boolean;
+  UseSoftwareButton?: 0 | 1;
   SendFullResults?: 0 | 1 | 2;
   SemiAutomaticMode?: boolean;
 }
@@ -52,12 +52,12 @@ export interface GapResultsInterface {
   State?: string;
   GapThreshold?: number;
   GapLengthArray?: number[];
-  HitOrMissArray?: number[];
+  HitOrMissArray?: boolean[];
   ReversalUsedForThresholdArray?: boolean[];
   // Fields used during training to drive the canvas animation
   PlayPosition?: number;
   CurrentGapStartTime?: number;
-  HitOrMiss?: number;
+  HitOrMiss?: boolean;
 }
 
 /**
@@ -65,7 +65,7 @@ export interface GapResultsInterface {
  */
 export interface GapPlotDataInterface {
   y: number[];
-  hit: number[];
+  hit: boolean[];
   maxY: number;
   GapThreshold: number;
   reversals: boolean[];

@@ -94,7 +94,7 @@ describe('GapComponent', () => {
     expect(devicesService.queueExam).not.toHaveBeenCalled();
   });
 
-  it('runs a single-gap-length trial with the software button when training', async () => {
+  it('runs a single-gap-length trial, sending the CHA an integer UseSoftwareButton flag', async () => {
     component.device = mockDevice;
 
     await component.startTrainingTrial(40, 70);
@@ -102,7 +102,8 @@ describe('GapComponent', () => {
     const [device, examName, properties] = devicesService.queueExam.calls.mostRecent().args;
     expect(device).toBe(mockDevice);
     expect(examName).toBe('GAP');
-    expect(properties).toEqual(jasmine.objectContaining({ AllowableGapLengths: [40], LNoise: 70, UseSoftwareButton: true }));
+    // The CHA GAP exam expects UseSoftwareButton as an integer (1/0), not a boolean.
+    expect(properties).toEqual(jasmine.objectContaining({ AllowableGapLengths: [40], LNoise: 70, UseSoftwareButton: 1 }));
   });
 
   it('toggles the device software button when the response button is tapped', async () => {

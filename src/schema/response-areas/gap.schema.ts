@@ -188,10 +188,11 @@ export const gapSchema: JSONSchemaType<GapResponseAreaInterface> = {
           description: 'Maximum frequency used to generate the white noise, in Hz.',
         },
         UseSoftwareButton: {
-          type: 'boolean',
+          type: 'number',
           nullable: true,
-          default: false,
-          description: 'Uses a software submission instead of the mechanical button.',
+          enum: [0, 1],
+          default: 0,
+          description: 'Uses a software submission instead of the mechanical button (1 = on, 0 = off).',
         },
         SendFullResults: {
           type: 'number',

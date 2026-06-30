@@ -1277,7 +1277,7 @@
               "Channel": 0,
               "TimePres": 4000,
               "LNoise": 65,
-              "UseSoftwareButton": true,
+              "UseSoftwareButton": 1,
               "NReversals": 8,
               "NReversalsCalc": 4
             }

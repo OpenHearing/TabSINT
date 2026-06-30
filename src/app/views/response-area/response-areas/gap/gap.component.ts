@@ -66,7 +66,7 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
   private windowPos = 0;
   private windowWidth = 0;
   private windowPosEnd = 0;
-  private hitOrMiss: number | undefined;
+  private hitOrMiss: boolean | undefined;
 
   private pageSubscription: Subscription | undefined;
 
@@ -105,11 +105,9 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
     this.gapTraining = responseArea.training ?? gapSchema.properties.training.default;
     this.autoSubmit = responseArea.autoSubmit ?? gapSchema.properties.autoSubmit.default;
     this.gapLengths =
-      responseArea.trainingAllowableGapLengths && responseArea.trainingAllowableGapLengths.length === 5
-        ? responseArea.trainingAllowableGapLengths
-        : this.defaultTrainingGapLengths;
+      responseArea.trainingAllowableGapLengths?.length === 5 ? responseArea.trainingAllowableGapLengths : this.defaultTrainingGapLengths;
     this.examProperties = responseArea.examProperties ?? {};
-    this.useSoftwareButton = this.examProperties.UseSoftwareButton ?? false;
+    this.useSoftwareButton = Boolean(this.examProperties.UseSoftwareButton ?? false);
 
     await this.setupDevice(responseArea);
     if (!this.device) {
@@ -144,7 +142,7 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
     this.gapTraining = false;
-    this.useSoftwareButton = this.examProperties.UseSoftwareButton ?? false;
+    this.useSoftwareButton = Boolean(this.examProperties.UseSoftwareButton ?? false);
     this.resetCanvas();
     this.gapState = 'exam';
     this.stateModel.updateState({ isSubmittable: false });
@@ -178,9 +176,14 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param noiseLevel The presentation level, in dBA.
    */
   async startTrainingTrial(gapLength: number, noiseLevel: number): Promise<void> {
-    if (!this.device) {
-      await this.devicesService.deviceNotFound();
-      return;
+    try {
+      if (!this.device) {
+        await this.devicesService.deviceNotFound();
+        return;
+      }
+    } catch (e) {
+      this.logger.error('startTrainingTrial failed: ' + JSON.stringify(e));
+      throw e;
     }
     const props: GapExamPropertiesInterface = {
       Channel: this.examProperties.Channel ?? 0,
@@ -189,7 +192,7 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
       TimeTrail: this.examProperties.TimeTrail ?? 1000,
       TimeWindow: this.examProperties.TimeWindow ?? 900,
       TimeNoResp: this.examProperties.TimeNoResp ?? 50,
-      UseSoftwareButton: true,
+      UseSoftwareButton: 1,
       AllowableGapLengths: [gapLength],
       LNoise: noiseLevel,
       GapLengthStartIndex: 0,
@@ -207,8 +210,12 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
     this.gapState = 'exam';
     this.stateModel.updateState({ isSubmittable: false });
 
-    await this.devicesService.abortExams(this.device);
-    await this.devicesService.queueExam(this.device, EXAM_NAME, props);
+    this.logger.debug(`Gap exam: training trial. device status=${this.device.status}, props=${JSON.stringify(props)}`);
+    const abortResp = await this.devicesService.abortExams(this.device);
+    this.logger.debug('Gap exam: abortExams response: ' + JSON.stringify(abortResp?.msg));
+    const queueResp = await this.devicesService.queueExam(this.device, EXAM_NAME, props);
+    this.logger.debug('Gap exam: queueExam response: ' + JSON.stringify(queueResp?.msg));
+    this.examActive = true;
     this.examActive = true;
 
     // Read the in-progress results to position the training animation.
@@ -280,9 +287,9 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
     ctx.fillStyle = '#fff'; // gap
     ctx.fillRect(this.gapPos, 0, this.gapWidth, canvas.height);
 
-    if (this.hitOrMiss === 1) {
+    if (this.hitOrMiss === true) {
       ctx.fillStyle = '#4cae4c'; // hit
-    } else if (this.hitOrMiss === 0) {
+    } else if (this.hitOrMiss === false) {
       ctx.fillStyle = '#d43f3a'; // miss
     } else {
       ctx.fillStyle = '#666'; // response window, no response yet
@@ -367,7 +374,7 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param results The most recent results from the device.
    */
   private isExamComplete(results: GapResultsInterface): boolean {
-    return results.State === 'READY' || Array.isArray(results.GapLengthArray);
+    return results.State !== undefined && results.State !== 'IN PROGRESS';
   }
 
   /**
