@@ -9,7 +9,7 @@ import { DevicesService } from '../../../../services/devices/devices.service';
 import { Logger } from '../../../../services/logger.service';
 import { PageInterface } from '../../../../models/page/page.interface';
 import { IDevice } from '../../../../interfaces/devices/device.interface';
-import { DeviceStatus, DeviceType } from '../../../../utilities/constants';
+import { DeviceType } from '../../../../utilities/constants';
 import { gapSchema } from '../../../../../schema/response-areas/gap.schema';
 import { GapExamPropertiesInterface, GapPlotDataInterface, GapResponseAreaInterface, GapResultsInterface } from './gap.interface';
 
@@ -29,8 +29,6 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
   private readonly logger = inject(Logger);
 
   @ViewChild('gapCanvas') private canvasRef?: ElementRef<HTMLCanvasElement>;
-
-  DeviceStatus = DeviceStatus;
 
   // Configuration
   private readonly allowableDevices = [DeviceType.Wahts];
@@ -238,6 +236,10 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
     } else if (results.HitOrMissArray && results.HitOrMissArray.length > 0) {
       this.hitOrMiss = results.HitOrMissArray[results.HitOrMissArray.length - 1];
     }
+    // The exam ends after the response window has passed, so the animation has usually
+    // already stopped. Redraw a final frame so the window shows the hit (green) / miss (red).
+    this.stopAnimation();
+    this.drawGapFrame();
     this.gapState = 'start';
   }
 
@@ -272,9 +274,25 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Render one frame of the training animation onto the canvas.
+   * Advance and render one frame of the training animation, stopping at the end of the noise.
    */
   private drawGapAnimation(): void {
+    const canvas = this.canvasRef?.nativeElement;
+    if (!canvas) {
+      return;
+    }
+    this.drawGapFrame();
+    this.animX += (this.animationSpeed * canvas.width) / this.timePres;
+    if (this.animX > canvas.width) {
+      this.stopAnimation();
+    }
+  }
+
+  /**
+   * Render a single training frame: background noise, the gap, the response window (colored
+   * green for a hit and red for a miss once known, grey otherwise), and the playback tick.
+   */
+  private drawGapFrame(): void {
     const canvas = this.canvasRef?.nativeElement;
     const ctx = canvas?.getContext('2d');
     if (!canvas || !ctx) {
@@ -298,11 +316,6 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
 
     ctx.fillStyle = '#000'; // current position tick mark
     ctx.fillRect(this.animX, 0, this.tickWidth, canvas.height);
-    this.animX += (this.animationSpeed * canvas.width) / this.timePres;
-
-    if (this.animX > canvas.width) {
-      this.stopAnimation();
-    }
   }
 
   // ======= Software response button =======
