@@ -1,5 +1,5 @@
 export interface ChoiceInterface {
-  id: string;
+  id: string | number;
   text?: string;
   correct?: boolean;
   disable?: boolean;

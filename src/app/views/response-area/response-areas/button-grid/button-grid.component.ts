@@ -69,7 +69,7 @@ export class ButtonGridComponent implements OnInit, OnDestroy {
           this.choices = [];
           this.rows.forEach(row => {
             row.choices.forEach(choice => {
-              choice.text = choice.text ?? choice.id;
+              choice.text = choice.text ?? String(choice.id);
               choice.correct = choice.correct ?? choiceSchema.properties.correct.default;
               choice.disable = choice.disable ?? choiceSchema.properties.disable.default;
               choice.textColor = choice.textColor ?? choiceSchema.properties.textColor.default;
@@ -122,7 +122,7 @@ export class ButtonGridComponent implements OnInit, OnDestroy {
     this.resultsModel.updateCurrentPage({ response: this.results.currentPage.response.other });
   }
 
-  choiceSelected(id: string) {
+  choiceSelected(id: string | number) {
     // Remove element if already selected, else add element to selected
     if (this.results.currentPage.response.selected.includes(id)) {
       const index = this.results.currentPage.response.selected.indexOf(id);

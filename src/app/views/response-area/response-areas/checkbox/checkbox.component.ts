@@ -66,7 +66,7 @@ export class CheckboxComponent implements OnInit, OnDestroy {
         if (updatedCheckboxResponseArea) {
           this.choices = updatedCheckboxResponseArea.choices;
           this.choices.forEach(choice => {
-            choice.text = choice.text ?? choice.id;
+            choice.text = choice.text ?? String(choice.id);
           });
           this.buttonScheme = updatedCheckboxResponseArea.buttonScheme ?? checkboxSchema.properties.buttonScheme.default;
           this.feedback = updatedCheckboxResponseArea.feedback ?? checkboxSchema.properties.feedback.default;
@@ -148,7 +148,7 @@ export class CheckboxComponent implements OnInit, OnDestroy {
     this.resultsModel.updateCurrentPage({ response: this.results.currentPage.response.other });
   }
 
-  choiceSelected(id: string) {
+  choiceSelected(id: string | number) {
     // Handle the other case
     if (id === 'Other') {
       this.toggleOther();

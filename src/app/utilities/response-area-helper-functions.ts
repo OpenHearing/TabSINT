@@ -1,12 +1,12 @@
 import { ChoiceInterface } from '../interfaces/choice.interface';
 
-function includesOrEquals(item: string[] | string, arg: string): boolean {
+function includesOrEquals(item: string[] | string | number, arg: string | number): boolean {
   if (item === undefined) {
     return false;
-  } else if (typeof item === 'string') {
-    return item === arg;
+  } else if (Array.isArray(item)) {
+    return item.length === 0 ? false : item.includes(String(arg));
   } else {
-    return item.includes(arg);
+    return item === arg;
   }
 }
 
@@ -16,13 +16,13 @@ export function choiceBtnClassHelper(choice: ChoiceInterface, response: any, opt
     if (options?.disableButton) {
       btnClass += 'btn-disabled ';
     }
-    if (includesOrEquals(response.selected, choice.id)) {
+    if (includesOrEquals(response.selected, String(choice.id))) {
       btnClass += 'btn-danger ';
     } else {
       btnClass += 'btn-success ';
     }
   } else if (options?.buttonScheme === 'markCorrect') {
-    if (includesOrEquals(response.selected, choice.id)) {
+    if (includesOrEquals(response.selected, String(choice.id))) {
       btnClass += 'btn-success ';
     } else {
       btnClass += 'btn-danger ';
@@ -30,7 +30,7 @@ export function choiceBtnClassHelper(choice: ChoiceInterface, response: any, opt
   } else {
     btnClass += 'btn-default ';
     if (
-      includesOrEquals(response.selected, choice.id) &&
+      includesOrEquals(response.selected, String(choice.id)) &&
       options?.feedback !== 'gradeResponse' &&
       options?.feedback !== 'showCorrect' &&
       !options?.disableButton
@@ -42,19 +42,22 @@ export function choiceBtnClassHelper(choice: ChoiceInterface, response: any, opt
     }
     if (
       (options?.feedback === 'gradeResponse' || options?.feedback === 'showCorrect') &&
-      includesOrEquals(response.selected, choice.id) &&
+      includesOrEquals(response.selected, String(choice.id)) &&
       choice?.correct
     ) {
       btnClass += 'btn-success ';
     }
     if (
       (options?.feedback === 'gradeResponse' || options?.feedback === 'showCorrect') &&
-      includesOrEquals(response.selected, choice.id) &&
+      includesOrEquals(response.selected, String(choice.id)) &&
       !choice?.correct
     ) {
       btnClass += 'btn-danger ';
     }
-    if ((options?.feedback === 'showCorrect' && !includesOrEquals(response.selected, choice.id) && !choice?.correct) || options?.disableButton) {
+    if (
+      (options?.feedback === 'showCorrect' && !includesOrEquals(response.selected, String(choice.id)) && !choice?.correct) ||
+      options?.disableButton
+    ) {
       btnClass += 'btn-faded ';
     }
   }

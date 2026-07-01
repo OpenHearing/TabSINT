@@ -5,7 +5,7 @@ export const choiceSchema: JSONSchemaType<ChoiceInterface> = {
   type: 'object',
   properties: {
     id: {
-      type: 'string',
+      oneOf: [{ type: 'string' }, { type: 'number' }],
       description: 'A string representing this choice, as it will be recorded in the database. Required.',
       default: '',
     },
