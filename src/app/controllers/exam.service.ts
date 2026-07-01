@@ -466,9 +466,13 @@ export class ExamService {
    * @summary Handles and evaluates the logic from a protocol conditional.
    */
   private conditionalEvaluator(conditional: string) {
-    // Change string text for flags and results to correctly grab the correct variables
-    conditional = conditional.replaceAll(/\bflags\b/g, 'this.resultsModel.getResults().currentExam.flags');
-    conditional = conditional.replaceAll(/\bresult\.response\b/g, 'this.results.currentPage.response');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const response = this.results.currentPage.response?.selected ?? this.results.currentPage.response;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const flags = this.resultsModel.getResults().currentExam.flags;
+
+    conditional = conditional.replaceAll(/\bflags\b/g, 'flags');
+    conditional = conditional.replaceAll(/\bresult\.response\b/g, 'response');
     return eval(conditional);
   }
 
