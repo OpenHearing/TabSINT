@@ -18,6 +18,7 @@ describe('ThreeDigitComponent', () => {
   let devicesService: jasmine.SpyObj<DevicesService>;
   let examService: jasmine.SpyObj<ExamService>;
   let stateModel: StateModel;
+  let resultsModel: ResultsModel;
 
   const mockDevice = { deviceId: 'WAHTS-1', type: DeviceType.Wahts, status: DeviceStatus.Ready } as unknown as IDevice;
 
@@ -66,6 +67,7 @@ describe('ThreeDigitComponent', () => {
     fixture = TestBed.createComponent(ThreeDigitComponent);
     component = fixture.componentInstance;
     stateModel = TestBed.inject(StateModel);
+    resultsModel = TestBed.inject(ResultsModel);
     fixture.detectChanges();
   });
 
@@ -136,18 +138,56 @@ describe('ThreeDigitComponent', () => {
     expect(devicesService.examSubmission).toHaveBeenCalledWith(mockDevice, { name: 'ThreeDigit$Submission', nCorrect: 2 });
   }));
 
-  it('marks the page submittable and auto-submits when the device reports the exam is complete', async () => {
+  it('stores the full device results and auto-submits when the exam completes', async () => {
     component.device = mockDevice;
     component.autoSubmit = true;
-    devicesService.requestResults.and.resolveTo({
-      deviceId: mockDevice.deviceId,
-      msg: ['Result', { State: 2, digitScore: 80, presentationScore: 10 }],
-    });
+    const finalResults = {
+      State: 2,
+      digitScore: 80,
+      presentationScore: 10,
+      warmupDigitScore: 70,
+      warmupPresentationScore: 40,
+      warmupSRT: 1.2,
+      SRT: -3.5,
+      ear: 'both',
+      targetType: 'filtered',
+    };
+    devicesService.requestResults.and.resolveTo({ deviceId: mockDevice.deviceId, msg: ['Result', finalResults] });
 
     await component.startExam();
 
     expect(component.examComplete).toBeTrue();
     expect(stateModel.getState().isSubmittable).toBeTrue();
     expect(examService.submitDefault).toHaveBeenCalled();
+    expect(resultsModel.getResults().currentPage.response.results).toEqual(jasmine.objectContaining(finalResults));
   });
+
+  it('records the per-presentation SNR and masker with the graded response', fakeAsync(() => {
+    component.device = mockDevice;
+    component.autoSubmitPresentation = false;
+    // First requestResults (during startExam) delivers the presentation context.
+    devicesService.requestResults.and.resolveTo({
+      deviceId: mockDevice.deviceId,
+      msg: [
+        'Result',
+        { State: 0, currentDigits: 123, currentSNR: -4, currentMasker: 'positivePhase', currentPresentation: 'P1.wav', presentationCount: 1 },
+      ],
+    });
+
+    component.startExam();
+    flushMicrotasks();
+
+    component.userResponse = ['1', '2', '3'];
+    // Grading requests results again; State 1 signals the device is ready for the response.
+    devicesService.requestResults.and.resolveTo({ deviceId: mockDevice.deviceId, msg: ['Result', { State: 1 }] });
+    component.processDigits();
+    flush();
+    flushMicrotasks();
+
+    const firstPresentation = resultsModel.getResults().currentPage.response.presentations[0];
+    expect(firstPresentation).toEqual(
+      jasmine.objectContaining({ currentSNR: -4, currentMasker: 'positivePhase', currentPresentation: 'P1.wav', correct: true })
+    );
+    expect(devicesService.examSubmission).toHaveBeenCalledWith(mockDevice, { name: 'ThreeDigit$Submission', nCorrect: 3 });
+  }));
 });

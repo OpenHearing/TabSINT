@@ -11,6 +11,7 @@ import { PageInterface } from '../../../../models/page/page.interface';
 import { IDevice } from '../../../../interfaces/devices/device.interface';
 import { DeviceStatus, DeviceType } from '../../../../utilities/constants';
 import { getCurrentDatetime } from '../../../../utilities/exam-helper-functions';
+import { isThreeDigitResultsResponse } from '../../../../guards/type.guard';
 import { threeDigitSchema } from '../../../../../schema/response-areas/three-digit.schema';
 import {
   ThreeDigitDeviceResultsInterface,
@@ -23,6 +24,10 @@ import {
 const EXAM_NAME = 'ThreeDigit';
 const SUBMISSION_NAME = 'ThreeDigit$Submission';
 const POLL_INTERVAL_MS = 500;
+
+/** Schema property definitions used to seed parameters with their defaults at construction. */
+const raSchema = threeDigitSchema.properties;
+const examPropSchema = threeDigitSchema.properties.examProperties.properties;
 
 /**
  * Device exam states reported by the CHA in the "ThreeDigit" results.
@@ -48,15 +53,15 @@ export class ThreeDigitComponent implements OnInit, OnDestroy {
 
   DeviceStatus = DeviceStatus;
 
-  // Configuration
+  // Configuration (seeded with schema defaults at construction, overridden by the protocol)
   private readonly allowableDevices = [DeviceType.Wahts];
-  autoSubmit = false;
-  autoSubmitPresentation = true;
-  private feedbackEnabled = true;
-  private feedbackDelay = 1000;
-  private keypadDelay = 10;
+  autoSubmit = raSchema.autoSubmit.default;
+  autoSubmitPresentation = raSchema.autoSubmitPresentation.default;
+  private feedbackEnabled = raSchema.feedback.default;
+  private feedbackDelay = raSchema.feedbackDelay.default;
+  private keypadDelay = raSchema.keypadDelay.default;
   examInstructions: string | undefined;
-  nPresentations = 50;
+  nPresentations = examPropSchema.nPresentations.default;
 
   // Exam UI state
   device: IDevice | undefined;
@@ -69,10 +74,28 @@ export class ThreeDigitComponent implements OnInit, OnDestroy {
 
   // Internal state
   private responseArea: ThreeDigitResponseAreaInterface | undefined;
-  private examProperties: ThreeDigitExamPropertiesInterface = {};
+  private examProperties: ThreeDigitExamPropertiesInterface = {
+    nPresentations: examPropSchema.nPresentations.default,
+    warmupN: examPropSchema.warmupN.default,
+    targetType: examPropSchema.targetType.default,
+    maskerType: examPropSchema.maskerType.default,
+    warmupMasker: examPropSchema.warmupMasker.default,
+    initialSNR: examPropSchema.initialSNR.default,
+    fixedLevel: examPropSchema.fixedLevel.default,
+    fixedMaterial: examPropSchema.fixedMaterial.default,
+    correctStep: examPropSchema.correctStep.default,
+    incorrectStep: examPropSchema.incorrectStep.default,
+    warmupCorrectStep: examPropSchema.warmupCorrectStep.default,
+    warmupIncorrectStep: examPropSchema.warmupIncorrectStep.default,
+    ear: examPropSchema.ear.default,
+  };
   private presentations: ThreeDigitPresentationResultInterface[] = [];
   private currentDigits: string[] = [];
   private currentPresentationId: number | undefined;
+  private currentPresentation: string | undefined;
+  private currentSNR: number | undefined;
+  private currentMasker: 'positivePhase' | 'negativePhase' | '2babble' | undefined;
+  private currentDeviceCount: number | undefined;
   private responseStartTime = '';
   private readyToProcess = false;
   private initialized = false;
@@ -109,14 +132,15 @@ export class ThreeDigitComponent implements OnInit, OnDestroy {
     }
     this.initialized = true;
     this.responseArea = responseArea;
-    this.autoSubmit = responseArea.autoSubmit ?? threeDigitSchema.properties.autoSubmit.default;
-    this.autoSubmitPresentation = responseArea.autoSubmitPresentation ?? threeDigitSchema.properties.autoSubmitPresentation.default;
-    this.feedbackEnabled = responseArea.feedback ?? threeDigitSchema.properties.feedback.default;
-    this.feedbackDelay = responseArea.feedbackDelay ?? threeDigitSchema.properties.feedbackDelay.default;
-    this.keypadDelay = responseArea.keypadDelay ?? threeDigitSchema.properties.keypadDelay.default;
+    // Overlay the protocol's values on top of the schema defaults seeded at construction.
+    this.autoSubmit = responseArea.autoSubmit ?? this.autoSubmit;
+    this.autoSubmitPresentation = responseArea.autoSubmitPresentation ?? this.autoSubmitPresentation;
+    this.feedbackEnabled = responseArea.feedback ?? this.feedbackEnabled;
+    this.feedbackDelay = responseArea.feedbackDelay ?? this.feedbackDelay;
+    this.keypadDelay = responseArea.keypadDelay ?? this.keypadDelay;
     this.examInstructions = responseArea.examInstructions;
-    this.examProperties = responseArea.examProperties ?? {};
-    this.nPresentations = this.examProperties.nPresentations ?? threeDigitSchema.properties.examProperties.properties.nPresentations.default;
+    this.examProperties = { ...this.examProperties, ...(responseArea.examProperties ?? {}) };
+    this.nPresentations = this.examProperties.nPresentations ?? this.nPresentations;
     this.examProperties.nPresentations = this.nPresentations;
 
     await this.setupDevice(responseArea);
@@ -174,6 +198,10 @@ export class ThreeDigitComponent implements OnInit, OnDestroy {
     if (results.State === ExamProgress.Running || results.State === ExamProgress.WaitingForResult) {
       this.currentDigits = String(results.currentDigits ?? '').split('');
       this.currentPresentationId = results.presentationId;
+      this.currentPresentation = results.currentPresentation;
+      this.currentSNR = results.currentSNR;
+      this.currentMasker = results.currentMasker;
+      this.currentDeviceCount = results.presentationCount;
       this.readyToProcess = true;
     } else if (results.State === ExamProgress.Complete) {
       this.examActive = false;
@@ -181,8 +209,7 @@ export class ThreeDigitComponent implements OnInit, OnDestroy {
       this.digitsDisabled = true;
       const response: ThreeDigitResponseInterface = {
         presentations: this.presentations,
-        digitScore: results.digitScore,
-        presentationScore: results.presentationScore,
+        results,
       };
       this.resultsModel.updateCurrentPage({ response });
       this.stateModel.updateState({ isSubmittable: true });
@@ -268,9 +295,13 @@ export class ThreeDigitComponent implements OnInit, OnDestroy {
     const numberCorrect = this.digitCorrect.filter(correct => correct).length;
     const presentation: ThreeDigitPresentationResultInterface = {
       presentationId: this.currentPresentationId,
+      presentationCount: this.currentDeviceCount,
       responseStartTime: this.responseStartTime,
+      currentPresentation: this.currentPresentation,
       response: [...this.userResponse],
       currentDigits: [...this.currentDigits],
+      currentSNR: this.currentSNR,
+      currentMasker: this.currentMasker,
       numberCorrect,
       numberIncorrect: this.digitCorrect.length - numberCorrect,
       eachCorrect: [...this.digitCorrect],
@@ -315,8 +346,8 @@ export class ThreeDigitComponent implements OnInit, OnDestroy {
       return undefined;
     }
     const resp = await this.devicesService.requestResults(this.device);
-    if (resp?.msg && typeof resp.msg[1] === 'object' && resp.msg[1] !== null) {
-      return resp.msg[1] as ThreeDigitDeviceResultsInterface;
+    if (isThreeDigitResultsResponse(resp)) {
+      return resp.msg[1];
     }
     this.logger.debug('Three digit exam: unexpected requestResults response: ' + JSON.stringify(resp?.msg));
     return undefined;

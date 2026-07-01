@@ -16,6 +16,7 @@ import { PageTypes } from '../types/custom-types';
 import { ButtonGridInterface } from '../views/response-area/response-areas/button-grid/button-grid.interface';
 import { CheckboxInterface } from '../views/response-area/response-areas/checkbox/checkbox.interface';
 import { MultipleChoiceInterface } from '../views/response-area/response-areas/multiple-choice/multiple-choice.interface';
+import { ThreeDigitResultsResponse } from '../views/response-area/response-areas/three-digit/three-digit.interface';
 
 export function isChoiceResponseArea(responseArea?: ResponseArea): responseArea is ButtonGridInterface | MultipleChoiceInterface | CheckboxInterface {
   return (responseArea as CheckboxInterface)?.choices !== undefined;
@@ -73,6 +74,15 @@ export function isRequestSettingResponse(response?: IDeviceResponse): response i
 
 export function isStatusResponse(response?: IDeviceResponse): response is StatusResponse {
   return isValidDeviceResponse(response) && response.msg.length >= 2 && (response as StatusResponse).msg[1].state !== undefined;
+}
+
+export function isThreeDigitResultsResponse(response?: IDeviceResponse): response is ThreeDigitResultsResponse {
+  return (
+    isValidDeviceResponse(response) &&
+    response.msg.length >= 2 &&
+    typeof (response as ThreeDigitResultsResponse).msg[1] === 'object' &&
+    (response as ThreeDigitResultsResponse).msg[1] !== null
+  );
 }
 
 export function isLongNameResponse(response?: IDeviceResponse): response is IDeviceResponse {

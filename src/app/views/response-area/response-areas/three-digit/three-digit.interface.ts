@@ -1,4 +1,5 @@
 import { CommonResponseAreaInterface } from '../../../../interfaces/page-definition.interface';
+import { IDeviceResponse } from '../../../../interfaces/devices/device-response.interface';
 
 /**
  * Properties sent to the CHA when queueing a "ThreeDigit" exam. These map directly to the
@@ -7,7 +8,7 @@ import { CommonResponseAreaInterface } from '../../../../interfaces/page-definit
 export interface ThreeDigitExamPropertiesInterface {
   nPresentations?: number;
   warmupN?: number;
-  targetType?: 'filtered' | 'timeCompressed' | 'H3CamFiltered' | 'TFS' | 'Swahili' | 'Mandarin' | 'Portuguese' | 'French';
+  targetType?: 'filtered' | 'timeCompressed' | 'H3CamFiltered' | 'TFS' | 'Swahili' | 'MANDARIN' | 'PORTUGUE' | 'French';
   maskerType?: 'schroeder' | '2babble';
   warmupMasker?: 'none' | 'negativePhase' | 'positivePhase' | '2babble';
   initialSNR?: number;
@@ -41,28 +42,48 @@ export interface ThreeDigitResponseAreaInterface extends CommonResponseAreaInter
 /**
  * Results structure returned by the CHA for a "ThreeDigit" exam, polled via requestResults.
  * State 0 = presentation running, 1 = waiting for the graded response, 2 = exam complete.
+ * Mirrors the device's TestThreeDigitResults class.
  */
 export interface ThreeDigitDeviceResultsInterface {
   State?: number;
+  currentPresentation?: string;
   currentDigits?: number | string;
+  currentSNR?: number;
+  presentationCount?: number;
   presentationId?: number;
+  currentMasker?: 'positivePhase' | 'negativePhase' | '2babble';
   digitScore?: number;
   presentationScore?: number;
-  currentMasker?: string;
-  targetType?: string;
-  currentSNR?: number;
   maskerLevel?: number;
   targetLevel?: number;
+  targetType?: 'filtered' | 'timeCompressed' | 'H3CamFiltered';
+  warmupDigitScore?: number;
+  warmupPresentationScore?: number;
+  ear?: 'left' | 'right' | 'both';
+  warmupSRT?: number;
+  SRT?: number;
 }
 
 /**
- * Graded result for a single presentation, accumulated across the exam.
+ * A requestResults device response whose payload is a ThreeDigit results object.
+ */
+export interface ThreeDigitResultsResponse extends IDeviceResponse {
+  msg: [unknown, ThreeDigitDeviceResultsInterface];
+}
+
+/**
+ * Graded result for a single presentation, accumulated across the exam. Carries the device
+ * context for the presentation alongside the graded response.
  */
 export interface ThreeDigitPresentationResultInterface {
   presentationId?: number;
+  presentationCount?: number;
   responseStartTime: string;
+  currentPresentation?: string;
   response: string[];
   currentDigits: string[];
+  currentSNR?: number;
+  currentMasker?: 'positivePhase' | 'negativePhase' | '2babble';
   numberCorrect: number;
   numberIncorrect: number;
   eachCorrect: boolean[];
@@ -70,10 +91,10 @@ export interface ThreeDigitPresentationResultInterface {
 }
 
 /**
- * Aggregate response stored for the page once the exam completes.
+ * Aggregate response stored for the page once the exam completes. `results` holds the full
+ * final TestThreeDigitResults payload from the device (SRT, warmup scores, etc.).
  */
 export interface ThreeDigitResponseInterface {
   presentations: ThreeDigitPresentationResultInterface[];
-  digitScore?: number;
-  presentationScore?: number;
+  results?: ThreeDigitDeviceResultsInterface;
 }

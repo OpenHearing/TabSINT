@@ -86,7 +86,7 @@ export const threeDigitSchema: JSONSchemaType<ThreeDigitResponseAreaInterface> =
         targetType: {
           type: 'string',
           nullable: true,
-          enum: ['filtered', 'timeCompressed', 'H3CamFiltered', 'TFS', 'Swahili', 'Mandarin', 'Portuguese', 'French'],
+          enum: ['filtered', 'timeCompressed', 'H3CamFiltered', 'TFS', 'Swahili', 'MANDARIN', 'PORTUGUE', 'French'],
           default: 'filtered',
           description: 'Type of target material',
         },
