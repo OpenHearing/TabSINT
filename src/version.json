@@ -5,8 +5,8 @@
   "version_code": "1093",
   "deps": {
     "user_agent": "angular/^17.1.1",
-    "node": "node/v20.17.0",
-    "capacitor": "capacitor/^6.1.0"
+    "node": "node/v24.0.1",
+    "capacitor": "capacitor/^8.0.0"
   },
   "plugins": []
 }
