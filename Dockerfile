@@ -56,7 +56,7 @@ RUN (yes || true) | sdkmanager --licenses
 
 # Update SDK and install specific Android platform and build tools
 RUN sdkmanager --update && \
-    sdkmanager "platforms;android-24" "build-tools;24.0.3"
+    sdkmanager "platforms;android-36" "build-tools;36.0.0"
 
 # Set working directory
 WORKDIR /usr/src/app

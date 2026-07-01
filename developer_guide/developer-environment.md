@@ -141,12 +141,12 @@ OpenJDK 64-Bit Server VM (build 21.0.11+10-1-24.04.2-Ubuntu, mixed mode, sharing
     source ~/.bashrc
     ```
 
-### Install Android Platform Tools, Platforms, and Build Tools (Version 31.0.3)
+### Install Android Platform Tools, Platforms, and Build Tools (Version 36)
 
-1. **Download and Install Platform Tools Version 31.0.3**:
+1. **Download and Install Platform Tools Version 36**:
 
     ```bash
-    curl https://dl.google.com/android/repository/platform-tools_r31.0.3-linux.zip -o /tmp/platform-tools.zip
+    curl https://dl.google.com/android/repository/platform-tools_r36.0.2-linux.zip -o /tmp/platform-tools.zip
     unzip /tmp/platform-tools.zip -d $HOME/android/
     rm /tmp/platform-tools.zip
     ```
@@ -154,7 +154,7 @@ OpenJDK 64-Bit Server VM (build 21.0.11+10-1-24.04.2-Ubuntu, mixed mode, sharing
 2. **Install Platforms and Build Tools Using sdkmanager**:
 
     ```bash
-    sdkmanager "platforms;android-31" "build-tools;31.0.3"
+    sdkmanager "platforms;android-36" "build-tools;36.0.0"
     ```
 
 ### Verify the Installation
@@ -169,8 +169,9 @@ OpenJDK 64-Bit Server VM (build 21.0.11+10-1-24.04.2-Ubuntu, mixed mode, sharing
 
     ```
     Android Debug Bridge version 1.0.41
-    Version 31.0.3-7562133
-    Installed as /home/ppallavalli/android/platform-tools-31.0.3/platform-tools/adb
+    Version 36.0.0-13206524
+    Installed as /usr/local/android-sdk/platform-tools/adb
+    Running on Linux 5.15.167.4-microsoft-standard-WSL2 (x86_64)
     ```
 
 2. **Check Build Tools and Platforms**:
@@ -275,9 +276,9 @@ Change the `src` to work with your file path. -->
 sudo unzip commandlinetools-linux-9477386_latest.zip
 sudo rm commandlinetools-linux-9477386_latest.zip
 cd cmdline-tools/bin
-sudo bash sdkmanager --install "platform-tools" "platforms;android-32" "build-tools;32.0.0" --sdk_root=.
+sudo bash sdkmanager --install "platform-tools" "platforms;android-36" "build-tools;36.0.0" --sdk_root=.
 sudo bash sdkmanager --licenses --sdk_root=.
-mv ~/android-tools/cmdline-tools/bin/build-tools/32.0.0 ~/android-tools/build-tools/32.0.0
+mv ~/android-tools/cmdline-tools/bin/build-tools/36.0.0 ~/android-tools/build-tools/36.0.0
 cp -R ~/android-tools/cmdline-tools/bin/licenses ~/android-tools/
 ```
 ### Add exports to the end of your .bashrc file with `sudo nano ~/.bashrc`; make sure to change the paths accordingly
