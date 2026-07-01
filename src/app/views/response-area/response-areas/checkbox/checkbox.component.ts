@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ResultsInterface } from '../../../../models/results/results.interface';
 import { PageInterface } from '../../../../models/page/page.interface';
@@ -34,6 +34,12 @@ export class CheckboxComponent implements OnInit, OnDestroy {
   verticalSpacing: number;
   otherSelected: boolean = false;
   submitted = false;
+
+  @ViewChild('otherResponse')
+  set otherResponse(textarea: ElementRef<HTMLTextAreaElement> | undefined) {
+    // Fires when the "Other" textarea enters the DOM; move the cursor into it
+    textarea?.nativeElement.focus();
+  }
 
   pageSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
