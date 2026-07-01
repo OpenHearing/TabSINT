@@ -274,9 +274,10 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
     // The exam ends after the response window has passed, so the animation has usually
     // already stopped. Redraw a final frame so the window shows the hit (green) / miss (red).
     // This feedback persists until the next trial or "Begin Exam" (both call resetCanvas).
-    this.stopAnimation();
-    this.ensureFeedbackVisible();
-    this.drawGapFrame();
+    if (this.animationInterval === undefined) {
+      this.ensureFeedbackVisible();
+      this.drawGapFrame();
+    }
     this.gapState = 'start';
   }
 
