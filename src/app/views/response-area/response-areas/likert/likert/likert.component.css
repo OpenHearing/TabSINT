@@ -24,31 +24,21 @@
   font-style: normal;
 }
 
-/* Labels — one cell per level, aligned with the options row below/above it */
+/* Labels — only the non-empty ones are rendered, each sized to its own text and
+   distributed across the scale. Content sizing means multi-word labels are never
+   clipped; space-between puts the ends flush left/right with interior labels between. */
 .likert-labels {
   display: flex;
-  gap: 10px;
+  justify-content: space-between;
+  gap: 8px;
   width: 100%;
   font-weight: bold;
   font-size: 1.2rem;
 }
 
 .likert-label {
-  flex: 1 1 0;
-  min-width: 0;
+  flex: 0 1 auto;
   text-align: center;
-  padding: 0 4px;
-  /* Keep labels on one line; end labels are aligned outward so multi-word text
-     stays readable and spills over the (usually empty) neighboring columns. */
-  white-space: nowrap;
-}
-
-.likert-label.label-start {
-  text-align: left;
-}
-
-.likert-label.label-end {
-  text-align: right;
 }
 
 /* Center label spanning the whole scale */

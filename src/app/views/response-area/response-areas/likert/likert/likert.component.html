@@ -9,13 +9,9 @@
 
   <!-- Labels Above -->
   <div class="likert-labels" *ngIf="hasLabels(question.topLabels)" [style.font-size]="question.labelFontSize">
-    <span
-      *ngFor="let label of question.topLabels; let i = index"
-      class="likert-label"
-      [class.label-start]="i === 0"
-      [class.label-end]="i === question.levels - 1"
-      >{{ label }}</span
-    >
+    <ng-container *ngFor="let label of question.topLabels">
+      <span *ngIf="label !== ''" class="likert-label">{{ label }}</span>
+    </ng-container>
   </div>
 
   <!-- Slider Mode -->
@@ -72,13 +68,9 @@
 
   <!-- Labels Below -->
   <div class="likert-labels" *ngIf="hasLabels(question.bottomLabels)" [style.font-size]="question.labelFontSize">
-    <span
-      *ngFor="let label of question.bottomLabels; let i = index"
-      class="likert-label"
-      [class.label-start]="i === 0"
-      [class.label-end]="i === question.levels - 1"
-      >{{ label }}</span
-    >
+    <ng-container *ngFor="let label of question.bottomLabels">
+      <span *ngIf="label !== ''" class="likert-label">{{ label }}</span>
+    </ng-container>
   </div>
 
   <!-- Center Label Below -->
