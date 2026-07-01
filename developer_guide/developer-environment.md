@@ -51,7 +51,7 @@ All the following commands should be run on your WSL machine unless specified ot
     nvm install node
     ```
 
-2. **Install a Specific Node.js Version**: If your project requires a specific version of Node.js (e.g., 14.18.1), install it using:
+2. **Install a Specific Node.js Version**: The project requires a version of Node.js >= 22.0.0 (e.g., 22.4.0), install it using:
 
     ```bash
     nvm install v22.4.0
@@ -72,12 +72,12 @@ All the following commands should be run on your WSL machine unless specified ot
 
 By following these steps, you will have nvm, Node.js, and npm installed and properly configured on your system.
 
-### Install Java (OpenJDK 17.0.12)
+### Install Java (OpenJDK 21)
 
-1. **Install OpenJDK 17**: Use the following command to install OpenJDK 17.0.12:
+1. **Install OpenJDK 21**: The project requires Java Version 21 Use the following command to install OpenJDK 21:
 
     ```bash
-    sudo apt-get install openjdk-17-jdk
+    sudo apt-get install openjdk-21-jdk
     ```
 
 2. **Verify Java Installation**: Confirm the Java installation by checking its version:
@@ -88,7 +88,7 @@ By following these steps, you will have nvm, Node.js, and npm installed and prop
 3. **Export JAVA_HOME Variable**: Set the `JAVA_HOME` environment variable to the root of the JDK directory. Add the following line to your `.bashrc` file:
 
     ```bash
-    export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
+    export JAVA_HOME="/usr/lib/jvm/java-21-openjdk-amd64"
     ```
 
     After adding the line, reload your `.bashrc` file to apply the changes:
@@ -100,9 +100,9 @@ By following these steps, you will have nvm, Node.js, and npm installed and prop
 You should see output similar to the following:
 
 ```text
-openjdk 17.0.12 2024-07-16
-OpenJDK Runtime Environment (build 17.0.12+7-Ubuntu-1ubuntu220.04)
-OpenJDK 64-Bit Server VM (build 17.0.12+7-Ubuntu-1ubuntu220.04, mixed mode, sharing)
+openjdk version "21.0.11" 2026-04-21
+OpenJDK Runtime Environment (build 21.0.11+10-1-24.04.2-Ubuntu)
+OpenJDK 64-Bit Server VM (build 21.0.11+10-1-24.04.2-Ubuntu, mixed mode, sharing)
 ```
 
 ### Install Android Command Line Tools
@@ -286,7 +286,7 @@ cp -R ~/android-tools/cmdline-tools/bin/licenses ~/android-tools/
 export ANDROID_HOME="/home/<username>/android-tools"
 export ANDROID_SDK_ROOT="/home/<username>/android-tools"
 export PLATFORM_TOOLS="/usr/local/android-sdk/platform-tools"
-export JAVA_HOME="/usr/lib/jvm/java-1.11.0-openjdk-amd64/"
+export JAVA_HOME="/usr/lib/jvm/java-1.21.0-openjdk-amd64/"
 export PATH="$ANDROID_HOME/cmdline-tools:$ANDROID_HOME/cmdline-tools/bin:$PLATFORM_TOOLS:$JAVA_HOME:$PATH"
 ``` -->
 ### Gradle
@@ -304,7 +304,7 @@ To build and develop the TabSINT software, you must set up your local machine wi
 - [Node](https://nodejs.org/)
   - Make sure global `node_modules` directory is on your system path
   - **Node** comes with a command line package manager `npm`
-  - Currently requires Node 14.x (14.18.1 as of Tabsint v4.5.0)
+  - Currently requires Node >= 22.0.0 (as of Tabsint v5.0.0)
 
 **NOTE: When installing Git for Windows, I had to add a couple extra things to my path, per this [stackoverflow post](https://stackoverflow.com/a/50833818). When installing Node, select the Current version. Do not install the LTS version.**
 
@@ -323,7 +323,7 @@ At this point, you are ready to serve the app locally in the browser for testing
 To build an android package you need the following tools:
 
 - [JAVA JDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
-  - Currently requires Java JDK 17.0.12
+  - Currently requires Java JDK 21
   - Confirm that you have the environment variable `JAVA_HOME` set to be the root of the JDK directory (i.e. `C:\Program Files\Java\jdkx.x.x`)
   - **NOTE: Oracle's download page seems broken (October 26, 2020), so I used [this](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot) to install the JDK**
 - [Android Studio](https://developer.android.com/sdk/index.html)
@@ -331,10 +331,10 @@ To build an android package you need the following tools:
   - Make sure the following directories within the Android SDK root directory are on your system path:
     - `[path-to-sdk]/tools/`
     - `[path-to-sdk]/platform-tools/`
-    - `[path-to-sdk]/build-tools/[sdk-version]/` where `[sdk-version]` is the SDK version you have installed (32 as of TabsINT v4.5.0).
+    - `[path-to-sdk]/build-tools/[sdk-version]/` where `[sdk-version]` is the SDK version you have installed (32 as of TabsINT v5.0.0).
     - **NOTE: if using the Android Studio (Windows) sdkmanager to install the tools, platform-tools and build-tools, the installed files might be found in the C:\Users\User\AppData\Local\Android\Sdk directory. To fix this issue I copied these folders to my C:\Program Files\Android\Android Studio directory.**
 - [Gradle](https://gradle.org/install/)
-  - Current version on continuous integration jobs is 7.3.3.
+  - Current version recommended is Version >= 8.7.2.
   - Note down the path where Gradle is installed
   - Make sure the bin directory within your Gradle installation is on your system path.
 - As of Android 12, `ANDROID_HOME` is now the preferred environment variable, and not `ANDROID_SDK_ROOT`. Depending on your environment, you may need to define these.

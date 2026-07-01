@@ -1,5 +1,5 @@
-# Start with Eclipse Temurin JDK 17 as the base image
-FROM eclipse-temurin:17-jdk
+# Start with Eclipse Temurin JDK 21 as the base image
+FROM eclipse-temurin:21-jdk
 
 # Hadolint (DL4006)
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -31,7 +31,7 @@ RUN echo "export NVM_DIR=\"$NVM_DIR\"" >> /root/.bashrc && \
     echo "[ -s \"$NVM_DIR/nvm.sh\" ] && \. \"$NVM_DIR/nvm.sh\"" >> /root/.bashrc && \
     echo "[ -s \"$NVM_DIR/bash_completion\" ] && \. \"$NVM_DIR/bash_completion\"" >> /root/.bashrc
 
-# Set Node.js version and install it
+# Set Node.js version and install it, requires Version >= 22.0.0 for Capacitor V8
 ENV NODE_VERSION=v22.4.0
 RUN bash -c "source $NVM_DIR/nvm.sh && nvm install $NODE_VERSION && nvm use $NODE_VERSION"
 
