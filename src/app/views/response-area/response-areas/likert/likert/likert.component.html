@@ -1,6 +1,6 @@
 <div class="likert-container" *ngFor="let question of questions; let questionIndex = index">
   <!-- Question Text (may contain HTML) -->
-  <p class="question" [style.font-size]="question.questionFontSize" [innerHTML]="question.safeText"></p>
+  <p class="question" [style.font-size]="question.questionFontSize" [innerHTML]="question.text"></p>
 
   <!-- Center Label Above -->
   <p *ngIf="question.centerLabelAbove" class="likert-center-label" [style.font-size]="question.labelFontSize">

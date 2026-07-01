@@ -1,5 +1,4 @@
 import { Component, EventEmitter, inject, OnDestroy, OnInit, Output } from '@angular/core';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { PageModel } from '../../../../../models/page/page.service';
@@ -13,7 +12,7 @@ import { ExamService } from '../../../../../controllers/exam.service';
 
 /** One question expanded into everything the template needs to render it. */
 interface NormalizedQuestion {
-  safeText: SafeHtml;
+  text: string;
   levels: number;
   topLabels: string[];
   bottomLabels: string[];
@@ -34,7 +33,6 @@ export class LikertComponent implements OnInit, OnDestroy {
   private readonly pageModel = inject(PageModel);
   private readonly stateModel = inject(StateModel);
   private readonly examService = inject(ExamService);
-  private readonly sanitizer = inject(DomSanitizer);
   @Output() responseChange = new EventEmitter<number>();
 
   likertExamProperties: LikertInterface = {
@@ -157,7 +155,7 @@ export class LikertComponent implements OnInit, OnDestroy {
     }
 
     return {
-      safeText: this.sanitizer.bypassSecurityTrustHtml(q.text ?? ''),
+      text: q.text ?? '',
       levels,
       topLabels,
       bottomLabels,
