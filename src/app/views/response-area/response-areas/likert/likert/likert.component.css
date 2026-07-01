@@ -1,4 +1,16 @@
 /* General Styling */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .likert-container {
   text-align: center;
   margin: 20px 0;
@@ -26,7 +38,17 @@
   min-width: 0;
   text-align: center;
   padding: 0 4px;
-  overflow-wrap: break-word;
+  /* Keep labels on one line; end labels are aligned outward so multi-word text
+     stays readable and spills over the (usually empty) neighboring columns. */
+  white-space: nowrap;
+}
+
+.likert-label.label-start {
+  text-align: left;
+}
+
+.likert-label.label-end {
+  text-align: right;
 }
 
 /* Center label spanning the whole scale */

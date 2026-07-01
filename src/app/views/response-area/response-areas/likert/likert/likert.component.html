@@ -9,7 +9,13 @@
 
   <!-- Labels Above -->
   <div class="likert-labels" *ngIf="hasLabels(question.topLabels)" [style.font-size]="question.labelFontSize">
-    <span *ngFor="let label of question.topLabels" class="likert-label">{{ label }}</span>
+    <span
+      *ngFor="let label of question.topLabels; let i = index"
+      class="likert-label"
+      [class.label-start]="i === 0"
+      [class.label-end]="i === question.levels - 1"
+      >{{ label }}</span
+    >
   </div>
 
   <!-- Slider Mode -->
@@ -36,8 +42,10 @@
     </div>
 
     <!-- Slider Input -->
+    <label [attr.for]="'likert-slider-' + questionIndex" class="sr-only">Response slider</label>
     <input
       type="range"
+      [id]="'likert-slider-' + questionIndex"
       [class.hidden-cursor]="isNotApplicable[questionIndex] || sliderValue[questionIndex] === null"
       min="0"
       [max]="question.levels"
@@ -64,7 +72,13 @@
 
   <!-- Labels Below -->
   <div class="likert-labels" *ngIf="hasLabels(question.bottomLabels)" [style.font-size]="question.labelFontSize">
-    <span *ngFor="let label of question.bottomLabels" class="likert-label">{{ label }}</span>
+    <span
+      *ngFor="let label of question.bottomLabels; let i = index"
+      class="likert-label"
+      [class.label-start]="i === 0"
+      [class.label-end]="i === question.levels - 1"
+      >{{ label }}</span
+    >
   </div>
 
   <!-- Center Label Below -->
