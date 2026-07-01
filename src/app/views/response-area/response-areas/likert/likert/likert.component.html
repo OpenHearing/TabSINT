@@ -8,7 +8,7 @@
   </p>
 
   <!-- Labels Above -->
-  <div class="likert-labels" *ngIf="hasLabels(question.topLabels)" [style.font-size]="question.labelFontSize">
+  <div class="likert-labels likert-labels-top" *ngIf="hasLabels(question.topLabels)" [style.font-size]="question.labelFontSize">
     <ng-container *ngFor="let label of question.topLabels">
       <span *ngIf="label !== ''" class="likert-label">{{ label }}</span>
     </ng-container>
@@ -67,7 +67,7 @@
   </div>
 
   <!-- Labels Below -->
-  <div class="likert-labels" *ngIf="hasLabels(question.bottomLabels)" [style.font-size]="question.labelFontSize">
+  <div class="likert-labels likert-labels-bottom" *ngIf="hasLabels(question.bottomLabels)" [style.font-size]="question.labelFontSize">
     <ng-container *ngFor="let label of question.bottomLabels">
       <span *ngIf="label !== ''" class="likert-label">{{ label }}</span>
     </ng-container>

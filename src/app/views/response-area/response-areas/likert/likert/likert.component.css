@@ -39,6 +39,16 @@
 .likert-label {
   flex: 0 1 auto;
   text-align: center;
+  line-height: 1.1;
+}
+
+/* Pull the label rows in close to the scale */
+.likert-labels-top {
+  margin-bottom: -4px;
+}
+
+.likert-labels-bottom {
+  margin-top: 0;
 }
 
 /* Center label spanning the whole scale */
@@ -149,7 +159,7 @@
   border: 2px solid transparent;
   background: none;
   font-size: 1.3rem;
-  padding: 10px;
+  padding: 4px 10px;
   flex: 1 1 0;
   min-width: 0;
   box-sizing: border-box;
