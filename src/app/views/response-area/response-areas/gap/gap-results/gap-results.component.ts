@@ -9,7 +9,7 @@ import { GapPlotDataInterface } from '../gap.interface';
 })
 export class GapResultsComponent implements AfterViewInit {
   @Input() data!: GapPlotDataInterface;
-  @ViewChild('gapResultsPlot') private plotRef!: ElementRef<HTMLDivElement>;
+  @ViewChild('gapResultsPlot') private readonly plotRef!: ElementRef<HTMLDivElement>;
 
   private readonly plotWidth = 400;
   private readonly plotHeight = 400;

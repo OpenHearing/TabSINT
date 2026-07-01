@@ -34,7 +34,7 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
   private readonly devicesService = inject(DevicesService);
   private readonly logger = inject(Logger);
 
-  @ViewChild('gapCanvas') private canvasRef?: ElementRef<HTMLCanvasElement>;
+  @ViewChild('gapCanvas') private readonly canvasRef?: ElementRef<HTMLCanvasElement>;
 
   // Configuration
   private readonly allowableDevices = [DeviceType.Wahts];
@@ -269,7 +269,7 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
     if (results.HitOrMiss !== undefined) {
       this.hitOrMiss = results.HitOrMiss === 1;
     } else if (results.HitOrMissArray && results.HitOrMissArray.length > 0) {
-      this.hitOrMiss = results.HitOrMissArray[results.HitOrMissArray.length - 1];
+      this.hitOrMiss = results.HitOrMissArray.at(-1);
     }
     // The exam ends after the response window has passed, so the animation has usually
     // already stopped. Redraw a final frame so the window shows the hit (green) / miss (red).
@@ -513,7 +513,7 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   private createGapData(results: GapResultsInterface): GapPlotDataInterface {
     const gapLengths = results.GapLengthArray ?? [];
-    const maxLength = gapLengths.reduce((max, value) => (value > max ? value : max), 0);
+    const maxLength = gapLengths.reduce((max, value) => Math.max(value, max), 0);
     return {
       y: gapLengths,
       hit: results.HitOrMissArray ?? [],
