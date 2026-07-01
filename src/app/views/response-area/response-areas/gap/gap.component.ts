@@ -12,7 +12,7 @@ import { IDevice } from '../../../../interfaces/devices/device.interface';
 import { DeviceType } from '../../../../utilities/constants';
 import { gapSchema } from '../../../../../schema/response-areas/gap.schema';
 import { GapExamPropertiesInterface, GapPlotDataInterface, GapResponseAreaInterface, GapResultsInterface } from './gap.interface';
-import { isGapResults } from '../../../../guards/type.guard';
+import { isGapResults, isStatusResponse } from '../../../../guards/type.guard';
 
 const EXAM_NAME = 'GAP';
 
@@ -426,7 +426,7 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
       return undefined;
     }
     const resp = await this.devicesService.requestStatus(this.device);
-    if (resp?.msg && typeof resp.msg[1] === 'object' && resp.msg[1] !== null && 'state' in resp.msg[1]) {
+    if (isStatusResponse(resp)) {
       const state = (resp.msg[1] as { state: number }).state;
       this.logger.debug(`Gap exam: requestStatus state=${state}`);
       return state;
