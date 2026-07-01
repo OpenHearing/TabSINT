@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ResultsInterface } from '../../../../models/results/results.interface';
 import { PageInterface } from '../../../../models/page/page.interface';
@@ -35,6 +35,12 @@ export class CheckboxComponent implements OnInit, OnDestroy {
   otherSelected: boolean = false;
   submitted = false;
 
+  @ViewChild('otherResponse')
+  set otherResponse(textarea: ElementRef<HTMLTextAreaElement> | undefined) {
+    // Fires when the "Other" textarea enters the DOM; move the cursor into it
+    textarea?.nativeElement.focus();
+  }
+
   pageSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
@@ -66,7 +72,7 @@ export class CheckboxComponent implements OnInit, OnDestroy {
         if (updatedCheckboxResponseArea) {
           this.choices = updatedCheckboxResponseArea.choices;
           this.choices.forEach(choice => {
-            choice.text = choice.text ?? choice.id;
+            choice.text = choice.text ?? String(choice.id);
           });
           this.buttonScheme = updatedCheckboxResponseArea.buttonScheme ?? checkboxSchema.properties.buttonScheme.default;
           this.feedback = updatedCheckboxResponseArea.feedback ?? checkboxSchema.properties.feedback.default;
@@ -148,7 +154,7 @@ export class CheckboxComponent implements OnInit, OnDestroy {
     this.resultsModel.updateCurrentPage({ response: this.results.currentPage.response.other });
   }
 
-  choiceSelected(id: string) {
+  choiceSelected(id: string | number) {
     // Handle the other case
     if (id === 'Other') {
       this.toggleOther();

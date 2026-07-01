@@ -43,11 +43,29 @@ describe('LikertComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-  it('should initialize with mocked questions, labels, and levels', () => {
-    expect(component.questions).toEqual([]);
-    expect(component.labels).toEqual([]);
-    expect(component.levels).toEqual(10);
-  });
+
+  it('should normalize the flat form into per-question labels', fakeAsync(() => {
+    mockPageModel.updatePage({
+      responseArea: {
+        type: 'likertResponseArea',
+        questions: ['Question 1', 'Question 2'],
+        levels: 5,
+        position: 'above',
+        labels: ['Strongly Disagree', 'Strongly Agree'],
+        useEmoticons: false,
+      },
+      id: 'page1',
+    });
+    tick();
+    fixture.detectChanges();
+
+    expect(component.questions.length).toEqual(2);
+    // A length-2 labels array becomes end labels above the scale (levels === 5).
+    expect(component.questions[0].levels).toEqual(5);
+    expect(component.questions[0].topLabels[0]).toEqual('Strongly Disagree');
+    expect(component.questions[0].topLabels[4]).toEqual('Strongly Agree');
+    expect(component.hasLabels(component.questions[0].bottomLabels)).toBeFalse();
+  }));
 
   it('should emit response change when onResponseChange is called', () => {
     spyOn(component.responseChange, 'emit');
@@ -57,15 +75,14 @@ describe('LikertComponent', () => {
     expect(component.responseChange.emit).toHaveBeenCalledWith(resultsModel.resultsModel.currentPage.response);
   });
 
-  it('should subscribe to pageModel currentPageObservable and update questions', fakeAsync(() => {
+  it('should honor per-question overrides and below-positioned labels', fakeAsync(() => {
     const updatedPage = {
       responseArea: {
         type: 'likertResponseArea',
-        questions: ['Updated Question 1', 'Updated Question 2'],
-        levels: 7,
+        levels: 5,
         position: 'below',
         labels: ['Never', 'Always'],
-        useEmoticons: true,
+        questions: [{ text: 'Percent', levels: 11, labels: ['0%', '100%'] }, 'Plain question'],
       },
       id: 'page2',
     };
@@ -74,9 +91,14 @@ describe('LikertComponent', () => {
     tick();
     fixture.detectChanges();
 
-    expect(component.questions).toEqual(['Updated Question 1', 'Updated Question 2']);
-    expect(component.levels).toEqual(7);
-    expect(component.labels).toEqual(['Never', 'Always']);
-    expect(component.useEmoticons).toBeTrue();
+    expect(component.questions.length).toEqual(2);
+    // Per-question override wins: 11 levels with end labels below.
+    expect(component.questions[0].levels).toEqual(11);
+    expect(component.questions[0].bottomLabels[0]).toEqual('0%');
+    expect(component.questions[0].bottomLabels[10]).toEqual('100%');
+    // Second question falls back to response-area defaults.
+    expect(component.questions[1].levels).toEqual(5);
+    expect(component.questions[1].bottomLabels[0]).toEqual('Never');
+    expect(component.questions[1].bottomLabels[4]).toEqual('Always');
   }));
 });

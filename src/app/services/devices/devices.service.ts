@@ -113,9 +113,7 @@ export class DevicesService {
       metadata.model = info.model ?? 'Unknown';
       metadata.os = info.operatingSystem;
       metadata.other = `Battery level: ${batteryInfo.batteryLevel ?? 'Unknown'}, Language: ${languageCode.value ?? 'Unknown'}`;
-      if (info.realDiskFree !== undefined) {
-        metadata.diskSpace = String(Math.round(info.realDiskFree / (1024 * 1024)));
-      }
+      // TODO: Need to determine metadata.diskSpace following realDiskFree removal in Capacitor V7
       this.hostMetadataSubject.next(metadata);
       this.logger.debug('Device info processed -- \n' + JSON.stringify(metadata));
     } catch (err) {

@@ -5,7 +5,6 @@ dist
 /tmp
 /out-tsc
 /bazel-out
-/android/
 build/
 !/build/.npmkeep
 version.json

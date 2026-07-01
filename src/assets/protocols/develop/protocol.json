@@ -387,6 +387,50 @@
           }
         },
         {
+          "id": "tfi_style",
+          "instructionText": "Over the PAST WEEK... (dual labels + per-question overrides + radio buttons)",
+          "responseArea": {
+            "type": "likertResponseArea",
+            "responseRequired": true,
+            "levels": 11,
+            "useRadioButtons": true,
+            "specifiers": [
+              { "level": 0, "label": "Never aware", "position": "above" },
+              { "level": 10, "label": "Always aware", "position": "above" },
+              { "level": 0, "label": "0%", "position": "below" },
+              { "level": 5, "label": "50%", "position": "below" },
+              { "level": 10, "label": "100%", "position": "below" }
+            ],
+            "questions": [
+              { "text": "What percentage of your time awake were you consciously AWARE OF your tinnitus?" },
+              {
+                "text": "How STRONG or LOUD was your tinnitus?",
+                "specifiers": [
+                  { "level": 0, "label": "Not at all", "position": "above" },
+                  { "level": 10, "label": "Extremely", "position": "above" }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "rich_formatting",
+          "instructionText": "HTML text, custom font sizes, and centered labels",
+          "responseArea": {
+            "type": "likertResponseArea",
+            "responseRequired": false,
+            "levels": 5,
+            "questionFontSize": 24,
+            "labelFontSize": 16,
+            "centerLabelAbove": "Please rate the following:",
+            "labels": ["Strongly disagree", "Strongly agree"],
+            "questions": [
+              { "text": "I can hear <b>well</b> in <i>quiet</i> rooms." },
+              { "text": "I can hear well in <b>noisy</b> rooms." }
+            ]
+          }
+        },
+        {
           "id": "backtomain",
           "reference": "MainMenu"
         }
