@@ -8,7 +8,7 @@ export const memrSchema: JSONSchemaType<MemrExamInterface> = {
     enableSkip: { type: 'boolean', nullable: true, default: false },
     responseRequired: { type: 'boolean', nullable: true, default: false },
     exportToCSV: { type: 'boolean', nullable: true, default: false },
-    tabsintId: { type: 'string', nullable: true, default: '1' },
+    tabsintId: { type: 'string', nullable: true },
     soundFileName: { type: 'string', nullable: true },
     recordFileFolder: { type: 'string', nullable: true, default: 'memr', description: 'Directory to store full waveform' },
     nRepeats: { type: 'number', nullable: true },

@@ -9,7 +9,7 @@ export const waiSchema: JSONSchemaType<WAIInterface> = {
     responseRequired: { type: 'boolean', nullable: true, default: false },
     type: { type: 'string', enum: ['WAIResponseArea'] },
     exportToCSV: { type: 'boolean', nullable: true, default: false },
-    tabsintId: { type: 'string', nullable: true, default: '1' },
+    tabsintId: { type: 'string', nullable: true },
     outputCalibrationType: { type: 'string', nullable: true, default: 'SPL' },
     fStart: { type: 'number', nullable: true, default: 1000 },
     fEnd: { type: 'number', nullable: true, default: 8000 },

@@ -8,7 +8,7 @@ export const gapSchema: JSONSchemaType<GapResponseAreaInterface> = {
     type: { type: 'string', enum: ['gapResponseArea'] },
     enableSkip: { type: 'boolean', nullable: true, default: false },
     responseRequired: { type: 'boolean', nullable: true, default: false },
-    tabsintId: { type: 'string', nullable: true, default: '1' },
+    tabsintId: { type: 'string', nullable: true },
     autoSubmit: {
       type: 'boolean',
       nullable: true,
