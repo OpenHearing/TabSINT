@@ -31,7 +31,10 @@ export class GapResultsComponent implements AfterViewInit {
     const height = this.plotHeight - this.margin.top - this.margin.bottom;
 
     const dataMin = y.length ? Math.min(...y) : 0;
+    // y-axis lower bound: 0 when all gap lengths are non-negative, otherwise the
+    // next multiple of 20 below the smallest value (rounds dataMin down to a clean tick).
     const minY = dataMin < 0 ? -20 * Math.ceil(Math.abs(dataMin) / 20) : 0;
+    // y-axis upper bound: max gap length reported by the device, defaulting to 200 ms.
     const maxY = this.data.maxY ?? 200;
     const minX = Math.max(y.length, 5);
 

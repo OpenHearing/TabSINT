@@ -12,6 +12,7 @@ import { IDevice } from '../../../../interfaces/devices/device.interface';
 import { DeviceType } from '../../../../utilities/constants';
 import { gapSchema } from '../../../../../schema/response-areas/gap.schema';
 import { GapExamPropertiesInterface, GapPlotDataInterface, GapResponseAreaInterface, GapResultsInterface } from './gap.interface';
+import { isGapResults } from '../../../../guards/type.guard';
 
 const EXAM_NAME = 'GAP';
 
@@ -38,17 +39,17 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // Configuration
   private readonly allowableDevices = [DeviceType.Wahts];
-  private readonly defaultTrainingGapLengths = [40, 20, 12, 6, 0];
-  gapTraining = false;
+  private readonly defaultTrainingGapLengths = gapSchema.properties.trainingAllowableGapLengths.default;
+  gapTraining = gapSchema.properties.training.default;
   gapLengths: number[] = this.defaultTrainingGapLengths;
-  autoSubmit = false;
-  useSoftwareButton = false;
+  autoSubmit = gapSchema.properties.autoSubmit.default;
+  useSoftwareButton = Boolean(gapSchema.properties.examProperties.properties.UseSoftwareButton.default);
   buttonText = 'Press when gap detected';
   examInstructions = "Select a gap length to run a training trial, then press 'Begin Exam' to run the full test.";
 
   // State
   gapState: 'start' | 'exam' | 'results' = 'start';
-  noiseLevel = 65;
+  noiseLevel = gapSchema.properties.examProperties.properties.LNoise.default;
   buttonPressed = false;
   device: IDevice | undefined;
   gapResultsData: GapPlotDataInterface | undefined;
@@ -110,12 +111,12 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
     this.initialized = true;
-    this.gapTraining = responseArea.training ?? gapSchema.properties.training.default;
-    this.autoSubmit = responseArea.autoSubmit ?? gapSchema.properties.autoSubmit.default;
+    this.gapTraining = responseArea.training ?? this.gapTraining;
+    this.autoSubmit = responseArea.autoSubmit ?? this.autoSubmit;
     this.gapLengths =
       responseArea.trainingAllowableGapLengths?.length === 5 ? responseArea.trainingAllowableGapLengths : this.defaultTrainingGapLengths;
     this.examProperties = responseArea.examProperties ?? {};
-    this.useSoftwareButton = Boolean(this.examProperties.UseSoftwareButton ?? false);
+    this.useSoftwareButton = Boolean(this.examProperties.UseSoftwareButton ?? this.useSoftwareButton);
     this.examInstructions = responseArea.examInstructions ?? this.examInstructions;
 
     await this.setupDevice(responseArea);
@@ -207,12 +208,12 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
     const props: GapExamPropertiesInterface = {
-      Channel: this.examProperties.Channel ?? 0,
-      TimePres: this.examProperties.TimePres ?? 4000,
-      TimeLead: this.examProperties.TimeLead ?? 1000,
-      TimeTrail: this.examProperties.TimeTrail ?? 1000,
-      TimeWindow: this.examProperties.TimeWindow ?? 900,
-      TimeNoResp: this.examProperties.TimeNoResp ?? 50,
+      Channel: this.examProperties.Channel ?? gapSchema.properties.examProperties.properties.Channel.default,
+      TimePres: this.examProperties.TimePres ?? gapSchema.properties.examProperties.properties.TimePres.default,
+      TimeLead: this.examProperties.TimeLead ?? gapSchema.properties.examProperties.properties.TimeLead.default,
+      TimeTrail: this.examProperties.TimeTrail ?? gapSchema.properties.examProperties.properties.TimeTrail.default,
+      TimeWindow: this.examProperties.TimeWindow ?? gapSchema.properties.examProperties.properties.TimeWindow.default,
+      TimeNoResp: this.examProperties.TimeNoResp ?? gapSchema.properties.examProperties.properties.TimeNoResp.default,
       UseSoftwareButton: 1,
       AllowableGapLengths: [gapLength],
       LNoise: noiseLevel,
@@ -474,8 +475,8 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
       return undefined;
     }
     const resp = await this.devicesService.requestResults(this.device, timeoutMs);
-    if (resp?.msg && typeof resp.msg[1] === 'object' && resp.msg[1] !== null) {
-      const results = resp.msg[1] as GapResultsInterface;
+    if (resp?.msg && isGapResults(resp.msg[1])) {
+      const results = resp.msg[1];
       this.logger.debug(`Gap exam: requestResults State=${results.State}, HitOrMiss=${results.HitOrMiss}, PlayPosition=${results.PlayPosition}`);
       return results;
     }

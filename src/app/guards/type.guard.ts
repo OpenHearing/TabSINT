@@ -15,10 +15,15 @@ import { ProtocolStackItem } from '../models/protocol/protocol-stack';
 import { PageTypes } from '../types/custom-types';
 import { ButtonGridInterface } from '../views/response-area/response-areas/button-grid/button-grid.interface';
 import { CheckboxInterface } from '../views/response-area/response-areas/checkbox/checkbox.interface';
+import { GapResultsInterface } from '../views/response-area/response-areas/gap/gap.interface';
 import { MultipleChoiceInterface } from '../views/response-area/response-areas/multiple-choice/multiple-choice.interface';
 
 export function isChoiceResponseArea(responseArea?: ResponseArea): responseArea is ButtonGridInterface | MultipleChoiceInterface | CheckboxInterface {
   return (responseArea as CheckboxInterface)?.choices !== undefined;
+}
+
+export function isGapResults(value: unknown): value is GapResultsInterface {
+  return typeof value === 'object' && value !== null;
 }
 
 export function isProtocolStarted(item?: ProtocolStackItem): item is ProtocolStackItem {
