@@ -1,14 +1,28 @@
 import { Component, EventEmitter, inject, OnDestroy, OnInit, Output } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { PageModel } from '../../../../../models/page/page.service';
 import { ResultsInterface } from '../../../../../models/results/results.interface';
-import { LikertInterface } from './likert.interface';
+import { LikertInterface, LikertQuestion, LikertSpecifier } from './likert.interface';
 import { PageInterface } from '../../../../../models/page/page.interface';
 import { likertSchema } from '../../../../../../schema/response-areas/likert.schema';
 import { StateModel } from '../../../../../models/state/state.service';
 import { StateInterface } from '../../../../../models/state/state.interface';
 import { ExamService } from '../../../../../controllers/exam.service';
+
+/** One question expanded into everything the template needs to render it. */
+interface NormalizedQuestion {
+  safeText: SafeHtml;
+  levels: number;
+  topLabels: string[];
+  bottomLabels: string[];
+  centerLabelAbove: string | null;
+  centerLabelBelow: string | null;
+  labelFontSize: string | null;
+  questionFontSize: string | null;
+  useEmoticons: boolean;
+}
 
 @Component({
   selector: 'app-likert-view',
@@ -20,6 +34,7 @@ export class LikertComponent implements OnInit, OnDestroy {
   private readonly pageModel = inject(PageModel);
   private readonly stateModel = inject(StateModel);
   private readonly examService = inject(ExamService);
+  private readonly sanitizer = inject(DomSanitizer);
   @Output() responseChange = new EventEmitter<number>();
 
   likertExamProperties: LikertInterface = {
@@ -28,17 +43,14 @@ export class LikertComponent implements OnInit, OnDestroy {
   };
 
   // Controller variables
-  questions: string[] = [];
+  questions: NormalizedQuestion[] = [];
   sliderValue: (number | null)[] = [];
   isNotApplicable: boolean[] = [];
   emoticons: string[] = ['😠', '😟', '😐', '🙂', '😃'];
 
-  // Configuration variables
-  levels: number = 10;
-  position: 'above' | 'below' = 'above';
-  labels: string[] = [];
-  useEmoticons: boolean = false;
-  useSlider: boolean = true;
+  // Configuration variables (shared across all questions)
+  useRadioButtons: boolean = false;
+  useSlider: boolean = false;
   naBox: boolean = false;
 
   results: ResultsInterface;
@@ -100,7 +112,6 @@ export class LikertComponent implements OnInit, OnDestroy {
     let res;
 
     if (isChecked) {
-      res = null;
       res = 'NA';
     } else {
       res = this.sliderValue[questionIndex];
@@ -113,16 +124,81 @@ export class LikertComponent implements OnInit, OnDestroy {
     this.onResponseChange(questionIndex, value);
   }
 
+  /** Whether a label row has any non-empty entries worth rendering. */
+  hasLabels(labels: string[]): boolean {
+    return labels.some(label => label !== '');
+  }
+
   private initializeResponseArea(responseArea: LikertInterface): void {
-    this.questions = responseArea.questions ?? [''];
-    this.sliderValue = this.questions.map(() => null);
-    this.isNotApplicable = this.questions.map(() => false);
-    this.levels = responseArea.levels ?? likertSchema.properties.levels.default;
-    this.position = responseArea.position ?? likertSchema.properties.position.default;
-    this.labels = responseArea.labels ?? [''];
-    this.useEmoticons = responseArea.useEmoticons ?? likertSchema.properties.useEmoticons.default;
+    const rawQuestions: (string | LikertQuestion)[] = responseArea.questions?.length ? responseArea.questions : [''];
+    this.useRadioButtons = responseArea.useRadioButtons ?? likertSchema.properties.useRadioButtons.default;
     this.useSlider = responseArea.useSlider ?? likertSchema.properties.useSlider.default;
     this.naBox = responseArea.naBox ?? likertSchema.properties.naBox.default;
-    this.resultsModel.updateCurrentPage({ response: Array.from({ length: this.questions.length }, () => []) });
+    this.questions = rawQuestions.map(question => this.normalizeQuestion(question, responseArea));
+    this.sliderValue = this.questions.map(() => null);
+    this.isNotApplicable = this.questions.map(() => false);
+    this.resultsModel.updateCurrentPage({ response: Array.from({ length: this.questions.length }, () => null) });
+  }
+
+  /** Expand a question (string or object) plus the response-area defaults into a NormalizedQuestion. */
+  private normalizeQuestion(question: string | LikertQuestion, responseArea: LikertInterface): NormalizedQuestion {
+    const q: LikertQuestion = typeof question === 'string' ? { text: question } : question;
+    const levels = q.levels ?? responseArea.levels ?? likertSchema.properties.levels.default;
+    const topLabels: string[] = Array.from({ length: levels }, () => '');
+    const bottomLabels: string[] = Array.from({ length: levels }, () => '');
+
+    for (const specifier of this.resolveSpecifiers(q, responseArea, levels)) {
+      if (specifier.level < 0 || specifier.level >= levels) continue;
+      if (specifier.position === 'below') {
+        bottomLabels[specifier.level] = specifier.label;
+      } else {
+        topLabels[specifier.level] = specifier.label;
+      }
+    }
+
+    return {
+      safeText: this.sanitizer.bypassSecurityTrustHtml(q.text ?? ''),
+      levels,
+      topLabels,
+      bottomLabels,
+      centerLabelAbove: q.centerLabelAbove ?? responseArea.centerLabelAbove ?? null,
+      centerLabelBelow: q.centerLabelBelow ?? responseArea.centerLabelBelow ?? null,
+      labelFontSize: this.toPx(q.labelFontSize ?? responseArea.labelFontSize),
+      questionFontSize: this.toPx(q.questionFontSize ?? responseArea.questionFontSize),
+      useEmoticons: q.useEmoticons ?? responseArea.useEmoticons ?? likertSchema.properties.useEmoticons.default,
+    };
+  }
+
+  /**
+   * Determine the labels for a question, most specific first: per-question specifiers, then
+   * per-question labels, then response-area specifiers, then response-area labels.
+   */
+  private resolveSpecifiers(q: LikertQuestion, responseArea: LikertInterface, levels: number): LikertSpecifier[] {
+    const defaultPosition = likertSchema.properties.position.default;
+    if (q.specifiers) return q.specifiers;
+    if (q.labels) return this.labelsToSpecifiers(q.labels, q.position ?? responseArea.position ?? defaultPosition, levels);
+    if (responseArea.specifiers) return responseArea.specifiers;
+    if (responseArea.labels) {
+      return this.labelsToSpecifiers(responseArea.labels, responseArea.position ?? defaultPosition, levels);
+    }
+    return [];
+  }
+
+  /**
+   * Convert a plain labels array into specifiers. A labels array the same length as the scale
+   * places one label per level; a length-2 array places labels at the two ends.
+   */
+  private labelsToSpecifiers(labels: string[], position: 'above' | 'below', levels: number): LikertSpecifier[] {
+    if (labels.length === 2 && levels > 2) {
+      return [
+        { level: 0, label: labels[0], position },
+        { level: levels - 1, label: labels[1], position },
+      ];
+    }
+    return labels.map((label, level) => ({ level, label, position }));
+  }
+
+  private toPx(size: number | undefined): string | null {
+    return size === undefined ? null : `${size}px`;
   }
 }

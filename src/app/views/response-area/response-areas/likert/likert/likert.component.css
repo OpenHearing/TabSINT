@@ -12,35 +12,29 @@
   font-style: normal;
 }
 
-/* Labels */
+/* Labels — one cell per level, aligned with the options row below/above it */
 .likert-labels {
   display: flex;
-  justify-content: space-between;
+  gap: 10px;
   width: 100%;
   font-weight: bold;
   font-size: 1.2rem;
-  flex-grow: 1;
 }
 
-.likert-label-above {
-  padding: 0 10px;
-}
-
-.likert-label-below {
-  padding: 0 10px 50px 10px;
-}
-
-.align-left {
-  text-align: left;
-  flex-grow: 1;
-}
-.align-right {
-  text-align: right;
-  flex-grow: 1;
-}
-
-.center-align {
+.likert-label {
+  flex: 1 1 0;
+  min-width: 0;
   text-align: center;
+  padding: 0 4px;
+  overflow-wrap: break-word;
+}
+
+/* Center label spanning the whole scale */
+.likert-center-label {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin: 4px 0;
 }
 
 /* Slider */
@@ -140,11 +134,16 @@
 
 .likert-option {
   cursor: pointer;
-  border: none;
+  border: 2px solid transparent;
   background: none;
   font-size: 1.3rem;
   padding: 10px;
-  flex-grow: 1;
+  flex: 1 1 0;
+  min-width: 0;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition:
     transform 0.2s ease,
     background-color 0.2s ease;
@@ -161,6 +160,22 @@
   border: 2px solid black; /* Add black border when selected */
   border-radius: 5px; /* Optional: Make the border rounded */
 }
+
+/* Radio-button appearance */
+.radio-circle {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border: 2px solid #333;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+.likert-option.selected .radio-circle {
+  background: #333;
+  box-shadow: inset 0 0 0 3px #fff;
+}
+
 /* Not Applicable Checkbox */
 .likert-footer {
   text-align: right;

@@ -1,5 +1,38 @@
 import { JSONSchemaType } from 'ajv';
-import { LikertInterface } from '../../app/views/response-area/response-areas/likert/likert/likert.interface';
+import { LikertInterface, LikertQuestion, LikertSpecifier } from '../../app/views/response-area/response-areas/likert/likert/likert.interface';
+
+const specifierSchema: JSONSchemaType<LikertSpecifier> = {
+  type: 'object',
+  properties: {
+    level: { type: 'number', multipleOf: 1, description: 'Which level (0-based) this label is pinned to.' },
+    label: { type: 'string', description: 'The label text.' },
+    position: {
+      type: 'string',
+      enum: ['above', 'below'],
+      description: 'Whether this label sits above or below the scale. Defaults to above.',
+      nullable: true,
+    },
+  },
+  required: ['level', 'label'],
+};
+
+const questionSchema: JSONSchemaType<LikertQuestion> = {
+  type: 'object',
+  description: 'A single Likert question. Any field left out falls back to the response-area value.',
+  properties: {
+    text: { type: 'string', description: 'Question prompt. May contain HTML.', nullable: true },
+    levels: { type: 'number', multipleOf: 1, description: 'Override number of levels for this question.', nullable: true },
+    labels: { type: 'array', items: { type: 'string' }, description: 'Override labels for this question.', nullable: true },
+    specifiers: { type: 'array', items: specifierSchema, description: 'Per-level labels for this question.', nullable: true },
+    position: { type: 'string', enum: ['above', 'below'], nullable: true },
+    centerLabelAbove: { type: 'string', nullable: true },
+    centerLabelBelow: { type: 'string', nullable: true },
+    labelFontSize: { type: 'number', description: 'Label font size in px.', nullable: true },
+    questionFontSize: { type: 'number', description: 'Question font size in px.', nullable: true },
+    useEmoticons: { type: 'boolean', nullable: true },
+  },
+  required: [],
+};
 
 export const likertSchema: JSONSchemaType<LikertInterface> = {
   type: 'object',
@@ -10,7 +43,13 @@ export const likertSchema: JSONSchemaType<LikertInterface> = {
     type: { type: 'string', enum: ['likertResponseArea'] },
     useEmoticons: {
       type: 'boolean',
-      description: 'If true, use emoticons instead of radio buttons. Requires levels == 5',
+      description: 'If true, use emoticons instead of numbers. Requires levels == 5',
+      nullable: true,
+      default: false,
+    },
+    useRadioButtons: {
+      type: 'boolean',
+      description: 'If true, show radio buttons instead of numbers for each level.',
       nullable: true,
       default: false,
     },
@@ -24,37 +63,53 @@ export const likertSchema: JSONSchemaType<LikertInterface> = {
     labels: {
       type: 'array',
       description:
-        'Description of the likeRT scale. Length should be equal to the levels array, which will display labels with each option. Otherwise, labels can be on length 2, where the first item is aligned to the left of the scale and the second item is aligned to the right.',
-      items: {
-        type: 'string',
-        description: 'Words describing each levels.',
-      },
+        'Description of the Likert scale. Length equal to levels displays a label with each option; length 2 places the first label at the left end and the second at the right end.',
+      items: { type: 'string', description: 'Words describing each level.' },
+      nullable: true,
+    },
+    specifiers: {
+      type: 'array',
+      description: 'Per-level labels, each optionally positioned above or below the scale. Overrides labels when present.',
+      items: specifierSchema,
       nullable: true,
     },
     position: {
       type: 'string',
       enum: ['above', 'below'],
-      description: 'Position label above or below the slider',
+      description: 'Position the (labels-based) labels above or below the scale.',
       nullable: true,
       default: 'above',
     },
+    centerLabelAbove: {
+      type: 'string',
+      description: 'A single label centered above the whole scale, applying to all questions.',
+      nullable: true,
+    },
+    centerLabelBelow: {
+      type: 'string',
+      description: 'A single label centered below the whole scale, applying to all questions.',
+      nullable: true,
+    },
+    labelFontSize: { type: 'number', description: 'Override the label font size, in px.', nullable: true },
+    questionFontSize: { type: 'number', description: 'Override the question text font size, in px.', nullable: true },
     questions: {
       type: 'array',
-      description: 'Questions being asked. Length should be equal to the levels array. If only one, can use page level instruction test instead.',
+      description:
+        'Questions being asked. Each item is either a plain string (shares the response-area settings) or an object with per-question overrides. If only one, page-level instruction text can be used instead.',
       items: {
-        type: 'string',
-      },
+        anyOf: [{ type: 'string' }, questionSchema],
+      } as unknown as JSONSchemaType<string | LikertQuestion>,
       nullable: true,
     },
     useSlider: {
       type: 'boolean',
-      description: 'If true, use a slider to 1 decimal acuracy to record the answer.',
+      description: 'If true, use a slider to 1 decimal accuracy to record the answer.',
       nullable: true,
       default: false,
     },
     naBox: {
       type: 'boolean',
-      description: "If true, use a 'Not Applicable' textbox.",
+      description: "If true, use a 'Not Applicable' checkbox.",
       nullable: true,
       default: false,
     },
