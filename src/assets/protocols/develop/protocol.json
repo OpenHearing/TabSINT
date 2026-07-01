@@ -1268,10 +1268,10 @@
           "id": "gapResponseArea",
           "title": "GAP",
           "questionMainText": "Gap Detection Test",
-          "instructionText": "Select a gap length to run a training trial, then press 'Begin Exam' to run the full test.",
           "responseArea": {
             "type": "gapResponseArea",
             "training": true,
+            "examInstructions": "Select a gap length to run a training trial, then press 'Begin Exam' to run the full test.",
             "trainingAllowableGapLengths": [40, 20, 12, 6, 0],
             "examProperties": {
               "Channel": 0,

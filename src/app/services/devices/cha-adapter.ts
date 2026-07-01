@@ -185,14 +185,14 @@ export class ChaAdapter implements IDeviceAdapter {
   /**
    * Request results from an exam for a device.
    * @param device The device to request exam results from.
-   * @param examId The identifier of the exam to request results for.
+   * @param timeoutTimeMs How long to wait for the results response before giving up.
    */
   async requestResults(device: ChaDeviceType, timeoutTimeMs: number = this.defaultTimeoutTimeMs): Promise<IDeviceResponse> {
     const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
       const nameOptions = { name: device.deviceId };
       let deviceResponse = this.defaultInvalidResponse(device);
       try {
-        const waitForResponse = this.waitForResponse(device, 'Result');
+        const waitForResponse = this.waitForResponse(device, 'Result', timeoutTimeMs);
         await TabsintCha.requestResults(nameOptions);
         deviceResponse = (await waitForResponse) ?? deviceResponse;
       } catch (err) {

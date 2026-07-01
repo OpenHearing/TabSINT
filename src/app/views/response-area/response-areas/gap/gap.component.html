@@ -8,9 +8,12 @@
     </button>
   </div>
 
-  <!-- Training selection, shown when training and not mid-trial -->
+  <!-- Training selection, shown when training and not mid-trial. The instruction lives here (not as
+       a page-level instructionText) so it is hidden while a trial is playing noise. -->
   <div *ngIf="gapTraining && gapState !== 'exam'" class="gap-training">
     <h2>{{ "Training" | transloco }}</h2>
+
+    <p class="instructions" *ngIf="examInstructions">{{ examInstructions | transloco }}</p>
 
     <div class="gap-training-row">
       <b>{{ "Gap Lengths (ms)" | transloco }}:</b>

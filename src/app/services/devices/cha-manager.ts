@@ -311,10 +311,10 @@ export abstract class ChaManager implements IDeviceManager {
   /**
    * Request results from an exam for a device.
    * @param device The device to request exam results from.
-   * @param examId The identifier of the exam to request results for.
+   * @param timeoutMs How long to wait for the results response before giving up.
    */
-  async requestResults(device: ChaDeviceType): Promise<IDeviceResponse> {
-    const response = await this.adapter.requestResults(device);
+  async requestResults(device: ChaDeviceType, timeoutMs?: number): Promise<IDeviceResponse> {
+    const response = await this.adapter.requestResults(device, timeoutMs);
     await this.deviceErrorHandler(response);
     return response;
   }

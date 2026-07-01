@@ -29,6 +29,7 @@ describe('GapComponent', () => {
       'abortExams',
       'queueExam',
       'requestResults',
+      'requestStatus',
       'setSoftwareButtonState',
     ]);
     devicesService.getDeviceOrDefault.and.resolveTo([mockDevice]);
@@ -37,6 +38,7 @@ describe('GapComponent', () => {
     devicesService.abortExams.and.resolveTo(undefined);
     devicesService.queueExam.and.resolveTo(undefined);
     devicesService.requestResults.and.resolveTo({ deviceId: mockDevice.deviceId, msg: ['Result', null] });
+    devicesService.requestStatus.and.resolveTo({ deviceId: mockDevice.deviceId, msg: ['Status', { state: 2 }] });
     devicesService.setSoftwareButtonState.and.resolveTo(undefined);
 
     examService = jasmine.createSpyObj<ExamService>('ExamService', [

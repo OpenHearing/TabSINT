@@ -5,7 +5,7 @@
 .gap-canvas {
   width: 90%;
   display: block;
-  margin: 0 auto;
+  margin: 0 auto 1.5rem;
 }
 
 .gap-button-row {

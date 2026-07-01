@@ -15,6 +15,12 @@ import { GapExamPropertiesInterface, GapPlotDataInterface, GapResponseAreaInterf
 
 const EXAM_NAME = 'GAP';
 
+/** CHA device exam states reported by requestStatus (mirrors the legacy status.state values). */
+enum ChaExamState {
+  Ready = 1,
+  Playing = 2,
+}
+
 @Component({
   selector: 'app-gap-exam',
   templateUrl: './gap.component.html',
@@ -38,6 +44,7 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
   autoSubmit = false;
   useSoftwareButton = false;
   buttonText = 'Press when gap detected';
+  examInstructions = "Select a gap length to run a training trial, then press 'Begin Exam' to run the full test.";
 
   // State
   gapState: 'start' | 'exam' | 'results' = 'start';
@@ -47,24 +54,28 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
   gapResultsData: GapPlotDataInterface | undefined;
   showResults = false;
 
-  private responseArea: GapResponseAreaInterface | undefined;
   private examProperties: GapExamPropertiesInterface = {};
   private initialized = false;
   private examActive = false;
+  private examPlaying = false;
   private pollTimeout: ReturnType<typeof setTimeout> | undefined;
 
   // Training canvas animation state
   private readonly animationSpeed = 30; // ms refresh of the training animation
   private readonly tickWidth = 2; // px width of the moving sound tick mark
+  private readonly finalResultsTimeoutMs = 7000; // device can lag streaming full results after the exam
   private animationInterval: ReturnType<typeof setInterval> | undefined;
   private timePres = 0;
   private animX = 0;
+  private animStartTime = 0; // wall-clock time (ms) when the play-position anchor was captured
+  private basePlayMs = 0; // device play position (ms) at that anchor
   private gapPos = 0;
   private gapWidth = 0;
   private windowPos = 0;
   private windowWidth = 0;
-  private windowPosEnd = 0;
   private hitOrMiss: boolean | undefined;
+  private trainingProps: GapExamPropertiesInterface | undefined;
+  private animationStarted = false;
 
   private pageSubscription: Subscription | undefined;
 
@@ -99,13 +110,13 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
     this.initialized = true;
-    this.responseArea = responseArea;
     this.gapTraining = responseArea.training ?? gapSchema.properties.training.default;
     this.autoSubmit = responseArea.autoSubmit ?? gapSchema.properties.autoSubmit.default;
     this.gapLengths =
       responseArea.trainingAllowableGapLengths?.length === 5 ? responseArea.trainingAllowableGapLengths : this.defaultTrainingGapLengths;
     this.examProperties = responseArea.examProperties ?? {};
     this.useSoftwareButton = Boolean(this.examProperties.UseSoftwareButton ?? false);
+    this.examInstructions = responseArea.examInstructions ?? this.examInstructions;
 
     await this.setupDevice(responseArea);
     if (!this.device) {
@@ -148,7 +159,24 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
     await this.devicesService.abortExams(this.device);
     await this.devicesService.queueExam(this.device, EXAM_NAME, this.examProperties);
     this.examActive = true;
-    this.startPollingResults(results => this.finishFullExam(results));
+    // Poll lightweight status (not results) while the adaptive exam runs, matching the legacy
+    // flow; hammering requestResults mid-exam disrupts the device state machine. Fetch the
+    // full results once, at the end.
+    this.startStatusPolling(() => this.fetchAndFinishFullExam());
+  }
+
+  /**
+   * Fetch the final results once the exam has completed and move to the results view. The device
+   * can lag streaming the full results after the exam ends, so a longer timeout is used here.
+   */
+  private async fetchAndFinishFullExam(): Promise<void> {
+    const results = await this.requestGapResults(this.finalResultsTimeoutMs);
+    if (results) {
+      this.finishFullExam(results);
+    } else {
+      this.logger.error('Gap exam: exam completed but no final results were returned.');
+      this.finishFullExam({});
+    }
   }
 
   /**
@@ -174,14 +202,9 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param noiseLevel The presentation level, in dBA.
    */
   async startTrainingTrial(gapLength: number, noiseLevel: number): Promise<void> {
-    try {
-      if (!this.device) {
-        await this.devicesService.deviceNotFound();
-        return;
-      }
-    } catch (e) {
-      this.logger.error('startTrainingTrial failed: ' + JSON.stringify(e));
-      throw e;
+    if (!this.device) {
+      await this.devicesService.deviceNotFound();
+      return;
     }
     const props: GapExamPropertiesInterface = {
       Channel: this.examProperties.Channel ?? 0,
@@ -203,27 +226,39 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
       SendFullResults: 2,
     };
     this.timePres = props.TimePres!;
+    this.trainingProps = props;
+    this.animationStarted = false;
     this.useSoftwareButton = true;
     this.resetCanvas();
     this.gapState = 'exam';
     this.stateModel.updateState({ isSubmittable: false });
 
-    this.logger.debug(`Gap exam: training trial. device status=${this.device.status}, props=${JSON.stringify(props)}`);
-    const abortResp = await this.devicesService.abortExams(this.device);
-    this.logger.debug('Gap exam: abortExams response: ' + JSON.stringify(abortResp?.msg));
-    const queueResp = await this.devicesService.queueExam(this.device, EXAM_NAME, props);
-    this.logger.debug('Gap exam: queueExam response: ' + JSON.stringify(queueResp?.msg));
-    this.examActive = true;
+    await this.devicesService.abortExams(this.device);
+    await this.devicesService.queueExam(this.device, EXAM_NAME, props);
     this.examActive = true;
 
-    // Read the in-progress results to position the training animation.
-    const initial = await this.requestGapResults();
-    if (initial) {
-      this.initializeGapTraining(initial, props);
+    // Drive the animation and hit/miss from the polling loop. The CHA rejects a
+    // requestResults fired immediately after queueExam, so we never poll eagerly.
+    this.startPollingResults(
+      results => this.handleTrainingProgress(results),
+      results => this.finishTrainingTrial(results)
+    );
+  }
+
+  /**
+   * Handle an in-progress training result: start the animation once the device reports a
+   * play position, and turn the response window green as soon as the gap is detected.
+   * @param results The latest in-progress results from the device.
+   */
+  private handleTrainingProgress(results: GapResultsInterface): void {
+    if (!this.animationStarted && results.PlayPosition !== undefined && this.trainingProps) {
+      this.animationStarted = true;
+      this.initializeGapTraining(results, this.trainingProps);
     }
-
-    // Poll until the device finishes the single presentation to capture hit/miss.
-    this.startPollingResults(results => this.finishTrainingTrial(results));
+    // Green immediately on a hit; a miss is shown red at the end of the trial.
+    if (results.HitOrMiss === 1) {
+      this.hitOrMiss = true;
+    }
   }
 
   /**
@@ -232,13 +267,15 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   private finishTrainingTrial(results: GapResultsInterface): void {
     if (results.HitOrMiss !== undefined) {
-      this.hitOrMiss = results.HitOrMiss;
+      this.hitOrMiss = results.HitOrMiss === 1;
     } else if (results.HitOrMissArray && results.HitOrMissArray.length > 0) {
       this.hitOrMiss = results.HitOrMissArray[results.HitOrMissArray.length - 1];
     }
     // The exam ends after the response window has passed, so the animation has usually
     // already stopped. Redraw a final frame so the window shows the hit (green) / miss (red).
+    // This feedback persists until the next trial or "Begin Exam" (both call resetCanvas).
     this.stopAnimation();
+    this.ensureFeedbackVisible();
     this.drawGapFrame();
     this.gapState = 'start';
   }
@@ -262,12 +299,13 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
     const playPos = results.PlayPosition ?? 0;
 
     this.timePres = timePres;
+    this.basePlayMs = playPos;
+    this.animStartTime = Date.now();
     this.animX = (playPos * canvas.width) / timePres;
     this.gapPos = ((results.CurrentGapStartTime ?? 0) * canvas.width) / timePres;
     this.gapWidth = (gapLength * canvas.width) / timePres;
     this.windowPos = this.gapPos + ((gapLength + (props.TimeNoResp ?? 0)) * canvas.width) / timePres;
     this.windowWidth = ((props.TimeWindow ?? 0) * canvas.width) / timePres;
-    this.windowPosEnd = this.windowPos + this.windowWidth;
 
     this.stopAnimation();
     this.animationInterval = setInterval(() => this.drawGapAnimation(), this.animationSpeed);
@@ -281,8 +319,11 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
     if (!canvas) {
       return;
     }
+    // Position the tick from real elapsed time rather than fixed per-frame increments, so it
+    // stays synced with the sound and does not drift left when setInterval callbacks fire late.
+    const playMs = this.basePlayMs + (Date.now() - this.animStartTime);
+    this.animX = (playMs * canvas.width) / this.timePres;
     this.drawGapFrame();
-    this.animX += (this.animationSpeed * canvas.width) / this.timePres;
     if (this.animX > canvas.width) {
       this.stopAnimation();
     }
@@ -342,10 +383,63 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
   // ======= Polling / device helpers =======
 
   /**
-   * Poll the device for results every 500ms, invoking onComplete once the exam is done.
+   * Poll the device's lightweight status every 500ms and invoke onComplete once the exam has
+   * run and returned to the ready state. Used for the full adaptive exam so that requestResults
+   * is not issued while the exam is running.
+   * @param onComplete Callback invoked once the exam has finished.
+   */
+  private startStatusPolling(onComplete: () => void): void {
+    this.examPlaying = false;
+    const poll = async () => {
+      if (!this.examActive || !this.device) {
+        return;
+      }
+      try {
+        const state = await this.requestGapStatus();
+        if (state === ChaExamState.Playing) {
+          this.examPlaying = true;
+        }
+        // Only treat "ready" as done once we have seen the exam actually start playing,
+        // otherwise a status poll landing before playback begins would end it immediately.
+        if (this.examPlaying && state === ChaExamState.Ready) {
+          this.examActive = false;
+          onComplete();
+          return;
+        }
+        this.pollTimeout = setTimeout(poll, 500);
+      } catch (error) {
+        this.logger.error('Gap exam: error polling status: ' + error);
+        this.examActive = false;
+      }
+    };
+    this.pollTimeout = setTimeout(poll, 500);
+  }
+
+  /**
+   * Request the device's exam status and extract its numeric state.
+   * @returns The device state, or undefined if the response was not usable.
+   */
+  private async requestGapStatus(): Promise<number | undefined> {
+    if (!this.device) {
+      return undefined;
+    }
+    const resp = await this.devicesService.requestStatus(this.device);
+    if (resp?.msg && typeof resp.msg[1] === 'object' && resp.msg[1] !== null && 'state' in resp.msg[1]) {
+      const state = (resp.msg[1] as { state: number }).state;
+      this.logger.debug(`Gap exam: requestStatus state=${state}`);
+      return state;
+    }
+    this.logger.debug('Gap exam: unexpected requestStatus response: ' + JSON.stringify(resp?.msg));
+    return undefined;
+  }
+
+  /**
+   * Poll the device for results every 500ms, reporting in-progress results to onProgress and
+   * the final results to onComplete once the exam is done.
+   * @param onProgress Callback invoked with each in-progress result.
    * @param onComplete Callback invoked with the final results when the exam completes.
    */
-  private startPollingResults(onComplete: (results: GapResultsInterface) => void): void {
+  private startPollingResults(onProgress: (results: GapResultsInterface) => void, onComplete: (results: GapResultsInterface) => void): void {
     const poll = async () => {
       if (!this.examActive || !this.device) {
         return;
@@ -356,6 +450,9 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
           this.examActive = false;
           onComplete(results);
         } else {
+          if (results) {
+            onProgress(results);
+          }
           this.pollTimeout = setTimeout(poll, 500);
         }
       } catch (error) {
@@ -368,15 +465,18 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
 
   /**
    * Request results from the device and extract the gap results payload.
+   * @param timeoutMs Optional override for how long to wait for the results response.
    * @returns The gap results, or undefined if the response was not usable.
    */
-  private async requestGapResults(): Promise<GapResultsInterface | undefined> {
+  private async requestGapResults(timeoutMs?: number): Promise<GapResultsInterface | undefined> {
     if (!this.device) {
       return undefined;
     }
-    const resp = await this.devicesService.requestResults(this.device);
+    const resp = await this.devicesService.requestResults(this.device, timeoutMs);
     if (resp?.msg && typeof resp.msg[1] === 'object' && resp.msg[1] !== null) {
-      return resp.msg[1] as GapResultsInterface;
+      const results = resp.msg[1] as GapResultsInterface;
+      this.logger.debug(`Gap exam: requestResults State=${results.State}, HitOrMiss=${results.HitOrMiss}, PlayPosition=${results.PlayPosition}`);
+      return results;
     }
     this.logger.debug('Gap exam: unexpected requestResults response: ' + JSON.stringify(resp?.msg));
     return undefined;
@@ -423,6 +523,26 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
       yLabel: 'Gap Length (ms)',
       title: 'Gap Detection Results',
     };
+  }
+
+  /**
+   * Guarantee the feedback frame is visible at the end of a trial. If the animation never
+   * initialized (e.g. the device never reported a play position), the canvas is still collapsed,
+   * so give it a height and a full-width response window to show the hit/miss color.
+   */
+  private ensureFeedbackVisible(): void {
+    const canvas = this.canvasRef?.nativeElement;
+    if (!canvas || canvas.height > 0) {
+      return;
+    }
+    canvas.height = 80;
+    canvas.style.height = '20%';
+    canvas.width = canvas.offsetWidth;
+    this.gapPos = 0;
+    this.gapWidth = 0;
+    this.windowPos = 0;
+    this.windowWidth = canvas.width;
+    this.animX = canvas.width;
   }
 
   /**

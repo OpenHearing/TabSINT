@@ -107,9 +107,9 @@ export interface IDeviceManager {
   /**
    * Optional method to request results from an exam for a device.
    * @param device The device to request exam results from.
-   * @param examId The identifier of the exam to request results for.
+   * @param timeoutMs How long to wait for the results response before giving up.
    */
-  requestResults?(device: IDevice): Promise<IDeviceResponse>;
+  requestResults?(device: IDevice, timeoutMs?: number): Promise<IDeviceResponse>;
 
   /**
    * Optional method to reprogram the firmware for a device.

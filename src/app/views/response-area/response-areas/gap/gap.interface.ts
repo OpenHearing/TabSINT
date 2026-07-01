@@ -54,10 +54,12 @@ export interface GapResultsInterface {
   GapLengthArray?: number[];
   HitOrMissArray?: boolean[];
   ReversalUsedForThresholdArray?: boolean[];
-  // Fields used during training to drive the canvas animation
+  // Fields used during training to drive the canvas animation.
+  // Note: the scalar HitOrMiss is an integer (1 = hit, 0 = miss/no-response), even though
+  // HitOrMissArray is delivered as booleans via the CHA's getter.
   PlayPosition?: number;
   CurrentGapStartTime?: number;
-  HitOrMiss?: boolean;
+  HitOrMiss?: number;
 }
 
 /**
