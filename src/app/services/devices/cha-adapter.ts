@@ -185,14 +185,14 @@ export class ChaAdapter implements IDeviceAdapter {
   /**
    * Request results from an exam for a device.
    * @param device The device to request exam results from.
-   * @param examId The identifier of the exam to request results for.
+   * @param timeoutTimeMs How long to wait for the results response before giving up.
    */
   async requestResults(device: ChaDeviceType, timeoutTimeMs: number = this.defaultTimeoutTimeMs): Promise<IDeviceResponse> {
     const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
       const nameOptions = { name: device.deviceId };
       let deviceResponse = this.defaultInvalidResponse(device);
       try {
-        const waitForResponse = this.waitForResponse(device, 'Result');
+        const waitForResponse = this.waitForResponse(device, 'Result', timeoutTimeMs);
         await TabsintCha.requestResults(nameOptions);
         deviceResponse = (await waitForResponse) ?? deviceResponse;
       } catch (err) {
@@ -250,6 +250,27 @@ export class ChaAdapter implements IDeviceAdapter {
       try {
         const msg = await TabsintCha.reboot(rebootOptions);
         deviceResponse = { deviceId: device.deviceId, msg: ['Reboot', msg] };
+      } catch (err) {
+        this.logger.error('Failed to write to CHA', err);
+      }
+      return deviceResponse;
+    });
+    return response;
+  }
+
+  /**
+   * Set the state of the software response button for a device.
+   * @param device The device to set the software button state for.
+   * @param state The new state of the software button (0 or 1).
+   * @returns The device response for the request.
+   */
+  async setSoftwareButtonState(device: ChaDeviceType, state: number): Promise<IDeviceResponse> {
+    const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
+      const setSoftwareButtonStateOptions = { name: device.deviceId, state: state };
+      let deviceResponse = this.defaultInvalidResponse(device);
+      try {
+        const msg = await TabsintCha.setSoftwareButtonState(setSoftwareButtonStateOptions);
+        deviceResponse = { deviceId: device.deviceId, msg: ['SetSoftwareButtonState', msg] };
       } catch (err) {
         this.logger.error('Failed to write to CHA', err);
       }

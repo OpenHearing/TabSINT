@@ -21,7 +21,7 @@ export const mrtSchema: JSONSchemaType<MrtExamInterface> = {
     responseRequired: { type: 'boolean', nullable: true, default: false },
     type: { type: 'string', enum: ['mrtResponseArea'] },
     exportToCSV: { type: 'boolean', nullable: true, default: false },
-    tabsintId: { type: 'string', nullable: true, default: '1' },
+    tabsintId: { type: 'string', nullable: true },
     examDefinitionFilename: { type: 'string' },
     outputChannel: {
       type: 'array',

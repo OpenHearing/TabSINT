@@ -9,7 +9,7 @@ export const sweptDpoaeSchema: JSONSchemaType<SweptDpoaeInterface> = {
     responseRequired: { type: 'boolean', nullable: true, default: false },
     type: { type: 'string', enum: ['sweptDPOAEResponseArea'] },
     exportToCSV: { type: 'boolean', nullable: true, default: false },
-    tabsintId: { type: 'string', nullable: true, default: '1' },
+    tabsintId: { type: 'string', nullable: true },
     outputCalibrationType: { type: 'string', nullable: true, default: 'SPL' },
     outputChannel1: { type: 'string', nullable: true, default: 'HPL0' },
     outputChannel2: { type: 'string', nullable: true, default: 'HPR0' },
