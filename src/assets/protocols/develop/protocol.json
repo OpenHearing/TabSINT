@@ -102,6 +102,9 @@
                 "id": "Three Digit Test"
               },
               {
+                "id": "GAP"
+              },
+              {
                 "id": "CHA Wav Test"
               },
               {
@@ -264,6 +267,12 @@
               "conditional": "result.response=='Three Digit Test'",
               "target": {
                 "reference": "threeDigitResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='GAP'",
+              "target": {
+                "reference": "gapResponseArea"
               }
             },
             {
@@ -1321,6 +1330,30 @@
               "nPresentations": 5,
               "correctStep": -4,
               "fixedLevel": 50
+            }
+          }
+        }
+      ]
+    },
+    {
+      "protocolId": "gapResponseArea",
+      "pages": [
+        {
+          "id": "gapResponseArea",
+          "title": "GAP",
+          "questionMainText": "Gap Detection Test",
+          "responseArea": {
+            "type": "gapResponseArea",
+            "training": true,
+            "examInstructions": "Select a gap length to run a training trial, then press 'Begin Exam' to run the full test.",
+            "trainingAllowableGapLengths": [40, 20, 12, 6, 0],
+            "examProperties": {
+              "Channel": 0,
+              "TimePres": 4000,
+              "LNoise": 65,
+              "UseSoftwareButton": 1,
+              "NReversals": 8,
+              "NReversalsCalc": 4
             }
           }
         },

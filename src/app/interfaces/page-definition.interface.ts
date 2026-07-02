@@ -21,6 +21,7 @@ import { QrCodeResponseAreaInterface } from '../views/response-area/response-are
 import { DuodoseDownloadInterface } from '../views/response-area/response-areas/duodose-download/duodose-download.interface';
 import { BekesyResponseAreaInterface } from '../views/response-area/response-areas/bekesy/bekesy.interface';
 import { ThreeDigitResponseAreaInterface } from '../views/response-area/response-areas/three-digit/three-digit.interface';
+import { GapResponseAreaInterface } from '../views/response-area/response-areas/gap/gap.interface';
 import { CalibrationFileWavProperties } from './calibration-file.interface';
 
 export interface PageDefinition {
@@ -161,4 +162,5 @@ export type ResponseArea =
   | CustomResponseAreaInterface
   | QrCodeResponseAreaInterface
   | BekesyResponseAreaInterface
-  | ThreeDigitResponseAreaInterface;
+  | ThreeDigitResponseAreaInterface
+  | GapResponseAreaInterface;
