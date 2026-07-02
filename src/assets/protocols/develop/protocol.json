@@ -424,10 +424,7 @@
             "labelFontSize": 16,
             "centerLabelAbove": "Please rate the following:",
             "labels": ["Strongly disagree", "Strongly agree"],
-            "questions": [
-              { "text": "I can hear <b>well</b> in <i>quiet</i> rooms." },
-              { "text": "I can hear well in <b>noisy</b> rooms." }
-            ]
+            "questions": [{ "text": "I can hear <b>well</b> in <i>quiet</i> rooms." }, { "text": "I can hear well in <b>noisy</b> rooms." }]
           }
         },
         {
@@ -493,7 +490,6 @@
           "instructionText": "Test manual audiometry response area",
           "responseArea": {
             "type": "manualAudiometryResponseArea",
-            "tabsintId": "1",
             "frequencies": [500, 1000, 2000, 3000, 4000, 6000, 8000],
             "adjustmentStepSize": 2,
             "incrementRatioMultiplier": 2,
