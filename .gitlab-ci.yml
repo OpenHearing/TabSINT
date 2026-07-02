@@ -235,6 +235,8 @@ archive-release-apk-aab:
 release:
   stage: release
   image: alpine:latest
+  needs:
+    - job: archive-release-apk-aab
   before_script:
     - apk add --no-cache curl
   script:
