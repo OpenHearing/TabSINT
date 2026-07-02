@@ -267,8 +267,8 @@ release:
     - |
       for i in $(seq 1 10); do
         if curl --silent --fail \
-          -H "Authorization: Bearer ${GITHUB_TOKEN}" \
-          -H "Accept: application/vnd.github+json" \
+          --header "Authorization: Bearer ${GITHUB_TOKEN}" \
+          --header "Accept: application/vnd.github+json" \
           "https://api.github.com/repos/OpenHearing/TabSINT/git/ref/tags/$CI_COMMIT_TAG" \
           >/dev/null; then
           echo "Tag found."
@@ -285,22 +285,19 @@ release:
     - |
       RELEASE_JSON=$(curl --silent --fail \
           -X POST \
-          -H "Authorization: Bearer ${GITHUB_TOKEN}" \
-          -H "Accept: application/vnd.github+json" \
-          "https://api.github.com/repos/OpenHearing/TabSINT/releases" \
-          -d "$(jq -n \
-            --arg tag "$CI_COMMIT_TAG" \
-            --arg name "Release $CI_COMMIT_TAG" \
-            '{
-              tag_name: $tag,
-              name: $name,
-              generate_release_notes: true
-            }')")
+          --header "Authorization: Bearer ${GITHUB_TOKEN}" \
+          --header "Accept: application/vnd.github+json" \
+          --data "{
+            \"name\": \"Release $CI_COMMIT_TAG\",
+            \"tag_name\": \"$CI_COMMIT_TAG\",
+            \"generate_release_notes\": true
+          }" \
+          "https://api.github.com/repos/OpenHearing/TabSINT/releases"
       UPLOAD_URL=$(echo "$RELEASE_JSON" | jq -r '.upload_url' | sed 's/{?name,label}//')
       curl --fail \
         -X POST \
-        -H "Authorization: Bearer ${GITHUB_TOKEN}" \
-        -H "Content-Type: application/zip" \
+        --header "Authorization: Bearer ${GITHUB_TOKEN}" \
+        --header "Content-Type: application/zip" \
         --data-binary @dist/app-release.zip \
         "${UPLOAD_URL}?name=app-release.zip"
   rules:
