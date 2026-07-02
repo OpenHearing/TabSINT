@@ -1,23 +1,17 @@
 <div class="likert-container" *ngFor="let question of questions; let questionIndex = index">
-  <!-- Question Text -->
-  <p class="question">{{ question }}</p>
+  <!-- Question Text (may contain HTML) -->
+  <p class="question" [style.font-size]="question.questionFontSize" [innerHTML]="question.text"></p>
+
+  <!-- Center Label Above -->
+  <p *ngIf="question.centerLabelAbove" class="likert-center-label" [style.font-size]="question.labelFontSize">
+    {{ question.centerLabelAbove }}
+  </p>
 
   <!-- Labels Above -->
-  <div
-    class="likert-labels"
-    *ngIf="position === 'above' && labels.length > 0"
-    [style.justify-content]="labels.length === levels ? 'space-between' : 'flex-start'">
-    <span
-      *ngFor="let label of labels; let labelIndex = index"
-      class="likert-label-above"
-      [ngClass]="{
-        'align-left': labelIndex === 0 && labels.length !== levels,
-        'align-right': labelIndex === labels.length - 1 && labels.length !== levels,
-        'center-align': labels.length === levels,
-      }"
-      [style.width]="labels.length === levels ? 100 / levels + '%' : 'auto'">
-      {{ label }}
-    </span>
+  <div class="likert-labels likert-labels-top" *ngIf="hasLabels(question.topLabels)" [style.font-size]="question.labelFontSize">
+    <ng-container *ngFor="let label of question.topLabels">
+      <span *ngIf="label !== ''" class="likert-label">{{ label }}</span>
+    </ng-container>
   </div>
 
   <!-- Slider Mode -->
@@ -26,29 +20,31 @@
     <div class="ruler">
       <div
         class="tick"
-        *ngFor="let value of [].constructor(levels * 10 + 1); let index = index"
+        *ngFor="let value of [].constructor(question.levels * 10 + 1); let index = index"
         [ngClass]="{
           'major-tick': index % 10 === 0,
           'minor-tick': index % 10 !== 0,
         }"
-        [style.left]="((index / 10) * 100) / levels + '%'">
+        [style.left]="((index / 10) * 100) / question.levels + '%'">
         <!-- Major Tick Buttons -->
         <button
           *ngIf="index % 10 === 0"
           class="tick-button"
           (click)="setSliderValue(questionIndex, index / 10)"
-          [style.left]="((index / 10) * 100) / levels + '%'">
+          [style.left]="((index / 10) * 100) / question.levels + '%'">
           {{ index / 10 }}
         </button>
       </div>
     </div>
 
     <!-- Slider Input -->
+    <label [attr.for]="'likert-slider-' + questionIndex" class="sr-only">Response slider</label>
     <input
       type="range"
+      [id]="'likert-slider-' + questionIndex"
       [class.hidden-cursor]="isNotApplicable[questionIndex] || sliderValue[questionIndex] === null"
       min="0"
-      max="{{ levels }}"
+      [max]="question.levels"
       step="0.1"
       class="custom-slider"
       [value]="sliderValue[questionIndex]"
@@ -59,15 +55,28 @@
   <div *ngIf="!useSlider" class="likert-scale">
     <div class="likert-options">
       <button
-        *ngFor="let level of [].constructor(levels); let levelIndex = index"
+        *ngFor="let level of [].constructor(question.levels); let levelIndex = index"
         class="likert-option"
         [ngClass]="{ selected: results.currentPage.response[questionIndex] === levelIndex }"
         (click)="onResponseChange(questionIndex, levelIndex)">
-        <span *ngIf="!useEmoticons">{{ levelIndex }}</span>
-        <span *ngIf="useEmoticons">{{ emoticons[levelIndex % emoticons.length] }}</span>
+        <span *ngIf="question.useEmoticons">{{ emoticons[levelIndex % emoticons.length] }}</span>
+        <span *ngIf="!question.useEmoticons && useRadioButtons" class="radio-circle"></span>
+        <span *ngIf="!question.useEmoticons && !useRadioButtons">{{ levelIndex }}</span>
       </button>
     </div>
   </div>
+
+  <!-- Labels Below -->
+  <div class="likert-labels likert-labels-bottom" *ngIf="hasLabels(question.bottomLabels)" [style.font-size]="question.labelFontSize">
+    <ng-container *ngFor="let label of question.bottomLabels">
+      <span *ngIf="label !== ''" class="likert-label">{{ label }}</span>
+    </ng-container>
+  </div>
+
+  <!-- Center Label Below -->
+  <p *ngIf="question.centerLabelBelow" class="likert-center-label" [style.font-size]="question.labelFontSize">
+    {{ question.centerLabelBelow }}
+  </p>
 
   <!-- Not Applicable Checkbox -->
   <div *ngIf="naBox" class="likert-footer">
@@ -75,23 +84,5 @@
       <input type="checkbox" [(ngModel)]="isNotApplicable[questionIndex]" (change)="onNotApplicableChange(questionIndex, $event)" />
       Not Applicable
     </label>
-  </div>
-
-  <!-- Labels Below -->
-  <div
-    class="likert-labels"
-    *ngIf="position === 'below' && labels.length > 0"
-    [style.justify-content]="labels.length === levels ? 'space-between' : 'flex-start'">
-    <span
-      *ngFor="let label of labels; let labelIndex = index"
-      class="likert-label-below"
-      [ngClass]="{
-        'align-left': labelIndex === 0 && labels.length !== levels,
-        'align-right': labelIndex === labels.length - 1 && labels.length !== levels,
-        'center-align': labels.length === levels,
-      }"
-      [style.width]="labels.length === levels ? 100 / levels + '%' : 'auto'">
-      {{ label }}
-    </span>
   </div>
 </div>
