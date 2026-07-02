@@ -70,6 +70,7 @@ export class CheckboxComponent implements OnInit, OnDestroy {
       if (updatedPage?.responseArea?.type === 'checkboxResponseArea') {
         const updatedCheckboxResponseArea = updatedPage.responseArea as CheckboxInterface;
         if (updatedCheckboxResponseArea) {
+          this.otherSelected = false;
           this.choices = updatedCheckboxResponseArea.choices;
           this.choices.forEach(choice => {
             choice.text = choice.text ?? String(choice.id);
