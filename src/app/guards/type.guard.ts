@@ -49,6 +49,8 @@ export function isManualAudiometryResponseArea(page: PageInterface): boolean {
 
 export function isThreeDigitResponseArea(page: PageInterface): boolean {
   return page?.responseArea?.type === 'threeDigitResponseArea';
+}
+
 export function isGapResponseArea(page: PageInterface): boolean {
   return page?.responseArea?.type === 'gapResponseArea';
 }
