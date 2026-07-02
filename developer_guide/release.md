@@ -2,13 +2,11 @@
 
 ## Overview
 
-The TabSINT release procedure is largely automated using GitLab CI. The pipeline for releasing a new APK/AAB is run automatically when a tag is created and can additionally be run manually on the tagged commit. Although the process can be run automatically, the final steps of the release stage in the pipeline require manual actions to be started. This ensures no accidental releases are added to the GitLab Package Registry or Release page. The public GitHub mirror release process is automatically handled when the mirror is updated with a new tag. It uses the GitLab package registry to find the files needed. The Google Play Store is a manual process.
+The TabSINT release procedure is largely automated using GitLab CI. The pipeline for releasing a new APK/AAB is run automatically when a tag is created and can additionally be run manually on the tagged commit. Although the process can be run automatically, the final steps of the release stage in the pipeline require manual actions to be started. This ensures no accidental releases are added to the GitLab Package Registry or GitLab and GitHub Release pages. The Google Play Store is a manual process.
 
 ## CI Build System
 
-The CI build system for TabSINT handles multiple stages before a release is made. This includes linting, creating a base build environment using Docker, testing, and two releases (including a beta and production release). The release stage of the pipeline includes manual actions to publish the release in the GitLab Package Registry and Release page of GitLab.
-
-Additionally, the public GitHub mirror uses an automated process triggered by a new tag. This creates a new release and retrieves the necessary files from the GitLab Package Registry. See the `.github/workflows` directory for more information.
+The CI build system for TabSINT handles multiple stages before a release is made. This includes linting, creating a base build environment using Docker, testing, and two releases (including a beta and production release). The release stage of the pipeline includes manual actions to publish the release in the GitLab Package Registry and Release pages of GitLab and GitHub.
 
 ## Steps
 
@@ -33,7 +31,7 @@ This procedure releases an APK/AAB for Android usage.
 7.  Merge the release branch back into the `master` branch. Tag the master branch with the release tag/version in `package.json`, prefixed by a `v` (i.e. `v1.1.0`)
     - Once tagged, the GitLab pipeline will run with the release stage included. This will create a release APK/AAB and will show two manual steps to archive and release the tagged application on GitLab.
     - Note: If the release requires a specific tag/version of SVN code, the pipeline should be run manually and the tag should be provided as an input before running the pipeline.
-8.  Run the manual archive and release actions in the pipeline. This will push the zip file containing the APK/AAB to the GitLab Package Registry and Release pages of GitLab and the public GitHub mirror.
+8.  Run the manual archive and release actions in the pipeline. This will push the zip file containing the APK/AAB to the GitLab Package Registry and Release pages of GitLab and GitHub.
 9.  Make sure also to merge the changes back into the `develop` branch to avoid regression.
 10. Run the publish process below.
 

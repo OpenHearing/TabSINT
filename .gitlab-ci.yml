@@ -238,7 +238,7 @@ release:
   needs:
     - job: archive-release-apk-aab
   before_script:
-    - apk add --no-cache curl
+    - apk add --no-cache curl jq
   script:
     - echo "Creating GitLab release for $CI_COMMIT_TAG"
     - |
@@ -261,6 +261,47 @@ release:
           }
         }" \
         "$CI_API_V4_URL/projects/$CI_PROJECT_ID/releases"
+    - echo "Creating GitHub release for $CI_COMMIT_TAG"
+    - echo "Waiting for tag $CI_COMMIT_TAG to exist on GitHub..."
+    - |
+      for i in $(seq 1 10); do
+        if curl --silent --fail \
+          -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+          -H "Accept: application/vnd.github+json" \
+          "https://api.github.com/repos/OpenHearing/TabSINT/git/ref/tags/$CI_COMMIT_TAG" \
+          >/dev/null; then
+          echo "Tag found."
+          break
+        fi
+        if [ "$i" -eq 10 ]; then
+          echo "Timed out waiting for tag."
+          exit 1
+        fi
+        echo "Tag not available yet. Waiting 30 seconds..."
+        sleep 30
+      done
+    - echo "Publishing Release for GitHub"
+    - |
+      RELEASE_JSON=$(curl --silent --fail \
+          -X POST \
+          -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+          -H "Accept: application/vnd.github+json" \
+          "https://api.github.com/repos/OpenHearing/TabSINT/releases" \
+          -d "$(jq -n \
+            --arg tag "$CI_COMMIT_TAG" \
+            --arg name "Release $CI_COMMIT_TAG" \
+            '{
+              tag_name: $tag,
+              name: $name,
+              generate_release_notes: true
+            }')")
+      UPLOAD_URL=$(echo "$RELEASE_JSON" | jq -r '.upload_url' | sed 's/{?name,label}//')
+      curl --fail \
+        -X POST \
+        -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+        -H "Content-Type: application/zip" \
+        --data-binary @app-release.zip \
+        "${UPLOAD_URL}?name=$(basename app-release.zip)"
   rules:
     - if: $CI_COMMIT_TAG
       when: manual
