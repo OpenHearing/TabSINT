@@ -78,6 +78,8 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
       if (updatedPage?.responseArea?.type == 'multipleChoiceResponseArea') {
         const updatedMultipleChoiceResponseArea = updatedPage.responseArea as MultipleChoiceInterface;
         if (updatedMultipleChoiceResponseArea) {
+          this.enableOther = false;
+          this.otherSelected = false;
           const rawchoices: ChoiceInterface[] = _.cloneDeep(updatedMultipleChoiceResponseArea.choices || this.yesNo);
           this.choices = [];
           rawchoices.forEach(choice => {
@@ -99,7 +101,6 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
 
           if (updatedMultipleChoiceResponseArea.other) {
             this.enableOther = true;
-            this.otherSelected = false;
             this.choices.push({
               id: 'Other',
               text: updatedMultipleChoiceResponseArea.other,
