@@ -15,10 +15,15 @@ import { ProtocolStackItem } from '../models/protocol/protocol-stack';
 import { PageTypes } from '../types/custom-types';
 import { ButtonGridInterface } from '../views/response-area/response-areas/button-grid/button-grid.interface';
 import { CheckboxInterface } from '../views/response-area/response-areas/checkbox/checkbox.interface';
+import { GapResultsInterface } from '../views/response-area/response-areas/gap/gap.interface';
 import { MultipleChoiceInterface } from '../views/response-area/response-areas/multiple-choice/multiple-choice.interface';
 
 export function isChoiceResponseArea(responseArea?: ResponseArea): responseArea is ButtonGridInterface | MultipleChoiceInterface | CheckboxInterface {
   return (responseArea as CheckboxInterface)?.choices !== undefined;
+}
+
+export function isGapResults(value: unknown): value is GapResultsInterface {
+  return typeof value === 'object' && value !== null;
 }
 
 export function isProtocolStarted(item?: ProtocolStackItem): item is ProtocolStackItem {
@@ -39,6 +44,10 @@ export function isProtocolReferenceInterface(page: PageTypes): page is ProtocolR
 
 export function isManualAudiometryResponseArea(page: PageInterface): boolean {
   return page?.responseArea?.type === 'manualAudiometryResponseArea';
+}
+
+export function isGapResponseArea(page: PageInterface): boolean {
+  return page?.responseArea?.type === 'gapResponseArea';
 }
 
 export function isValidDeviceResponse(response?: IDeviceResponse): response is IDeviceResponse {
