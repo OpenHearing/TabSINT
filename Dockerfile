@@ -14,20 +14,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     subversion \
     unzip \
     wget \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Google Chrome
-RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-RUN apt-get update && apt-get install -y --no-install-recommends ./google-chrome-stable_current_amd64.deb && rm -rf /var/lib/apt/lists/*
-RUN rm google-chrome-stable_current_amd64.deb
+    && rm -rf /var/lib/apt/lists/* \
+    wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \ # Install Google Chrome
+    apt-get update && apt-get install -y --no-install-recommends \
+    ./google-chrome-stable_current_amd64.deb && rm -rf /var/lib/apt/lists/* \
+    rm google-chrome-stable_current_amd64.deb
 ENV CHROME_BIN=/usr/bin/google-chrome-stable
 
 # Set up NVM (Node Version Manager)
 ENV NVM_DIR=/root/.nvm
-RUN wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh | bash
-
-# Add NVM to bash profile
-RUN echo "export NVM_DIR=\"$NVM_DIR\"" >> /root/.bashrc && \
+RUN wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh | bash \
+    echo "export NVM_DIR=\"$NVM_DIR\"" >> /root/.bashrc && \ # Add NVM to bash profile
     echo "[ -s \"$NVM_DIR/nvm.sh\" ] && \. \"$NVM_DIR/nvm.sh\"" >> /root/.bashrc && \
     echo "[ -s \"$NVM_DIR/bash_completion\" ] && \. \"$NVM_DIR/bash_completion\"" >> /root/.bashrc
 
@@ -43,19 +40,14 @@ ENV ANDROID_HOME=$HOME/android
 ENV ANDROID_SDK_ROOT=$ANDROID_HOME
 ENV PATH=${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${PATH}
 
-RUN mkdir -p ${ANDROID_HOME}
-RUN wget -q https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -O /tmp/cmdline-tools.zip && \
+RUN mkdir -p ${ANDROID_HOME} \
+    wget -q https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip -O /tmp/cmdline-tools.zip && \
     unzip /tmp/cmdline-tools.zip -d /tmp/cmdline-tools && \
     mkdir -p ${ANDROID_HOME}/cmdline-tools/latest && \
     mv /tmp/cmdline-tools/cmdline-tools/* ${ANDROID_HOME}/cmdline-tools/latest/ && \
     rm -rf /tmp/cmdline-tools.zip /tmp/cmdline-tools
-
-# Accept Android SDK licenses
-# Handle 141 exit codes from the yes command 
-RUN (yes || true) | sdkmanager --licenses
-
-# Update SDK and install specific Android platform and build tools
-RUN sdkmanager --update && \
+    (yes || true) | sdkmanager --licenses  # Accept Android SDK licenses, Handle 141 exit codes from the yes command 
+    sdkmanager --update && \
     sdkmanager "platforms;android-36" "build-tools;36.0.0"
 
 # Set working directory
@@ -69,13 +61,9 @@ RUN --mount=type=secret,id=SVN_TAG_DIRECTORY \
     --mount=type=secret,id=SVN_USERNAME \ 
     --mount=type=secret,id=SVN_PASSWORD \ 
     --mount=type=secret,id=SVN_TAG \ 
-    bash ./bin/svn_import.sh
-
-# Install npm dependencies
-RUN bash -c "source $NVM_DIR/nvm.sh && npm install"
-
-# Create an entrypoint script to ensure NVM is loaded
-RUN printf '%s\n' '#!/bin/bash'\
+    bash ./bin/svn_import.sh \
+    bash -c "source $NVM_DIR/nvm.sh && npm install" \ # Install npm dependencies
+    printf '%s\n' '#!/bin/bash'\ #  Create an entrypoint script to ensure NVM is loaded
     "source \"$NVM_DIR/nvm.sh\"" \
     'exec "$@"' > /usr/local/bin/entrypoint.sh && \
     chmod +x /usr/local/bin/entrypoint.sh
