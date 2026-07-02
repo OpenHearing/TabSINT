@@ -681,6 +681,7 @@ export class ExamService {
    * @param page The page being initialized.
    */
   private async activateSvantek(page: PageDefinition) {
+    this.resultsModel.updateCurrentPage({ svantek: undefined });
     if (!page.svantek) {
       return;
     }

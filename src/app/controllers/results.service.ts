@@ -111,6 +111,7 @@ export class ResultsService {
       isSkipped: false,
       responseArea: currentPage.responseArea ? currentPage.responseArea.type : undefined,
       page: currentPage,
+      svantek: undefined,
     };
 
     this.resultsModel.updateCurrentPage(res);
