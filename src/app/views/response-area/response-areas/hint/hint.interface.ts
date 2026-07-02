@@ -1,11 +1,12 @@
 import { CommonResponseAreaInterface } from '../../../../interfaces/page-definition.interface';
+import { IDeviceResponse } from '../../../../interfaces/devices/device-response.interface';
 
 /**
  * Properties sent to the CHA when queueing a "HINT" exam. These map directly to the
  * fields the CHA firmware expects. See the source chaHINT schema for full descriptions.
  */
 export interface HintExamPropertiesInterface {
-  Language?: 'english' | 'mandarin' | 'military' | 'swahili' | 'laspanish' | 'portuguese' | 'plaspanish';
+  Language?: 'english' | 'mandarin' | 'military' | 'swahili' | 'laspanish' | 'portuguese' | 'plaspanish' | 'frenchcan';
   IsPractice?: boolean;
   Direction?: 'front' | 'left' | 'right' | 'quiet';
   NoiseLevel?: number;
@@ -37,9 +38,21 @@ export interface HintResponseAreaInterface extends CommonResponseAreaInterface {
  */
 export interface HintDeviceResultsInterface {
   State?: number;
-  CurrentSentence?: string;
+  SentencePath?: string | number;
+  ListLength?: number;
   CurrentSentenceIndex?: number;
+  CurrentSentence?: string;
+  CurrentSNR?: number;
+  sSRT?: number;
+  sSRTstd?: number;
   presentationId?: string | number;
+}
+
+/**
+ * A requestResults device response whose payload is a HINT results object.
+ */
+export interface HintResultsResponse extends IDeviceResponse {
+  msg: [unknown, HintDeviceResultsInterface];
 }
 
 /**
@@ -64,4 +77,5 @@ export interface HintResponseInterface {
   presentations: HintPresentationResultInterface[];
   presentationCount?: number;
   correctPresentationCount?: number;
+  results?: HintDeviceResultsInterface;
 }

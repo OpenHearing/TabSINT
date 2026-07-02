@@ -8,7 +8,7 @@ export const hintSchema: JSONSchemaType<HintResponseAreaInterface> = {
     type: { type: 'string', enum: ['hintResponseArea'] },
     enableSkip: { type: 'boolean', nullable: true, default: false },
     responseRequired: { type: 'boolean', nullable: true, default: false },
-    tabsintId: { type: 'string', nullable: true, default: '1' },
+    tabsintId: { type: 'string', nullable: true },
     autoSubmit: {
       type: 'boolean',
       nullable: true,
@@ -39,7 +39,7 @@ export const hintSchema: JSONSchemaType<HintResponseAreaInterface> = {
         Language: {
           type: 'string',
           nullable: true,
-          enum: ['english', 'mandarin', 'military', 'swahili', 'laspanish', 'portuguese', 'plaspanish'],
+          enum: ['english', 'mandarin', 'military', 'swahili', 'laspanish', 'portuguese', 'plaspanish', 'frenchcan'],
           default: 'english',
           description: 'Target material language',
         },
@@ -97,10 +97,9 @@ export const hintSchema: JSONSchemaType<HintResponseAreaInterface> = {
         ListNumber: {
           type: 'number',
           nullable: true,
-          default: 0,
-          minimum: 0,
+          minimum: 1,
           maximum: 12,
-          description: 'One-based index of the list to use. The value 0 selects the list randomly.',
+          description: 'One-based index of the list to use. When omitted, a list is chosen at random.',
         },
         NumberOfPresentations: {
           type: 'number',

@@ -11,6 +11,7 @@ import { PageInterface } from '../../../../models/page/page.interface';
 import { IDevice } from '../../../../interfaces/devices/device.interface';
 import { DeviceType } from '../../../../utilities/constants';
 import { getCurrentDatetime } from '../../../../utilities/exam-helper-functions';
+import { isHintResultsResponse } from '../../../../guards/type.guard';
 import { hintSchema } from '../../../../../schema/response-areas/hint.schema';
 import {
   HintDeviceResultsInterface,
@@ -23,10 +24,13 @@ import {
 const EXAM_NAME = 'HINT';
 const SUBMISSION_NAME = 'HINT$Submission';
 const POLL_INTERVAL_MS = 500;
-const SUBMIT_LOCKOUT_MS = 3000;
+const SUBMIT_LOCKOUT_MS = 7000;
 const FEEDBACK_DELAY_MS = 200;
 const LIST_NUMBER_MAX = 12;
 const TEMP_SPACER = '$SPACER';
+
+/** Schema property defaults used to seed exam parameters at construction. */
+const examPropSchema = hintSchema.properties.examProperties.properties;
 
 /**
  * Device exam states reported by the CHA in the "HINT" results.
@@ -49,10 +53,10 @@ export class HintComponent implements OnInit, OnDestroy {
   private readonly devicesService = inject(DevicesService);
   private readonly logger = inject(Logger);
 
-  // Configuration
+  // Configuration (seeded with schema defaults at construction, overridden by the protocol)
   private readonly allowableDevices = [DeviceType.Wahts];
   examInstructions: string | undefined;
-  numberOfPresentations = 20;
+  numberOfPresentations = examPropSchema.NumberOfPresentations.default;
 
   // Exam UI state
   device: IDevice | undefined;
@@ -63,7 +67,17 @@ export class HintComponent implements OnInit, OnDestroy {
 
   // Internal state
   private responseArea: HintResponseAreaInterface | undefined;
-  private examProperties: HintExamPropertiesInterface = {};
+  private examProperties: HintExamPropertiesInterface = {
+    Language: examPropSchema.Language.default,
+    IsPractice: examPropSchema.IsPractice.default,
+    Direction: examPropSchema.Direction.default,
+    NoiseLevel: examPropSchema.NoiseLevel.default,
+    MaskerType: examPropSchema.MaskerType.default,
+    InitialStepSize: examPropSchema.InitialStepSize.default,
+    StepSize: examPropSchema.StepSize.default,
+    NumberOfPresentations: examPropSchema.NumberOfPresentations.default,
+    DisableRepeatFirstUntilCorrect: examPropSchema.DisableRepeatFirstUntilCorrect.default,
+  };
   private presentations: HintPresentationResultInterface[] = [];
   private correctPresentations = 0;
   private currentPresentationId: string | number | undefined;
@@ -104,9 +118,9 @@ export class HintComponent implements OnInit, OnDestroy {
     this.initialized = true;
     this.responseArea = responseArea;
     this.examInstructions = responseArea.examInstructions;
-    this.examProperties = { ...(responseArea.examProperties ?? {}) };
-    this.numberOfPresentations =
-      this.examProperties.NumberOfPresentations ?? hintSchema.properties.examProperties.properties.NumberOfPresentations.default;
+    // Overlay the protocol's values on top of the schema defaults seeded at construction.
+    this.examProperties = { ...this.examProperties, ...(responseArea.examProperties ?? {}) };
+    this.numberOfPresentations = this.examProperties.NumberOfPresentations ?? this.numberOfPresentations;
     this.examProperties.NumberOfPresentations = this.numberOfPresentations;
 
     await this.setupDevice(responseArea);
@@ -139,7 +153,8 @@ export class HintComponent implements OnInit, OnDestroy {
     // Submit advances each sentence rather than the whole page while the exam runs.
     this.examService.submit = () => this.processSelectedWords();
 
-    if (this.examProperties.ListNumber === undefined) {
+    // ListNumber 0 (the schema default) means "no list chosen"; pick one client-side for traceability.
+    if (!this.examProperties.ListNumber) {
       this.examProperties.ListNumber = Math.ceil(Math.random() * LIST_NUMBER_MAX);
       this.logger.debug('CHA HINT exam called without a ListNumber defined, using ' + this.examProperties.ListNumber);
     }
@@ -191,6 +206,7 @@ export class HintComponent implements OnInit, OnDestroy {
         presentations: this.presentations,
         presentationCount: this.presentationCount + 1,
         correctPresentationCount: this.correctPresentations,
+        results,
       };
       this.resultsModel.updateCurrentPage({ response });
       this.examService.submit = this.examService.submitDefault.bind(this.examService);
@@ -360,8 +376,8 @@ export class HintComponent implements OnInit, OnDestroy {
       return undefined;
     }
     const resp = await this.devicesService.requestResults(this.device);
-    if (resp?.msg && typeof resp.msg[1] === 'object' && resp.msg[1] !== null) {
-      return resp.msg[1] as HintDeviceResultsInterface;
+    if (isHintResultsResponse(resp)) {
+      return resp.msg[1];
     }
     this.logger.debug('HINT exam: unexpected requestResults response: ' + JSON.stringify(resp?.msg));
     return undefined;
