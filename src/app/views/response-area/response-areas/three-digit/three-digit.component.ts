@@ -26,7 +26,7 @@ const SUBMISSION_NAME = 'ThreeDigit$Submission';
 const POLL_INTERVAL_MS = 500;
 
 /** Schema property definitions used to seed parameters with their defaults at construction. */
-const raSchema = threeDigitSchema.properties;
+const tdSchema = threeDigitSchema.properties;
 const examPropSchema = threeDigitSchema.properties.examProperties.properties;
 
 /**
@@ -55,11 +55,11 @@ export class ThreeDigitComponent implements OnInit, OnDestroy {
 
   // Configuration (seeded with schema defaults at construction, overridden by the protocol)
   private readonly allowableDevices = [DeviceType.Wahts];
-  autoSubmit = raSchema.autoSubmit.default;
-  autoSubmitPresentation = raSchema.autoSubmitPresentation.default;
-  private feedbackEnabled = raSchema.feedback.default;
-  private feedbackDelay = raSchema.feedbackDelay.default;
-  private keypadDelay = raSchema.keypadDelay.default;
+  autoSubmit = tdSchema.autoSubmit.default;
+  autoSubmitPresentation = tdSchema.autoSubmitPresentation.default;
+  private feedbackEnabled = tdSchema.feedback.default;
+  private feedbackDelay = tdSchema.feedbackDelay.default;
+  private keypadDelay = tdSchema.keypadDelay.default;
   examInstructions: string | undefined;
   nPresentations = examPropSchema.nPresentations.default;
 
