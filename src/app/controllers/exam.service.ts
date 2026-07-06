@@ -134,7 +134,7 @@ export class ExamService {
     this.resultsService.initializeExamResults();
     this.stateModel.updateState({ examState: ExamState.Testing });
     this.protocol.activeProtocolStack.addProtocol(this.protocol.activeProtocol!);
-    this.audioService.setSystemVolume(1.0);
+    this.audioService.setSystemVolume(1);
     this.advancePage();
   }
 
@@ -449,8 +449,8 @@ export class ExamService {
       // determine number of repititions
       const numRepititions = Number(page.repeatPage!.nRepeats);
       // create desired number of repeated pages
-      for (let i = currentRepeatCount + 1; i < (numRepititions + currentRepeatCount + 1 < 4 ? numRepititions + currentRepeatCount + 1 : 4); i++) {
-        const repeatedPage: PageInterface = JSON.parse(JSON.stringify(page));
+      for (let i = currentRepeatCount + 1; i < Math.min(numRepititions + currentRepeatCount + 1, 4); i++) {
+        const repeatedPage: PageInterface = structuredClone(page);
         if (i > 1) {
           repeatedPage.id = repeatedPage.id.replace('_repeated_' + String(i - 1), '_repeated_' + String(i));
         } else {
@@ -466,9 +466,13 @@ export class ExamService {
    * @summary Handles and evaluates the logic from a protocol conditional.
    */
   private conditionalEvaluator(conditional: string) {
-    // Change string text for flags and results to correctly grab the correct variables
-    conditional = conditional.replaceAll(/\bflags\b/g, 'this.resultsModel.getResults().currentExam.flags');
-    conditional = conditional.replaceAll(/\bresult\.response\b/g, 'this.results.currentPage.response');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const response = this.results.currentPage.response?.selected ?? this.results.currentPage.response;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const flags = this.resultsModel.getResults().currentExam.flags;
+
+    conditional = conditional.replaceAll(/\bflags\b/g, 'flags');
+    conditional = conditional.replaceAll(/\bresult\.response\b/g, 'response');
     return eval(conditional);
   }
 
@@ -695,7 +699,7 @@ export class ExamService {
       }
       return;
     }
-    this.activeSvantekDevice = devices[0] as ISvantekDevice;
+    this.activeSvantekDevice = devices[0];
     try {
       await this.devicesService.startRecording(this.activeSvantekDevice);
       this.svantekResultPoll = setInterval(() => {
@@ -884,6 +888,6 @@ export class ExamService {
    * @returns The resized array filled with extra zeros.
    */
   private resizeLeq(arr: number[] | undefined = [72, 72, 0, 0], size: number = 4): number[] {
-    return (arr ?? []).slice(0, size).concat(Array(Math.max(0, size - (arr ?? []).length)).fill(0));
+    return (arr ?? []).slice(0, size).concat(new Array(Math.max(0, size - (arr ?? []).length)).fill(0));
   }
 }

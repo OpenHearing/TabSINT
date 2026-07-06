@@ -113,9 +113,7 @@ export class DevicesService {
       metadata.model = info.model ?? 'Unknown';
       metadata.os = info.operatingSystem;
       metadata.other = `Battery level: ${batteryInfo.batteryLevel ?? 'Unknown'}, Language: ${languageCode.value ?? 'Unknown'}`;
-      if (info.realDiskFree !== undefined) {
-        metadata.diskSpace = String(Math.round(info.realDiskFree / (1024 * 1024)));
-      }
+      // TODO: Need to determine metadata.diskSpace following realDiskFree removal in Capacitor V7
       this.hostMetadataSubject.next(metadata);
       this.logger.debug('Device info processed -- \n' + JSON.stringify(metadata));
     } catch (err) {
@@ -427,10 +425,19 @@ export class DevicesService {
   /**
    * Request results from an exam for a device.
    * @param device The device to request exam results from.
-   * @param examId The identifier of the exam to request results for.
+   * @param timeoutMs How long to wait for the results response before giving up.
    */
-  async requestResults(device: IDevice): Promise<IDeviceResponse | undefined> {
-    return this.getManager(device.type).requestResults?.(device);
+  async requestResults(device: IDevice, timeoutMs?: number): Promise<IDeviceResponse | undefined> {
+    return this.getManager(device.type).requestResults?.(device, timeoutMs);
+  }
+
+  /**
+   * Set the state of the software response button for a device.
+   * @param device The device to set the software button state for.
+   * @param state The new state of the software button (0 or 1).
+   */
+  async setSoftwareButtonState(device: IDevice, state: number): Promise<IDeviceResponse | undefined> {
+    return this.getManager(device.type).setSoftwareButtonState?.(device, state);
   }
 
   /**

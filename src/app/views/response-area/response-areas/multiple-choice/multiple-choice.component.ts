@@ -78,10 +78,12 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
       if (updatedPage?.responseArea?.type == 'multipleChoiceResponseArea') {
         const updatedMultipleChoiceResponseArea = updatedPage.responseArea as MultipleChoiceInterface;
         if (updatedMultipleChoiceResponseArea) {
+          this.enableOther = false;
+          this.otherSelected = false;
           const rawchoices: ChoiceInterface[] = _.cloneDeep(updatedMultipleChoiceResponseArea.choices || this.yesNo);
           this.choices = [];
           rawchoices.forEach(choice => {
-            choice.text = choice.text ?? choice.id;
+            choice.text = choice.text ?? String(choice.id);
             choice.correct = choice.correct ?? choiceSchema.properties.correct.default;
             choice.disable = choice.disable ?? choiceSchema.properties.disable.default;
             choice.textColor = choice.textColor ?? choiceSchema.properties.textColor.default;
@@ -99,7 +101,6 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
 
           if (updatedMultipleChoiceResponseArea.other) {
             this.enableOther = true;
-            this.otherSelected = false;
             this.choices.push({
               id: 'Other',
               text: updatedMultipleChoiceResponseArea.other,
@@ -137,7 +138,7 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
     this.stateSubscription?.unsubscribe();
   }
 
-  choose(id: string) {
+  choose(id: string | number) {
     this.results.currentPage.response = id;
     this.stateModel.updateState({ doesResponseExist: true });
     this.stateModel.setPageSubmittable();

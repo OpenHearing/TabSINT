@@ -18,12 +18,12 @@
     "@angular/localize": "^17.2.1",
     "@angular/platform-browser": "^17.1.0",
     "@angular/platform-browser-dynamic": "^17.1.0",
-    "@capacitor/android": "^6.1.0",
-    "@capacitor/core": "^6.2.1",
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/core": "^8.0.0",
     "tabsintcha": "file:.."
   },
   "devDependencies": {
-    "@capacitor/cli": "^6.2.1"
+    "@capacitor/cli": "^8.0.0"
   },
   "scripts": {
     "ng": "ng",
