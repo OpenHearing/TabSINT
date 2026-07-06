@@ -2,15 +2,47 @@ import { CommonResponseAreaInterface } from '../../../../interfaces/page-definit
 import { IDeviceResponse } from '../../../../interfaces/devices/device-response.interface';
 
 /**
+ * Language of the HINT sentence material.
+ */
+export enum HintLanguage {
+  English = 'english',
+  Mandarin = 'mandarin',
+  Military = 'military',
+  Swahili = 'swahili',
+  LaSpanish = 'laspanish',
+  Portuguese = 'portuguese',
+  PLaSpanish = 'plaspanish',
+  FrenchCanadian = 'frenchcan',
+}
+
+/**
+ * Spatial direction of the speech presentation relative to the masking noise.
+ */
+export enum HintDirection {
+  Front = 'front',
+  Left = 'left',
+  Right = 'right',
+  Quiet = 'quiet',
+}
+
+/**
+ * Type of masker played against the target speech.
+ */
+export enum HintMaskerType {
+  Noise = 'noise',
+  TwoBabble = '2babble',
+}
+
+/**
  * Properties sent to the CHA when queueing a "HINT" exam. These map directly to the
  * fields the CHA firmware expects. See the source chaHINT schema for full descriptions.
  */
 export interface HintExamPropertiesInterface {
-  Language?: 'english' | 'mandarin' | 'military' | 'swahili' | 'laspanish' | 'portuguese' | 'plaspanish' | 'frenchcan';
+  Language?: HintLanguage;
   IsPractice?: boolean;
-  Direction?: 'front' | 'left' | 'right' | 'quiet';
+  Direction?: HintDirection;
   NoiseLevel?: number;
-  MaskerType?: 'noise' | '2babble';
+  MaskerType?: HintMaskerType;
   InitialStepSize?: number;
   StepSize?: number;
   InitialSNR?: number;

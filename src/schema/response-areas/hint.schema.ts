@@ -1,5 +1,10 @@
 import { JSONSchemaType } from 'ajv';
-import { HintResponseAreaInterface } from '../../app/views/response-area/response-areas/hint/hint.interface';
+import {
+  HintResponseAreaInterface,
+  HintLanguage,
+  HintDirection,
+  HintMaskerType,
+} from '../../app/views/response-area/response-areas/hint/hint.interface';
 
 export const hintSchema: JSONSchemaType<HintResponseAreaInterface> = {
   type: 'object',
@@ -39,8 +44,8 @@ export const hintSchema: JSONSchemaType<HintResponseAreaInterface> = {
         Language: {
           type: 'string',
           nullable: true,
-          enum: ['english', 'mandarin', 'military', 'swahili', 'laspanish', 'portuguese', 'plaspanish', 'frenchcan'],
-          default: 'english',
+          enum: Object.values(HintLanguage),
+          default: HintLanguage.English,
           description: 'Target material language',
         },
         IsPractice: {
@@ -52,8 +57,8 @@ export const hintSchema: JSONSchemaType<HintResponseAreaInterface> = {
         Direction: {
           type: 'string',
           nullable: true,
-          enum: ['front', 'left', 'right', 'quiet'],
-          default: 'front',
+          enum: Object.values(HintDirection),
+          default: HintDirection.Front,
           description: 'Noise direction',
         },
         NoiseLevel: {
@@ -67,8 +72,8 @@ export const hintSchema: JSONSchemaType<HintResponseAreaInterface> = {
         MaskerType: {
           type: 'string',
           nullable: true,
-          enum: ['noise', '2babble'],
-          default: 'noise',
+          enum: Object.values(HintMaskerType),
+          default: HintMaskerType.Noise,
           description: 'Type of sound used as the masker',
         },
         InitialStepSize: {
