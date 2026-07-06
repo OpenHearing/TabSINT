@@ -538,18 +538,10 @@ export class DevicesService {
   }
 
   /**
-   * Disconnect all WAHTS devices that don't match the new connection type, then update the preference.
+   * Update the preference for connection type.
    * @param connectionType The new WAHTS connection type to switch to.
    */
   async changeChaConnectionType(connectionType: BluetoothType): Promise<void> {
-    const devices = await firstValueFrom(this.devices);
-    const toDisconnect = devices.filter(d => d.type === DeviceType.Wahts && (d as IWahtsDevice).connectionType !== connectionType);
-    for (const device of toDisconnect) {
-      if (device.state !== DeviceState.Disconnected) {
-        await this.disconnect(device);
-      }
-      await this.updateDeviceConnectionType(device, connectionType);
-    }
     this.diskModel.updatePreferences({ wahtsConnectionType: connectionType });
   }
 

@@ -25,6 +25,7 @@ import org.json.JSONObject;
 class TabsintCha {
 
   private static final String TAG = "TabsintCha";
+  private static final String USB_GENERIC_NAME = "CHA-USB";
   final java.util.HashMap<String, A2DP_CHA> a2dpMap = new java.util.HashMap<>();
   final java.util.HashMap<String, ChaState> chaMap = new java.util.HashMap<>();
   final java.util.HashSet<String> chaConnectedSet = new java.util.HashSet<>();
@@ -226,7 +227,7 @@ class TabsintCha {
 
       chaState.chaListener = new WrappedChaListener(chaState);
       chaState.cha.addListener(chaState.chaListener);
-      return createValueObject(chaState.cha.toString());
+      return createValueObject(getChaName(chaState.cha));
     }
   };
 
@@ -241,7 +242,7 @@ class TabsintCha {
         chaState.chaListener = null;
       }
 
-      return createValueObject(chaState.cha.toString());
+      return createValueObject(getChaName(chaState.cha));
     }
   };
 
@@ -335,7 +336,10 @@ class TabsintCha {
       ChaState chaState = getChaState(name);
       CHA cha = chaState.cha;
 
-      Class<?> c = cha.getClass().getClassLoader().loadClass("com.creare.cha.exams." + examName);
+      Class<?> c = cha
+        .getClass()
+        .getClassLoader()
+        .loadClass("com.creare.cha.exams." + examName);
       Exam e = (Exam) c.newInstance();
 
       if (params != null) {
@@ -361,7 +365,10 @@ class TabsintCha {
       ChaState chaState = getChaState(name);
       CHA cha = chaState.cha;
 
-      Class<?> c = cha.getClass().getClassLoader().loadClass("com.creare.cha.exams." + subName);
+      Class<?> c = cha
+        .getClass()
+        .getClassLoader()
+        .loadClass("com.creare.cha.exams." + subName);
       SubmissionInterface sub = (SubmissionInterface) c.newInstance();
 
       if (params != null) {
@@ -889,6 +896,21 @@ class TabsintCha {
 
   final ChaState getChaState(String name) throws IllegalArgumentException {
     ChaState cha = chaMap.get(name);
+
+    // USB fallback to allow a single name to map to any connected USB port
+    // Internally we still use /dev/bus references for each USB device
+    if (cha == null && name.toLowerCase().contains("usb")) {
+      String matchedKey = chaMap
+        .keySet()
+        .stream()
+        .filter(key -> key.toLowerCase().contains("usb"))
+        .findAny()
+        .orElse(null);
+      if (matchedKey != null) {
+        cha = chaMap.get(matchedKey);
+      }
+    }
+
     if (cha == null) {
       throw new IllegalArgumentException("No CHA \"" + name + "\" has been discovered.");
     }
@@ -897,6 +919,18 @@ class TabsintCha {
 
   final CHA getCha(String name) throws IllegalArgumentException {
     return getChaState(name).cha;
+  }
+
+  final String getChaName(CHA cha) {
+    String name = cha.toString();
+
+    // USB bypass to reference all USB connections by a single name
+    // Internally we still use /dev/bus references for each USB device
+    if (name.toLowerCase().contains("usb")) {
+      name = USB_GENERIC_NAME;
+    }
+
+    return name;
   }
 
   static final class ChaState {
@@ -1100,7 +1134,7 @@ class TabsintCha {
       // Send a "Set" message to the event listener
       try {
         JSONObject obj = new JSONObject();
-        obj.put("name", parentState.cha.toString());
+        obj.put("name", getChaName(parentState.cha));
         JSONArray arr = new JSONArray();
         arr.put(0, "Set");
         obj.put("res", arr);
@@ -1116,7 +1150,7 @@ class TabsintCha {
 
     private void sendResultToListener(String identifier, JSONObject obj) throws JSONException {
       JSONObject objResponse = new JSONObject();
-      objResponse.put("name", parentState.cha.toString());
+      objResponse.put("name", getChaName(parentState.cha));
       JSONArray arr = new JSONArray();
       arr.put(0, identifier);
       if (obj != null) {
@@ -1138,7 +1172,7 @@ class TabsintCha {
 
       JSONObject obj = new JSONObject();
       try {
-        obj.put("name", parentState.cha.toString());
+        obj.put("name", getChaName(parentState.cha));
         obj.put("res", e.getMessage());
       } catch (JSONException ex) {
         // noop
@@ -1172,7 +1206,7 @@ class TabsintCha {
         android.util.Log.e(TAG, t.getMessage(), t);
         JSONObject obj = new JSONObject();
         try {
-          obj.put("name", parentState.cha.toString());
+          obj.put("name", getChaName(parentState.cha));
           obj.put("res", t.getMessage());
         } catch (JSONException ex) {
           // noop
@@ -1195,7 +1229,7 @@ class TabsintCha {
       JSONObject obj = new JSONObject();
 
       try {
-        obj.put("name", cha.toString());
+        obj.put("name", getChaName(cha));
         obj.put("status", "searching");
       } catch (JSONException ex) {
         // noop
