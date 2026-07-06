@@ -1,6 +1,10 @@
 import { JSONSchemaType } from 'ajv';
-import { ThreeDigitResponseAreaInterface } from '../../app/views/response-area/response-areas/three-digit/three-digit.interface';
-import { ThreeDigitTargetType, ThreeDigitMaskerType, ThreeDigitWarmupMasker } from '../../app/utilities/constants';
+import {
+  ThreeDigitResponseAreaInterface,
+  ThreeDigitTargetType,
+  ThreeDigitMaskerType,
+  ThreeDigitWarmupMasker,
+} from '../../app/views/response-area/response-areas/three-digit/three-digit.interface';
 
 export const threeDigitSchema: JSONSchemaType<ThreeDigitResponseAreaInterface> = {
   type: 'object',
