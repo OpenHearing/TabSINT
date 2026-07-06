@@ -63,11 +63,11 @@ WORKDIR /usr/src/app
 COPY . .
 
 # Install SVN dependencies
-RUN --mount=type=secret,id=SVN_TAG_DIRECTORY \
-    --mount=type=secret,id=SVN_USERNAME \
-    --mount=type=secret,id=SVN_PASSWORD \
-    --mount=type=secret,id=SVN_TAG \
-    bash ./bin/svn_import.sh
+# RUN --mount=type=secret,id=SVN_TAG_DIRECTORY \
+#     --mount=type=secret,id=SVN_USERNAME \
+#     --mount=type=secret,id=SVN_PASSWORD \
+#     --mount=type=secret,id=SVN_TAG \
+#     bash ./bin/svn_import.sh
 
 # Install npm dependencies
 RUN bash -c "source $NVM_DIR/nvm.sh && npm install"
