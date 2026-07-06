@@ -15,7 +15,7 @@
     "test:headless": "ng test --code-coverage --browsers=ChromeHeadlessNoSandbox --watch=false",
     "run.build": "npm run prepare --suffix dev && ng build && npx cap sync android && cd android && ./gradlew assembleDebug && cd ..",
     "run.build.beta:ci": "npm run prepare --suffix beta && ng build && npx cap sync android && cd android && ./gradlew assembleDebug && cd ..",
-    "run.build.production:ci": "npm run prepare && ng build && npx cap sync android && cd android && ./gradlew assembleRelease && cd ..",
+    "run.build.production:ci": "npm run prepare && ng build && npx cap sync android && cd android && ./gradlew assembleRelease && ./gradlew bundleRelease && cd ..",
     "run.android": "npm run prepare --suffix dev && ng build && npx cap sync android && npx cap run android",
     "serve:ssr:tabsint": "node dist/tabsint/server/server.mjs",
     "lint": "ng lint",
