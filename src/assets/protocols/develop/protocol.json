@@ -99,6 +99,9 @@
                 "id": "Bekesy"
               },
               {
+                "id": "Three Digit Test"
+              },
+              {
                 "id": "GAP"
               },
               {
@@ -258,6 +261,12 @@
               "conditional": "result.response=='Bekesy'",
               "target": {
                 "reference": "bekesyResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='Three Digit Test'",
+              "target": {
+                "reference": "threeDigitResponseArea"
               }
             },
             {
@@ -1298,6 +1307,27 @@
         {
           "id": "backtomain",
           "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "threeDigitResponseArea",
+      "pages": [
+        {
+          "id": "threeDigitResponseArea",
+          "title": "Three Digit Test",
+          "questionMainText": "Three Digit Test",
+          "instructionText": "Enter the three digits you hear.",
+          "responseArea": {
+            "type": "threeDigitResponseArea",
+            "examInstructions": "Enter the three digits you hear",
+            "feedback": true,
+            "examProperties": {
+              "nPresentations": 5,
+              "correctStep": -4,
+              "fixedLevel": 50
+            }
+          }
         }
       ]
     },
