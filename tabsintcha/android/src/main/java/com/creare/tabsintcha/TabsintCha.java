@@ -1,6 +1,7 @@
 package com.creare.tabsintcha;
 
 import android.content.Context;
+import android.hardware.usb.UsbDevice;
 import com.creare.cha.A2DP_CHA;
 import com.creare.cha.CHA;
 import com.creare.cha.CalibrationEntry;
@@ -17,7 +18,10 @@ import com.creare.cha.Streamable;
 import com.creare.cha.SubmissionInterface;
 import com.creare.cha.exams.AudiometrySubmission;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
+import java.util.Optional;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,7 +29,6 @@ import org.json.JSONObject;
 class TabsintCha {
 
   private static final String TAG = "TabsintCha";
-  private static final String USB_GENERIC_NAME = "CHA-USB";
   final java.util.HashMap<String, A2DP_CHA> a2dpMap = new java.util.HashMap<>();
   final java.util.HashMap<String, ChaState> chaMap = new java.util.HashMap<>();
   final java.util.HashSet<String> chaConnectedSet = new java.util.HashSet<>();
@@ -897,14 +900,15 @@ class TabsintCha {
   final ChaState getChaState(String name) throws IllegalArgumentException {
     ChaState cha = chaMap.get(name);
 
-    // USB fallback to allow a single name to map to any connected USB port
+    // USB uses product name to ensure a consistent identifier is used
     // Internally we still use /dev/bus references for each USB device
     if (cha == null && name.toLowerCase().contains("usb")) {
       String matchedKey = chaMap
-        .keySet()
+        .entrySet()
         .stream()
-        .filter(key -> key.toLowerCase().contains("usb"))
-        .findAny()
+        .filter(entry -> getUsbProductName(entry.getValue().cha).map(name::equals).orElse(false))
+        .map(Map.Entry::getKey)
+        .findFirst()
         .orElse(null);
       if (matchedKey != null) {
         cha = chaMap.get(matchedKey);
@@ -924,13 +928,33 @@ class TabsintCha {
   final String getChaName(CHA cha) {
     String name = cha.toString();
 
-    // USB bypass to reference all USB connections by a single name
+    // USB uses product name to ensure a consistent identifier is used
     // Internally we still use /dev/bus references for each USB device
     if (name.toLowerCase().contains("usb")) {
-      name = USB_GENERIC_NAME;
+      String productName = TabsintCha.getUsbProductName(cha).orElse(null);
+      if (productName != null) {
+        name = productName;
+      }
     }
 
     return name;
+  }
+
+  static final Optional<String> getUsbProductName(Object obj) {
+    try {
+      Field field = obj.getClass().getDeclaredField("usbDevice");
+      field.setAccessible(true);
+
+      Object value = field.get(obj);
+
+      if (value instanceof UsbDevice device) {
+        return Optional.of(device.getProductName());
+      }
+    } catch (NoSuchFieldException | IllegalAccessException e) {
+      // ignore if it cannot be determined
+    }
+
+    return Optional.empty();
   }
 
   static final class ChaState {
