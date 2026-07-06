@@ -9,7 +9,7 @@ import { DevicesService } from '../../../../services/devices/devices.service';
 import { Logger } from '../../../../services/logger.service';
 import { PageInterface } from '../../../../models/page/page.interface';
 import { IDevice } from '../../../../interfaces/devices/device.interface';
-import { DeviceStatus, DeviceType, ThreeDigitWarmupMasker } from '../../../../utilities/constants';
+import { DeviceStatus, DeviceType } from '../../../../utilities/constants';
 import { getCurrentDatetime } from '../../../../utilities/exam-helper-functions';
 import { isThreeDigitResultsResponse } from '../../../../guards/type.guard';
 import { threeDigitSchema } from '../../../../../schema/response-areas/three-digit.schema';
@@ -19,6 +19,7 @@ import {
   ThreeDigitPresentationResultInterface,
   ThreeDigitResponseAreaInterface,
   ThreeDigitResponseInterface,
+  ThreeDigitWarmupMasker,
 } from './three-digit.interface';
 
 const EXAM_NAME = 'ThreeDigit';

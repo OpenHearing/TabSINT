@@ -1,6 +1,28 @@
 import { CommonResponseAreaInterface } from '../../../../interfaces/page-definition.interface';
 import { IDeviceResponse } from '../../../../interfaces/devices/device-response.interface';
-import { ThreeDigitTargetType, ThreeDigitMaskerType, ThreeDigitWarmupMasker } from '../../../../utilities/constants';
+
+export enum ThreeDigitTargetType {
+  Filtered = 'filtered',
+  TimeCompressed = 'timeCompressed',
+  H3CamFiltered = 'H3CamFiltered',
+  TFS = 'TFS',
+  Swahili = 'Swahili',
+  Mandarin = 'MANDARIN',
+  Portuguese = 'PORTUGUE',
+  French = 'French',
+}
+
+export enum ThreeDigitMaskerType {
+  Schroeder = 'schroeder',
+  Babble = '2babble',
+}
+
+export enum ThreeDigitWarmupMasker {
+  None = 'none',
+  NegativePhase = 'negativePhase',
+  PositivePhase = 'positivePhase',
+  Babble = '2babble',
+}
 
 /**
  * Properties sent to the CHA when queueing a "ThreeDigit" exam. These map directly to the
