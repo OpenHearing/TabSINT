@@ -78,7 +78,7 @@ export class HintComponent implements OnInit, OnDestroy {
     NumberOfPresentations: examPropSchema.NumberOfPresentations.default,
     DisableRepeatFirstUntilCorrect: examPropSchema.DisableRepeatFirstUntilCorrect.default,
   };
-  private presentations: HintPresentationResultInterface[] = [];
+  private readonly presentations: HintPresentationResultInterface[] = [];
   private correctPresentations = 0;
   private currentPresentationId: string | number | undefined;
   private responseStartTime = '';
