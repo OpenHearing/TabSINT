@@ -2155,7 +2155,6 @@
           "instructionText": "Test manual audiometry response area",
           "responseArea": {
             "type": "manualAudiometryResponseArea",
-            "tabsintId": "1",
             "frequencies": [500, 1000, 2000, 4000, 8000],
             "retspls": {
               "500": 11.0,

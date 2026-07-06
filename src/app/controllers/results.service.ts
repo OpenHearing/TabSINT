@@ -75,7 +75,7 @@ export class ResultsService {
    * @models results, protocol, disk
    */
   initializeExamResults() {
-    const currentExam = {
+    const currentExam: ExamResults = {
       testDateTime: new Date().toJSON(),
       elapsedTime: undefined,
       protocol: _.cloneDeep(this.protocol.activeProtocol!),
@@ -89,9 +89,10 @@ export class ResultsService {
         calibrationPyManualReleaseDate: this.protocol.activeProtocol!._calibrationPyManualReleaseDate,
       },
       flags: {},
+      qrString: undefined,
+      devices: [],
     };
-
-    this.resultsModel.updateCurrentExam(currentExam);
+    this.resultsModel.setCurrentExam(currentExam);
     this.results = this.resultsModel.getResults();
   }
 
@@ -101,7 +102,7 @@ export class ResultsService {
    * @models results
    */
   initializePageResults(currentPage: PageInterface) {
-    const res = {
+    const res: CurrentResults = {
       pageId: currentPage.id,
       response: '',
       correct: undefined,
@@ -113,7 +114,7 @@ export class ResultsService {
       page: currentPage,
     };
 
-    this.resultsModel.updateCurrentPage(res);
+    this.resultsModel.setCurrentPage(res);
     this.results = this.resultsModel.getResults();
   }
 

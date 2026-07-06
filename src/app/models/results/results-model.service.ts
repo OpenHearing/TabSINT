@@ -47,8 +47,18 @@ export class ResultsModel {
     this.resultsSubject.next(this.resultsModel);
   }
 
+  setCurrentPage(page: CurrentResults): void {
+    this.resultsModel.currentPage = structuredClone(page);
+    this.resultsSubject.next(this.resultsModel);
+  }
+
   updateCurrentExam(updates: Partial<ExamResults>): void {
     this.resultsModel.currentExam = { ...this.resultsModel.currentExam, ...updates };
+    this.resultsSubject.next(this.resultsModel);
+  }
+
+  setCurrentExam(exam: ExamResults): void {
+    this.resultsModel.currentExam = structuredClone(exam);
     this.resultsSubject.next(this.resultsModel);
   }
 
