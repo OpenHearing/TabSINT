@@ -292,7 +292,7 @@ release:
             \"tag_name\": \"$CI_COMMIT_TAG\",
             \"generate_release_notes\": true
           }" \
-          "https://api.github.com/repos/OpenHearing/TabSINT/releases"
+          "https://api.github.com/repos/OpenHearing/TabSINT/releases")
       UPLOAD_URL=$(echo "$RELEASE_JSON" | jq -r '.upload_url' | sed 's/{?name,label}//')
       curl --fail \
         -X POST \
