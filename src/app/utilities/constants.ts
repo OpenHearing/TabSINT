@@ -168,3 +168,26 @@ export enum ButtonAlignment {
   Start = 'start',
   End = 'end',
 }
+
+export enum ThreeDigitTargetType {
+  Filtered = 'filtered',
+  TimeCompressed = 'timeCompressed',
+  H3CamFiltered = 'H3CamFiltered',
+  TFS = 'TFS',
+  Swahili = 'Swahili',
+  Mandarin = 'MANDARIN',
+  Portuguese = 'PORTUGUE',
+  French = 'French',
+}
+
+export enum ThreeDigitMaskerType {
+  Schroeder = 'schroeder',
+  Babble = '2babble',
+}
+
+export enum ThreeDigitWarmupMasker {
+  None = 'none',
+  NegativePhase = 'negativePhase',
+  PositivePhase = 'positivePhase',
+  Babble = '2babble',
+}

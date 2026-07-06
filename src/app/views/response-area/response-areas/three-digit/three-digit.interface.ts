@@ -1,5 +1,6 @@
 import { CommonResponseAreaInterface } from '../../../../interfaces/page-definition.interface';
 import { IDeviceResponse } from '../../../../interfaces/devices/device-response.interface';
+import { ThreeDigitTargetType, ThreeDigitMaskerType, ThreeDigitWarmupMasker } from '../../../../utilities/constants';
 
 /**
  * Properties sent to the CHA when queueing a "ThreeDigit" exam. These map directly to the
@@ -8,9 +9,9 @@ import { IDeviceResponse } from '../../../../interfaces/devices/device-response.
 export interface ThreeDigitExamPropertiesInterface {
   nPresentations?: number;
   warmupN?: number;
-  targetType?: 'filtered' | 'timeCompressed' | 'H3CamFiltered' | 'TFS' | 'Swahili' | 'MANDARIN' | 'PORTUGUE' | 'French';
-  maskerType?: 'schroeder' | '2babble';
-  warmupMasker?: 'none' | 'negativePhase' | 'positivePhase' | '2babble';
+  targetType?: ThreeDigitTargetType;
+  maskerType?: ThreeDigitMaskerType;
+  warmupMasker?: ThreeDigitWarmupMasker;
   initialSNR?: number;
   fixedLevel?: number;
   fixedMaterial?: 'target' | 'masker';
@@ -51,12 +52,12 @@ export interface ThreeDigitDeviceResultsInterface {
   currentSNR?: number;
   presentationCount?: number;
   presentationId?: number;
-  currentMasker?: 'positivePhase' | 'negativePhase' | '2babble';
+  currentMasker?: ThreeDigitWarmupMasker;
   digitScore?: number;
   presentationScore?: number;
   maskerLevel?: number;
   targetLevel?: number;
-  targetType?: 'filtered' | 'timeCompressed' | 'H3CamFiltered';
+  targetType?: ThreeDigitTargetType;
   warmupDigitScore?: number;
   warmupPresentationScore?: number;
   ear?: 'left' | 'right' | 'both';
@@ -83,7 +84,7 @@ export interface ThreeDigitPresentationResultInterface {
   response: string[];
   currentDigits: string[];
   currentSNR?: number;
-  currentMasker?: 'positivePhase' | 'negativePhase' | '2babble';
+  currentMasker?: ThreeDigitWarmupMasker;
   numberCorrect: number;
   numberIncorrect: number;
   eachCorrect: boolean[];

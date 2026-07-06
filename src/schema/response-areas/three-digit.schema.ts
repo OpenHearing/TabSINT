@@ -1,5 +1,6 @@
 import { JSONSchemaType } from 'ajv';
 import { ThreeDigitResponseAreaInterface } from '../../app/views/response-area/response-areas/three-digit/three-digit.interface';
+import { ThreeDigitTargetType, ThreeDigitMaskerType, ThreeDigitWarmupMasker } from '../../app/utilities/constants';
 
 export const threeDigitSchema: JSONSchemaType<ThreeDigitResponseAreaInterface> = {
   type: 'object',
@@ -86,22 +87,22 @@ export const threeDigitSchema: JSONSchemaType<ThreeDigitResponseAreaInterface> =
         targetType: {
           type: 'string',
           nullable: true,
-          enum: ['filtered', 'timeCompressed', 'H3CamFiltered', 'TFS', 'Swahili', 'MANDARIN', 'PORTUGUE', 'French'],
-          default: 'filtered',
+          enum: Object.values(ThreeDigitTargetType),
+          default: ThreeDigitTargetType.Filtered,
           description: 'Type of target material',
         },
         maskerType: {
           type: 'string',
           nullable: true,
-          enum: ['schroeder', '2babble'],
-          default: 'schroeder',
+          enum: Object.values(ThreeDigitMaskerType),
+          default: ThreeDigitMaskerType.Schroeder,
           description: 'Type of Masker Material',
         },
         warmupMasker: {
           type: 'string',
           nullable: true,
-          enum: ['none', 'negativePhase', 'positivePhase', '2babble'],
-          default: 'positivePhase',
+          enum: Object.values(ThreeDigitWarmupMasker),
+          default: ThreeDigitWarmupMasker.PositivePhase,
           description: 'Type of Masker Material used during the warmup period.',
         },
         initialSNR: {

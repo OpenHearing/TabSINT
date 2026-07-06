@@ -9,7 +9,7 @@ import { DevicesService } from '../../../../services/devices/devices.service';
 import { Logger } from '../../../../services/logger.service';
 import { PageInterface } from '../../../../models/page/page.interface';
 import { IDevice } from '../../../../interfaces/devices/device.interface';
-import { DeviceStatus, DeviceType } from '../../../../utilities/constants';
+import { DeviceStatus, DeviceType, ThreeDigitWarmupMasker } from '../../../../utilities/constants';
 import { getCurrentDatetime } from '../../../../utilities/exam-helper-functions';
 import { isThreeDigitResultsResponse } from '../../../../guards/type.guard';
 import { threeDigitSchema } from '../../../../../schema/response-areas/three-digit.schema';
@@ -89,12 +89,12 @@ export class ThreeDigitComponent implements OnInit, OnDestroy {
     warmupIncorrectStep: examPropSchema.warmupIncorrectStep.default,
     ear: examPropSchema.ear.default,
   };
-  private presentations: ThreeDigitPresentationResultInterface[] = [];
+  private readonly presentations: ThreeDigitPresentationResultInterface[] = [];
   private currentDigits: string[] = [];
   private currentPresentationId: number | undefined;
   private currentPresentation: string | undefined;
   private currentSNR: number | undefined;
-  private currentMasker: 'positivePhase' | 'negativePhase' | '2babble' | undefined;
+  private currentMasker: ThreeDigitWarmupMasker | undefined;
   private currentDeviceCount: number | undefined;
   private responseStartTime = '';
   private readyToProcess = false;
