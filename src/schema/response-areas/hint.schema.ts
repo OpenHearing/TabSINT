@@ -20,22 +20,10 @@ export const hintSchema: JSONSchemaType<HintResponseAreaInterface> = {
       default: false,
       description: 'Go straight to next page once this page is complete',
     },
-    autoBegin: {
-      type: 'boolean',
-      nullable: true,
-      default: false,
-      description: "Go straight into exam, without having to press the 'Begin' button",
-    },
     examInstructions: {
       type: 'string',
       nullable: true,
       description: 'Replaces the top-level instruction text on the CHA exam pages (each page after starting page)',
-    },
-    measureBackground: {
-      type: 'string',
-      nullable: true,
-      enum: ['ThirdOctaveBands'],
-      description: 'Select a method to measure background noise after an exam.',
     },
     examProperties: {
       type: 'object',

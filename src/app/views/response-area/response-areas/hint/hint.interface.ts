@@ -58,9 +58,7 @@ export interface HintResponseAreaInterface extends CommonResponseAreaInterface {
   type: 'hintResponseArea';
   tabsintId?: string;
   autoSubmit?: boolean;
-  autoBegin?: boolean;
   examInstructions?: string;
-  measureBackground?: 'ThirdOctaveBands';
   examProperties?: HintExamPropertiesInterface;
 }
 

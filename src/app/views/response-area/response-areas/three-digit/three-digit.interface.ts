@@ -52,12 +52,10 @@ export interface ThreeDigitResponseAreaInterface extends CommonResponseAreaInter
   tabsintId?: string;
   autoSubmit?: boolean;
   autoSubmitPresentation?: boolean;
-  autoBegin?: boolean;
   keypadDelay?: number;
   feedback?: boolean;
   feedbackDelay?: number;
   examInstructions?: string;
-  measureBackground?: 'ThirdOctaveBands';
   exportToCSV?: boolean;
   examProperties?: ThreeDigitExamPropertiesInterface;
 }

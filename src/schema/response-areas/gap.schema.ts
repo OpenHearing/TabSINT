@@ -15,12 +15,6 @@ export const gapSchema: JSONSchemaType<GapResponseAreaInterface> = {
       default: false,
       description: 'Go straight to next page once this page is complete',
     },
-    autoBegin: {
-      type: 'boolean',
-      nullable: true,
-      default: true,
-      description: "Go straight into exam, without having to press the 'Begin' button",
-    },
     feedback: {
       type: 'boolean',
       nullable: true,
@@ -52,12 +46,6 @@ export const gapSchema: JSONSchemaType<GapResponseAreaInterface> = {
       type: 'string',
       nullable: true,
       description: 'Replaces the top-level instruction text on the CHA exam pages.',
-    },
-    measureBackground: {
-      type: 'string',
-      nullable: true,
-      enum: ['ThirdOctaveBands'],
-      description: 'Select a method to measure background noise after an exam.',
     },
     examProperties: {
       type: 'object',
