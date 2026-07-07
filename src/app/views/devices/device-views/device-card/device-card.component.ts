@@ -14,6 +14,7 @@ import { Logger } from '../../../../services/logger.service';
 export class DeviceCardComponent implements OnInit, OnDestroy {
   @Input() device!: IDevice;
   @Input() connected = false;
+  @Input() enabled = true;
 
   private readonly devicesService = inject(DevicesService);
   private readonly diskModel = inject(DiskModel);
