@@ -24,7 +24,7 @@ import {
 const EXAM_NAME = 'HINT';
 const SUBMISSION_NAME = 'HINT$Submission';
 const POLL_INTERVAL_MS = 500;
-const SUBMIT_LOCKOUT_MS = 7000;
+const SUBMIT_LOCKOUT_MS = 3000;
 const FEEDBACK_DELAY_MS = 200;
 const LIST_NUMBER_MAX = 12;
 const TEMP_SPACER = '$SPACER';
