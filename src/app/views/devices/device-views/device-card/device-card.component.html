@@ -1,5 +1,4 @@
 <div class="device-card">
-
   <div class="device-card-header">
     <div>
       <span class="admin-labels">{{ "Device Name:" | transloco }}</span>
@@ -16,26 +15,40 @@
   <div class="row pad-top">
     <div class="col-6">
       <div [ngSwitch]="device.state">
-        <button *ngSwitchDefault class="btn btn-block btn-primary" (click)="disconnect()" style="display:flex;align-items:center;justify-content:center;">{{ "Cancel" | transloco }}</button>
+        <button
+          *ngSwitchDefault
+          class="btn btn-block btn-primary"
+          (click)="disconnect()"
+          style="display: flex; align-items: center; justify-content: center">
+          {{ "Cancel" | transloco }}
+        </button>
         <button
           *ngSwitchCase="DeviceState.Disconnected"
           class="btn btn-block btn-primary"
-          [disabled]="!connected"
-          [ngClass]="!connected ? 'disabled custom-disabled' : ''"
+          [disabled]="!enabled || !connected"
+          [ngClass]="!enabled || !connected ? 'disabled custom-disabled' : ''"
           (click)="reconnect()"
-          style="display:flex;align-items:center;justify-content:center;">
+          style="display: flex; align-items: center; justify-content: center">
           {{ "Connect" | transloco }}
         </button>
-        <button *ngSwitchCase="DeviceState.Connected" class="btn btn-block btn-primary" (click)="disconnect()" style="display:flex;align-items:center;justify-content:center;">{{ "Disconnect" | transloco }}</button>
+        <button
+          *ngSwitchCase="DeviceState.Connected"
+          class="btn btn-block btn-primary"
+          (click)="disconnect()"
+          style="display: flex; align-items: center; justify-content: center">
+          {{ "Disconnect" | transloco }}
+        </button>
       </div>
     </div>
     <div class="col-6">
-      <button class="btn btn-block btn-primary" (click)="remove()" style="display:flex;align-items:center;justify-content: center;">{{ "Remove" | transloco }}</button>
+      <button class="btn btn-block btn-primary" (click)="remove()" style="display: flex; align-items: center; justify-content: center">
+        {{ "Remove" | transloco }}
+      </button>
     </div>
   </div>
 
   <button
-    *ngIf="device.state === DeviceState.Connected && device.type != DeviceType.Svantek"
+    *ngIf="enabled && device.state === DeviceState.Connected && device.type !== DeviceType.Svantek"
     class="device-card-settings-toggle"
     (click)="toggleSettings()"
     [attr.aria-expanded]="settingsExpanded">
@@ -43,8 +56,7 @@
     <span>{{ "Settings" | transloco }}</span>
   </button>
 
-  <div [ngbCollapse]="!settingsExpanded">
+  <div [ngbCollapse]="!enabled || !settingsExpanded || device.state !== DeviceState.Connected || device.type === DeviceType.Svantek">
     <ng-content></ng-content>
   </div>
-
 </div>
