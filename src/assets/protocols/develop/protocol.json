@@ -105,6 +105,9 @@
                 "id": "GAP"
               },
               {
+                "id": "HINT"
+              },
+              {
                 "id": "CHA Wav Test"
               },
               {
@@ -273,6 +276,12 @@
               "conditional": "result.response=='GAP'",
               "target": {
                 "reference": "gapResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='HINT'",
+              "target": {
+                "reference": "hintResponseArea"
               }
             },
             {
@@ -1350,6 +1359,29 @@
               "UseSoftwareButton": 1,
               "NReversals": 8,
               "NReversalsCalc": 4
+            }
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "hintResponseArea",
+      "pages": [
+        {
+          "id": "hintResponseArea",
+          "title": "HINT",
+          "questionMainText": "Hearing In Noise Test",
+          "responseArea": {
+            "type": "hintResponseArea",
+            "examInstructions": "Select all the words that the subject heard correctly.",
+            "examProperties": {
+              "Direction": "front",
+              "ListNumber": 2,
+              "NumberOfPresentations": 4
             }
           }
         },

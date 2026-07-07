@@ -1,0 +1,116 @@
+import { JSONSchemaType } from 'ajv';
+import {
+  HintResponseAreaInterface,
+  HintLanguage,
+  HintDirection,
+  HintMaskerType,
+} from '../../app/views/response-area/response-areas/hint/hint.interface';
+
+export const hintSchema: JSONSchemaType<HintResponseAreaInterface> = {
+  type: 'object',
+  description: 'CHA - HINT exam',
+  properties: {
+    type: { type: 'string', enum: ['hintResponseArea'] },
+    enableSkip: { type: 'boolean', nullable: true, default: false },
+    responseRequired: { type: 'boolean', nullable: true, default: false },
+    tabsintId: { type: 'string', nullable: true },
+    autoSubmit: {
+      type: 'boolean',
+      nullable: true,
+      default: false,
+      description: 'Go straight to next page once this page is complete',
+    },
+    examInstructions: {
+      type: 'string',
+      nullable: true,
+      description: 'Replaces the top-level instruction text on the CHA exam pages (each page after starting page)',
+    },
+    examProperties: {
+      type: 'object',
+      nullable: true,
+      properties: {
+        Language: {
+          type: 'string',
+          nullable: true,
+          enum: Object.values(HintLanguage),
+          default: HintLanguage.English,
+          description: 'Target material language',
+        },
+        IsPractice: {
+          type: 'boolean',
+          nullable: true,
+          default: false,
+          description: 'Exam or practice',
+        },
+        Direction: {
+          type: 'string',
+          nullable: true,
+          enum: Object.values(HintDirection),
+          default: HintDirection.Front,
+          description: 'Noise direction',
+        },
+        NoiseLevel: {
+          type: 'number',
+          nullable: true,
+          default: 65,
+          minimum: 0,
+          maximum: 85,
+          description: 'Absolute level at which noise is played, in dBA SPL',
+        },
+        MaskerType: {
+          type: 'string',
+          nullable: true,
+          enum: Object.values(HintMaskerType),
+          default: HintMaskerType.Noise,
+          description: 'Type of sound used as the masker',
+        },
+        InitialStepSize: {
+          type: 'number',
+          nullable: true,
+          default: 4,
+          minimum: 0,
+          maximum: 20,
+          description: 'Change in SNR for first 4 presentations, in dB',
+        },
+        StepSize: {
+          type: 'number',
+          nullable: true,
+          default: 2,
+          minimum: 0,
+          maximum: 20,
+          description: 'Change in SNR after each response, in dB',
+        },
+        InitialSNR: {
+          type: 'number',
+          nullable: true,
+          minimum: -20,
+          maximum: 20,
+          description: 'SNR for the first presentation, in dB. Defaults to the device-selected value when omitted.',
+        },
+        ListNumber: {
+          type: 'number',
+          nullable: true,
+          minimum: 1,
+          maximum: 12,
+          description: 'One-based index of the list to use. When omitted, a list is chosen at random.',
+        },
+        NumberOfPresentations: {
+          type: 'number',
+          nullable: true,
+          default: 20,
+          minimum: 1,
+          maximum: 150,
+          description: 'Number of presentations',
+        },
+        DisableRepeatFirstUntilCorrect: {
+          type: 'boolean',
+          nullable: true,
+          default: false,
+          description: 'When true, do not repeat the first presentation until the subject gets it correct.',
+        },
+      },
+      required: [],
+    },
+  },
+  required: ['type'],
+};

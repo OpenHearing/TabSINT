@@ -116,6 +116,7 @@ import { DuodoseDownloadComponent } from './views/response-area/response-areas/d
 import { ThreeDigitComponent } from './views/response-area/response-areas/three-digit/three-digit.component';
 import { GapComponent } from './views/response-area/response-areas/gap/gap.component';
 import { GapResultsComponent } from './views/response-area/response-areas/gap/gap-results/gap-results.component';
+import { HintComponent } from './views/response-area/response-areas/hint/hint.component';
 
 @NgModule({
   declarations: [
@@ -188,6 +189,7 @@ import { GapResultsComponent } from './views/response-area/response-areas/gap/ga
     ThreeDigitComponent,
     GapComponent,
     GapResultsComponent,
+    HintComponent,
     GitlabFormComponent,
   ],
   imports: [

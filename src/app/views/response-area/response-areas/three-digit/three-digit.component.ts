@@ -11,7 +11,7 @@ import { PageInterface } from '../../../../models/page/page.interface';
 import { IDevice } from '../../../../interfaces/devices/device.interface';
 import { DeviceStatus, DeviceType } from '../../../../utilities/constants';
 import { getCurrentDatetime } from '../../../../utilities/exam-helper-functions';
-import { isThreeDigitResultsResponse } from '../../../../guards/type.guard';
+import { isWahtsResultsResponse } from '../../../../guards/type.guard';
 import { threeDigitSchema } from '../../../../../schema/response-areas/three-digit.schema';
 import {
   ThreeDigitDeviceResultsInterface,
@@ -347,8 +347,8 @@ export class ThreeDigitComponent implements OnInit, OnDestroy {
       return undefined;
     }
     const resp = await this.devicesService.requestResults(this.device);
-    if (isThreeDigitResultsResponse(resp)) {
-      return resp.msg[1];
+    if (isWahtsResultsResponse(resp)) {
+      return resp.msg[1] as ThreeDigitDeviceResultsInterface;
     }
     this.logger.debug('Three digit exam: unexpected requestResults response: ' + JSON.stringify(resp?.msg));
     return undefined;

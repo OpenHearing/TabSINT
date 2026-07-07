@@ -1,5 +1,4 @@
 import { CommonResponseAreaInterface } from '../../../../interfaces/page-definition.interface';
-import { IDeviceResponse } from '../../../../interfaces/devices/device-response.interface';
 
 export enum ThreeDigitTargetType {
   Filtered = 'filtered',
@@ -52,12 +51,10 @@ export interface ThreeDigitResponseAreaInterface extends CommonResponseAreaInter
   tabsintId?: string;
   autoSubmit?: boolean;
   autoSubmitPresentation?: boolean;
-  autoBegin?: boolean;
   keypadDelay?: number;
   feedback?: boolean;
   feedbackDelay?: number;
   examInstructions?: string;
-  measureBackground?: 'ThirdOctaveBands';
   exportToCSV?: boolean;
   examProperties?: ThreeDigitExamPropertiesInterface;
 }
@@ -85,13 +82,6 @@ export interface ThreeDigitDeviceResultsInterface {
   ear?: 'left' | 'right' | 'both';
   warmupSRT?: number;
   SRT?: number;
-}
-
-/**
- * A requestResults device response whose payload is a ThreeDigit results object.
- */
-export interface ThreeDigitResultsResponse extends IDeviceResponse {
-  msg: [unknown, ThreeDigitDeviceResultsInterface];
 }
 
 /**

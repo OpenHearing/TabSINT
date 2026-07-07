@@ -1,0 +1,26 @@
+<div class="hint-container">
+  <p *ngIf="examInstructions" class="hint-instructions">{{ examInstructions | transloco }}</p>
+
+  <p class="hint-progress">{{ "Presentation" | transloco }} {{ presentationCount + 1 }} / {{ numberOfPresentations }}</p>
+
+  <div class="hint-words">
+    <button
+      *ngFor="let word of listOfWords; let i = index"
+      type="button"
+      class="btn btn-default hint-word-btn"
+      [class.active]="hintChosen(i)"
+      [disabled]="wordsDisabled"
+      (click)="toggleWord(i)">
+      {{ word }}
+    </button>
+  </div>
+
+  <div class="hint-actions">
+    <button type="button" class="btn btn-default btn-block" [disabled]="wordsDisabled" (click)="selectAllWords()">
+      {{ "Select All" | transloco }}
+    </button>
+    <button type="button" class="btn btn-default btn-block" [disabled]="wordsDisabled" (click)="clearSelection()">
+      {{ "Clear All" | transloco }}
+    </button>
+  </div>
+</div>

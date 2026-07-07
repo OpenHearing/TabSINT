@@ -35,13 +35,11 @@ export interface GapResponseAreaInterface extends CommonResponseAreaInterface {
   type: 'gapResponseArea';
   tabsintId?: string;
   autoSubmit?: boolean;
-  autoBegin?: boolean;
   feedback?: boolean;
   feedbackDelay?: number;
   training?: boolean;
   trainingAllowableGapLengths?: number[];
   examInstructions?: string;
-  measureBackground?: 'ThirdOctaveBands';
   examProperties?: GapExamPropertiesInterface;
 }
 
