@@ -345,7 +345,7 @@ export class ChaMediaHandler {
       [BluetoothType.BLUETOOTH_LE]: 800,
       [BluetoothType.USB]: 75000,
     };
-    const connectionType = this.diskModel.disk.preferences.wahtsConnectionType;
+    const connectionType = device.connectionType;
     const speed = FILE_TRANSFER_SPEEDS[connectionType];
     if (bytesToTransfer !== 0) {
       const estimateM = Math.round(bytesToTransfer / speed / 60);
