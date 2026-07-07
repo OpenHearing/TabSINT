@@ -47,6 +47,15 @@ export interface GetDirectoryResponse extends IDeviceResponse {
 }
 
 /**
+ * A `requestResults` response from a WAHTS device. The payload at `msg[1]` is an exam-specific
+ * results object; the response envelope alone cannot tell which exam produced it, so callers cast
+ * `msg[1]` to the concrete exam results interface they expect.
+ */
+export interface WahtsResultsResponse extends IDeviceResponse {
+  msg: [unknown, object];
+}
+
+/**
  * Object held in a request ID response.
  */
 export interface RequestIdObject {

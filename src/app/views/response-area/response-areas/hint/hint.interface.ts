@@ -1,5 +1,4 @@
 import { CommonResponseAreaInterface } from '../../../../interfaces/page-definition.interface';
-import { IDeviceResponse } from '../../../../interfaces/devices/device-response.interface';
 
 /**
  * Language of the HINT sentence material.
@@ -76,13 +75,6 @@ export interface HintDeviceResultsInterface {
   sSRT?: number;
   sSRTstd?: number;
   presentationId?: string | number;
-}
-
-/**
- * A requestResults device response whose payload is a HINT results object.
- */
-export interface HintResultsResponse extends IDeviceResponse {
-  msg: [unknown, HintDeviceResultsInterface];
 }
 
 /**

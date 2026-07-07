@@ -1,5 +1,4 @@
 import { CommonResponseAreaInterface } from '../../../../interfaces/page-definition.interface';
-import { IDeviceResponse } from '../../../../interfaces/devices/device-response.interface';
 
 export enum ThreeDigitTargetType {
   Filtered = 'filtered',
@@ -83,13 +82,6 @@ export interface ThreeDigitDeviceResultsInterface {
   ear?: 'left' | 'right' | 'both';
   warmupSRT?: number;
   SRT?: number;
-}
-
-/**
- * A requestResults device response whose payload is a ThreeDigit results object.
- */
-export interface ThreeDigitResultsResponse extends IDeviceResponse {
-  msg: [unknown, ThreeDigitDeviceResultsInterface];
 }
 
 /**

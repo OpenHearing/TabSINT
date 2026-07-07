@@ -11,7 +11,7 @@ import { PageInterface } from '../../../../models/page/page.interface';
 import { IDevice } from '../../../../interfaces/devices/device.interface';
 import { DeviceType } from '../../../../utilities/constants';
 import { getCurrentDatetime } from '../../../../utilities/exam-helper-functions';
-import { isHintResultsResponse } from '../../../../guards/type.guard';
+import { isWahtsResultsResponse } from '../../../../guards/type.guard';
 import { hintSchema } from '../../../../../schema/response-areas/hint.schema';
 import {
   HintDeviceResultsInterface,
@@ -121,7 +121,6 @@ export class HintComponent implements OnInit, OnDestroy {
     // Overlay the protocol's values on top of the schema defaults seeded at construction.
     this.examProperties = { ...this.examProperties, ...(responseArea.examProperties ?? {}) };
     this.numberOfPresentations = this.examProperties.NumberOfPresentations ?? this.numberOfPresentations;
-    this.examProperties.NumberOfPresentations = this.numberOfPresentations;
 
     await this.setupDevice(responseArea);
     if (!this.device) {
@@ -376,8 +375,8 @@ export class HintComponent implements OnInit, OnDestroy {
       return undefined;
     }
     const resp = await this.devicesService.requestResults(this.device);
-    if (isHintResultsResponse(resp)) {
-      return resp.msg[1];
+    if (isWahtsResultsResponse(resp)) {
+      return resp.msg[1] as HintDeviceResultsInterface;
     }
     this.logger.debug('HINT exam: unexpected requestResults response: ' + JSON.stringify(resp?.msg));
     return undefined;
