@@ -21,6 +21,7 @@ npx cap sync
 * [`getFileContentURI(...)`](#getfilecontenturi)
 * [`deletePath(...)`](#deletepath)
 * [`listFilesInDirectory(...)`](#listfilesindirectory)
+* [`unzip(...)`](#unzip)
 
 </docgen-index>
 
@@ -139,6 +140,21 @@ listFilesInDirectory(options: { rootUri?: string | null; folderPath?: string | n
 | **`options`** | <code>{ rootUri?: string \| null; folderPath?: string \| null; folderUri?: string \| null; }</code> |
 
 **Returns:** <code>Promise&lt;{ files: { name: string; uri: string; mimeType: string; size: number; content: string; }[]; }&gt;</code>
+
+--------------------
+
+
+### unzip(...)
+
+```typescript
+unzip(options: { sourcePath: string; destinationPath: string; ignoreRoot: boolean; }) => Promise<{ success: boolean; message: string; }>
+```
+
+| Param         | Type                                                                               |
+| ------------- | ---------------------------------------------------------------------------------- |
+| **`options`** | <code>{ sourcePath: string; destinationPath: string; ignoreRoot: boolean; }</code> |
+
+**Returns:** <code>Promise&lt;{ success: boolean; message: string; }&gt;</code>
 
 --------------------
 

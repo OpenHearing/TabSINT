@@ -184,6 +184,24 @@ export class FileService {
     return result;
   }
 
+  /**
+   * Unzip a file from a source path to a destination folder using absolute paths, file://, or content://.
+   * @param sourcePath - The source file path.
+   * @param destinationPath - The destination folder path.
+   * @param ignoreRoot - (Optional) Whether the root of the zip file should be ignored.
+   * @returns A promise containing the status of the unzip operation.
+   */
+  async unzip(sourcePath: string, destinationPath: string, ignoreRoot: boolean = false) {
+    let result = null;
+    try {
+      result = await TabsintFs.unzip({ sourcePath: sourcePath, destinationPath: destinationPath, ignoreRoot: ignoreRoot });
+      this.logger.debug('Successfully unzipped content from ' + sourcePath);
+    } catch (error) {
+      this.logger.error('Error unzipping file', error);
+    }
+    return result;
+  }
+
   async writeBinaryFile(path: string, data: unknown, rootDir: string | null = this.rootUri) {
     let result = null;
     try {

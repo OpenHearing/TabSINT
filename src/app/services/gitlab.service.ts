@@ -1,9 +1,10 @@
 import { Injectable, inject } from '@angular/core';
-import { CapacitorHttp, HttpOptions, HttpResponseType, HttpResponse } from '@capacitor/core';
+import { CapacitorHttp, HttpOptions, HttpResponse } from '@capacitor/core';
+import { FileTransfer } from '@capacitor/file-transfer';
 
 import { GitlabConfigInterface } from '../models/disk/disk.interface';
 import { FileService } from './file.service';
-import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
+import { Directory, Filesystem } from '@capacitor/filesystem';
 import { Logger } from './logger.service';
 
 @Injectable({
@@ -120,58 +121,32 @@ export class GitlabService {
     headers: { Authorization: string },
     localDir: string
   ): Promise<string | undefined> {
-    let page = 1;
-    const repoFiles = [];
-
-    // Loop over each returned pages to retrieve all files
-    while (page) {
-      const response = await this._fetchGitlabResponse(
-        { url: `${host}/api/v4/projects/${projectId}/repository/tree?ref=${ref}&recursive=true&per_page=100&page=${page}`, headers: headers },
-        'Failed to fetch repository files: '
-      );
-
-      const items = await response.data;
-      repoFiles.push(...items);
-
-      const nextPage = response.headers['x-next-page'];
-      page = nextPage ? Number(nextPage) : 0;
-    }
-
-    if (!repoFiles || repoFiles.length === 0) {
-      throw new Error('No files found in the repository.');
-    }
-
     await this.fileService.deleteDirectory(localDir);
     const fileServiceResult = await this.fileService.createDirectory(localDir);
 
-    for (const file of repoFiles) {
-      // Skip any directories, only loop over files, directories will be created when the file is saved
-      if (file.type !== 'blob') {
-        continue;
-      }
-
-      const filePath = encodeURIComponent(file.path);
-      const fileUrl = `${host}/api/v4/projects/${projectId}/repository/files/${filePath}/raw?ref=${ref}`;
-
-      const options = {
-        url: fileUrl,
-        responseType: (file.name.includes('.json') ? 'json' : 'blob') as HttpResponseType,
-        headers: headers,
-      };
-      const data = (await this._fetchGitlabResponse(options, `Error loading repo file ${filePath}`)).data;
-
-      try {
-        if (file.name.includes('.json')) {
-          await this.fileService.writeFile(`${localDir}/${file.path}`, JSON.stringify(data));
-        } else {
-          await this.fileService.writeBinaryFile(`${localDir}/${file.path}`, data);
-        }
-      } catch {
-        throw new Error(`Error writing file: ${file.name}`);
-      }
+    if (fileServiceResult === null) {
+      throw new Error(`Unable to create the external directory`);
     }
 
-    return fileServiceResult?.uri;
+    // Internal download for the zip file
+    const zipResult = await Filesystem.getUri({ path: 'archive.zip', directory: Directory.Data });
+    const downloadResult = await FileTransfer.downloadFile({
+      url: `${host}/api/v4/projects/${projectId}/repository/archive.zip?sha=${ref}`,
+      headers: headers,
+      path: zipResult.uri,
+    });
+
+    try {
+      const response = await this.fileService.unzip(downloadResult.path as string, fileServiceResult.uri, true);
+      if (response === null) {
+        throw new Error('Error unzipping the repository.');
+      }
+    } finally {
+      // Cleanup the archive after expanding in desired location
+      await Filesystem.deleteFile({ path: 'archive.zip', directory: Directory.Data });
+    }
+
+    return fileServiceResult.uri;
   }
 
   /**
@@ -191,74 +166,31 @@ export class GitlabService {
     headers: { Authorization: string },
     localDir: string
   ): Promise<string | undefined> {
-    let page = 1;
-    const repoFiles = [];
-
-    // Loop over each returned pages to retrieve all files
-    while (page) {
-      const response = await this._fetchGitlabResponse(
-        { url: `${host}/api/v4/projects/${projectId}/repository/tree?ref=${ref}&recursive=true&per_page=100&page=${page}`, headers: headers },
-        'Failed to fetch repository files: '
-      );
-
-      const items = await response.data;
-      repoFiles.push(...items);
-
-      const nextPage = response.headers['x-next-page'];
-      page = nextPage ? Number(nextPage) : 0;
-    }
-
-    if (!repoFiles || repoFiles.length === 0) {
-      throw new Error('No files found in the repository.');
-    }
-
     if (await Filesystem.readdir({ path: localDir, directory: Directory.Data }).catch(() => null)) {
       await Filesystem.rmdir({ path: localDir, directory: Directory.Data, recursive: true });
     }
     await Filesystem.mkdir({ path: localDir, directory: Directory.Data, recursive: true });
     const fileServiceResult = await Filesystem.getUri({ path: localDir, directory: Directory.Data });
 
-    for (const file of repoFiles) {
-      // Skip any directories, only loop over files, directories will be created when the file is saved
-      if (file.type !== 'blob') {
-        continue;
+    // Internal download for the zip file
+    const zipResult = await Filesystem.getUri({ path: 'archive.zip', directory: Directory.Data });
+    const downloadResult = await FileTransfer.downloadFile({
+      url: `${host}/api/v4/projects/${projectId}/repository/archive.zip?sha=${ref}`,
+      headers: headers,
+      path: zipResult.uri,
+    });
+
+    try {
+      const response = await this.fileService.unzip(downloadResult.path as string, fileServiceResult.uri, true);
+      if (response === null) {
+        throw new Error('Error unzipping the repository.');
       }
-
-      const filePath = encodeURIComponent(file.path);
-      const fileUrl = `${host}/api/v4/projects/${projectId}/repository/files/${filePath}/raw?ref=${ref}`;
-
-      const options = {
-        url: fileUrl,
-        responseType: (file.name.includes('.json') ? 'json' : 'blob') as HttpResponseType,
-        headers: headers,
-      };
-      const data = (await this._fetchGitlabResponse(options, `Error loading repo file ${filePath}`)).data;
-
-      try {
-        if (file.name.includes('.json')) {
-          await Filesystem.writeFile({
-            path: `${localDir}/${file.path}`,
-            directory: Directory.Data,
-            data: JSON.stringify(data),
-            encoding: 'utf8' as Encoding,
-            recursive: true,
-          });
-        } else {
-          const blob = new Blob([data as BlobPart]);
-          const base64 = await this.fileService.blobToBase64(blob);
-          await Filesystem.writeFile({
-            path: `${localDir}/${file.path}`,
-            directory: Directory.Data,
-            data: base64,
-            recursive: true,
-          });
-        }
-      } catch (e) {
-        throw new Error(`Error writing file: ${JSON.stringify(e)} ${file.name}`);
-      }
+    } finally {
+      // Cleanup the archive after expanding in desired location
+      await Filesystem.deleteFile({ path: 'archive.zip', directory: Directory.Data });
     }
 
-    return fileServiceResult?.uri;
+    return fileServiceResult.uri;
   }
 
   /**

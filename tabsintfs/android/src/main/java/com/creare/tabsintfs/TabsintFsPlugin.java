@@ -3,81 +3,90 @@ package com.creare.tabsintfs;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.net.Uri;
+import android.os.ParcelFileDescriptor;
+import android.provider.DocumentsContract;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
+import androidx.activity.result.ActivityResult;
 import androidx.annotation.Nullable;
-import com.getcapacitor.JSObject;
+import androidx.documentfile.provider.DocumentFile;
 import com.getcapacitor.JSArray;
+import com.getcapacitor.JSObject;
+import com.getcapacitor.NativePlugin;
+import com.getcapacitor.PermissionState;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
+import com.getcapacitor.PluginMethod;
+import com.getcapacitor.annotation.ActivityCallback;
 import com.getcapacitor.annotation.CapacitorPlugin;
-import com.getcapacitor.NativePlugin;
 import com.getcapacitor.annotation.Permission;
 import com.getcapacitor.annotation.PermissionCallback;
-import com.getcapacitor.PluginMethod;
-import com.getcapacitor.PermissionState;
-import com.getcapacitor.annotation.ActivityCallback;
-import androidx.activity.result.ActivityResult;
-import android.net.Uri;
-import androidx.documentfile.provider.DocumentFile;
-import android.webkit.MimeTypeMap;
+import java.io.File;
 import java.io.FileInputStream;
-import android.os.ParcelFileDescriptor;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import android.provider.DocumentsContract;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Base64;
-
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 @CapacitorPlugin(
   name = "TabsintFs",
   permissions = {
     @Permission(strings = { android.Manifest.permission.READ_EXTERNAL_STORAGE }, alias = "readStorage"),
-    @Permission(strings = { android.Manifest.permission.WRITE_EXTERNAL_STORAGE }, alias = "writeStorage")
+    @Permission(strings = { android.Manifest.permission.WRITE_EXTERNAL_STORAGE }, alias = "writeStorage"),
   }
 )
 public class TabsintFsPlugin extends Plugin {
+
   public static final int REQUEST_CODE = 1234;
   private static final String TAG = "TabsintFsPlugin";
 
   @ActivityCallback
   private void onFolderPicked(PluginCall call, ActivityResult result) {
-      Log.d(TAG, "Intent result being handle");
-      if (result.getResultCode() == Activity.RESULT_OK) {
-          Intent data = result.getData();
-          if (data != null) {
-            Uri uri = data.getData();
-            final int takeFlags = data.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-            getContext().getContentResolver().takePersistableUriPermission(uri, takeFlags);
-            DocumentFile pickedDir = DocumentFile.fromTreeUri(getContext(), uri);
-            if (pickedDir != null) {
-                String folderName = pickedDir.getName();
-                JSObject ret = new JSObject();
-                ret.put("uri", uri.toString());
-                ret.put("name", folderName);
-                call.resolve(ret);
-            } else {
-                call.reject("Failed to get the selected folder");
-            }
-          } else {
-              call.reject("Folder not chosen");
-          }
+    Log.d(TAG, "Intent result being handle");
+    if (result.getResultCode() == Activity.RESULT_OK) {
+      Intent data = result.getData();
+      if (data != null) {
+        Uri uri = data.getData();
+        final int takeFlags = data.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        getContext().getContentResolver().takePersistableUriPermission(uri, takeFlags);
+        DocumentFile pickedDir = DocumentFile.fromTreeUri(getContext(), uri);
+        if (pickedDir != null) {
+          String folderName = pickedDir.getName();
+          JSObject ret = new JSObject();
+          ret.put("uri", uri.toString());
+          ret.put("name", folderName);
+          call.resolve(ret);
+        } else {
+          call.reject("Failed to get the selected folder");
+        }
       } else {
-          call.reject("Folder chooser canceled");
+        call.reject("Folder not chosen");
       }
+    } else {
+      call.reject("Folder chooser canceled");
+    }
   }
 
   @PermissionCallback
   private void storagePermissionCallback(PluginCall call) {
     Log.d(TAG, "storagePermissionCallback called");
     if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q) {
-        if (getPermissionState("readStorage") == PermissionState.GRANTED) {
-            openFileChooser();
-        } else {
-            call.reject("Permission is required to access the file system");
-        }
-    } else {
+      if (getPermissionState("readStorage") == PermissionState.GRANTED) {
         openFileChooser();
+      } else {
+        call.reject("Permission is required to access the file system");
+      }
+    } else {
+      openFileChooser();
     }
   }
 
@@ -93,103 +102,103 @@ public class TabsintFsPlugin extends Plugin {
     Log.d(TAG, "Android SDK Version: " + android.os.Build.VERSION.SDK_INT);
     saveCall(call);
     if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q) {
-        // For Android 9 and below
-        if (getPermissionState("readStorage") != PermissionState.GRANTED) {
-            Log.d(TAG, "Requesting read storage permission");
-            requestPermissionForAlias("readStorage", call, "storagePermissionCallback");
-            requestPermissionForAlias("writeStorage", call, "writeStoragePermissionCallback");
-        } else {
-            openFileChooser();
-        }
-    } else {
-        // For Android 10 and above
+      // For Android 9 and below
+      if (getPermissionState("readStorage") != PermissionState.GRANTED) {
+        Log.d(TAG, "Requesting read storage permission");
+        requestPermissionForAlias("readStorage", call, "storagePermissionCallback");
+        requestPermissionForAlias("writeStorage", call, "writeStoragePermissionCallback");
+      } else {
         openFileChooser();
+      }
+    } else {
+      // For Android 10 and above
+      openFileChooser();
     }
   }
 
   @PluginMethod
   public void readFile(PluginCall call) {
-      String fileUri = call.getString("fileUri");
-      String rootUri = call.getString("rootUri");
-      String filePath = call.getString("filePath");
-      boolean asBase64 = call.getBoolean("asBase64", false);
-  
-      DocumentFile file = null;
-  
-      if (fileUri != null) {
-        Log.d(TAG,"Reading via content uri");
-          // Handle the case where fileUri is provided
-          Uri uri = Uri.parse(fileUri);
-          file = DocumentFile.fromTreeUri(getContext(), uri);
-      } else if (rootUri != null && filePath != null) {
-        Log.d(TAG,"Reading via file path");
-          // Handle the case where rootUri and filePath are provided
-          filePath = filePath.replaceAll("^/+|/+$", "");
-          Uri uri = Uri.parse(rootUri);
-          DocumentFile rootDir = DocumentFile.fromTreeUri(getContext(), uri);
-          if (rootDir == null) {
-              call.reject("Invalid root URI");
-              return;
-          }
-          file = getFileFromPath(rootDir, filePath);
-      } else {
-          call.reject("Must provide either fileUri or both rootUri and filePath");
-          return;
+    String fileUri = call.getString("fileUri");
+    String rootUri = call.getString("rootUri");
+    String filePath = call.getString("filePath");
+    boolean asBase64 = call.getBoolean("asBase64", false);
+
+    DocumentFile file = null;
+
+    if (fileUri != null) {
+      Log.d(TAG, "Reading via content uri");
+      // Handle the case where fileUri is provided
+      Uri uri = Uri.parse(fileUri);
+      file = DocumentFile.fromTreeUri(getContext(), uri);
+    } else if (rootUri != null && filePath != null) {
+      Log.d(TAG, "Reading via file path");
+      // Handle the case where rootUri and filePath are provided
+      filePath = filePath.replaceAll("^/+|/+$", "");
+      Uri uri = Uri.parse(rootUri);
+
+      DocumentFile rootDir = DocumentFile.fromTreeUri(getContext(), uri);
+      if (rootDir == null) {
+        call.reject("Invalid root URI");
+        return;
       }
-  
-      if (file == null || !file.isFile()) {
-          call.reject("File not found or is not a regular file");
-          return;
-      }
-  
-      String content = readFileContent(file, asBase64);
-  
-      if (content == null) {
-          call.reject("Failed to read content from the file");
-          return;
-      }
-  
-      JSObject result = new JSObject();
-      result.put("contentUri", file.getUri().toString());
-      result.put("mimeType", file.getType());
-      result.put("name", file.getName());
-      result.put("size", file.length());
-      result.put("content", content);
-      call.resolve(result);
+      file = getFileFromPath(rootDir, filePath);
+    } else {
+      call.reject("Must provide either fileUri or both rootUri and filePath");
+      return;
+    }
+
+    if (file == null || !file.isFile()) {
+      call.reject("File not found or is not a regular file");
+      return;
+    }
+
+    String content = readFileContent(file, asBase64);
+
+    if (content == null) {
+      call.reject("Failed to read content from the file");
+      return;
+    }
+
+    JSObject result = new JSObject();
+    result.put("contentUri", file.getUri().toString());
+    result.put("mimeType", file.getType());
+    result.put("name", file.getName());
+    result.put("size", file.length());
+    result.put("content", content);
+    call.resolve(result);
   }
 
   @PluginMethod
   public void getFileContentURI(PluginCall call) {
-      String rootUri = call.getString("rootUri");
-      String filePath = call.getString("filePath");
-  
-      DocumentFile file = null;
-  
-      if (rootUri != null && filePath != null) {
-        Log.d(TAG,"Reading via file path");
-        filePath = filePath.replaceAll("^/+|/+$", "");
-        Uri uri = Uri.parse(rootUri);
-        DocumentFile rootDir = DocumentFile.fromTreeUri(getContext(), uri);
-        if (rootDir == null) {
-            call.reject("Invalid root URI");
-            return;
-        }
-        file = getFileFromPath(rootDir, filePath);
-      } else {
-          call.reject("Must provide rootUri and filePath");
-          return;
-      }
-  
-      if (file == null || !file.isFile()) {
-          call.reject("File not found or is not a regular file");
-          return;
-      }
+    String rootUri = call.getString("rootUri");
+    String filePath = call.getString("filePath");
 
-      JSObject result = new JSObject();
-      result.put("contentUri", file.getUri().toString());
-      call.resolve(result);
+    DocumentFile file = null;
+
+    if (rootUri != null && filePath != null) {
+      Log.d(TAG, "Reading via file path");
+      filePath = filePath.replaceAll("^/+|/+$", "");
+      Uri uri = Uri.parse(rootUri);
+      DocumentFile rootDir = DocumentFile.fromTreeUri(getContext(), uri);
+      if (rootDir == null) {
+        call.reject("Invalid root URI");
+        return;
+      }
+      file = getFileFromPath(rootDir, filePath);
+    } else {
+      call.reject("Must provide rootUri and filePath");
+      return;
+    }
+
+    if (file == null || !file.isFile()) {
+      call.reject("File not found or is not a regular file");
+      return;
+    }
+
+    JSObject result = new JSObject();
+    result.put("contentUri", file.getUri().toString());
+    call.resolve(result);
   }
-  
 
   @PermissionCallback
   private void writeStoragePermissionCallback(PluginCall call) {
@@ -202,15 +211,15 @@ public class TabsintFsPlugin extends Plugin {
   }
 
   @PluginMethod
-    public void createPath(PluginCall call) {
+  public void createPath(PluginCall call) {
     Log.d(TAG, "createPath called");
-    
+
     // Check for write permission
     if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q) {
-        if (getPermissionState("writeStorage") != PermissionState.GRANTED) {
-            requestPermissionForAlias("writeStorage", call, "writeStoragePermissionCallback");
-            return;
-        }
+      if (getPermissionState("writeStorage") != PermissionState.GRANTED) {
+        requestPermissionForAlias("writeStorage", call, "writeStoragePermissionCallback");
+        return;
+      }
     }
 
     // Get parameters from the call
@@ -220,8 +229,8 @@ public class TabsintFsPlugin extends Plugin {
     boolean asBase64 = call.getBoolean("asBase64", false);
 
     if (rootUri == null || path == null) {
-        call.reject("Must provide rootUri and path");
-        return;
+      call.reject("Must provide rootUri and path");
+      return;
     }
 
     // Remove leading and trailing slashes if present
@@ -231,91 +240,93 @@ public class TabsintFsPlugin extends Plugin {
     DocumentFile rootDir = DocumentFile.fromTreeUri(getContext(), uri);
 
     if (rootDir == null || !rootDir.canWrite()) {
-        call.reject("Cannot write to the specified root directory");
-        return;
+      call.reject("Cannot write to the specified root directory");
+      return;
     }
+
     DocumentFile currentDir = createPathHelper(path, rootDir, content, asBase64);
-    if(currentDir==null){
-        call.reject("Failed to create or access file/directory");
-        return;
+    if (currentDir == null) {
+      call.reject("Failed to create or access file/directory");
+      return;
     }
+
     JSObject ret = new JSObject();
     ret.put("uri", currentDir.getUri().toString());
     call.resolve(ret);
-}
+  }
 
-private DocumentFile createPathHelper(String path, DocumentFile rootDir, String content, boolean asBase64) {
-    if(path==null || path.isEmpty() || rootDir==null){
-        return null;
+  private DocumentFile createPathHelper(String path, DocumentFile rootDir, String content, boolean asBase64) {
+    if (path == null || path.isEmpty() || rootDir == null) {
+      return null;
     }
     // Split the path into components
     String[] pathComponents = path.split("/");
     DocumentFile currentDir = rootDir;
-    
+
     // Iterate through path components
     for (int i = 0; i < pathComponents.length; i++) {
-        String component = pathComponents[i];
-        boolean isLastComponent = (i == pathComponents.length - 1);
-        boolean isFile = isLastComponent && hasFileExtension(component);
+      String component = pathComponents[i];
+      boolean isLastComponent = i == pathComponents.length - 1;
+      boolean isFile = isLastComponent && hasFileExtension(component);
 
-        if (isFile) {
-            // Create file
-            currentDir = createFile(currentDir, component, content, asBase64);
-        } else {
-            // Create or navigate to directory
-            currentDir = createOrGetDirectory(currentDir, component);
-        }
-        if (currentDir == null) {
-            return null;
-        }
+      if (isFile) {
+        // Create file
+        currentDir = createFile(currentDir, component, content, asBase64);
+      } else {
+        // Create or navigate to directory
+        currentDir = createOrGetDirectory(currentDir, component);
+      }
+      if (currentDir == null) {
+        return null;
+      }
     }
     return currentDir;
-}
+  }
 
-private boolean hasFileExtension(String component) {
+  private boolean hasFileExtension(String component) {
     String lower = component.toLowerCase();
     String[] fileExtensions = { "txt", "pdf", "docx", "jpg", "png", "xlsx", "csv", "json", "xml", "html", "enc" };
     for (String extension : fileExtensions) {
-        if (lower.endsWith("." + extension)) {
-            Log.d(TAG, "hasFileExtension: " + component + " → file (matched ." + extension + ")");
-            return true;
-        }
+      if (lower.endsWith("." + extension)) {
+        Log.d(TAG, "hasFileExtension: " + component + " → file (matched ." + extension + ")");
+        return true;
+      }
     }
     Log.d(TAG, "hasFileExtension: " + component + " → directory (no match)");
     return false;
-}
+  }
 
-private DocumentFile createFile(DocumentFile parentDir, String fileName, String content, boolean asBase64) {
+  private DocumentFile createFile(DocumentFile parentDir, String fileName, String content, boolean asBase64) {
     String extension = fileName.substring(fileName.lastIndexOf(".") + 1);
     String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
 
     if (mimeType == null) {
-        mimeType = "application/octet-stream";
+      mimeType = "application/octet-stream";
     }
 
     DocumentFile newFile = parentDir.createFile(mimeType, fileName);
     if (newFile == null) {
-        return null;
+      return null;
     }
 
     if (content != null) {
-        if (!writeFileContent(newFile, content, asBase64)) {
-            return null;
-        }
+      if (!writeFileContent(newFile, content, asBase64)) {
+        return null;
+      }
     }
     return newFile;
-}
+  }
 
-private DocumentFile createOrGetDirectory(DocumentFile parentDir, String dirName) {
+  private DocumentFile createOrGetDirectory(DocumentFile parentDir, String dirName) {
     DocumentFile dir = parentDir.findFile(dirName);
     if (dir != null && dir.isDirectory()) {
-        return dir;
+      return dir;
     }
     return parentDir.createDirectory(dirName);
-}
+  }
 
-@PluginMethod
-public void getDirectoryStructure(PluginCall call) {
+  @PluginMethod
+  public void getDirectoryStructure(PluginCall call) {
     String rootUri = call.getString("rootUri");
     String path = call.getString("path");
 
@@ -326,71 +337,71 @@ public void getDirectoryStructure(PluginCall call) {
     if (rootUri == null) {
       call.reject("Must provide rootUri");
       return;
-    } 
+    }
 
     Uri uri = Uri.parse(rootUri);
     DocumentFile rootDir = DocumentFile.fromTreeUri(getContext(), uri);
 
     if (rootDir == null) {
-        call.reject("Invalid root URI");
-        return;
+      call.reject("Invalid root URI");
+      return;
     }
 
-    DocumentFile targetFile = (path == null || path.isEmpty()) ? rootDir : getFileFromPath(rootDir, path);
+    DocumentFile targetFile = path == null || path.isEmpty() ? rootDir : getFileFromPath(rootDir, path);
     if (targetFile == null) {
-        call.reject("Path not found");
-        return;
+      call.reject("Path not found");
+      return;
     }
 
     JSObject result = new JSObject();
     result.put("structure", getStructureRecursively(targetFile));
     call.resolve(result);
-}
+  }
 
-private DocumentFile getFileFromPath(DocumentFile root, String path) {
+  private DocumentFile getFileFromPath(DocumentFile root, String path) {
     String[] components = path.split("/");
     DocumentFile current = root;
     for (String component : components) {
-        if (component.isEmpty()) continue;
-        DocumentFile next = current.findFile(component);
-        if (next == null) return null;
-        current = next;
+      if (component.isEmpty()) continue;
+      DocumentFile next = current.findFile(component);
+      if (next == null) return null;
+      current = next;
     }
     return current;
-}
+  }
 
-private JSObject getStructureRecursively(DocumentFile file) {
+  private JSObject getStructureRecursively(DocumentFile file) {
     JSObject item = new JSObject();
     item.put("name", file.getName());
     item.put("isDirectory", file.isDirectory());
-    
+
     if (file.isDirectory()) {
-        JSArray children = new JSArray();
-        DocumentFile[] childFiles = file.listFiles();
-        if (childFiles != null) {
-            for (DocumentFile child : childFiles) {
-                children.put(getStructureRecursively(child));
-            }
+      JSArray children = new JSArray();
+      DocumentFile[] childFiles = file.listFiles();
+      if (childFiles != null) {
+        for (DocumentFile child : childFiles) {
+          children.put(getStructureRecursively(child));
         }
-        item.put("children", children);
+      }
+      item.put("children", children);
     }
 
     item.put("lastModified", file.lastModified());
     item.put("size", file.length());
     item.put("type", file.getType());
-    
-    return item;
-}
 
-@PluginMethod
-public void copyFileOrFolder(PluginCall call) {
+    return item;
+  }
+
+  @PluginMethod
+  public void copyFileOrFolder(PluginCall call) {
     String rootUri = call.getString("rootUri");
     String sourcePath = call.getString("sourcePath");
     String destinationPath = call.getString("destinationPath");
 
     if (rootUri == null || sourcePath == null || destinationPath == null) {
-        call.reject("Must provide rootUri, sourcePath, and destinationPath");
-        return;
+      call.reject("Must provide rootUri, sourcePath, and destinationPath");
+      return;
     }
 
     sourcePath = sourcePath.replaceAll("^/+|/+$", "");
@@ -400,67 +411,67 @@ public void copyFileOrFolder(PluginCall call) {
     DocumentFile rootDir = DocumentFile.fromTreeUri(getContext(), uri);
 
     if (rootDir == null) {
-        call.reject("Invalid root URI");
-        return;
+      call.reject("Invalid root URI");
+      return;
     }
 
     DocumentFile sourceFile = getFileFromPath(rootDir, sourcePath);
 
-    if(destinationPath.substring(destinationPath.lastIndexOf("/")+1).contains(".")) {
-        call.reject("Destination path specified is a file path, please specify a valid destination path");
+    if (destinationPath.substring(destinationPath.lastIndexOf("/") + 1).contains(".")) {
+      call.reject("Destination path specified is a file path, please specify a valid destination path");
     }
 
     DocumentFile destinationFolder = createPathHelper(destinationPath, rootDir, null, false);
-    if (destinationFolder==null){
-        call.reject("Error creating destination path");
+    if (destinationFolder == null) {
+      call.reject("Error creating destination path");
     }
 
     if (sourceFile == null) {
-        call.reject("Source file/folder not found");
-        return;
+      call.reject("Source file/folder not found");
+      return;
     }
 
     try {
-        boolean success = copyRecursively(sourceFile, destinationFolder,0);
-        if (success) {
-            JSObject result = new JSObject();
-            result.put("success", true);
-            result.put("message", "Copy operation completed successfully");
-            call.resolve(result);
-        } else {
-            call.reject("Copy operation failed");
-        }
+      boolean success = copyRecursively(sourceFile, destinationFolder, 0);
+      if (success) {
+        JSObject result = new JSObject();
+        result.put("success", true);
+        result.put("message", "Copy operation completed successfully");
+        call.resolve(result);
+      } else {
+        call.reject("Copy operation failed");
+      }
     } catch (IOException e) {
-        call.reject("Error during copy operation: " + e.getMessage());
+      call.reject("Error during copy operation: " + e.getMessage());
     }
-}
+  }
 
-private boolean copyRecursively(DocumentFile source, DocumentFile destinationFolder, int layer) throws IOException {
+  private boolean copyRecursively(DocumentFile source, DocumentFile destinationFolder, int layer) throws IOException {
     if (source.isDirectory()) {
-        DocumentFile newDir = layer==0 ? destinationFolder : destinationFolder.createDirectory(source.getName()); 
-        if (newDir == null) return false;
+      DocumentFile newDir = layer == 0 ? destinationFolder : destinationFolder.createDirectory(source.getName());
+      if (newDir == null) return false;
 
-        for (DocumentFile child : source.listFiles()) {
-            if (!copyRecursively(child, newDir,layer+1)) return false;
-        }
+      for (DocumentFile child : source.listFiles()) {
+        if (!copyRecursively(child, newDir, layer + 1)) return false;
+      }
     } else {
-        DocumentFile newFile = destinationFolder.createFile(source.getType(), source.getName());
-        if (newFile == null) return false;
-        String content = readFileContent(source);
-        if (content == null) return false;
-        if (!writeFileContent(newFile, content)) return false;
+      DocumentFile newFile = destinationFolder.createFile(source.getType(), source.getName());
+      if (newFile == null) return false;
+      String content = readFileContent(source);
+      if (content == null) return false;
+      if (!writeFileContent(newFile, content)) return false;
     }
     return true;
-}
+  }
 
-@PluginMethod
-public void deletePath(PluginCall call) {
+  @PluginMethod
+  public void deletePath(PluginCall call) {
     String rootUri = call.getString("rootUri");
     String path = call.getString("path");
 
     if (rootUri == null || path == null) {
-        call.reject("Must provide rootUri and path");
-        return;
+      call.reject("Must provide rootUri and path");
+      return;
     }
 
     path = path.replaceAll("^/+|/+$", "");
@@ -469,79 +480,78 @@ public void deletePath(PluginCall call) {
     DocumentFile rootDir = DocumentFile.fromTreeUri(getContext(), uri);
 
     if (rootDir == null) {
-        call.reject("Invalid root URI");
-        return;
+      call.reject("Invalid root URI");
+      return;
     }
 
     DocumentFile targetFile = getFileFromPath(rootDir, path);
 
     if (targetFile == null) {
-        call.reject("Path not found");
-        return;
+      call.reject("Path not found");
+      return;
     }
 
     // Use DocumentsContract.deleteDocument to delete the file or directory
     try {
-        boolean deleted = DocumentsContract.deleteDocument(
-            getContext().getContentResolver(), targetFile.getUri());
-        
-        if (deleted) {
-            JSObject result = new JSObject();
-            result.put("success", true);
-            result.put("message", (targetFile.isFile() ? "File" : "Directory") + " deleted successfully");
-            call.resolve(result);
-        } else {
-            call.reject("Failed to delete the " + (targetFile.isFile() ? "file" : "directory") + ": " + path);
-        }
+      boolean deleted = DocumentsContract.deleteDocument(getContext().getContentResolver(), targetFile.getUri());
+
+      if (deleted) {
+        JSObject result = new JSObject();
+        result.put("success", true);
+        result.put("message", (targetFile.isFile() ? "File" : "Directory") + " deleted successfully");
+        call.resolve(result);
+      } else {
+        call.reject("Failed to delete the " + (targetFile.isFile() ? "file" : "directory") + ": " + path);
+      }
     } catch (Exception e) {
-        call.reject("Error deleting " + (targetFile.isFile() ? "file" : "directory") + ": " + e.getMessage());
+      call.reject("Error deleting " + (targetFile.isFile() ? "file" : "directory") + ": " + e.getMessage());
     }
-}
+  }
 
-private boolean writeFileContent(DocumentFile file, String content) {
+  private boolean writeFileContent(DocumentFile file, String content) {
     return writeFileContent(file, content, false);
-}
+  }
 
-private boolean writeFileContent(DocumentFile file, String content, boolean asBase64) {
-    try (ParcelFileDescriptor pfd = getContext().getContentResolver().openFileDescriptor(file.getUri(), "w");
-            FileOutputStream fos = new FileOutputStream(pfd.getFileDescriptor())) {
-        if (content != null) {
-            byte[] contentBytes = asBase64 ? Base64.getDecoder().decode(content.replaceAll("\\s+", ""))
-                    : content.getBytes();
-            fos.write(contentBytes);
-        }
-        return true;
-
+  private boolean writeFileContent(DocumentFile file, String content, boolean asBase64) {
+    try (
+      ParcelFileDescriptor pfd = getContext().getContentResolver().openFileDescriptor(file.getUri(), "w");
+      FileOutputStream fos = new FileOutputStream(pfd.getFileDescriptor())
+    ) {
+      if (content != null) {
+        byte[] contentBytes = asBase64 ? Base64.getDecoder().decode(content.replaceAll("\\s+", "")) : content.getBytes();
+        fos.write(contentBytes);
+      }
+      return true;
     } catch (IOException | IllegalArgumentException e) {
-        Log.e(TAG, "Failed to write content to the file: " + file.getName(), e);
-        return false;
+      Log.e(TAG, "Failed to write content to the file: " + file.getName(), e);
+      return false;
     }
-}
+  }
 
-private String readFileContent(DocumentFile file) {
+  private String readFileContent(DocumentFile file) {
     return readFileContent(file, false);
-}
+  }
 
-private String readFileContent(DocumentFile file, boolean asBase64) {
-    try (ParcelFileDescriptor pfd = getContext().getContentResolver().openFileDescriptor(file.getUri(), "r");
-         FileInputStream fis = new FileInputStream(pfd.getFileDescriptor())) {
-
-        byte[] contentBytes = new byte[(int) file.length()];
-        fis.read(contentBytes);
-        if (asBase64) {
-            return Base64.getEncoder().encodeToString(contentBytes);
-        }
-        return new String(contentBytes, StandardCharsets.UTF_8);
-
+  private String readFileContent(DocumentFile file, boolean asBase64) {
+    try (
+      ParcelFileDescriptor pfd = getContext().getContentResolver().openFileDescriptor(file.getUri(), "r");
+      FileInputStream fis = new FileInputStream(pfd.getFileDescriptor())
+    ) {
+      byte[] contentBytes = new byte[(int) file.length()];
+      fis.read(contentBytes);
+      if (asBase64) {
+        return Base64.getEncoder().encodeToString(contentBytes);
+      }
+      return new String(contentBytes, StandardCharsets.UTF_8);
     } catch (IOException | OutOfMemoryError e) {
-        // Handle the IOException or OOM here and return null or an appropriate value
-        Log.e("TabsintFsPlugin", "Failed to read content from the file: " + file.getName(), e);
-        return null; // Or you could return an empty string or some error message
+      // Handle the IOException or OOM here and return null or an appropriate value
+      Log.e("TabsintFsPlugin", "Failed to read content from the file: " + file.getName(), e);
+      return null; // Or you could return an empty string or some error message
     }
-}
+  }
 
-@PluginMethod
-public void listFilesInDirectory(PluginCall call) {
+  @PluginMethod
+  public void listFilesInDirectory(PluginCall call) {
     String rootUri = call.getString("rootUri");
     String folderPath = call.getString("folderPath");
     String contentUri = call.getString("folderUri");
@@ -549,63 +559,166 @@ public void listFilesInDirectory(PluginCall call) {
     DocumentFile targetDir = null;
 
     if (contentUri != null) {
-        // Handle the case where contentUri is provided
-        Uri uri = Uri.parse(contentUri);
-        targetDir = DocumentFile.fromTreeUri(getContext(), uri);
+      // Handle the case where contentUri is provided
+      Uri uri = Uri.parse(contentUri);
+      targetDir = DocumentFile.fromTreeUri(getContext(), uri);
     } else if (rootUri != null && folderPath != null) {
-        // Handle the case where rootUri and folderPath are provided
-        folderPath = folderPath.replaceAll("^/+|/+$", "");
+      // Handle the case where rootUri and folderPath are provided
+      folderPath = folderPath.replaceAll("^/+|/+$", "");
 
-        Uri uri = Uri.parse(rootUri);
-        DocumentFile rootDir = DocumentFile.fromTreeUri(getContext(), uri);
+      Uri uri = Uri.parse(rootUri);
+      DocumentFile rootDir = DocumentFile.fromTreeUri(getContext(), uri);
 
-        if (rootDir == null) {
-            call.reject("Invalid root URI");
-            return;
-        }
-
-        targetDir = getFileFromPath(rootDir, folderPath);
-    } else {
-        call.reject("Must provide either contentUri or both rootUri and folderPath");
+      if (rootDir == null) {
+        call.reject("Invalid root URI");
         return;
+      }
+
+      targetDir = getFileFromPath(rootDir, folderPath);
+    } else {
+      call.reject("Must provide either contentUri or both rootUri and folderPath");
+      return;
     }
 
     if (targetDir == null || !targetDir.isDirectory()) {
-        call.reject("Specified path is not a directory or does not exist");
-        return;
+      call.reject("Specified path is not a directory or does not exist");
+      return;
     }
     try {
-        DocumentFile[] files = targetDir.listFiles();
-        JSArray fileList = new JSArray();
+      DocumentFile[] files = targetDir.listFiles();
+      JSArray fileList = new JSArray();
 
-        if (files != null) {
-            for (DocumentFile file : files) {
-                if (file.isFile()) {
-                    JSObject fileInfo = new JSObject();
-                    fileInfo.put("name", file.getName());
-                    fileInfo.put("uri", file.getUri().toString());
-                    fileInfo.put("mimeType", file.getType());
-                    fileInfo.put("size", file.length());
+      if (files != null) {
+        for (DocumentFile file : files) {
+          if (file.isFile()) {
+            JSObject fileInfo = new JSObject();
+            fileInfo.put("name", file.getName());
+            fileInfo.put("uri", file.getUri().toString());
+            fileInfo.put("mimeType", file.getType());
+            fileInfo.put("size", file.length());
 
-                    // Optionally, you can read the content of the file (depends on your use case)
-                    String content = readFileContent(file);
-                    if (content != null) {
-                        fileInfo.put("content", content);
-                    } else {
-                        fileInfo.put("content", "Failed to read file content");
-                    }
-
-                    fileList.put(fileInfo);
-                }
+            // Optionally, you can read the content of the file (depends on your use case)
+            String content = readFileContent(file);
+            if (content != null) {
+              fileInfo.put("content", content);
+            } else {
+              fileInfo.put("content", "Failed to read file content");
             }
+
+            fileList.put(fileInfo);
+          }
         }
-        JSObject result = new JSObject();
-        result.put("files", fileList);
-        call.resolve(result);
+      }
+      JSObject result = new JSObject();
+      result.put("files", fileList);
+      call.resolve(result);
     } catch (OutOfMemoryError e) {
-        call.reject("Specified path is too large to load content into memory");
-        return;
+      call.reject("Specified path is too large to load content into memory");
+      return;
     }
     return;
-}
+  }
+
+  @PluginMethod
+  public void unzip(PluginCall call) {
+    String sourcePath = call.getString("sourcePath");
+    String destinationPath = call.getString("destinationPath");
+    boolean ignoreRoot = call.getBoolean("ignoreRoot");
+
+    if (sourcePath == null || destinationPath == null) {
+      call.reject("Must provide sourcePath and destinationPath");
+      return;
+    }
+
+    // Handle the expected file references for both input and output
+    InputStream in;
+    try {
+      if (sourcePath.startsWith("content://")) {
+        in = getContext().getContentResolver().openInputStream(Uri.parse(sourcePath));
+      } else if (sourcePath.startsWith("file://")) {
+        in = Files.newInputStream(Paths.get(Uri.parse(sourcePath).getPath()));
+      } else {
+        in = Files.newInputStream(Paths.get(sourcePath));
+      }
+    } catch (IOException e) {
+      call.reject("Error during unzip operation: " + e.getMessage());
+      return;
+    }
+
+    boolean destIsContent;
+    DocumentFile rootDoc;
+    Path rootPath;
+    if (destinationPath.startsWith("content://")) {
+      destIsContent = true;
+      rootDoc = DocumentFile.fromTreeUri(getContext(), Uri.parse(destinationPath));
+      rootPath = null;
+    } else if (destinationPath.startsWith("file://")) {
+      destIsContent = false;
+      rootDoc = null;
+      rootPath = Paths.get(Uri.parse(destinationPath).getPath());
+    } else {
+      destIsContent = false;
+      rootDoc = null;
+      rootPath = Paths.get(destinationPath);
+    }
+
+    try (ZipInputStream zis = new ZipInputStream(in)) {
+      ZipEntry entry;
+      String rootFolder = null;
+      while ((entry = zis.getNextEntry()) != null) {
+        String name = entry.getName().replace('\\', '/');
+        if (ignoreRoot) {
+          if (rootFolder == null) {
+            int slash = name.indexOf('/');
+            if (slash >= 0) rootFolder = name.substring(0, slash);
+          }
+          if (rootFolder != null && name.startsWith(rootFolder + "/")) name = name.substring(rootFolder.length() + 1);
+          if (name.isEmpty()) {
+            zis.closeEntry();
+            continue;
+          }
+        }
+        if (destIsContent) {
+          DocumentFile current = rootDoc;
+          String[] parts = name.split("/");
+          for (int i = 0; i < parts.length; i++) {
+            boolean last = i == parts.length - 1;
+            if (last && !entry.isDirectory()) {
+              DocumentFile file = current.findFile(parts[i]);
+              if (file != null) file.delete();
+              file = current.createFile("application/octet-stream", parts[i]);
+              try (OutputStream out = getContext().getContentResolver().openOutputStream(file.getUri())) {
+                zis.transferTo(out);
+              }
+            } else {
+              DocumentFile next = current.findFile(parts[i]);
+              if (next == null) next = current.createDirectory(parts[i]);
+              current = next;
+            }
+          }
+        } else {
+          Path out = rootPath.resolve(name).normalize();
+          if (!out.startsWith(rootPath)) {
+            call.reject("Error during unzip operation: Zip Slip");
+            return;
+          }
+          if (entry.isDirectory()) {
+            Files.createDirectories(out);
+          } else {
+            Files.createDirectories(out.getParent());
+            try (OutputStream outStream = Files.newOutputStream(out)) {
+              zis.transferTo(outStream);
+            }
+          }
+        }
+        zis.closeEntry();
+      }
+      JSObject result = new JSObject();
+      result.put("success", true);
+      result.put("message", "Unzip operation completed successfully");
+      call.resolve(result);
+    } catch (IOException e) {
+      call.reject("Error during unzip operation: " + e.getMessage());
+    }
+  }
 }

@@ -25,4 +25,5 @@ export interface TabsintFsPlugin {
       content: string;
     }[];
   }>;
+  unzip(options: { sourcePath: string; destinationPath: string; ignoreRoot: boolean }): Promise<{ success: boolean; message: string }>;
 }
