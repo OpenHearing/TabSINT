@@ -28,7 +28,10 @@
 
     <app-device-panel [deviceType]="DeviceType.Wahts">
       <ng-container *ngFor="let wahtsDevice of wahtsDevices$ | async; trackBy: trackByDeviceId">
-        <app-device-card [device]="wahtsDevice" [connected]="state.bluetoothConnected">
+        <app-device-card
+          [device]="wahtsDevice"
+          [connected]="state.bluetoothConnected"
+          [enabled]="wahtsDevice.connectionType === disk.preferences.wahtsConnectionType">
           <app-wahts-settings [device]="wahtsDevice"></app-wahts-settings>
         </app-device-card>
       </ng-container>
@@ -68,8 +71,7 @@
 
     <app-device-panel [deviceType]="DeviceType.Svantek">
       <ng-container *ngFor="let svantekDevice of svantekDevices$ | async; trackBy: trackByDeviceId">
-        <app-device-card [device]="svantekDevice" [connected]="state.bluetoothConnected">
-        </app-device-card>
+        <app-device-card [device]="svantekDevice" [connected]="state.bluetoothConnected"> </app-device-card>
       </ng-container>
     </app-device-panel>
   </mat-expansion-panel>

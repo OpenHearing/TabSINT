@@ -1,6 +1,7 @@
 package com.creare.tabsintcha;
 
 import android.content.Context;
+import android.hardware.usb.UsbDevice;
 import com.creare.cha.A2DP_CHA;
 import com.creare.cha.CHA;
 import com.creare.cha.CalibrationEntry;
@@ -17,7 +18,10 @@ import com.creare.cha.Streamable;
 import com.creare.cha.SubmissionInterface;
 import com.creare.cha.exams.AudiometrySubmission;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
+import java.util.Optional;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -226,7 +230,7 @@ class TabsintCha {
 
       chaState.chaListener = new WrappedChaListener(chaState);
       chaState.cha.addListener(chaState.chaListener);
-      return createValueObject(chaState.cha.toString());
+      return createValueObject(getChaName(chaState.cha));
     }
   };
 
@@ -241,7 +245,7 @@ class TabsintCha {
         chaState.chaListener = null;
       }
 
-      return createValueObject(chaState.cha.toString());
+      return createValueObject(getChaName(chaState.cha));
     }
   };
 
@@ -335,7 +339,10 @@ class TabsintCha {
       ChaState chaState = getChaState(name);
       CHA cha = chaState.cha;
 
-      Class<?> c = cha.getClass().getClassLoader().loadClass("com.creare.cha.exams." + examName);
+      Class<?> c = cha
+        .getClass()
+        .getClassLoader()
+        .loadClass("com.creare.cha.exams." + examName);
       Exam e = (Exam) c.newInstance();
 
       if (params != null) {
@@ -361,7 +368,10 @@ class TabsintCha {
       ChaState chaState = getChaState(name);
       CHA cha = chaState.cha;
 
-      Class<?> c = cha.getClass().getClassLoader().loadClass("com.creare.cha.exams." + subName);
+      Class<?> c = cha
+        .getClass()
+        .getClassLoader()
+        .loadClass("com.creare.cha.exams." + subName);
       SubmissionInterface sub = (SubmissionInterface) c.newInstance();
 
       if (params != null) {
@@ -889,6 +899,22 @@ class TabsintCha {
 
   final ChaState getChaState(String name) throws IllegalArgumentException {
     ChaState cha = chaMap.get(name);
+
+    // USB uses product name to ensure a consistent identifier is used
+    // Internally we still use /dev/bus references for each USB device
+    if (cha == null && name.toLowerCase().contains("usb")) {
+      String matchedKey = chaMap
+        .entrySet()
+        .stream()
+        .filter(entry -> getUsbProductName(entry.getValue().cha).map(name::equals).orElse(false))
+        .map(Map.Entry::getKey)
+        .findFirst()
+        .orElse(null);
+      if (matchedKey != null) {
+        cha = chaMap.get(matchedKey);
+      }
+    }
+
     if (cha == null) {
       throw new IllegalArgumentException("No CHA \"" + name + "\" has been discovered.");
     }
@@ -897,6 +923,38 @@ class TabsintCha {
 
   final CHA getCha(String name) throws IllegalArgumentException {
     return getChaState(name).cha;
+  }
+
+  final String getChaName(CHA cha) {
+    String name = cha.toString();
+
+    // USB uses product name to ensure a consistent identifier is used
+    // Internally we still use /dev/bus references for each USB device
+    if (name.toLowerCase().contains("usb")) {
+      String productName = TabsintCha.getUsbProductName(cha).orElse(null);
+      if (productName != null) {
+        name = productName;
+      }
+    }
+
+    return name;
+  }
+
+  static final Optional<String> getUsbProductName(Object obj) {
+    try {
+      Field field = obj.getClass().getDeclaredField("usbDevice");
+      field.setAccessible(true);
+
+      Object value = field.get(obj);
+
+      if (value instanceof UsbDevice device) {
+        return Optional.of(device.getProductName());
+      }
+    } catch (NoSuchFieldException | IllegalAccessException e) {
+      // ignore if it cannot be determined
+    }
+
+    return Optional.empty();
   }
 
   static final class ChaState {
@@ -1100,7 +1158,7 @@ class TabsintCha {
       // Send a "Set" message to the event listener
       try {
         JSONObject obj = new JSONObject();
-        obj.put("name", parentState.cha.toString());
+        obj.put("name", getChaName(parentState.cha));
         JSONArray arr = new JSONArray();
         arr.put(0, "Set");
         obj.put("res", arr);
@@ -1116,7 +1174,7 @@ class TabsintCha {
 
     private void sendResultToListener(String identifier, JSONObject obj) throws JSONException {
       JSONObject objResponse = new JSONObject();
-      objResponse.put("name", parentState.cha.toString());
+      objResponse.put("name", getChaName(parentState.cha));
       JSONArray arr = new JSONArray();
       arr.put(0, identifier);
       if (obj != null) {
@@ -1138,7 +1196,7 @@ class TabsintCha {
 
       JSONObject obj = new JSONObject();
       try {
-        obj.put("name", parentState.cha.toString());
+        obj.put("name", getChaName(parentState.cha));
         obj.put("res", e.getMessage());
       } catch (JSONException ex) {
         // noop
@@ -1172,7 +1230,7 @@ class TabsintCha {
         android.util.Log.e(TAG, t.getMessage(), t);
         JSONObject obj = new JSONObject();
         try {
-          obj.put("name", parentState.cha.toString());
+          obj.put("name", getChaName(parentState.cha));
           obj.put("res", t.getMessage());
         } catch (JSONException ex) {
           // noop
@@ -1195,7 +1253,7 @@ class TabsintCha {
       JSONObject obj = new JSONObject();
 
       try {
-        obj.put("name", cha.toString());
+        obj.put("name", getChaName(cha));
         obj.put("status", "searching");
       } catch (JSONException ex) {
         // noop

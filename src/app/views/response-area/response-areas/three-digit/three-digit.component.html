@@ -1,0 +1,61 @@
+<div class="three-digit-container">
+  <p *ngIf="examInstructions" class="three-digit-instructions">{{ examInstructions | transloco }}</p>
+
+  <div class="three-digit-progress">
+    <p *ngIf="!examComplete">{{ "Presentation" | transloco }} {{ presentationCount }} / {{ nPresentations }}</p>
+    <p *ngIf="examComplete">{{ "Exam Completed" | transloco }}</p>
+  </div>
+
+  <table class="keypad">
+    <tr class="three-digit-row">
+      <td>
+        <div [ngClass]="digitCorrect[0] && showFeedback ? 'three-digit-response-correct' : 'three-digit-response-incorrect'">
+          {{ userResponse[0] }}
+        </div>
+      </td>
+      <td>
+        <div [ngClass]="digitCorrect[1] && showFeedback ? 'three-digit-response-correct' : 'three-digit-response-incorrect'">
+          {{ userResponse[1] }}
+        </div>
+      </td>
+      <td>
+        <div [ngClass]="digitCorrect[2] && showFeedback ? 'three-digit-response-correct' : 'three-digit-response-incorrect'">
+          {{ userResponse[2] }}
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td><button type="button" class="btn btn-default btn-block" [disabled]="digitsDisabled" (click)="addDigit(1)">1</button></td>
+      <td><button type="button" class="btn btn-default btn-block" [disabled]="digitsDisabled" (click)="addDigit(2)">2</button></td>
+      <td><button type="button" class="btn btn-default btn-block" [disabled]="digitsDisabled" (click)="addDigit(3)">3</button></td>
+    </tr>
+    <tr>
+      <td><button type="button" class="btn btn-default btn-block" [disabled]="digitsDisabled" (click)="addDigit(4)">4</button></td>
+      <td><button type="button" class="btn btn-default btn-block" [disabled]="digitsDisabled" (click)="addDigit(5)">5</button></td>
+      <td><button type="button" class="btn btn-default btn-block" [disabled]="digitsDisabled" (click)="addDigit(6)">6</button></td>
+    </tr>
+    <tr>
+      <td><button type="button" class="btn btn-default btn-block" [disabled]="digitsDisabled" (click)="addDigit(7)">7</button></td>
+      <td><button type="button" class="btn btn-default btn-block" [disabled]="digitsDisabled" (click)="addDigit(8)">8</button></td>
+      <td><button type="button" class="btn btn-default btn-block" [disabled]="digitsDisabled" (click)="addDigit(9)">9</button></td>
+    </tr>
+    <tr>
+      <td>
+        <button type="button" class="btn btn-block btn-default symbol" [disabled]="digitsDisabled" (click)="resetKeypad()">
+          {{ "clear" | transloco }}
+        </button>
+      </td>
+      <td><button type="button" class="btn btn-default btn-block" [disabled]="digitsDisabled" (click)="addDigit(0)">0</button></td>
+      <td>
+        <button
+          *ngIf="!autoSubmitPresentation"
+          type="button"
+          class="btn btn-block btn-default symbol"
+          [disabled]="digitsDisabled || userResponse.length !== 3"
+          (click)="processDigits()">
+          {{ "submit" | transloco }}
+        </button>
+      </td>
+    </tr>
+  </table>
+</div>

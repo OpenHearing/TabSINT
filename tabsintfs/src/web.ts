@@ -60,4 +60,9 @@ export class TabsintFsWeb extends WebPlugin implements TabsintFsPlugin {
     console.log('listFilesInDirectory not implemented for web');
     return { files: [] };
   }
+
+  async unzip(_options: { sourcePath: string; destinationPath: string; ignoreRoot: boolean }): Promise<{ success: boolean; message: string }> {
+    console.log('unzip not implemented for web');
+    return { success: false, message: 'Not implemented on web' };
+  }
 }

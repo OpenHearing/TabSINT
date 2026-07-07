@@ -17,6 +17,7 @@ import { ButtonGridInterface } from '../views/response-area/response-areas/butto
 import { CheckboxInterface } from '../views/response-area/response-areas/checkbox/checkbox.interface';
 import { GapResultsInterface } from '../views/response-area/response-areas/gap/gap.interface';
 import { MultipleChoiceInterface } from '../views/response-area/response-areas/multiple-choice/multiple-choice.interface';
+import { ThreeDigitResultsResponse } from '../views/response-area/response-areas/three-digit/three-digit.interface';
 import { HintResultsResponse } from '../views/response-area/response-areas/hint/hint.interface';
 
 export function isChoiceResponseArea(responseArea?: ResponseArea): responseArea is ButtonGridInterface | MultipleChoiceInterface | CheckboxInterface {
@@ -45,6 +46,10 @@ export function isProtocolReferenceInterface(page: PageTypes): page is ProtocolR
 
 export function isManualAudiometryResponseArea(page: PageInterface): boolean {
   return page?.responseArea?.type === 'manualAudiometryResponseArea';
+}
+
+export function isThreeDigitResponseArea(page: PageInterface): boolean {
+  return page?.responseArea?.type === 'threeDigitResponseArea';
 }
 
 export function isGapResponseArea(page: PageInterface): boolean {
@@ -83,6 +88,15 @@ export function isRequestSettingResponse(response?: IDeviceResponse): response i
 
 export function isStatusResponse(response?: IDeviceResponse): response is StatusResponse {
   return isValidDeviceResponse(response) && response.msg.length >= 2 && (response as StatusResponse).msg[1].state !== undefined;
+}
+
+export function isThreeDigitResultsResponse(response?: IDeviceResponse): response is ThreeDigitResultsResponse {
+  return (
+    isValidDeviceResponse(response) &&
+    response.msg.length >= 2 &&
+    typeof (response as ThreeDigitResultsResponse).msg[1] === 'object' &&
+    (response as ThreeDigitResultsResponse).msg[1] !== null
+  );
 }
 
 export function isHintResultsResponse(response?: IDeviceResponse): response is HintResultsResponse {

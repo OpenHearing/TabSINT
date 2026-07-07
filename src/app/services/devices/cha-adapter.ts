@@ -150,7 +150,10 @@ export class ChaAdapter implements IDeviceAdapter {
    */
   async examSubmission(device: ChaDeviceType, examProperties: object, ignoreErrors: string[]): Promise<IDeviceResponse> {
     const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
-      const examSubmissionOptions = { name: device.deviceId, submissionName: (examProperties as { name: string }).name, params: examProperties };
+      // `name` selects the submission class; it must not be forwarded as a device parameter,
+      // otherwise the native introspection rejects it as an unknown field on the class.
+      const { name, ...params } = examProperties as { name?: string } & Record<string, unknown>;
+      const examSubmissionOptions = { name: device.deviceId, submissionName: name as string, params };
       let deviceResponse = this.defaultInvalidResponse(device);
       try {
         const msg = await TabsintCha.examSubmission(examSubmissionOptions);

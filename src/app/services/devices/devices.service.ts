@@ -548,7 +548,6 @@ export class DevicesService {
       if (device.state !== DeviceState.Disconnected) {
         await this.disconnect(device);
       }
-      await this.updateDeviceConnectionType(device, connectionType);
     }
     this.diskModel.updatePreferences({ wahtsConnectionType: connectionType });
   }

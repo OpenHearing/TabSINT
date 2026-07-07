@@ -113,6 +113,7 @@ import { BekesyComponent } from './views/response-area/response-areas/bekesy/bek
 import { QrService } from './services/qr.service';
 import { QRCodeModule } from 'angularx-qrcode';
 import { DuodoseDownloadComponent } from './views/response-area/response-areas/duodose-download/duodose-download.component';
+import { ThreeDigitComponent } from './views/response-area/response-areas/three-digit/three-digit.component';
 import { GapComponent } from './views/response-area/response-areas/gap/gap.component';
 import { GapResultsComponent } from './views/response-area/response-areas/gap/gap-results/gap-results.component';
 import { HintComponent } from './views/response-area/response-areas/hint/hint.component';
@@ -185,6 +186,7 @@ import { HintComponent } from './views/response-area/response-areas/hint/hint.co
     InputParametersComponent,
     TabsintConfigComponent,
     BekesyComponent,
+    ThreeDigitComponent,
     GapComponent,
     GapResultsComponent,
     HintComponent,

@@ -167,7 +167,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
       const folderUri = await this.gitlabService.downloadGitlabRepository(config, localDir, true);
       let protocolContent = undefined;
       try {
-        const fileResponse = await this.fileService.readFile('protocol.json', localDir);
+        const fileResponse = await this.fileService.readFile('protocol.json', folderUri);
         protocolContent = fileResponse?.content ? JSON.parse(fileResponse.content) : undefined;
       } catch {
         throw new Error('protocol.json not found in repository.');
@@ -351,7 +351,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
       }
       const latestProtocolJson = await this.gitlabService.fetchLatestGitlabFile(selectedGitlabConfig, 'protocol.json');
       const localDir = `.tabsint-protocols/${selectedGitlabConfig.repository}`;
-      const localProtocolFile = await this.fileService.readFile('protocol.json', localDir);
+      const localProtocolFile = await this.fileService.readFile(`${localDir}/protocol.json`);
 
       if (localProtocolFile) {
         const localProtocolJson = JSON.parse(localProtocolFile.content);
@@ -370,7 +370,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
 
       const newGitlabConfig = { ...selectedGitlabConfig, tag: latestCommitHash };
       const localDirUri = await this.gitlabService.downloadGitlabRepository(newGitlabConfig, localDir, true);
-      const fileResponse = await this.fileService.readFile('protocol.json', localDir);
+      const fileResponse = await this.fileService.readFile('protocol.json', localDirUri);
       const protocolContent = fileResponse?.content ? JSON.parse(fileResponse.content) : undefined;
       const updatedProtocol: ProtocolInterface = {
         ...partialMetaDefaults,

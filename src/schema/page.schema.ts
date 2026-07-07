@@ -23,6 +23,7 @@ import { buttonGridSchema } from './response-areas/button-grid.schema';
 import { qrCodeResponseAreaSchema } from './response-areas/qr-code.schema';
 import { duodoseDownloadSchema } from './response-areas/duodose-download.schema';
 import { bekesyResponseAreaSchema } from './response-areas/bekesy.schema';
+import { threeDigitSchema } from './response-areas/three-digit.schema';
 import { hintSchema } from './response-areas/hint.schema';
 import { gapSchema } from './response-areas/gap.schema';
 
@@ -116,6 +117,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
         CustomResponseAreaSchema,
         qrCodeResponseAreaSchema,
         bekesyResponseAreaSchema,
+        threeDigitSchema,
         hintSchema,
         gapSchema,
       ],
