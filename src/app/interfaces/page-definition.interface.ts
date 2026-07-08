@@ -28,7 +28,6 @@ import { CalibrationFileWavProperties } from './calibration-file.interface';
 export interface PageDefinition {
   id: string;
   skipIf?: string;
-  hideProgressBar?: boolean;
   autoSubmitDelay?: number;
   enableBackButton?: boolean;
   navMenu?: NavMenuInterface[];

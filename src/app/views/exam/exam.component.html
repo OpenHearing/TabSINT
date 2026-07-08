@@ -158,7 +158,7 @@
     <div
       class="row response-buttons"
       style="margin-top: 30px"
-      *ngIf="!(currentPage.hideProgressBar || state.examState === ExamState.Ready || state.examState === ExamState.Finalized)">
+      *ngIf="showProgressBar && state.examState !== ExamState.Ready && state.examState !== ExamState.Finalized">
       <mat-progress-bar mode="determinate" *ngIf="!isString(state.examProgress)" [value]="state.examProgress"></mat-progress-bar>
       <div *ngIf="isString(state.examProgress)" class="progress-words">
         {{ state.examProgress }}

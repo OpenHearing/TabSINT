@@ -80,12 +80,26 @@ describe('ProtocolStack', () => {
     expect(stack.peek()?.maxPages).toBe(Number.MAX_SAFE_INTEGER);
   });
 
+  it('uses progress bar visibility from protocol when provided', () => {
+    stack.addProtocol(makeProtocol({ hideProgressBar: undefined }));
+    expect(stack.peek()?.showProgressBar).toBe(false);
+    stack.addProtocol(makeProtocol({ hideProgressBar: true }));
+    expect(stack.peek()?.showProgressBar).toBe(false);
+    stack.addProtocol(makeProtocol({ hideProgressBar: false }));
+    expect(stack.peek()?.showProgressBar).toBe(true);
+  });
+
+  it('defaults show progress bar to false when not provided', () => {
+    stack.addProtocol(makeProtocol());
+    expect(stack.peek()?.showProgressBar).toBe(false);
+  });
+
   it('defaults protocolId to empty string when not provided', () => {
     stack.addProtocol(makeProtocol({ protocolId: undefined }));
     expect(stack.peek()?.protocolId).toBe('');
   });
 
-  it('emits the top item when a protocol is added', (done) => {
+  it('emits the top item when a protocol is added', done => {
     stack.latestProtocolObservable.subscribe(item => {
       if (item) {
         expect(item.protocolId).toBe('emitted');
@@ -95,7 +109,7 @@ describe('ProtocolStack', () => {
     stack.addProtocol(makeProtocol({ protocolId: 'emitted' }));
   });
 
-  it('emits undefined when cleared', (done) => {
+  it('emits undefined when cleared', done => {
     stack.addProtocol(makeProtocol());
     let emissionCount = 0;
     stack.latestProtocolObservable.subscribe(item => {

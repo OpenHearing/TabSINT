@@ -31,7 +31,7 @@ const protocolSchemaBase: JSONSchemaType<ProtocolSchemaInterface> = {
       },
       nullable: true,
     },
-    hideProgressBar: { type: 'boolean', default: false, nullable: true },
+    hideProgressBar: { type: 'boolean', default: true, nullable: true },
     enableBackButton: { type: 'boolean', default: false, nullable: true },
     navMenu: { type: 'array', items: navMenuSchema, nullable: true },
     pages: {

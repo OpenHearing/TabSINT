@@ -11,6 +11,7 @@ import { AppState, ExamState } from '../../utilities/constants';
 import { PageInterface } from '../../models/page/page.interface';
 import { PageModel } from '../../models/page/page.service';
 import { ButtonTextService } from '../../controllers/button-text.service';
+import { ProtocolModel } from '../../models/protocol/protocol-model.service';
 
 @Component({
   selector: 'app-exam-view',
@@ -21,6 +22,7 @@ export class ExamComponent implements OnInit, OnDestroy {
   // Controller varialbles
   buttonText: string = 'Submit';
   isKeyboardVisible = false;
+  showProgressBar: boolean = false;
 
   // Models
   disk: DiskInterface;
@@ -41,6 +43,7 @@ export class ExamComponent implements OnInit, OnDestroy {
   private readonly diskModel = inject(DiskModel);
   private readonly stateModel = inject(StateModel);
   private readonly pageModel = inject(PageModel);
+  private readonly protocolModel = inject(ProtocolModel);
   private readonly buttonTextService = inject(ButtonTextService);
 
   constructor() {
@@ -64,6 +67,9 @@ export class ExamComponent implements OnInit, OnDestroy {
     this.stateModel.updateState({ appState: AppState.Exam });
     this.buttonTextSubscription = this.buttonTextService.buttonText$.subscribe((newText: string) => {
       this.buttonText = newText;
+    });
+    this.protocolModel.getProtocolModel().activeProtocolStack.latestProtocolObservable.subscribe(latestStackItem => {
+      this.showProgressBar = latestStackItem?.showProgressBar ?? this.showProgressBar;
     });
   }
 
