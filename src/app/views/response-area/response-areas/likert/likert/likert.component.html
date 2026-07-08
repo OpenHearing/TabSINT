@@ -1,4 +1,4 @@
-<div class="likert-container" *ngFor="let question of questions; let questionIndex = index">
+<div class="likert-container" *ngFor="let question of questions; let questionIndex = index" [style.margin-bottom.px]="verticalSpacing">
   <!-- Question Text (may contain HTML) -->
   <p class="question" [style.font-size]="question.questionFontSize" [innerHTML]="question.text"></p>
 

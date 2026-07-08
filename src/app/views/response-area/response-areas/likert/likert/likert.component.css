@@ -13,7 +13,8 @@
 
 .likert-container {
   text-align: center;
-  margin: 20px 0;
+  /* Bottom margin (inter-question spacing) is set from `verticalSpacing` in the template. */
+  margin-top: 20px;
 }
 
 .question {
