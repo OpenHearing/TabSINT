@@ -40,4 +40,5 @@ export interface LikertInterface extends CommonResponseAreaInterface {
   useSlider?: boolean;
   naBox?: boolean;
   autoSubmit?: boolean;
+  verticalSpacing?: number;
 }

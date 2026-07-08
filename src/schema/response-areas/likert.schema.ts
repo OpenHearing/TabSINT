@@ -63,20 +63,22 @@ export const likertSchema: JSONSchemaType<LikertInterface> = {
     labels: {
       type: 'array',
       description:
-        'Description of the Likert scale. Length equal to levels displays a label with each option; length 2 places the first label at the left end and the second at the right end.',
+        'Description of the Likert scale. Length equal to levels displays a label with each option; length 2 places the first label at the left end and the second at the right end. Positioned by `position`, and combined with `specifiers`.',
       items: { type: 'string', description: 'Words describing each level.' },
       nullable: true,
     },
     specifiers: {
       type: 'array',
-      description: 'Per-level labels, each optionally positioned above or below the scale. Overrides labels when present.',
+      description:
+        'Per-level labels as objects { level, label, position? }, each positioned above or below the scale (default above). Combined with labels — put the two on opposite sides to show descriptive text on one side and numbers on the other.',
       items: specifierSchema,
       nullable: true,
     },
     position: {
       type: 'string',
       enum: ['above', 'below'],
-      description: 'Position the (labels-based) labels above or below the scale.',
+      description:
+        'Where the labels array is placed (above or below the scale). Does not affect specifiers, which carry their own per-item position.',
       nullable: true,
       default: 'above',
     },
@@ -114,6 +116,12 @@ export const likertSchema: JSONSchemaType<LikertInterface> = {
       default: false,
     },
     autoSubmit: { type: 'boolean', nullable: true, default: false },
+    verticalSpacing: {
+      type: 'number',
+      description: 'Vertical gap (in px) between questions on the page.',
+      nullable: true,
+      default: 20,
+    },
   },
   required: ['type'],
 };

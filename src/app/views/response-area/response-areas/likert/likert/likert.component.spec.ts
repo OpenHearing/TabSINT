@@ -101,4 +101,37 @@ describe('LikertComponent', () => {
     expect(component.questions[1].bottomLabels[0]).toEqual('Never');
     expect(component.questions[1].bottomLabels[4]).toEqual('Always');
   }));
+
+  it('should show labels and specifiers at the same time on opposite sides', fakeAsync(() => {
+    mockPageModel.updatePage({
+      responseArea: {
+        type: 'likertResponseArea',
+        levels: 11,
+        useRadioButtons: true,
+        // Numbers below via labels...
+        labels: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+        position: 'below',
+        // ...and descriptive end labels above via specifiers.
+        specifiers: [
+          { level: 0, label: 'No, Not a problem', position: 'above' },
+          { level: 10, label: 'Yes, a very big problem', position: 'above' },
+        ],
+        verticalSpacing: 40,
+        questions: ['Tinnitus kept me from sleeping.'],
+      },
+      id: 'page3',
+    });
+    tick();
+    fixture.detectChanges();
+
+    const q = component.questions[0];
+    // Specifiers rendered above.
+    expect(q.topLabels[0]).toEqual('No, Not a problem');
+    expect(q.topLabels[10]).toEqual('Yes, a very big problem');
+    // Labels rendered below (per-level, length === levels).
+    expect(q.bottomLabels[0]).toEqual('0');
+    expect(q.bottomLabels[5]).toEqual('5');
+    expect(q.bottomLabels[10]).toEqual('10');
+    expect(component.verticalSpacing).toEqual(40);
+  }));
 });

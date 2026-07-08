@@ -432,6 +432,25 @@
           }
         },
         {
+          "id": "labels_and_specifiers",
+          "instructionText": "labels + specifiers together: numbers below (labels), descriptors above (specifiers), wider verticalSpacing",
+          "responseArea": {
+            "type": "likertResponseArea",
+            "responseRequired": true,
+            "levels": 11,
+            "questionFontSize": 24,
+            "useRadioButtons": true,
+            "verticalSpacing": 40,
+            "labels": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+            "position": "below",
+            "specifiers": [
+              { "level": 0, "label": "No, Not a problem", "position": "above" },
+              { "level": 10, "label": "Yes, a very big problem", "position": "above" }
+            ],
+            "questions": ["Tinnitus kept me from sleeping.", "Tinnitus kept me from concentrating."]
+          }
+        },
+        {
           "id": "rich_formatting",
           "instructionText": "HTML text, custom font sizes, and centered labels",
           "responseArea": {

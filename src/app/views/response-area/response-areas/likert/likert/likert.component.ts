@@ -50,6 +50,7 @@ export class LikertComponent implements OnInit, OnDestroy {
   useRadioButtons: boolean = false;
   useSlider: boolean = false;
   naBox: boolean = false;
+  verticalSpacing: number = likertSchema.properties.verticalSpacing.default;
 
   results: ResultsInterface;
   state: StateInterface;
@@ -132,6 +133,7 @@ export class LikertComponent implements OnInit, OnDestroy {
     this.useRadioButtons = responseArea.useRadioButtons ?? likertSchema.properties.useRadioButtons.default;
     this.useSlider = responseArea.useSlider ?? likertSchema.properties.useSlider.default;
     this.naBox = responseArea.naBox ?? likertSchema.properties.naBox.default;
+    this.verticalSpacing = responseArea.verticalSpacing ?? likertSchema.properties.verticalSpacing.default;
     this.questions = rawQuestions.map(question => this.normalizeQuestion(question, responseArea));
     this.sliderValue = this.questions.map(() => null);
     this.isNotApplicable = this.questions.map(() => false);
@@ -168,18 +170,27 @@ export class LikertComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Determine the labels for a question, most specific first: per-question specifiers, then
-   * per-question labels, then response-area specifiers, then response-area labels.
+   * Collect the labels for a question by combining both sources so they can be shown at the
+   * same time (e.g. descriptive labels on one side, numbers on the other). Per-question values
+   * override the response-area values. `labels` are placed via `position`; `specifiers` carry
+   * their own per-item `position`. When both target the same level+side, the specifier wins.
    */
   private resolveSpecifiers(q: LikertQuestion, responseArea: LikertInterface, levels: number): LikertSpecifier[] {
     const defaultPosition = likertSchema.properties.position.default;
-    if (q.specifiers) return q.specifiers;
-    if (q.labels) return this.labelsToSpecifiers(q.labels, q.position ?? responseArea.position ?? defaultPosition, levels);
-    if (responseArea.specifiers) return responseArea.specifiers;
-    if (responseArea.labels) {
-      return this.labelsToSpecifiers(responseArea.labels, responseArea.position ?? defaultPosition, levels);
+    const result: LikertSpecifier[] = [];
+
+    const labels = q.labels ?? responseArea.labels;
+    if (labels) {
+      const labelPosition = q.position ?? responseArea.position ?? defaultPosition;
+      result.push(...this.labelsToSpecifiers(labels, labelPosition, levels));
     }
-    return [];
+
+    const specifiers = q.specifiers ?? responseArea.specifiers;
+    if (specifiers) {
+      result.push(...specifiers);
+    }
+
+    return result;
   }
 
   /**
