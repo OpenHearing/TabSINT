@@ -1,5 +1,14 @@
 apply plugin: 'com.android.application'
 
+import groovy.json.JsonSlurper
+
+// Setup versioning for builds
+def packageJsonFile = file("../../package.json")
+def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
+def appVersionName = packageJson.version 
+def versionParts = appVersionName.split('\\.')
+def appVersionCode = (versionParts[0].toInteger() * 10000) + (versionParts[1].toInteger() * 100) + (versionParts.length > 2 ? versionParts[2].toInteger() : 0)
+
 android {
     namespace = "com.creare.tabsint"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -7,8 +16,8 @@ android {
         applicationId = "com.creare.tabsint"
         minSdkVersion = rootProject.ext.minSdkVersion
         targetSdkVersion = rootProject.ext.targetSdkVersion
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = appVersionCode
+        versionName = appVersionName
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.

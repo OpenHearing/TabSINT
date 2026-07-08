@@ -37,6 +37,17 @@ function getNodeVersion() {
   return process.version;
 }
 
+/**
+ * Get the version code based on app version.
+ * This matches how version is determined by android build.gradle.
+ * @param appVersion The application version with major, minor, patch format.
+ * @returns The version code.
+ */
+function getVersionCode(appVersion: string): number {
+  const versionParts = appVersion.split('.');
+  return Number(versionParts[0]) * 10000 + Number(versionParts[1]) * 100 + (versionParts.length > 2 ? Number(versionParts[2]) : 0);
+}
+
 async function generateVersionJson() {
   const updatedRev = await incrementRev();
   const suffix = process.argv.slice(2) ? '-' + process.argv.slice(2) : '';
@@ -44,7 +55,7 @@ async function generateVersionJson() {
     tabsint: packageJson.version + suffix,
     date: new Date().toISOString(),
     rev: updatedRev,
-    version_code: (parseInt(versionJson.version_code, 10) + 1).toString(),
+    version_code: getVersionCode(packageJson.version).toString(),
     deps: {
       user_agent: 'angular/' + packageJson.devDependencies['@angular/cli'],
       node: 'node/' + getNodeVersion(),
