@@ -183,7 +183,7 @@ export class SweptDpoaeExamComponent implements OnInit, OnDestroy {
         }
         break;
       case 'results':
-        this.examService.submit();
+        this.examService.submitDefault();
         break;
     }
   }
