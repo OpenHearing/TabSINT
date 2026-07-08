@@ -81,17 +81,17 @@ describe('ProtocolStack', () => {
   });
 
   it('uses progress bar visibility from protocol when provided', () => {
-    stack.addProtocol(makeProtocol({ hideProgressBar: undefined }));
+    stack.addProtocol(makeProtocol({ showProgressBar: undefined }));
+    expect(stack.peek()?.showProgressBar).toBe(undefined);
+    stack.addProtocol(makeProtocol({ showProgressBar: false }));
     expect(stack.peek()?.showProgressBar).toBe(false);
-    stack.addProtocol(makeProtocol({ hideProgressBar: true }));
-    expect(stack.peek()?.showProgressBar).toBe(false);
-    stack.addProtocol(makeProtocol({ hideProgressBar: false }));
+    stack.addProtocol(makeProtocol({ showProgressBar: true }));
     expect(stack.peek()?.showProgressBar).toBe(true);
   });
 
-  it('defaults show progress bar to false when not provided', () => {
+  it('defaults show progress bar to undefined when not provided', () => {
     stack.addProtocol(makeProtocol());
-    expect(stack.peek()?.showProgressBar).toBe(false);
+    expect(stack.peek()?.showProgressBar).toBe(undefined);
   });
 
   it('defaults protocolId to empty string when not provided', () => {
