@@ -117,11 +117,6 @@ export class ButtonGridComponent implements OnInit, OnDestroy {
     this.resultsSubscription?.unsubscribe();
   }
 
-  onResponseChange() {
-    this.stateModel.updateState({ doesResponseExist: this.results.currentPage.response.other !== '' });
-    this.resultsModel.updateCurrentPage({ response: this.results.currentPage.response.other });
-  }
-
   choiceSelected(id: string | number) {
     // Remove element if already selected, else add element to selected
     if (this.results.currentPage.response.selected.includes(id)) {
