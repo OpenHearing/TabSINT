@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
-import { Subscription } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 import _ from 'lodash';
 import { DialogDataInterface } from '../../interfaces/dialog-data.interface';
 import { ProtocolSchemaInterface } from '../../interfaces/protocol-schema.interface';
@@ -20,6 +20,8 @@ import { DialogType, ProtocolServer } from '../../utilities/constants';
 import { getProtocolMetaData } from '../../utilities/protocol-helper-functions';
 import { partialMetaDefaults } from '../../utilities/defaults';
 import { GitlabService } from '../../services/gitlab.service';
+import { MatDialog } from '@angular/material/dialog';
+import { GitlabReferenceDialog } from '../gitlab-reference-dialog/gitlab-reference-dialog.component';
 
 @Component({
   selector: 'app-protocols-view',
@@ -38,6 +40,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
   private readonly stateModel = inject(StateModel);
   private readonly tasks = inject(Tasks);
   private readonly transloco = inject(TranslocoService);
+  private readonly dialog = inject(MatDialog);
 
   selected?: ProtocolMetaInterface;
   disk: DiskInterface;
@@ -158,13 +161,14 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
   /**
    * Fetch the remote repository and save it to the devices local storage.
    * @param config The configuration used to download the repository.
+   * @param tagsOnly Whether only tags should be considered references or commits can be used.
    */
-  async fetchGitlabProtocol(config: GitlabConfigInterface) {
+  async fetchGitlabProtocol(config: GitlabConfigInterface, useTagsOnly: boolean) {
     try {
       const localDir = `.tabsint-protocols/${config.repository}`;
       this.tasks.register('Add Gitlab Protocol', 'Download protocol files');
-      const ref = await this.gitlabService.getGitlabReference(config);
-      const folderUri = await this.gitlabService.downloadGitlabRepository(config, localDir, true);
+      const ref = config.tag ? config.tag : await this.gitlabService.getLatestReference(config, useTagsOnly);
+      const folderUri = await this.gitlabService.downloadGitlabRepository(config, localDir, true, useTagsOnly);
       let protocolContent = undefined;
       try {
         const fileResponse = await this.fileService.readFile('protocol.json', folderUri);
@@ -326,6 +330,15 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // Determine which Gitlab reference type the user wants
+    const dialogRef = this.dialog.open(GitlabReferenceDialog);
+    const response = await firstValueFrom(dialogRef.afterClosed());
+    if (!response) {
+      // User cancelled the update do not continue
+      return;
+    }
+    const useTagsOnly = response === GitlabReferenceDialog.OPTION_TAG;
+
     try {
       this.tasks.register('Update Protocol', `Checking for updates for ${this.selected.name}...`);
 
@@ -338,10 +351,10 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
       if (!selectedGitlabConfig.host || !selectedGitlabConfig.token || !selectedGitlabConfig.group || !selectedGitlabConfig.repository) {
         throw new Error('Missing required GitLab configuration. Please specify a GitLab host, token, group, and repository.');
       }
-      const latestCommitHash = await this.gitlabService.getLatestCommitHash(selectedGitlabConfig);
-      this.logger.debug(`Latest commit hash: ${latestCommitHash}`);
+      const latestReference = await this.gitlabService.getLatestReference(selectedGitlabConfig, useTagsOnly);
+      this.logger.debug(`Latest reference: ${latestReference}`);
 
-      if (selectedGitlabConfig.tag === latestCommitHash) {
+      if (selectedGitlabConfig.tag === latestReference) {
         this.notifications.alert({
           title: 'Up-to-date',
           content: 'Your protocol is already up-to-date.',
@@ -349,31 +362,14 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
         });
         return;
       }
-      const latestProtocolJson = await this.gitlabService.fetchLatestGitlabFile(selectedGitlabConfig, 'protocol.json');
       const localDir = `.tabsint-protocols/${selectedGitlabConfig.repository}`;
-      const localProtocolFile = await this.fileService.readFile(`${localDir}/protocol.json`);
-
-      if (localProtocolFile) {
-        const localProtocolJson = JSON.parse(localProtocolFile.content);
-
-        if (_.isEqual(localProtocolJson, latestProtocolJson)) {
-          this.notifications.alert({
-            title: 'No Changes Detected',
-            content: 'The protocol.json file has not changed in the latest commit.',
-            type: DialogType.Confirm,
-          });
-          return;
-        }
-      } else {
-        throw new Error('Could not read local protocol.json file.');
-      }
-
-      const newGitlabConfig = { ...selectedGitlabConfig, tag: latestCommitHash };
-      const localDirUri = await this.gitlabService.downloadGitlabRepository(newGitlabConfig, localDir, true);
+      const newGitlabConfig = { ...selectedGitlabConfig, tag: latestReference };
+      const localDirUri = await this.gitlabService.downloadGitlabRepository(newGitlabConfig, localDir, true, useTagsOnly);
       const fileResponse = await this.fileService.readFile('protocol.json', localDirUri);
       const protocolContent = fileResponse?.content ? JSON.parse(fileResponse.content) : undefined;
       const updatedProtocol: ProtocolInterface = {
         ...partialMetaDefaults,
+        version: latestReference,
         name: selectedGitlabConfig.repository,
         server: ProtocolServer.Gitlab,
         contentURI: localDirUri,
@@ -402,10 +398,24 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
    * Callback for gitlab configuration submission events.
    * @param config The new validated configuration.
    */
-  onGitlabConfigSubmit(config: GitlabConfigInterface) {
-    this.disk.preferences.gitlabConfig = { ...this.disk.preferences.gitlabConfig, ...config };
-    this.diskModel.storeDisk();
-    this.fetchGitlabProtocol(config);
+  async onGitlabConfigSubmit(config: GitlabConfigInterface) {
+    if (config.tag) {
+      // Tag already exists so we can immediately fetch
+      this.disk.preferences.gitlabConfig = { ...this.disk.preferences.gitlabConfig, ...config };
+      this.diskModel.storeDisk();
+      await this.fetchGitlabProtocol(config, false);
+    } else {
+      // Determine which Gitlab reference type the user wants
+      const dialogRef = this.dialog.open(GitlabReferenceDialog);
+      dialogRef.afterClosed().subscribe(async result => {
+        if (result) {
+          const useTagsOnly = result === GitlabReferenceDialog.OPTION_TAG;
+          this.disk.preferences.gitlabConfig = { ...this.disk.preferences.gitlabConfig, ...config };
+          this.diskModel.storeDisk();
+          await this.fetchGitlabProtocol(config, useTagsOnly);
+        }
+      });
+    }
   }
 
   gitlabButtonClass(): string {

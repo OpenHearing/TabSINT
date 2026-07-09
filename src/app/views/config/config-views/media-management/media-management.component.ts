@@ -17,6 +17,8 @@ import { Tasks } from '../../../../services/tasks.service';
 import { Logger } from '../../../../services/logger.service';
 import { isValidDeviceResponse } from '../../../../guards/type.guard';
 import { DialogDataInterface } from '../../../../interfaces/dialog-data.interface';
+import { MatDialog } from '@angular/material/dialog';
+import { GitlabReferenceDialog } from '../../../gitlab-reference-dialog/gitlab-reference-dialog.component';
 
 @Component({
   selector: 'app-media-management-view',
@@ -31,6 +33,7 @@ export class MediaManagementComponent implements OnInit, OnDestroy {
   private readonly gitlabService = inject(GitlabService);
   private readonly tasks = inject(Tasks);
   private readonly logger = inject(Logger);
+  private readonly dialog = inject(MatDialog);
 
   @Input() device!: IDevice;
   DeviceState = DeviceState;
@@ -131,7 +134,30 @@ export class MediaManagementComponent implements OnInit, OnDestroy {
     if (!name) return;
     const mediaRepo = this.mediaRepos.find(media => media.repository === name);
     if (mediaRepo !== undefined) {
-      await this.fetchRepository(mediaRepo);
+      // Determine which Gitlab reference type the user wants
+      const dialogRef = this.dialog.open(GitlabReferenceDialog);
+      const response = await firstValueFrom(dialogRef.afterClosed());
+      if (!response) {
+        // User cancelled the update do not continue
+        return;
+      }
+      try {
+        const useTagsOnly = response === GitlabReferenceDialog.OPTION_TAG;
+        const latestReference = await this.gitlabService.getLatestReference(mediaRepo, useTagsOnly);
+        this.logger.debug(`Latest reference: ${latestReference}`);
+        if (mediaRepo.tag === latestReference) {
+          this.notifications.alert({
+            title: 'Up-to-date',
+            content: 'Your media repository is already up-to-date.',
+            type: DialogType.Confirm,
+          });
+          return;
+        }
+        const newGitlabConfig = { ...mediaRepo, tag: latestReference };
+        await this.fetchRepository(newGitlabConfig, useTagsOnly);
+      } catch (error) {
+        this.handleGitlabError(error);
+      }
     }
   }
 
@@ -161,7 +187,19 @@ export class MediaManagementComponent implements OnInit, OnDestroy {
       });
       return;
     }
-    await this.fetchRepository(config);
+    if (config.tag) {
+      // Tag already exists so we can immediately fetch
+      await this.fetchRepository(config, false);
+    } else {
+      // Determine which Gitlab reference type the user wants
+      const dialogRef = this.dialog.open(GitlabReferenceDialog);
+      dialogRef.afterClosed().subscribe(async result => {
+        if (result) {
+          const useTagsOnly = result === GitlabReferenceDialog.OPTION_TAG;
+          await this.fetchRepository(config, useTagsOnly);
+        }
+      });
+    }
   }
 
   /**
@@ -217,17 +255,16 @@ export class MediaManagementComponent implements OnInit, OnDestroy {
   /**
    * Fetch the remote repository and save it to the devices local storage.
    * @param config The configuration used to download the repository.
+   * @param tagsOnly Whether only tags should be considered references or commits can be used.
    */
-  private async fetchRepository(config: GitlabConfigInterface) {
+  private async fetchRepository(config: GitlabConfigInterface, tagsOnly: boolean) {
     const safeFolder = `${config.group}${config.repository}`.replace(/[^a-z0-9]/gi, '-').toLowerCase();
     const relativePath = `gitlab/${safeFolder}`;
     const taggedConfig = structuredClone(config);
     try {
       this.tasks.register('Add Gitlab Media', 'Downloading Media Files...');
-      if (!config.tag) {
-        taggedConfig.tag = (await this.gitlabService.getGitlabReference(config)) ?? '';
-      }
-      const directoryUri = await this.gitlabService.downloadGitlabRepository(config, relativePath, false);
+      taggedConfig.tag = config.tag ? config.tag : await this.gitlabService.getLatestReference(config, tagsOnly);
+      const directoryUri = await this.gitlabService.downloadGitlabRepository(taggedConfig, relativePath, false, tagsOnly);
       if (directoryUri !== undefined) {
         const mediaRepo: MediaReposInterface = { ...taggedConfig, date: getDateString(), path: directoryUri };
         const filteredRepos = this.mediaRepos.filter(media => media.repository !== mediaRepo.repository);
