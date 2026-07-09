@@ -68,7 +68,7 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
   }
 
   ngAfterViewInit(): void {
-    this.svg = this.createProgressPlot();
+    this.svg = this.createProgressPlot(this.yScale);
   }
 
   ngOnDestroy(): void {
@@ -130,16 +130,17 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
     );
   }
 
-  private createProgressPlot() {
-    let svg = d3
-      .select('#dpoae-in-progress-plot')
+  private createProgressPlot(yScale: d3.ScaleLinear<number, number, never>) {
+    const plot = d3.select('#dpoae-in-progress-plot');
+    plot.select('svg').remove(); // Remove existing svg in case of update
+    let svg = plot
       .append('svg')
       .attr('width', this.width + this.margin.left + this.margin.right)
       .attr('height', this.height + this.margin.top + this.margin.bottom)
       .append('g')
       .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
 
-    svg = createOAEResultsChartSvg(svg, this.width, this.height, this.xTicks, this.xScale, this.yScale);
+    svg = createOAEResultsChartSvg(svg, this.width, this.height, this.xTicks, this.xScale, yScale);
 
     const legendData = [
       { label: 'DPOAE', color: 'blue', symbol: 'circle' },
@@ -154,6 +155,15 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
   private updatePlot(dpLowData: DPOAEDataInterface, f2Data: DPOAEDataInterface) {
     const filteredData = this.filterData(dpLowData, f2Data);
 
+    // Re-create the plot with expanding Y scale
+    const yDomainLower = Math.min(...this.yScale.domain());
+    const yDomainUpper = Math.max(...this.yScale.domain());
+    const newMin = Math.min(yDomainLower, ...filteredData['Amplitude'], ...filteredData['NoiseFloor']);
+    const newMax = Math.max(yDomainUpper, ...filteredData['Amplitude'], ...filteredData['NoiseFloor']);
+    const extendedYScale = this.yScale.copy();
+    extendedYScale.domain([newMin, newMax]);
+    this.svg = this.createProgressPlot(extendedYScale);
+
     // Plot DpLow Amplitude / DPOAE (blue open circles)
     this.svg
       .selectAll('.dot')
@@ -161,7 +171,7 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
       .enter()
       .append('circle')
       .attr('cx', (d, i) => this.xScale(filteredData['F2Frequency'][i]))
-      .attr('cy', (d, i) => this.yScale(filteredData['Amplitude'][i]))
+      .attr('cy', (d, i) => extendedYScale(filteredData['Amplitude'][i]))
       .attr('r', 4)
       .style('fill', 'none')
       .style('stroke', 'blue')
@@ -174,7 +184,7 @@ export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterVi
       .enter()
       .append('text')
       .attr('x', (d, i) => this.xScale(filteredData['F2Frequency'][i]))
-      .attr('y', (d, i) => this.yScale(filteredData['NoiseFloor'][i]))
+      .attr('y', (d, i) => extendedYScale(filteredData['NoiseFloor'][i]))
       .attr('text-anchor', 'middle')
       .attr('alignment-baseline', 'middle')
       .style('fill', 'red')
