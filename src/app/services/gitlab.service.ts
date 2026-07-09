@@ -20,7 +20,7 @@ export class GitlabService {
    * @param config Gitlab configuration to access a repository.
    * @param localDirectory The local directory to save the repository.
    * @param saveExternal Whether the download should be saved to internal or external storage.
-   * @param tagsOnly Whether only tags should be considered references or commits can be used.
+   * @param tagsOnly Whether only tags should be used or only commits.
    * @returns The content URI for the created local directory.
    */
   async downloadGitlabRepository(
@@ -47,7 +47,7 @@ export class GitlabService {
   /**
    * Determine the latest Gitlab reference for a repository.
    * @param config Gitlab configuration to access a repository.
-   * @param tagsOnly Whether only tags should be considered references or commits can be used.
+   * @param tagsOnly Whether only tags should be used or only commits.
    * @returns The latest commit hash.
    */
   async getLatestReference(config: GitlabConfigInterface, tagsOnly: boolean): Promise<string> {
@@ -67,7 +67,7 @@ export class GitlabService {
    * Fetch a single file from a gitlab repository.
    * @param gitlabConfig Gitlab configuration to access a repository.
    * @param relativeFilePath The relative path to the requested file.
-   * @param tagsOnly Whether only tags should be considered references or commits can be used.
+   * @param tagsOnly Whether only tags should be used or only commits.
    * @returns The response data if successful.
    */
   async fetchLatestGitlabFile(gitlabConfig: GitlabConfigInterface, relativeFilePath: string, tagsOnly: boolean): Promise<any> {
@@ -218,7 +218,7 @@ export class GitlabService {
     const tags = (
       await this._fetchGitlabResponse(
         { url: `${host}/api/v4/projects/${projectId}/repository/tags?per_page=1`, headers: headers },
-        'Failed to fetch latest commit: '
+        'Failed to fetch latest tag: '
       )
     ).data;
 

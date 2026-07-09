@@ -255,7 +255,7 @@ export class MediaManagementComponent implements OnInit, OnDestroy {
   /**
    * Fetch the remote repository and save it to the devices local storage.
    * @param config The configuration used to download the repository.
-   * @param tagsOnly Whether only tags should be considered references or commits can be used.
+   * @param tagsOnly Whether only tags should be used or only commits.
    */
   private async fetchRepository(config: GitlabConfigInterface, tagsOnly: boolean) {
     const safeFolder = `${config.group}${config.repository}`.replace(/[^a-z0-9]/gi, '-').toLowerCase();
