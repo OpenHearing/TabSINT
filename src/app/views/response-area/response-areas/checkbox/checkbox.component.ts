@@ -152,7 +152,7 @@ export class CheckboxComponent implements OnInit, OnDestroy {
 
   onResponseChange() {
     this.stateModel.updateState({ doesResponseExist: this.results.currentPage.response.other !== '' });
-    this.resultsModel.updateCurrentPage({ response: this.results.currentPage.response.other });
+    this.resultsModel.updateCurrentPage({ response: this.results.currentPage.response });
   }
 
   choiceSelected(id: string | number) {
