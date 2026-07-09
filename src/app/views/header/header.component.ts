@@ -102,6 +102,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
     });
   }
 
+  /** The current page's title, inherited from the nearest ancestor protocol if the page has none of its own. */
+  get pageTitle(): string | undefined {
+    return this.currentPage.title ?? this.protocol.activeProtocolStack.resolveInheritedTitle();
+  }
+
   navigateToNavMenuItem(navMenuItem: NavMenuInterface) {
     const contentStr = navMenuItem.returnHereAfterward
       ? 'TabSINT will navigate to the selected sub-protocol, then return to this page and resume the current series of questions after that sub-protocol is complete.'

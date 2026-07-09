@@ -73,6 +73,11 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
     });
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe((updatedResults: ResultsInterface) => {
       this.results = updatedResults;
+      if (typeof this.results.currentPage.response !== 'object') {
+        this.results.currentPage.response = {
+          selected: null,
+        };
+      }
     });
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type == 'multipleChoiceResponseArea') {
@@ -139,10 +144,15 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
   }
 
   choose(id: string | number) {
-    this.results.currentPage.response = id;
+    const isOther = id === 'Other';
+    if (isOther !== this.otherSelected) {
+      this.toggleOther();
+    }
+    this.results.currentPage.response.selected = id;
+    this.resultsModel.updateCurrentPage({ response: this.results.currentPage.response });
     this.stateModel.updateState({ doesResponseExist: true });
     this.stateModel.setPageSubmittable();
-    if (this.state.isSubmittable && this.results.currentPage.response !== 'Other') {
+    if (this.state.isSubmittable && !isOther) {
       this.examService.submit();
     }
   }
@@ -157,7 +167,7 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
 
   onResponseChange() {
     this.stateModel.updateState({ doesResponseExist: this.results.currentPage.response.other !== '' });
-    this.resultsModel.updateCurrentPage({ response: this.results.currentPage.response.other });
+    this.resultsModel.updateCurrentPage({ response: this.results.currentPage.response });
   }
 
   onEnter() {
@@ -169,9 +179,6 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
       feedback: this.submitted ? this.feedback : undefined,
       disableButton: this.disableButtons,
     };
-    const response = {
-      selected: this.results.currentPage.response,
-    };
-    return choiceBtnClassHelper(choice, response, options);
+    return choiceBtnClassHelper(choice, this.results.currentPage.response, options);
   }
 }

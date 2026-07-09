@@ -54,7 +54,7 @@ export class ButtonGridComponent implements OnInit, OnDestroy {
     });
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe((updatedResults: ResultsInterface) => {
       this.results = updatedResults;
-      if (typeof this.results.currentPage.response !== 'object') {
+      if (!Array.isArray(this.results.currentPage.response?.selected)) {
         this.results.currentPage.response = {
           selected: [],
         };
@@ -115,11 +115,6 @@ export class ButtonGridComponent implements OnInit, OnDestroy {
     this.pageSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();
     this.resultsSubscription?.unsubscribe();
-  }
-
-  onResponseChange() {
-    this.stateModel.updateState({ doesResponseExist: this.results.currentPage.response.other !== '' });
-    this.resultsModel.updateCurrentPage({ response: this.results.currentPage.response.other });
   }
 
   choiceSelected(id: string | number) {

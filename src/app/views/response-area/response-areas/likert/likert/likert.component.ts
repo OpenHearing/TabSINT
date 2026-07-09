@@ -94,9 +94,15 @@ export class LikertComponent implements OnInit, OnDestroy {
     });
     this.stateModel.setPageSubmittable();
     this.responseChange.emit(this.results.currentPage.response);
-    if (this.likertExamProperties.autoSubmit) {
+    if (this.likertExamProperties.autoSubmit && this.allQuestionsAnswered()) {
       this.examService.submit();
     }
+  }
+
+  /** Whether every question on the page has a non-null response, required before autoSubmit fires. */
+  private allQuestionsAnswered(): boolean {
+    const response = this.results.currentPage.response;
+    return Array.isArray(response) && response.every(value => value !== null);
   }
 
   onSliderChange(questionIndex: number, event: Event): void {

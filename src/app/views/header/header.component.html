@@ -3,11 +3,10 @@
 <!-- Header -->
 <nav class="navbar navbar-default navbar-fixed-top sticky-top tablet-interface">
   <div class="container-fluid">
-
     <!-- Exam Header -->
     <div *ngIf="state.appState === AppState.Exam">
-      <h1 *ngIf="currentPage.id && state.examState !== ExamState.Ready" class="surveytitle truncate">
-        {{ currentPage.id }}
+      <h1 *ngIf="pageTitle && state.examState !== ExamState.Ready" class="surveytitle truncate">
+        {{ pageTitle }}
       </h1>
     </div>
 
@@ -22,7 +21,6 @@
       <!-- resource indicators -->
       <app-indicator-view></app-indicator-view>
 
-
       <div class="col">
         <div ngbDropdown display="dynamic" class="d-inline-block">
           <button type="button" class="btn btn-outline-primary" id="header-dropdown-menu" ngbDropdownToggle>
@@ -31,7 +29,9 @@
           <div ngbDropdownMenu aria-labelledby="header-dropdown-menu">
             <button routerLink="/exam" ngbDropdownItem>{{ "Exam View" | transloco }}</button>
             <button (click)="adminService.onAdminViewClick()" ngbDropdownItem>{{ "Admin View" | transloco }}</button>
-            <a href="https://tabsint.org/"><button ngbDropdownItem>{{ "Documentation" | transloco }}</button></a>
+            <a href="https://tabsint.org/"
+              ><button ngbDropdownItem>{{ "Documentation" | transloco }}</button></a
+            >
             <div *ngIf="(state.examState === ExamState.Testing || state.examState === ExamState.DeviceError) && state.appState === AppState.Exam">
               <div class="dropdown-divider"></div>
               <button (click)="resetExam()" ngbDropdownItem><i class="ion-close"></i> {{ "Reset Exam and Discard Results" | transloco }}</button>
