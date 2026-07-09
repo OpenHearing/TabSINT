@@ -14,6 +14,7 @@ export interface ProtocolStackItem {
   maxPages: number;
   pageQueue: PageTypes[];
   pageIndex: number;
+  title?: string;
 }
 
 /**
@@ -37,6 +38,7 @@ export class ProtocolStack {
       maxPages: protocolCopy.timeout?.nMaxPages ?? Number.MAX_SAFE_INTEGER,
       pageQueue: protocolCopy.pages,
       pageIndex: -1,
+      title: protocolCopy.title,
     };
     this.items.push(item);
     this.latestProtocol.next(this.peek());
@@ -70,6 +72,20 @@ export class ProtocolStack {
    */
   peek(): ProtocolStackItem | undefined {
     return structuredClone(this.items.at(-1));
+  }
+
+  /**
+   * Resolve the title an untitled page should inherit: the title of the nearest ancestor
+   * protocol, walking from the current protocol up to the root.
+   * @returns The nearest ancestor title, or undefined if no protocol in the stack has one.
+   */
+  resolveInheritedTitle(): string | undefined {
+    for (let i = this.items.length - 1; i >= 0; i--) {
+      if (this.items[i].title) {
+        return this.items[i].title;
+      }
+    }
+    return undefined;
   }
 
   /**
