@@ -81,7 +81,7 @@ export class ProtocolStack {
    */
   resolveInheritedTitle(): string | undefined {
     for (let i = this.items.length - 1; i >= 0; i--) {
-      if (this.items[i].title) {
+      if (this.items[i].title !== undefined) {
         return this.items[i].title;
       }
     }

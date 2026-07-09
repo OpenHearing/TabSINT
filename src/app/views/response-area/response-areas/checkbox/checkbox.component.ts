@@ -60,7 +60,7 @@ export class CheckboxComponent implements OnInit, OnDestroy {
     });
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe((updatedResults: ResultsInterface) => {
       this.results = updatedResults;
-      if (typeof this.results.currentPage.response !== 'object') {
+      if (!Array.isArray(this.results.currentPage.response?.selected)) {
         this.results.currentPage.response = {
           selected: [],
         };
@@ -84,7 +84,6 @@ export class CheckboxComponent implements OnInit, OnDestroy {
               id: 'Other',
               text: this.other ?? 'Other',
             });
-            this.results.currentPage.response.other = '';
           }
 
           // Overwrite the gradeResponses default

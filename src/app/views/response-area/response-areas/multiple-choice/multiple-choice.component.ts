@@ -110,7 +110,6 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
               id: 'Other',
               text: updatedMultipleChoiceResponseArea.other,
             });
-            this.results.currentPage.response.other = '';
           }
 
           this.disableButtons = true;
