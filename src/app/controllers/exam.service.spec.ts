@@ -425,6 +425,7 @@ describe('ExamService', () => {
         maxPages: 10,
         maxSeconds: 60,
         startTime: new Date(),
+        showProgressBar: false,
       };
       examService.updateExamProgress(notStarted);
       expect(mockStateModel.updateState).toHaveBeenCalledWith({ examProgress: 0 });
@@ -438,6 +439,7 @@ describe('ExamService', () => {
         maxPages: Number.MAX_SAFE_INTEGER,
         maxSeconds: Number.MAX_SAFE_INTEGER,
         startTime: new Date(),
+        showProgressBar: false,
       };
       examService.updateExamProgress(protocol);
       const call = mockStateModel.updateState.calls.mostRecent();

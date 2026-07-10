@@ -15,6 +15,7 @@ export interface ProtocolStackItem {
   pageQueue: PageTypes[];
   pageIndex: number;
   title?: string;
+  showProgressBar?: boolean;
 }
 
 /**
@@ -39,6 +40,7 @@ export class ProtocolStack {
       pageQueue: protocolCopy.pages,
       pageIndex: -1,
       title: protocolCopy.title,
+      showProgressBar: protocolCopy.showProgressBar,
     };
     this.items.push(item);
     this.latestProtocol.next(this.peek());
