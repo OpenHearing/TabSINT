@@ -20,15 +20,22 @@ export class GitlabService {
    * @param config Gitlab configuration to access a repository.
    * @param localDirectory The local directory to save the repository.
    * @param saveExternal Whether the download should be saved to internal or external storage.
+   * @param tagsOnly Whether only tags should be used or only commits.
    * @returns The content URI for the created local directory.
    */
-  async downloadGitlabRepository(config: GitlabConfigInterface, localDirectory: string, saveExternal: boolean): Promise<string | undefined> {
+  async downloadGitlabRepository(
+    config: GitlabConfigInterface,
+    localDirectory: string,
+    saveExternal: boolean,
+    tagsOnly: boolean
+  ): Promise<string | undefined> {
     let folderUri = undefined;
     const headers = {
       Authorization: `Bearer ${config.token}`,
     };
     const projectId = await this._getGitlabProjectId(config.host, config.repository, config.group, headers);
-    const ref = config.tag ? config.tag : await this._getLatestCommitHash(config.host, projectId, headers);
+    const ref = config.tag ? config.tag : await this.getLatestReference(config, tagsOnly);
+
     if (saveExternal) {
       folderUri = await this.downloadAndSaveFilesExternal(projectId, ref, config.host, headers, localDirectory);
     } else {
@@ -38,50 +45,38 @@ export class GitlabService {
   }
 
   /**
-   * Determine the Gitlab pointer/reference in a repository.
+   * Determine the latest Gitlab reference for a repository.
    * @param config Gitlab configuration to access a repository.
-   * @returns The tag if available, otherwise the latest commit hash.
-   */
-  async getGitlabReference(config: GitlabConfigInterface): Promise<string | undefined> {
-    if (config.tag) {
-      return config.tag;
-    }
-
-    const headers = {
-      Authorization: `Bearer ${config.token}`,
-    };
-    const projectId = await this._getGitlabProjectId(config.host, config.repository, config.group, headers);
-    const ref = await this._getLatestCommitHash(config.host, projectId, headers);
-    return ref;
-  }
-
-  /**
-   * Determine the latest Gitlab commit hash for a repository.
-   * @param config Gitlab configuration to access a repository.
+   * @param tagsOnly Whether only tags should be used or only commits.
    * @returns The latest commit hash.
    */
-  async getLatestCommitHash(config: GitlabConfigInterface): Promise<string> {
+  async getLatestReference(config: GitlabConfigInterface, tagsOnly: boolean): Promise<string> {
     const headers = {
       Authorization: `Bearer ${config.token}`,
     };
     const projectId = await this._getGitlabProjectId(config.host, config.repository, config.group, headers);
-    const commitHash = await this._getLatestCommitHash(config.host, projectId, headers);
-    return commitHash;
+
+    if (tagsOnly) {
+      return await this._getLatestTag(config.host, projectId, headers);
+    }
+
+    return await this._getLatestCommitHash(config.host, projectId, headers);
   }
 
   /**
    * Fetch a single file from a gitlab repository.
    * @param gitlabConfig Gitlab configuration to access a repository.
    * @param relativeFilePath The relative path to the requested file.
+   * @param tagsOnly Whether only tags should be used or only commits.
    * @returns The response data if successful.
    */
-  async fetchLatestGitlabFile(gitlabConfig: GitlabConfigInterface, relativeFilePath: string): Promise<any> {
+  async fetchLatestGitlabFile(gitlabConfig: GitlabConfigInterface, relativeFilePath: string, tagsOnly: boolean): Promise<any> {
     const headers = {
       Authorization: `Bearer ${gitlabConfig.token}`,
     };
     const projectId = await this._getGitlabProjectId(gitlabConfig.host, gitlabConfig.repository, gitlabConfig.group, headers);
-    const commitHash = await this._getLatestCommitHash(gitlabConfig.host, projectId, headers);
-    const fileUrl = `${gitlabConfig.host}/api/v4/projects/${projectId}/repository/files/${relativeFilePath}/raw?ref=${commitHash}`;
+    const ref = await this.getLatestReference(gitlabConfig, tagsOnly);
+    const fileUrl = `${gitlabConfig.host}/api/v4/projects/${projectId}/repository/files/${relativeFilePath}/raw?ref=${ref}`;
     const data = (await this._fetchGitlabResponse({ url: fileUrl, headers: headers }, `Failed to fetch ${relativeFilePath}`)).data;
     return data;
   }
@@ -210,6 +205,25 @@ export class GitlabService {
 
     if (!commits.length) throw new Error('No commits found in repository.');
     return commits[0].id.substring(0, 8);
+  }
+
+  /**
+   * Private method for determining the latest Gitlab tag for a repository.
+   * @param host The host of the Gitlab repository.
+   * @param projectId The project identifier for the repository.
+   * @param headers Authorization headers for the request.
+   * @returns The latest tag.
+   */
+  private async _getLatestTag(host: string, projectId: number, headers: { Authorization: string }): Promise<string> {
+    const tags = (
+      await this._fetchGitlabResponse(
+        { url: `${host}/api/v4/projects/${projectId}/repository/tags?per_page=1`, headers: headers },
+        'Failed to fetch latest tag: '
+      )
+    ).data;
+
+    if (!tags.length) throw new Error('No tags found in repository.');
+    return tags[0].name;
   }
 
   /**
