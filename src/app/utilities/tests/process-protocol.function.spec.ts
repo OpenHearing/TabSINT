@@ -125,7 +125,6 @@ const testProtocol: ProtocolInterface = {
   title: 'Test Protocol',
   subtitle: "Developer testing of open-tabsint responseArea's.",
   instructionText: 'instructionText goes here',
-  hideProgressBar: true,
   navMenu: [
     {
       text: 'Back to Main Menu',

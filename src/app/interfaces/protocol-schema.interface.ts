@@ -17,7 +17,7 @@ export interface ProtocolSchemaInterface {
   commonMediaRepository?: string;
   calibration?: ProtocolCalibrationInterface[];
   timeout?: TimeoutInterface;
-  hideProgressBar?: boolean;
+  showProgressBar?: boolean;
   enableBackButton?: boolean;
   navMenu?: NavMenuInterface[];
   pages: PageTypes[];

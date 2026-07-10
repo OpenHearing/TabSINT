@@ -33,7 +33,6 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
   properties: {
     id: { type: 'string' },
     skipIf: { type: 'string', nullable: true },
-    hideProgressBar: { type: 'boolean', nullable: true, default: false },
     autoSubmitDelay: { type: 'number', nullable: true, minimum: 50 },
     enableBackButton: { type: 'boolean', nullable: true, default: false },
     navMenu: { type: 'array', items: navMenuSchema, nullable: true },

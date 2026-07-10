@@ -51,7 +51,6 @@ export const pageInterfaceDefaults: PageInterface = {
   example: 0,
   other: [],
   dict: {},
-  hideProgressBar: true,
   isSubmittable: true,
   canGoBack: checkIfCanGoBack(),
   subtitle: '',
