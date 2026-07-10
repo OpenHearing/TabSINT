@@ -295,6 +295,21 @@ a:focus {
   border: 1px #ddd solid;
 }
 
+.mat-mdc-button.focused-appearance {
+  background-color: #ddd;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.mat-mdc-radio-button.mat-mdc-radio-checked {
+  --mdc-radio-selected-icon-color: #ffc107;
+  --mdc-radio-selected-hover-icon-color: #ffc107;
+  --mdc-radio-selected-focus-icon-color: #ffc107;
+  --mdc-radio-selected-pressed-icon-color: #ffc107;
+  --mat-radio-ripple-color: #ffc107;
+  --mat-radio-checked-ripple-color: #ffc107;
+}
+
 /* ----------
   * Welcome Page
   * -----------*/
