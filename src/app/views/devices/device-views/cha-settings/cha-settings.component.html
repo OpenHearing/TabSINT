@@ -1,5 +1,4 @@
 <div>
-    
     <br />
 
     <div class="row">
@@ -63,27 +62,37 @@
     <!-- Calibration Date -->
     <div class="row pad-top">
         <div class="col-4">{{ "Calibration Date:" | transloco }}</div>
-        <div class="col-8">{{ device?.metadata?.calibrationDate ?? "N/A" }}</div>
+    <div class="col-8">{{ device.metadata.calibrationDate ?? "N/A" }}</div>
     </div>
 
     <div class="row pad-top">
         <div class="col-4">{{ "Battery Level:" | transloco }}</div>
-        <div class="col-4">
+    <div class="col-4" *ngIf="device.metadata.batteryLevel !== undefined">
             <span class="cha-battery-border" [style.width.%]="100">
-                <div *ngIf="device?.metadata?.batteryLevel! >= 66" class="cha-battery-status" [ngStyle]="{'width': device?.metadata?.batteryLevel!+'%', 'background-color': 'green'}"></div>
-                <div *ngIf="device?.metadata?.batteryLevel! >= 33 && device?.metadata?.batteryLevel! < 66" class="cha-battery-status" [ngStyle]="{'width': device?.metadata?.batteryLevel!+'%', 'background-color': 'orange'}"></div>
-                <div *ngIf="device?.metadata?.batteryLevel! < 33"class="cha-battery-status" [ngStyle]="{'width': device?.metadata?.batteryLevel!+'%', 'background-color': 'red'}"></div>
+        <div
+          *ngIf="device.metadata.batteryLevel >= 66"
+          class="cha-battery-status high"
+          [ngStyle]="{ width: device.metadata.batteryLevel + '%' }"></div>
+        <div
+          *ngIf="device.metadata.batteryLevel >= 33 && device.metadata.batteryLevel < 66"
+          class="cha-battery-status medium"
+          [ngStyle]="{ width: device.metadata.batteryLevel + '%' }"></div>
+        <div *ngIf="device.metadata.batteryLevel < 33" class="cha-battery-status low" [ngStyle]="{ width: device.metadata.batteryLevel + '%' }"></div>
             </span>
         </div>
-        <div class="col-4"><small>{{device?.metadata?.batteryLevel!}}%</small></div>
+    <div class="col-4" *ngIf="device.metadata.batteryLevel !== undefined">
+      <small>{{ device.metadata.batteryLevel }}%</small>
+    </div>
     </div>
 
     <!-- Auto Shutdown Time -->
     <div class="row pad-top">
         <div class="col-4">{{ "Auto Shutdown Time:" | transloco }}</div>
-        <div class="col-4">{{ device?.metadata?.autoShutdownTime != null ? (device?.metadata?.autoShutdownTime + ' mins') : 'N/A' }}</div>
+    <div class="col-4">{{ device.metadata.autoShutdownTime !== undefined ? device.metadata.autoShutdownTime + " mins" : "N/A" }}</div>
         <div class="col-1">
-            <a href="javascript:" title="{{ 'Change Auto Shutdown Time' | transloco }}" (click)="changeAutoShutdownTime(device)"><i class="ion-edit"></i></a>
+      <a href="javascript:" title="{{ 'Change Auto Shutdown Time' | transloco }}" (click)="changeAutoShutdownTime(device)"
+        ><i class="ion-edit"></i
+      ></a>
         </div>
         <div class="col-1"></div>
         <div class="col-1" title="{{ 'Auto Shutdown Time Help' | transloco }}">

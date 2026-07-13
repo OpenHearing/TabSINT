@@ -2572,6 +2572,18 @@ button.btn.cha-selected {
   vertical-align: inherit;
 }
 
+.cha-battery-status.low {
+  background-color: #d43f3a;
+}
+
+.cha-battery-status.medium {
+  background-color: #ffc107;
+}
+
+.cha-battery-status.high {
+  background-color: #5cb85c;
+}
+
 .cha-battery-border {
   display: inline-block;
   height: 25px;
