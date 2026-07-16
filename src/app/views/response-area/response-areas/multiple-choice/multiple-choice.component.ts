@@ -73,11 +73,6 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
     });
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe((updatedResults: ResultsInterface) => {
       this.results = updatedResults;
-      if (typeof this.results.currentPage.response !== 'object') {
-        this.results.currentPage.response = {
-          selected: null,
-        };
-      }
     });
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type == 'multipleChoiceResponseArea') {
@@ -119,6 +114,11 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
 
           // delay 100ms to allow results and exam defaults to be set before we override them
           setTimeout(() => {
+            if (typeof this.results.currentPage.response !== 'object') {
+              this.results.currentPage.response = {
+                selected: null,
+              };
+            }
             (this.results.currentPage.page.responseArea as MultipleChoiceInterface).choices = this.choices;
             // Allow for 1250ms delay if feedback is present
             if (this.feedback) {
