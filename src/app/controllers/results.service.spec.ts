@@ -74,6 +74,23 @@ describe('ResultsService', () => {
     });
     expect(returnedResults.currentExam.responses.length).toEqual(1);
   });
+
+  it('records response timing on page results', () => {
+    const resultsService = TestBed.inject(ResultsService);
+    const returnedResults: ResultsInterface = resultsService.results;
+    resultsService.initializePageResults({
+      id: '001',
+      title: 'Test',
+      instructionText: 'Test Case',
+    });
+    const startTime = returnedResults.currentPage.responseStartTime;
+    expect(startTime).toBeDefined();
+    expect(new Date(startTime!).getTime()).not.toBeNaN();
+    resultsService.pushResults(returnedResults.currentPage);
+    const pushed = returnedResults.currentExam.responses[0];
+    expect(pushed.responseStartTime).toBe(startTime);
+    expect(pushed.responseElapTimeMS).toBeGreaterThanOrEqual(0);
+  });
 });
 
 // ── Mocked-dependency tests ────────────────────────────────────────────────

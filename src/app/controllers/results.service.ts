@@ -111,6 +111,7 @@ export class ResultsService {
       numberIncorrect: undefined,
       isSkipped: false,
       responseArea: currentPage.responseArea ? currentPage.responseArea.type : undefined,
+      responseStartTime: new Date().toJSON(),
       page: currentPage,
       svantek: undefined,
     };
@@ -125,6 +126,9 @@ export class ResultsService {
    * @param response Response for the current page.
    */
   pushResults(currentPageResults: CurrentResults) {
+    if (currentPageResults.responseStartTime) {
+      currentPageResults.responseElapTimeMS = Date.now() - new Date(currentPageResults.responseStartTime).getTime();
+    }
     this.resultsModel.pushResponse(currentPageResults);
   }
 

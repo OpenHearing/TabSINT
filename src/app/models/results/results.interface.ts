@@ -23,6 +23,8 @@ export interface CurrentResults {
   numberIncorrect?: number;
   isSkipped?: boolean;
   responseArea?: string;
+  responseStartTime?: string;
+  responseElapTimeMS?: number;
   page: {
     id: string;
     wavfiles?: PageWavfileInterface[];
