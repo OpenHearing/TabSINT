@@ -1,74 +1,72 @@
 <div>
-    <br />
+  <br />
 
-    <div class="row">
-        <div class="col-12">
-            <h5>{{ "Device Details" | transloco }}</h5>
-        </div>
+  <div class="row">
+    <div class="col-12">
+      <h5>{{ "Device Details" | transloco }}</h5>
     </div>
-        
-    <!-- Connected Device Tabsint ID -->
-    <div class="row pad-top">
-        <div class="col-4">{{ "TabSINT ID:" | transloco }}</div>
-        <div class="col-4" style="min-width: 0">
-            <div class="text-line-truncate">{{ device.tabsintId }}</div>
-        </div>
-        <div class="col-1">
-            <a href="javascript:" title="{{ 'TabSINT ID Edit' | transloco }}" (click)="editTabsintId(device)"><i class="ion-edit"></i></a>
-        </div>
-        <div class="col-1"></div>
-        <div class="col-1" href="javascript:" title="{{ 'TabSINT ID Edit Help' | transloco }}">
-            <i [matMenuTriggerFor]="setTabsintIdMenu" class="ion-help-circled"></i>
-        </div>
-        <mat-menu #setTabsintIdMenu="matMenu">
-            <button mat-menu-item>
-                <div [innerHTML]="setTabsintIdPopover"></div>
-            </button>
-        </mat-menu>
-    </div>
+  </div>
 
-    <!-- Connected Device Firmware-->
-    <div class="row pad-top">
-        <div class="col-4">{{ "Firmware:" | transloco }}</div>
-        <div class="col-4" [ngStyle]="{ color: firmwareMatch === undefined ? 'black' : firmwareMatch ? 'green' : 'red' }">
-            {{ device.metadata.buildDateTime ?? "N/A" }}
-        </div>
-        <div class="col-1">
-            <a
-            *ngIf="firmwareMatch === false && device.state === DeviceState.Connected"
-            href="javascript:"
-            title="{{ 'Update Firmware' | transloco }}"
-            (click)="reprogramFirmware(device)">
-                <i class="ion-refresh"></i>
-            </a>
-        </div>
-        <div class="col-1"></div>
-        <div class="col-1" href="javascript:" title="{{ 'Update Firmware Help' | transloco }}">
-            <i [matMenuTriggerFor]="firmwareMenu" class="ion-help-circled"></i>
-        </div>
-        <mat-menu #firmwareMenu="matMenu">
-            <button mat-menu-item>
-                <div [innerHTML]="firmwarePopover"></div>
-            </button>
-        </mat-menu>
+  <!-- Connected Device Tabsint ID -->
+  <div class="row pad-top">
+    <div class="col-4">{{ "TabSINT ID:" | transloco }}</div>
+    <div class="col-4" style="min-width: 0">
+      <div class="text-line-truncate">{{ device.tabsintId }}</div>
     </div>
-
-    <!-- Connected Device Serial-->
-    <div class="row pad-top">
-        <div class="col-4">{{ "Serial number:" | transloco }}</div>
-        <div class="col-8">{{ device.metadata.serialNumber ?? "N/A" }}</div>
+    <div class="col-1">
+      <a href="javascript:" title="{{ 'TabSINT ID Edit' | transloco }}" (click)="editTabsintId(device)"><i class="ion-edit"></i></a>
     </div>
+    <div class="col-1"></div>
+    <div class="col-1" href="javascript:" title="{{ 'TabSINT ID Edit Help' | transloco }}">
+      <i [matMenuTriggerFor]="setTabsintIdMenu" class="ion-help-circled"></i>
+    </div>
+    <mat-menu #setTabsintIdMenu="matMenu">
+      <button mat-menu-item>
+        <div [innerHTML]="setTabsintIdPopover"></div>
+      </button>
+    </mat-menu>
+  </div>
 
-    <!-- Calibration Date -->
-    <div class="row pad-top">
-        <div class="col-4">{{ "Calibration Date:" | transloco }}</div>
+  <!-- Connected Device Firmware-->
+  <div class="row pad-top">
+    <div class="col-4">{{ "Firmware:" | transloco }}</div>
+    <div class="col-4" [ngStyle]="{ color: firmwareMatch === undefined ? 'black' : firmwareMatch ? 'green' : 'red' }">
+      {{ device.metadata.buildDateTime ?? "N/A" }}
+    </div>
+    <div class="col-2">
+      <button
+        *ngIf="firmwareMatch === false && device.state === DeviceState.Connected"
+        class="btn btn-primary btn-small-wrap"
+        (click)="reprogramFirmware(device)">
+        {{ "Update" | transloco }}
+      </button>
+    </div>
+    <div class="col-1" href="javascript:" title="{{ 'Update Firmware Help' | transloco }}">
+      <i [matMenuTriggerFor]="firmwareMenu" class="ion-help-circled"></i>
+    </div>
+    <mat-menu #firmwareMenu="matMenu">
+      <button mat-menu-item>
+        <div [innerHTML]="firmwarePopover"></div>
+      </button>
+    </mat-menu>
+  </div>
+
+  <!-- Connected Device Serial-->
+  <div class="row pad-top">
+    <div class="col-4">{{ "Serial number:" | transloco }}</div>
+    <div class="col-8">{{ device.metadata.serialNumber ?? "N/A" }}</div>
+  </div>
+
+  <!-- Calibration Date -->
+  <div class="row pad-top">
+    <div class="col-4">{{ "Calibration Date:" | transloco }}</div>
     <div class="col-8">{{ device.metadata.calibrationDate ?? "N/A" }}</div>
-    </div>
+  </div>
 
-    <div class="row pad-top">
-        <div class="col-4">{{ "Battery Level:" | transloco }}</div>
+  <div class="row pad-top">
+    <div class="col-4">{{ "Battery Level:" | transloco }}</div>
     <div class="col-4" *ngIf="device.metadata.batteryLevel !== undefined">
-            <span class="cha-battery-border" [style.width.%]="100">
+      <span class="cha-battery-border" [style.width.%]="100">
         <div
           *ngIf="device.metadata.batteryLevel >= 66"
           class="cha-battery-status high"
@@ -78,30 +76,30 @@
           class="cha-battery-status medium"
           [ngStyle]="{ width: device.metadata.batteryLevel + '%' }"></div>
         <div *ngIf="device.metadata.batteryLevel < 33" class="cha-battery-status low" [ngStyle]="{ width: device.metadata.batteryLevel + '%' }"></div>
-            </span>
-        </div>
+      </span>
+    </div>
     <div class="col-4" *ngIf="device.metadata.batteryLevel !== undefined">
       <small>{{ device.metadata.batteryLevel }}%</small>
     </div>
-    </div>
+  </div>
 
-    <!-- Auto Shutdown Time -->
-    <div class="row pad-top">
-        <div class="col-4">{{ "Auto Shutdown Time:" | transloco }}</div>
+  <!-- Auto Shutdown Time -->
+  <div class="row pad-top">
+    <div class="col-4">{{ "Auto Shutdown Time:" | transloco }}</div>
     <div class="col-4">{{ device.metadata.autoShutdownTime !== undefined ? device.metadata.autoShutdownTime + " mins" : "N/A" }}</div>
-        <div class="col-1">
+    <div class="col-1">
       <a href="javascript:" title="{{ 'Change Auto Shutdown Time' | transloco }}" (click)="changeAutoShutdownTime(device)"
         ><i class="ion-edit"></i
       ></a>
-        </div>
-        <div class="col-1"></div>
-        <div class="col-1" title="{{ 'Auto Shutdown Time Help' | transloco }}">
-            <i [matMenuTriggerFor]="shutdownTimerMenu" class="ion-help-circled"></i>
-        </div>
-        <mat-menu #shutdownTimerMenu="matMenu">
-            <button mat-menu-item>
-                <div [innerHTML]="setShutdownTimerPopover"></div>
-            </button>
-        </mat-menu>
     </div>
+    <div class="col-1"></div>
+    <div class="col-1" title="{{ 'Auto Shutdown Time Help' | transloco }}">
+      <i [matMenuTriggerFor]="shutdownTimerMenu" class="ion-help-circled"></i>
+    </div>
+    <mat-menu #shutdownTimerMenu="matMenu">
+      <button mat-menu-item>
+        <div [innerHTML]="setShutdownTimerPopover"></div>
+      </button>
+    </mat-menu>
+  </div>
 </div>
