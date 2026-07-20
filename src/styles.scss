@@ -81,6 +81,17 @@ $tabsint-training-site-theme: mat.define-light-theme(
 }
 
 /*------------
+  * Coloring
+  * ------------*/
+:root {
+  /* Semantics */
+  --color-success: #5cb85c;
+  --color-warning: #ffc107;
+  --color-danger: #d43f3a;
+  --color-unknown: black;
+}
+
+/*------------
   * General Styling
   * ------------*/
 

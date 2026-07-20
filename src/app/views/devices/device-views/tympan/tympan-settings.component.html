@@ -1,62 +1,64 @@
 <div class="cha-info">
-    <br />
+  <br />
 
-    <div class="row">
-        <div class="col-12">
-            <h5>{{ "Device Details" | transloco }}</h5>
-        </div>
+  <div class="row">
+    <div class="col-12">
+      <h5>{{ "Device Details" | transloco }}</h5>
     </div>
+  </div>
 
-    <!-- Connected Device Tabsint ID -->
-    <div class="row pad-top">
-        <div class="col-4">{{ "TabSINT ID:" | transloco }}</div>
-        <div class="col-4" style="min-width: 0">
-            <div class="text-line-truncate">{{ device.tabsintId }}</div>
-        </div>
-        <div class="col-1">
-            <a href="javascript:" title="{{ 'TabSINT ID Edit' | transloco }}" (click)="editTabsintId(device)"><i class="ion-edit"></i></a>
-        </div>
-        <div class="col-1"></div>
-            <div class="col-1" href="javascript:" title="{{ 'TabSINT ID Edit Help' | transloco }}">
-            <i [matMenuTriggerFor]="setTabsintIdMenu" class="ion-help-circled"></i>
-        </div>
-        <mat-menu #setTabsintIdMenu="matMenu">
-        <button mat-menu-item>
-            <div [innerHTML]="setTabsintIdPopover"></div>
-        </button>
-        </mat-menu>
+  <!-- Connected Device Tabsint ID -->
+  <div class="row pad-top">
+    <div class="col-4">{{ "TabSINT ID:" | transloco }}</div>
+    <div class="col-4" style="min-width: 0">
+      <div class="text-line-truncate">{{ device.tabsintId }}</div>
     </div>
-
-    <!-- Connected Device Firmware-->
-    <div class="row pad-top">
-        <div class="col-4">{{ "Firmware:" | transloco }}</div>
-        <div class="col-4" [ngStyle]="{ color: firmwareMatch === undefined ? 'black' : firmwareMatch ? 'green' : 'red' }">
-            {{ device.metadata.buildDateTime ?? "N/A" }}
-        </div>
-        <div class="col-1">
-            <a
-                *ngIf="firmwareMatch === false && device.state === DeviceState.Connected"
-                href="javascript:"
-                title="{{ 'Update Firmware' | transloco }}"
-                (click)="reprogramFirmware(device)"
-                ><i class="ion-refresh"></i
-            ></a>
-        </div>
-        <div class="col-1"></div>
-        <div class="col-1" href="javascript:" title="{{ 'Update Firmware Help' | transloco }}">
-            <i [matMenuTriggerFor]="firmwareMenu" class="ion-help-circled"></i>
-        </div>
-        <mat-menu #firmwareMenu="matMenu">
-        <button mat-menu-item>
-            <div [innerHTML]="firmwarePopover"></div>
-        </button>
-        </mat-menu>
+    <div class="col-1">
+      <a href="javascript:" title="{{ 'TabSINT ID Edit' | transloco }}" (click)="editTabsintId(device)"><i class="ion-edit"></i></a>
     </div>
-
-    <!-- Connected Device Serial-->
-    <div class="row pad-top">
-        <div class="col-4">{{ "Serial number:" | transloco }}</div>
-        <div class="col-8">{{ device.metadata.serialNumber ?? "N/A" }}</div>
+    <div class="col-1"></div>
+    <div class="col-1" href="javascript:" title="{{ 'TabSINT ID Edit Help' | transloco }}">
+      <i [matMenuTriggerFor]="setTabsintIdMenu" class="ion-help-circled"></i>
     </div>
+    <mat-menu #setTabsintIdMenu="matMenu">
+      <button mat-menu-item>
+        <div [innerHTML]="setTabsintIdPopover"></div>
+      </button>
+    </mat-menu>
+  </div>
 
+  <!-- Connected Device Firmware-->
+  <div class="row pad-top">
+    <div class="col-4">{{ "Firmware:" | transloco }}</div>
+    <div
+      class="col-4"
+      [ngStyle]="{ color: firmwareMatch === undefined ? ColorPalette.Unknown : firmwareMatch ? ColorPalette.Success : ColorPalette.Danger }">
+      >
+      {{ device.metadata.buildDateTime ?? "N/A" }}
+    </div>
+    <div class="col-1">
+      <a
+        *ngIf="firmwareMatch === false && device.state === DeviceState.Connected"
+        href="javascript:"
+        title="{{ 'Update Firmware' | transloco }}"
+        (click)="reprogramFirmware(device)"
+        ><i class="ion-refresh"></i
+      ></a>
+    </div>
+    <div class="col-1"></div>
+    <div class="col-1" href="javascript:" title="{{ 'Update Firmware Help' | transloco }}">
+      <i [matMenuTriggerFor]="firmwareMenu" class="ion-help-circled"></i>
+    </div>
+    <mat-menu #firmwareMenu="matMenu">
+      <button mat-menu-item>
+        <div [innerHTML]="firmwarePopover"></div>
+      </button>
+    </mat-menu>
+  </div>
+
+  <!-- Connected Device Serial-->
+  <div class="row pad-top">
+    <div class="col-4">{{ "Serial number:" | transloco }}</div>
+    <div class="col-8">{{ device.metadata.serialNumber ?? "N/A" }}</div>
+  </div>
 </div>

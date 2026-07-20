@@ -30,7 +30,9 @@
   <!-- Connected Device Firmware-->
   <div class="row pad-top">
     <div class="col-4">{{ "Firmware:" | transloco }}</div>
-    <div class="col-4" [ngStyle]="{ color: firmwareMatch === undefined ? 'black' : firmwareMatch ? 'green' : 'red' }">
+    <div
+      class="col-4"
+      [ngStyle]="{ color: firmwareMatch === undefined ? ColorPalette.Unknown : firmwareMatch ? ColorPalette.Success : ColorPalette.Danger }">
       {{ device.metadata.buildDateTime ?? "N/A" }}
     </div>
     <div class="col-2">
