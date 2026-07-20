@@ -81,6 +81,17 @@ $tabsint-training-site-theme: mat.define-light-theme(
 }
 
 /*------------
+  * Coloring
+  * ------------*/
+:root {
+  /* Semantics */
+  --color-success: #5cb85c;
+  --color-warning: #ffc107;
+  --color-danger: #d43f3a;
+  --color-unknown: black;
+}
+
+/*------------
   * General Styling
   * ------------*/
 
@@ -698,6 +709,17 @@ button.btn.disabled.custom-disabled {
   .btn-content-split .btn {
     min-width: 150px;
   }
+}
+.btn.btn-small-wrap {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  max-width: 100%;
+  padding: 0 18px;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 /*-----------
   * Exam Page
@@ -2570,6 +2592,18 @@ button.btn.cha-selected {
   height: 18px;
   background-color: rgb(0, 169, 242);
   vertical-align: inherit;
+}
+
+.cha-battery-status.low {
+  background-color: #d43f3a;
+}
+
+.cha-battery-status.medium {
+  background-color: #ffc107;
+}
+
+.cha-battery-status.high {
+  background-color: #5cb85c;
 }
 
 .cha-battery-border {

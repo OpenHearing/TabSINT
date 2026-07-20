@@ -14,6 +14,7 @@ import { ChangeTabsintIdComponent } from '../../../change-tabsint-id/change-tabs
 import { MatDialog } from '@angular/material/dialog';
 import { DevicesService } from '../../../../services/devices/devices.service';
 import { ITympanDevice } from '../../../../interfaces/devices/tympan-device.interface';
+import { AppColor } from '../../../../utilities/color';
 
 @Component({
   selector: 'app-tympan-settings',
@@ -25,6 +26,7 @@ export class TympanSettingsComponent implements OnInit, OnDestroy, OnChanges {
   private readonly transloco = inject(TranslocoService);
   private readonly dialog = inject(MatDialog);
   private readonly devicesService = inject(DevicesService);
+  readonly ColorPalette = AppColor;
 
   @Input() device!: ITympanDevice;
   DeviceState = DeviceState;
