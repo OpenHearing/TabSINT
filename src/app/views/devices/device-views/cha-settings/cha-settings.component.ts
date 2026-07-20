@@ -13,6 +13,7 @@ import { ChangeTabsintIdComponent } from '../../../change-tabsint-id/change-tabs
 import { ChangeAutoShutdownTimeComponent } from '../../../change-auto-shutdown-time/change-auto-shutdown-time.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DevicesService } from '../../../../services/devices/devices.service';
+import { AppColor } from '../../../../utilities/color';
 
 @Component({
   selector: 'app-cha-settings',
@@ -24,6 +25,7 @@ export class ChaSettingsComponent implements OnInit, OnDestroy, OnChanges {
   private readonly transloco = inject(TranslocoService);
   private readonly dialog = inject(MatDialog);
   private readonly devicesService = inject(DevicesService);
+  readonly ColorPalette = AppColor;
 
   @Input() device!: ChaDeviceType;
   DeviceState = DeviceState;
