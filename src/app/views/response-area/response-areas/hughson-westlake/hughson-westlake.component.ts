@@ -120,6 +120,8 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
 
   private pageSubscription: Subscription | undefined;
 
+  // TODO fix initialize for back to back without destruction
+
   ngOnInit(): void {
     this.stateModel.updateState({ isSubmittable: false });
     this.examService.submit = () => this.submitWithNotes();
