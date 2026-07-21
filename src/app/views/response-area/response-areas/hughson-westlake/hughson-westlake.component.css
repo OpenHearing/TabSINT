@@ -1,0 +1,32 @@
+.hw-container {
+  width: 100%;
+}
+
+.hw-start {
+  padding-top: 1rem;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
+
+.hw-button-row {
+  display: flex;
+  justify-content: center;
+  padding-top: 1rem;
+}
+
+.hw-results {
+  padding-top: 1rem;
+  text-align: center;
+}
+
+.hw-notes {
+  padding-top: 1rem;
+  text-align: center;
+}
+
+.hw-notes-input {
+  width: 100%;
+  min-height: 100px;
+  margin-top: 0.5rem;
+}

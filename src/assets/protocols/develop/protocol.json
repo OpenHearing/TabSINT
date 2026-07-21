@@ -108,6 +108,9 @@
                 "id": "HINT"
               },
               {
+                "id": "Hughson-Westlake"
+              },
+              {
                 "id": "CHA Wav Test"
               },
               {
@@ -282,6 +285,12 @@
               "conditional": "result.response=='HINT'",
               "target": {
                 "reference": "hintResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='Hughson-Westlake'",
+              "target": {
+                "reference": "hughsonWestlakeResponseArea"
               }
             },
             {
@@ -1415,6 +1424,42 @@
               "Direction": "front",
               "ListNumber": 2,
               "NumberOfPresentations": 4
+            }
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "hughsonWestlakeResponseArea",
+      "pages": [
+        {
+          "id": "Hughson-Westlake",
+          "title": "Hughson-Westlake",
+          "questionMainText": "Automated Threshold Audiometry",
+          "responseArea": {
+            "type": "hughsonWestlakeResponseArea",
+            "hideExamProperties": "never",
+            "repeatIfFailedOnce": true,
+            "getNotesIfFailedTwice": true,
+            "showMessageIfNoResponse": true,
+            "examInstructions": "Use the button to complete the exam.",
+            "examProperties": {
+              "Screener": true,
+              "TonePulseNumber": 3,
+              "PresentationMax": 3,
+              "NumCorrectReq": 2,
+              "LevelUnits": "dB HL",
+              "Lstart": 25,
+              "F": 1000,
+              "OutputChannel": "HPL0",
+              "UseSoftwareButton": true,
+              "PollingOffset": 1000,
+              "MinISI": 1000,
+              "MaxISI": 3000
             }
           }
         },

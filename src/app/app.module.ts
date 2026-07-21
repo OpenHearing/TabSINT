@@ -90,7 +90,7 @@ import { FPLCalibrationScreenComponent } from './views/response-area/response-ar
 import { DevicesService } from './services/devices/devices.service';
 import { CalibrationResultsViewerComponent } from './views/response-area/response-areas/calibration-exam/calibration-results-viewer/calibration-results-viewer.component';
 import { ManualAudiometryResultViewerComponent } from './views/response-area/response-areas/manual-audiometry/manual-audiometry-result-viewer/manual-audiometry-result-viewer';
-import { AudiogramComponent } from './views/audiogram/audiogram.component';
+import { AudiogramComponent } from './views/response-area/response-areas/shared/audiogram/audiogram.component';
 import { ExamDeviceErrorComponent } from './views/exam-device-error/exam-device-error.component';
 import { MultipleInputComponent } from './views/response-area/response-areas/multiple-input/multiple-input.component';
 import { LikertComponent } from './views/response-area/response-areas/likert/likert/likert.component';
@@ -117,6 +117,11 @@ import { ThreeDigitComponent } from './views/response-area/response-areas/three-
 import { GapComponent } from './views/response-area/response-areas/gap/gap.component';
 import { GapResultsComponent } from './views/response-area/response-areas/gap/gap-results/gap-results.component';
 import { HintComponent } from './views/response-area/response-areas/hint/hint.component';
+import { HughsonWestlakeComponent } from './views/response-area/response-areas/hughson-westlake/hughson-westlake.component';
+import { SoftwareButtonComponent } from './views/response-area/response-areas/shared/audiometry/software-button/software-button.component';
+import { AudiometryResultsTableComponent } from './views/response-area/response-areas/shared/audiometry/audiometry-results-table/audiometry-results-table.component';
+import { AudiometryPropertiesComponent } from './views/response-area/response-areas/shared/audiometry/audiometry-properties/audiometry-properties.component';
+import { AudiometryLegendComponent } from './views/response-area/response-areas/shared/audiometry/audiometry-legend/audiometry-legend.component';
 
 @NgModule({
   declarations: [
@@ -190,7 +195,12 @@ import { HintComponent } from './views/response-area/response-areas/hint/hint.co
     GapComponent,
     GapResultsComponent,
     HintComponent,
+    HughsonWestlakeComponent,
     GitlabFormComponent,
+    SoftwareButtonComponent,
+    AudiometryResultsTableComponent,
+    AudiometryPropertiesComponent,
+    AudiometryLegendComponent,
   ],
   imports: [
     BrowserModule,
