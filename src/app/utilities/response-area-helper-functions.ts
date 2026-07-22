@@ -4,9 +4,9 @@ function includesOrEquals(item: string[] | string | number, arg: string | number
   if (item === undefined) {
     return false;
   } else if (Array.isArray(item)) {
-    return item.length === 0 ? false : item.includes(String(arg));
+    return item.length === 0 ? false : item.map(String).includes(String(arg));
   } else {
-    return item === arg;
+    return String(item) === String(arg);
   }
 }
 
