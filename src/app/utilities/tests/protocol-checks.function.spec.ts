@@ -1,6 +1,8 @@
-import { checkCalibrationFiles, checkControllers, checkUnresolvedFilePaths } from '../protocol-checks.function';
+import { checkCalibrationFiles, checkControllers, checkUnresolvedFilePaths, protocolHasWavFiles } from '../protocol-checks.function';
 import { ProtocolInterface } from '../../models/protocol/protocol.interface';
 import { ProtocolServer } from '../constants';
+import { PageDefinition } from '../../interfaces/page-definition.interface';
+import { ProtocolSchemaInterface } from '../../interfaces/protocol-schema.interface';
 
 const makeProtocol = (overrides: Partial<ProtocolInterface> = {}): ProtocolInterface =>
   ({
@@ -58,6 +60,43 @@ describe('checkControllers', () => {
     expect(errors.length).toBe(1);
     expect(errors[0].type).toBe('Protocol');
     expect(errors[0].error).toContain('myCtrl');
+  });
+});
+
+describe('protocolHasWavFiles', () => {
+  const makePage = (overrides: Partial<PageDefinition> = {}): PageDefinition =>
+    ({
+      id: 'page1',
+      ...overrides,
+    }) as PageDefinition;
+
+  it('returns false when no pages have wav files', () => {
+    const protocol = makeProtocol({ pages: [makePage(), makePage()] });
+    expect(protocolHasWavFiles(protocol)).toBe(false);
+  });
+
+  it('returns true when a page has wavfiles', () => {
+    const protocol = makeProtocol({ pages: [makePage({ wavfiles: [{ path: 'a.wav' }] })] });
+    expect(protocolHasWavFiles(protocol)).toBe(true);
+  });
+
+  it('returns true when a page has chaWavFiles', () => {
+    const protocol = makeProtocol({ pages: [makePage({ chaWavFiles: { wavfiles: [{ path: 'a.wav' }] } })] });
+    expect(protocolHasWavFiles(protocol)).toBe(true);
+  });
+
+  it('returns true when a subProtocol page has wavfiles', () => {
+    const subProtocol = {
+      protocolId: 'sub',
+      pages: [makePage({ wavfiles: [{ path: 'a.wav' }] })],
+    } as ProtocolSchemaInterface;
+    const protocol = makeProtocol({ pages: [], subProtocols: [subProtocol] });
+    expect(protocolHasWavFiles(protocol)).toBe(true);
+  });
+
+  it('returns false for an empty wavfiles array', () => {
+    const protocol = makeProtocol({ pages: [makePage({ wavfiles: [] })] });
+    expect(protocolHasWavFiles(protocol)).toBe(false);
   });
 });
 

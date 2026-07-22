@@ -1,4 +1,5 @@
 import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import * as _ from 'lodash';
 import { Subscription } from 'rxjs';
 import { ResultsInterface } from '../../../../models/results/results.interface';
 import { PageInterface } from '../../../../models/page/page.interface';
@@ -71,7 +72,7 @@ export class CheckboxComponent implements OnInit, OnDestroy {
         const updatedCheckboxResponseArea = updatedPage.responseArea as CheckboxInterface;
         if (updatedCheckboxResponseArea) {
           this.otherSelected = false;
-          this.choices = updatedCheckboxResponseArea.choices;
+          this.choices = _.cloneDeep(updatedCheckboxResponseArea.choices);
           this.choices.forEach(choice => {
             choice.text = choice.text ?? String(choice.id);
           });

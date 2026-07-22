@@ -1,5 +1,30 @@
 import { ProtocolErrorInterface } from '../interfaces/protocol-error.interface';
 import { ProtocolInterface } from '../models/protocol/protocol.interface';
+import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
+import { PageTypes } from '../types/custom-types';
+import { isPageDefinition, isProtocolSchemaInterface } from '../guards/type.guard';
+
+/**
+ * Determine whether a protocol references any audio content, so calibration.json
+ * only needs to be read for protocols that actually require it.
+ * @param protocol The raw, unprocessed protocol (or subProtocol) to check.
+ */
+export function protocolHasWavFiles(protocol: ProtocolSchemaInterface): boolean {
+  return pagesHaveWavFiles(protocol.pages) || (protocol.subProtocols ?? []).some(protocolHasWavFiles);
+}
+
+function pagesHaveWavFiles(pages: PageTypes | PageTypes[]): boolean {
+  const pageArray = Array.isArray(pages) ? pages : [pages];
+  return pageArray.some(page => {
+    if (isProtocolSchemaInterface(page)) {
+      return protocolHasWavFiles(page);
+    }
+    if (isPageDefinition(page)) {
+      return (page.wavfiles?.length ?? 0) > 0 || page.chaWavFiles !== undefined;
+    }
+    return false;
+  });
+}
 
 export function checkCalibrationFiles(activeProtocol: ProtocolInterface): string | undefined {
   let msg = undefined;

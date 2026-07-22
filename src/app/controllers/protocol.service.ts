@@ -23,7 +23,7 @@ import { Logger } from '../services/logger.service';
 import { Tasks } from '../services/tasks.service';
 import { Notifications } from '../services/notifications.service';
 import { loadingProtocolDefaults } from '../utilities/defaults';
-import { checkCalibrationFiles, checkControllers, checkUnresolvedFilePaths } from '../utilities/protocol-checks.function';
+import { checkCalibrationFiles, checkControllers, checkUnresolvedFilePaths, protocolHasWavFiles } from '../utilities/protocol-checks.function';
 import { processProtocol } from '../utilities/process-protocol.function';
 import { initializeLoadingProtocol } from '../utilities/initialize-loading-protocol';
 
@@ -271,6 +271,8 @@ export class ProtocolService {
 
   private async setCalibration() {
     this.loading.calibration = undefined;
+    if (!protocolHasWavFiles(this.loading.protocol)) return;
+
     let calibration;
     if (this.loading.meta.server === ProtocolServer.Developer) {
       calibration = DeveloperProtocolsCalibration[this.loading.meta.name];
