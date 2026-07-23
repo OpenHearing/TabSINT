@@ -472,7 +472,7 @@ export class ExamService {
     const flags = this.resultsModel.getResults().currentExam.flags;
 
     conditional = conditional.replaceAll(/\bflags\b/g, 'flags');
-    conditional = conditional.replaceAll(/\bresult\.response\b/g, 'response');
+    conditional = conditional.replaceAll(/\bresult\.response(?:\.selected)?\b/g, 'response');
     return eval(conditional);
   }
 
