@@ -6,7 +6,7 @@
   <div class="spacer"></div>
 
   <div class="container">
-    <a class="welcome-row" tabindex="0" (click)="scanQrCodeandAutoConfig()" (keyup.enter)="scanQrCodeandAutoConfig()">
+    <a class="welcome-row" tabindex="0" (click)="qrScanHandler()" (keyup.enter)="qrScanHandler()">
       <span><img src="assets/img/QR_code.png" class="qrCode-logo-size" alt="{{ 'QR code logo' }}" /></span>
       <span class="welcome">{{ "Scan Configuration" | transloco }}</span>
     </a>

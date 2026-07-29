@@ -16,6 +16,7 @@ import { Tasks } from '../../services/tasks.service';
 import { QrService } from '../../services/qr.service';
 import { preferencesSchema } from '../../../schema/definitions/preferences.schema';
 import { Notifications } from '../../services/notifications.service';
+import { scanQrCodeAndAutoConfig } from '../../utilities/qr-scan';
 
 @Component({
   selector: 'app-welcome',
@@ -67,21 +68,11 @@ export class WelcomeComponent implements OnInit, OnDestroy {
   /**
    * Scan the configuration QR code and adjust the preferences.
    */
-  async scanQrCodeandAutoConfig() {
-    const preferences = await this.qrService.validatedScan(preferencesSchema);
-    if (preferences) {
-      this.diskModel.updatePreferences(preferences);
-      this.notifications.alert({
-        title: 'QR Code',
-        content: 'QR code scanned successfully, configuration has been updated.',
-        type: DialogType.Alert,
-      });
-    } else {
-      this.notifications.alert({
-        title: 'QR Code',
-        content: 'Failed to configure the application with the provided QR code.',
-        type: DialogType.Alert,
-      });
-    }
+  async qrScanHandler() {
+    scanQrCodeAndAutoConfig({
+      qrService: this.qrService,
+      diskModel: this.diskModel,
+      notifications: this.notifications,
+    });
   }
 }
