@@ -1,4 +1,8 @@
-<div class="likert-container" *ngFor="let question of questions; let questionIndex = index" [style.margin-bottom.px]="verticalSpacing">
+<div
+  class="likert-container"
+  *ngFor="let question of questions; let questionIndex = index"
+  [style.margin-bottom.px]="verticalSpacing"
+  [style.--levels]="question.levels">
   <!-- Question Text (may contain HTML) -->
   <p class="question" [style.font-size]="question.questionFontSize" [innerHTML]="question.text"></p>
 
@@ -9,9 +13,7 @@
 
   <!-- Labels Above -->
   <div class="likert-labels likert-labels-top" *ngIf="hasLabels(question.topLabels)" [style.font-size]="question.labelFontSize">
-    <ng-container *ngFor="let label of question.topLabels">
-      <span *ngIf="label !== ''" class="likert-label">{{ label }}</span>
-    </ng-container>
+    <span *ngFor="let label of question.topLabels" class="likert-label">{{ label }}</span>
   </div>
 
   <!-- Slider Mode -->
@@ -68,9 +70,7 @@
 
   <!-- Labels Below -->
   <div class="likert-labels likert-labels-bottom" *ngIf="hasLabels(question.bottomLabels)" [style.font-size]="question.labelFontSize">
-    <ng-container *ngFor="let label of question.bottomLabels">
-      <span *ngIf="label !== ''" class="likert-label">{{ label }}</span>
-    </ng-container>
+    <span *ngFor="let label of question.bottomLabels" class="likert-label">{{ label }}</span>
   </div>
 
   <!-- Center Label Below -->
