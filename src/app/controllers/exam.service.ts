@@ -11,6 +11,7 @@ import {
 import { PageTypes } from '../types/custom-types';
 import {
   ChaWavfilesInterface,
+  FlagType,
   FollowOnInterface,
   PageDefinition,
   PageWavfileInterface,
@@ -328,7 +329,7 @@ export class ExamService {
     if (page.setFlags) {
       page.setFlags.forEach(flags => {
         if (this.conditionalEvaluator(flags.conditional)) {
-          this.results.currentExam.flags[flags.id] = true;
+          this.results.currentExam.flags[flags.id] = flags.value ?? true;
           this.logger.debug('Flag set: ' + flags.id);
         }
       });
