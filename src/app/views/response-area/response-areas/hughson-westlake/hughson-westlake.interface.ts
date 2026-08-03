@@ -23,8 +23,11 @@ export interface HughsonWestlakeResponseAreaInterface extends AudiometryResponse
   type: 'hughsonWestlakeResponseArea';
   tabsintId?: string;
   autoSubmit?: boolean;
+  autoBegin?: boolean;
   exportToCSV?: boolean;
   examInstructions?: string;
+  resultMainText?: string;
+  resultSubText?: string;
   examProperties?: HughsonWestlakeExamPropertiesInterface;
 }
 

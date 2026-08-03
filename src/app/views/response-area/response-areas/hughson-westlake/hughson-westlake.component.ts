@@ -17,7 +17,8 @@ import {
   HughsonWestlakeResponseAreaInterface,
 } from './hughson-westlake.interface';
 import { isWahtsResultsResponse, isStatusResponse } from '../../../../guards/type.guard';
-import { AudiometryHideExamProps } from '../shared/audiometry/audiometry.interface';
+import { AudiometryHideExamProps, MaskingNoise, PlotProperties } from '../shared/audiometry/audiometry.interface';
+import { TrialProgressionPlotDataInterface } from '../shared/trial-progression-plot/trial-progression-plot.interface';
 
 const EXAM_NAME = 'HughsonWestlake';
 const examSchema = hughsonWestlakeSchema.properties;
@@ -55,8 +56,11 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
   private readonly allowableDevices = [DeviceType.Wahts];
 
   autoSubmit: boolean = examSchema.autoSubmit.default;
+  autoBegin: boolean = examSchema.autoBegin.default;
   useSoftwareButton: boolean = examPropSchema.UseSoftwareButton.default;
   examInstructions: string | undefined;
+  resultMainText: string = examSchema.resultMainText.default;
+  resultSubText: string = examSchema.resultSubText.default;
   noResponseMessage: string | undefined;
   retryMessage: string | undefined;
   adminNotes = '';
@@ -66,11 +70,17 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
   noResponseCustomMessage: string = examSchema.noResponseCustomMessage.default;
   repeatIfFailedOnce: boolean = examSchema.repeatIfFailedOnce.default;
   getNotesIfFailedTwice: boolean = examSchema.getNotesIfFailedTwice.default;
+  plotProperties: PlotProperties = {
+    displayAudiogram: examSchema.plotProperties.properties.displayAudiogram.default,
+    displayLevelProgression: examSchema.plotProperties.properties.displayLevelProgression.default,
+  };
+  maskingNoise: MaskingNoise | undefined;
 
   // State
   hwState: ResponseAreaState = ResponseAreaState.Start;
   device: IDevice | undefined;
   results: HughsonWestlakeResultsInterface | undefined;
+  levelProgressionData: TrialProgressionPlotDataInterface | undefined;
 
   protected examProperties: HughsonWestlakeExamPropertiesInterface = {
     Screener: examPropSchema.Screener.default,
@@ -150,7 +160,10 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
 
     this.initialized = true;
     this.autoSubmit = responseArea.autoSubmit ?? this.autoSubmit;
+    this.autoBegin = responseArea.autoBegin ?? this.autoBegin;
     this.examInstructions = responseArea.examInstructions ?? this.examInstructions;
+    this.resultMainText = responseArea.resultMainText ?? this.resultMainText;
+    this.resultSubText = responseArea.resultSubText ?? this.resultSubText;
     this.useSoftwareButton = responseArea.examProperties?.UseSoftwareButton ?? this.useSoftwareButton;
     this.examProperties = { ...this.examProperties, ...(responseArea.examProperties ?? {}) };
     this.hideExamProperties = responseArea.hideExamProperties ?? this.hideExamProperties;
@@ -158,9 +171,15 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
     this.noResponseCustomMessage = responseArea.noResponseCustomMessage ?? this.noResponseCustomMessage;
     this.repeatIfFailedOnce = responseArea.repeatIfFailedOnce ?? this.repeatIfFailedOnce;
     this.getNotesIfFailedTwice = responseArea.getNotesIfFailedTwice ?? this.getNotesIfFailedTwice;
+    this.plotProperties = { ...this.plotProperties, ...(responseArea.plotProperties ?? {}) };
+    this.maskingNoise = responseArea.maskingNoise ?? this.maskingNoise;
     this.showProperties = this.getPropertiesVisibility(this.hwState, this.hideExamProperties);
 
     await this.setupDevice(responseArea);
+
+    if (this.autoBegin && this.device) {
+      await this.beginExam();
+    }
   }
 
   /**
@@ -189,6 +208,9 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
     this.noResponseMessage = undefined;
     this.stateModel.updateState({ isSubmittable: false });
     await this.devicesService.abortExams(this.device);
+    if (this.maskingNoise) {
+      await this.devicesService.startMaskingNoise(this.device, this.maskingNoise);
+    }
     await this.devicesService.queueExam(this.device, EXAM_NAME, this.examProperties);
     this.examActive = true;
 
@@ -200,11 +222,36 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
    * Fetch the final results once the exam has completed and move to the results view.
    */
   private async fetchAndFinishExam(): Promise<void> {
+    if (this.device && this.maskingNoise) {
+      await this.devicesService.stopMaskingNoise(this.device);
+    }
     const results = await this.requestHughsonWestlakeResults(this.finalResultsTimeoutMs);
-    if (!results) {
+    if (results) {
+      this.applyScreenerResultType(results);
+    } else {
       this.logger.error('Hughson-Westlake exam: exam completed but no final results were returned.');
     }
     this.processResults(results);
+  }
+
+  /**
+   * When running as a screener (pass/fail at Lstart instead of a full threshold search), remap
+   * the device's raw ResultType to the screener's pass/fail vocabulary: a converged "Threshold"
+   * result means the screener passed, an out-of-range result is unused, and anything else that
+   * failed to converge is a fail.
+   * @param results The results to remap in place.
+   */
+  private applyScreenerResultType(results: HughsonWestlakeResultsInterface): void {
+    if (!this.examProperties.Screener) {
+      return;
+    }
+    if (results.ResultType === 'Threshold') {
+      results.ResultType = 'Pass';
+    } else if (results.ResultType === 'Hearing Potentially Outside Measurable Range') {
+      results.ResultType = 'Unused';
+    } else if (results.ResultType === 'Failed to Converge') {
+      results.ResultType = 'Fail';
+    }
   }
 
   /**
@@ -241,12 +288,58 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
    */
   private finishExam(results: HughsonWestlakeResultsInterface | undefined): void {
     this.results = results;
+    this.levelProgressionData = this.plotProperties.displayLevelProgression && results?.L ? this.createLevelProgressionData(results) : undefined;
     this.updateResponseAreaState(ResponseAreaState.Results);
     this.resultsModel.updateCurrentPage({ response: results });
     this.stateModel.updateState({ isSubmittable: true });
     if (this.autoSubmit) {
       this.submitWithNotes();
     }
+  }
+
+  /**
+   * Build the data structure consumed by the shared trial-progression plot: one point per
+   * presentation (dB level on the y axis), styled by whether the subject responded and whether
+   * the presentation was one of the responses that confirmed the threshold (2-of-3 at the
+   * threshold level).
+   *
+   * The CHA firmware only populates `Threshold` when `ResultType` is `'Threshold'` — for any
+   * other result (e.g. "Failed to Converge", out-of-range results) it is left undefined, so that
+   * case is treated as "no confirmed threshold" rather than trusting a stray/undefined value.
+   * @param results The final results returned by the device.
+   */
+  private createLevelProgressionData(results: HughsonWestlakeResultsInterface): TrialProgressionPlotDataInterface {
+    const hasThreshold = results.ResultType === 'Threshold' && Number.isFinite(results.Threshold);
+    const pointStyles = results.L.map((level, i) => {
+      const heard = (results.ResponseTime?.[i] ?? 0) > 0;
+      if (hasThreshold && heard && level === results.Threshold) {
+        return 'highlight' as const;
+      }
+      return heard ? ('filled' as const) : ('open' as const);
+    });
+    const levelUnits = this.examProperties.LevelUnits ?? examPropSchema.LevelUnits.default;
+    // Screener mode never has a numeric Threshold (it only checks pass/fail at Lstart), so its
+    // fallback title reads as a screener outcome rather than a generic, unlabeled result type.
+    let title = `Level Progression: ${results.ResultType} (${results.L.length} trials)`;
+    if (this.examProperties.Screener) {
+      title = `Screener: ${results.ResultType} (${results.L.length} trials)`;
+    } else if (hasThreshold) {
+      title = `Threshold at ${results.Threshold} ${levelUnits} (${results.L.length} trials)`;
+    }
+    // Scale the y axis to the levels actually presented (screener presentations all sit at a
+    // single, often low, level) instead of a fixed 0-200 range that would squash the line.
+    const maxLevel = results.L.length ? Math.max(...results.L) : 0;
+    return {
+      y: results.L,
+      pointStyles,
+      pointShape: 'diamond',
+      connectLine: true,
+      maxY: maxLevel === 0 ? 200 : maxLevel + 10,
+      referenceLine: hasThreshold ? results.Threshold : undefined,
+      xLabel: 'Presentation',
+      yLabel: levelUnits,
+      title,
+    };
   }
 
   /**
@@ -349,7 +442,6 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
     const resp = await this.devicesService.requestStatus(this.device);
     if (isStatusResponse(resp)) {
       const state = resp.msg[1].state;
-      this.logger.debug(`Hughson-Westlake exam: requestStatus state=${state}`);
       return state;
     }
     this.logger.debug('Hughson-Westlake exam: unexpected requestStatus response: ' + JSON.stringify(resp?.msg));
@@ -386,6 +478,9 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
     }
     if (this.device) {
       this.devicesService.abortExams(this.device);
+      if (this.maskingNoise) {
+        this.devicesService.stopMaskingNoise(this.device);
+      }
     }
   }
 }

@@ -8,9 +8,12 @@ export enum AudiometryLevelUnits {
 export enum AudiometryOutputChannel {
   HPR0 = 'HPR0',
   HPL0 = 'HPL0',
+  HPR1 = 'HPR1',
+  HPL1 = 'HPL1',
   LINEL0 = 'LINEL0',
   NONE_LINEL0 = 'NONE LINEL0',
   LINEL0_NONE = 'LINEL0 NONE',
+  HPL0_HPR0 = 'HPL0 HPR0',
 }
 
 export enum AudiometryDevForm {
@@ -20,9 +23,9 @@ export enum AudiometryDevForm {
 }
 
 export enum AudiometryMaskingShape {
-  White = 'White',
-  Pink = 'Pink',
-  Brown = 'Brown',
+  White = 'white',
+  Pink = 'pink',
+  Brown = 'brown',
 }
 
 export enum AudiometryHideExamProps {
@@ -42,6 +45,7 @@ export interface MaskingNoise {
 
 export interface PlotProperties {
   displayAudiogram?: string[];
+  displayLevelProgression?: boolean;
 }
 
 export interface AudiometryExamProperties {

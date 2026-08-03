@@ -115,7 +115,7 @@ import { QRCodeModule } from 'angularx-qrcode';
 import { DuodoseDownloadComponent } from './views/response-area/response-areas/duodose-download/duodose-download.component';
 import { ThreeDigitComponent } from './views/response-area/response-areas/three-digit/three-digit.component';
 import { GapComponent } from './views/response-area/response-areas/gap/gap.component';
-import { GapResultsComponent } from './views/response-area/response-areas/gap/gap-results/gap-results.component';
+import { TrialProgressionPlotComponent } from './views/response-area/response-areas/shared/trial-progression-plot/trial-progression-plot.component';
 import { HintComponent } from './views/response-area/response-areas/hint/hint.component';
 import { HughsonWestlakeComponent } from './views/response-area/response-areas/hughson-westlake/hughson-westlake.component';
 import { SoftwareButtonComponent } from './views/response-area/response-areas/shared/audiometry/software-button/software-button.component';
@@ -193,7 +193,7 @@ import { AudiometryLegendComponent } from './views/response-area/response-areas/
     BekesyComponent,
     ThreeDigitComponent,
     GapComponent,
-    GapResultsComponent,
+    TrialProgressionPlotComponent,
     HintComponent,
     HughsonWestlakeComponent,
     GitlabFormComponent,

@@ -59,17 +59,3 @@ export interface GapResultsInterface {
   CurrentGapStartTime?: number;
   HitOrMiss?: number;
 }
-
-/**
- * Data structure consumed by the gap results d3 plot.
- */
-export interface GapPlotDataInterface {
-  y: number[];
-  hit: boolean[];
-  maxY: number;
-  GapThreshold: number;
-  reversals: boolean[];
-  xLabel: string;
-  yLabel: string;
-  title: string;
-}

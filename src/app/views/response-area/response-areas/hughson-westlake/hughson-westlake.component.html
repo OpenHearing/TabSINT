@@ -38,8 +38,10 @@
       <div>{{ noResponseMessage | transloco }}</div>
     </ng-container>
     <ng-template #hwNormalResults>
-      <div>{{ "Exam complete, press submit." | transloco }}</div>
+      <div>{{ resultMainText | transloco }}</div>
+      <div *ngIf="resultSubText">{{ resultSubText | transloco }}</div>
     </ng-template>
+    <app-trial-progression-plot *ngIf="levelProgressionData" [data]="levelProgressionData"></app-trial-progression-plot>
   </div>
 
   <!-- Notes: shown after the exam has failed twice in a row and getNotesIfFailedTwice is set. -->

@@ -14,6 +14,7 @@ import { SavedDevice } from '../../models/disk/disk.interface';
 import { DiskModel } from '../../models/disk/disk.service';
 
 import { DirectoryEntryObject, RequestIdObject, RequestSettingObject, StatusObject } from '../../interfaces/devices/device-responses.interface';
+import { MaskingNoise } from '../../views/response-area/response-areas/shared/audiometry/audiometry.interface';
 import { isGetDirectoryResponse, isLongNameResponse, isRequestIdResponse, isRequestSettingResponse, isStatusResponse } from '../../guards/type.guard';
 import { ChaMediaHandler } from './cha-media-handler';
 
@@ -326,6 +327,27 @@ export abstract class ChaManager implements IDeviceManager {
    */
   async setSoftwareButtonState(device: ChaDeviceType, state: number): Promise<IDeviceResponse> {
     const response = await this.adapter.setSoftwareButtonState(device, state);
+    await this.deviceErrorHandler(response);
+    return response;
+  }
+
+  /**
+   * Start playback of masking noise on a device.
+   * @param device The device to start the masking noise on.
+   * @param maskingNoise The masking noise configuration.
+   */
+  async startMaskingNoise(device: ChaDeviceType, maskingNoise: MaskingNoise): Promise<IDeviceResponse> {
+    const response = await this.adapter.startMaskingNoise(device, maskingNoise);
+    await this.deviceErrorHandler(response);
+    return response;
+  }
+
+  /**
+   * Stop playback of masking noise on a device.
+   * @param device The device to stop the masking noise on.
+   */
+  async stopMaskingNoise(device: ChaDeviceType): Promise<IDeviceResponse> {
+    const response = await this.adapter.stopMaskingNoise(device);
     await this.deviceErrorHandler(response);
     return response;
   }

@@ -22,6 +22,12 @@ export const hughsonWestlakeSchema: JSONSchemaType<HughsonWestlakeResponseAreaIn
       default: false,
       description: 'Go straight to next page once this page is complete',
     },
+    autoBegin: {
+      type: 'boolean',
+      nullable: true,
+      default: false,
+      description: "Go straight into the exam, without having to press the 'Begin' button.",
+    },
     exportToCSV: {
       type: 'boolean',
       nullable: true,
@@ -32,6 +38,18 @@ export const hughsonWestlakeSchema: JSONSchemaType<HughsonWestlakeResponseAreaIn
       type: 'string',
       nullable: true,
       description: 'Replaces the top-level instruction text on the CHA exam pages.',
+    },
+    resultMainText: {
+      type: 'string',
+      nullable: true,
+      default: 'Exam complete, press submit.',
+      description: 'Replaces the questionMainText text while presenting results.',
+    },
+    resultSubText: {
+      type: 'string',
+      nullable: true,
+      default: '',
+      description: 'Replaces the questionSubText text while presenting results.',
     },
     examProperties: {
       type: 'object',
@@ -276,7 +294,13 @@ export const hughsonWestlakeSchema: JSONSchemaType<HughsonWestlakeResponseAreaIn
           items: { type: 'string' },
           nullable: true,
           default: [],
-          description: 'Select a method from the list below to measure background noise after an audiometry exam',
+          description: 'An array of strings, used to match page ids, to select which results are plotted on a combined audiogram.',
+        },
+        displayLevelProgression: {
+          type: 'boolean',
+          nullable: true,
+          default: false,
+          description: 'If true, turn on plotting of the level progression for an individual exam.',
         },
       },
       required: [],
@@ -334,8 +358,8 @@ export const hughsonWestlakeSchema: JSONSchemaType<HughsonWestlakeResponseAreaIn
           maxItems: 2,
         },
       },
+      required: [],
     },
-    required: [],
   },
   required: ['type'],
 };

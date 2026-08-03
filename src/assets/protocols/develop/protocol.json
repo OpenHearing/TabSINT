@@ -108,7 +108,10 @@
                 "id": "HINT"
               },
               {
-                "id": "Hughson-Westlake"
+                "id": "Hughson-Westlake Screener"
+              },
+              {
+                "id": "Hughson-Westlake Threshold"
               },
               {
                 "id": "CHA Wav Test"
@@ -288,9 +291,15 @@
               }
             },
             {
-              "conditional": "result.response=='Hughson-Westlake'",
+              "conditional": "result.response=='Hughson-Westlake Screener'",
               "target": {
-                "reference": "hughsonWestlakeResponseArea"
+                "reference": "hughsonWestlakeScreenerResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='Hughson-Westlake Threshold'",
+              "target": {
+                "reference": "hughsonWestlakeThresholdResponseArea"
               }
             },
             {
@@ -1434,24 +1443,27 @@
       ]
     },
     {
-      "protocolId": "hughsonWestlakeResponseArea",
+      "protocolId": "hughsonWestlakeScreenerResponseArea",
       "pages": [
         {
-          "id": "Hughson-Westlake",
-          "title": "Hughson-Westlake",
-          "questionMainText": "Automated Threshold Audiometry",
+          "id": "Hughson-Westlake-Screener",
+          "title": "Hughson-Westlake Screener",
+          "questionMainText": "Automated Hearing Screener",
           "responseArea": {
             "type": "hughsonWestlakeResponseArea",
-            "hideExamProperties": "never",
+            "hideExamProperties": "during",
+            "autoBegin": true,
             "repeatIfFailedOnce": true,
             "getNotesIfFailedTwice": true,
             "showMessageIfNoResponse": true,
             "examInstructions": "Use the button to complete the exam.",
+            "resultMainText": "Screener complete.",
+            "resultSubText": "Press submit to continue.",
             "examProperties": {
               "Screener": true,
               "TonePulseNumber": 3,
-              "PresentationMax": 3,
-              "NumCorrectReq": 2,
+              "PresentationMax": 5,
+              "NumCorrectReq": 3,
               "LevelUnits": "dB HL",
               "Lstart": 25,
               "F": 1000,
@@ -1460,6 +1472,57 @@
               "PollingOffset": 1000,
               "MinISI": 1000,
               "MaxISI": 3000
+            },
+            "plotProperties": {
+              "displayLevelProgression": true
+            },
+            "maskingNoise": {
+              "Type": "white",
+              "Level": [30, 30]
+            }
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "hughsonWestlakeThresholdResponseArea",
+      "pages": [
+        {
+          "id": "Hughson-Westlake-Threshold",
+          "title": "Hughson-Westlake Threshold",
+          "questionMainText": "Automated Threshold Audiometry",
+          "responseArea": {
+            "type": "hughsonWestlakeResponseArea",
+            "hideExamProperties": "during",
+            "autoBegin": true,
+            "repeatIfFailedOnce": true,
+            "getNotesIfFailedTwice": true,
+            "showMessageIfNoResponse": true,
+            "examInstructions": "Use the button to complete the exam.",
+            "resultMainText": "Automated threshold search complete.",
+            "resultSubText": "Press submit to continue.",
+            "examProperties": {
+              "Screener": false,
+              "TonePulseNumber": 3,
+              "LevelUnits": "dB HL",
+              "Lstart": 25,
+              "F": 1000,
+              "OutputChannel": "HPL0",
+              "UseSoftwareButton": true,
+              "PollingOffset": 1000,
+              "MinISI": 1000,
+              "MaxISI": 3000
+            },
+            "plotProperties": {
+              "displayLevelProgression": true
+            },
+            "maskingNoise": {
+              "Type": "white",
+              "Level": [30, 30]
             }
           }
         },
