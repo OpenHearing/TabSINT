@@ -32,10 +32,10 @@ enum ChaExamState {
 }
 
 enum ResponseAreaState {
-  Start = 'Start',
-  Exam = 'Exam',
-  Results = 'Results',
-  Notes = 'Notes',
+  Start = 'start',
+  Exam = 'exam',
+  Results = 'results',
+  Notes = 'notes',
 }
 
 @Component({
@@ -130,14 +130,14 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
 
   private pageSubscription: Subscription | undefined;
 
-  // TODO fix initialize for back to back without destruction
+  // TODO fix initialize for back to back response areas of the same type without destruction
 
   ngOnInit(): void {
     this.stateModel.updateState({ isSubmittable: false });
     this.examService.submit = () => this.submitWithNotes();
-    this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
+    this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'hughsonWestlakeResponseArea') {
-        this.setupResponseArea(updatedPage.responseArea as HughsonWestlakeResponseAreaInterface);
+        await this.setupResponseArea(updatedPage.responseArea as HughsonWestlakeResponseAreaInterface);
       }
     });
   }

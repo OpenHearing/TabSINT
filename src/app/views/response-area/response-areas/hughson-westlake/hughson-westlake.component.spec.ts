@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { TranslocoTestingModule } from '@jsverse/transloco';
 
 import { HughsonWestlakeComponent } from './hughson-westlake.component';
@@ -110,7 +110,7 @@ describe('HughsonWestlakeComponent', () => {
     expect(component.resultSubText).toBe('');
   });
 
-  it('auto-begins the exam when autoBegin is configured and a device is available', async () => {
+  it('auto-begins the exam when autoBegin is configured and a device is available', fakeAsync(() => {
     const pageModel = TestBed.inject(PageModel);
 
     pageModel.updatePage({
@@ -118,13 +118,15 @@ describe('HughsonWestlakeComponent', () => {
       id: 'hw',
       responseArea: { type: 'hughsonWestlakeResponseArea', autoBegin: true },
     });
-    await fixture.whenStable();
+    tick();
+    fixture.detectChanges();
 
     expect(devicesService.queueExam).toHaveBeenCalledWith(mockDevice, 'HughsonWestlake', jasmine.any(Object));
     expect(component.hwState).toBe('exam');
-  });
+    component.ngOnDestroy();
+  }));
 
-  it('overrides resultMainText and resultSubText from the response area config', async () => {
+  it('overrides resultMainText and resultSubText from the response area config', fakeAsync(() => {
     const pageModel = TestBed.inject(PageModel);
 
     pageModel.updatePage({
@@ -136,13 +138,15 @@ describe('HughsonWestlakeComponent', () => {
         resultSubText: 'Custom sub text',
       },
     });
-    await fixture.whenStable();
+    tick();
+    fixture.detectChanges();
 
     expect(component.resultMainText).toBe('Custom main text');
     expect(component.resultSubText).toBe('Custom sub text');
-  });
+    component.ngOnDestroy();
+  }));
 
-  it('starts masking noise before queuing the exam and stops it on teardown, when maskingNoise is configured', async () => {
+  it('starts masking noise before queuing the exam and stops it on teardown, when maskingNoise is configured', fakeAsync(() => {
     const pageModel = TestBed.inject(PageModel);
 
     pageModel.updatePage({
@@ -153,16 +157,21 @@ describe('HughsonWestlakeComponent', () => {
         maskingNoise: { Type: 'White', Level: [30, 30] },
       } as ResponseArea,
     });
-    await fixture.whenStable();
+    tick();
+    fixture.detectChanges();
 
-    await component.beginExam();
+    component.beginExam();
+
+    tick();
+    fixture.detectChanges();
+
     expect(devicesService.startMaskingNoise).toHaveBeenCalledWith(mockDevice, jasmine.objectContaining({ Type: 'White' }));
 
     component.ngOnDestroy();
     expect(devicesService.stopMaskingNoise).toHaveBeenCalledWith(mockDevice);
-  });
+  }));
 
-  it('stops masking noise as soon as the exam completes, not just on teardown', async () => {
+  it('stops masking noise as soon as the exam completes, not just on teardown', fakeAsync(() => {
     const pageModel = TestBed.inject(PageModel);
 
     pageModel.updatePage({
@@ -173,14 +182,19 @@ describe('HughsonWestlakeComponent', () => {
         maskingNoise: { Type: 'White', Level: [30, 30] },
       } as ResponseArea,
     });
-    await fixture.whenStable();
+    tick();
+    fixture.detectChanges();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (component as any).fetchAndFinishExam();
+    (component as any).fetchAndFinishExam();
+
+    tick();
+    fixture.detectChanges();
 
     expect(devicesService.stopMaskingNoise).toHaveBeenCalledWith(mockDevice);
     expect(component.hwState).not.toBe('exam');
-  });
+    component.ngOnDestroy();
+  }));
 
   it('does not start or stop masking noise when maskingNoise is not configured', async () => {
     component.device = mockDevice;
