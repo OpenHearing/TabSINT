@@ -9,13 +9,11 @@ import { DiskModel } from '../../models/disk/disk.service';
 import { AppModel } from '../../models/app/app.service';
 import { Router } from '@angular/router';
 import { StateModel } from '../../models/state/state.service';
-import { AppState, DialogType } from '../../utilities/constants';
+import { AppState } from '../../utilities/constants';
 import { StateInterface } from '../../models/state/state.interface';
 import { AdminService } from '../../controllers/admin.service';
 import { Tasks } from '../../services/tasks.service';
-import { QrService } from '../../services/qr.service';
-import { preferencesSchema } from '../../../schema/definitions/preferences.schema';
-import { Notifications } from '../../services/notifications.service';
+import { QrScanService } from '../../services/qr-scan.service';
 
 @Component({
   selector: 'app-welcome',
@@ -30,8 +28,7 @@ export class WelcomeComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly tasks = inject(Tasks);
   readonly adminService = inject(AdminService);
-  private readonly qrService = inject(QrService);
-  private readonly notifications = inject(Notifications);
+  private readonly qrScanService = inject(QrScanService);
 
   disk: DiskInterface;
   app: AppInterface;
@@ -67,21 +64,7 @@ export class WelcomeComponent implements OnInit, OnDestroy {
   /**
    * Scan the configuration QR code and adjust the preferences.
    */
-  async scanQrCodeandAutoConfig() {
-    const preferences = await this.qrService.validatedScan(preferencesSchema);
-    if (preferences) {
-      this.diskModel.updatePreferences(preferences);
-      this.notifications.alert({
-        title: 'QR Code',
-        content: 'QR code scanned successfully, configuration has been updated.',
-        type: DialogType.Alert,
-      });
-    } else {
-      this.notifications.alert({
-        title: 'QR Code',
-        content: 'Failed to configure the application with the provided QR code.',
-        type: DialogType.Alert,
-      });
-    }
+  async qrScanHandler() {
+    this.qrScanService.scanAndAutoConfig();
   }
 }
