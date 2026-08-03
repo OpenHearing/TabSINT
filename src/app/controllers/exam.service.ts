@@ -11,7 +11,6 @@ import {
 import { PageTypes } from '../types/custom-types';
 import {
   ChaWavfilesInterface,
-  FlagType,
   FollowOnInterface,
   PageDefinition,
   PageWavfileInterface,
