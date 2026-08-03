@@ -5,7 +5,7 @@ import { TrialProgressionPlotDataInterface } from './trial-progression-plot.inte
 /**
  * Shared trial-progression plot: one point per trial/presentation (value on the y axis, trial
  * index on the x axis), optionally connected by a line, with per-point styling and an optional
- * dashed reference line. Used for GAP detection results and Hughson-Westlake level progression.
+ * dashed reference line.
  */
 @Component({
   selector: 'app-trial-progression-plot',

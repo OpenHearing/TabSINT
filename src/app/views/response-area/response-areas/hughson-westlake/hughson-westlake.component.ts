@@ -52,9 +52,9 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
   private readonly logger = inject(Logger);
   ResponseAreaState = ResponseAreaState;
 
-  // Configuration
   private readonly allowableDevices = [DeviceType.Wahts];
 
+  // Configuration
   autoSubmit: boolean = examSchema.autoSubmit.default;
   autoBegin: boolean = examSchema.autoBegin.default;
   useSoftwareButton: boolean = examPropSchema.UseSoftwareButton.default;
@@ -149,7 +149,7 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Initialize the response area from the protocol definition and resolve the device.s
+   * Initialize the response area from the protocol definition and resolve the devices.
    * @param responseArea The Hughson-Westlake response area definition.
    */
   private async setupResponseArea(responseArea: HughsonWestlakeResponseAreaInterface): Promise<void> {
