@@ -131,12 +131,6 @@ export interface ProtocolReferenceInterface {
   skipIf?: string;
 }
 
-export enum FlagType {
-  Boolean = 'boolean',
-  Number = 'number',
-  String = 'string',
-}
-
 export interface SetFlagInterface {
   id: string;
   conditional: string;
