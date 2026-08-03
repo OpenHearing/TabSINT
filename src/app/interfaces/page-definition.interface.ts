@@ -134,6 +134,7 @@ export interface ProtocolReferenceInterface {
 export interface SetFlagInterface {
   id: string;
   conditional: string;
+  value?: boolean | number | string;
 }
 
 export interface CommonResponseAreaInterface {
