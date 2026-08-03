@@ -54,6 +54,10 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
     },
     preProcessFunction: {
       type: 'object',
+      description:
+        'A JS file/function to run before this page displays. The function receives no arguments; ' +
+        'it may inspect prior results/flags via window.tabsint.resultsModel and override this page\'s ' +
+        'variables (instructionText, responseArea config, etc.) by mutating window.tabsint.page directly.',
       properties: {
         filepath: { type: 'string', nullable: false },
         function: { type: 'string', nullable: false },

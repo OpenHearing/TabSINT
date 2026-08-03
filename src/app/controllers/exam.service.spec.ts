@@ -10,6 +10,7 @@ import { Logger } from '../services/logger.service';
 import { AppState, ExamState, ProtocolServer, ProtocolState } from '../utilities/constants';
 import { BehaviorSubject, of } from 'rxjs';
 import { PageInterface } from '../models/page/page.interface';
+import { PageDefinition } from '../interfaces/page-definition.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { ResultsInterface } from '../models/results/results.interface';
 import { ProtocolStack, ProtocolStackItem } from '../models/protocol/protocol-stack';
@@ -408,6 +409,42 @@ describe('ExamService', () => {
     it('returns false when responseRequired is explicitly false', () => {
       const page = { responseArea: { responseRequired: false, type: 'textboxResponseArea' } } as PageInterface;
       expect(examService.isPageResponseRequired(page)).toBeFalse();
+    });
+  });
+
+  describe('preprocess function page overrides', () => {
+    function buildPageWithPreprocess(js: string): PageDefinition {
+      return {
+        id: 'preprocess-page',
+        instructionText: 'original text',
+        responseArea: { type: 'textboxResponseArea', rows: 3, responseRequired: false },
+        preProcessFunction: {
+          filepath: 'test.js',
+          function: 'testOverride',
+          js,
+        },
+      } as unknown as PageDefinition;
+    }
+
+    it('applies overrides made via window.tabsint.page to the page passed to pageModel.updatePage', () => {
+      const page = buildPageWithPreprocess(
+        'function testOverride() { window.tabsint.page.instructionText = "overridden text"; window.tabsint.page.responseArea.rows = 8; }',
+      );
+
+      (examService as unknown as { initializeCurrentPage: (page: PageDefinition) => void }).initializeCurrentPage(page);
+
+      expect(mockPageModel.updatePage).toHaveBeenCalled();
+      const renderedPage = mockPageModel.updatePage.calls.mostRecent().args[0] as PageDefinition;
+      expect(renderedPage.instructionText).toBe('overridden text');
+      expect((renderedPage.responseArea as { rows: number }).rows).toBe(8);
+    });
+
+    it('does not mutate the original page object', () => {
+      const page = buildPageWithPreprocess('function testOverride() { window.tabsint.page.instructionText = "overridden text"; }');
+
+      (examService as unknown as { initializeCurrentPage: (page: PageDefinition) => void }).initializeCurrentPage(page);
+
+      expect(page.instructionText).toBe('original text');
     });
   });
 

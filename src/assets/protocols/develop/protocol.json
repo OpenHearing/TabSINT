@@ -892,6 +892,20 @@
           }
         },
         {
+          "id": "advancedProtocolLogic_007",
+          "title": "Page 7",
+          "instructionText": "This instruction text and the response area below should be overridden by a preprocess function",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 1,
+            "responseRequired": false
+          },
+          "preProcessFunction": {
+            "filepath": "customPreprocessOverride.js",
+            "function": "overridePreprocessExample"
+          }
+        },
+        {
           "id": "backtomain",
           "reference": "MainMenu"
         }

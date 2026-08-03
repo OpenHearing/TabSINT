@@ -328,14 +328,14 @@ export class ExamService {
     if (page.setFlags) {
       page.setFlags.forEach(flags => {
         if (this.conditionalEvaluator(flags.conditional)) {
-          this.results.currentExam.flags[flags.id] = flags.value ?? true;
+          this.results.currentExam.flags[flags.id] = true;
           this.logger.debug('Flag set: ' + flags.id);
         }
       });
     }
   }
 
-  private async handlePreProcessFunctions(page: PageInterface) {
+  private async handlePreProcessFunctions(page: PageDefinition) {
     if (page.preProcessFunction) {
       this.window.tabsint = {
         logger: this.logger,
@@ -347,6 +347,7 @@ export class ExamService {
         resultsModel: this.resultsModel,
         pageModel: this.pageModel,
         protocolModel: this.protocolModel,
+        page,
       };
 
       eval(page.preProcessFunction.js! + '\n' + page.preProcessFunction.function + '()');
@@ -569,19 +570,22 @@ export class ExamService {
    * @param page The new page to initialize.
    */
   private initializeCurrentPage(page: PageDefinition) {
-    this.handlePreProcessFunctions(page);
-    this.pageModel.updatePage(page);
+    // Clone so a preprocess function's overrides (via window.tabsint.page) apply only to this
+    // render and never mutate the canonical page stored in the protocol's page queue.
+    const pageForRender = structuredClone(page);
+    this.handlePreProcessFunctions(pageForRender);
+    this.pageModel.updatePage(pageForRender);
     this.stateModel.updateState({
       doesResponseExist: false,
-      isResponseRequired: this.isPageResponseRequired(page),
+      isResponseRequired: this.isPageResponseRequired(pageForRender),
     });
     this.stateModel.setPageSubmittable();
-    this.resultsService.initializePageResults(page);
+    this.resultsService.initializePageResults(pageForRender);
     this.window.scrollTo({ top: 0, behavior: 'smooth' });
-    this.activateDosimeters(page);
-    this.activateSvantek(page);
-    this.activateMedia(page);
-    this.handleAutoSubmitDelay(page);
+    this.activateDosimeters(pageForRender);
+    this.activateSvantek(pageForRender);
+    this.activateMedia(pageForRender);
+    this.handleAutoSubmitDelay(pageForRender);
   }
 
   /**
