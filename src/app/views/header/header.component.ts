@@ -18,6 +18,7 @@ import { AppInterface } from '../../models/app/app.interface';
 import { AdminService } from '../../controllers/admin.service';
 import { PageInterface } from '../../models/page/page.interface';
 import { PageModel } from '../../models/page/page.service';
+import { QrScanService } from '../../services/qr-scan.service';
 
 @Component({
   selector: 'app-header-view',
@@ -34,6 +35,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private readonly pageModel = inject(PageModel);
   private readonly protocolM = inject(ProtocolModel);
   private readonly stateModel = inject(StateModel);
+  private readonly qrScanService = inject(QrScanService);
 
   state: StateInterface;
   protocol: ProtocolModelInterface;
@@ -131,5 +133,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.logger.debug('navigateToNavMenuItem() canceled.');
       }
     });
+  }
+
+  async qrScanHandler() {
+    this.qrScanService.scanAndAutoConfig();
   }
 }

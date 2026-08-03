@@ -879,7 +879,7 @@
         },
         {
           "id": "advancedProtocolLogic_006",
-          "title": "Page 3",
+          "title": "Page 6",
           "instructionText": "If flags were set on the last page, testFlag should be logged as 'True'",
           "responseArea": {
             "type": "textboxResponseArea",
