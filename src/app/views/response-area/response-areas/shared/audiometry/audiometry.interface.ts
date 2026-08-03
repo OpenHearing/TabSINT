@@ -80,8 +80,7 @@ export interface AudiometryResponseArea extends CommonResponseAreaInterface {
   getNotesIfFailedTwice?: boolean;
   showMessageIfNoResponse?: boolean;
   noResponseCustomMessage?: string;
-  hideExamProperties?: AudiometryHideExamProps; // TODO all these below
+  hideExamProperties?: AudiometryHideExamProps;
   plotProperties?: PlotProperties;
-  measureBackground?: string;
   maskingNoise?: MaskingNoise;
 }

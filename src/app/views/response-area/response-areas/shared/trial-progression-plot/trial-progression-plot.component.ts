@@ -27,6 +27,24 @@ export class TrialProgressionPlotComponent implements AfterViewInit {
   }
 
   /**
+   * Fill color based on point style.
+   * @param style The style for the point.
+   * @returns The fill color.
+   */
+  private getPointFill(style: string): string {
+    switch (style) {
+      case 'open':
+        return 'none';
+
+      case 'highlight':
+        return this.highlightColor;
+
+      default:
+        return this.filledColor;
+    }
+  }
+
+  /**
    * Render the trial-progression plot.
    */
   private createPlot(): void {
@@ -124,7 +142,7 @@ export class TrialProgressionPlotComponent implements AfterViewInit {
 
     // data points: filled (response received), open (no response), or highlighted (e.g. the
     // responses that confirmed a threshold)
-    const fillFor = (i: number) => (pointStyles[i] === 'open' ? 'none' : pointStyles[i] === 'highlight' ? this.highlightColor : this.filledColor);
+    const fillFor = (i: number) => this.getPointFill(pointStyles[i]);
     const strokeFor = (i: number) => (pointStyles[i] === 'open' ? this.filledColor : 'none');
     const strokeWidthFor = (i: number) => (pointStyles[i] === 'open' ? 2 : 0);
 

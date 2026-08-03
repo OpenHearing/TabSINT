@@ -15,8 +15,8 @@
 }
 
 .software-button-pressed {
-  background-color: #4cae4c;
-  color: #fff;
+  background-color: var(--color-success);
+  color: #ffffff;
 }
 
 .software-button:disabled {

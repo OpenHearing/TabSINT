@@ -305,13 +305,6 @@ export const hughsonWestlakeSchema: JSONSchemaType<HughsonWestlakeResponseAreaIn
       },
       required: [],
     },
-    measureBackground: {
-      type: 'string',
-      nullable: true,
-      default: 'ThirdOctaveBands',
-      description: 'Select a method from the list below to measure background noise after an audiometry exam',
-      enum: ['ThirdOctaveBands'],
-    },
 
     // Masking Noise Properties
     maskingNoise: {
