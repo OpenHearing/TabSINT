@@ -33,6 +33,7 @@ export function loadingProtocolDefaults(disk: DiskInterface): LoadingProtocolInt
 }
 
 export const pageInterfaceDefaults: PageInterface = {
+  _uuid: crypto.randomUUID(),
   id: '',
   enableBackButton: false,
   title: '',

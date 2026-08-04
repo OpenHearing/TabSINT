@@ -18,6 +18,7 @@ import { ProtocolStack } from '../models/protocol/protocol-stack';
 import { ProtocolServer } from '../utilities/constants';
 import { DiskInterface } from '../models/disk/disk.interface';
 import { ProtocolInterface } from '../models/protocol/protocol.interface';
+import { PageInterface } from '../models/page/page.interface';
 
 describe('ResultsService', () => {
   beforeEach(async () => {
@@ -48,7 +49,8 @@ describe('ResultsService', () => {
     const returnedResults: ResultsInterface = resultsService.results;
     expect(returnedResults.currentPage.pageId).toBe('');
     expect(returnedResults.currentPage.responseArea).toBeUndefined();
-    const testCurrentPage = {
+    const testCurrentPage: PageInterface = {
+      _uuid: '001',
       id: '001',
       title: 'Test',
       instructionText: 'Test Case',
@@ -79,6 +81,7 @@ describe('ResultsService', () => {
     const resultsService = TestBed.inject(ResultsService);
     const returnedResults: ResultsInterface = resultsService.results;
     resultsService.initializePageResults({
+      _uuid: '001',
       id: '001',
       title: 'Test',
       instructionText: 'Test Case',

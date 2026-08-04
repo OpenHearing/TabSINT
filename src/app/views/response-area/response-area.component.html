@@ -1,25 +1,27 @@
-<div [ngSwitch]="currentPage.responseArea?.type">
-  <app-textbox-view *ngSwitchCase="'textboxResponseArea'"></app-textbox-view>
-  <app-textbox-result-viewer-view *ngSwitchCase="'textboxResponseAreaResultViewer'"></app-textbox-result-viewer-view>
-  <app-likert-view *ngSwitchCase="'likertResponseArea'"></app-likert-view>
-  <app-multiple-input-view *ngSwitchCase="'multipleInputResponseArea'"></app-multiple-input-view>
-  <app-manual-audiometry-view *ngSwitchCase="'manualAudiometryResponseArea'"></app-manual-audiometry-view>
-  <app-manual-audiometry-result-viewer *ngSwitchCase="'manualAudiometryResponseAreaResultViewer'"></app-manual-audiometry-result-viewer>
-  <app-multiple-choice-view *ngSwitchCase="'multipleChoiceResponseArea'"></app-multiple-choice-view>
-  <app-custom-response-area-view *ngSwitchCase="'customResponseArea'"></app-custom-response-area-view>
-  <app-calibration-exam *ngSwitchCase="'calibrationResponseArea'"></app-calibration-exam>
-  <app-fpl-calibration-exam *ngSwitchCase="'fplCalibrationResponseArea'"></app-fpl-calibration-exam>
-  <app-swept-dpoae-exam *ngSwitchCase="'sweptDPOAEResponseArea'"></app-swept-dpoae-exam>
-  <app-mrt-exam *ngSwitchCase="'mrtResponseArea'"></app-mrt-exam>
-  <app-wai-exam *ngSwitchCase="'WAIResponseArea'"></app-wai-exam>
-  <app-memr-exam *ngSwitchCase="'memrResponseArea'"></app-memr-exam>
-  <app-subject-id *ngSwitchCase="'subjectIdResponseArea'"></app-subject-id>
-  <app-checkbox *ngSwitchCase="'checkboxResponseArea'"></app-checkbox>
-  <app-duodose-download *ngSwitchCase="'duodoseDownloadResponseArea'"></app-duodose-download>
-  <app-button-grid *ngSwitchCase="'buttonGridResponseArea'"></app-button-grid>
-  <app-qr-code-response-area *ngSwitchCase="'qrCodeResponseArea'"></app-qr-code-response-area>
-  <app-bekesy-response-area *ngSwitchCase="'bekesyResponseArea'"></app-bekesy-response-area>
-  <app-three-digit-exam *ngSwitchCase="'threeDigitResponseArea'"></app-three-digit-exam>
-  <app-hint-exam *ngSwitchCase="'hintResponseArea'"></app-hint-exam>
-  <app-gap-exam *ngSwitchCase="'gapResponseArea'"></app-gap-exam>
-</div>
+<ng-container *ngIf="renderKey === currentPage._uuid">
+  <div [ngSwitch]="currentPage.responseArea?.type">
+    <app-textbox-view *ngSwitchCase="'textboxResponseArea'"></app-textbox-view>
+    <app-textbox-result-viewer-view *ngSwitchCase="'textboxResponseAreaResultViewer'"></app-textbox-result-viewer-view>
+    <app-likert-view *ngSwitchCase="'likertResponseArea'"></app-likert-view>
+    <app-multiple-input-view *ngSwitchCase="'multipleInputResponseArea'"></app-multiple-input-view>
+    <app-manual-audiometry-view *ngSwitchCase="'manualAudiometryResponseArea'"></app-manual-audiometry-view>
+    <app-manual-audiometry-result-viewer *ngSwitchCase="'manualAudiometryResponseAreaResultViewer'"></app-manual-audiometry-result-viewer>
+    <app-multiple-choice-view *ngSwitchCase="'multipleChoiceResponseArea'"></app-multiple-choice-view>
+    <app-custom-response-area-view *ngSwitchCase="'customResponseArea'"></app-custom-response-area-view>
+    <app-calibration-exam *ngSwitchCase="'calibrationResponseArea'"></app-calibration-exam>
+    <app-fpl-calibration-exam *ngSwitchCase="'fplCalibrationResponseArea'"></app-fpl-calibration-exam>
+    <app-swept-dpoae-exam *ngSwitchCase="'sweptDPOAEResponseArea'"></app-swept-dpoae-exam>
+    <app-mrt-exam *ngSwitchCase="'mrtResponseArea'"></app-mrt-exam>
+    <app-wai-exam *ngSwitchCase="'WAIResponseArea'"></app-wai-exam>
+    <app-memr-exam *ngSwitchCase="'memrResponseArea'"></app-memr-exam>
+    <app-subject-id *ngSwitchCase="'subjectIdResponseArea'"></app-subject-id>
+    <app-checkbox *ngSwitchCase="'checkboxResponseArea'"></app-checkbox>
+    <app-duodose-download *ngSwitchCase="'duodoseDownloadResponseArea'"></app-duodose-download>
+    <app-button-grid *ngSwitchCase="'buttonGridResponseArea'"></app-button-grid>
+    <app-qr-code-response-area *ngSwitchCase="'qrCodeResponseArea'"></app-qr-code-response-area>
+    <app-bekesy-response-area *ngSwitchCase="'bekesyResponseArea'"></app-bekesy-response-area>
+    <app-three-digit-exam *ngSwitchCase="'threeDigitResponseArea'"></app-three-digit-exam>
+    <app-hint-exam *ngSwitchCase="'hintResponseArea'"></app-hint-exam>
+    <app-gap-exam *ngSwitchCase="'gapResponseArea'"></app-gap-exam>
+  </div>
+</ng-container>

@@ -288,7 +288,7 @@ export class ExamService {
    * @summary The exam will proceed to the correct page.
    * @models page
    */
-  private getPagesFromAdvancedLogic(page: PageInterface): PageTypes[] {
+  private getPagesFromAdvancedLogic(page: PageDefinition): PageTypes[] {
     const pageList: PageTypes[] = [];
     if (page.repeatPage) {
       const repeatedPages = this.handleRepeats(page);
@@ -324,7 +324,7 @@ export class ExamService {
    * @summary TBD.
    */
   private setFlags(pageResult: CurrentResults) {
-    const page: PageDefinition = pageResult.page;
+    const page = pageResult.page;
     if (page.setFlags) {
       page.setFlags.forEach(flags => {
         if (this.conditionalEvaluator(flags.conditional)) {
@@ -423,7 +423,7 @@ export class ExamService {
    * @models state, results
    * @returns followOn ID: string or undefined
    */
-  private findFollowOn(page: PageInterface) {
+  private findFollowOn(page: PageDefinition) {
     let id: string | undefined = undefined;
     page.followOns?.forEach((followOn: FollowOnInterface) => {
       // backward compatibility
@@ -437,7 +437,7 @@ export class ExamService {
     return id;
   }
 
-  private handleRepeats(page: PageInterface) {
+  private handleRepeats(page: PageDefinition) {
     let repeatedPages: PageTypes[] | undefined;
     // repeat if repeatIf not present or it evaluates to true
     if (page.repeatPage!.repeatIf === undefined || (page.repeatPage!.repeatIf && this.conditionalEvaluator(page.repeatPage!.repeatIf))) {
@@ -451,7 +451,7 @@ export class ExamService {
       const numRepititions = Number(page.repeatPage!.nRepeats);
       // create desired number of repeated pages
       for (let i = currentRepeatCount + 1; i < Math.min(numRepititions + currentRepeatCount + 1, 4); i++) {
-        const repeatedPage: PageInterface = structuredClone(page);
+        const repeatedPage: PageDefinition = structuredClone(page);
         if (i > 1) {
           repeatedPage.id = repeatedPage.id.replace('_repeated_' + String(i - 1), '_repeated_' + String(i));
         } else {
@@ -567,11 +567,12 @@ export class ExamService {
 
   /**
    * Initializes the provided page and set it as the current page.
-   * @param page The new page to initialize.
+   * @param pageDef The new page to initialize.
    */
-  private initializeCurrentPage(page: PageDefinition) {
+  private initializeCurrentPage(pageDef: PageDefinition) {
     // Clone so a preprocess function's overrides (via window.tabsint.page) apply only to this
     // render and never mutate the canonical page stored in the protocol's page queue.
+    const page = { ...pageDef, _uuid: crypto.randomUUID() };
     const pageForRender = structuredClone(page);
     this.handlePreProcessFunctions(pageForRender);
     this.pageModel.updatePage(pageForRender);
