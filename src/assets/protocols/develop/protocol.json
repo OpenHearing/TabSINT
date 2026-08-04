@@ -1473,9 +1473,6 @@
               "MinISI": 1000,
               "MaxISI": 3000
             },
-            "plotProperties": {
-              "displayLevelProgression": true
-            },
             "maskingNoise": {
               "Type": "white",
               "Level": [30, 30]
