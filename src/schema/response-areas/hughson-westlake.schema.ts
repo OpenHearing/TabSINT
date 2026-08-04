@@ -300,7 +300,7 @@ export const hughsonWestlakeSchema: JSONSchemaType<HughsonWestlakeResponseAreaIn
           type: 'boolean',
           nullable: true,
           default: false,
-          description: 'If true, turn on plotting of the level progression for an individual exam.',
+          description: 'If true, turn on plotting of the level progression for an individual exam, ignored for screener exam.',
         },
       },
       required: [],

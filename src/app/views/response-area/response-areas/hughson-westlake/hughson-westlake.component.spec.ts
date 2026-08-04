@@ -252,27 +252,6 @@ describe('HughsonWestlakeComponent', () => {
     expect(data.maxY).toBe(70);
   });
 
-  it('titles the plot as a screener outcome, scaled to the tested level, when Screener is configured', () => {
-    (component as unknown as { examProperties: { Screener: boolean } }).examProperties.Screener = true;
-    const results: HughsonWestlakeResultsInterface = {
-      RetSPL: 0,
-      L: [25, 25, 25, 25, 25],
-      FalsePositive: [0, 0, 0, 0, 0],
-      ResponseTime: [500, 500, 500, 0, 500],
-      NumCorrectResp: 4,
-      Threshold: NaN,
-      Units: 0,
-      ResultType: 'Pass',
-    };
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const data = (component as any).createLevelProgressionData(results);
-
-    expect(data.title).toBe('Screener: Pass (5 trials)');
-    expect(data.referenceLine).toBeUndefined();
-    expect(data.maxY).toBe(35);
-  });
-
   it('remaps ResultType to the screener pass/fail vocabulary when Screener is configured', () => {
     (component as unknown as { examProperties: { Screener: boolean } }).examProperties.Screener = true;
 

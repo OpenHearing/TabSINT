@@ -288,7 +288,11 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
    */
   private finishExam(results: HughsonWestlakeResultsInterface | undefined): void {
     this.results = results;
-    this.levelProgressionData = this.plotProperties.displayLevelProgression && results?.L ? this.createLevelProgressionData(results) : undefined;
+    // Level progression plotting should not be shown for screener exam
+    this.levelProgressionData =
+      !this.examProperties.Screener && this.plotProperties.displayLevelProgression && results?.L
+        ? this.createLevelProgressionData(results)
+        : undefined;
     this.updateResponseAreaState(ResponseAreaState.Results);
     this.resultsModel.updateCurrentPage({ response: results });
     this.stateModel.updateState({ isSubmittable: true });
@@ -321,9 +325,7 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
     // Screener mode never has a numeric Threshold (it only checks pass/fail at Lstart), so its
     // fallback title reads as a screener outcome rather than a generic, unlabeled result type.
     let title = `Level Progression: ${results.ResultType} (${results.L.length} trials)`;
-    if (this.examProperties.Screener) {
-      title = `Screener: ${results.ResultType} (${results.L.length} trials)`;
-    } else if (hasThreshold) {
+    if (hasThreshold) {
       title = `Threshold at ${results.Threshold} ${levelUnits} (${results.L.length} trials)`;
     }
     // Scale the y axis to the levels actually presented (screener presentations all sit at a
