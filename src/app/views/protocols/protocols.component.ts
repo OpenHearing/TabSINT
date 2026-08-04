@@ -77,7 +77,11 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
 
   getAvailableProtocols(): { key: string; value: ProtocolMetaInterface }[] {
     const availableProtocols = this.disk.availableProtocolsMeta;
-    return Object.entries(availableProtocols).map(([key, value]) => ({ key, value }));
+    return Object.entries(availableProtocols)
+      .filter(([, value]) => {
+        return !value.admin || this.disk.preferences.debugMode;
+      })
+      .map(([key, value]) => ({ key, value }));
   }
 
   trackByIndex(index: number, item: any): number {
