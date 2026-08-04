@@ -322,14 +322,11 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
       return heard ? ('filled' as const) : ('open' as const);
     });
     const levelUnits = this.examProperties.LevelUnits ?? examPropSchema.LevelUnits.default;
-    // Screener mode never has a numeric Threshold (it only checks pass/fail at Lstart), so its
-    // fallback title reads as a screener outcome rather than a generic, unlabeled result type.
     let title = `Level Progression: ${results.ResultType} (${results.L.length} trials)`;
     if (hasThreshold) {
       title = `Threshold at ${results.Threshold} ${levelUnits} (${results.L.length} trials)`;
     }
-    // Scale the y axis to the levels actually presented (screener presentations all sit at a
-    // single, often low, level) instead of a fixed 0-200 range that would squash the line.
+    // Scale the y axis to the levels actually presented
     const maxLevel = results.L.length ? Math.max(...results.L) : 0;
     return {
       y: results.L,
