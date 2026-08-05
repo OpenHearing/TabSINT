@@ -5,6 +5,7 @@ import { ResultsModel } from '../../../../../models/results/results-model.servic
 import { PageModel } from '../../../../../models/page/page.service';
 import { StateModel } from '../../../../../models/state/state.service';
 import { TranslocoTestingModule } from '@jsverse/transloco';
+import { PageInterface } from '../../../../../models/page/page.interface';
 
 describe('LikertComponent', () => {
   let component: LikertComponent;
@@ -23,6 +24,7 @@ describe('LikertComponent', () => {
         labels: ['Strongly Disagree', 'Strongly Agree'],
         useEmoticons: false,
       },
+      _uuid: 'page1',
       id: 'page1',
     });
 
@@ -54,6 +56,7 @@ describe('LikertComponent', () => {
         labels: ['Strongly Disagree', 'Strongly Agree'],
         useEmoticons: false,
       },
+      _uuid: 'page1',
       id: 'page1',
     });
     tick();
@@ -76,7 +79,7 @@ describe('LikertComponent', () => {
   });
 
   it('should honor per-question overrides and below-positioned labels', fakeAsync(() => {
-    const updatedPage = {
+    const updatedPage: PageInterface = {
       responseArea: {
         type: 'likertResponseArea',
         levels: 5,
@@ -84,6 +87,7 @@ describe('LikertComponent', () => {
         labels: ['Never', 'Always'],
         questions: [{ text: 'Percent', levels: 11, labels: ['0%', '100%'] }, 'Plain question'],
       },
+      _uuid: 'page2',
       id: 'page2',
     };
 
@@ -119,6 +123,7 @@ describe('LikertComponent', () => {
         verticalSpacing: 40,
         questions: ['Tinnitus kept me from sleeping.'],
       },
+      _uuid: 'page3',
       id: 'page3',
     });
     tick();

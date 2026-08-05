@@ -2,8 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { PageModel } from './page.service';
 import { PageInterface } from './page.interface';
 
-const makePage = (overrides: Partial<PageInterface> = {}): PageInterface =>
-  ({ id: 'test-page', title: 'Test', ...overrides }) as PageInterface;
+const makePage = (overrides: Partial<PageInterface> = {}): PageInterface => ({ _uuid: 'test', id: 'test-page', title: 'Test', ...overrides });
 
 describe('PageModel', () => {
   let pageModel: PageModel;
@@ -31,7 +30,7 @@ describe('PageModel', () => {
     expect(pageModel.getPage().id).toBe('original');
   });
 
-  it('observable emits when page is updated', (done) => {
+  it('observable emits when page is updated', done => {
     const page = makePage({ id: 'observable-test' });
     pageModel.currentPageObservable.subscribe(emitted => {
       if (emitted.id === 'observable-test') {

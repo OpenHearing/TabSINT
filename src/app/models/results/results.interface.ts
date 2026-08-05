@@ -3,11 +3,11 @@ import { IDeviceMetadata } from '../../interfaces/devices/device-metadata.interf
 import { IDevice } from '../../interfaces/devices/device.interface';
 import { DosimetryResultsInterface } from '../../interfaces/dosimeter-results.interface';
 import { SvantekResultInterface } from '../../interfaces/svantek-result.interface';
-import { ChaWavfilesInterface, ImageInterface, VideoInterface, PageWavfileInterface, ResponseArea } from '../../interfaces/page-definition.interface';
 import { ProtocolServer } from '../../utilities/constants';
 import { ProtocolInterface } from '../protocol/protocol.interface';
 import { VersionInterface } from '../version/version.interface';
 import { FlagsInterface } from './flags.interface';
+import { PageInterface } from '../page/page.interface';
 
 export interface ResultsInterface {
   currentPage: CurrentResults;
@@ -25,14 +25,7 @@ export interface CurrentResults {
   responseArea?: string;
   responseStartTime?: string;
   responseElapTimeMS?: number;
-  page: {
-    id: string;
-    wavfiles?: PageWavfileInterface[];
-    chaWavFiles?: ChaWavfilesInterface;
-    image?: ImageInterface;
-    video?: VideoInterface;
-    responseArea?: ResponseArea;
-  };
+  page: Partial<PageInterface>;
   dosimetry?: DosimetryResultsInterface;
   svantek?: SvantekResultInterface;
 }

@@ -31,7 +31,8 @@ describe('ExamService', () => {
   let mockAudioService: jasmine.SpyObj<AudioService>;
 
   beforeEach(() => {
-    const mockPage = {
+    const mockPage: PageInterface = {
+      _uuid: 'test-page',
       id: 'test-page',
       responseArea: {
         responseRequired: false,
@@ -43,7 +44,7 @@ describe('ExamService', () => {
       instructionText: '',
       helpText: '',
       submitText: '',
-    } as PageInterface;
+    };
     const mockProtocol = {
       protocolId: 'test-protocol',
       name: 'Test Protocol',
@@ -155,7 +156,7 @@ describe('ExamService', () => {
           instructionText: '',
           helpText: '',
           submitText: '',
-        } as PageInterface,
+        },
       },
       currentExam: {
         protocol: {
@@ -290,6 +291,7 @@ describe('ExamService', () => {
 
   it('should begin the exam and set exam state to Testing', async () => {
     mockPageModel.getPage.and.returnValue({
+      _uuid: 'test-page',
       id: 'test-page',
       responseArea: { responseRequired: false, type: 'textboxResponseArea' },
     });
@@ -297,6 +299,7 @@ describe('ExamService', () => {
     mockPageModel.updatePage.and.stub();
 
     mockPageModel.currentPageObservable = new BehaviorSubject<PageInterface>({
+      _uuid: 'test-page',
       id: 'test-page',
       responseArea: {
         responseRequired: false,
@@ -308,7 +311,7 @@ describe('ExamService', () => {
       instructionText: '',
       helpText: '',
       submitText: '',
-    } as PageInterface).asObservable();
+    }).asObservable();
 
     spyOn(examService, 'advancePage' as never).and.stub();
     await examService.begin();
@@ -428,7 +431,7 @@ describe('ExamService', () => {
 
     it('applies overrides made via window.tabsint.page to the page passed to pageModel.updatePage', () => {
       const page = buildPageWithPreprocess(
-        'function testOverride() { window.tabsint.page.instructionText = "overridden text"; window.tabsint.page.responseArea.rows = 8; }',
+        'function testOverride() { window.tabsint.page.instructionText = "overridden text"; window.tabsint.page.responseArea.rows = 8; }'
       );
 
       (examService as unknown as { initializeCurrentPage: (page: PageDefinition) => void }).initializeCurrentPage(page);
@@ -445,6 +448,44 @@ describe('ExamService', () => {
       (examService as unknown as { initializeCurrentPage: (page: PageDefinition) => void }).initializeCurrentPage(page);
 
       expect(page.instructionText).toBe('original text');
+    });
+  });
+
+  describe('page reinitialization (stack navigation)', () => {
+    function buildPage(): PageDefinition {
+      return {
+        id: 'reinit-page',
+        instructionText: 'text',
+        responseArea: { type: 'textboxResponseArea', rows: 3, responseRequired: false },
+      } as unknown as PageDefinition;
+    }
+
+    it('assigns a fresh _uuid to the rendered page', () => {
+      const page = buildPage();
+
+      (examService as unknown as { initializeCurrentPage: (page: PageDefinition) => void }).initializeCurrentPage(page);
+
+      const renderedPage = mockPageModel.updatePage.calls.mostRecent().args[0] as PageInterface;
+      expect(renderedPage._uuid).toBeTruthy();
+    });
+
+    it('assigns a new _uuid on every call, even for the exact same page reference navigated to twice in a row', () => {
+      // Simulates re-entering the same subprotocol/page during stack navigation (e.g. a followOn
+      // that loops back onto the same reference), where the identical PageDefinition object is
+      // initialized again without any different page in between.
+      const page = buildPage();
+      const initializeCurrentPage = (examService as unknown as { initializeCurrentPage: (page: PageDefinition) => void }).initializeCurrentPage.bind(
+        examService
+      );
+
+      initializeCurrentPage(page);
+      const firstRenderedPage = mockPageModel.updatePage.calls.mostRecent().args[0] as PageInterface;
+
+      initializeCurrentPage(page);
+      const secondRenderedPage = mockPageModel.updatePage.calls.mostRecent().args[0] as PageInterface;
+
+      expect(firstRenderedPage.id).toBe(secondRenderedPage.id);
+      expect(secondRenderedPage._uuid).not.toBe(firstRenderedPage._uuid);
     });
   });
 
