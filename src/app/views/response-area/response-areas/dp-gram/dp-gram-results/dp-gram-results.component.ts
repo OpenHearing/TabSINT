@@ -1,23 +1,20 @@
 import { Component, Input } from '@angular/core';
 import * as d3 from 'd3';
 import { DpoaeResultsBaseComponent } from '../../shared/dpoae/dpoae-results-base.component';
-import { SweptDpoaeResultsInterface } from '../swept-dpoae-exam/swept-dpoae-exam.interface';
-import { createLegend, createOAEResultsChartSvg, createNormativeDataPath } from '../../../../../utilities/d3-plot-functions';
+import { DpGramResultsInterface } from '../dp-gram-exam/dp-gram-exam.interface';
+import { createLegend, createOAEResultsChartSvg, createNormativeDataPath, plotOAEPointMarkers } from '../../../../../utilities/d3-plot-functions';
 
 @Component({
-  selector: 'app-swept-dpoae-results',
-  templateUrl: './swept-dpoae-results.component.html',
-  styleUrl: './swept-dpoae-results.component.css',
+  selector: 'app-dp-gram-results',
+  templateUrl: './dp-gram-results.component.html',
+  styleUrl: './dp-gram-results.component.css',
 })
-export class SweptDpoaeResultsComponent extends DpoaeResultsBaseComponent<SweptDpoaeResultsInterface> {
-  @Input() f2Start!: number;
-  @Input() f2End!: number;
+export class DpGramResultsComponent extends DpoaeResultsBaseComponent<DpGramResultsInterface> {
   @Input() xScale!: d3.ScaleLogarithmic<number, number, never>;
   @Input() xTicks!: number[];
 
   protected createResultsPlot() {
-    // TODO: Do I need to filter data? Probably not after I get real firmware.
-    const filteredData = this.filterSweptDpoaeResults(this.results);
+    const filteredData = this.filterDpGramResults(this.results);
 
     const yScale = d3
       .scaleLinear()
@@ -38,7 +35,7 @@ export class SweptDpoaeResultsComponent extends DpoaeResultsBaseComponent<SweptD
       .range([this.height, 0]);
 
     let svg = d3
-      .select('#dpoae-results-plot')
+      .select('#dp-gram-results-plot')
       .append('svg')
       .attr('width', this.width + this.margin.left + this.margin.right)
       .attr('height', this.height + this.margin.top + this.margin.bottom)
@@ -58,34 +55,12 @@ export class SweptDpoaeResultsComponent extends DpoaeResultsBaseComponent<SweptD
     const normativePath = createNormativeDataPath(this.normativeData, this.xScale, yScale);
     clippedGroup.append('path').attr('d', normativePath).attr('fill', 'gray').attr('stroke', 'gray').attr('stroke-width', 2);
 
-    // Plot DpLow Amplitude (blue line)
-    svg
-      .selectAll('.dot')
-      .data(filteredData.DpLow.F2Frequency)
-      .enter()
-      .append('circle')
-      .attr('cx', (d, i) => this.xScale(filteredData.DpLow.F2Frequency[i]))
-      .attr('cy', (d, i) => yScale(filteredData.DpLow.Amplitude[i]))
-      .attr('r', 4)
-      .style('fill', 'none')
-      .style('stroke', 'blue')
-      .style('stroke-width', 2);
+    // Plot DpLow Amplitude (blue open circles) and NoiseFloor (red X) - discrete points, no
+    // connecting line, since a handful of possibly non-uniformly-spaced test frequencies
+    // shouldn't visually imply a continuous trend.
+    plotOAEPointMarkers(svg, this.xScale, yScale, filteredData.DpLow.F2Frequency, filteredData.DpLow.Amplitude, filteredData.DpLow.NoiseFloor);
 
-    // Plot Noise Floor (dashed red line)
-    svg
-      .selectAll('.dot')
-      .data(filteredData.DpLow.F2Frequency)
-      .enter()
-      .append('circle')
-      .attr('cx', (d, i) => this.xScale(filteredData.DpLow.F2Frequency[i]))
-      .attr('cy', (d, i) => yScale(filteredData.DpLow.NoiseFloor[i]))
-      .attr('r', 4)
-      .style('fill', 'none')
-      .style('stroke', 'red')
-      .style('stroke-dasharray', '1,3')
-      .style('stroke-width', 2);
-
-    // Plot F2 (violet line)
+    // Plot F2 (violet circles)
     svg
       .selectAll('.dot')
       .data(filteredData.F2.Frequency)
@@ -98,7 +73,7 @@ export class SweptDpoaeResultsComponent extends DpoaeResultsBaseComponent<SweptD
       .style('stroke', '#9400d3')
       .style('stroke-width', 2);
 
-    // PlotF1 (yellow line)
+    // Plot F1 (yellow circles)
     svg
       .selectAll('.dot')
       .data(filteredData.F1.Frequency)
@@ -111,40 +86,18 @@ export class SweptDpoaeResultsComponent extends DpoaeResultsBaseComponent<SweptD
       .style('stroke', '#ffc107')
       .style('stroke-width', 2);
 
-    // Define the line generator
-    const line = d3
-      .line<{ frequency: number; amplitude: number }>()
-      .x(d => this.xScale(d.frequency)) // Map x values
-      .y(d => yScale(d.amplitude)) // Map y values
-      .curve(d3.curveLinear); // smoothing
-
-    const lineData = filteredData.DpLow.F2Frequency.map((frequency, i) => ({
-      frequency,
-      amplitude: filteredData.DpLow.Amplitude[i],
-    }));
-
-    // Append the line path
-    svg
-      .append('path')
-      .datum(lineData) // Bind data
-      .attr('fill', 'none') // Ensure no area is filled
-      .attr('stroke', 'blue') // Set line color
-      .attr('stroke-width', 2) // Set line thickness
-      .attr('d', line); // Call the line generator
-
-    // Define the legend data
     const legendData = [
-      { label: 'DPOAE', color: 'blue', line: 'solid' },
-      { label: 'NF', color: 'red', line: 'dashed' },
-      { label: 'F2', color: '#9400d3', line: 'solid' },
-      { label: 'F1', color: '#ffc107', line: 'solid' },
+      { label: 'DPOAE', color: 'blue', symbol: 'circle' },
+      { label: 'NF', color: 'red', symbol: 'X' },
+      { label: 'F2', color: '#9400d3', symbol: 'circle' },
+      { label: 'F1', color: '#ffc107', symbol: 'circle' },
     ];
 
     createLegend(svg, legendData, this.width, 85);
     return svg;
   }
 
-  private filterSweptDpoaeResults(data: SweptDpoaeResultsInterface): {
+  private filterDpGramResults(data: DpGramResultsInterface): {
     DpLow: { Frequency: number[]; F2Frequency: number[]; Amplitude: number[]; NoiseFloor: number[] };
     F2: { Frequency: number[]; Amplitude: number[] };
     F1: { Frequency: number[]; Amplitude: number[] };

@@ -97,6 +97,9 @@ import { LikertComponent } from './views/response-area/response-areas/likert/lik
 import { SweptDpoaeExamComponent } from './views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/swept-dpoae-exam.component';
 import { SweptDpoaeInProgressComponent } from './views/response-area/response-areas/swept-dpoae/swept-dpoae-in-progress/swept-dpoae-in-progress.component';
 import { SweptDpoaeResultsComponent } from './views/response-area/response-areas/swept-dpoae/swept-dpoae-results/swept-dpoae-results.component';
+import { DpGramExamComponent } from './views/response-area/response-areas/dp-gram/dp-gram-exam/dp-gram-exam.component';
+import { DpGramInProgressComponent } from './views/response-area/response-areas/dp-gram/dp-gram-in-progress/dp-gram-in-progress.component';
+import { DpGramResultsComponent } from './views/response-area/response-areas/dp-gram/dp-gram-results/dp-gram-results.component';
 import { WAIExamComponent } from './views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.component';
 import { WAIInProgressComponent } from './views/response-area/response-areas/wideband-acoustic-immittance/wai-in-progress/wai-in-progress.component';
 import { WAIResultsComponent } from './views/response-area/response-areas/wideband-acoustic-immittance/wai-results/wai-results.component';
@@ -181,6 +184,9 @@ import { AudiometryLegendComponent } from './views/response-area/response-areas/
     SweptDpoaeExamComponent,
     SweptDpoaeInProgressComponent,
     SweptDpoaeResultsComponent,
+    DpGramExamComponent,
+    DpGramInProgressComponent,
+    DpGramResultsComponent,
     WAIExamComponent,
     WAIInProgressComponent,
     WAIResultsComponent,

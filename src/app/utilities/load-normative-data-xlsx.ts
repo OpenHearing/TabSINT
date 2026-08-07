@@ -6,6 +6,7 @@ import { Buffer } from 'buffer';
 import * as XLSX from 'xlsx';
 import { WAIInterface } from '../views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.interface';
 import { SweptDpoaeInterface } from '../views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/swept-dpoae-exam.interface';
+import { DpGramInterface } from '../views/response-area/response-areas/dp-gram/dp-gram-exam/dp-gram-exam.interface';
 
 /**
  * Validate that the file headers align with the expected headers/properties for the data
@@ -67,6 +68,20 @@ async function parseXlsxBuffer(xlsxFileContent: ArrayBuffer): Promise<NormativeD
  * @returns A promise that resolves to the updated response area.
  */
 export async function loadSweptDPOAENormativeData(responseArea: SweptDpoaeInterface, meta: ProtocolMetaInterface): Promise<SweptDpoaeInterface> {
+  if (responseArea.normativeDataPath) {
+    const normativeData = await loadNormativeDataXlsx(responseArea.normativeDataPath, meta);
+    return { ...responseArea, normativeData: normativeData };
+  }
+  return responseArea;
+}
+
+/**
+ * Get normative data for the DP-gram response area.
+ * @param responseArea The response area to load data for.
+ * @param meta The metadata associated with the protocol to determine the full file path information
+ * @returns A promise that resolves to the updated response area.
+ */
+export async function loadDpGramNormativeData(responseArea: DpGramInterface, meta: ProtocolMetaInterface): Promise<DpGramInterface> {
   if (responseArea.normativeDataPath) {
     const normativeData = await loadNormativeDataXlsx(responseArea.normativeDataPath, meta);
     return { ...responseArea, normativeData: normativeData };

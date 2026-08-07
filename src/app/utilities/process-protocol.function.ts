@@ -8,10 +8,11 @@ import { FollowOnsDictionary } from '../interfaces/follow-ons-dictionary';
 import { isPageDefinition, isProtocolReferenceInterface, isProtocolSchemaInterface } from '../guards/type.guard';
 import { PageTypes } from '../types/custom-types';
 import { loadMrtExamCsv } from './load-mrt-exam-csv';
-import { loadSweptDPOAENormativeData, loadWAINormativeData } from './load-normative-data-xlsx';
+import { loadDpGramNormativeData, loadSweptDPOAENormativeData, loadWAINormativeData } from './load-normative-data-xlsx';
 import { MrtExamInterface } from '../views/response-area/response-areas/mrt/mrt-exam/mrt-exam.interface';
 import { WAIInterface } from '../views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.interface';
 import { SweptDpoaeInterface } from '../views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/swept-dpoae-exam.interface';
+import { DpGramInterface } from '../views/response-area/response-areas/dp-gram/dp-gram-exam/dp-gram-exam.interface';
 import { CustomResponseAreaInterface } from '../views/response-area/response-areas/custom-response-area/custom-response-area.interface';
 import { ProtocolServer } from './constants';
 import { TabsintFs } from 'tabsintfs';
@@ -113,6 +114,11 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
         case 'sweptDPOAEResponseArea': {
           const responseArea = page.responseArea as SweptDpoaeInterface;
           page.responseArea = await loadSweptDPOAENormativeData(responseArea, loading.meta);
+          break;
+        }
+        case 'dpGramResponseArea': {
+          const responseArea = page.responseArea as DpGramInterface;
+          page.responseArea = await loadDpGramNormativeData(responseArea, loading.meta);
           break;
         }
         case 'customResponseArea': {
