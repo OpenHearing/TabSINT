@@ -18,7 +18,6 @@ const protocolSchemaBase: JSONSchemaType<ProtocolSchemaInterface> = {
     instructionText: { type: 'string', nullable: true },
     helpText: { type: 'string', nullable: true },
     submitText: { type: 'string', nullable: true },
-    chaStream: { type: 'boolean', default: false, nullable: true },
     randomization: { type: 'string', enum: ['WithoutReplacement'], nullable: true },
     commonMediaRepository: { type: 'string', nullable: true },
     calibration: { type: 'array', items: protocolCalibrationSchema, nullable: true },

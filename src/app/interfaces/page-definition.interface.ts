@@ -44,7 +44,6 @@ export interface PageDefinition {
   wavfileStartDelayTime?: number;
   wavfiles?: PageWavfileInterface[];
   chaWavFiles?: ChaWavfilesInterface;
-  chaStream?: boolean;
   image?: ImageInterface;
   video?: VideoInterface;
   responseArea?: ResponseArea;
