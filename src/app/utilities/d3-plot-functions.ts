@@ -316,3 +316,50 @@ export function createNormativeDataPath(
 
   return pathAreaGenerator(data);
 }
+
+/**
+ * Draw discrete DPOAE amplitude markers (blue open circles) and noise floor markers (red X) at
+ * the given x/amplitude/noiseFloor values, with no connecting line between points.
+ * @param svg The svg group to draw into
+ * @param xScale The x-axis (frequency) scale
+ * @param yScale The y-axis (amplitude) scale
+ * @param xValues The x-axis value for each point
+ * @param amplitudeValues The DPOAE amplitude for each point, index-aligned with xValues
+ * @param noiseFloorValues The noise floor for each point, index-aligned with xValues
+ */
+export function plotOAEPointMarkers(
+  svg: d3.Selection<SVGGElement, unknown, HTMLElement, any>,
+  xScale: d3.ScaleLogarithmic<number, number, never>,
+  yScale: d3.ScaleLinear<number, number, never>,
+  xValues: number[],
+  amplitudeValues: number[],
+  noiseFloorValues: number[]
+) {
+  // Plot Amplitude / DPOAE (blue open circles)
+  svg
+    .selectAll('.dot')
+    .data(xValues)
+    .enter()
+    .append('circle')
+    .attr('cx', (d, i) => xScale(xValues[i]))
+    .attr('cy', (d, i) => yScale(amplitudeValues[i]))
+    .attr('r', 4)
+    .style('fill', 'none')
+    .style('stroke', 'blue')
+    .style('stroke-width', 2);
+
+  // Plot NoiseFloor (red X)
+  svg
+    .selectAll('.cross')
+    .data(xValues)
+    .enter()
+    .append('text')
+    .attr('x', (d, i) => xScale(xValues[i]))
+    .attr('y', (d, i) => yScale(noiseFloorValues[i]))
+    .attr('text-anchor', 'middle')
+    .attr('alignment-baseline', 'middle')
+    .style('fill', 'red')
+    .style('font-size', '10px')
+    .style('font-weight', 'bold')
+    .text('X');
+}

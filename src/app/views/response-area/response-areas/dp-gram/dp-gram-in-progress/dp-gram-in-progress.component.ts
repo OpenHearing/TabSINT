@@ -2,22 +2,19 @@ import { Component, Input } from '@angular/core';
 import * as d3 from 'd3';
 
 import { DpoaeInProgressBaseComponent } from '../../shared/dpoae/dpoae-in-progress-base.component';
-import { DPOAEDataInterface, SweptDpoaeResultsInterface } from '../swept-dpoae-exam/swept-dpoae-exam.interface';
-import { createLegend, createOAEResultsChartSvg } from '../../../../../utilities/d3-plot-functions';
-import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-dpoae.schema';
+import { DPOAEDataInterface, DpGramResultsInterface } from '../dp-gram-exam/dp-gram-exam.interface';
+import { createLegend, createOAEResultsChartSvg, plotOAEPointMarkers } from '../../../../../utilities/d3-plot-functions';
 
 @Component({
-  selector: 'app-swept-dpoae-in-progress',
-  templateUrl: './swept-dpoae-in-progress.component.html',
-  styleUrl: './swept-dpoae-in-progress.component.css',
+  selector: 'app-dp-gram-in-progress',
+  templateUrl: './dp-gram-in-progress.component.html',
+  styleUrl: './dp-gram-in-progress.component.css',
 })
-export class SweptDpoaeInProgressComponent extends DpoaeInProgressBaseComponent<SweptDpoaeResultsInterface> {
-  @Input() f2Start: number = sweptDpoaeSchema.properties.f2Start.default;
-  @Input() f2End: number = sweptDpoaeSchema.properties.f2End.default;
+export class DpGramInProgressComponent extends DpoaeInProgressBaseComponent<DpGramResultsInterface> {
   @Input() xScale!: d3.ScaleLogarithmic<number, number, never>;
 
   protected createProgressPlot(yScale: d3.ScaleLinear<number, number, never>) {
-    const plot = d3.select('#dpoae-in-progress-plot');
+    const plot = d3.select('#dp-gram-in-progress-plot');
     plot.select('svg').remove(); // Remove existing svg in case of update
     let svg = plot
       .append('svg')
@@ -38,7 +35,7 @@ export class SweptDpoaeInProgressComponent extends DpoaeInProgressBaseComponent<
     return svg;
   }
 
-  protected onResultsUpdate(results: SweptDpoaeResultsInterface): void {
+  protected onResultsUpdate(results: DpGramResultsInterface): void {
     if (results.DpLow && results.F2) {
       this.updatePlot(results.DpLow, results.F2);
     }
@@ -56,33 +53,7 @@ export class SweptDpoaeInProgressComponent extends DpoaeInProgressBaseComponent<
     extendedYScale.domain([newMin, newMax]);
     this.svg = this.createProgressPlot(extendedYScale);
 
-    // Plot DpLow Amplitude / DPOAE (blue open circles)
-    this.svg
-      .selectAll('.dot')
-      .data(filteredData['F2Frequency'])
-      .enter()
-      .append('circle')
-      .attr('cx', (d, i) => this.xScale(filteredData['F2Frequency'][i]))
-      .attr('cy', (d, i) => extendedYScale(filteredData['Amplitude'][i]))
-      .attr('r', 4)
-      .style('fill', 'none')
-      .style('stroke', 'blue')
-      .style('stroke-width', 2);
-
-    // Plot DpLow NoiseFloor (red X)
-    this.svg
-      .selectAll('.cross')
-      .data(filteredData['F2Frequency'])
-      .enter()
-      .append('text')
-      .attr('x', (d, i) => this.xScale(filteredData['F2Frequency'][i]))
-      .attr('y', (d, i) => extendedYScale(filteredData['NoiseFloor'][i]))
-      .attr('text-anchor', 'middle')
-      .attr('alignment-baseline', 'middle')
-      .style('fill', 'red')
-      .style('font-size', '10px')
-      .style('font-weight', 'bold')
-      .text('X');
+    plotOAEPointMarkers(this.svg, this.xScale, extendedYScale, filteredData['F2Frequency'], filteredData['Amplitude'], filteredData['NoiseFloor']);
   }
 
   private filterData(dpLowData: DPOAEDataInterface, f2Data: DPOAEDataInterface) {
