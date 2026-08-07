@@ -34,7 +34,7 @@ This software specification relates to the `firmware specification <https://code
 Algorithm
 --------------
 
-See `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/swept_dpoae.rst?ref_type=heads>`_. The DPGRAM exam runs a series of firmware DPGRAM exams, where each step in the series runs a single frequency (same start and end frequency for each step). This exam specifies which frequencies to run.
+See `firmware specification <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/swept_dpoae.rst?ref_type=heads>`_. The DPGRAM exam runs a series of firmware Swept DPOAE exams, where each step in the series runs a single frequency (same start and end frequency for each step). This exam specifies which frequencies to run.
 
 Implementation
 --------------
@@ -88,6 +88,7 @@ Results-View
 ^^^^^^^^^^^^^
 
 The GUI should display the results of the DPGRAM exam:
+
 * Results are plotted in a manner similar to the plot shown below.
 * Below the plot, a table similar to the one shown below should summarize the results saved for the DPGRAM exam.
 
