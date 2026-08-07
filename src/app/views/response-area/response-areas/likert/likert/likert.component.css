@@ -39,6 +39,7 @@
 
 .likert-label {
   flex: 0 1 auto;
+  min-width: 0;
   text-align: center;
   line-height: 1.1;
 }
