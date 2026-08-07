@@ -3,7 +3,7 @@ import { TranslocoTestingModule } from '@jsverse/transloco';
 import { FormsModule } from '@angular/forms';
 
 import { GapComponent } from './gap.component';
-import { GapResultsComponent } from './gap-results/gap-results.component';
+import { TrialProgressionPlotComponent } from '../shared/trial-progression-plot/trial-progression-plot.component';
 import { PageModel } from '../../../../models/page/page.service';
 import { ResultsModel } from '../../../../models/results/results-model.service';
 import { StateModel } from '../../../../models/state/state.service';
@@ -50,7 +50,7 @@ describe('GapComponent', () => {
     ]);
 
     await TestBed.configureTestingModule({
-      declarations: [GapComponent, GapResultsComponent],
+      declarations: [GapComponent, TrialProgressionPlotComponent],
       imports: [
         FormsModule,
         TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),

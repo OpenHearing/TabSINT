@@ -9,6 +9,7 @@ import { isDirectoryEntryResponse, isStatusResponse, isSuccessfulFileOperation }
 import { inject } from '@angular/core';
 import { Directory, Filesystem, Encoding } from '@capacitor/filesystem';
 import { DirectoryEntryObject } from '../../interfaces/devices/device-responses.interface';
+import { MaskingNoise } from '../../views/response-area/response-areas/shared/audiometry/audiometry.interface';
 
 /**
  * CHA base device adapter.
@@ -158,6 +159,45 @@ export class ChaAdapter implements IDeviceAdapter {
       try {
         const msg = await TabsintCha.examSubmission(examSubmissionOptions);
         deviceResponse = { deviceId: device.deviceId, msg: ['ExamSubmission', msg] };
+      } catch (err) {
+        this.logger.error('Failed to write to CHA', err);
+      }
+      return deviceResponse;
+    });
+    return response;
+  }
+
+  /**
+   * Start playback of masking noise on a device.
+   * @param device The device to start the masking noise on.
+   * @param maskingNoise The masking noise configuration.
+   */
+  async startMaskingNoise(device: ChaDeviceType, maskingNoise: MaskingNoise): Promise<IDeviceResponse> {
+    const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
+      const noiseFeatureStartOptions = { name: device.deviceId, params: maskingNoise };
+      let deviceResponse = this.defaultInvalidResponse(device);
+      try {
+        const msg = await TabsintCha.noiseFeatureStart(noiseFeatureStartOptions);
+        deviceResponse = { deviceId: device.deviceId, msg: ['StartMaskingNoise', msg] };
+      } catch (err) {
+        this.logger.error('Failed to write to CHA', err);
+      }
+      return deviceResponse;
+    });
+    return response;
+  }
+
+  /**
+   * Stop playback of masking noise on a device.
+   * @param device The device to stop the masking noise on.
+   */
+  async stopMaskingNoise(device: ChaDeviceType): Promise<IDeviceResponse> {
+    const response = await this.runWithStateChanges<IDeviceResponse>(device, async () => {
+      const nameOptions = { name: device.deviceId };
+      let deviceResponse = this.defaultInvalidResponse(device);
+      try {
+        const msg = await TabsintCha.noiseFeatureStop(nameOptions);
+        deviceResponse = { deviceId: device.deviceId, msg: ['StopMaskingNoise', msg] };
       } catch (err) {
         this.logger.error('Failed to write to CHA', err);
       }

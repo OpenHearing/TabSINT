@@ -18,6 +18,7 @@ import { IDeviceMetadata } from '../../interfaces/devices/device-metadata.interf
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
 import { DeviceChooseComponent } from '../../views/devices/device-views/device-choose/device-choose.component';
 import { MatDialog } from '@angular/material/dialog';
+import { MaskingNoise } from '../../views/response-area/response-areas/shared/audiometry/audiometry.interface';
 import { WahtsManager } from './wahts-manager';
 import { FirmwareAsset } from '../../interfaces/firmware-asset.interface';
 import { DialogDataInterface } from '../../interfaces/dialog-data.interface';
@@ -438,6 +439,23 @@ export class DevicesService {
    */
   async setSoftwareButtonState(device: IDevice, state: number): Promise<IDeviceResponse | undefined> {
     return this.getManager(device.type).setSoftwareButtonState?.(device, state);
+  }
+
+  /**
+   * Start playback of masking noise on a device.
+   * @param device The device to start the masking noise on.
+   * @param maskingNoise The masking noise configuration.
+   */
+  async startMaskingNoise(device: IDevice, maskingNoise: MaskingNoise): Promise<IDeviceResponse | undefined> {
+    return this.getManager(device.type).startMaskingNoise?.(device, maskingNoise);
+  }
+
+  /**
+   * Stop playback of masking noise on a device.
+   * @param device The device to stop the masking noise on.
+   */
+  async stopMaskingNoise(device: IDevice): Promise<IDeviceResponse | undefined> {
+    return this.getManager(device.type).stopMaskingNoise?.(device);
   }
 
   /**

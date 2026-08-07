@@ -67,6 +67,9 @@ export class MediaManagementComponent implements OnInit, OnDestroy {
    * Cancel an ongoing media sync/transfer.
    */
   async cancelMediaSync() {
+    if (!this.syncingMedia) {
+      return;
+    }
     this.logger.debug('Cancelling Media Repo Sync');
     this.tasks.register('cancelMediaSync', 'Cancelling CHA Media Sync.');
     try {

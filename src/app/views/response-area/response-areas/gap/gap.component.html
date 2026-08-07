@@ -41,6 +41,6 @@
   <!-- Results -->
   <div *ngIf="!gapTraining && gapState === 'results'" class="gap-results">
     <div>{{ "Exam complete, press submit." | transloco }}</div>
-    <app-gap-results *ngIf="showResults && gapResultsData" [data]="gapResultsData"></app-gap-results>
+    <app-trial-progression-plot *ngIf="showResults && gapResultsData" [data]="gapResultsData"></app-trial-progression-plot>
   </div>
 </div>
