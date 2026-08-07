@@ -1,6 +1,7 @@
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ProtocolSchemaInterface } from '../../interfaces/protocol-schema.interface';
 import { PageTypes } from '../../types/custom-types';
+import { shuffleArray } from '../../utilities/shuffle-array';
 import { ProtocolInterface } from './protocol.interface';
 
 /**
@@ -32,6 +33,9 @@ export class ProtocolStack {
    */
   addProtocol(protocol: ProtocolInterface | ProtocolSchemaInterface): void {
     const protocolCopy = structuredClone(protocol);
+    if (protocolCopy.randomization === 'WithoutReplacement') {
+      shuffleArray(protocolCopy.pages);
+    }
     const item: ProtocolStackItem = {
       protocolId: protocolCopy.protocolId ?? '',
       startTime: new Date(),
