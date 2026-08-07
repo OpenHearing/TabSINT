@@ -25,12 +25,12 @@
   font-style: normal;
 }
 
-/* Labels — one grid column per level, matching .likert-options, so label N always
-   sits above/below option N. Long labels wrap within their own column (growing the
-   row) instead of overflowing into neighboring labels or options. */
+/* Labels — only the non-empty ones are rendered, each sized to its own text and
+   distributed across the scale. Content sizing means multi-word labels are never
+   clipped; space-between puts the ends flush left/right with interior labels between. */
 .likert-labels {
-  display: grid;
-  grid-template-columns: repeat(var(--levels), 1fr);
+  display: flex;
+  justify-content: space-between;
   gap: 8px;
   width: 100%;
   font-weight: bold;
@@ -38,11 +38,9 @@
 }
 
 .likert-label {
-  min-width: 0;
+  flex: 0 1 auto;
   text-align: center;
   line-height: 1.1;
-  overflow-wrap: break-word;
-  word-break: break-word;
 }
 
 /* Pull the label rows in close to the scale */
@@ -153,8 +151,7 @@
 }
 
 .likert-options {
-  display: grid;
-  grid-template-columns: repeat(var(--levels), 1fr);
+  display: flex;
   gap: 10px;
 }
 
@@ -164,6 +161,7 @@
   background: none;
   font-size: 1.3rem;
   padding: 4px 10px;
+  flex: 1 1 0;
   min-width: 0;
   box-sizing: border-box;
   display: flex;
