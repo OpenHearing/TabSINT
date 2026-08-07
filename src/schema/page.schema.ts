@@ -26,6 +26,7 @@ import { bekesyResponseAreaSchema } from './response-areas/bekesy.schema';
 import { threeDigitSchema } from './response-areas/three-digit.schema';
 import { hintSchema } from './response-areas/hint.schema';
 import { gapSchema } from './response-areas/gap.schema';
+import { hughsonWestlakeSchema } from './response-areas/hughson-westlake.schema';
 
 export const pageSchema: JSONSchemaType<PageDefinition> = {
   $id: 'page_base',
@@ -123,6 +124,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
         threeDigitSchema,
         hintSchema,
         gapSchema,
+        hughsonWestlakeSchema,
       ],
       required: ['type'],
       nullable: true,

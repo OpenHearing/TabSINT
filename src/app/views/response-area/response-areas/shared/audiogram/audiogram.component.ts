@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, Input, SimpleChanges, OnChanges, inject } from '@angular/core';
 import * as d3 from 'd3';
-import { AudiogramDatumNoNullInterface, AudiometryResultsInterface } from '../../interfaces/audiometry-results.interface';
-import { LevelUnits, ResultType } from '../../utilities/constants';
+import { AudiogramDatumNoNullInterface, AudiometryResultsInterface } from '../../../../../interfaces/audiometry-results.interface';
+import { LevelUnits, ResultType } from '../../../../../utilities/constants';
 
 // See https://www.asha.org/policy/GL1990-00006/ for audiogram specifications
 @Component({

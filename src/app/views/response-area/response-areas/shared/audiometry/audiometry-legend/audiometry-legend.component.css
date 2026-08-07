@@ -1,0 +1,9 @@
+.audiometry-legend {
+  margin: 20px;
+  color: #333;
+}
+
+.audiometry-legend p {
+  margin: 5px 0;
+  font-size: 14px;
+}

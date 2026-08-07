@@ -1,0 +1,44 @@
+.audiometry-results-table-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+}
+
+.channel-table {
+  margin-bottom: 40px; /* Add more vertical space by increasing this value */
+}
+
+.channel-title {
+  margin: 0;
+  padding: 10px;
+  color: white;
+  font-size: 20px;
+  text-align: center;
+  border-radius: 5px 5px 0 0;
+}
+
+/* Table styles */
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+}
+
+.results-table th,
+.results-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: center;
+}
+
+.results-table th {
+  background-color: #f2f2f2;
+  color: #333;
+}
+
+.results-table td {
+  font-size: 16px;
+}
