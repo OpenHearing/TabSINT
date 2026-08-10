@@ -70,6 +70,7 @@ export class LikertComponent implements OnInit, OnDestroy {
   private pageSubscription?: Subscription;
   stateSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
+  private autoSubmitTimeout: ReturnType<typeof setTimeout> | undefined;
 
   constructor() {
     this.results = this.resultsModel.getResults();
@@ -97,17 +98,20 @@ export class LikertComponent implements OnInit, OnDestroy {
     this.pageSubscription?.unsubscribe();
     this.resultsSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();
+    clearTimeout(this.autoSubmitTimeout);
   }
 
   onResponseChange(questionIndex: number, levelIndex: number | string | null): void {
     this.resultsModel.updateCurrentPageResponseElement(questionIndex, levelIndex);
-    this.stateModel.updateState({
-      doesResponseExist: this.results.currentPage.response !== Array.from({ length: this.questions.length }, () => null),
-    });
+    this.stateModel.updateState({ doesResponseExist: this.allQuestionsAnswered() });
     this.stateModel.setPageSubmittable();
     this.responseChange.emit(this.results.currentPage.response);
     if (this.likertExamProperties.autoSubmit && this.allQuestionsAnswered()) {
-      this.examService.submit();
+      // Defer so Angular renders this question's selection before the page advances --
+      // otherwise, when this click is the one that completes the page, submit()/advancePage()
+      // run synchronously in the same click handler and the selection is never painted.
+      clearTimeout(this.autoSubmitTimeout);
+      this.autoSubmitTimeout = setTimeout(() => this.examService.submit(), 300);
     }
   }
 

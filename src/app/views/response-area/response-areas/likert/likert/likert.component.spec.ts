@@ -6,6 +6,7 @@ import { PageModel } from '../../../../../models/page/page.service';
 import { StateModel } from '../../../../../models/state/state.service';
 import { TranslocoTestingModule } from '@jsverse/transloco';
 import { PageInterface } from '../../../../../models/page/page.interface';
+import { ExamService } from '../../../../../controllers/exam.service';
 
 describe('LikertComponent', () => {
   let component: LikertComponent;
@@ -77,6 +78,32 @@ describe('LikertComponent', () => {
     expect(resultsModel.resultsModel.currentPage.response[0]).toEqual(2);
     expect(component.responseChange.emit).toHaveBeenCalledWith(resultsModel.resultsModel.currentPage.response);
   });
+
+  it('should defer autoSubmit so the completing answer renders before the page advances', fakeAsync(() => {
+    const examService = TestBed.inject(ExamService);
+    spyOn(examService, 'submit');
+    component.likertExamProperties.autoSubmit = true;
+    resultsModel.resultsModel.currentPage.response = [0, null];
+
+    // Answering the last remaining question should not submit synchronously -- the caller (and
+    // Angular's change detection) must get a chance to render this selection first.
+    component.onResponseChange(1, 3);
+    expect(examService.submit).not.toHaveBeenCalled();
+
+    tick(300);
+    expect(examService.submit).toHaveBeenCalledTimes(1);
+  }));
+
+  it('should not autoSubmit while any question is still unanswered', fakeAsync(() => {
+    const examService = TestBed.inject(ExamService);
+    spyOn(examService, 'submit');
+    component.likertExamProperties.autoSubmit = true;
+    resultsModel.resultsModel.currentPage.response = [null, null];
+
+    component.onResponseChange(0, 1);
+    tick(300);
+    expect(examService.submit).not.toHaveBeenCalled();
+  }));
 
   it('should honor per-question overrides and below-positioned labels', fakeAsync(() => {
     const updatedPage: PageInterface = {
