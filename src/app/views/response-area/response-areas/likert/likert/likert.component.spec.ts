@@ -138,5 +138,42 @@ describe('LikertComponent', () => {
     expect(q.bottomLabels[5]).toEqual('5');
     expect(q.bottomLabels[10]).toEqual('10');
     expect(component.verticalSpacing).toEqual(40);
+
+    // Sparse (2-end) top labels: each anchored to its own edge, sharing the full row between them.
+    expect(q.topLabelSlots.length).toEqual(2);
+    expect(q.topLabelSlots[0]).toEqual(jasmine.objectContaining({ label: 'No, Not a problem', align: 'left' }));
+    expect(q.topLabelSlots[1]).toEqual(jasmine.objectContaining({ label: 'Yes, a very big problem', align: 'right' }));
+    expect(q.topLabelSlots[0].flexGrow + q.topLabelSlots[1].flexGrow).toEqual(11);
+
+    // Dense (every level) bottom labels: every slot gets an equal, single-level share.
+    expect(q.bottomLabelSlots.length).toEqual(11);
+    expect(q.bottomLabelSlots.every(slot => slot.flexGrow === 1)).toBeTrue();
+  }));
+
+  it('should center a labeled midpoint between two anchored end labels', fakeAsync(() => {
+    mockPageModel.updatePage({
+      responseArea: {
+        type: 'likertResponseArea',
+        levels: 11,
+        specifiers: [
+          { level: 0, label: '0%', position: 'below' },
+          { level: 5, label: '50%', position: 'below' },
+          { level: 10, label: '100%', position: 'below' },
+        ],
+        questions: ['Question'],
+      },
+      _uuid: 'page4',
+      id: 'page4',
+    });
+    tick();
+    fixture.detectChanges();
+
+    const slots = component.questions[0].bottomLabelSlots;
+    expect(slots.length).toEqual(3);
+    expect(slots[0]).toEqual(jasmine.objectContaining({ label: '0%', align: 'left' }));
+    expect(slots[1]).toEqual(jasmine.objectContaining({ label: '50%', align: 'center' }));
+    expect(slots[2]).toEqual(jasmine.objectContaining({ label: '100%', align: 'right' }));
+    // Halfway between level 0 and level 5 to halfway between level 5 and level 10 == 5 level-widths.
+    expect(slots[1].flexGrow).toEqual(5);
   }));
 });

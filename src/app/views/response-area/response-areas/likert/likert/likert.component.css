@@ -25,28 +25,28 @@
   font-style: normal;
 }
 
-/* Labels — only the non-empty ones are rendered, each sized to its own text and
-   distributed across the scale. Content sizing means multi-word labels are never
-   clipped; space-between puts the ends flush left/right with interior labels between. */
+/* Labels — only the non-empty ones are rendered. Each label's flex-grow share (computed in
+   computeLabelSlots()) is the number of "level-widths" it should occupy, sized to reach halfway
+   to its nearest labeled neighbor (or the row edge) — this keeps it aligned with its own level's
+   button while giving it room to wrap. Gap must match .likert-options' gap exactly so the two
+   rows' column math lines up when every level is labeled. */
 .likert-labels {
   display: flex;
-  justify-content: space-between;
-  gap: 8px;
+  gap: 10px;
   width: 100%;
   font-weight: bold;
   font-size: 1.2rem;
 }
 
 .likert-label {
-  flex: 0 1 auto;
+  flex: 0 1 0;
   min-width: 0;
-  text-align: center;
   line-height: 1.1;
 }
 
-/* Pull the label rows in close to the scale */
+/* Give wrapped (multi-line) label text clearance from the scale below it */
 .likert-labels-top {
-  margin-bottom: -4px;
+  margin-bottom: 8px;
 }
 
 .likert-labels-bottom {

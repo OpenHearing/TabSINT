@@ -16,11 +16,23 @@ interface NormalizedQuestion {
   levels: number;
   topLabels: string[];
   bottomLabels: string[];
+  topLabelSlots: LabelSlot[];
+  bottomLabelSlots: LabelSlot[];
   centerLabelAbove: string | null;
   centerLabelBelow: string | null;
   labelFontSize: string | null;
   questionFontSize: string | null;
   useEmoticons: boolean;
+}
+
+/**
+ * A rendered label sized and aligned to its own share of the scale: `flexGrow` is how many
+ * "level-widths" wide its box should be, so it lines up with its own level's button.
+ */
+interface LabelSlot {
+  label: string;
+  flexGrow: number;
+  align: 'left' | 'center' | 'right';
 }
 
 @Component({
@@ -167,12 +179,43 @@ export class LikertComponent implements OnInit, OnDestroy {
       levels,
       topLabels,
       bottomLabels,
+      topLabelSlots: this.computeLabelSlots(topLabels),
+      bottomLabelSlots: this.computeLabelSlots(bottomLabels),
       centerLabelAbove: q.centerLabelAbove ?? responseArea.centerLabelAbove ?? null,
       centerLabelBelow: q.centerLabelBelow ?? responseArea.centerLabelBelow ?? null,
       labelFontSize: this.toPx(q.labelFontSize ?? responseArea.labelFontSize),
       questionFontSize: this.toPx(q.questionFontSize ?? responseArea.questionFontSize),
       useEmoticons: q.useEmoticons ?? responseArea.useEmoticons ?? likertSchema.properties.useEmoticons.default,
     };
+  }
+
+  /**
+   * Size and align each non-empty label to the region halfway to its nearest labeled neighbor
+   * (or the row edge, if it has no neighbor on that side) — a 1-D Voronoi partition. A label with
+   * no neighbor on one side is anchored (left/right) to that edge and free to grow toward its
+   * neighbor; a label between two others is centered in the shared middle region. Levels with no
+   * label at all consume no space. When every level is labeled, every share degenerates to `1`
+   * (equal columns, matching `.likert-option`'s equal-width layout).
+   */
+  private computeLabelSlots(labels: string[]): LabelSlot[] {
+    const populatedIndices = labels.reduce<number[]>((acc, label, index) => {
+      if (label !== '') acc.push(index);
+      return acc;
+    }, []);
+
+    return populatedIndices.map((index, rank) => {
+      const prevIndex = rank > 0 ? populatedIndices[rank - 1] : null;
+      const nextIndex = rank < populatedIndices.length - 1 ? populatedIndices[rank + 1] : null;
+      // Column `index` naturally spans [index, index+1). Split the gap of empty columns to a
+      // neighbor between that neighbor's own column and this one, so two adjacent (dense) labels
+      // meet exactly at their shared column edge, degenerating to flexGrow 1 each.
+      const left = prevIndex === null ? 0 : (prevIndex + 1 + index) / 2;
+      const right = nextIndex === null ? labels.length : (index + 1 + nextIndex) / 2;
+      const align: LabelSlot['align'] =
+        prevIndex === null && nextIndex === null ? 'center' : prevIndex === null ? 'left' : nextIndex === null ? 'right' : 'center';
+
+      return { label: labels[index], flexGrow: right - left, align };
+    });
   }
 
   /**
