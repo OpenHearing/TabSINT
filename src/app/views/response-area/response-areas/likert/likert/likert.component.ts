@@ -191,11 +191,15 @@ export class LikertComponent implements OnInit, OnDestroy {
 
   /**
    * Size and align each non-empty label to the region halfway to its nearest labeled neighbor
-   * (or the row edge, if it has no neighbor on that side) — a 1-D Voronoi partition. A label with
-   * no neighbor on one side is anchored (left/right) to that edge and free to grow toward its
-   * neighbor; a label between two others is centered in the shared middle region. Levels with no
-   * label at all consume no space. When every level is labeled, every share degenerates to `1`
+   * (or the row edge, if it has no neighbor on that side) — a 1-D Voronoi partition. Levels with
+   * no label at all consume no space. When every level is labeled, every share degenerates to `1`
    * (equal columns, matching `.likert-option`'s equal-width layout).
+   *
+   * Alignment is based on whether the box actually extends past the label's own natural column
+   * [index, index+1) on a given side, not merely on whether a neighbor exists: a label with no
+   * genuine extra room on either side (e.g. every edge label in a fully-labeled row) is centered
+   * over its own button exactly like an interior label; only a label that actually grew into free
+   * neighboring space is anchored toward its own button and left to grow the other way.
    */
   private computeLabelSlots(labels: string[]): LabelSlot[] {
     const populatedIndices = labels.reduce<number[]>((acc, label, index) => {
@@ -211,8 +215,9 @@ export class LikertComponent implements OnInit, OnDestroy {
       // meet exactly at their shared column edge, degenerating to flexGrow 1 each.
       const left = prevIndex === null ? 0 : (prevIndex + 1 + index) / 2;
       const right = nextIndex === null ? labels.length : (index + 1 + nextIndex) / 2;
-      const align: LabelSlot['align'] =
-        prevIndex === null && nextIndex === null ? 'center' : prevIndex === null ? 'left' : nextIndex === null ? 'right' : 'center';
+      const extendsLeft = left < index;
+      const extendsRight = right > index + 1;
+      const align: LabelSlot['align'] = extendsLeft && extendsRight ? 'center' : extendsLeft ? 'right' : extendsRight ? 'left' : 'center';
 
       return { label: labels[index], flexGrow: right - left, align };
     });

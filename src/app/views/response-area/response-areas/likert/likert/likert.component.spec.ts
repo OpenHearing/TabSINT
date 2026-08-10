@@ -145,9 +145,12 @@ describe('LikertComponent', () => {
     expect(q.topLabelSlots[1]).toEqual(jasmine.objectContaining({ label: 'Yes, a very big problem', align: 'right' }));
     expect(q.topLabelSlots[0].flexGrow + q.topLabelSlots[1].flexGrow).toEqual(11);
 
-    // Dense (every level) bottom labels: every slot gets an equal, single-level share.
+    // Dense (every level) bottom labels: every slot gets an equal, single-level share, and every
+    // slot -- including the first and last, which have no neighbor but also no extra room -- is
+    // centered over its own button just like the interior ones.
     expect(q.bottomLabelSlots.length).toEqual(11);
     expect(q.bottomLabelSlots.every(slot => slot.flexGrow === 1)).toBeTrue();
+    expect(q.bottomLabelSlots.every(slot => slot.align === 'center')).toBeTrue();
   }));
 
   it('should center a labeled midpoint between two anchored end labels', fakeAsync(() => {
