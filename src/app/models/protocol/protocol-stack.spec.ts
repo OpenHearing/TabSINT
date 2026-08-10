@@ -128,4 +128,29 @@ describe('ProtocolStack', () => {
     peeked.protocolId = 'mutated';
     expect(stack.peek()?.protocolId).toBe('original');
   });
+
+  describe('randomization', () => {
+    const makePages = (count: number) => Array.from({ length: count }, (_, i) => ({ id: `page-${i}` })) as ProtocolInterface['pages'];
+
+    it('shuffles pages when randomization is WithoutReplacement', () => {
+      const pages = makePages(10);
+      stack.addProtocol(makeProtocol({ randomization: 'WithoutReplacement', pages }));
+      const pageQueue = stack.peek()?.pageQueue ?? [];
+      expect(pageQueue.map(p => (p as { id: string }).id)).not.toEqual(pages.map(p => (p as { id: string }).id));
+    });
+
+    it('preserves every page when shuffling', () => {
+      const pages = makePages(10);
+      stack.addProtocol(makeProtocol({ randomization: 'WithoutReplacement', pages }));
+      const pageQueue = stack.peek()?.pageQueue ?? [];
+      expect(pageQueue.map(p => (p as { id: string }).id).sort()).toEqual(pages.map(p => (p as { id: string }).id).sort());
+    });
+
+    it('preserves original order when randomization is not set', () => {
+      const pages = makePages(10);
+      stack.addProtocol(makeProtocol({ pages }));
+      const pageQueue = stack.peek()?.pageQueue ?? [];
+      expect(pageQueue).toEqual(pages);
+    });
+  });
 });
