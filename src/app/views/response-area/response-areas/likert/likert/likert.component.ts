@@ -221,10 +221,21 @@ export class LikertComponent implements OnInit, OnDestroy {
       const right = nextIndex === null ? labels.length : (index + 1 + nextIndex) / 2;
       const extendsLeft = left < index;
       const extendsRight = right > index + 1;
-      const align: LabelSlot['align'] = extendsLeft && extendsRight ? 'center' : extendsLeft ? 'right' : extendsRight ? 'left' : 'center';
+      const align = this.labelAlign(extendsLeft, extendsRight);
 
       return { label: labels[index], flexGrow: right - left, align };
     });
+  }
+
+  /**
+   * A label that grew into free room on only one side is anchored toward its own button, leaving
+   * the grown side for text to wrap into; a label with room on both sides (or none at all) is
+   * centered over its own button.
+   */
+  private labelAlign(extendsLeft: boolean, extendsRight: boolean): LabelSlot['align'] {
+    if (extendsLeft && !extendsRight) return 'right';
+    if (extendsRight && !extendsLeft) return 'left';
+    return 'center';
   }
 
   /**
