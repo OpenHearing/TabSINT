@@ -41,15 +41,14 @@ export class DpGramExamComponent extends DpoaeExamBaseComponent<DpGramInterface,
       ['Noise Floor Threshold', this.noiseFloorThreshold.toString()],
     ]);
 
-    // Update xTicks and scales - every tested frequency gets its own labeled tick, since DP-gram
-    // tests discrete frequencies rather than sweeping continuously between them.
+    // Update xTicks and scales - matches Swept DPOAE's approach: standard octave ticks filtered
+    // to the tested frequency range, domain spanning that range.
     const sortedF2 = [...this.f2].sort((a, b) => a - b);
-    this.xTicks = sortedF2;
     if (sortedF2.length > 0) {
-      this.xScale = d3
-        .scaleLog()
-        .domain([sortedF2[0], sortedF2[sortedF2.length - 1]])
-        .range([0, this.width]);
+      const f2Min = sortedF2[0];
+      const f2Max = sortedF2[sortedF2.length - 1];
+      this.xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000].filter(tick => tick >= f2Min && tick <= f2Max);
+      this.xScale = d3.scaleLog().domain([f2Min, f2Max]).range([0, this.width]);
     }
 
     this.yScale = d3.scaleLinear().domain([-20, 70]).range([this.height, 0]);
