@@ -4,7 +4,6 @@ import * as d3 from 'd3';
 import { DpoaeExamBaseComponent } from '../../shared/dpoae/dpoae-exam-base.component';
 import { DpGramInterface, DpGramResultsInterface } from './dp-gram-exam.interface';
 import { dpGramSchema } from '../../../../../../schema/response-areas/dp-gram.schema';
-import { handleOutputCalibration, getCurrentDatetime } from '../../../../../utilities/exam-helper-functions';
 
 @Component({
   selector: 'app-dp-gram-exam',
@@ -56,29 +55,12 @@ export class DpGramExamComponent extends DpoaeExamBaseComponent<DpGramInterface,
     this.yScale = d3.scaleLinear().domain([-20, 70]).range([this.height, 0]);
   }
 
+  /**
+   * DP-gram queues one SweptDPOAE exam per f2 frequency (rather than one exam for the whole
+   * response area), so the actual queueExam calls happen inside DpGramInProgressComponent's own
+   * frequency loop. This just resolves the device, matching every other DPOAE response area.
+   */
   protected async beginExam(): Promise<void> {
     this.device = await this.resolveDevice();
-    if (this.device) {
-      const examProperties: any = {
-        OutputChannel1: handleOutputCalibration(this.outputChannel1, this.outputCalibrationType),
-        OutputChannel2: handleOutputCalibration(this.outputChannel2, this.outputCalibrationType),
-        InputChannel: this.inputChannel,
-        F2Start: this.f2,
-        F2End: this.f2,
-        Ratio: this.ratio,
-        L1: this.l1,
-        L2: this.l2,
-        NoiseFloorThreshold: this.noiseFloorThreshold,
-        SNRThreshold: this.SNRThreshold,
-        NumAverages: this.numAverages,
-        OutputRawMeasurements: this.outputRawMeasurements,
-      };
-      if (this.recordFileFolder != undefined) {
-        examProperties['Filename'] = this.recordFileFolder + '/' + getCurrentDatetime() + '.WAV';
-      }
-      // TODO: device exam command name and examProperties field casing are unconfirmed against
-      // real DP-gram firmware - placeholder mirroring swept's PascalCase convention.
-      await this.devicesService.queueExam(this.device, 'SweptDPOAE', examProperties);
-    }
   }
 }
