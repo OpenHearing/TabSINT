@@ -11,6 +11,8 @@ import { createLegend, createOAEResultsChartSvg, plotOAEPointMarkers } from '../
   styleUrl: './dp-gram-in-progress.component.css',
 })
 export class DpGramInProgressComponent extends DpoaeInProgressBaseComponent<DpGramResultsInterface> {
+  protected readonly examLabel = 'DP-gram';
+
   @Input() xScale!: d3.ScaleLogarithmic<number, number, never>;
 
   protected createProgressPlot(yScale: d3.ScaleLinear<number, number, never>) {
