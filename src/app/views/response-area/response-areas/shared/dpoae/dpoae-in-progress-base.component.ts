@@ -52,15 +52,32 @@ export abstract class DpoaeInProgressBaseComponent<TResults extends DpoaeResults
   }
 
   ngOnInit(): void {
-    this.requestResults();
+    this.subscribeToState();
+    this.subscribeToResults();
+    this.startPolling();
+  }
+
+  protected subscribeToState(): void {
     this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
+  }
+
+  protected subscribeToResults(): void {
     this.inProgressResultsSubscription = this.inProgressResultsSubject.subscribe((updatedResults: TResults) => {
       this.onResultsUpdate(updatedResults);
       this.inProgressResults = updatedResults;
       this.inProgressResults.PctComplete = Math.round(this.inProgressResults.PctComplete);
     });
+  }
+
+  /**
+   * Kicks off however this response area obtains its results. Default behavior (used by Swept
+   * DPOAE) is to poll the single exam already queued by the exam component. DP-gram overrides
+   * this to run its own multi-frequency loop instead.
+   */
+  protected startPolling(): void {
+    this.requestResults();
   }
 
   ngAfterViewInit(): void {
@@ -115,7 +132,7 @@ export abstract class DpoaeInProgressBaseComponent<TResults extends DpoaeResults
     pollResults();
   }
 
-  private doesRespContainResults(resp: IDeviceResponse | undefined) {
+  protected doesRespContainResults(resp: IDeviceResponse | undefined) {
     return (
       resp?.msg !== undefined &&
       resp.msg.length > 1 &&
