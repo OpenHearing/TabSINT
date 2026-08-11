@@ -42,6 +42,8 @@ export abstract class DpoaeInProgressBaseComponent<TResults extends DpoaeResults
 
   stateSubscription: Subscription | undefined;
 
+  protected abstract readonly examLabel: string;
+
   protected constructor() {
     this.inProgressResults = { State: 'READY', PctComplete: 0 } as TResults;
     this.inProgressResultsSubject = new BehaviorSubject<TResults>(this.inProgressResults);
@@ -103,7 +105,7 @@ export abstract class DpoaeInProgressBaseComponent<TResults extends DpoaeResults
         }
       } else {
         this.logger.debug(
-          `${this.constructor.name} in-progress component. Request results did not return expected results. It may be too early to receive results.`
+          `${this.examLabel} in-progress component. Request results did not return expected results. It may be too early to receive results.`
         );
       }
 

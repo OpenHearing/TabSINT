@@ -12,6 +12,8 @@ import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-
   styleUrl: './swept-dpoae-in-progress.component.css',
 })
 export class SweptDpoaeInProgressComponent extends DpoaeInProgressBaseComponent<SweptDpoaeResultsInterface> {
+  protected readonly examLabel = 'Swept DPOAE';
+
   @Input() f2Start: number = sweptDpoaeSchema.properties.f2Start.default;
   @Input() f2End: number = sweptDpoaeSchema.properties.f2End.default;
   @Input() xScale!: d3.ScaleLogarithmic<number, number, never>;

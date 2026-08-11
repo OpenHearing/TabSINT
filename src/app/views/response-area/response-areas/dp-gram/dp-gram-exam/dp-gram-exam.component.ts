@@ -63,7 +63,8 @@ export class DpGramExamComponent extends DpoaeExamBaseComponent<DpGramInterface,
         OutputChannel1: handleOutputCalibration(this.outputChannel1, this.outputCalibrationType),
         OutputChannel2: handleOutputCalibration(this.outputChannel2, this.outputCalibrationType),
         InputChannel: this.inputChannel,
-        F2: this.f2,
+        F2Start: this.f2,
+        F2End: this.f2,
         Ratio: this.ratio,
         L1: this.l1,
         L2: this.l2,
@@ -77,7 +78,7 @@ export class DpGramExamComponent extends DpoaeExamBaseComponent<DpGramInterface,
       }
       // TODO: device exam command name and examProperties field casing are unconfirmed against
       // real DP-gram firmware - placeholder mirroring swept's PascalCase convention.
-      await this.devicesService.queueExam(this.device, 'DPGram', examProperties);
+      await this.devicesService.queueExam(this.device, 'SweptDPOAE', examProperties);
     }
   }
 }
