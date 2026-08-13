@@ -80,6 +80,11 @@ describe('ProtocolStack', () => {
     expect(stack.peek()?.maxPages).toBe(Number.MAX_SAFE_INTEGER);
   });
 
+  it('uses showAlert from protocol timeout when provided', () => {
+    stack.addProtocol(makeProtocol({ timeout: { showAlert: true } }));
+    expect(stack.peek()?.showAlert).toBe(true);
+  });
+
   it('uses progress bar visibility from protocol when provided', () => {
     stack.addProtocol(makeProtocol({ showProgressBar: undefined }));
     expect(stack.peek()?.showProgressBar).toBe(undefined);
