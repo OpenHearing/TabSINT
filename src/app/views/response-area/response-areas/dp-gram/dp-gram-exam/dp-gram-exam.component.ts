@@ -16,8 +16,9 @@ export class DpGramExamComponent extends DpoaeExamBaseComponent<DpGramInterface,
 
   // f2 is required (no schema default) - protocols must always supply the frequency list.
   f2: number[] = [];
-  // TODO: unconfirmed against firmware - name/default placeholder.
-  numAverages: number = dpGramSchema.properties.numAverages.default;
+  windowDuration: number = dpGramSchema.properties.windowDuration.default;
+  minTestAverages: number = dpGramSchema.properties.minTestAverages.default;
+  maxTestAverages: number = dpGramSchema.properties.maxTestAverages.default;
 
   // Set default dimensions and margins
   xTicks: number[] = [];
@@ -31,7 +32,9 @@ export class DpGramExamComponent extends DpoaeExamBaseComponent<DpGramInterface,
   protected applyResponseArea(responseArea: DpGramInterface): void {
     this.applyCommonFields(responseArea);
     this.f2 = responseArea.f2 ?? this.f2;
-    this.numAverages = responseArea.numAverages ?? this.numAverages;
+    this.windowDuration = responseArea.windowDuration ?? this.windowDuration;
+    this.minTestAverages = responseArea.minTestAverages ?? this.minTestAverages;
+    this.maxTestAverages = responseArea.maxTestAverages ?? this.maxTestAverages;
 
     this.inputParameterMap = new Map([
       ['F2 Frequencies [Hz]', this.f2.join(', ')],
@@ -41,13 +44,13 @@ export class DpGramExamComponent extends DpoaeExamBaseComponent<DpGramInterface,
       ['Noise Floor Threshold', this.noiseFloorThreshold.toString()],
     ]);
 
-    // Update xTicks and scales - matches Swept DPOAE's approach: standard octave ticks filtered
-    // to the tested frequency range, domain spanning that range.
+    // Update xTicks and scales - unlike Swept DPOAE's continuous sweep, DP-gram tests a handful
+    // of discrete f2 frequencies, so ticks sit exactly at the tested frequencies.
     const sortedF2 = [...this.f2].sort((a, b) => a - b);
     if (sortedF2.length > 0) {
       const f2Min = sortedF2[0];
       const f2Max = sortedF2[sortedF2.length - 1];
-      this.xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000].filter(tick => tick >= f2Min && tick <= f2Max);
+      this.xTicks = sortedF2;
       this.xScale = d3.scaleLog().domain([f2Min, f2Max]).range([0, this.width]);
     }
 
