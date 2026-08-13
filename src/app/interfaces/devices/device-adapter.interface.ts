@@ -1,6 +1,7 @@
 import { FirmwareAsset } from '../firmware-asset.interface';
 import { IDeviceResponse } from './device-response.interface';
 import { IDevice } from './device.interface';
+import { MaskingNoise } from '../../views/response-area/response-areas/shared/audiometry/audiometry.interface';
 
 /**
  * Device Adapter Interface.
@@ -87,4 +88,19 @@ export interface IDeviceAdapter {
    * @returns The device response for the request or undefined.
    */
   setSoftwareButtonState?(device: IDevice, state: number): Promise<IDeviceResponse | undefined>;
+
+  /**
+   * Optional method to start playback of masking noise on a device.
+   * @param device The device to start the masking noise on.
+   * @param maskingNoise The masking noise configuration.
+   * @returns The device response for the request or undefined.
+   */
+  startMaskingNoise?(device: IDevice, maskingNoise: MaskingNoise): Promise<IDeviceResponse | undefined>;
+
+  /**
+   * Optional method to stop playback of masking noise on a device.
+   * @param device The device to stop the masking noise on.
+   * @returns The device response for the request or undefined.
+   */
+  stopMaskingNoise?(device: IDevice): Promise<IDeviceResponse | undefined>;
 }

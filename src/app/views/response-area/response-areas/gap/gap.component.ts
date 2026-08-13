@@ -11,8 +11,9 @@ import { PageInterface } from '../../../../models/page/page.interface';
 import { IDevice } from '../../../../interfaces/devices/device.interface';
 import { DeviceType } from '../../../../utilities/constants';
 import { gapSchema } from '../../../../../schema/response-areas/gap.schema';
-import { GapExamPropertiesInterface, GapPlotDataInterface, GapResponseAreaInterface, GapResultsInterface } from './gap.interface';
+import { GapExamPropertiesInterface, GapResponseAreaInterface, GapResultsInterface } from './gap.interface';
 import { isGapResults, isStatusResponse } from '../../../../guards/type.guard';
+import { TrialProgressionPlotDataInterface } from '../shared/trial-progression-plot/trial-progression-plot.interface';
 
 const EXAM_NAME = 'GAP';
 
@@ -52,7 +53,7 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
   noiseLevel = gapSchema.properties.examProperties.properties.LNoise.default;
   buttonPressed = false;
   device: IDevice | undefined;
-  gapResultsData: GapPlotDataInterface | undefined;
+  gapResultsData: TrialProgressionPlotDataInterface | undefined;
   showResults = false;
 
   private examProperties: GapExamPropertiesInterface = {};
@@ -509,18 +510,19 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
   // ======= Canvas / plot helpers =======
 
   /**
-   * Build the data structure consumed by the gap results plot.
+   * Build the data structure consumed by the trial-progression plot.
    * @param results The final results returned by the device.
    */
-  private createGapData(results: GapResultsInterface): GapPlotDataInterface {
+  private createGapData(results: GapResultsInterface): TrialProgressionPlotDataInterface {
     const gapLengths = results.GapLengthArray ?? [];
+    const reversals = results.ReversalUsedForThresholdArray ?? [];
     const maxLength = gapLengths.reduce((max, value) => Math.max(value, max), 0);
+    const gapThreshold = results.GapThreshold && !Number.isNaN(results.GapThreshold) ? results.GapThreshold : 0;
     return {
       y: gapLengths,
-      hit: results.HitOrMissArray ?? [],
+      pointStyles: gapLengths.map((_length, i) => (reversals[i] ? 'highlight' : 'filled')),
       maxY: maxLength === 0 ? 200 : maxLength + 10,
-      GapThreshold: results.GapThreshold && !Number.isNaN(results.GapThreshold) ? results.GapThreshold : 0,
-      reversals: results.ReversalUsedForThresholdArray ?? [],
+      referenceLine: gapThreshold,
       xLabel: 'Presentation #',
       yLabel: 'Gap Length (ms)',
       title: 'Gap Detection Results',

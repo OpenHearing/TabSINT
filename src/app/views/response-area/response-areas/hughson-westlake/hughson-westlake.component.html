@@ -1,0 +1,52 @@
+<div class="hw-container">
+  <!-- Properties: shown depending on the exam hide properties flag and current exam state. -->
+  <div *ngIf="showProperties">
+    <app-audiometry-properties
+      [level]="examProperties.Lstart"
+      levelLabel="Level"
+      [levelUnits]="examProperties.LevelUnits"
+      [frequency]="examProperties.F"
+      frequencyUnits="Hz"
+      [ear]="examProperties.OutputChannel">
+    </app-audiometry-properties>
+  </div>
+
+  <!-- Landing page: shown until the subject presses begin. -->
+  <div *ngIf="hwState === ResponseAreaState.Start" class="hw-start">
+    <p *ngIf="retryMessage">{{ retryMessage | transloco }}</p>
+    <button class="btn btn-default" type="button" (click)="beginExam()">
+      {{ "Begin" | transloco }}
+    </button>
+  </div>
+
+  <!-- Running exam: shows the software response button while the device runs the exam. -->
+  <div *ngIf="hwState === ResponseAreaState.Exam" class="hw-exam">
+    <p class="instructions" *ngIf="examInstructions">{{ examInstructions | transloco }}</p>
+    <div *ngIf="useSoftwareButton" class="hw-button-row">
+      <app-software-button
+        [mode]="'tap'"
+        buttonText="Tap this button when you hear a set of sounds"
+        buttonPressedText="Tap this button when you hear a set of sounds"
+        (pressStart)="onPressStart()">
+      </app-software-button>
+    </div>
+  </div>
+
+  <!-- Results: shown once the device reports the exam is complete. -->
+  <div *ngIf="hwState === ResponseAreaState.Results" class="hw-results">
+    <ng-container *ngIf="noResponseMessage; else hwNormalResults">
+      <div>{{ noResponseMessage | transloco }}</div>
+    </ng-container>
+    <ng-template #hwNormalResults>
+      <div>{{ resultMainText | transloco }}</div>
+      <div *ngIf="resultSubText">{{ resultSubText | transloco }}</div>
+    </ng-template>
+    <app-trial-progression-plot *ngIf="levelProgressionData" [data]="levelProgressionData"></app-trial-progression-plot>
+  </div>
+
+  <!-- Notes: shown after the exam has failed twice in a row and getNotesIfFailedTwice is set. -->
+  <div *ngIf="hwState === ResponseAreaState.Notes" class="hw-notes">
+    <p>{{ "Audiometry Administrator Notes Message" | transloco }}</p>
+    <textarea class="hw-notes-input" [(ngModel)]="adminNotes"></textarea>
+  </div>
+</div>
