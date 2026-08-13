@@ -74,6 +74,13 @@ export enum DialogType {
   Alert,
 }
 
+export enum MediaUpdateStatus {
+  Skipped = 'Skipped',
+  UpToDate = 'UpToDate',
+  Updated = 'Updated',
+  Failed = 'Failed',
+}
+
 export enum SvantekState {
   Connected,
   Disconnected,

@@ -19,7 +19,12 @@ const protocolSchemaBase: JSONSchemaType<ProtocolSchemaInterface> = {
     helpText: { type: 'string', nullable: true },
     submitText: { type: 'string', nullable: true },
     randomization: { type: 'string', enum: ['WithoutReplacement'], nullable: true },
-    commonMediaRepository: { type: 'string', nullable: true },
+    commonMediaRepository: {
+      type: 'string',
+      description:
+        'Name of a separate gitlab repository to be used for playing some or all media files. This repository will be automatically downloaded after the protocol is downloaded. This repository must be in the same group (a.k.a. namespace) as the protocol.',
+      nullable: true,
+    },
     calibration: { type: 'array', items: protocolCalibrationSchema, nullable: true },
     timeout: {
       type: 'object',

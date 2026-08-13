@@ -60,7 +60,7 @@
       </thead>
 
       <tbody>
-        <tr *ngFor="let mediaRepo of mediaRepos; let i = index" (click)="selectedMediaRepo = mediaRepo.repository">
+        <tr *ngFor="let mediaRepo of deviceMediaRepos; let i = index" (click)="selectedMediaRepo = mediaRepo.repository">
           <td [ngClass]="{ 'table-selected': selectedMediaRepo === mediaRepo.repository }">{{ mediaRepo.group }}</td>
           <td [ngClass]="{ 'table-selected': selectedMediaRepo === mediaRepo.repository }">{{ mediaRepo.repository }}</td>
           <td [ngClass]="{ 'table-selected': selectedMediaRepo === mediaRepo.repository }">{{ mediaRepo.tag }}</td>
