@@ -898,6 +898,29 @@
         {
           "id": "advancedProtocolLogic_006",
           "title": "Page 6",
+          "instructionText": "This page can set integer flag",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "choices": [
+              {
+                "id": "Set integerFlag"
+              },
+              {
+                "id": "Do not set integerFlag"
+              }
+            ]
+          },
+          "setFlags": [
+            {
+              "id": "integerFlag",
+              "conditional": "result.response==='Set integerFlag'",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "advancedProtocolLogic_007",
+          "title": "Page 7",
           "instructionText": "If flags were set on the last page, testFlag should be logged as 'True'",
           "responseArea": {
             "type": "textboxResponseArea",
@@ -910,8 +933,8 @@
           }
         },
         {
-          "id": "advancedProtocolLogic_007",
-          "title": "Page 7",
+          "id": "advancedProtocolLogic_008",
+          "title": "Page 8",
           "instructionText": "This instruction text and the response area below should be overridden by a preprocess function",
           "responseArea": {
             "type": "textboxResponseArea",
