@@ -8,9 +8,19 @@ export const dpGramSchema: JSONSchemaType<DpGramInterface> = {
     ...dpoaeCommonSchemaProperties,
     type: { type: 'string', enum: ['dpGramResponseArea'] },
     f2: { type: 'array', items: { type: 'number' }, minItems: 1, description: 'Explicit list of F2 test frequencies, in Hz.' },
-    windowDuration: { type: 'number', nullable: true, default: 1.0, description: 'Span of analysis windows for least-squares fit. In seconds.' },
-    minTestAverages: { type: 'number', nullable: true, default: 1, description: 'Minimum number of overlapping analysis windows averaged per f2 frequency.' },
-    maxTestAverages: { type: 'number', nullable: true, default: 1, description: 'Maximum number of overlapping analysis windows averaged per f2 frequency.' },
+    windowDuration: { type: 'number', nullable: true, default: 0.1, description: 'Span of analysis windows for least-squares fit. In seconds.' },
+    minTestAverages: {
+      type: 'number',
+      nullable: true,
+      default: 10,
+      description: 'Minimum number of overlapping analysis windows averaged per f2 frequency.',
+    },
+    maxTestAverages: {
+      type: 'number',
+      nullable: true,
+      default: 20,
+      description: 'Maximum number of overlapping analysis windows averaged per f2 frequency.',
+    },
   },
   required: ['type', 'f2'],
 };
