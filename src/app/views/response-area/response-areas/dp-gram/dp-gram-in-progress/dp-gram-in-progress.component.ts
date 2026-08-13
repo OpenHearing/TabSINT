@@ -154,7 +154,10 @@ export class DpGramInProgressComponent extends DpoaeInProgressBaseComponent<DpGr
   private buildExamProperties(freq: number, index: number): object {
     // 50% overlap between successive analysis windows: NumFrequencies windows span
     // MaxTestAverages window-widths of the sweep.
-    const sweepDuration = this.maxTestAverages * this.windowDuration;
+    let sweepDuration = Math.round(this.maxTestAverages * this.windowDuration);
+    if (sweepDuration < this.windowDuration) {
+      sweepDuration = this.windowDuration + 0.01;
+    }
     const numFrequencies = 2 * this.maxTestAverages - 1;
 
     const examProperties: any = {
