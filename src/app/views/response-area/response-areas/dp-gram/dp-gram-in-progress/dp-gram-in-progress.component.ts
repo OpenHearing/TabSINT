@@ -14,13 +14,14 @@ import { getCurrentDatetime, handleOutputCalibration } from '../../../../../util
 export class DpGramInProgressComponent extends DpoaeInProgressBaseComponent<DpGramResultsInterface> {
   protected readonly examLabel = 'DP-gram';
 
-  // TODO: fixed internal defaults for a single-frequency measurement - unconfirmed against real
-  // DP-gram firmware. Revisit once firmware behavior for a zero-width (F2Start === F2End) sweep
-  // is known.
-  private static readonly SINGLE_POINT_SWEEP_DURATION = 2;
-  private static readonly SINGLE_POINT_WINDOW_DURATION = 0.125;
-  private static readonly SINGLE_POINT_MIN_SWEEPS = 4;
-  private static readonly SINGLE_POINT_MAX_SWEEPS = 8;
+  // MinSweeps/MaxSweeps are fixed at 1: for a single-point (F2Start === F2End) measurement,
+  // repeated averaging comes from overlapping analysis windows within one sweep (see
+  // buildExamProperties), not from repeated sweeps.
+  private static readonly SINGLE_POINT_MIN_SWEEPS = 1;
+  private static readonly SINGLE_POINT_MAX_SWEEPS = 1;
+
+  /** Reference pressure for dB SPL, in Pascals (20 micropascals). */
+  private static readonly REFERENCE_PRESSURE_PA = 20e-6;
 
   @Input() xScale!: d3.ScaleLogarithmic<number, number, never>;
   @Input() f2: number[] = [];
@@ -29,6 +30,9 @@ export class DpGramInProgressComponent extends DpoaeInProgressBaseComponent<DpGr
   @Input() inputChannel!: string;
   @Input() outputCalibrationType!: string;
   @Input() ratio!: number;
+  @Input() windowDuration!: number;
+  @Input() minTestAverages!: number;
+  @Input() maxTestAverages!: number;
   @Input() l1!: number;
   @Input() l2!: number;
   @Input() noiseFloorThreshold!: number;
@@ -148,6 +152,11 @@ export class DpGramInProgressComponent extends DpoaeInProgressBaseComponent<DpGr
   }
 
   private buildExamProperties(freq: number, index: number): object {
+    // 50% overlap between successive analysis windows: NumFrequencies windows span
+    // MaxTestAverages window-widths of the sweep.
+    const sweepDuration = this.maxTestAverages * this.windowDuration;
+    const numFrequencies = 2 * this.maxTestAverages - 1;
+
     const examProperties: any = {
       OutputChannel1: handleOutputCalibration(this.outputChannel1, this.outputCalibrationType),
       OutputChannel2: handleOutputCalibration(this.outputChannel2, this.outputCalibrationType),
@@ -155,12 +164,12 @@ export class DpGramInProgressComponent extends DpoaeInProgressBaseComponent<DpGr
       F2Start: freq,
       F2End: freq,
       Ratio: this.ratio,
-      SweepDuration: DpGramInProgressComponent.SINGLE_POINT_SWEEP_DURATION,
+      SweepDuration: sweepDuration,
       SweepType: 'log',
-      WindowDuration: DpGramInProgressComponent.SINGLE_POINT_WINDOW_DURATION,
+      WindowDuration: this.windowDuration,
       MinSweeps: DpGramInProgressComponent.SINGLE_POINT_MIN_SWEEPS,
       MaxSweeps: DpGramInProgressComponent.SINGLE_POINT_MAX_SWEEPS,
-      NumFrequencies: 1,
+      NumFrequencies: numFrequencies,
       L1: this.l1,
       L2: this.l2,
       NoiseFloorThreshold: this.noiseFloorThreshold,
@@ -175,29 +184,92 @@ export class DpGramInProgressComponent extends DpoaeInProgressBaseComponent<DpGr
 
   private mergeFrequencyResult(raw: DpGramResultsInterface): void {
     this.accumulated.NumPoints = (this.accumulated.NumPoints ?? 0) + 1;
-    this.accumulated.DpLow = this.appendPoint(this.accumulated.DpLow, raw.DpLow);
-    this.accumulated.DpHigh = this.appendPoint(this.accumulated.DpHigh, raw.DpHigh);
-    this.accumulated.F1 = this.appendPoint(this.accumulated.F1, raw.F1);
-    this.accumulated.F2 = this.appendPoint(this.accumulated.F2, raw.F2);
+    this.accumulated.DpLow = this.appendAggregatedPoint(this.accumulated.DpLow, raw.DpLow);
+    this.accumulated.DpHigh = this.appendAggregatedPoint(this.accumulated.DpHigh, raw.DpHigh);
+    this.accumulated.F1 = this.appendAggregatedPoint(this.accumulated.F1, raw.F1);
+    this.accumulated.F2 = this.appendAggregatedPoint(this.accumulated.F2, raw.F2);
     if (raw.Raw) {
       this.accumulated.Raw = this.accumulated.Raw ?? {};
-      this.accumulated.Raw.DpLow = this.appendPoint(this.accumulated.Raw.DpLow, raw.Raw.DpLow);
-      this.accumulated.Raw.DpHigh = this.appendPoint(this.accumulated.Raw.DpHigh, raw.Raw.DpHigh);
-      this.accumulated.Raw.F1 = this.appendPoint(this.accumulated.Raw.F1, raw.Raw.F1);
-      this.accumulated.Raw.F2 = this.appendPoint(this.accumulated.Raw.F2, raw.Raw.F2);
+      this.accumulated.Raw.DpLow = this.appendRawWindows(this.accumulated.Raw.DpLow, raw.Raw.DpLow);
+      this.accumulated.Raw.DpHigh = this.appendRawWindows(this.accumulated.Raw.DpHigh, raw.Raw.DpHigh);
+      this.accumulated.Raw.F1 = this.appendRawWindows(this.accumulated.Raw.F1, raw.Raw.F1);
+      this.accumulated.Raw.F2 = this.appendRawWindows(this.accumulated.Raw.F2, raw.Raw.F2);
     }
   }
 
-  /** Appends the single point (index 0) of source onto target, creating target if necessary. */
-  private appendPoint(target: DPOAEDataInterface | undefined, source: DPOAEDataInterface | undefined): DPOAEDataInterface | undefined {
+  /**
+   * Appends one aggregated point onto target, creating target if necessary. Source holds
+   * NumFrequencies raw overlapping-window samples of the same nominal frequency (from the
+   * single-point SweptDPOAE exam) - these are coherently (complex) averaged into one
+   * amplitude/phase pair, and the noise floor is aggregated to match, rather than just reading
+   * off a single raw sample.
+   */
+  private appendAggregatedPoint(target: DPOAEDataInterface | undefined, source: DPOAEDataInterface | undefined): DPOAEDataInterface | undefined {
     if (!source) return target;
     const next: DPOAEDataInterface = target ?? { Frequency: [], Amplitude: [], Phase: [] };
+    const { amplitudeDB, phaseRad } = DpGramInProgressComponent.complexAverageMagnitude(source.Amplitude, source.Phase);
     next.Frequency.push(source.Frequency[0]);
-    next.Amplitude.push(source.Amplitude[0]);
-    next.Phase.push(source.Phase[0]);
+    next.Amplitude.push(amplitudeDB);
+    next.Phase.push(phaseRad);
     if (source.NoiseFloor) {
       next.NoiseFloor = next.NoiseFloor ?? [];
-      next.NoiseFloor.push(source.NoiseFloor[0]);
+      next.NoiseFloor.push(DpGramInProgressComponent.aggregateNoiseFloor(source.NoiseFloor));
+    }
+    return next;
+  }
+
+  /**
+   * Coherently (complex/vector) average NumFrequencies overlapping-window samples of the same
+   * nominal frequency into a single amplitude (dB SPL) / phase (radians) pair. Averaging happens
+   * in the linear complex domain (Pascals) rather than naively averaging dB values, since dB
+   * magnitudes alone discard the phase information needed to average out incoherent noise.
+   */
+  private static complexAverageMagnitude(amplitudeDB: number[], phaseRad: number[]): { amplitudeDB: number; phaseRad: number } {
+    let sumReal = 0;
+    let sumImag = 0;
+    for (let i = 0; i < amplitudeDB.length; i++) {
+      const magnitudePa = DpGramInProgressComponent.REFERENCE_PRESSURE_PA * 10 ** (amplitudeDB[i] / 20);
+      sumReal += magnitudePa * Math.cos(phaseRad[i]);
+      sumImag += magnitudePa * Math.sin(phaseRad[i]);
+    }
+    const meanReal = sumReal / amplitudeDB.length;
+    const meanImag = sumImag / amplitudeDB.length;
+    return {
+      amplitudeDB: 20 * Math.log10(Math.hypot(meanReal, meanImag) / DpGramInProgressComponent.REFERENCE_PRESSURE_PA),
+      phaseRad: Math.atan2(meanImag, meanReal),
+    };
+  }
+
+  /**
+   * Aggregate per-window noise floor samples (dB) into the noise floor of the coherently
+   * averaged signal computed by complexAverageMagnitude. Adjacent windows overlap 50% and are
+   * therefore not statistically independent, so only every other sample is used; the summed
+   * power is divided by n^2 (not n) to match the variance reduction of coherently averaging n
+   * independent complex samples.
+   */
+  private static aggregateNoiseFloor(noiseFloorDB: number[]): number {
+    const independentPowerPa2 = noiseFloorDB
+      .filter((_, i) => i % 2 === 0)
+      .map(db => (DpGramInProgressComponent.REFERENCE_PRESSURE_PA * 10 ** (db / 20)) ** 2);
+    const n = independentPowerPa2.length;
+    const meanPowerPa2 = independentPowerPa2.reduce((sum, power) => sum + power, 0) / (n * n);
+    return 20 * Math.log10(Math.sqrt(meanPowerPa2) / DpGramInProgressComponent.REFERENCE_PRESSURE_PA);
+  }
+
+  /**
+   * Appends all of source's raw windows onto target, creating target if necessary. Unlike
+   * appendAggregatedPoint, nothing is combined or discarded here - Raw is meant to preserve every
+   * individual raw window measurement (across every f2 frequency) for later export/analysis.
+   */
+  private appendRawWindows(target: DPOAEDataInterface | undefined, source: DPOAEDataInterface | undefined): DPOAEDataInterface | undefined {
+    if (!source) return target;
+    const next: DPOAEDataInterface = target ?? { Frequency: [], Amplitude: [], Phase: [] };
+    next.Frequency.push(...source.Frequency);
+    next.Amplitude.push(...source.Amplitude);
+    next.Phase.push(...source.Phase);
+    if (source.NoiseFloor) {
+      next.NoiseFloor = next.NoiseFloor ?? [];
+      next.NoiseFloor.push(...source.NoiseFloor);
     }
     return next;
   }

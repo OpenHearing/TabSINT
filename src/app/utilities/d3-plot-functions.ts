@@ -14,7 +14,9 @@ export function createOAEResultsChartSvg(
   chartHeight: number,
   xTicks: number[],
   xScale: d3.ScaleLogarithmic<number, number, never>,
-  yScale: d3.ScaleLinear<number, number, never>
+  yScale: d3.ScaleLinear<number, number, never>,
+  xAxisLabel: string = 'Frequency (Hz)',
+  yAxisLabel: string = 'Amplitude (dB SPL)'
 ) {
   // Define axes
   const xAxisMinor = d3
@@ -46,7 +48,7 @@ export function createOAEResultsChartSvg(
     .attr('y', 50)
     .style('text-anchor', 'middle')
     .attr('fill', 'black')
-    .text('Frequency (Hz)');
+    .text(xAxisLabel);
 
   svg
     .append('g')
@@ -60,7 +62,7 @@ export function createOAEResultsChartSvg(
     .attr('transform', 'rotate(-90)')
     .attr('fill', 'black')
     .style('text-anchor', 'middle')
-    .text('Amplitude (dB SPL)');
+    .text(yAxisLabel);
 
   // Major X Axis Gridlines
   svg
@@ -245,13 +247,13 @@ export function createLegend(
 
   function addSymbol(group: d3.Selection<SVGGElement, LegendItemInterface, null, undefined>, legendItem: LegendItemInterface) {
     const size = 5;
-    if (legendItem.symbol === 'circle') {
+    if (legendItem.symbol === 'circle' || legendItem.symbol === 'dot') {
       group
         .append('circle')
         .attr('cx', 10)
         .attr('cy', 0)
-        .attr('r', size)
-        .style('fill', 'none')
+        .attr('r', legendItem.symbol === 'dot' ? size - 1 : size)
+        .style('fill', legendItem.symbol === 'dot' ? legendItem.color : 'none')
         .style('stroke', legendItem.color)
         .style('stroke-width', 2);
     } else if (legendItem.symbol === 'X') {
@@ -362,4 +364,59 @@ export function plotOAEPointMarkers(
     .style('font-size', '10px')
     .style('font-weight', 'bold')
     .text('X');
+}
+
+/**
+ * Plot a single OAE series (e.g. F1, F2, DPOAE, noise floor) as a connected line with markers.
+ * @param svg The svg group to draw into
+ * @param xScale The x-axis (frequency) scale
+ * @param yScale The y-axis (amplitude) scale
+ * @param xValues The x-axis value for each point
+ * @param yValues The y-axis value for each point, index-aligned with xValues
+ * @param color The stroke/fill color for the line and markers
+ * @param marker The marker shape: 'dot' (small filled circle), 'circle' (open circle), or 'cross' ('X')
+ */
+export function plotOAELineSeries(
+  svg: d3.Selection<SVGGElement, unknown, HTMLElement, any>,
+  xScale: d3.ScaleLogarithmic<number, number, never>,
+  yScale: d3.ScaleLinear<number, number, never>,
+  xValues: number[],
+  yValues: number[],
+  color: string,
+  marker: 'dot' | 'circle' | 'cross'
+) {
+  const lineGenerator = d3
+    .line<number>()
+    .x((_d, i) => xScale(xValues[i]))
+    .y(d => yScale(d));
+
+  svg.append('path').datum(yValues).attr('d', lineGenerator).attr('fill', 'none').attr('stroke', color).attr('stroke-width', 2);
+
+  if (marker === 'cross') {
+    svg
+      .selectAll(null)
+      .data(xValues)
+      .enter()
+      .append('text')
+      .attr('x', (_d, i) => xScale(xValues[i]))
+      .attr('y', (_d, i) => yScale(yValues[i]))
+      .attr('text-anchor', 'middle')
+      .attr('alignment-baseline', 'middle')
+      .style('fill', color)
+      .style('font-size', '10px')
+      .style('font-weight', 'bold')
+      .text('X');
+  } else {
+    svg
+      .selectAll(null)
+      .data(xValues)
+      .enter()
+      .append('circle')
+      .attr('cx', (_d, i) => xScale(xValues[i]))
+      .attr('cy', (_d, i) => yScale(yValues[i]))
+      .attr('r', marker === 'dot' ? 3 : 4)
+      .style('fill', marker === 'dot' ? color : 'none')
+      .style('stroke', color)
+      .style('stroke-width', 2);
+  }
 }

@@ -2,8 +2,9 @@ import { DpoaeCommonInterface, DpoaeResultsCommonInterface, DPOAEDataInterface }
 
 export interface DpGramInterface extends DpoaeCommonInterface {
   f2: number[];
-  // TODO: unconfirmed per-point averaging/repeat control - confirm name/default against firmware.
-  numAverages?: number;
+  windowDuration?: number;
+  minTestAverages?: number;
+  maxTestAverages?: number;
 }
 
 export interface DpGramResultsInterface extends DpoaeResultsCommonInterface {

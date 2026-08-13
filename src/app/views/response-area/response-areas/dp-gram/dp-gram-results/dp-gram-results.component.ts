@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import * as d3 from 'd3';
 import { DpoaeResultsBaseComponent } from '../../shared/dpoae/dpoae-results-base.component';
 import { DpGramResultsInterface } from '../dp-gram-exam/dp-gram-exam.interface';
-import { createLegend, createOAEResultsChartSvg, createNormativeDataPath, plotOAEPointMarkers } from '../../../../../utilities/d3-plot-functions';
+import { createLegend, createOAEResultsChartSvg, createNormativeDataPath, plotOAELineSeries } from '../../../../../utilities/d3-plot-functions';
 
 @Component({
   selector: 'app-dp-gram-results',
@@ -16,23 +16,7 @@ export class DpGramResultsComponent extends DpoaeResultsBaseComponent<DpGramResu
   protected createResultsPlot() {
     const filteredData = this.filterDpGramResults(this.results);
 
-    const yScale = d3
-      .scaleLinear()
-      .domain([
-        d3.min([
-          ...filteredData.DpLow.Amplitude,
-          ...filteredData.DpLow.NoiseFloor,
-          ...filteredData.F1.Amplitude,
-          ...filteredData.F2.Amplitude,
-        ]) as number,
-        d3.max([
-          ...filteredData.DpLow.Amplitude,
-          ...filteredData.DpLow.NoiseFloor,
-          ...filteredData.F1.Amplitude,
-          ...filteredData.F2.Amplitude,
-        ]) as number,
-      ])
-      .range([this.height, 0]);
+    const yScale = d3.scaleLinear().domain([-40, 100]).range([this.height, 0]);
 
     let svg = d3
       .select('#dp-gram-results-plot')
@@ -42,7 +26,7 @@ export class DpGramResultsComponent extends DpoaeResultsBaseComponent<DpGramResu
       .append('g')
       .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
 
-    svg = createOAEResultsChartSvg(svg, this.width, this.height, this.xTicks, this.xScale, yScale);
+    svg = createOAEResultsChartSvg(svg, this.width, this.height, this.xTicks, this.xScale, yScale, 'F2 Frequency, (Hz)', 'Magnitude, (dB)');
 
     // Define definitions for the svg and add clip path
     const defs = svg.append('defs');
@@ -55,42 +39,20 @@ export class DpGramResultsComponent extends DpoaeResultsBaseComponent<DpGramResu
     const normativePath = createNormativeDataPath(this.normativeData, this.xScale, yScale);
     clippedGroup.append('path').attr('d', normativePath).attr('fill', 'gray').attr('stroke', 'gray').attr('stroke-width', 2);
 
-    // Plot DpLow Amplitude (blue open circles) and NoiseFloor (red X) - discrete points, no
-    // connecting line, since a handful of possibly non-uniformly-spaced test frequencies
-    // shouldn't visually imply a continuous trend.
-    plotOAEPointMarkers(svg, this.xScale, yScale, filteredData.DpLow.F2Frequency, filteredData.DpLow.Amplitude, filteredData.DpLow.NoiseFloor);
-
-    // Plot F2 (violet circles)
-    svg
-      .selectAll('.dot')
-      .data(filteredData.F2.Frequency)
-      .enter()
-      .append('circle')
-      .attr('cx', (d, i) => this.xScale(filteredData.F2.Frequency[i]))
-      .attr('cy', (d, i) => yScale(filteredData.F2.Amplitude[i]))
-      .attr('r', 4)
-      .style('fill', 'none')
-      .style('stroke', '#9400d3')
-      .style('stroke-width', 2);
-
-    // Plot F1 (yellow circles)
-    svg
-      .selectAll('.dot')
-      .data(filteredData.F1.Frequency)
-      .enter()
-      .append('circle')
-      .attr('cx', (d, i) => this.xScale(filteredData.F1.Frequency[i]))
-      .attr('cy', (d, i) => yScale(filteredData.F1.Amplitude[i]))
-      .attr('r', 4)
-      .style('fill', 'none')
-      .style('stroke', '#ffc107')
-      .style('stroke-width', 2);
+    // Plot each series as a connected line with markers, all indexed by the nominal F2 test
+    // frequency (rather than each series' own measured frequency) so the four lines share a
+    // common x-axis position per test point.
+    const f2Freq = filteredData.F2.Frequency;
+    plotOAELineSeries(svg, this.xScale, yScale, f2Freq, filteredData.F1.Amplitude, '#984ea3', 'dot');
+    plotOAELineSeries(svg, this.xScale, yScale, f2Freq, filteredData.F2.Amplitude, '#ff7f00', 'dot');
+    plotOAELineSeries(svg, this.xScale, yScale, f2Freq, filteredData.DpLow.Amplitude, '#3773b8', 'circle');
+    plotOAELineSeries(svg, this.xScale, yScale, f2Freq, filteredData.DpLow.NoiseFloor, '#aaaaaa', 'cross');
 
     const legendData = [
-      { label: 'DPOAE', color: 'blue', symbol: 'circle' },
-      { label: 'NF', color: 'red', symbol: 'X' },
-      { label: 'F2', color: '#9400d3', symbol: 'circle' },
-      { label: 'F1', color: '#ffc107', symbol: 'circle' },
+      { label: 'F1', color: '#984ea3', symbol: 'dot', line: 'solid' },
+      { label: 'F2', color: '#ff7f00', symbol: 'dot', line: 'solid' },
+      { label: 'DPlow', color: '#3773b8', symbol: 'circle', line: 'solid' },
+      { label: 'NFlow', color: '#aaaaaa', symbol: 'X', line: 'solid' },
     ];
 
     createLegend(svg, legendData, this.width, 85);
@@ -98,7 +60,7 @@ export class DpGramResultsComponent extends DpoaeResultsBaseComponent<DpGramResu
   }
 
   private filterDpGramResults(data: DpGramResultsInterface): {
-    DpLow: { Frequency: number[]; F2Frequency: number[]; Amplitude: number[]; NoiseFloor: number[] };
+    DpLow: { Frequency: number[]; Amplitude: number[]; NoiseFloor: number[] };
     F2: { Frequency: number[]; Amplitude: number[] };
     F1: { Frequency: number[]; Amplitude: number[] };
   } {
@@ -106,7 +68,6 @@ export class DpGramResultsComponent extends DpoaeResultsBaseComponent<DpGramResu
     const filteredData = {
       DpLow: {
         Frequency: [],
-        F2Frequency: [],
         Amplitude: [],
         NoiseFloor: [],
       },
@@ -147,8 +108,6 @@ export class DpGramResultsComponent extends DpoaeResultsBaseComponent<DpGramResu
       filterAndPush(data.F1, filteredData.F1);
     }
 
-    // Update the DpLow frequencies for plotting
-    filteredData.DpLow.F2Frequency = filteredData.F2.Frequency;
     return filteredData;
   }
 }
