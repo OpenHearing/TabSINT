@@ -489,6 +489,71 @@ describe('ExamService', () => {
     });
   });
 
+  describe('protocol nMaxPages timeout enforcement', () => {
+    function buildPage(id: string): PageDefinition {
+      return {
+        id,
+        instructionText: 'text',
+        responseArea: { type: 'textboxResponseArea', rows: 3, responseRequired: false },
+      } as unknown as PageDefinition;
+    }
+
+    function useTimedProtocol(showAlert?: boolean) {
+      const timedProtocol = {
+        protocolId: 'timed-protocol',
+        name: 'Timed Protocol',
+        date: new Date().toISOString(),
+        version: '1.0',
+        server: ProtocolServer.LocalServer,
+        admin: true,
+        timeout: { nMaxPages: 2, showAlert },
+        pages: [buildPage('p1'), buildPage('p2'), buildPage('p3')],
+      };
+      examService.protocol.activeProtocol = timedProtocol;
+      examService.protocol.activeProtocolStack = new ProtocolStack();
+      examService.protocol.activeProtocolDictionary = { 'timed-protocol': timedProtocol };
+    }
+
+    it('ends the protocol once nMaxPages is reached, without showing pages beyond the limit', async () => {
+      useTimedProtocol();
+      spyOn(examService, 'endExam' as never);
+
+      await examService.begin();
+      expect(mockPageModel.updatePage).toHaveBeenCalledTimes(1);
+      expect((mockPageModel.updatePage.calls.argsFor(0)[0] as PageInterface).id).toBe('p1');
+
+      examService.submitDefault();
+      expect(mockPageModel.updatePage).toHaveBeenCalledTimes(2);
+      expect((mockPageModel.updatePage.calls.argsFor(1)[0] as PageInterface).id).toBe('p2');
+
+      examService.submitDefault();
+      expect(mockPageModel.updatePage).toHaveBeenCalledTimes(2);
+      expect(examService['endExam' as keyof ExamService]).toHaveBeenCalled();
+    });
+
+    it('alerts the user on timeout only when the protocol requests it', async () => {
+      useTimedProtocol(true);
+      spyOn(examService, 'endExam' as never);
+
+      await examService.begin();
+      examService.submitDefault();
+      examService.submitDefault();
+
+      expect(mockNotifications.alert).toHaveBeenCalled();
+    });
+
+    it('does not alert the user on timeout when the protocol does not request it', async () => {
+      useTimedProtocol(false);
+      spyOn(examService, 'endExam' as never);
+
+      await examService.begin();
+      examService.submitDefault();
+      examService.submitDefault();
+
+      expect(mockNotifications.alert).not.toHaveBeenCalled();
+    });
+  });
+
   describe('updateExamProgress', () => {
     it('sets progress to 0 when protocol is undefined', () => {
       examService.updateExamProgress(undefined);
