@@ -77,41 +77,67 @@
       </div>
     </div>
   </mat-expansion-panel>
-  <!-- 
-  <div mat-expansion-panel="media-repo-table" class="panel panel-default" is-open="isOpenMedia" *ngIf="disk.mediaRepos.length > 0">
-    <h2 mat-expansion-panel-header i18n>
-      Media<i class='pull-right glyphicon' [ngClass]='{"glyphicon-chevron-up": isOpenMedia, "glyphicon-chevron-down": !isOpenMedia}'></i>
-    </h2>
-    <div class="panel-body text-left">
 
-      <table class="table">
+  <br />
+
+  <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.protocolsMedia" *ngIf="commonMediaRepos.length > 0">
+    <mat-expansion-panel-header>
+      <mat-panel-title>{{ "Media" | transloco }}</mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <div class="panel-body text-left">
+      <table class="table fixed">
         <thead>
           <tr>
-            <th></th>
             <th scope="col">{{ "Name" | transloco }}</th>
             <th scope="col">{{ "Version" | transloco }}</th>
             <th scope="col">{{ "Date" | transloco }}</th>
-            <th scope="col"><a title="Media help" uib-popover-html="mediaTablePopover" popover-placement="left" popover-trigger="'outsideClick'" i18n><i class="ion-help-circled"></i></a></th>
           </tr>
         </thead>
 
         <tbody>
-          <tr *ngFor="let m of disk.mediaRepos; index as i" [ngClass]="mclass(m) ? 'active-row': ''">
-            <td>
-              <button *ngIf="m.server === 'gitlab'" class="btn btn-success btn-sm" (click)="updateMedia(m)"><i class="ion-android-sync"></i></button>
-            </td>
-            <td>{{m.name}}</td>
-            <td>{{m.version}}</td>
-            <td>{{m.date.replace('T', ' ').split('.')[0]}}</td>
-            <td>
-              <button class="btn btn-danger btn-sm" (click)="deleteMedia(m)"><i class="ion-trash-a"></i></button>
-            </td>
+          <tr
+            *ngFor="let mediaRepo of commonMediaRepos; trackBy: trackByIndex"
+            class="no-border"
+            (click)="selectMedia(mediaRepo)"
+            (keypress)="selectMedia(mediaRepo)">
+            <td [ngClass]="mclass(mediaRepo)">{{ mediaRepo.repository }}</td>
+            <td [ngClass]="mclass(mediaRepo)">{{ mediaRepo.tag }}</td>
+            <td [ngClass]="mclass(mediaRepo)">{{ mediaRepo.date.replace("T", " ").split(".")[0] }}</td>
           </tr>
         </tbody>
       </table>
 
+      <br />
+
+      <div class="row pad-top">
+        <div class="col-3"></div>
+        <div class="col-6">
+          <div class="row">
+            <div class="col-6">
+              <button [disabled]="!selectedCommonMedia" class="btn btn-success btn-block" (click)="updateMedia()">
+                <i class="ion-android-sync"></i>{{ "Update" | transloco }}
+              </button>
+            </div>
+            <div class="col-6">
+              <button [disabled]="!selectedCommonMedia" class="btn btn-danger btn-block" (click)="deleteMedia()">
+                <i class="ion-trash-a"></i>{{ "Delete" | transloco }}
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-1"></div>
+        <div class="col-1">
+          <i [matMenuTriggerFor]="mediaTableHelpMenu" class="ion-help-circled"></i>
+        </div>
+        <mat-menu #mediaTableHelpMenu="matMenu">
+          <button mat-menu-item>
+            <div [innerHTML]="mediaTablePopover"></div>
+          </button>
+        </mat-menu>
+      </div>
     </div>
-  </div> -->
+  </mat-expansion-panel>
 
   <br />
 

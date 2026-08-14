@@ -1,5 +1,6 @@
 import { JSONSchemaType } from 'ajv';
-import { MediaReposInterface } from '../../app/interfaces/media-repos.interface';
+import { MediaRepoProtocolTarget, MediaReposInterface } from '../../app/interfaces/media-repos.interface';
+import { DeviceType } from '../../app/utilities/constants';
 
 export const mediaReposSchema: JSONSchemaType<MediaReposInterface> = {
   type: 'object',
@@ -11,6 +12,7 @@ export const mediaReposSchema: JSONSchemaType<MediaReposInterface> = {
     tag: { type: 'string' },
     date: { type: 'string' },
     path: { type: 'string' },
+    target: { type: 'string', enum: [...Object.values(DeviceType), MediaRepoProtocolTarget] },
   },
-  required: ['host', 'repository', 'token', 'group', 'tag', 'date', 'path'],
+  required: ['host', 'repository', 'token', 'group', 'tag', 'date', 'path', 'target'],
 };

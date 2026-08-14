@@ -16,10 +16,12 @@ import { Logger } from '../../services/logger.service';
 import { Notifications } from '../../services/notifications.service';
 import { Tasks } from '../../services/tasks.service';
 import { FileService } from '../../services/file.service';
-import { DialogType, ProtocolServer } from '../../utilities/constants';
+import { DialogType, MediaUpdateStatus, ProtocolServer } from '../../utilities/constants';
 import { getProtocolMetaData } from '../../utilities/protocol-helper-functions';
 import { partialMetaDefaults } from '../../utilities/defaults';
 import { GitlabService } from '../../services/gitlab.service';
+import { MediaRepositoryService } from '../../services/media-repository.service';
+import { MediaRepoProtocolTarget, MediaReposInterface } from '../../interfaces/media-repos.interface';
 import { MatDialog } from '@angular/material/dialog';
 import { GitlabReferenceDialog } from '../gitlab-reference-dialog/gitlab-reference-dialog.component';
 
@@ -35,6 +37,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
   private readonly protocolService = inject(ProtocolService);
   private readonly fileService = inject(FileService);
   private readonly gitlabService = inject(GitlabService);
+  private readonly mediaRepositoryService = inject(MediaRepositoryService);
   private readonly logger = inject(Logger);
   private readonly notifications = inject(Notifications);
   private readonly stateModel = inject(StateModel);
@@ -49,6 +52,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
   protocolModel: ProtocolModelInterface;
   state: StateInterface;
   selectedSource = 'device';
+  selectedMedia: string | null | undefined;
 
   constructor() {
     this.disk = this.diskModel.getDisk();
@@ -144,7 +148,10 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
               admin: false,
               ...protocolContent,
             };
-            await this.updateDiskModel(protocol);
+            const updated = await this.updateDiskModel(protocol);
+            if (updated) {
+              await this.loadProtocol();
+            }
           }
         }
       }
@@ -170,7 +177,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
   async fetchGitlabProtocol(config: GitlabConfigInterface, useTagsOnly: boolean) {
     try {
       const localDir = `.tabsint-protocols/${config.repository}`;
-      this.tasks.register('Add Gitlab Protocol', 'Download protocol files');
+      this.tasks.register('Add Gitlab Protocol', 'Downloading Protocol Files');
       const ref = config.tag ? config.tag : await this.gitlabService.getLatestReference(config, useTagsOnly);
       const folderUri = await this.gitlabService.downloadGitlabRepository(config, localDir, true, useTagsOnly);
       let protocolContent = undefined;
@@ -180,6 +187,10 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
       } catch {
         throw new Error('protocol.json not found in repository.');
       }
+
+      // Update common media before loading the protocol
+      const status = await this.mediaRepositoryService.processCommonMedia(config, protocolContent?.commonMediaRepository);
+      await this.mediaRepositoryService.notifyStatus(status);
 
       const protocol = {
         ...partialMetaDefaults,
@@ -191,16 +202,18 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
         gitlabConfig: { ...config, tag: ref },
         ...protocolContent,
       };
-
-      const isProtocolAdded = await this.updateDiskModel(protocol);
-
-      if (isProtocolAdded) {
+      const updated = await this.updateDiskModel(protocol);
+      if (!updated) {
+        throw new Error('Unable to update the current protocol.');
+      }
+      await firstValueFrom(
         this.notifications.alert({
           title: 'Success',
           content: `Protocol '${protocol.name}' imported successfully from GitLab.`,
           type: DialogType.Confirm,
-        });
-      }
+        })
+      );
+      await this.loadProtocol();
     } catch (error: any) {
       this.handleGitlabError(error);
     } finally {
@@ -257,11 +270,11 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
    * Load selected protocol: make it the active protocol.
    * @summary Get the meta data of the selected protocol, then load all protocol files onto the protocolModel.activeProtocol object.
    * @models protocol
-   * @param parameter: description
+   * @returns Whether the protocol was actually (re)loaded, false if there was nothing selected or the user cancelled/an error occurred
    */
-  async loadProtocol() {
+  async loadProtocol(): Promise<boolean> {
     if (!this.selected) {
-      return;
+      return false;
     }
 
     this.tasks.register('Load Protocol', 'Loading Protocol...');
@@ -271,25 +284,28 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
 
       if (!this.protocolModel.activeProtocol) {
         await this.protocolService.load(protocolMetaData, true);
-      } else {
-        const msg: DialogDataInterface = {
-          title: 'Confirm',
-          content: `Switch to protocol ${this.selected.name} and reset the current test? The current test results will be deleted`,
-          type: DialogType.Confirm,
-        };
-        if (this.isActive(this.selected)) {
-          msg.content = `Overwrite protocol ${this.selected.name} and reset the current test? The current test will be reset`;
-        }
-
-        this.notifications.alert(msg).subscribe(async result => {
-          if (result === 'OK') {
-            await this.protocolService.load(protocolMetaData, true);
-            this.examService.reset();
-          }
-        });
+        return true;
       }
+
+      const msg: DialogDataInterface = {
+        title: 'Confirm',
+        content: `Switch to protocol "${this.selected.name}" and reset the current test? The current test results will be deleted.`,
+        type: DialogType.Confirm,
+      };
+      if (this.isActive(this.selected)) {
+        msg.content = `Reload the protocol "${this.selected.name}" and reset the current test? The current test results will be deleted.`;
+      }
+
+      const result = await firstValueFrom(this.notifications.alert(msg));
+      if (result !== 'OK') {
+        return false;
+      }
+      await this.protocolService.load(protocolMetaData, true);
+      this.examService.reset();
+      return true;
     } catch (e) {
       this.logger.debug('loadProtocol failed with error: ' + e);
+      return false;
     } finally {
       this.tasks.deregister('Load Protocol');
     }
@@ -334,8 +350,10 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Determine which Gitlab reference type the user wants
-    const dialogRef = this.dialog.open(GitlabReferenceDialog);
+    // Determine which Gitlab reference type the user wants for the protocol itself
+    const dialogRef = this.dialog.open(GitlabReferenceDialog, {
+      data: { title: 'Select GitLab Reference for Protocol' },
+    });
     const response = await firstValueFrom(dialogRef.afterClosed());
     if (!response) {
       // User cancelled the update do not continue
@@ -357,40 +375,49 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
       }
       const latestReference = await this.gitlabService.getLatestReference(selectedGitlabConfig, useTagsOnly);
       this.logger.debug(`Latest reference: ${latestReference}`);
+      const protocolUpToDate = selectedGitlabConfig.tag === latestReference;
+      let activeProtocol: ProtocolInterface | undefined = this.protocolModel.activeProtocol;
 
-      if (selectedGitlabConfig.tag === latestReference) {
-        this.notifications.alert({
-          title: 'Up-to-date',
-          content: 'Your protocol is already up-to-date.',
-          type: DialogType.Confirm,
-        });
-        return;
+      if (!protocolUpToDate) {
+        const localDir = `.tabsint-protocols/${selectedGitlabConfig.repository}`;
+        const newGitlabConfig = { ...selectedGitlabConfig, tag: latestReference };
+        const contentURI = await this.gitlabService.downloadGitlabRepository(newGitlabConfig, localDir, true, useTagsOnly);
+        const fileResponse = await this.fileService.readFile('protocol.json', contentURI);
+        const protocolContent = fileResponse?.content ? JSON.parse(fileResponse.content) : undefined;
+        activeProtocol = {
+          ...partialMetaDefaults,
+          version: latestReference,
+          name: selectedGitlabConfig.repository,
+          server: ProtocolServer.Gitlab,
+          contentURI: contentURI,
+          admin: false,
+          gitlabConfig: newGitlabConfig,
+          ...protocolContent,
+        };
       }
-      const localDir = `.tabsint-protocols/${selectedGitlabConfig.repository}`;
-      const newGitlabConfig = { ...selectedGitlabConfig, tag: latestReference };
-      const localDirUri = await this.gitlabService.downloadGitlabRepository(newGitlabConfig, localDir, true, useTagsOnly);
-      const fileResponse = await this.fileService.readFile('protocol.json', localDirUri);
-      const protocolContent = fileResponse?.content ? JSON.parse(fileResponse.content) : undefined;
-      const updatedProtocol: ProtocolInterface = {
-        ...partialMetaDefaults,
-        version: latestReference,
-        name: selectedGitlabConfig.repository,
-        server: ProtocolServer.Gitlab,
-        contentURI: localDirUri,
-        admin: false,
-        gitlabConfig: newGitlabConfig,
-        ...protocolContent,
-      };
 
-      const protocolUpdated = await this.updateDiskModel(updatedProtocol);
+      if (!activeProtocol) {
+        throw new Error('Unable to update the current protocol.');
+      }
 
-      if (protocolUpdated) {
+      // Update media repository before protocol is reloaded
+      const mediaStatus = activeProtocol.commonMediaRepository
+        ? await this.mediaRepositoryService.processCommonMedia(selectedGitlabConfig, activeProtocol.commonMediaRepository)
+        : MediaUpdateStatus.Skipped;
+      await this.mediaRepositoryService.notifyStatus(mediaStatus);
+
+      const updated = await this.updateDiskModel(activeProtocol);
+      if (!updated) {
+        throw new Error('Unable to update the current protocol.');
+      }
+      await firstValueFrom(
         this.notifications.alert({
           title: 'Success',
           content: `Protocol '${this.selected?.name}' has been updated successfully.`,
           type: DialogType.Confirm,
-        });
-      }
+        })
+      );
+      await this.loadProtocol();
     } catch (error: any) {
       this.handleGitlabError(error);
     } finally {
@@ -474,12 +501,86 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
     this.diskModel.updateDiskModel({ availableProtocolsMeta: availableMetaProtocols });
     this.protocolModel = this.protocolM.getProtocolModel();
     this.select(protocolMetaData);
-    await this.loadProtocol();
     return true;
   }
 
   toggleValidateProtocols() {
     this.diskModel.updatePreferences({ validateProtocols: !this.disk.preferences.validateProtocols });
+  }
+
+  /**
+   * Media repositories usable as a protocol's common media repository.
+   */
+  get commonMediaRepos(): MediaReposInterface[] {
+    return this.disk.mediaRepos.filter(mediaRepo => mediaRepo.target === MediaRepoProtocolTarget);
+  }
+
+  /**
+   * The media repository the update/delete buttons act on: whichever the user explicitly
+   * selected, defaulting to the one backing the active protocol's commonMediaRepository.
+   * Explicitly null (as opposed to undefined) means the selection was cleared by a delete
+   * and should NOT fall back to the default.
+   */
+  get selectedCommonMedia(): MediaReposInterface | undefined {
+    if (this.selectedMedia === null) return undefined;
+    const repository = this.selectedMedia ?? this.protocolModel.activeProtocol?.commonMediaRepository;
+    return this.commonMediaRepos.find(mediaRepo => mediaRepo.repository === repository);
+  }
+
+  /**
+   * Select a media repo table row, overriding the default active-protocol highlight.
+   * @param mediaRepo The media repository to select.
+   */
+  selectMedia(mediaRepo: MediaReposInterface): void {
+    this.selectedMedia = mediaRepo.repository;
+  }
+
+  /**
+   * Style a media repo table row if it is the selected (or, by default, the active protocol's) media.
+   * @param mediaRepo The media repository to check.
+   * @returns Style class string.
+   */
+  mclass(mediaRepo: MediaReposInterface): string {
+    return this.selectedCommonMedia?.repository === mediaRepo.repository ? 'active-row' : '';
+  }
+
+  /**
+   * Update the selected common media repository by fetching the latest reference from Gitlab.
+   */
+  async updateMedia() {
+    const selectedMedia = this.selectedCommonMedia;
+    if (!selectedMedia) return;
+    try {
+      this.tasks.register('Update Media', `Checking for updates for ${selectedMedia.repository}...`);
+      const mediaRepo = this.disk.mediaRepos.find(media => media.repository === selectedMedia.repository && media.target === MediaRepoProtocolTarget);
+      if (!mediaRepo) {
+        throw new Error('Unable to find repository to update.');
+      }
+      const status = await this.mediaRepositoryService.promptAndUpdate(mediaRepo, MediaRepoProtocolTarget, true);
+      await this.mediaRepositoryService.notifyStatus(status);
+    } catch (error) {
+      this.handleGitlabError(error);
+    } finally {
+      this.tasks.deregister('Update Media');
+    }
+  }
+
+  /**
+   * Delete the selected common media repository, warning first if it backs the active protocol.
+   */
+  deleteMedia() {
+    const media = this.selectedCommonMedia;
+    if (!media) return;
+    const isActiveProtocolMedia = this.protocolModel.activeProtocol?.commonMediaRepository === media.repository;
+    const content = isActiveProtocolMedia
+      ? `"${media.repository}" is used by the active protocol. Delete it anyway?`
+      : `Delete media repository "${media.repository}"?`;
+    this.notifications.alert({ title: 'Confirm', content, type: DialogType.Confirm }).subscribe(result => {
+      if (result === 'OK') {
+        this.mediaRepositoryService.deleteRepository(media.repository, media.target);
+        this.selectedMedia = null;
+      }
+    });
   }
 
   get validateProtocolPopover() {
