@@ -7,7 +7,6 @@ import { createLegend, createOAEResultsChartSvg, createNormativeDataPath, plotOA
 @Component({
   selector: 'app-dp-gram-results',
   templateUrl: './dp-gram-results.component.html',
-  styleUrl: './dp-gram-results.component.css',
 })
 export class DpGramResultsComponent extends DpoaeResultsBaseComponent<DpGramResultsInterface> {
   @Input() xScale!: d3.ScaleLogarithmic<number, number, never>;

@@ -8,7 +8,6 @@ import { dpGramSchema } from '../../../../../../schema/response-areas/dp-gram.sc
 @Component({
   selector: 'app-dp-gram-exam',
   templateUrl: './dp-gram-exam.component.html',
-  styleUrl: './dp-gram-exam.component.css',
 })
 export class DpGramExamComponent extends DpoaeExamBaseComponent<DpGramInterface, DpGramResultsInterface> {
   protected readonly responseAreaType = 'dpGramResponseArea';
@@ -49,7 +48,7 @@ export class DpGramExamComponent extends DpoaeExamBaseComponent<DpGramInterface,
     const sortedF2 = [...this.f2].sort((a, b) => a - b);
     if (sortedF2.length > 0) {
       const f2Min = sortedF2[0];
-      const f2Max = sortedF2[sortedF2.length - 1];
+      const f2Max = sortedF2.at(-1)!;
       this.xTicks = sortedF2;
       this.xScale = d3.scaleLog().domain([f2Min, f2Max]).range([0, this.width]);
     }

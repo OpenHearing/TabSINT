@@ -41,7 +41,7 @@ export class DpGramInProgressComponent extends DpoaeInProgressBaseComponent<DpGr
   @Input() recordFileFolder: string | undefined;
 
   /** Results merged across every f2 frequency completed so far. */
-  private accumulated: DpGramResultsInterface = { State: 'BUSY', PctComplete: 0 };
+  private readonly accumulated: DpGramResultsInterface = { State: 'BUSY', PctComplete: 0 };
 
   protected override startPolling(): void {
     this.runFrequencyLoop();

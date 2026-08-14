@@ -25,4 +25,4 @@ export interface SweptDpoaeResultsInterface extends DpoaeResultsCommonInterface 
   };
 }
 
-export { DPOAEDataInterface };
+export { DPOAEDataInterface } from '../../shared/dpoae/dpoae-common.interface';

@@ -8,7 +8,7 @@ import { FollowOnsDictionary } from '../interfaces/follow-ons-dictionary';
 import { isPageDefinition, isProtocolReferenceInterface, isProtocolSchemaInterface } from '../guards/type.guard';
 import { PageTypes } from '../types/custom-types';
 import { loadMrtExamCsv } from './load-mrt-exam-csv';
-import { loadDpGramNormativeData, loadSweptDPOAENormativeData, loadWAINormativeData } from './load-normative-data-xlsx';
+import { loadDPOAENormativeData, loadWAINormativeData } from './load-normative-data-xlsx';
 import { MrtExamInterface } from '../views/response-area/response-areas/mrt/mrt-exam/mrt-exam.interface';
 import { WAIInterface } from '../views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.interface';
 import { SweptDpoaeInterface } from '../views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/swept-dpoae-exam.interface';
@@ -113,12 +113,12 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
         }
         case 'sweptDPOAEResponseArea': {
           const responseArea = page.responseArea as SweptDpoaeInterface;
-          page.responseArea = await loadSweptDPOAENormativeData(responseArea, loading.meta);
+          page.responseArea = await loadDPOAENormativeData(responseArea, loading.meta);
           break;
         }
         case 'dpGramResponseArea': {
           const responseArea = page.responseArea as DpGramInterface;
-          page.responseArea = await loadDpGramNormativeData(responseArea, loading.meta);
+          page.responseArea = await loadDPOAENormativeData(responseArea, loading.meta);
           break;
         }
         case 'customResponseArea': {
