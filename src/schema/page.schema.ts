@@ -57,7 +57,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
       type: 'object',
       description:
         'A JS file/function to run before this page displays. The function receives no arguments; ' +
-        'it may inspect prior results/flags via window.tabsint.resultsModel and override this page\'s ' +
+        "it may inspect prior results/flags via window.tabsint.resultsModel and override this page's " +
         'variables (instructionText, responseArea config, etc.) by mutating window.tabsint.page directly.',
       properties: {
         filepath: { type: 'string', nullable: false },
@@ -76,7 +76,6 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
     },
     wavfiles: { type: 'array', items: pageWavfileSchema, nullable: true },
     chaWavFiles: { ...chaWavFilesSchema, nullable: true },
-    chaStream: { type: 'boolean', nullable: true, default: false },
     image: {
       type: 'object',
       properties: {

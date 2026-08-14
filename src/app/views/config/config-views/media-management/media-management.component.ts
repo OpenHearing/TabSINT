@@ -11,8 +11,7 @@ import { IDevice } from '../../../../interfaces/devices/device.interface';
 import { DevicesService } from '../../../../services/devices/devices.service';
 import { Notifications } from '../../../../services/notifications.service';
 import { MediaReposInterface } from '../../../../interfaces/media-repos.interface';
-import { GitlabService } from '../../../../services/gitlab.service';
-import { getDateString } from '../../../../utilities/results-helper-functions';
+import { MediaRepositoryService } from '../../../../services/media-repository.service';
 import { Tasks } from '../../../../services/tasks.service';
 import { Logger } from '../../../../services/logger.service';
 import { isValidDeviceResponse } from '../../../../guards/type.guard';
@@ -30,7 +29,7 @@ export class MediaManagementComponent implements OnInit, OnDestroy {
   private readonly transloco = inject(TranslocoService);
   private readonly devicesService = inject(DevicesService);
   private readonly notifications = inject(Notifications);
-  private readonly gitlabService = inject(GitlabService);
+  private readonly mediaRepositoryService = inject(MediaRepositoryService);
   private readonly tasks = inject(Tasks);
   private readonly logger = inject(Logger);
   private readonly dialog = inject(MatDialog);
@@ -88,7 +87,7 @@ export class MediaManagementComponent implements OnInit, OnDestroy {
    */
   async syncRepositoryToDevice(name: string | undefined) {
     if (!name || this.syncingMedia) return;
-    const mediaRepo = this.mediaRepos.find(repo => repo.repository === name);
+    const mediaRepo = this.mediaRepos.find(repo => repo.repository === name && repo.target === this.device.type);
     this.logger.debug('Starting Media Repo Sync');
 
     if (mediaRepo === undefined) {
@@ -135,32 +134,15 @@ export class MediaManagementComponent implements OnInit, OnDestroy {
    */
   async updateLocalRepository(name: string | undefined) {
     if (!name) return;
-    const mediaRepo = this.mediaRepos.find(media => media.repository === name);
-    if (mediaRepo !== undefined) {
-      // Determine which Gitlab reference type the user wants
-      const dialogRef = this.dialog.open(GitlabReferenceDialog);
-      const response = await firstValueFrom(dialogRef.afterClosed());
-      if (!response) {
-        // User cancelled the update do not continue
-        return;
+    try {
+      const mediaRepo = this.mediaRepos.find(media => media.repository === name && media.target === this.device.type);
+      if (!mediaRepo) {
+        throw new Error('Unable to find repository to update.');
       }
-      try {
-        const useTagsOnly = response === GitlabReferenceDialog.OPTION_TAG;
-        const latestReference = await this.gitlabService.getLatestReference(mediaRepo, useTagsOnly);
-        this.logger.debug(`Latest reference: ${latestReference}`);
-        if (mediaRepo.tag === latestReference) {
-          this.notifications.alert({
-            title: 'Up-to-date',
-            content: 'Your media repository is already up-to-date.',
-            type: DialogType.Confirm,
-          });
-          return;
-        }
-        const newGitlabConfig = { ...mediaRepo, tag: latestReference };
-        await this.fetchRepository(newGitlabConfig, useTagsOnly);
-      } catch (error) {
-        this.handleGitlabError(error);
-      }
+      const status = await this.mediaRepositoryService.promptAndUpdate(mediaRepo, this.device.type, true);
+      await this.mediaRepositoryService.notifyStatus(status);
+    } catch (error) {
+      this.handleGitlabError(error);
     }
   }
 
@@ -173,8 +155,14 @@ export class MediaManagementComponent implements OnInit, OnDestroy {
     if (this.selectedMediaRepo === name) {
       this.selectedMediaRepo = undefined;
     }
-    const mediaRepos = this.mediaRepos.filter(media => media.repository !== name);
-    this.diskModel.updateDiskModel({ mediaRepos: mediaRepos });
+    this.mediaRepositoryService.deleteRepository(name, this.device.type);
+  }
+
+  /**
+   * Media repositories usable by this device.
+   */
+  get deviceMediaRepos(): MediaReposInterface[] {
+    return this.mediaRepos.filter(media => media.target === this.device.type);
   }
 
   /**
@@ -182,7 +170,7 @@ export class MediaManagementComponent implements OnInit, OnDestroy {
    * @param config The configuration used to download the repository.
    */
   async addRemoteRepository(config: GitlabConfigInterface) {
-    if (this.mediaRepos.filter(media => media.repository == config.repository).length > 0) {
+    if (this.mediaRepos.some(media => media.repository === config.repository && media.target === this.device.type)) {
       this.notifications.alert({
         title: 'Failure',
         content: 'Media repository already exists, update the existing reference.',
@@ -261,24 +249,15 @@ export class MediaManagementComponent implements OnInit, OnDestroy {
    * @param tagsOnly Whether only tags should be used or only commits.
    */
   private async fetchRepository(config: GitlabConfigInterface, tagsOnly: boolean) {
-    const safeFolder = `${config.group}${config.repository}`.replace(/[^a-z0-9]/gi, '-').toLowerCase();
-    const relativePath = `gitlab/${safeFolder}`;
-    const taggedConfig = structuredClone(config);
     try {
-      this.tasks.register('Add Gitlab Media', 'Downloading Media Files...');
-      taggedConfig.tag = config.tag ? config.tag : await this.gitlabService.getLatestReference(config, tagsOnly);
-      const directoryUri = await this.gitlabService.downloadGitlabRepository(taggedConfig, relativePath, false, tagsOnly);
-      if (directoryUri !== undefined) {
-        const mediaRepo: MediaReposInterface = { ...taggedConfig, date: getDateString(), path: directoryUri };
-        const filteredRepos = this.mediaRepos.filter(media => media.repository !== mediaRepo.repository);
-        this.diskModel.updateDiskModel({ mediaRepos: [...filteredRepos, mediaRepo] });
-        this.selectedMediaRepo = config.repository;
-        this.notifications.alert({
-          title: 'Success',
-          content: 'Media imported successfully from GitLab.',
-          type: DialogType.Alert,
-        });
-      }
+      this.tasks.register('Add Gitlab Media', 'Downloading Media Files');
+      const mediaRepo = await this.mediaRepositoryService.resolveAndDownload(config, tagsOnly, this.device.type);
+      this.selectedMediaRepo = mediaRepo.repository;
+      this.notifications.alert({
+        title: 'Success',
+        content: 'Media imported successfully from GitLab.',
+        type: DialogType.Alert,
+      });
     } catch (error) {
       this.handleGitlabError(error);
     } finally {
