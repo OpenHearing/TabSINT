@@ -6,7 +6,6 @@ import { Buffer } from 'buffer';
 import * as XLSX from 'xlsx';
 import { WAIInterface } from '../views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.interface';
 import { SweptDpoaeInterface } from '../views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/swept-dpoae-exam.interface';
-import { DpGramInterface } from '../views/response-area/response-areas/dp-gram/dp-gram-exam/dp-gram-exam.interface';
 
 /**
  * Validate that the file headers align with the expected headers/properties for the data
