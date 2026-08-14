@@ -395,16 +395,19 @@ export class ExamService {
     this.protocol.activeProtocolStack.updateCurrentProtocol({ pageQueue: pageQueue });
 
     pageIndex = pageIndex + 1;
-    const page: PageTypes = pageQueue[pageIndex];
     this.protocol.activeProtocolStack.updateCurrentProtocol({ pageIndex: pageIndex });
 
-    // A protocol should be removed from the stack if all of the pages have been completed
-    if (pageIndex >= pageQueue.length) {
+    // A protocol should be removed from the stack if all of its pages have been completed or it has timed out
+    if (pageIndex >= pageQueue.length || this.hasProtocolTimedOut(currentProtocol, pageIndex)) {
+      if (pageIndex < pageQueue.length) {
+        this.handleProtocolTimeout(currentProtocol, pageIndex);
+      }
       this.protocol.activeProtocolStack.pop();
       this.advancePage();
       return;
     }
 
+    const page: PageTypes = pageQueue[pageIndex];
     if (isProtocolReferenceInterface(page)) {
       this.protocol.activeProtocolStack.updateCurrentProtocol({ pageIndex: pageIndex + 1 });
       this.handleProtocolReference(page);
@@ -563,6 +566,35 @@ export class ExamService {
       progress = Math.min(Math.max(maxProgress, 0), 1) * 100;
     }
     this.stateModel.updateState({ examProgress: progress });
+  }
+
+  /**
+   * Checks whether a protocol has exceeded its timeout, based on pages completed or elapsed time.
+   * @param protocol The protocol stack item to check.
+   * @param pagesDone The number of pages completed so far in this protocol.
+   * @returns True if the protocol's nMaxPages or nMaxSeconds timeout has been reached.
+   */
+  private hasProtocolTimedOut(protocol: ProtocolStackItem, pagesDone: number): boolean {
+    const elapsedSeconds = (Date.now() - protocol.startTime.getTime()) / 1000;
+    return pagesDone >= protocol.maxPages || elapsedSeconds >= protocol.maxSeconds;
+  }
+
+  /**
+   * Logs and, if configured, alerts the user that a protocol has timed out.
+   * @param protocol The protocol stack item that timed out.
+   * @param pagesDone The number of pages completed so far in this protocol.
+   */
+  private handleProtocolTimeout(protocol: ProtocolStackItem, pagesDone: number) {
+    this.logger.debug(`Protocol ${protocol.protocolId} timed out after ${pagesDone} pages.`);
+    if (protocol.showAlert) {
+      this.notifications
+        .alert({
+          title: 'Alert',
+          content: `This (sub)exam has timed out after ${pagesDone} pages.`,
+          type: DialogType.Alert,
+        })
+        .subscribe();
+    }
   }
 
   /**

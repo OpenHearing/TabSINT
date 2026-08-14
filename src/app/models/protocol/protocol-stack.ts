@@ -17,6 +17,7 @@ export interface ProtocolStackItem {
   pageIndex: number;
   title?: string;
   showProgressBar?: boolean;
+  showAlert?: boolean;
 }
 
 /**
@@ -45,6 +46,7 @@ export class ProtocolStack {
       pageIndex: -1,
       title: protocolCopy.title,
       showProgressBar: protocolCopy.showProgressBar,
+      showAlert: protocolCopy.timeout?.showAlert,
     };
     this.items.push(item);
     this.latestProtocol.next(this.peek());
