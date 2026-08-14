@@ -187,6 +187,8 @@ export class DevicesService {
             const rebootResponse = await this.reboot(device);
             if (isValidDeviceResponse(rebootResponse)) {
               completionResponse = 'The device will now reboot. Reconnect the device to verify firmware was updated.';
+            } else {
+              completionResponse = 'The device failed to reboot automatically, please power cycle the device for the firmware update.';
             }
           }
         }
