@@ -39,7 +39,7 @@ export class MediaRepositoryService {
     const disk = this.diskModel.getDisk();
     const saveExternal = target === MediaRepoProtocolTarget;
 
-    const safeFolder = `${config.group}${config.repository}${target}`.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+    const safeFolder = `${config.group}${config.repository}${target}`.replaceAll(/[^a-z0-9]/gi, '-').toLowerCase();
     const relativePath = `gitlab/${safeFolder}`;
     const taggedConfig = structuredClone(config);
     taggedConfig.tag = config.tag ? config.tag : await this.gitlabService.getLatestReference(config, tagsOnly);
