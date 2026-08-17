@@ -24,6 +24,7 @@ import { ThreeDigitResponseAreaInterface } from '../views/response-area/response
 import { HintResponseAreaInterface } from '../views/response-area/response-areas/hint/hint.interface';
 import { GapResponseAreaInterface } from '../views/response-area/response-areas/gap/gap.interface';
 import { HughsonWestlakeResponseAreaInterface } from '../views/response-area/response-areas/hughson-westlake/hughson-westlake.interface';
+import { BhaftResponseAreaInterface } from '../views/response-area/response-areas/bhaft/bhaft.interface';
 import { CalibrationFileWavProperties } from './calibration-file.interface';
 
 export interface PageDefinition {
@@ -166,4 +167,5 @@ export type ResponseArea =
   | ThreeDigitResponseAreaInterface
   | HintResponseAreaInterface
   | GapResponseAreaInterface
-  | HughsonWestlakeResponseAreaInterface;
+  | HughsonWestlakeResponseAreaInterface
+  | BhaftResponseAreaInterface;

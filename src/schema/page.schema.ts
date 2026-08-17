@@ -27,6 +27,7 @@ import { threeDigitSchema } from './response-areas/three-digit.schema';
 import { hintSchema } from './response-areas/hint.schema';
 import { gapSchema } from './response-areas/gap.schema';
 import { hughsonWestlakeSchema } from './response-areas/hughson-westlake.schema';
+import { bhaftSchema } from './response-areas/bhaft.schema';
 
 export const pageSchema: JSONSchemaType<PageDefinition> = {
   $id: 'page_base',
@@ -124,6 +125,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
         hintSchema,
         gapSchema,
         hughsonWestlakeSchema,
+        bhaftSchema,
       ],
       required: ['type'],
       nullable: true,

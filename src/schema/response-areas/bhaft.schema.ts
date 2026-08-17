@@ -1,5 +1,5 @@
 import { JSONSchemaType } from 'ajv';
-import { HughsonWestlakeResponseAreaInterface } from '../../app/views/response-area/response-areas/hughson-westlake/hughson-westlake.interface';
+import { BhaftResponseAreaInterface } from '../../app/views/response-area/response-areas/bhaft/bhaft.interface';
 import {
   AudiometryDevForm,
   AudiometryHideExamProps,
@@ -8,11 +8,11 @@ import {
   AudiometryOutputChannel,
 } from '../../app/views/response-area/response-areas/shared/audiometry/audiometry.interface';
 
-export const hughsonWestlakeSchema: JSONSchemaType<HughsonWestlakeResponseAreaInterface> = {
+export const bhaftSchema: JSONSchemaType<BhaftResponseAreaInterface> = {
   type: 'object',
-  description: 'CHA - Hughson-Westlake Level Audiometry',
+  description: 'CHA - Bekesy Highest Audible Frequency Threshold Audiometry',
   properties: {
-    type: { type: 'string', enum: ['hughsonWestlakeResponseArea'] },
+    type: { type: 'string', enum: ['bhaftResponseArea'] },
     enableSkip: { type: 'boolean', nullable: true, default: false },
     responseRequired: { type: 'boolean', nullable: true, default: false },
     tabsintId: { type: 'string', nullable: true },
@@ -55,75 +55,88 @@ export const hughsonWestlakeSchema: JSONSchemaType<HughsonWestlakeResponseAreaIn
       type: 'object',
       nullable: true,
       properties: {
-        Screener: {
-          type: 'boolean',
-          nullable: true,
-          default: false,
-          description: 'If true, runs the screener version of the exam (pass/fail at Lstart) instead of a full threshold search.',
-        },
-        StepSize: {
-          type: 'integer',
-          nullable: true,
-          default: 5,
-          minimum: 2,
-          maximum: 10,
-          description: 'Smallest level increment. Ignored when Screener = true.',
-        },
-        TonePulseNumber: {
-          type: 'integer',
-          nullable: true,
-          default: 3,
-          minimum: 1,
-          maximum: 5,
-          description: 'Total number of tones played for each pulse train.',
-        },
-        PollingOffset: {
-          type: 'integer',
-          nullable: true,
-          default: 600,
-          minimum: 0,
-          maximum: 1000,
-          description: 'Period beyond the last pulse where a subject response is still accepted, in msec.',
-        },
-        MinISI: {
-          type: 'integer',
-          nullable: true,
-          default: 600,
-          minimum: 0,
-          maximum: 2000,
-          description: 'Minimum inter-stimulus interval, in msec. Enforced on the CHA: PollingOffset <= MinISI <= MaxISI',
-        },
-        MaxISI: {
-          type: 'integer',
+        // BHAFT-specific frequency/level tracking
+        Fstart: {
+          type: 'number',
           nullable: true,
           default: 1000,
-          minimum: 1000,
-          maximum: 5000,
-          description: 'Maximum inter-stimulus interval, in msec. Enforced on the CHA: PollingOffset <= MinISI <= MaxISI',
+          description: 'Start frequency, in Hz. Constrain to nearest octave.',
         },
-        NumCorrectReq: {
+        MaximumOutputFrequency: {
+          type: 'number',
+          nullable: true,
+          description: 'Maximum frequency that could be presented during exam, in Hz (set by calibration).',
+        },
+        MinimumOutputFrequency: {
+          type: 'number',
+          nullable: true,
+          description: 'Minimum frequency that could be presented during exam, in Hz (set by calibration).',
+        },
+        Level: {
+          type: 'number',
+          nullable: true,
+          default: 65,
+          description: 'Level of tone, in dB SPL.',
+        },
+        ReversalDiscard: {
           type: 'integer',
           nullable: true,
           default: 2,
           minimum: 0,
-          description: 'Number of correct responses required to pass and end the exam early. Only used when Screener = true.',
+          maximum: 10,
+          description: 'Reversals to discard.',
+        },
+        ReversalKeep: {
+          type: 'integer',
+          nullable: true,
+          default: 6,
+          minimum: 2,
+          maximum: 10,
+          multipleOf: 2,
+          description: 'Reversals to keep. Must be even.',
+        },
+        IncrementStartMultiplierFrequency: {
+          type: 'integer',
+          nullable: true,
+          default: 2,
+          minimum: 1,
+          maximum: 10,
+          description: 'Increment until ReversalDiscard: multiply this by IncrementNominalFrequency.',
+        },
+        IncrementNominalFrequency: {
+          type: 'number',
+          nullable: true,
+          default: 0.08333,
+          minimum: 0.04166,
+          maximum: 1,
+          description: 'Frequency increment after first reversal, in octaves.',
+        },
+        IncrementStartMultiplierLevel: {
+          type: 'integer',
+          nullable: true,
+          default: 2,
+          minimum: 1,
+          maximum: 10,
+          description: 'Increment until ReversalDiscard: multiply this by IncrementNominalLevel.',
+        },
+        IncrementNominalLevel: {
+          type: 'number',
+          nullable: true,
+          default: 4,
+          minimum: 0.5,
+          maximum: 10,
+          description: 'Level increment after first reversal, in dB.',
         },
         SemiAutomaticMode: {
           type: 'boolean',
           nullable: true,
           default: false,
-          description: 'If true, pause after each pulse train to wait for a response instead of proceeding automatically.',
-        },
-        UseReducedInitialIncrement: {
-          type: 'boolean',
-          nullable: true,
-          default: false,
-          description: 'f True, the initial factor if no response is 2 instead of 4.',
+          description: 'If true, pause after each presentation to wait for a response instead of proceeding automatically.',
         },
 
         // Audiometry Level
-        F: { type: 'number', nullable: true, default: 1000, minimum: 1, maximum: 32000, description: 'Tone frequency, in Hz.' },
-        Lstart: { type: 'number', nullable: true, default: 40, description: 'Starting presentation level, in LevelUnits.' },
+        F: { type: 'number', nullable: true, minimum: 1, maximum: 32000, description: 'Unused by BHAFT (frequency is tracked via Fstart).' },
+        Lstart: { type: 'number', nullable: true, description: 'Unused by BHAFT (level is tracked via Level).' },
         MaximumOutputLevel: {
           type: 'number',
           nullable: true,
@@ -132,24 +145,24 @@ export const hughsonWestlakeSchema: JSONSchemaType<HughsonWestlakeResponseAreaIn
         MinimumOutputLevel: {
           type: 'number',
           nullable: true,
-          description: 'Minimum reportable threshold that can be measured during exam (set by calibration).',
+          description: 'Minimum level that could be presented during exam (set by calibration).',
         },
 
         // Audiometry
         LevelUnits: {
           type: 'string',
-          enum: Object.values(AudiometryLevelUnits),
+          enum: [AudiometryLevelUnits.dbSpl],
           nullable: true,
-          default: AudiometryLevelUnits.dbHl,
-          description: 'Units the presentation level is expressed in.',
+          default: AudiometryLevelUnits.dbSpl,
+          description: 'Units the presentation level is expressed in. BHAFT only supports dB SPL.',
         },
         ToneRepetitionInterval: {
           type: 'number',
           nullable: true,
-          default: 450,
+          default: 700,
           minimum: 450,
           maximum: 2000,
-          description: 'Maximum number of tone presentations before the exam aborts.',
+          description: 'Rate tones are presented, in ms. Overrides the default inherited from TestAudiometry.',
         },
         PresentationMax: {
           type: 'number',
@@ -300,15 +313,13 @@ export const hughsonWestlakeSchema: JSONSchemaType<HughsonWestlakeResponseAreaIn
           type: 'boolean',
           nullable: true,
           default: false,
-          description: 'If true, turn on plotting of the level progression for an individual exam, ignored for screener exam.',
+          description: 'If true, turn on plotting of the level progression for an individual exam.',
         },
         displayFrequencyProgression: {
           type: 'boolean',
-          enum: [false],
           nullable: true,
           default: false,
-          description:
-            'Unused by Hughson-Westlake (a single fixed frequency is tested, so always false); present for type compatibility with the shared PlotProperties interface.',
+          description: 'If true, turn on plotting of the frequency progression for an individual exam.',
         },
       },
       required: [],

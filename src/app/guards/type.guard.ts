@@ -63,6 +63,10 @@ export function isHughsonWestlakeResponseArea(page: PageInterface): boolean {
   return page?.responseArea?.type === 'hughsonWestlakeResponseArea';
 }
 
+export function isBhaftResponseArea(page: PageInterface): boolean {
+  return page?.responseArea?.type === 'bhaftResponseArea';
+}
+
 export function isValidDeviceResponse(response?: IDeviceResponse): response is IDeviceResponse {
   return response?.msg !== undefined && Array.isArray(response?.msg) && !response.msg.includes('ERROR') && !response.msg.includes('error');
 }

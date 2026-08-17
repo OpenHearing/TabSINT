@@ -18,9 +18,10 @@ export class TrialProgressionPlotComponent implements AfterViewInit {
 
   private readonly plotWidth = 400;
   private readonly plotHeight = 400;
-  private readonly margin = { top: 55, right: 10, bottom: 40, left: 65 };
+  private readonly margin = { top: 75, right: 10, bottom: 40, left: 65 };
   private readonly filledColor = '#1f77b4';
   private readonly highlightColor = '#FF6347';
+  private readonly openStrokeColor = '#000000';
 
   ngAfterViewInit(): void {
     this.createPlot();
@@ -42,6 +43,50 @@ export class TrialProgressionPlotComponent implements AfterViewInit {
       default:
         return this.filledColor;
     }
+  }
+
+  /**
+   * Render a centered, bold title above the plot, wrapped onto multiple lines (via tspans) so it
+   * fits within maxWidth instead of overflowing the SVG's fixed width and getting clipped.
+   * @param svg The plot's root <g> selection to append the title into.
+   * @param x The horizontal center to align the title to.
+   * @param title The title text to render.
+   * @param maxWidth The maximum width, in px, a single line may occupy before wrapping.
+   */
+  private renderTitle(svg: d3.Selection<SVGGElement, unknown, null, undefined>, x: number, title: string, maxWidth: number): void {
+    const lineHeightPx = 21.6; // 18px bold font at a ~1.2 line-height
+    const bottomLineY = -22; // gap above the plot's top edge (y = 0)
+
+    const text = svg.append('text').attr('x', x).style('text-anchor', 'middle').style('font-weight', 'bold').style('font-size', '18px');
+
+    const measure = text.append('tspan');
+    const measureNode = measure.node();
+    const words = title.split(/\s+/);
+    const lines: string[] = [];
+    let currentLine = '';
+    for (const word of words) {
+      const candidate = currentLine ? `${currentLine} ${word}` : word;
+      measure.text(candidate);
+      if (currentLine && measureNode && measureNode.getComputedTextLength() > maxWidth) {
+        lines.push(currentLine);
+        currentLine = word;
+      } else {
+        currentLine = candidate;
+      }
+    }
+    if (currentLine) {
+      lines.push(currentLine);
+    }
+    measure.remove();
+
+    const firstLineY = bottomLineY - (lines.length - 1) * lineHeightPx;
+    lines.forEach((line, i) => {
+      text
+        .append('tspan')
+        .attr('x', x)
+        .attr('y', firstLineY + i * lineHeightPx)
+        .text(line);
+    });
   }
 
   /**
@@ -75,11 +120,13 @@ export class TrialProgressionPlotComponent implements AfterViewInit {
       .append('g')
       .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
 
-    // x-axis: explicit integer tick values (one per presentation) so a fractional "nice" tick
-    // step never rounds two adjacent ticks to the same integer label.
-    const xTickValues = d3.range(0, minX + 1);
+    const minTickSpacingPx = 35;
+    const maxTickCount = Math.max(1, Math.floor(width / minTickSpacingPx));
+    const tickStep = Math.max(1, Math.ceil(minX / maxTickCount));
+    const xTickValues = d3.range(0, minX + 1, tickStep);
     svg
       .append('g')
+      .attr('class', 'x-axis')
       .attr('transform', `translate(0,${height})`)
       .attr('font-size', 16)
       .call(d3.axisBottom(xScale).tickValues(xTickValues).tickFormat(d3.format('d')));
@@ -104,14 +151,7 @@ export class TrialProgressionPlotComponent implements AfterViewInit {
 
     // title: placed above the plot area (in the top margin band) so it never overlaps the
     // topmost y-axis tick label, which sits right at the plot's top edge (y=0).
-    svg
-      .append('text')
-      .attr('x', plotCenterX)
-      .attr('y', -30)
-      .style('text-anchor', 'middle')
-      .style('font-weight', 'bold')
-      .style('font-size', '18px')
-      .text(this.data.title);
+    this.renderTitle(svg, plotCenterX, this.data.title, this.plotWidth - 20);
 
     // dashed reference line (e.g. a threshold)
     if (this.data.referenceLine !== undefined) {
@@ -125,7 +165,7 @@ export class TrialProgressionPlotComponent implements AfterViewInit {
           { x: 0, y: this.data.referenceLine },
           { x: minX, y: this.data.referenceLine },
         ])
-        .attr('stroke', 'black')
+        .attr('stroke', this.data.referenceLineColor ?? 'black')
         .attr('fill', 'none')
         .style('stroke-dasharray', '4,4')
         .attr('d', referenceLineGenerator);
@@ -143,7 +183,7 @@ export class TrialProgressionPlotComponent implements AfterViewInit {
     // data points: filled (response received), open (no response), or highlighted (e.g. the
     // responses that confirmed a threshold)
     const fillFor = (i: number) => this.getPointFill(pointStyles[i]);
-    const strokeFor = (i: number) => (pointStyles[i] === 'open' ? this.filledColor : 'none');
+    const strokeFor = (i: number) => (pointStyles[i] === 'open' ? this.openStrokeColor : 'none');
     const strokeWidthFor = (i: number) => (pointStyles[i] === 'open' ? 2 : 0);
 
     if ((this.data.pointShape ?? 'circle') === 'diamond') {
