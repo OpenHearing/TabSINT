@@ -8,6 +8,7 @@ import { StateInterface } from '../../../../../models/state/state.interface';
 import { Logger } from '../../../../../services/logger.service';
 import { IDevice } from '../../../../../interfaces/devices/device.interface';
 import { IDeviceResponse } from '../../../../../interfaces/devices/device-response.interface';
+import { NormativeDataInterface } from '../../../../../interfaces/normative-data-interface';
 import { DpoaeResultsCommonInterface } from './dpoae-common.interface';
 
 /**
@@ -29,6 +30,7 @@ export abstract class DpoaeInProgressBaseComponent<TResults extends DpoaeResults
   @Input() height!: number;
   @Input() xTicks!: number[];
   @Input() margin!: { top: number; right: number; bottom: number; left: number };
+  @Input() normativeData!: NormativeDataInterface[];
   @Output() resultsEvent = new EventEmitter<TResults>();
 
   state: StateInterface;

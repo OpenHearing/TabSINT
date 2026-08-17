@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import * as d3 from 'd3';
 
 import { DpoaeExamBaseComponent } from '../../shared/dpoae/dpoae-exam-base.component';
+import { DPOAE_Y_AXIS_DOMAIN } from '../../shared/dpoae/dpoae-common.interface';
 import { SweptDpoaeInterface, SweptDpoaeResultsInterface } from './swept-dpoae-exam.interface';
 import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-dpoae.schema';
 import { handleOutputCalibration, getCurrentDatetime } from '../../../../../utilities/exam-helper-functions';
@@ -60,7 +61,7 @@ export class SweptDpoaeExamComponent extends DpoaeExamBaseComponent<SweptDpoaeIn
     this.xTicks = [125, 250, 500, 1000, 2000, 4000, 8000, 16000].filter(tick => tick >= this.f2Start && tick <= this.f2End);
     this.xScale = d3.scaleLog().domain([this.f2Start, this.f2End]).range([0, this.width]);
 
-    this.yScale = d3.scaleLinear().domain([-20, 70]).range([this.height, 0]);
+    this.yScale = d3.scaleLinear().domain(DPOAE_Y_AXIS_DOMAIN).range([this.height, 0]);
   }
 
   protected async beginExam(): Promise<void> {

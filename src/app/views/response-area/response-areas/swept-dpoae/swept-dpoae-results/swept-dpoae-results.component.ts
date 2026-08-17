@@ -2,7 +2,8 @@ import { Component, Input } from '@angular/core';
 import * as d3 from 'd3';
 import { DpoaeResultsBaseComponent } from '../../shared/dpoae/dpoae-results-base.component';
 import { SweptDpoaeResultsInterface } from '../swept-dpoae-exam/swept-dpoae-exam.interface';
-import { createLegend, createOAEResultsChartSvg, createNormativeDataPath } from '../../../../../utilities/d3-plot-functions';
+import { DPOAE_Y_AXIS_DOMAIN } from '../../shared/dpoae/dpoae-common.interface';
+import { appendNormativeDataBand, createLegend, createOAEResultsChartSvg, plotDpoaeSeries } from '../../../../../utilities/d3-plot-functions';
 
 @Component({
   selector: 'app-swept-dpoae-results',
@@ -19,23 +20,8 @@ export class SweptDpoaeResultsComponent extends DpoaeResultsBaseComponent<SweptD
     // TODO: Do I need to filter data? Probably not after I get real firmware.
     const filteredData = this.filterSweptDpoaeResults(this.results);
 
-    const yScale = d3
-      .scaleLinear()
-      .domain([
-        d3.min([
-          ...filteredData.DpLow.Amplitude,
-          ...filteredData.DpLow.NoiseFloor,
-          ...filteredData.F1.Amplitude,
-          ...filteredData.F2.Amplitude,
-        ]) as number,
-        d3.max([
-          ...filteredData.DpLow.Amplitude,
-          ...filteredData.DpLow.NoiseFloor,
-          ...filteredData.F1.Amplitude,
-          ...filteredData.F2.Amplitude,
-        ]) as number,
-      ])
-      .range([this.height, 0]);
+    const [yClampMin, yClampMax] = DPOAE_Y_AXIS_DOMAIN;
+    const yScale = d3.scaleLinear().domain(DPOAE_Y_AXIS_DOMAIN).range([this.height, 0]);
 
     let svg = d3
       .select('#dpoae-results-plot')
@@ -47,92 +33,17 @@ export class SweptDpoaeResultsComponent extends DpoaeResultsBaseComponent<SweptD
 
     svg = createOAEResultsChartSvg(svg, this.width, this.height, this.xTicks, this.xScale, yScale);
 
-    // Define definitions for the svg and add clip path
-    const defs = svg.append('defs');
-    defs.append('clipPath').attr('id', 'clipRect').append('rect').attr('x', 0).attr('y', 0).attr('height', this.height).attr('width', this.width);
+    appendNormativeDataBand(svg, this.width, this.height, this.normativeData, this.xScale, yScale, yClampMin, yClampMax);
 
-    // Apply clipping to the group for additional plotting steps
-    const clippedGroup = svg.append('g').attr('clip-path', `url(#clipRect)`);
+    // Plot each series as open circle markers, all indexed by the nominal F2 test frequency
+    // (rather than each series' own measured frequency) so the four lines share a common x-axis
+    // position per test point. Only DPOAE gets a connecting line.
+    const f2Freq = filteredData.DpLow.F2Frequency;
+    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.DpLow.Amplitude, 'blue', false, yClampMin, yClampMax);
+    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.DpLow.NoiseFloor, 'red', true, yClampMin, yClampMax);
+    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.F2.Amplitude, '#9400d3', false, yClampMin, yClampMax);
+    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.F1.Amplitude, '#ffc107', false, yClampMin, yClampMax);
 
-    // Plot normative data (grey area)
-    const normativePath = createNormativeDataPath(this.normativeData, this.xScale, yScale);
-    clippedGroup.append('path').attr('d', normativePath).attr('fill', 'gray').attr('stroke', 'gray').attr('stroke-width', 2);
-
-    // Plot DpLow Amplitude (blue line)
-    svg
-      .selectAll('.dot')
-      .data(filteredData.DpLow.F2Frequency)
-      .enter()
-      .append('circle')
-      .attr('cx', (d, i) => this.xScale(filteredData.DpLow.F2Frequency[i]))
-      .attr('cy', (d, i) => yScale(filteredData.DpLow.Amplitude[i]))
-      .attr('r', 4)
-      .style('fill', 'none')
-      .style('stroke', 'blue')
-      .style('stroke-width', 2);
-
-    // Plot Noise Floor (dashed red line)
-    svg
-      .selectAll('.dot')
-      .data(filteredData.DpLow.F2Frequency)
-      .enter()
-      .append('circle')
-      .attr('cx', (d, i) => this.xScale(filteredData.DpLow.F2Frequency[i]))
-      .attr('cy', (d, i) => yScale(filteredData.DpLow.NoiseFloor[i]))
-      .attr('r', 4)
-      .style('fill', 'none')
-      .style('stroke', 'red')
-      .style('stroke-dasharray', '1,3')
-      .style('stroke-width', 2);
-
-    // Plot F2 (violet line)
-    svg
-      .selectAll('.dot')
-      .data(filteredData.F2.Frequency)
-      .enter()
-      .append('circle')
-      .attr('cx', (d, i) => this.xScale(filteredData.F2.Frequency[i]))
-      .attr('cy', (d, i) => yScale(filteredData.F2.Amplitude[i]))
-      .attr('r', 4)
-      .style('fill', 'none')
-      .style('stroke', '#9400d3')
-      .style('stroke-width', 2);
-
-    // PlotF1 (yellow line)
-    svg
-      .selectAll('.dot')
-      .data(filteredData.F1.Frequency)
-      .enter()
-      .append('circle')
-      .attr('cx', (d, i) => this.xScale(filteredData.F1.Frequency[i]))
-      .attr('cy', (d, i) => yScale(filteredData.F1.Amplitude[i]))
-      .attr('r', 4)
-      .style('fill', 'none')
-      .style('stroke', '#ffc107')
-      .style('stroke-width', 2);
-
-    // Define the line generator
-    const line = d3
-      .line<{ frequency: number; amplitude: number }>()
-      .x(d => this.xScale(d.frequency)) // Map x values
-      .y(d => yScale(d.amplitude)) // Map y values
-      .curve(d3.curveLinear); // smoothing
-
-    const lineData = filteredData.DpLow.F2Frequency.map((frequency, i) => ({
-      frequency,
-      amplitude: filteredData.DpLow.Amplitude[i],
-    }));
-
-    // Append the line path
-    svg
-      .append('path')
-      .datum(lineData) // Bind data
-      .attr('fill', 'none') // Ensure no area is filled
-      .attr('stroke', 'blue') // Set line color
-      .attr('stroke-width', 2) // Set line thickness
-      .attr('d', line); // Call the line generator
-
-    // Define the legend data
     const legendData = [
       { label: 'DPOAE', color: 'blue', line: 'solid' },
       { label: 'NF', color: 'red', line: 'dashed' },

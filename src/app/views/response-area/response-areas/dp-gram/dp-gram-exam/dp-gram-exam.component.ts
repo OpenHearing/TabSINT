@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import * as d3 from 'd3';
 
 import { DpoaeExamBaseComponent } from '../../shared/dpoae/dpoae-exam-base.component';
+import { DPOAE_Y_AXIS_DOMAIN } from '../../shared/dpoae/dpoae-common.interface';
 import { DpGramInterface, DpGramResultsInterface } from './dp-gram-exam.interface';
 import { dpGramSchema } from '../../../../../../schema/response-areas/dp-gram.schema';
 
@@ -53,7 +54,7 @@ export class DpGramExamComponent extends DpoaeExamBaseComponent<DpGramInterface,
       this.xScale = d3.scaleLog().domain([f2Min, f2Max]).range([0, this.width]);
     }
 
-    this.yScale = d3.scaleLinear().domain([-20, 70]).range([this.height, 0]);
+    this.yScale = d3.scaleLinear().domain(DPOAE_Y_AXIS_DOMAIN).range([this.height, 0]);
   }
 
   /**

@@ -320,103 +320,93 @@ export function createNormativeDataPath(
 }
 
 /**
- * Draw discrete DPOAE amplitude markers (blue open circles) and noise floor markers (red X) at
- * the given x/amplitude/noiseFloor values, with no connecting line between points.
- * @param svg The svg group to draw into
- * @param xScale The x-axis (frequency) scale
- * @param yScale The y-axis (amplitude) scale
- * @param xValues The x-axis value for each point
- * @param amplitudeValues The DPOAE amplitude for each point, index-aligned with xValues
- * @param noiseFloorValues The noise floor for each point, index-aligned with xValues
- */
-export function plotOAEPointMarkers(
-  svg: d3.Selection<SVGGElement, unknown, HTMLElement, any>,
-  xScale: d3.ScaleLogarithmic<number, number, never>,
-  yScale: d3.ScaleLinear<number, number, never>,
-  xValues: number[],
-  amplitudeValues: number[],
-  noiseFloorValues: number[]
-) {
-  // Plot Amplitude / DPOAE (blue open circles)
-  svg
-    .selectAll('.dot')
-    .data(xValues)
-    .enter()
-    .append('circle')
-    .attr('cx', (d, i) => xScale(xValues[i]))
-    .attr('cy', (d, i) => yScale(amplitudeValues[i]))
-    .attr('r', 4)
-    .style('fill', 'none')
-    .style('stroke', 'blue')
-    .style('stroke-width', 2);
-
-  // Plot NoiseFloor (red X)
-  svg
-    .selectAll('.cross')
-    .data(xValues)
-    .enter()
-    .append('text')
-    .attr('x', (d, i) => xScale(xValues[i]))
-    .attr('y', (d, i) => yScale(noiseFloorValues[i]))
-    .attr('text-anchor', 'middle')
-    .attr('alignment-baseline', 'middle')
-    .style('fill', 'red')
-    .style('font-size', '10px')
-    .style('font-weight', 'bold')
-    .text('X');
-}
-
-/**
- * Plot a single OAE series (e.g. F1, F2, DPOAE, noise floor) as a connected line with markers.
+ * Plot a single DPOAE-family series (e.g. DPOAE, noise floor, F1, F2) as a connected line with
+ * open circle markers, indexed by nominal F2 test frequency, with an optional dashed line/marker
+ * outline (e.g. the noise floor trace). Any y value outside [yClampMin, yClampMax] is shifted to
+ * the nearest bound rather than drawn off-chart, so out-of-range measurements stay visible at the
+ * axis edge instead of being hidden or overflowing the plot border.
  * @param svg The svg group to draw into
  * @param xScale The x-axis (frequency) scale
  * @param yScale The y-axis (amplitude) scale
  * @param xValues The x-axis value for each point
  * @param yValues The y-axis value for each point, index-aligned with xValues
- * @param color The stroke/fill color for the line and markers
- * @param marker The marker shape: 'dot' (small filled circle), 'circle' (open circle), or 'cross' ('X')
+ * @param color The stroke color for the line and markers
+ * @param dashed Draw the connecting line and marker outline dashed instead of solid
+ * @param yClampMin Values below this are shifted up to it before plotting
+ * @param yClampMax Values above this are shifted down to it before plotting
  */
-export function plotOAELineSeries(
+export function plotDpoaeSeries(
   svg: d3.Selection<SVGGElement, unknown, HTMLElement, any>,
   xScale: d3.ScaleLogarithmic<number, number, never>,
   yScale: d3.ScaleLinear<number, number, never>,
   xValues: number[],
   yValues: number[],
   color: string,
-  marker: 'dot' | 'circle' | 'cross'
+  dashed: boolean = false,
+  yClampMin?: number,
+  yClampMax?: number
 ) {
+  const minAllowableY = yClampMin ?? Number.NEGATIVE_INFINITY;
+  const maxAllowableY = yClampMax ?? Number.POSITIVE_INFINITY;
+  const clampedYValues = yValues.map(y => Math.min(Math.max(y, minAllowableY), maxAllowableY));
+  const dashArray = dashed ? '4,3' : '0';
+
   const lineGenerator = d3
     .line<number>()
     .x((_d, i) => xScale(xValues[i]))
     .y(d => yScale(d));
 
-  svg.append('path').datum(yValues).attr('d', lineGenerator).attr('fill', 'none').attr('stroke', color).attr('stroke-width', 2);
+  svg
+    .append('path')
+    .datum(clampedYValues)
+    .attr('d', lineGenerator)
+    .attr('fill', 'none')
+    .attr('stroke', color)
+    .attr('stroke-width', 2)
+    .attr('stroke-dasharray', dashArray);
 
-  if (marker === 'cross') {
-    svg
-      .selectAll(null)
-      .data(xValues)
-      .enter()
-      .append('text')
-      .attr('x', (_d, i) => xScale(xValues[i]))
-      .attr('y', (_d, i) => yScale(yValues[i]))
-      .attr('text-anchor', 'middle')
-      .attr('alignment-baseline', 'middle')
-      .style('fill', color)
-      .style('font-size', '10px')
-      .style('font-weight', 'bold')
-      .text('X');
-  } else {
-    svg
-      .selectAll(null)
-      .data(xValues)
-      .enter()
-      .append('circle')
-      .attr('cx', (_d, i) => xScale(xValues[i]))
-      .attr('cy', (_d, i) => yScale(yValues[i]))
-      .attr('r', marker === 'dot' ? 3 : 4)
-      .style('fill', marker === 'dot' ? color : 'none')
-      .style('stroke', color)
-      .style('stroke-width', 2);
-  }
+  svg
+    .selectAll(null)
+    .data(xValues)
+    .enter()
+    .append('circle')
+    .attr('cx', (_d, i) => xScale(xValues[i]))
+    .attr('cy', (_d, i) => yScale(clampedYValues[i]))
+    .attr('r', 4)
+    .style('fill', 'none')
+    .style('stroke', color)
+    .style('stroke-width', 2)
+    .style('stroke-dasharray', dashArray);
+}
+
+/**
+ * Append a clip-pathed group containing the shaded normative-data band, sized to the chart area.
+ * @param svg The svg group to draw into
+ * @param width The chart width (for the clip rect)
+ * @param height The chart height (for the clip rect)
+ * @param normativeData The normative data for the area to draw
+ * @param xScale The x-axis (frequency) scale
+ * @param yScale The y-axis (amplitude) scale
+ * @param yClampMin Optional minimum y value to clamp the band above
+ * @param yClampMax Optional maximum y value to clamp the band below
+ */
+export function appendNormativeDataBand(
+  svg: d3.Selection<SVGGElement, unknown, HTMLElement, any>,
+  width: number,
+  height: number,
+  normativeData: NormativeDataInterface[],
+  xScale: d3.ScaleContinuousNumeric<number, number, never>,
+  yScale: d3.ScaleContinuousNumeric<number, number, never>,
+  yClampMin?: number,
+  yClampMax?: number
+) {
+  const defs = svg.append('defs');
+  defs.append('clipPath').attr('id', 'clipRect').append('rect').attr('x', 0).attr('y', 0).attr('height', height).attr('width', width);
+
+  const clippedGroup = svg.append('g').attr('clip-path', `url(#clipRect)`);
+
+  const normativePath = createNormativeDataPath(normativeData, xScale, yScale, yClampMin, yClampMax);
+  clippedGroup.append('path').attr('d', normativePath).attr('fill', 'gray').attr('stroke', 'gray').attr('stroke-width', 2);
+
+  return clippedGroup;
 }

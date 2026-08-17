@@ -2,7 +2,8 @@ import { Component, Input } from '@angular/core';
 import * as d3 from 'd3';
 import { DpoaeResultsBaseComponent } from '../../shared/dpoae/dpoae-results-base.component';
 import { DpGramResultsInterface } from '../dp-gram-exam/dp-gram-exam.interface';
-import { createLegend, createOAEResultsChartSvg, createNormativeDataPath, plotOAELineSeries } from '../../../../../utilities/d3-plot-functions';
+import { DPOAE_Y_AXIS_DOMAIN } from '../../shared/dpoae/dpoae-common.interface';
+import { appendNormativeDataBand, createLegend, createOAEResultsChartSvg, plotDpoaeSeries } from '../../../../../utilities/d3-plot-functions';
 
 @Component({
   selector: 'app-dp-gram-results',
@@ -15,7 +16,8 @@ export class DpGramResultsComponent extends DpoaeResultsBaseComponent<DpGramResu
   protected createResultsPlot() {
     const filteredData = this.filterDpGramResults(this.results);
 
-    const yScale = d3.scaleLinear().domain([-40, 100]).range([this.height, 0]);
+    const [yClampMin, yClampMax] = DPOAE_Y_AXIS_DOMAIN;
+    const yScale = d3.scaleLinear().domain(DPOAE_Y_AXIS_DOMAIN).range([this.height, 0]);
 
     let svg = d3
       .select('#dp-gram-results-plot')
@@ -25,33 +27,24 @@ export class DpGramResultsComponent extends DpoaeResultsBaseComponent<DpGramResu
       .append('g')
       .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
 
-    svg = createOAEResultsChartSvg(svg, this.width, this.height, this.xTicks, this.xScale, yScale, 'F2 Frequency, (Hz)', 'Magnitude, (dB)');
+    svg = createOAEResultsChartSvg(svg, this.width, this.height, this.xTicks, this.xScale, yScale);
 
-    // Define definitions for the svg and add clip path
-    const defs = svg.append('defs');
-    defs.append('clipPath').attr('id', 'clipRect').append('rect').attr('x', 0).attr('y', 0).attr('height', this.height).attr('width', this.width);
+    appendNormativeDataBand(svg, this.width, this.height, this.normativeData, this.xScale, yScale, yClampMin, yClampMax);
 
-    // Apply clipping to the group for additional plotting steps
-    const clippedGroup = svg.append('g').attr('clip-path', `url(#clipRect)`);
-
-    // Plot normative data (grey area)
-    const normativePath = createNormativeDataPath(this.normativeData, this.xScale, yScale);
-    clippedGroup.append('path').attr('d', normativePath).attr('fill', 'gray').attr('stroke', 'gray').attr('stroke-width', 2);
-
-    // Plot each series as a connected line with markers, all indexed by the nominal F2 test
-    // frequency (rather than each series' own measured frequency) so the four lines share a
-    // common x-axis position per test point.
+    // Plot each series as open circle markers, all indexed by the nominal F2 test frequency
+    // (rather than each series' own measured frequency) so the four lines share a common x-axis
+    // position per test point. Only DPOAE gets a connecting line, matching Swept DPOAE's results plot.
     const f2Freq = filteredData.F2.Frequency;
-    plotOAELineSeries(svg, this.xScale, yScale, f2Freq, filteredData.F1.Amplitude, '#984ea3', 'dot');
-    plotOAELineSeries(svg, this.xScale, yScale, f2Freq, filteredData.F2.Amplitude, '#ff7f00', 'dot');
-    plotOAELineSeries(svg, this.xScale, yScale, f2Freq, filteredData.DpLow.Amplitude, '#3773b8', 'circle');
-    plotOAELineSeries(svg, this.xScale, yScale, f2Freq, filteredData.DpLow.NoiseFloor, '#aaaaaa', 'cross');
+    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.DpLow.Amplitude, 'blue', false, yClampMin, yClampMax);
+    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.DpLow.NoiseFloor, 'red', true, yClampMin, yClampMax);
+    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.F2.Amplitude, '#9400d3', false, yClampMin, yClampMax);
+    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.F1.Amplitude, '#ffc107', false, yClampMin, yClampMax);
 
     const legendData = [
-      { label: 'F1', color: '#984ea3', symbol: 'dot', line: 'solid' },
-      { label: 'F2', color: '#ff7f00', symbol: 'dot', line: 'solid' },
-      { label: 'DPlow', color: '#3773b8', symbol: 'circle', line: 'solid' },
-      { label: 'NFlow', color: '#aaaaaa', symbol: 'X', line: 'solid' },
+      { label: 'DPOAE', color: 'blue', line: 'solid' },
+      { label: 'NF', color: 'red', line: 'dashed' },
+      { label: 'F2', color: '#9400d3', line: 'solid' },
+      { label: 'F1', color: '#ffc107', line: 'solid' },
     ];
 
     createLegend(svg, legendData, this.width, 85);

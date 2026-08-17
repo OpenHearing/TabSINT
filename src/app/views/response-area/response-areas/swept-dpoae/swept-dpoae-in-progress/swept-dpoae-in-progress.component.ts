@@ -3,7 +3,8 @@ import * as d3 from 'd3';
 
 import { DpoaeInProgressBaseComponent } from '../../shared/dpoae/dpoae-in-progress-base.component';
 import { DPOAEDataInterface, SweptDpoaeResultsInterface } from '../swept-dpoae-exam/swept-dpoae-exam.interface';
-import { createLegend, createOAEResultsChartSvg } from '../../../../../utilities/d3-plot-functions';
+import { DPOAE_Y_AXIS_DOMAIN } from '../../shared/dpoae/dpoae-common.interface';
+import { appendNormativeDataBand, createLegend, createOAEResultsChartSvg, plotDpoaeSeries } from '../../../../../utilities/d3-plot-functions';
 import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-dpoae.schema';
 
 @Component({
@@ -30,9 +31,13 @@ export class SweptDpoaeInProgressComponent extends DpoaeInProgressBaseComponent<
 
     svg = createOAEResultsChartSvg(svg, this.width, this.height, this.xTicks, this.xScale, yScale);
 
+    appendNormativeDataBand(svg, this.width, this.height, this.normativeData, this.xScale, yScale, DPOAE_Y_AXIS_DOMAIN[0], DPOAE_Y_AXIS_DOMAIN[1]);
+
     const legendData = [
-      { label: 'DPOAE', color: 'blue', symbol: 'circle' },
-      { label: 'NF', color: 'red', symbol: 'X' },
+      { label: 'DPOAE', color: 'blue', line: 'solid' },
+      { label: 'NF', color: 'red', line: 'dashed' },
+      { label: 'F2', color: '#9400d3', line: 'solid' },
+      { label: 'F1', color: '#ffc107', line: 'solid' },
     ];
 
     createLegend(svg, legendData, this.width, 85);
@@ -42,65 +47,46 @@ export class SweptDpoaeInProgressComponent extends DpoaeInProgressBaseComponent<
 
   protected onResultsUpdate(results: SweptDpoaeResultsInterface): void {
     if (results.DpLow && results.F2) {
-      this.updatePlot(results.DpLow, results.F2);
+      this.updatePlot(results.DpLow, results.F2, results.F1);
     }
   }
 
-  private updatePlot(dpLowData: DPOAEDataInterface, f2Data: DPOAEDataInterface) {
-    const filteredData = this.filterData(dpLowData, f2Data);
+  private updatePlot(dpLowData: DPOAEDataInterface, f2Data: DPOAEDataInterface, f1Data?: DPOAEDataInterface) {
+    const filteredData = this.filterData(dpLowData, f2Data, f1Data);
+    const [yClampMin, yClampMax] = DPOAE_Y_AXIS_DOMAIN;
 
-    // Re-create the plot with expanding Y scale
-    const yDomainLower = Math.min(...this.yScale.domain());
-    const yDomainUpper = Math.max(...this.yScale.domain());
-    const newMin = Math.min(yDomainLower, ...filteredData['Amplitude'], ...filteredData['NoiseFloor']);
-    const newMax = Math.max(yDomainUpper, ...filteredData['Amplitude'], ...filteredData['NoiseFloor']);
-    const extendedYScale = this.yScale.copy();
-    extendedYScale.domain([newMin, newMax]);
-    this.svg = this.createProgressPlot(extendedYScale);
+    this.svg = this.createProgressPlot(this.yScale);
 
-    // Plot DpLow Amplitude / DPOAE (blue open circles)
-    this.svg
-      .selectAll('.dot')
-      .data(filteredData['F2Frequency'])
-      .enter()
-      .append('circle')
-      .attr('cx', (d, i) => this.xScale(filteredData['F2Frequency'][i]))
-      .attr('cy', (d, i) => extendedYScale(filteredData['Amplitude'][i]))
-      .attr('r', 4)
-      .style('fill', 'none')
-      .style('stroke', 'blue')
-      .style('stroke-width', 2);
-
-    // Plot DpLow NoiseFloor (red X)
-    this.svg
-      .selectAll('.cross')
-      .data(filteredData['F2Frequency'])
-      .enter()
-      .append('text')
-      .attr('x', (d, i) => this.xScale(filteredData['F2Frequency'][i]))
-      .attr('y', (d, i) => extendedYScale(filteredData['NoiseFloor'][i]))
-      .attr('text-anchor', 'middle')
-      .attr('alignment-baseline', 'middle')
-      .style('fill', 'red')
-      .style('font-size', '10px')
-      .style('font-weight', 'bold')
-      .text('X');
+    plotDpoaeSeries(this.svg, this.xScale, this.yScale, filteredData['F2Frequency'], filteredData['Amplitude'], 'blue', false, yClampMin, yClampMax);
+    plotDpoaeSeries(this.svg, this.xScale, this.yScale, filteredData['F2Frequency'], filteredData['NoiseFloor'], 'red', true, yClampMin, yClampMax);
+    plotDpoaeSeries(this.svg, this.xScale, this.yScale, filteredData['F2Frequency'], filteredData['F2Amplitude'], '#9400d3', false, yClampMin, yClampMax);
+    if (filteredData['F1Amplitude'].length) {
+      plotDpoaeSeries(this.svg, this.xScale, this.yScale, filteredData['F2Frequency'], filteredData['F1Amplitude'], '#ffc107', false, yClampMin, yClampMax);
+    }
   }
 
-  private filterData(dpLowData: DPOAEDataInterface, f2Data: DPOAEDataInterface) {
+  /**
+   * F1 and F2 are indexed by their own nominal F2 test frequency (not each series' own measured
+   * frequency), matching SweptDpoaeResultsComponent, so all four lines share a common x-axis
+   * position per completed test point.
+   */
+  private filterData(dpLowData: DPOAEDataInterface, f2Data: DPOAEDataInterface, f1Data?: DPOAEDataInterface) {
     const filteredData: Record<string, number[]> = {
-      Frequency: [],
       F2Frequency: [],
       Amplitude: [],
       NoiseFloor: [],
+      F2Amplitude: [],
+      F1Amplitude: [],
     };
     for (let i = 0; i < dpLowData.Frequency.length; i++) {
-      const freq = dpLowData.Frequency[i];
-      filteredData['Frequency'].push(freq);
       filteredData['F2Frequency'].push(f2Data.Frequency[i]);
       filteredData['Amplitude'].push(dpLowData.Amplitude[i]);
-      if (dpLowData['NoiseFloor'] && filteredData['NoiseFloor']) {
+      if (dpLowData.NoiseFloor) {
         filteredData['NoiseFloor'].push(dpLowData.NoiseFloor[i]);
+      }
+      filteredData['F2Amplitude'].push(f2Data.Amplitude[i]);
+      if (f1Data) {
+        filteredData['F1Amplitude'].push(f1Data.Amplitude[i]);
       }
     }
     return filteredData;

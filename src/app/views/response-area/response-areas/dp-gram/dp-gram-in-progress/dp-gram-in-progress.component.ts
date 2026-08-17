@@ -3,7 +3,8 @@ import * as d3 from 'd3';
 
 import { DpoaeInProgressBaseComponent } from '../../shared/dpoae/dpoae-in-progress-base.component';
 import { DPOAEDataInterface, DpGramResultsInterface } from '../dp-gram-exam/dp-gram-exam.interface';
-import { createLegend, createOAEResultsChartSvg, plotOAEPointMarkers } from '../../../../../utilities/d3-plot-functions';
+import { DPOAE_Y_AXIS_DOMAIN } from '../../shared/dpoae/dpoae-common.interface';
+import { appendNormativeDataBand, createLegend, createOAEResultsChartSvg, plotDpoaeSeries } from '../../../../../utilities/d3-plot-functions';
 import { getCurrentDatetime, handleOutputCalibration } from '../../../../../utilities/exam-helper-functions';
 
 @Component({
@@ -59,9 +60,13 @@ export class DpGramInProgressComponent extends DpoaeInProgressBaseComponent<DpGr
 
     svg = createOAEResultsChartSvg(svg, this.width, this.height, this.xTicks, this.xScale, yScale);
 
+    appendNormativeDataBand(svg, this.width, this.height, this.normativeData, this.xScale, yScale, DPOAE_Y_AXIS_DOMAIN[0], DPOAE_Y_AXIS_DOMAIN[1]);
+
     const legendData = [
-      { label: 'DPOAE', color: 'blue', symbol: 'circle' },
-      { label: 'NF', color: 'red', symbol: 'X' },
+      { label: 'DPOAE', color: 'blue', line: 'solid' },
+      { label: 'NF', color: 'red', line: 'dashed' },
+      { label: 'F2', color: '#9400d3', line: 'solid' },
+      { label: 'F1', color: '#ffc107', line: 'solid' },
     ];
 
     createLegend(svg, legendData, this.width, 85);
@@ -71,7 +76,7 @@ export class DpGramInProgressComponent extends DpoaeInProgressBaseComponent<DpGr
 
   protected onResultsUpdate(results: DpGramResultsInterface): void {
     if (results.DpLow && results.F2) {
-      this.updatePlot(results.DpLow, results.F2);
+      this.updatePlot(results.DpLow, results.F2, results.F1);
     }
   }
 
@@ -277,35 +282,42 @@ export class DpGramInProgressComponent extends DpoaeInProgressBaseComponent<DpGr
     return next;
   }
 
-  private updatePlot(dpLowData: DPOAEDataInterface, f2Data: DPOAEDataInterface) {
-    const filteredData = this.filterData(dpLowData, f2Data);
+  private updatePlot(dpLowData: DPOAEDataInterface, f2Data: DPOAEDataInterface, f1Data?: DPOAEDataInterface) {
+    const filteredData = this.filterData(dpLowData, f2Data, f1Data);
+    const [yClampMin, yClampMax] = DPOAE_Y_AXIS_DOMAIN;
 
-    // Re-create the plot with expanding Y scale
-    const yDomainLower = Math.min(...this.yScale.domain());
-    const yDomainUpper = Math.max(...this.yScale.domain());
-    const newMin = Math.min(yDomainLower, ...filteredData['Amplitude'], ...filteredData['NoiseFloor']);
-    const newMax = Math.max(yDomainUpper, ...filteredData['Amplitude'], ...filteredData['NoiseFloor']);
-    const extendedYScale = this.yScale.copy();
-    extendedYScale.domain([newMin, newMax]);
-    this.svg = this.createProgressPlot(extendedYScale);
+    this.svg = this.createProgressPlot(this.yScale);
 
-    plotOAEPointMarkers(this.svg, this.xScale, extendedYScale, filteredData['F2Frequency'], filteredData['Amplitude'], filteredData['NoiseFloor']);
+    plotDpoaeSeries(this.svg, this.xScale, this.yScale, filteredData['F2Frequency'], filteredData['Amplitude'], 'blue', false, yClampMin, yClampMax);
+    plotDpoaeSeries(this.svg, this.xScale, this.yScale, filteredData['F2Frequency'], filteredData['NoiseFloor'], 'red', true, yClampMin, yClampMax);
+    plotDpoaeSeries(this.svg, this.xScale, this.yScale, filteredData['F2Frequency'], filteredData['F2Amplitude'], '#9400d3', false, yClampMin, yClampMax);
+    if (filteredData['F1Amplitude'].length) {
+      plotDpoaeSeries(this.svg, this.xScale, this.yScale, filteredData['F2Frequency'], filteredData['F1Amplitude'], '#ffc107', false, yClampMin, yClampMax);
+    }
   }
 
-  private filterData(dpLowData: DPOAEDataInterface, f2Data: DPOAEDataInterface) {
+  /**
+   * F1 and F2 are indexed by their own nominal F2 test frequency (not each series' own measured
+   * frequency), matching DpGramResultsComponent, so all four lines share a common x-axis position
+   * per completed test point.
+   */
+  private filterData(dpLowData: DPOAEDataInterface, f2Data: DPOAEDataInterface, f1Data?: DPOAEDataInterface) {
     const filteredData: Record<string, number[]> = {
-      Frequency: [],
       F2Frequency: [],
       Amplitude: [],
       NoiseFloor: [],
+      F2Amplitude: [],
+      F1Amplitude: [],
     };
     for (let i = 0; i < dpLowData.Frequency.length; i++) {
-      const freq = dpLowData.Frequency[i];
-      filteredData['Frequency'].push(freq);
       filteredData['F2Frequency'].push(f2Data.Frequency[i]);
       filteredData['Amplitude'].push(dpLowData.Amplitude[i]);
-      if (dpLowData['NoiseFloor'] && filteredData['NoiseFloor']) {
+      if (dpLowData.NoiseFloor) {
         filteredData['NoiseFloor'].push(dpLowData.NoiseFloor[i]);
+      }
+      filteredData['F2Amplitude'].push(f2Data.Amplitude[i]);
+      if (f1Data) {
+        filteredData['F1Amplitude'].push(f1Data.Amplitude[i]);
       }
     }
     return filteredData;
