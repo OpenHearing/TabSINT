@@ -545,7 +545,7 @@ export class DevicesService {
           The firmware on device ${device.deviceId} is not supported by this TabSINT version.
           This TabSINT version supports ${firmwareAsset.version} firmware.
           Select 'OK' to update the firmware on ${device.deviceId}.
-          The firmware can also be updated through the device information panel.
+          The firmware can also be updated through the device details panel.
         `,
         type: DialogType.Confirm,
       };
