@@ -233,7 +233,7 @@ export class BhaftComponent implements OnInit, OnDestroy {
    */
   private processResults(results: BhaftResultsInterface | undefined): void {
     const shouldShowNoResponseMessage = this.useSoftwareButton && this.showMessageIfNoResponse && this.buttonPressCount === 0;
-    const repeatForFailure = this.repeatIfFailedOnce && (results === undefined || results.ResultType !== 'Threshold');
+    const repeatForFailure = this.repeatIfFailedOnce && results?.ResultType !== 'Threshold';
     if (repeatForFailure && !this.failedOnce) {
       this.failedOnce = true;
       this.retryMessage = this.useSoftwareButton && this.buttonPressCount === 0 ? retry_message_no_press : retry_message_with_press;
