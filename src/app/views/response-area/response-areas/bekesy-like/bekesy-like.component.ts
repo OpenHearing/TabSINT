@@ -14,8 +14,12 @@ import { round } from '../../../../utilities/math';
 import { bekesyLikeSchema } from '../../../../../schema/response-areas/bekesy-like.schema';
 import { BekesyLikeResultsInterface, BekesyLikeExamPropertiesInterface, BekesyLikeResponseAreaInterface } from './bekesy-like.interface';
 import { isWahtsResultsResponse, isStatusResponse } from '../../../../guards/type.guard';
-import { AudiometryHideExamProps, MaskingNoise, PlotProperties } from '../shared/audiometry/audiometry.interface';
+import { AudiometryCombinedDatum, AudiometryHideExamProps, MaskingNoise, PlotProperties } from '../shared/audiometry/audiometry.interface';
 import { TrialPointStyle, TrialProgressionPlotDataInterface } from '../shared/trial-progression-plot/trial-progression-plot.interface';
+import { AudiometryResultsInterface } from '../../../../interfaces/audiometry-results.interface';
+import { CurrentResults } from '../../../../models/results/results.interface';
+import { outputChannelToEarChannel } from '../shared/audiometry/audiometry-channel.utility';
+import { assembleAudiometryResults } from '../shared/audiometry/audiometry-combined-data.utility';
 
 const EXAM_NAME = 'BekesyLike';
 const examSchema = bekesyLikeSchema.properties;
@@ -79,6 +83,8 @@ export class BekesyLikeComponent implements OnInit, OnDestroy {
   device: IDevice | undefined;
   results: BekesyLikeResultsInterface | undefined;
   levelProgressionData: TrialProgressionPlotDataInterface | undefined;
+  combinedAudiogramData: AudiometryResultsInterface | undefined;
+  private currentPageId: string | undefined;
 
   protected examProperties: BekesyLikeExamPropertiesInterface = {
     ReversalDiscard: examPropSchema.ReversalDiscard.default,
@@ -128,6 +134,7 @@ export class BekesyLikeComponent implements OnInit, OnDestroy {
     this.examService.submit = () => this.submitWithNotes();
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'bekesyLikeResponseArea') {
+        this.currentPageId = updatedPage.id;
         await this.setupResponseArea(updatedPage.responseArea as BekesyLikeResponseAreaInterface);
       }
     });
@@ -257,6 +264,7 @@ export class BekesyLikeComponent implements OnInit, OnDestroy {
   private finishExam(results: BekesyLikeResultsInterface | undefined): void {
     this.results = results;
     this.levelProgressionData = this.plotProperties.displayLevelProgression && results?.L ? this.createLevelProgressionData(results) : undefined;
+    this.combinedAudiogramData = this.plotProperties.displayAudiogram?.length ? this.buildCombinedAudiogramData(results) : undefined;
     this.updateResponseAreaState(ResponseAreaState.Results);
     this.resultsModel.updateCurrentPage({ response: results });
     this.stateModel.updateState({ isSubmittable: true });
@@ -309,6 +317,62 @@ export class BekesyLikeComponent implements OnInit, OnDestroy {
       }
       return level < levels[i - 1] ? 'filled' : 'open';
     });
+  }
+
+  /**
+   * Build the combined audiogram data for the pages listed in plotProperties.displayAudiogram:
+   * the current (not-yet-submitted) page's own result, plus every other Bekesy-like page in that
+   * list that has already been submitted earlier in this protocol run.
+   * @param results The final results returned by the device for the current page.
+   */
+  private buildCombinedAudiogramData(results: BekesyLikeResultsInterface | undefined): AudiometryResultsInterface {
+    const levelUnits = this.examProperties.LevelUnits ?? examPropSchema.LevelUnits.default;
+    const pageIds = this.plotProperties.displayAudiogram ?? [];
+
+    const datums: AudiometryCombinedDatum[] = [];
+    const current = this.toAudiogramDatum(this.examProperties.F, this.examProperties.OutputChannel, results);
+    if (current) {
+      datums.push(current);
+    }
+
+    this.resultsModel
+      .getResults()
+      .currentExam.responses.filter(
+        (r: CurrentResults) => r.pageId !== this.currentPageId && r.responseArea === 'bekesyLikeResponseArea' && pageIds.includes(r.pageId)
+      )
+      .forEach((r: CurrentResults) => {
+        const examProperties = (r.page?.responseArea as BekesyLikeResponseAreaInterface)?.examProperties;
+        const datum = this.toAudiogramDatum(examProperties?.F, examProperties?.OutputChannel, r.response as BekesyLikeResultsInterface);
+        if (datum) {
+          datums.push(datum);
+        }
+      });
+
+    return assembleAudiometryResults(datums, levelUnits);
+  }
+
+  /**
+   * Map one page's frequency/channel configuration and device result into a single combined
+   * audiogram datum, or null if that page has no usable frequency/result to plot.
+   * @param frequency The page's configured test frequency (Hz).
+   * @param outputChannel The page's configured output channel.
+   * @param results The page's device result.
+   */
+  private toAudiogramDatum(
+    frequency: number | undefined,
+    outputChannel: BekesyLikeExamPropertiesInterface['OutputChannel'],
+    results: BekesyLikeResultsInterface | undefined
+  ): AudiometryCombinedDatum | null {
+    if (frequency === undefined || !results) {
+      return null;
+    }
+    return {
+      frequency,
+      threshold: Number.isFinite(results.Threshold) ? results.Threshold : null,
+      channel: outputChannelToEarChannel(outputChannel),
+      resultType: String(results.ResultType),
+      masking: false,
+    };
   }
 
   /**

@@ -1621,6 +1621,42 @@
           }
         },
         {
+          "id": "Hughson-Westlake-Threshold-2",
+          "title": "Hughson-Westlake Threshold",
+          "questionMainText": "Automated Threshold Audiometry",
+          "responseArea": {
+            "type": "hughsonWestlakeResponseArea",
+            "hideExamProperties": "during",
+            "autoBegin": true,
+            "repeatIfFailedOnce": true,
+            "getNotesIfFailedTwice": true,
+            "showMessageIfNoResponse": true,
+            "examInstructions": "Use the button to complete the exam.",
+            "resultMainText": "Automated threshold search complete.",
+            "resultSubText": "Press submit to continue.",
+            "examProperties": {
+              "Screener": false,
+              "TonePulseNumber": 3,
+              "LevelUnits": "dB HL",
+              "Lstart": 25,
+              "F": 2000,
+              "OutputChannel": "HPR0",
+              "UseSoftwareButton": true,
+              "PollingOffset": 1000,
+              "MinISI": 1000,
+              "MaxISI": 3000
+            },
+            "plotProperties": {
+              "displayLevelProgression": true,
+              "displayAudiogram": ["Hughson-Westlake-Threshold", "Hughson-Westlake-Threshold-2"]
+            },
+            "maskingNoise": {
+              "Type": "white",
+              "Level": [30, 30]
+            }
+          }
+        },
+        {
           "id": "backtomain",
           "reference": "MainMenu"
         }

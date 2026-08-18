@@ -15,8 +15,6 @@ export class AudiogramComponent implements OnInit, OnChanges {
 
   @Input() selectedEar: string | null = null;
 
-  @Input() earChannel: 'left' | 'right' = 'left';
-
   @Input() isManualExam: boolean = false;
 
   @Input() levelUnits: string = 'dB HL';

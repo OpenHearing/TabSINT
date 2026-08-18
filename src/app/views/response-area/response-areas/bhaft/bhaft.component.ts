@@ -14,8 +14,12 @@ import { round } from '../../../../utilities/math';
 import { bhaftSchema } from '../../../../../schema/response-areas/bhaft.schema';
 import { BhaftResultsInterface, BhaftExamPropertiesInterface, BhaftResponseAreaInterface } from './bhaft.interface';
 import { isWahtsResultsResponse, isStatusResponse } from '../../../../guards/type.guard';
-import { AudiometryHideExamProps, MaskingNoise, PlotProperties } from '../shared/audiometry/audiometry.interface';
+import { AudiometryCombinedDatum, AudiometryHideExamProps, MaskingNoise, PlotProperties } from '../shared/audiometry/audiometry.interface';
 import { TrialPointStyle, TrialProgressionPlotDataInterface } from '../shared/trial-progression-plot/trial-progression-plot.interface';
+import { AudiometryResultsInterface } from '../../../../interfaces/audiometry-results.interface';
+import { CurrentResults } from '../../../../models/results/results.interface';
+import { outputChannelToEarChannel } from '../shared/audiometry/audiometry-channel.utility';
+import { assembleAudiometryResults } from '../shared/audiometry/audiometry-combined-data.utility';
 
 const EXAM_NAME = 'BHAFT';
 const examSchema = bhaftSchema.properties;
@@ -81,6 +85,8 @@ export class BhaftComponent implements OnInit, OnDestroy {
   results: BhaftResultsInterface | undefined;
   frequencyProgressionData: TrialProgressionPlotDataInterface | undefined;
   levelProgressionData: TrialProgressionPlotDataInterface | undefined;
+  combinedAudiogramData: AudiometryResultsInterface | undefined;
+  private currentPageId: string | undefined;
 
   protected examProperties: BhaftExamPropertiesInterface = {
     Fstart: examPropSchema.Fstart.default,
@@ -131,6 +137,7 @@ export class BhaftComponent implements OnInit, OnDestroy {
     this.examService.submit = () => this.submitWithNotes();
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'bhaftResponseArea') {
+        this.currentPageId = updatedPage.id;
         await this.setupResponseArea(updatedPage.responseArea as BhaftResponseAreaInterface);
       }
     });
@@ -262,6 +269,7 @@ export class BhaftComponent implements OnInit, OnDestroy {
     this.frequencyProgressionData =
       this.plotProperties.displayFrequencyProgression && results?.F ? this.createFrequencyProgressionData(results) : undefined;
     this.levelProgressionData = this.plotProperties.displayLevelProgression && results?.L ? this.createLevelProgressionData(results) : undefined;
+    this.combinedAudiogramData = this.plotProperties.displayAudiogram?.length ? this.buildCombinedAudiogramData(results) : undefined;
     this.updateResponseAreaState(ResponseAreaState.Results);
     this.resultsModel.updateCurrentPage({ response: results });
     this.stateModel.updateState({ isSubmittable: true });
@@ -354,6 +362,62 @@ export class BhaftComponent implements OnInit, OnDestroy {
       }
       return levels[i] < levels[i - 1] ? 'filled' : 'open';
     });
+  }
+
+  /**
+   * Build the combined audiogram data for the pages listed in plotProperties.displayAudiogram:
+   * the current (not-yet-submitted) page's own result, plus every other BHAFT page in that list
+   * that has already been submitted earlier in this protocol run. Unlike Bekesy-like/Hughson-
+   * Westlake, BHAFT searches frequency and level together, so both come off the result itself
+   * rather than from a fixed examProperties.F, and the level is always dB SPL regardless of
+   * LevelUnits (see createLevelProgressionData).
+   * @param results The final results returned by the device for the current page.
+   */
+  private buildCombinedAudiogramData(results: BhaftResultsInterface | undefined): AudiometryResultsInterface {
+    const pageIds = this.plotProperties.displayAudiogram ?? [];
+
+    const datums: AudiometryCombinedDatum[] = [];
+    const current = this.toAudiogramDatum(this.examProperties.OutputChannel, results);
+    if (current) {
+      datums.push(current);
+    }
+
+    this.resultsModel
+      .getResults()
+      .currentExam.responses.filter(
+        (r: CurrentResults) => r.pageId !== this.currentPageId && r.responseArea === 'bhaftResponseArea' && pageIds.includes(r.pageId)
+      )
+      .forEach((r: CurrentResults) => {
+        const examProperties = (r.page?.responseArea as BhaftResponseAreaInterface)?.examProperties;
+        const datum = this.toAudiogramDatum(examProperties?.OutputChannel, r.response as BhaftResultsInterface);
+        if (datum) {
+          datums.push(datum);
+        }
+      });
+
+    return assembleAudiometryResults(datums, 'dB SPL');
+  }
+
+  /**
+   * Map one page's channel configuration and device result into a single combined audiogram
+   * datum, or null if that page has no usable result to plot.
+   * @param outputChannel The page's configured output channel.
+   * @param results The page's device result.
+   */
+  private toAudiogramDatum(
+    outputChannel: BhaftExamPropertiesInterface['OutputChannel'],
+    results: BhaftResultsInterface | undefined
+  ): AudiometryCombinedDatum | null {
+    if (!results || !Number.isFinite(results.ThresholdFrequency)) {
+      return null;
+    }
+    return {
+      frequency: results.ThresholdFrequency,
+      threshold: Number.isFinite(results.ThresholdLevel) ? results.ThresholdLevel : null,
+      channel: outputChannelToEarChannel(outputChannel),
+      resultType: String(results.ResultType),
+      masking: false,
+    };
   }
 
   /**

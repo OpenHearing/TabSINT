@@ -18,8 +18,12 @@ import {
   HughsonWestlakeResponseAreaInterface,
 } from './hughson-westlake.interface';
 import { isWahtsResultsResponse, isStatusResponse } from '../../../../guards/type.guard';
-import { AudiometryHideExamProps, MaskingNoise, PlotProperties } from '../shared/audiometry/audiometry.interface';
+import { AudiometryCombinedDatum, AudiometryHideExamProps, MaskingNoise, PlotProperties } from '../shared/audiometry/audiometry.interface';
 import { TrialProgressionPlotDataInterface } from '../shared/trial-progression-plot/trial-progression-plot.interface';
+import { AudiometryResultsInterface } from '../../../../interfaces/audiometry-results.interface';
+import { CurrentResults } from '../../../../models/results/results.interface';
+import { outputChannelToEarChannel } from '../shared/audiometry/audiometry-channel.utility';
+import { assembleAudiometryResults } from '../shared/audiometry/audiometry-combined-data.utility';
 
 const EXAM_NAME = 'HughsonWestlake';
 const examSchema = hughsonWestlakeSchema.properties;
@@ -83,6 +87,8 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
   device: IDevice | undefined;
   results: HughsonWestlakeResultsInterface | undefined;
   levelProgressionData: TrialProgressionPlotDataInterface | undefined;
+  combinedAudiogramData: AudiometryResultsInterface | undefined;
+  private currentPageId: string | undefined;
 
   protected examProperties: HughsonWestlakeExamPropertiesInterface = {
     Screener: examPropSchema.Screener.default,
@@ -137,6 +143,7 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
     this.examService.submit = () => this.submitWithNotes();
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'hughsonWestlakeResponseArea') {
+        this.currentPageId = updatedPage.id;
         await this.setupResponseArea(updatedPage.responseArea as HughsonWestlakeResponseAreaInterface);
       }
     });
@@ -293,6 +300,11 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
       !this.examProperties.Screener && this.plotProperties.displayLevelProgression && results?.L
         ? this.createLevelProgressionData(results)
         : undefined;
+    // The combined audiogram has no meaning for a pass/fail screener, which has no threshold to plot.
+    this.combinedAudiogramData =
+      !this.examProperties.Screener && this.plotProperties.displayAudiogram?.length
+        ? this.buildCombinedAudiogramData(results)
+        : undefined;
     this.updateResponseAreaState(ResponseAreaState.Results);
     this.resultsModel.updateCurrentPage({ response: results });
     this.stateModel.updateState({ isSubmittable: true });
@@ -338,6 +350,62 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
       xLabel: 'Presentation',
       yLabel: levelUnits,
       title,
+    };
+  }
+
+  /**
+   * Build the combined audiogram data for the pages listed in plotProperties.displayAudiogram:
+   * the current (not-yet-submitted) page's own result, plus every other Hughson-Westlake page in
+   * that list that has already been submitted earlier in this protocol run.
+   * @param results The final results returned by the device for the current page.
+   */
+  private buildCombinedAudiogramData(results: HughsonWestlakeResultsInterface | undefined): AudiometryResultsInterface {
+    const levelUnits = this.examProperties.LevelUnits ?? examPropSchema.LevelUnits.default;
+    const pageIds = this.plotProperties.displayAudiogram ?? [];
+
+    const datums: AudiometryCombinedDatum[] = [];
+    const current = this.toAudiogramDatum(this.examProperties.F, this.examProperties.OutputChannel, results);
+    if (current) {
+      datums.push(current);
+    }
+
+    this.resultsModel
+      .getResults()
+      .currentExam.responses.filter(
+        (r: CurrentResults) => r.pageId !== this.currentPageId && r.responseArea === 'hughsonWestlakeResponseArea' && pageIds.includes(r.pageId)
+      )
+      .forEach((r: CurrentResults) => {
+        const examProperties = (r.page?.responseArea as HughsonWestlakeResponseAreaInterface)?.examProperties;
+        const datum = this.toAudiogramDatum(examProperties?.F, examProperties?.OutputChannel, r.response as HughsonWestlakeResultsInterface);
+        if (datum) {
+          datums.push(datum);
+        }
+      });
+
+    return assembleAudiometryResults(datums, levelUnits);
+  }
+
+  /**
+   * Map one page's frequency/channel configuration and device result into a single combined
+   * audiogram datum, or null if that page has no usable frequency/result to plot.
+   * @param frequency The page's configured test frequency (Hz).
+   * @param outputChannel The page's configured output channel.
+   * @param results The page's device result.
+   */
+  private toAudiogramDatum(
+    frequency: number | undefined,
+    outputChannel: HughsonWestlakeExamPropertiesInterface['OutputChannel'],
+    results: HughsonWestlakeResultsInterface | undefined
+  ): AudiometryCombinedDatum | null {
+    if (frequency === undefined || !results) {
+      return null;
+    }
+    return {
+      frequency,
+      threshold: Number.isFinite(results.Threshold) ? results.Threshold : null,
+      channel: outputChannelToEarChannel(outputChannel),
+      resultType: String(results.ResultType),
+      masking: false,
     };
   }
 

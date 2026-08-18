@@ -49,6 +49,15 @@ export interface PlotProperties {
   displayFrequencyProgression?: boolean;
 }
 
+/** Single frequency/threshold point contributed by a page toward a combined audiogram. */
+export interface AudiometryCombinedDatum {
+  frequency: number;
+  threshold: number | null;
+  channel: string;
+  resultType: string;
+  masking: boolean;
+}
+
 export interface AudiometryExamProperties {
   // Audiometry Level
   F?: number;

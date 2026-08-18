@@ -50,6 +50,7 @@
         ><br />{{ results.ResultType }}
       </div>
       <app-trial-progression-plot *ngIf="levelProgressionData" [data]="levelProgressionData"></app-trial-progression-plot>
+      <app-audiometry-combined-results *ngIf="combinedAudiogramData" [dataStruct]="combinedAudiogramData"></app-audiometry-combined-results>
     </ng-container>
   </div>
 
