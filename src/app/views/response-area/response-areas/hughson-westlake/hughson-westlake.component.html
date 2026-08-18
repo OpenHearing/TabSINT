@@ -12,7 +12,7 @@
   </div>
 
   <!-- Landing page: shown until the subject presses begin. -->
-  <div *ngIf="hwState === ResponseAreaState.Start" class="hw-start">
+  <div *ngIf="state === ResponseAreaState.Start" class="hw-start">
     <p *ngIf="retryMessage">{{ retryMessage | transloco }}</p>
     <button class="btn btn-default" type="button" (click)="beginExam()">
       {{ "Begin" | transloco }}
@@ -20,7 +20,7 @@
   </div>
 
   <!-- Running exam: shows the software response button while the device runs the exam. -->
-  <div *ngIf="hwState === ResponseAreaState.Exam" class="hw-exam">
+  <div *ngIf="state === ResponseAreaState.Exam" class="hw-exam">
     <p class="instructions" *ngIf="examInstructions">{{ examInstructions | transloco }}</p>
     <div *ngIf="useSoftwareButton" class="hw-button-row">
       <app-software-button
@@ -33,7 +33,7 @@
   </div>
 
   <!-- Results: shown once the device reports the exam is complete. -->
-  <div *ngIf="hwState === ResponseAreaState.Results" class="hw-results">
+  <div *ngIf="state === ResponseAreaState.Results" class="hw-results">
     <ng-container *ngIf="noResponseMessage; else hwNormalResults">
       <div>{{ noResponseMessage | transloco }}</div>
     </ng-container>
@@ -55,7 +55,7 @@
   </div>
 
   <!-- Notes: shown after the exam has failed twice in a row and getNotesIfFailedTwice is set. -->
-  <div *ngIf="hwState === ResponseAreaState.Notes" class="hw-notes">
+  <div *ngIf="state === ResponseAreaState.Notes" class="hw-notes">
     <p>{{ "Audiometry Administrator Notes Message" | transloco }}</p>
     <textarea class="hw-notes-input" [(ngModel)]="adminNotes"></textarea>
   </div>

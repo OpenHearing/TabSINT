@@ -64,7 +64,10 @@ export class AudiometryResultsTableComponent implements OnChanges {
    */
   formatChannelName(channel: string) {
     if (!channel) return channel; // Handles empty strings, null, or undefined
-    return channel.charAt(0).toUpperCase() + channel.slice(1);
+    return channel
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
   }
 
   /**
@@ -75,8 +78,10 @@ export class AudiometryResultsTableComponent implements OnChanges {
   formatChannelColor(channel: string) {
     switch (channel) {
       case 'left':
+      case 'bone_left':
         return '#007bff';
       case 'right':
+      case 'bone_right':
         return '#dc3545';
       default:
         return 'black';
