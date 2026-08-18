@@ -1,20 +1,9 @@
-<div>
-  <br />
-  <br />
-  <br />
-  <br />
-  <div ng-style="div_style">
-    <button
-      id="bekesy_button"
-      class="button"
-      [ngClass]="buttonPressed ? 'buttonPressed' : 'buttonReleased'"
-      [ngStyle]="{ 'text-align': bekesyResponseParameter.buttonAlign }"
-      (touchstart)="touchstartFun()"
-      (touchmove)="touchmoveFun()"
-      (touchend)="touchendFun()"
-      (mousedown)="touchstartFun()"
-      (mouseup)="touchendFun()">
-      {{ buttonText | transloco }}
-    </button>
-  </div>
+<div class="bekesy-button-row" [ngStyle]="{ 'text-align': bekesyResponseParameter.buttonAlign }">
+  <app-software-button
+    [mode]="'hold'"
+    [buttonText]="buttonText"
+    [buttonPressedText]="bekesyResponseParameter.buttonPressedText"
+    (pressStart)="touchstartFun()"
+    (pressEnd)="touchendFun()">
+  </app-software-button>
 </div>
