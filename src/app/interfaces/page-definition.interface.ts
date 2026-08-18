@@ -27,6 +27,7 @@ import { GapResponseAreaInterface } from '../views/response-area/response-areas/
 import { HughsonWestlakeResponseAreaInterface } from '../views/response-area/response-areas/hughson-westlake/hughson-westlake.interface';
 import { BhaftResponseAreaInterface } from '../views/response-area/response-areas/bhaft/bhaft.interface';
 import { MpanlResponseAreaInterface } from '../views/response-area/response-areas/mpanl/mpanl.interface';
+import { BekesyLikeResponseAreaInterface } from '../views/response-area/response-areas/bekesy-like/bekesy-like.interface';
 import { CalibrationFileWavProperties } from './calibration-file.interface';
 
 export interface PageDefinition {
@@ -172,4 +173,5 @@ export type ResponseArea =
   | GapResponseAreaInterface
   | HughsonWestlakeResponseAreaInterface
   | BhaftResponseAreaInterface
-  | MpanlResponseAreaInterface;
+  | MpanlResponseAreaInterface
+  | BekesyLikeResponseAreaInterface;

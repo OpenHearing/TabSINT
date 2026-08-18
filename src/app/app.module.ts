@@ -123,6 +123,7 @@ import { HintComponent } from './views/response-area/response-areas/hint/hint.co
 import { HughsonWestlakeComponent } from './views/response-area/response-areas/hughson-westlake/hughson-westlake.component';
 import { BhaftComponent } from './views/response-area/response-areas/bhaft/bhaft.component';
 import { MpanlComponent } from './views/response-area/response-areas/mpanl/mpanl.component';
+import { BekesyLikeComponent } from './views/response-area/response-areas/bekesy-like/bekesy-like.component';
 import { SoftwareButtonComponent } from './views/response-area/response-areas/shared/audiometry/software-button/software-button.component';
 import { AudiometryResultsTableComponent } from './views/response-area/response-areas/shared/audiometry/audiometry-results-table/audiometry-results-table.component';
 import { AudiometryPropertiesComponent } from './views/response-area/response-areas/shared/audiometry/audiometry-properties/audiometry-properties.component';
@@ -206,6 +207,7 @@ import { AudiometryLegendComponent } from './views/response-area/response-areas/
     HughsonWestlakeComponent,
     BhaftComponent,
     MpanlComponent,
+    BekesyLikeComponent,
     GitlabFormComponent,
     SoftwareButtonComponent,
     AudiometryResultsTableComponent,
