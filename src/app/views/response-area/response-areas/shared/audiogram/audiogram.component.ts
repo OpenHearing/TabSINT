@@ -3,6 +3,21 @@ import * as d3 from 'd3';
 import { AudiogramDatumNoNullInterface, AudiometryResultsInterface } from '../../../../../interfaces/audiometry-results.interface';
 import { LevelUnits, ResultType } from '../../../../../utilities/constants';
 
+/**
+ * Color for a channel's symbols/lines. Left-ear channels (air or bone conduction) are blue,
+ * right-ear channels are red/tomato, and mono (binaural air, or bone conduction with no ear
+ * specified) is black since it isn't associated with either ear.
+ */
+function channelColor(channel: string): string {
+  if (channel === 'right' || channel === 'bone_right') {
+    return '#FF6347';
+  }
+  if (channel === 'mono') {
+    return 'black';
+  }
+  return 'blue'; // 'left' and 'bone_left'
+}
+
 // See https://www.asha.org/policy/GL1990-00006/ for audiogram specifications
 @Component({
   selector: 'app-audiogram',
@@ -87,7 +102,6 @@ export class AudiogramComponent implements OnInit, OnChanges {
     }
     const width = baseWidth - margin.left - margin.right;
     const height = width * aspectRatio - 20;
-    const graphBorderColor = this.dataStruct.channels[0] === 'left' ? 'blue' : 'red';
     const xScale = d3.scaleLog().base(2).range([0, width]).domain([93.75, 24000]);
     const yScale = d3
       .scaleLinear()
@@ -98,12 +112,35 @@ export class AudiogramComponent implements OnInit, OnChanges {
     const xAxisMinor = d3.axisTop(xScale).tickFormat(d3.format(',.0f')).tickValues(xTicksMinor).tickSize(3);
     const yAxis = d3.axisLeft(yScale).tickValues(yTicks).tickSize(10);
 
-    const colorMap = (d: any) => (d.channel.includes('left') ? 'blue' : '#FF6347');
+    const colorMap = (d: any) => channelColor(d.channel);
     const strokeWidthMap = () => 2;
-    // M -10,12 L -8,7
+
+    // Base symbol shapes, centered at the origin
+    const baseSymbol = (channel: string): string => {
+      switch (channel) {
+        case 'left':
+          return 'M -4,-4 L 4,4 M -4,4 L 4,-4'; // X shape
+        case 'bone_left':
+          return 'M 4,-5 L -4,0 L 4,5'; // '<' shape
+        case 'bone_right':
+          return 'M -4,-5 L 4,0 L -4,5'; // '>' shape
+        case 'mono':
+          return 'M 0,-5 L 5,0 L 0,5 L -5,0 Z'; // Diamond shape
+        case 'right':
+        default:
+          return d3.symbol().type(d3.symbolCircle).size(50)() ?? '';
+      }
+    };
+
+    // "Beyond" points get the base symbol plus an arrowhead tail pointing away from its lowest point.
     const symbolMap = (d: any): string => {
-      if (d.resultType === ResultType.Beyond) {
-        if (d.channel === 'left') {
+      const base = baseSymbol(d.channel);
+      if (d.resultType !== ResultType.Beyond) {
+        return base;
+      }
+
+      switch (d.channel) {
+        case 'left':
           // X with a proper southeast arrowhead
           return `
            M -4,-4 L 4,9
@@ -111,24 +148,39 @@ export class AudiogramComponent implements OnInit, OnChanges {
            M 4,9 L 6,4
            M 4,9 L -2,8
           `;
-        } else if (d.channel === 'right') {
+        case 'bone_left':
+          // '<' with a southeast arrowhead tail
+          return `
+            ${base}
+            M 4,5 L 10,12
+            M 10,12 L 8,7
+            M 10,12 L 2,11
+          `;
+        case 'right':
           // Circle with a proper southwest arrowhead
           return `
-            M 0,-5 A 5,5 0 1,0 0,5 A 5,5 0 1,0 0,-5
+            ${base}
             M 0,5 L -10,12
             M -10,12 L -8,7
             M -10,12 L -2,11
           `;
-        }
-      } else {
-        // Default symbols for Threshold points
-        if (d.channel === 'left') {
-          return 'M -4,-4 L 4,4 M -4,4 L 4,-4'; // X Shape
-        }
-        return d3.symbol().type(d3.symbolCircle).size(50)() ?? '';
+        case 'bone_right':
+          // '>' with a southwest arrowhead tail
+          return `
+            ${base}
+            M -4,5 L -10,12
+            M -10,12 L -8,7
+            M -10,12 L -2,11
+          `;
+        default:
+          // mono: diamond with a downward arrowhead tail
+          return `
+            ${base}
+            M 0,5 L 0,12
+            M 0,12 L -3,7
+            M 0,12 L 3,7
+          `;
       }
-
-      return ''; // Return an empty string as a fallback
     };
 
     // Chart Area
@@ -197,7 +249,6 @@ export class AudiogramComponent implements OnInit, OnChanges {
       .attr('height', height)
       .attr('width', width)
       .attr('class', 'graph-border')
-      .style('stroke', graphBorderColor) // Use the color you defined earlier
       .style('fill', 'none')
       .style('stroke-width', '1px');
 
