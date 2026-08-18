@@ -187,6 +187,8 @@ export class DevicesService {
             const rebootResponse = await this.reboot(device);
             if (isValidDeviceResponse(rebootResponse)) {
               completionResponse = 'The device will now reboot. Reconnect the device to verify firmware was updated.';
+            } else {
+              completionResponse = 'The device failed to reboot automatically, please power cycle the device for the firmware update.';
             }
           }
         }
@@ -543,7 +545,7 @@ export class DevicesService {
           The firmware on device ${device.deviceId} is not supported by this TabSINT version.
           This TabSINT version supports ${firmwareAsset.version} firmware.
           Select 'OK' to update the firmware on ${device.deviceId}.
-          The firmware can also be updated through the device information panel.
+          The firmware can also be updated through the device details panel.
         `,
         type: DialogType.Confirm,
       };
