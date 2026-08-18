@@ -7,7 +7,7 @@ This test measures the highest audible frequency for a given level, or the level
 
 .. important::
 
-   In practice, this exam has always been used with the :doc:`masking noise feature<../features/noise>`.
+   In practice, this exam has always been used with the `masking noise feature <chadocs_>`_.
 
 Revision Table
 --------------
@@ -23,22 +23,20 @@ Revision Table
    * - 1
      - 17 August 2026
      - SCranford
-     - Initial commit for a Bekesy Highest Audible Frequency (BHAFT) exam.  Imported the `CHA DOCS Bekesy Highest Audible Frequency exam <https://code.crearecomputing.com/cha/cha-docs/-/blob/master/CHA/protocols/bekesy%20highest%20audible%20frequency.rst?ref_type=heads>`_ rev 1.5.0. 
+     - Initial commit for a Bekesy Highest Audible Frequency (BHAFT) exam.  Imported the `CHA DOCS Bekesy Highest Audible Frequency exam <https://code.crearecomputing.com/cha/cha-docs/-/blob/master/CHA/protocols/bekesy%20highest%20audible%20frequency.rst?ref_type=heads>`_ rev 1.5.0.
 
 References
 ----------
 
+.. _chadocs: https://cha.crearecomputing.net/cha-docs/CHA/protocols/bekesy%20highest%20audible%20frequency.html
+
 This specification references
 """""""""""""""""""""""""""""
-1. :doc:`../api/index`
-2. :doc:`audiometry`
-3. :doc:`bekesy`
-4. :doc:`calibration`
-5. :doc:`tone generation`
+1. `CHA DOCS Bekesy Highest Audible Frequency <chadocs_>`_
 
 This specification is referenced in the following
 """""""""""""""""""""""""""""""""""""""""""""""""
-1. :doc:`audiometry`
+1. `CHA DOCS Bekesy Highest Audible Frequency <chadocs_>`_
 
 Literature
 ^^^^^^^^^^
@@ -55,18 +53,12 @@ Algorithm
 
 .. _bhaft_figure_1:
 
-.. figure:: ../images/HAF_Algorithm.png
-   :alt: Bekesy Highest Audible Frequency
-   :align: center
+**Figure 1**: `Bekesy Highest Audible Frequency Threshold Algorithm Schematic <chadocs_>`_. *"i" is the relevant increment.*
 
-   **Figure 1**
-
-   *Bekesy Highest Audible Frequency Threshold Algorithm Schematic. "i" is the relevant increment*
-   
 .. todo::
    should the following statement be in the SRS or removed?
 
-The exam ends successfully if *ReversalsKeep* reversals are observed enforcing the :doc:`bekesy` "peaks and valleys" criterion. 
+The exam ends successfully if *ReversalKeep* reversals are observed enforcing the `Bekesy tracking algorithm <chadocs_>`_ "peaks and valleys" criterion.
    
 .. todo::
    Do we need the following "Behavior..." block?
@@ -82,44 +74,32 @@ Example Cases
 The three examples below have the following parameters:
 
 - *Fstart* = 8000
-- *L0* = 80
+- *Level* = 80
 - *MaximumOutputFrequency* = 16000
 
 Threshold Below MaximumOutputFrequency
 """"""""""""""""""""""""""""""""""""""
-If the subject's threshold frequency at *L0* is less than *MaximumOutputFrequency* then the traditional fixed-level frequency threshold (FLFT) behavior is observed:
+If the subject's threshold frequency at *Level* is less than *MaximumOutputFrequency* then the traditional fixed-level frequency threshold (FLFT) behavior is observed:
 
 .. _bhaft_figure_2:
 
-.. figure:: ../images/HAF_Freq.png
-   :alt: Example Behavior for Threshold Below MaximumOutputFrequency
-   :align: center
-
-   **Figure 2**
+**Figure 2**: `Example Behavior for Threshold Below MaximumOutputFrequency <chadocs_>`_
 
 Threshold Above MaximumOutputFrequency
 """"""""""""""""""""""""""""""""""""""
-If the subject's threshold is significantly less than *L0* at the *MaximumOutputFrequency* then traditional fixed-frequency level threshold (FFLT)-like behavior is observed following the FLFT portion of the exam:
+If the subject's threshold is significantly less than *Level* at the *MaximumOutputFrequency* then traditional fixed-frequency level threshold (FFLT)-like behavior is observed following the FLFT portion of the exam:
 
 .. _bhaft_figure_3:
 
-.. figure:: ../images/HAF_Level.png
-   :alt: Example Behavior for Threshold Above MaximumOutputFrequency
-   :align: center
-
-   **Figure 3**
+**Figure 3**: `Example Behavior for Threshold Above MaximumOutputFrequency <chadocs_>`_
 
 Threshold Near MaximumOutputFrequency
 """""""""""""""""""""""""""""""""""""
-If the subject's threshold is close to *L0* at the *MaximumOutputFrequency* then both FLFT and FFLT behavior is observed:
+If the subject's threshold is close to *Level* at the *MaximumOutputFrequency* then both FLFT and FFLT behavior is observed:
 
 .. _bhaft_figure_4:
 
-.. figure:: ../images/HAF_FreqLevel.png
-   :alt: Example Behavior for Threshold Near MaximumOutputFrequency
-   :align: center
-
-   **Figure 4**
+**Figure 4**: `Example Behavior for Threshold Near MaximumOutputFrequency <chadocs_>`_
 
 SemiAutomatic Mode
 ^^^^^^^^^^^^^^^^^^
@@ -150,7 +130,7 @@ Data Interface
 TestBekesyHighestAudibleFrequency
 """""""""""""""""""""""""""""""""
 
-This class represents the definition of a Bekesy-like threshold examination.  The Bekesy-like test includes testing multiple frequencies, but the order and number of frequencies will be controlled at the GUI level.  The conversion between dB SPL and dB HL is stored as part of the probe specific calibration (see :doc:`calibration`).
+This class represents the definition of a Bekesy-like threshold examination.  The Bekesy-like test includes testing multiple frequencies, but the order and number of frequencies will be controlled at the GUI level.  The conversion between dB SPL and dB HL is stored as part of the probe specific calibration (see `calibration <chadocs_>`_).
 
 +----+-----------------------------------+-------+-------------+-------+
 |Name                                    | Units | Range       |Default|
@@ -159,22 +139,22 @@ This class represents the definition of a Bekesy-like threshold examination.  Th
 +====+===================================+=======+=============+=======+
 | **TestAudiometry**                     |       |             |       |
 +----+-----------------------------------+-------+-------------+-------+
-|    |  See :ref:`TestAudiometry`                              |       |
+|    |  See `TestAudiometry <chadocs_>`_                       |       |
 +----+-----------------------------------+-------+-------------+-------+
 | **ToneGeneration**                     |       |             |       |
 +----+-----------------------------------+-------+-------------+-------+
-|    |  See :ref:`ToneGeneration`                              |       |
+|    |  See `ToneGeneration <chadocs_>`_                       |       |
 +----+-----------------------------------+-------+-------------+-------+
 | **ToneRepetitionInterval**             |       |             | 700   |
 +----+-----------------------------------+-------+-------------+-------+
 |    |  Overrides default inherited from         |             |       |
-|    |  :ref:`TestAudiometry`                    |             |       |
+|    |  `TestAudiometry <chadocs_>`_             |             |       |
 +----+-----------------------------------+-------+-------------+-------+
 | **Fstart**                             | Hz    | See [3]_    | 1000  |
 +----+-----------------------------------+-------+-------------+-------+
 |    |  Start frequency. Constrain to nearest octave.          |       |
 +----+-----------------------------------+-------+-------------+-------+
-| **MaximumOutputFrequncy**              | Hz    | See [4]_    | Set by|
+| **MaximumOutputFrequency**             | Hz    | See [4]_    | Set by|
 |                                        |       |             | cal   |
 +----+-----------------------------------+-------+-------------+-------+
 |    |  Maximum frequency that could be presented during exam  |       |
@@ -184,7 +164,7 @@ This class represents the definition of a Bekesy-like threshold examination.  Th
 +----+-----------------------------------+-------+-------------+-------+
 |    |  Minimum frequency that could be presented during exam  |       |
 +----+-----------------------------------+-------+-------------+-------+
-| **L0**                                 | dB    | See [2]_    | 80    |
+| **Level**                              | dB    | See [2]_    | 80    |
 +----+-----------------------------------+-------+-------------+-------+
 |    |  Nominal Test Level in dB SPL                           |       |
 +----+-----------------------------------+-------+-------------+-------+
@@ -231,7 +211,7 @@ This class represents the definition of a Bekesy-like threshold examination.  Th
 .. [1] If the next presentation frequency, p+1, will be increased, multiply current frequency by 2 raised to the increment, :math:`F_{p+1}=F_p \cdot 2^{increment}`.  Conversely, when decreasing frequency, multiply current frequency by 2 to the negative of the increment.
 .. [2] The allowable range for test level should be from the minimum to the maximum of the levels defined in the calibration table.  Also, this exam is only defined for dB SPL, and CHA shall not allow other units. 
 .. [3] The range allowed for start frequency should be based on the **MinimumOutputFrequency** and **MaximumOutputFrequency**.
-.. [4] The upper and lower limits should be derived from the data in the calibration table (see :doc:`calibration`).  These will likely also be dependent on the level, **L**, requested since we’re now defining Min/Max output levels based on speaker linearity.  A starting value requested outside of this range should raise an exception to alert the user the frequency is outside the allowable range.
+.. [4] The upper and lower limits should be derived from the data in the calibration table (see `calibration <chadocs_>`_).  These will likely also be dependent on the level, **L**, requested since we’re now defining Min/Max output levels based on speaker linearity.  A starting value requested outside of this range should raise an exception to alert the user the frequency is outside the allowable range.
 
 .. _bhaft_stored_data:
 
@@ -262,7 +242,7 @@ This class is returned from ProbeLink::getTestResults upon successful test compl
 +----+----------------------------------------------------+---------------+
 | **ResultType**                                          |               |
 +----+----------------------------------------------------+---------------+
-|    |  See :ref:`TestAudiometryResults`                  |               |
+|    |  See `TestAudiometryResults <chadocs_>`_           |               |
 +----+----------------------------------------------------+---------------+
 
 GUI
@@ -325,17 +305,11 @@ Software Tests
  #. Use your observations about the presentations during the exam to verify :envvar:`SRS-bhaft-001`, :envvar:`SRS-bhaft-002`, and :envvar:`SRS-bhaft-003`.
  #. Press "Show Debug Info" and look at the frequency array (**F**). Check that the frequency step size before the first reversal and after the first reversal is correct (see figure below). This verifies :envvar:`SRS-bhaft-004` and :envvar:`SRS-bhaft-005`.
 
-   .. figure:: /CHA/images/BHAFTIncrementNominalFrequency.png
-      :alt: BHAFT Frequency Increments Example
-      :align: center
-      :scale: 60
+   `BHAFT Frequency Increments Example <chadocs_>`_
 
  #. Review the frequency array (**F**) and confirm that the correct number of reversals were kept/discarded. The default value for **ReversalDiscard** is 2 and for **ReversalKeep** is 6. Also confirm that the threshold was correctly calculated (see figure below). This verifies :envvar:`SRS-bhaft-005`. 
   
-   .. figure:: /CHA/images/BHAFTFrequencyThresholdExample.png
-      :alt: BHAFT Threshold Calculation Example
-      :align: center
-      :scale: 60
+   `BHAFT Threshold Calculation Example <chadocs_>`_
 
  #. Review the frequency array (**F**) and confirm that the starting frequency in the array is equal to **Fstart**. This verifies :envvar:`SRS-bhaft-007`.
  #. Begin another BHAFT exam. Hold the response button such that the frequency stops increasing and the level starts to decrease. Review the frequency and level arrays (**F** and **L**) and confirm that when the maximum output frequency the exam switches from fixed level to fixed frequency. This verifies :envvar:`SRS-bhaft-008` and :envvar:`SRS-bhaft-009`. The Test Case and Acceptance Criteria for :envvar:`SRS-bhaft-009` will be improved at a later time. 
