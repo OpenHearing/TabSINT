@@ -114,6 +114,9 @@
                 "id": "Hughson-Westlake Threshold"
               },
               {
+                "id": "BHAFT"
+              },
+              {
                 "id": "CHA Wav Test"
               },
               {
@@ -300,6 +303,12 @@
               "conditional": "result.response=='Hughson-Westlake Threshold'",
               "target": {
                 "reference": "hughsonWestlakeThresholdResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='BHAFT'",
+              "target": {
+                "reference": "bhaftResponseArea"
               }
             },
             {
@@ -1538,6 +1547,56 @@
               "MaxISI": 3000
             },
             "plotProperties": {
+              "displayLevelProgression": true
+            },
+            "maskingNoise": {
+              "Type": "white",
+              "Level": [30, 30]
+            }
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "bhaftResponseArea",
+      "pages": [
+        {
+          "id": "BHAFT",
+          "title": "Bekesy Highest Audible Frequency Threshold",
+          "questionMainText": "Automated Highest Audible Frequency Search",
+          "responseArea": {
+            "type": "bhaftResponseArea",
+            "hideExamProperties": "during",
+            "autoBegin": false,
+            "repeatIfFailedOnce": true,
+            "getNotesIfFailedTwice": true,
+            "showMessageIfNoResponse": true,
+            "examInstructions": "Press and hold the button whenever you believe you hear the sound and release the button when you can no longer hear the sound.",
+            "resultMainText": "Automated frequency threshold search complete.",
+            "resultSubText": "Press submit to continue.",
+            "examProperties": {
+              "Fstart": 8000,
+              "MaximumOutputFrequency": 16000,
+              "Level": 80,
+              "ReversalDiscard": 2,
+              "ReversalKeep": 6,
+              "IncrementStartMultiplierFrequency": 2,
+              "IncrementNominalFrequency": 0.08333,
+              "IncrementStartMultiplierLevel": 2,
+              "IncrementNominalLevel": 4,
+              "SemiAutomaticMode": false,
+              "LevelUnits": "dB SPL",
+              "OutputChannel": "HPL0",
+              "UseSoftwareButton": true,
+              "PresentationMax": 100,
+              "BypassCalibrationLimit": true
+            },
+            "plotProperties": {
+              "displayFrequencyProgression": true,
               "displayLevelProgression": true
             },
             "maskingNoise": {

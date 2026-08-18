@@ -119,7 +119,7 @@ export class HintComponent implements OnInit, OnDestroy {
     this.responseArea = responseArea;
     this.examInstructions = responseArea.examInstructions;
     // Overlay the protocol's values on top of the schema defaults seeded at construction.
-    this.examProperties = { ...this.examProperties, ...(responseArea.examProperties ?? {}) };
+    this.examProperties = { ...this.examProperties, ...responseArea.examProperties };
     this.numberOfPresentations = this.examProperties.NumberOfPresentations ?? this.numberOfPresentations;
 
     await this.setupDevice(responseArea);
