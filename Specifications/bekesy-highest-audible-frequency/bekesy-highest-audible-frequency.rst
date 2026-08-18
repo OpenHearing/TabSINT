@@ -28,6 +28,9 @@ Revision Table
 References
 ----------
 
+Related internal documents
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. _chadocs: https://cha.crearecomputing.net/cha-docs/CHA/protocols/bekesy%20highest%20audible%20frequency.html
 
 This specification references
