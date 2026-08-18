@@ -371,7 +371,7 @@ describe('BekesyLikeComponent', () => {
     component.ngOnDestroy();
   }));
 
-  it('shows the device response (frequency/threshold) as rounded text, while the stored results keep full precision', fakeAsync(() => {
+  it('shows the device response (threshold only, rounded) as text, while the stored results keep full precision', fakeAsync(() => {
     const pageModel = TestBed.inject(PageModel);
     devicesService.requestResults.and.resolveTo({
       deviceId: mockDevice.deviceId,
@@ -396,9 +396,42 @@ describe('BekesyLikeComponent', () => {
     fixture.detectChanges();
 
     const responseText: string = fixture.nativeElement.querySelector('.bekesy-like-response')?.textContent ?? '';
-    expect(responseText).toContain('1000');
+    expect(responseText).not.toContain('1000');
     expect(responseText).toContain('39.57');
     expect(component.results?.Threshold).toBe(39.567);
+    component.ngOnDestroy();
+  }));
+
+  it('shows "Test Unsuccessful" with the ResultType when the result does not converge', fakeAsync(() => {
+    const pageModel = TestBed.inject(PageModel);
+    devicesService.requestResults.and.resolveTo({
+      deviceId: mockDevice.deviceId,
+      msg: [
+        'Result',
+        { RetSPL: NaN, L: [40, 44, 48, 52, 56], MaximumExcursion: NaN, Slope: NaN, Threshold: NaN, Units: 1, ResultType: 'Failed to Converge' },
+      ],
+    });
+
+    pageModel.updatePage({
+      ...pageInterfaceDefaults,
+      id: 'bekesy-like',
+      responseArea: {
+        type: 'bekesyLikeResponseArea',
+        autoBegin: true,
+        examProperties: { F: 1000, LevelUnits: 'dB HL' },
+      } as ResponseArea,
+    });
+    tick();
+    fixture.detectChanges();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (component as any).fetchAndFinishExam();
+    tick();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.bekesy-like-response')).toBeNull();
+    expect(fixture.nativeElement.textContent).toContain('Test Unsuccessful');
+    expect(fixture.nativeElement.textContent).toContain('Failed to Converge');
     component.ngOnDestroy();
   }));
 });

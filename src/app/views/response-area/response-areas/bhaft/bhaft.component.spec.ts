@@ -401,4 +401,30 @@ describe('BhaftComponent', () => {
     expect(responseText).toContain('72');
     component.ngOnDestroy();
   }));
+
+  it('shows "Test Unsuccessful" with the ResultType when the result does not converge', fakeAsync(() => {
+    const pageModel = TestBed.inject(PageModel);
+    devicesService.requestResults.and.resolveTo({
+      deviceId: mockDevice.deviceId,
+      msg: ['Result', { ThresholdFrequency: NaN, ThresholdLevel: NaN, F: [8000, 9500], L: [80, 72], ResultType: 'Failed to Converge' }],
+    });
+
+    pageModel.updatePage({
+      ...pageInterfaceDefaults,
+      id: 'bhaft',
+      responseArea: { type: 'bhaftResponseArea', autoBegin: true },
+    });
+    tick();
+    fixture.detectChanges();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (component as any).fetchAndFinishExam();
+    tick();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.bhaft-response')).toBeNull();
+    expect(fixture.nativeElement.textContent).toContain('Test Unsuccessful');
+    expect(fixture.nativeElement.textContent).toContain('Failed to Converge');
+    component.ngOnDestroy();
+  }));
 });

@@ -41,11 +41,16 @@
       <div>{{ resultMainText | transloco }}</div>
       <div *ngIf="resultSubText">{{ resultSubText | transloco }}</div>
     </ng-template>
-    <div *ngIf="results && !examProperties.Screener" class="hw-response">
-      <div>{{ "Frequency" | transloco }}: {{ examProperties.F }} Hz</div>
-      <div>{{ "Threshold" | transloco }}: {{ round(results.Threshold, 2) }} {{ examProperties.LevelUnits }}</div>
-    </div>
-    <app-trial-progression-plot *ngIf="levelProgressionData" [data]="levelProgressionData"></app-trial-progression-plot>
+    <ng-container *ngIf="results && !examProperties.Screener">
+      <div *ngIf="results.ResultType === 'Threshold'" class="hw-response">
+        {{ "Threshold:" | transloco }} {{ round(results.Threshold, 2) }} {{ examProperties.LevelUnits }}
+      </div>
+      <div *ngIf="results.ResultType !== 'Threshold'">
+        <i>{{ "Test Unsuccessful" | transloco }}</i
+        ><br />{{ results.ResultType }}
+      </div>
+      <app-trial-progression-plot *ngIf="levelProgressionData" [data]="levelProgressionData"></app-trial-progression-plot>
+    </ng-container>
   </div>
 
   <!-- Notes: shown after the exam has failed twice in a row and getNotesIfFailedTwice is set. -->
