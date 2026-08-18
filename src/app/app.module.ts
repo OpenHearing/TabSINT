@@ -118,6 +118,7 @@ import { GapComponent } from './views/response-area/response-areas/gap/gap.compo
 import { TrialProgressionPlotComponent } from './views/response-area/response-areas/shared/trial-progression-plot/trial-progression-plot.component';
 import { HintComponent } from './views/response-area/response-areas/hint/hint.component';
 import { HughsonWestlakeComponent } from './views/response-area/response-areas/hughson-westlake/hughson-westlake.component';
+import { BhaftComponent } from './views/response-area/response-areas/bhaft/bhaft.component';
 import { SoftwareButtonComponent } from './views/response-area/response-areas/shared/audiometry/software-button/software-button.component';
 import { AudiometryResultsTableComponent } from './views/response-area/response-areas/shared/audiometry/audiometry-results-table/audiometry-results-table.component';
 import { AudiometryPropertiesComponent } from './views/response-area/response-areas/shared/audiometry/audiometry-properties/audiometry-properties.component';
@@ -196,6 +197,7 @@ import { AudiometryLegendComponent } from './views/response-area/response-areas/
     TrialProgressionPlotComponent,
     HintComponent,
     HughsonWestlakeComponent,
+    BhaftComponent,
     GitlabFormComponent,
     SoftwareButtonComponent,
     AudiometryResultsTableComponent,

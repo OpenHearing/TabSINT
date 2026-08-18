@@ -46,6 +46,7 @@ export interface MaskingNoise {
 export interface PlotProperties {
   displayAudiogram?: string[];
   displayLevelProgression?: boolean;
+  displayFrequencyProgression?: boolean;
 }
 
 export interface AudiometryExamProperties {

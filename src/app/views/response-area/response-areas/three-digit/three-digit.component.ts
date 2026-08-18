@@ -140,7 +140,7 @@ export class ThreeDigitComponent implements OnInit, OnDestroy {
     this.feedbackDelay = responseArea.feedbackDelay ?? this.feedbackDelay;
     this.keypadDelay = responseArea.keypadDelay ?? this.keypadDelay;
     this.examInstructions = responseArea.examInstructions;
-    this.examProperties = { ...this.examProperties, ...(responseArea.examProperties ?? {}) };
+    this.examProperties = { ...this.examProperties, ...responseArea.examProperties };
     this.nPresentations = this.examProperties.nPresentations ?? this.nPresentations;
     this.examProperties.nPresentations = this.nPresentations;
 

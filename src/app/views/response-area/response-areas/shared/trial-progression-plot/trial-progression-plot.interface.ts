@@ -17,6 +17,7 @@ export interface TrialProgressionPlotDataInterface {
   maxY?: number;
   minX?: number;
   referenceLine?: number;
+  referenceLineColor?: string;
   xLabel: string;
   yLabel: string;
   title: string;

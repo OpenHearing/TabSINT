@@ -10,19 +10,16 @@ import { Logger } from '../../../../services/logger.service';
 import { PageInterface } from '../../../../models/page/page.interface';
 import { IDevice } from '../../../../interfaces/devices/device.interface';
 import { DeviceType } from '../../../../utilities/constants';
-import { hughsonWestlakeSchema } from '../../../../../schema/response-areas/hughson-westlake.schema';
-import {
-  HughsonWestlakeResultsInterface,
-  HughsonWestlakeExamPropertiesInterface,
-  HughsonWestlakeResponseAreaInterface,
-} from './hughson-westlake.interface';
+import { round } from '../../../../utilities/math';
+import { bhaftSchema } from '../../../../../schema/response-areas/bhaft.schema';
+import { BhaftResultsInterface, BhaftExamPropertiesInterface, BhaftResponseAreaInterface } from './bhaft.interface';
 import { isWahtsResultsResponse, isStatusResponse } from '../../../../guards/type.guard';
 import { AudiometryHideExamProps, MaskingNoise, PlotProperties } from '../shared/audiometry/audiometry.interface';
-import { TrialProgressionPlotDataInterface } from '../shared/trial-progression-plot/trial-progression-plot.interface';
+import { TrialPointStyle, TrialProgressionPlotDataInterface } from '../shared/trial-progression-plot/trial-progression-plot.interface';
 
-const EXAM_NAME = 'HughsonWestlake';
-const examSchema = hughsonWestlakeSchema.properties;
-const examPropSchema = hughsonWestlakeSchema.properties.examProperties.properties;
+const EXAM_NAME = 'BHAFT';
+const examSchema = bhaftSchema.properties;
+const examPropSchema = bhaftSchema.properties.examProperties.properties;
 const retry_message_no_press = 'Retry Audiometry No Button Pressed';
 const retry_message_with_press = 'Retry Audiometry Button Pressed';
 
@@ -39,11 +36,11 @@ enum ResponseAreaState {
 }
 
 @Component({
-  selector: 'app-hughson-westlake-exam',
-  templateUrl: './hughson-westlake.component.html',
-  styleUrl: './hughson-westlake.component.css',
+  selector: 'app-bhaft-exam',
+  templateUrl: './bhaft.component.html',
+  styleUrl: './bhaft.component.css',
 })
-export class HughsonWestlakeComponent implements OnInit, OnDestroy {
+export class BhaftComponent implements OnInit, OnDestroy {
   private readonly pageModel = inject(PageModel);
   private readonly stateModel = inject(StateModel);
   private readonly resultsModel = inject(ResultsModel);
@@ -51,6 +48,7 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
   private readonly devicesService = inject(DevicesService);
   private readonly logger = inject(Logger);
   ResponseAreaState = ResponseAreaState;
+  readonly round = round;
 
   private readonly allowableDevices = [DeviceType.Wahts];
 
@@ -73,29 +71,27 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
   plotProperties: PlotProperties = {
     displayAudiogram: examSchema.plotProperties.properties.displayAudiogram.default,
     displayLevelProgression: examSchema.plotProperties.properties.displayLevelProgression.default,
+    displayFrequencyProgression: examSchema.plotProperties.properties.displayFrequencyProgression.default,
   };
   maskingNoise: MaskingNoise | undefined;
 
   // State
-  hwState: ResponseAreaState = ResponseAreaState.Start;
+  bhaftState: ResponseAreaState = ResponseAreaState.Start;
   device: IDevice | undefined;
-  results: HughsonWestlakeResultsInterface | undefined;
+  results: BhaftResultsInterface | undefined;
+  frequencyProgressionData: TrialProgressionPlotDataInterface | undefined;
   levelProgressionData: TrialProgressionPlotDataInterface | undefined;
 
-  protected examProperties: HughsonWestlakeExamPropertiesInterface = {
-    Screener: examPropSchema.Screener.default,
-    StepSize: examPropSchema.StepSize.default,
-    TonePulseNumber: examPropSchema.TonePulseNumber.default,
-    PollingOffset: examPropSchema.PollingOffset.default,
-    MinISI: examPropSchema.MinISI.default,
-    MaxISI: examPropSchema.MaxISI.default,
-    NumCorrectReq: examPropSchema.NumCorrectReq.default,
+  protected examProperties: BhaftExamPropertiesInterface = {
+    Fstart: examPropSchema.Fstart.default,
+    Level: examPropSchema.Level.default,
+    ReversalDiscard: examPropSchema.ReversalDiscard.default,
+    ReversalKeep: examPropSchema.ReversalKeep.default,
+    IncrementStartMultiplierFrequency: examPropSchema.IncrementStartMultiplierFrequency.default,
+    IncrementNominalFrequency: examPropSchema.IncrementNominalFrequency.default,
+    IncrementStartMultiplierLevel: examPropSchema.IncrementStartMultiplierLevel.default,
+    IncrementNominalLevel: examPropSchema.IncrementNominalLevel.default,
     SemiAutomaticMode: examPropSchema.SemiAutomaticMode.default,
-    UseReducedInitialIncrement: examPropSchema.UseReducedInitialIncrement.default,
-
-    // Audiometry Level
-    F: examPropSchema.F.default,
-    Lstart: examPropSchema.Lstart.default,
 
     // Audiometry
     LevelUnits: examPropSchema.LevelUnits.default,
@@ -134,8 +130,8 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
     this.stateModel.updateState({ isSubmittable: false });
     this.examService.submit = () => this.submitWithNotes();
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
-      if (updatedPage?.responseArea?.type === 'hughsonWestlakeResponseArea') {
-        await this.setupResponseArea(updatedPage.responseArea as HughsonWestlakeResponseAreaInterface);
+      if (updatedPage?.responseArea?.type === 'bhaftResponseArea') {
+        await this.setupResponseArea(updatedPage.responseArea as BhaftResponseAreaInterface);
       }
     });
   }
@@ -148,9 +144,9 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
 
   /**
    * Initialize the response area from the protocol definition and resolve the devices.
-   * @param responseArea The Hughson-Westlake response area definition.
+   * @param responseArea The BHAFT response area definition.
    */
-  private async setupResponseArea(responseArea: HughsonWestlakeResponseAreaInterface): Promise<void> {
+  private async setupResponseArea(responseArea: BhaftResponseAreaInterface): Promise<void> {
     // The current page can emit more than once; only set up the exam once per page.
     if (this.initialized) {
       return;
@@ -171,7 +167,7 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
     this.getNotesIfFailedTwice = responseArea.getNotesIfFailedTwice ?? this.getNotesIfFailedTwice;
     this.plotProperties = { ...this.plotProperties, ...responseArea.plotProperties };
     this.maskingNoise = responseArea.maskingNoise ?? this.maskingNoise;
-    this.showProperties = this.getPropertiesVisibility(this.hwState, this.hideExamProperties);
+    this.showProperties = this.getPropertiesVisibility(this.bhaftState, this.hideExamProperties);
 
     await this.setupDevice(responseArea);
 
@@ -182,13 +178,13 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
 
   /**
    * Resolve the device used to run the exam.
-   * @param responseArea The Hughson-Westlake response area definition.
+   * @param responseArea The BHAFT response area definition.
    */
-  private async setupDevice(responseArea: HughsonWestlakeResponseAreaInterface): Promise<void> {
+  private async setupDevice(responseArea: BhaftResponseAreaInterface): Promise<void> {
     const deviceList = await this.devicesService.getDeviceOrDefault(responseArea.tabsintId, this.allowableDevices);
     this.device = await this.devicesService.confirmSingleDevice(deviceList);
     if (!this.device) {
-      this.logger.error('Hughson-Westlake exam: no device available.');
+      this.logger.error('BHAFT exam: no device available.');
     }
   }
 
@@ -223,33 +219,11 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
     if (this.device && this.maskingNoise) {
       await this.devicesService.stopMaskingNoise(this.device);
     }
-    const results = await this.requestHughsonWestlakeResults(this.finalResultsTimeoutMs);
-    if (results) {
-      this.applyScreenerResultType(results);
-    } else {
-      this.logger.error('Hughson-Westlake exam: exam completed but no final results were returned.');
+    const results = await this.requestBhaftResults(this.finalResultsTimeoutMs);
+    if (!results) {
+      this.logger.error('BHAFT exam: exam completed but no final results were returned.');
     }
     this.processResults(results);
-  }
-
-  /**
-   * When running as a screener (pass/fail at Lstart instead of a full threshold search), remap
-   * the device's raw ResultType to the screener's pass/fail vocabulary: a converged "Threshold"
-   * result means the screener passed, an out-of-range result is unused, and anything else that
-   * failed to converge is a fail.
-   * @param results The results to remap in place.
-   */
-  private applyScreenerResultType(results: HughsonWestlakeResultsInterface): void {
-    if (!this.examProperties.Screener) {
-      return;
-    }
-    if (results.ResultType === 'Threshold') {
-      results.ResultType = 'Pass';
-    } else if (results.ResultType === 'Hearing Potentially Outside Measurable Range') {
-      results.ResultType = 'Unused';
-    } else if (results.ResultType === 'Failed to Converge') {
-      results.ResultType = 'Fail';
-    }
   }
 
   /**
@@ -257,10 +231,9 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
    * completed exam's results, then move to whichever view they land on.
    * @param results The final results returned by the device.
    */
-  private processResults(results: HughsonWestlakeResultsInterface | undefined): void {
+  private processResults(results: BhaftResultsInterface | undefined): void {
     const shouldShowNoResponseMessage = this.useSoftwareButton && this.showMessageIfNoResponse && this.buttonPressCount === 0;
-    const repeatForFailure =
-      this.repeatIfFailedOnce && (results === undefined || (results.ResultType !== 'Pass' && results.ResultType !== 'Threshold'));
+    const repeatForFailure = this.repeatIfFailedOnce && results?.ResultType !== 'Threshold';
     if (repeatForFailure && !this.failedOnce) {
       this.failedOnce = true;
       this.retryMessage = this.useSoftwareButton && this.buttonPressCount === 0 ? retry_message_no_press : retry_message_with_press;
@@ -271,7 +244,7 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
       this.finishExam(results);
       this.updateResponseAreaState(ResponseAreaState.Notes);
     } else if (shouldShowNoResponseMessage) {
-      this.logger.warning('Hughson-Westlake exam: no software button presses during this exam - showing user a message about it.');
+      this.logger.warning('BHAFT exam: no software button presses during this exam - showing user a message about it.');
       this.autoSubmit = false;
       this.noResponseMessage = this.noResponseCustomMessage;
       this.finishExam(results);
@@ -284,13 +257,11 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
    * Record the final results and move to the results view.
    * @param results The final results returned by the device.
    */
-  private finishExam(results: HughsonWestlakeResultsInterface | undefined): void {
+  private finishExam(results: BhaftResultsInterface | undefined): void {
     this.results = results;
-    // Level progression plotting should not be shown for screener exam
-    this.levelProgressionData =
-      !this.examProperties.Screener && this.plotProperties.displayLevelProgression && results?.L
-        ? this.createLevelProgressionData(results)
-        : undefined;
+    this.frequencyProgressionData =
+      this.plotProperties.displayFrequencyProgression && results?.F ? this.createFrequencyProgressionData(results) : undefined;
+    this.levelProgressionData = this.plotProperties.displayLevelProgression && results?.L ? this.createLevelProgressionData(results) : undefined;
     this.updateResponseAreaState(ResponseAreaState.Results);
     this.resultsModel.updateCurrentPage({ response: results });
     this.stateModel.updateState({ isSubmittable: true });
@@ -300,51 +271,97 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Build the data structure consumed by the shared trial-progression plot: one point per
-   * presentation (dB level on the y axis), styled by whether the subject responded and whether
-   * the presentation was one of the responses that confirmed the threshold (2-of-3 at the
-   * threshold level).
-   *
-   * The CHA firmware only populates `Threshold` when `ResultType` is `'Threshold'` — for any
-   * other result (e.g. "Failed to Converge", out-of-range results) it is left undefined, so that
-   * case is treated as "no confirmed threshold" rather than trusting a stray/undefined value.
+   * Build the data structure consumed by the shared trial-progression plot for the frequency
+   * track: one point per presentation (Hz on the y axis), filled for a hit (heard) or open for a
+   * miss (not heard) — see classifyHitOrMiss for how that's inferred.
    * @param results The final results returned by the device.
    */
-  private createLevelProgressionData(results: HughsonWestlakeResultsInterface): TrialProgressionPlotDataInterface {
-    const hasThreshold = results.ResultType === 'Threshold' && Number.isFinite(results.Threshold);
-    const pointStyles = results.L.map((level, i) => {
-      const heard = (results.ResponseTime?.[i] ?? 0) > 0;
-      if (hasThreshold && heard && level === results.Threshold) {
-        return 'highlight' as const;
-      }
-      return heard ? ('filled' as const) : ('open' as const);
-    });
-    const levelUnits = this.examProperties.LevelUnits ?? examPropSchema.LevelUnits.default;
+  private createFrequencyProgressionData(results: BhaftResultsInterface): TrialProgressionPlotDataInterface {
+    const hasThreshold = results.ResultType === 'Threshold' && Number.isFinite(results.ThresholdFrequency);
+    let title = `Frequency Progression: ${results.ResultType} (${results.F.length} trials)`;
+    if (hasThreshold) {
+      title = `Frequency Threshold at ${this.round(results.ThresholdFrequency, 1)} Hz (${results.F.length} trials)`;
+    }
+    // Scale the y axis to the frequencies actually presented
+    const maxFrequency = results.F.length ? Math.max(...results.F) : 0;
+    return {
+      y: results.F,
+      pointStyles: this.classifyHitOrMiss(results.F, results.L),
+      pointShape: 'circle',
+      connectLine: true,
+      maxY: maxFrequency === 0 ? 20000 : maxFrequency * 1.1,
+      referenceLine: hasThreshold ? results.ThresholdFrequency : undefined,
+      referenceLineColor: '#FF0000',
+      xLabel: 'Presentation',
+      yLabel: 'Hz',
+      title,
+    };
+  }
+
+  /**
+   * Build the data structure consumed by the shared trial-progression plot for the level track.
+   * The y axis is always dB SPL — BHAFT is only ever defined in dB SPL regardless of LevelUnits.
+   * Point styles come from the same classifyHitOrMiss call as the frequency plot (a hit/miss is a
+   * single event per presentation), so both plots stay consistent with each other.
+   * @param results The final results returned by the device.
+   */
+  private createLevelProgressionData(results: BhaftResultsInterface): TrialProgressionPlotDataInterface {
+    const hasThreshold = results.ResultType === 'Threshold' && Number.isFinite(results.ThresholdLevel);
     let title = `Level Progression: ${results.ResultType} (${results.L.length} trials)`;
     if (hasThreshold) {
-      title = `Threshold at ${results.Threshold} ${levelUnits} (${results.L.length} trials)`;
+      title = `Level Threshold at ${this.round(results.ThresholdLevel, 2)} dB SPL (${results.L.length} trials)`;
     }
-    // Scale the y axis to the levels actually presented
     const maxLevel = results.L.length ? Math.max(...results.L) : 0;
     return {
       y: results.L,
-      pointStyles,
-      pointShape: 'diamond',
+      pointStyles: this.classifyHitOrMiss(results.F, results.L),
+      pointShape: 'circle',
       connectLine: true,
       maxY: maxLevel === 0 ? 200 : maxLevel + 10,
-      referenceLine: hasThreshold ? results.Threshold : undefined,
+      referenceLine: hasThreshold ? results.ThresholdLevel : undefined,
+      referenceLineColor: '#FF0000',
       xLabel: 'Presentation',
-      yLabel: levelUnits,
+      yLabel: 'dB SPL',
       title,
     };
+  }
+
+  /**
+   * Classify each presentation as a 'filled' hit (heard) or an 'open' miss (not heard)
+   * Two options: FLFT: frequency varies while level holds at Level; FFLT: frequency holds at
+   * MaximumOutputFrequency while level varies instead, and a hit moves the two tracks in OPPOSITE
+   * directions: it pushes frequency UP but pulls level DOWN.So for each step, whichever track actually
+   * changed determines hit/miss for that presentation.
+   * @param frequencies The frequency track (Hz).
+   * @param levels The level track (dB SPL), same length as frequencies.
+   * @returns One style per presentation ('filled' for a hit, 'open' for a miss), in the same order.
+   */
+  private classifyHitOrMiss(frequencies: number[], levels: number[]): TrialPointStyle[] {
+    if (frequencies.length < 2) {
+      return frequencies.map(() => 'filled');
+    }
+    return frequencies.map((f, i) => {
+      if (i < frequencies.length - 1) {
+        if (frequencies[i + 1] !== f) {
+          return frequencies[i + 1] > f ? 'filled' : 'open';
+        }
+        // Frequency held flat (at the ceiling): level is the track actually moving instead, with
+        // the opposite polarity — a hit pulls level down.
+        return levels[i + 1] < levels[i] ? 'filled' : 'open';
+      }
+      if (f !== frequencies[i - 1]) {
+        return f > frequencies[i - 1] ? 'filled' : 'open';
+      }
+      return levels[i] < levels[i - 1] ? 'filled' : 'open';
+    });
   }
 
   /**
    * Update the page state and any side effects of doing so.
    */
   updateResponseAreaState(state: ResponseAreaState): void {
-    this.hwState = state;
-    this.showProperties = this.getPropertiesVisibility(this.hwState, this.hideExamProperties);
+    this.bhaftState = state;
+    this.showProperties = this.getPropertiesVisibility(this.bhaftState, this.hideExamProperties);
   }
 
   /**
@@ -380,20 +397,24 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Update exam properties when a user press starts on the button.
+   * Forward the button-down state to the device when the subject presses and holds the button.
    */
-  async onPressStart() {
+  async onPressStart(): Promise<void> {
     if (!this.device || !this.examActive) {
       return;
     }
     this.buttonPressCount++;
     await this.devicesService.setSoftwareButtonState(this.device, 1);
-    setTimeout(async () => {
-      if (!this.device || !this.examActive) {
-        return;
-      }
-      await this.devicesService.setSoftwareButtonState(this.device, 0);
-    }, 20);
+  }
+
+  /**
+   * Forward the button-up state to the device when the subject releases the button.
+   */
+  async onPressEnd(): Promise<void> {
+    if (!this.device || !this.examActive) {
+      return;
+    }
+    await this.devicesService.setSoftwareButtonState(this.device, 0);
   }
 
   /**
@@ -408,7 +429,7 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
         return;
       }
       try {
-        const state = await this.requestHughsonWestlakeStatus();
+        const state = await this.requestBhaftStatus();
         if (state === ChaExamState.Playing) {
           this.examPlaying = true;
         }
@@ -421,7 +442,7 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
         }
         this.pollTimeout = setTimeout(poll, 500);
       } catch (error) {
-        this.logger.error('Hughson-Westlake exam: error polling status: ' + error);
+        this.logger.error('BHAFT exam: error polling status: ' + error);
         this.examActive = false;
       }
     };
@@ -432,7 +453,7 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
    * Request the device's exam status and extract its numeric state.
    * @returns The device state, or undefined if the response was not usable.
    */
-  private async requestHughsonWestlakeStatus(): Promise<number | undefined> {
+  private async requestBhaftStatus(): Promise<number | undefined> {
     if (!this.device) {
       return undefined;
     }
@@ -441,26 +462,28 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
       const state = resp.msg[1].state;
       return state;
     }
-    this.logger.debug('Hughson-Westlake exam: unexpected requestStatus response: ' + JSON.stringify(resp?.msg));
+    this.logger.debug('BHAFT exam: unexpected requestStatus response: ' + JSON.stringify(resp?.msg));
     return undefined;
   }
 
   /**
-   * Request results from the device and extract the Hughson-Westlake results payload.
+   * Request results from the device and extract the BHAFT results payload.
    * @param timeoutMs Optional override for how long to wait for the results response.
    * @returns The results, or undefined if the response was not usable.
    */
-  private async requestHughsonWestlakeResults(timeoutMs?: number): Promise<HughsonWestlakeResultsInterface | undefined> {
+  private async requestBhaftResults(timeoutMs?: number): Promise<BhaftResultsInterface | undefined> {
     if (!this.device) {
       return undefined;
     }
     const resp = await this.devicesService.requestResults(this.device, timeoutMs);
     if (resp?.msg && isWahtsResultsResponse(resp)) {
-      const results = resp.msg[1] as HughsonWestlakeResultsInterface;
-      this.logger.debug(`Hughson-Westlake exam: requestResults Threshold=${results.Threshold}, ResultType=${results.ResultType}`);
+      const results = resp.msg[1] as BhaftResultsInterface;
+      this.logger.debug(
+        `BHAFT exam: requestResults ThresholdFrequency=${results.ThresholdFrequency}, ThresholdLevel=${results.ThresholdLevel}, ResultType=${results.ResultType}`
+      );
       return results;
     }
-    this.logger.debug('Hughson-Westlake exam: unexpected requestResults response: ' + JSON.stringify(resp?.msg));
+    this.logger.debug('BHAFT exam: unexpected requestResults response: ' + JSON.stringify(resp?.msg));
     return undefined;
   }
 
