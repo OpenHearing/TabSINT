@@ -163,13 +163,13 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
     this.resultMainText = responseArea.resultMainText ?? this.resultMainText;
     this.resultSubText = responseArea.resultSubText ?? this.resultSubText;
     this.useSoftwareButton = responseArea.examProperties?.UseSoftwareButton ?? this.useSoftwareButton;
-    this.examProperties = { ...this.examProperties, ...(responseArea.examProperties ?? {}) };
+    this.examProperties = { ...this.examProperties, ...responseArea.examProperties };
     this.hideExamProperties = responseArea.hideExamProperties ?? this.hideExamProperties;
     this.showMessageIfNoResponse = responseArea.showMessageIfNoResponse ?? this.showMessageIfNoResponse;
     this.noResponseCustomMessage = responseArea.noResponseCustomMessage ?? this.noResponseCustomMessage;
     this.repeatIfFailedOnce = responseArea.repeatIfFailedOnce ?? this.repeatIfFailedOnce;
     this.getNotesIfFailedTwice = responseArea.getNotesIfFailedTwice ?? this.getNotesIfFailedTwice;
-    this.plotProperties = { ...this.plotProperties, ...(responseArea.plotProperties ?? {}) };
+    this.plotProperties = { ...this.plotProperties, ...responseArea.plotProperties };
     this.maskingNoise = responseArea.maskingNoise ?? this.maskingNoise;
     this.showProperties = this.getPropertiesVisibility(this.hwState, this.hideExamProperties);
 
