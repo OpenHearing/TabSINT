@@ -11,15 +11,15 @@ import { PageInterface } from '../../../../models/page/page.interface';
 import { IDevice } from '../../../../interfaces/devices/device.interface';
 import { DeviceType } from '../../../../utilities/constants';
 import { round } from '../../../../utilities/math';
-import { bhaftSchema } from '../../../../../schema/response-areas/bhaft.schema';
-import { BhaftResultsInterface, BhaftExamPropertiesInterface, BhaftResponseAreaInterface } from './bhaft.interface';
+import { bekesyLikeSchema } from '../../../../../schema/response-areas/bekesy-like.schema';
+import { BekesyLikeResultsInterface, BekesyLikeExamPropertiesInterface, BekesyLikeResponseAreaInterface } from './bekesy-like.interface';
 import { isWahtsResultsResponse, isStatusResponse } from '../../../../guards/type.guard';
 import { AudiometryHideExamProps, MaskingNoise, PlotProperties } from '../shared/audiometry/audiometry.interface';
 import { TrialPointStyle, TrialProgressionPlotDataInterface } from '../shared/trial-progression-plot/trial-progression-plot.interface';
 
-const EXAM_NAME = 'BHAFT';
-const examSchema = bhaftSchema.properties;
-const examPropSchema = bhaftSchema.properties.examProperties.properties;
+const EXAM_NAME = 'BekesyLike';
+const examSchema = bekesyLikeSchema.properties;
+const examPropSchema = bekesyLikeSchema.properties.examProperties.properties;
 const retry_message_no_press = 'Retry Audiometry No Button Pressed';
 const retry_message_with_press = 'Retry Audiometry Button Pressed Hold';
 
@@ -36,11 +36,11 @@ enum ResponseAreaState {
 }
 
 @Component({
-  selector: 'app-bhaft-exam',
-  templateUrl: './bhaft.component.html',
-  styleUrl: './bhaft.component.css',
+  selector: 'app-bekesy-like-exam',
+  templateUrl: './bekesy-like.component.html',
+  styleUrl: './bekesy-like.component.css',
 })
-export class BhaftComponent implements OnInit, OnDestroy {
+export class BekesyLikeComponent implements OnInit, OnDestroy {
   private readonly pageModel = inject(PageModel);
   private readonly stateModel = inject(StateModel);
   private readonly resultsModel = inject(ResultsModel);
@@ -71,27 +71,24 @@ export class BhaftComponent implements OnInit, OnDestroy {
   plotProperties: PlotProperties = {
     displayAudiogram: examSchema.plotProperties.properties.displayAudiogram.default,
     displayLevelProgression: examSchema.plotProperties.properties.displayLevelProgression.default,
-    displayFrequencyProgression: examSchema.plotProperties.properties.displayFrequencyProgression.default,
   };
   maskingNoise: MaskingNoise | undefined;
 
   // State
-  bhaftState: ResponseAreaState = ResponseAreaState.Start;
+  bekesyLikeState: ResponseAreaState = ResponseAreaState.Start;
   device: IDevice | undefined;
-  results: BhaftResultsInterface | undefined;
-  frequencyProgressionData: TrialProgressionPlotDataInterface | undefined;
+  results: BekesyLikeResultsInterface | undefined;
   levelProgressionData: TrialProgressionPlotDataInterface | undefined;
 
-  protected examProperties: BhaftExamPropertiesInterface = {
-    Fstart: examPropSchema.Fstart.default,
-    Level: examPropSchema.Level.default,
+  protected examProperties: BekesyLikeExamPropertiesInterface = {
     ReversalDiscard: examPropSchema.ReversalDiscard.default,
     ReversalKeep: examPropSchema.ReversalKeep.default,
-    IncrementStartMultiplierFrequency: examPropSchema.IncrementStartMultiplierFrequency.default,
-    IncrementNominalFrequency: examPropSchema.IncrementNominalFrequency.default,
-    IncrementStartMultiplierLevel: examPropSchema.IncrementStartMultiplierLevel.default,
-    IncrementNominalLevel: examPropSchema.IncrementNominalLevel.default,
-    SemiAutomaticMode: examPropSchema.SemiAutomaticMode.default,
+    IncrementStart: examPropSchema.IncrementStart.default,
+    IncrementNominal: examPropSchema.IncrementNominal.default,
+
+    // Audiometry Level
+    F: examPropSchema.F.default,
+    Lstart: examPropSchema.Lstart.default,
 
     // Audiometry
     LevelUnits: examPropSchema.LevelUnits.default,
@@ -130,8 +127,8 @@ export class BhaftComponent implements OnInit, OnDestroy {
     this.stateModel.updateState({ isSubmittable: false });
     this.examService.submit = () => this.submitWithNotes();
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
-      if (updatedPage?.responseArea?.type === 'bhaftResponseArea') {
-        await this.setupResponseArea(updatedPage.responseArea as BhaftResponseAreaInterface);
+      if (updatedPage?.responseArea?.type === 'bekesyLikeResponseArea') {
+        await this.setupResponseArea(updatedPage.responseArea as BekesyLikeResponseAreaInterface);
       }
     });
   }
@@ -144,9 +141,9 @@ export class BhaftComponent implements OnInit, OnDestroy {
 
   /**
    * Initialize the response area from the protocol definition and resolve the devices.
-   * @param responseArea The BHAFT response area definition.
+   * @param responseArea The Bekesy Like response area definition.
    */
-  private async setupResponseArea(responseArea: BhaftResponseAreaInterface): Promise<void> {
+  private async setupResponseArea(responseArea: BekesyLikeResponseAreaInterface): Promise<void> {
     // The current page can emit more than once; only set up the exam once per page.
     if (this.initialized) {
       return;
@@ -167,7 +164,7 @@ export class BhaftComponent implements OnInit, OnDestroy {
     this.getNotesIfFailedTwice = responseArea.getNotesIfFailedTwice ?? this.getNotesIfFailedTwice;
     this.plotProperties = { ...this.plotProperties, ...responseArea.plotProperties };
     this.maskingNoise = responseArea.maskingNoise ?? this.maskingNoise;
-    this.showProperties = this.getPropertiesVisibility(this.bhaftState, this.hideExamProperties);
+    this.showProperties = this.getPropertiesVisibility(this.bekesyLikeState, this.hideExamProperties);
 
     await this.setupDevice(responseArea);
 
@@ -178,13 +175,13 @@ export class BhaftComponent implements OnInit, OnDestroy {
 
   /**
    * Resolve the device used to run the exam.
-   * @param responseArea The BHAFT response area definition.
+   * @param responseArea The Bekesy Like response area definition.
    */
-  private async setupDevice(responseArea: BhaftResponseAreaInterface): Promise<void> {
+  private async setupDevice(responseArea: BekesyLikeResponseAreaInterface): Promise<void> {
     const deviceList = await this.devicesService.getDeviceOrDefault(responseArea.tabsintId, this.allowableDevices);
     this.device = await this.devicesService.confirmSingleDevice(deviceList);
     if (!this.device) {
-      this.logger.error('BHAFT exam: no device available.');
+      this.logger.error('Bekesy Like exam: no device available.');
     }
   }
 
@@ -219,9 +216,9 @@ export class BhaftComponent implements OnInit, OnDestroy {
     if (this.device && this.maskingNoise) {
       await this.devicesService.stopMaskingNoise(this.device);
     }
-    const results = await this.requestBhaftResults(this.finalResultsTimeoutMs);
+    const results = await this.requestBekesyLikeResults(this.finalResultsTimeoutMs);
     if (!results) {
-      this.logger.error('BHAFT exam: exam completed but no final results were returned.');
+      this.logger.error('Bekesy Like exam: exam completed but no final results were returned.');
     }
     this.processResults(results);
   }
@@ -231,7 +228,7 @@ export class BhaftComponent implements OnInit, OnDestroy {
    * completed exam's results, then move to whichever view they land on.
    * @param results The final results returned by the device.
    */
-  private processResults(results: BhaftResultsInterface | undefined): void {
+  private processResults(results: BekesyLikeResultsInterface | undefined): void {
     const shouldShowNoResponseMessage = this.useSoftwareButton && this.showMessageIfNoResponse && this.buttonPressCount === 0;
     const repeatForFailure = this.repeatIfFailedOnce && results?.ResultType !== 'Threshold';
     if (repeatForFailure && !this.failedOnce) {
@@ -244,7 +241,7 @@ export class BhaftComponent implements OnInit, OnDestroy {
       this.finishExam(results);
       this.updateResponseAreaState(ResponseAreaState.Notes);
     } else if (shouldShowNoResponseMessage) {
-      this.logger.warning('BHAFT exam: no software button presses during this exam - showing user a message about it.');
+      this.logger.warning('Bekesy Like exam: no software button presses during this exam - showing user a message about it.');
       this.autoSubmit = false;
       this.noResponseMessage = this.noResponseCustomMessage;
       this.finishExam(results);
@@ -257,10 +254,8 @@ export class BhaftComponent implements OnInit, OnDestroy {
    * Record the final results and move to the results view.
    * @param results The final results returned by the device.
    */
-  private finishExam(results: BhaftResultsInterface | undefined): void {
+  private finishExam(results: BekesyLikeResultsInterface | undefined): void {
     this.results = results;
-    this.frequencyProgressionData =
-      this.plotProperties.displayFrequencyProgression && results?.F ? this.createFrequencyProgressionData(results) : undefined;
     this.levelProgressionData = this.plotProperties.displayLevelProgression && results?.L ? this.createLevelProgressionData(results) : undefined;
     this.updateResponseAreaState(ResponseAreaState.Results);
     this.resultsModel.updateCurrentPage({ response: results });
@@ -271,88 +266,48 @@ export class BhaftComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Build the data structure consumed by the shared trial-progression plot for the frequency
-   * track: one point per presentation (Hz on the y axis), filled for a hit (heard) or open for a
-   * miss (not heard) — see classifyHitOrMiss for how that's inferred.
+   * Build the data structure consumed by the shared trial-progression plot: one point per
+   * presentation (dB level on the y axis), styled by whether the level was pulled down (a hit -
+   * the subject held the button because they heard the tone) or pushed up (a miss) between that
+   * presentation and the next - see classifyLevelDirection.
    * @param results The final results returned by the device.
    */
-  private createFrequencyProgressionData(results: BhaftResultsInterface): TrialProgressionPlotDataInterface {
-    const hasThreshold = results.ResultType === 'Threshold' && Number.isFinite(results.ThresholdFrequency);
-    let title = `Frequency Progression: ${results.ResultType} (${results.F.length} trials)`;
-    if (hasThreshold) {
-      title = `Frequency Threshold at ${this.round(results.ThresholdFrequency, 1)} Hz (${results.F.length} trials)`;
-    }
-    // Scale the y axis to the frequencies actually presented
-    const maxFrequency = results.F.length ? Math.max(...results.F) : 0;
-    return {
-      y: results.F,
-      pointStyles: this.classifyHitOrMiss(results.F, results.L),
-      pointShape: 'circle',
-      connectLine: true,
-      maxY: maxFrequency === 0 ? 20000 : maxFrequency * 1.1,
-      referenceLine: hasThreshold ? results.ThresholdFrequency : undefined,
-      referenceLineColor: '#FF0000',
-      xLabel: 'Presentation',
-      yLabel: 'Hz',
-      title,
-    };
-  }
-
-  /**
-   * Build the data structure consumed by the shared trial-progression plot for the level track.
-   * The y axis is always dB SPL — BHAFT is only ever defined in dB SPL regardless of LevelUnits.
-   * Point styles come from the same classifyHitOrMiss call as the frequency plot (a hit/miss is a
-   * single event per presentation), so both plots stay consistent with each other.
-   * @param results The final results returned by the device.
-   */
-  private createLevelProgressionData(results: BhaftResultsInterface): TrialProgressionPlotDataInterface {
-    const hasThreshold = results.ResultType === 'Threshold' && Number.isFinite(results.ThresholdLevel);
+  private createLevelProgressionData(results: BekesyLikeResultsInterface): TrialProgressionPlotDataInterface {
+    const hasThreshold = results.ResultType === 'Threshold' && Number.isFinite(results.Threshold);
+    const levelUnits = this.examProperties.LevelUnits ?? examPropSchema.LevelUnits.default;
     let title = `Level Progression: ${results.ResultType} (${results.L.length} trials)`;
     if (hasThreshold) {
-      title = `Level Threshold at ${this.round(results.ThresholdLevel, 2)} dB SPL (${results.L.length} trials)`;
+      title = `Threshold at ${this.round(results.Threshold, 2)} ${levelUnits} (${results.L.length} trials)`;
     }
     const maxLevel = results.L.length ? Math.max(...results.L) : undefined;
     return {
       y: results.L,
-      pointStyles: this.classifyHitOrMiss(results.F, results.L),
+      pointStyles: this.classifyLevelDirection(results.L),
       pointShape: 'circle',
       connectLine: true,
       maxY: maxLevel === undefined ? 200 : maxLevel + 10,
-      referenceLine: hasThreshold ? results.ThresholdLevel : undefined,
-      referenceLineColor: '#FF0000',
+      referenceLine: hasThreshold ? results.Threshold : undefined,
       xLabel: 'Presentation',
-      yLabel: 'dB SPL',
+      yLabel: levelUnits,
       title,
     };
   }
 
   /**
-   * Classify each presentation as a 'filled' hit (heard) or an 'open' miss (not heard)
-   * Two options: FLFT: frequency varies while level holds at Level; FFLT: frequency holds at
-   * MaximumOutputFrequency while level varies instead, and a hit moves the two tracks in OPPOSITE
-   * directions: it pushes frequency UP but pulls level DOWN.So for each step, whichever track actually
-   * changed determines hit/miss for that presentation.
-   * @param frequencies The frequency track (Hz).
-   * @param levels The level track (dB SPL), same length as frequencies.
+   * Classify each presentation as a 'filled' hit (the subject held the button, pulling the level
+   * down) or an 'open' miss (the subject released the button, letting the level climb back up).
+   * @param levels The level track (LevelUnits).
    * @returns One style per presentation ('filled' for a hit, 'open' for a miss), in the same order.
    */
-  private classifyHitOrMiss(frequencies: number[], levels: number[]): TrialPointStyle[] {
-    if (frequencies.length < 2) {
-      return frequencies.map(() => 'filled');
+  private classifyLevelDirection(levels: number[]): TrialPointStyle[] {
+    if (levels.length < 2) {
+      return levels.map(() => 'filled');
     }
-    return frequencies.map((f, i) => {
-      if (i < frequencies.length - 1) {
-        if (frequencies[i + 1] !== f) {
-          return frequencies[i + 1] > f ? 'filled' : 'open';
-        }
-        // Frequency held flat (at the ceiling): level is the track actually moving instead, with
-        // the opposite polarity — a hit pulls level down.
-        return levels[i + 1] < levels[i] ? 'filled' : 'open';
+    return levels.map((level, i) => {
+      if (i < levels.length - 1) {
+        return levels[i + 1] < level ? 'filled' : 'open';
       }
-      if (f !== frequencies[i - 1]) {
-        return f > frequencies[i - 1] ? 'filled' : 'open';
-      }
-      return levels[i] < levels[i - 1] ? 'filled' : 'open';
+      return level < levels[i - 1] ? 'filled' : 'open';
     });
   }
 
@@ -360,8 +315,8 @@ export class BhaftComponent implements OnInit, OnDestroy {
    * Update the page state and any side effects of doing so.
    */
   updateResponseAreaState(state: ResponseAreaState): void {
-    this.bhaftState = state;
-    this.showProperties = this.getPropertiesVisibility(this.bhaftState, this.hideExamProperties);
+    this.bekesyLikeState = state;
+    this.showProperties = this.getPropertiesVisibility(this.bekesyLikeState, this.hideExamProperties);
   }
 
   /**
@@ -429,7 +384,7 @@ export class BhaftComponent implements OnInit, OnDestroy {
         return;
       }
       try {
-        const state = await this.requestBhaftStatus();
+        const state = await this.requestBekesyLikeStatus();
         if (state === ChaExamState.Playing) {
           this.examPlaying = true;
         }
@@ -442,7 +397,7 @@ export class BhaftComponent implements OnInit, OnDestroy {
         }
         this.pollTimeout = setTimeout(poll, 500);
       } catch (error) {
-        this.logger.error('BHAFT exam: error polling status: ' + error);
+        this.logger.error('Bekesy Like exam: error polling status: ' + error);
         this.examActive = false;
       }
     };
@@ -453,7 +408,7 @@ export class BhaftComponent implements OnInit, OnDestroy {
    * Request the device's exam status and extract its numeric state.
    * @returns The device state, or undefined if the response was not usable.
    */
-  private async requestBhaftStatus(): Promise<number | undefined> {
+  private async requestBekesyLikeStatus(): Promise<number | undefined> {
     if (!this.device) {
       return undefined;
     }
@@ -462,28 +417,26 @@ export class BhaftComponent implements OnInit, OnDestroy {
       const state = resp.msg[1].state;
       return state;
     }
-    this.logger.debug('BHAFT exam: unexpected requestStatus response: ' + JSON.stringify(resp?.msg));
+    this.logger.debug('Bekesy Like exam: unexpected requestStatus response: ' + JSON.stringify(resp?.msg));
     return undefined;
   }
 
   /**
-   * Request results from the device and extract the BHAFT results payload.
+   * Request results from the device and extract the Bekesy Like results payload.
    * @param timeoutMs Optional override for how long to wait for the results response.
    * @returns The results, or undefined if the response was not usable.
    */
-  private async requestBhaftResults(timeoutMs?: number): Promise<BhaftResultsInterface | undefined> {
+  private async requestBekesyLikeResults(timeoutMs?: number): Promise<BekesyLikeResultsInterface | undefined> {
     if (!this.device) {
       return undefined;
     }
     const resp = await this.devicesService.requestResults(this.device, timeoutMs);
     if (resp?.msg && isWahtsResultsResponse(resp)) {
-      const results = resp.msg[1] as BhaftResultsInterface;
-      this.logger.debug(
-        `BHAFT exam: requestResults ThresholdFrequency=${results.ThresholdFrequency}, ThresholdLevel=${results.ThresholdLevel}, ResultType=${results.ResultType}`
-      );
+      const results = resp.msg[1] as BekesyLikeResultsInterface;
+      this.logger.debug(`Bekesy Like exam: requestResults Threshold=${results.Threshold}, ResultType=${results.ResultType}`);
       return results;
     }
-    this.logger.debug('BHAFT exam: unexpected requestResults response: ' + JSON.stringify(resp?.msg));
+    this.logger.debug('Bekesy Like exam: unexpected requestResults response: ' + JSON.stringify(resp?.msg));
     return undefined;
   }
 

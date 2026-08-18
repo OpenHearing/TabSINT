@@ -1,21 +1,21 @@
-.hw-container {
+.bekesy-like-container {
   width: 100%;
 }
 
-.hw-start {
+.bekesy-like-start {
   padding-top: 1rem;
   text-align: center;
   justify-content: center;
   align-items: center;
 }
 
-.hw-button-row {
+.bekesy-like-button-row {
   display: flex;
   justify-content: center;
   padding-top: 1rem;
 }
 
-.hw-results {
+.bekesy-like-results {
   padding-top: 1rem;
   text-align: center;
   display: flex;
@@ -23,17 +23,17 @@
   align-items: center;
 }
 
-.hw-response {
+.bekesy-like-response {
   padding-top: 0.5rem;
   font-weight: bold;
 }
 
-.hw-notes {
+.bekesy-like-notes {
   padding-top: 1rem;
   text-align: center;
 }
 
-.hw-notes-input {
+.bekesy-like-notes-input {
   width: 100%;
   min-height: 100px;
   margin-top: 0.5rem;

@@ -10,6 +10,7 @@ import { Logger } from '../../../../services/logger.service';
 import { PageInterface } from '../../../../models/page/page.interface';
 import { IDevice } from '../../../../interfaces/devices/device.interface';
 import { DeviceType } from '../../../../utilities/constants';
+import { round } from '../../../../utilities/math';
 import { hughsonWestlakeSchema } from '../../../../../schema/response-areas/hughson-westlake.schema';
 import {
   HughsonWestlakeResultsInterface,
@@ -51,6 +52,7 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
   private readonly devicesService = inject(DevicesService);
   private readonly logger = inject(Logger);
   ResponseAreaState = ResponseAreaState;
+  readonly round = round;
 
   private readonly allowableDevices = [DeviceType.Wahts];
 
@@ -322,16 +324,16 @@ export class HughsonWestlakeComponent implements OnInit, OnDestroy {
     const levelUnits = this.examProperties.LevelUnits ?? examPropSchema.LevelUnits.default;
     let title = `Level Progression: ${results.ResultType} (${results.L.length} trials)`;
     if (hasThreshold) {
-      title = `Threshold at ${results.Threshold} ${levelUnits} (${results.L.length} trials)`;
+      title = `Threshold at ${this.round(results.Threshold, 2)} ${levelUnits} (${results.L.length} trials)`;
     }
     // Scale the y axis to the levels actually presented
-    const maxLevel = results.L.length ? Math.max(...results.L) : 0;
+    const maxLevel = results.L.length ? Math.max(...results.L) : undefined;
     return {
       y: results.L,
       pointStyles,
       pointShape: 'diamond',
       connectLine: true,
-      maxY: maxLevel === 0 ? 200 : maxLevel + 10,
+      maxY: maxLevel === undefined ? 200 : maxLevel + 10,
       referenceLine: hasThreshold ? results.Threshold : undefined,
       xLabel: 'Presentation',
       yLabel: levelUnits,
