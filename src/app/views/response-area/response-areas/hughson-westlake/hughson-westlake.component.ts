@@ -8,7 +8,7 @@ import {
 } from './hughson-westlake.interface';
 import { isWahtsResultsResponse } from '../../../../guards/type.guard';
 import { AudiometryCombinedDatum } from '../shared/audiometry/audiometry.interface';
-import { outputChannelToEarChannel } from '../shared/audiometry/audiometry-channel.utility';
+import { outputChannelToEarChannel } from '../shared/audiometry/audiometry.utility';
 import { AutomatedAudiometryExamComponentBase } from '../shared/audiometry/automated-audiometry-exam.base';
 
 const examSchema = hughsonWestlakeSchema.properties;

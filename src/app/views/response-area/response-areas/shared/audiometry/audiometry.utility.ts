@@ -1,4 +1,5 @@
-import { AudiometryOutputChannel } from './audiometry.interface';
+import { AudiometryResultsInterface } from '../../../../../interfaces/audiometry-results.interface';
+import { AudiometryCombinedDatum, AudiometryOutputChannel } from './audiometry.interface';
 
 /**
  * Map a CHA audiometry OutputChannel (e.g. HPL0, HPR1, LINEL0 NONE) to the channel string
@@ -25,4 +26,20 @@ export function outputChannelToEarChannel(outputChannel: AudiometryOutputChannel
     default:
       return 'mono';
   }
+}
+
+/**
+ * Assemble a list of per-page combined-audiogram datums into a parallel-array.
+ * @param datums One datum per page contributing to the combined audiogram.
+ * @param levelUnits The level units shared by every datum.
+ */
+export function assembleAudiometryResults(datums: AudiometryCombinedDatum[], levelUnits: string): AudiometryResultsInterface {
+  return {
+    frequencies: datums.map(d => d.frequency),
+    thresholds: datums.map(d => d.threshold),
+    channels: datums.map(d => d.channel),
+    resultTypes: datums.map(d => d.resultType),
+    masking: datums.map(d => d.masking),
+    levelUnits,
+  };
 }

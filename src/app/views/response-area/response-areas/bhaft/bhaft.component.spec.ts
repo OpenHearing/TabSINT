@@ -92,7 +92,7 @@ describe('BhaftComponent', () => {
   });
 
   it('starts on the landing state and does not auto-begin the exam', () => {
-    expect(component.bhaftState).toBe('start');
+    expect(component.state).toBe('start');
     expect(devicesService.queueExam).not.toHaveBeenCalled();
   });
 
@@ -102,7 +102,7 @@ describe('BhaftComponent', () => {
     await component.beginExam();
 
     expect(devicesService.queueExam).toHaveBeenCalledWith(mockDevice, 'BHAFT', jasmine.any(Object));
-    expect(component.bhaftState).toBe('exam');
+    expect(component.state).toBe('exam');
   });
 
   it('does not queue an exam when no device is available', async () => {
@@ -131,7 +131,7 @@ describe('BhaftComponent', () => {
     fixture.detectChanges();
 
     expect(devicesService.queueExam).toHaveBeenCalledWith(mockDevice, 'BHAFT', jasmine.any(Object));
-    expect(component.bhaftState).toBe('exam');
+    expect(component.state).toBe('exam');
     component.ngOnDestroy();
   }));
 
@@ -201,7 +201,7 @@ describe('BhaftComponent', () => {
     fixture.detectChanges();
 
     expect(devicesService.stopMaskingNoise).toHaveBeenCalledWith(mockDevice);
-    expect(component.bhaftState).not.toBe('exam');
+    expect(component.state).not.toBe('exam');
     component.ngOnDestroy();
   }));
 
@@ -244,9 +244,11 @@ describe('BhaftComponent', () => {
       L: [80, 80, 80, 80, 80, 80],
       ResultType: 'Threshold',
     };
+    component.plotProperties.displayFrequencyProgression = true;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const data = (component as any).createFrequencyProgressionData(results);
+    (component as any).buildProgressionPlots(results);
+    const data = component.frequencyProgressionData!;
 
     expect(data.pointStyles).toEqual(['filled', 'filled', 'open', 'open', 'filled', 'filled']);
     expect(data.referenceLine).toBe(11000);
@@ -266,9 +268,11 @@ describe('BhaftComponent', () => {
       L: [80, 80, 80, 80, 80],
       ResultType: 'Failed to Converge',
     };
+    component.plotProperties.displayFrequencyProgression = true;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const data = (component as any).createFrequencyProgressionData(results);
+    (component as any).buildProgressionPlots(results);
+    const data = component.frequencyProgressionData!;
 
     expect(data.referenceLine).toBeUndefined();
     expect(data.title).toBe('Frequency Progression: Failed to Converge (5 trials)');
@@ -318,7 +322,7 @@ describe('BhaftComponent', () => {
     tick();
     fixture.detectChanges();
 
-    expect(component.bhaftState).toBe('start');
+    expect(component.state).toBe('start');
     expect(component.retryMessage).toBeDefined();
     component.ngOnDestroy();
   }));
@@ -346,7 +350,7 @@ describe('BhaftComponent', () => {
     tick();
     fixture.detectChanges();
 
-    expect(component.bhaftState).toBe('notes');
+    expect(component.state).toBe('notes');
     component.ngOnDestroy();
   }));
 
@@ -372,7 +376,7 @@ describe('BhaftComponent', () => {
     fixture.detectChanges();
 
     expect(component.noResponseMessage).toBeDefined();
-    expect(component.bhaftState).toBe('results');
+    expect(component.state).toBe('results');
     component.ngOnDestroy();
   }));
 

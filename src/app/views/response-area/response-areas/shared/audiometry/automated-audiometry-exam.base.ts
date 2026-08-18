@@ -24,7 +24,7 @@ import {
   PlotProperties,
 } from './audiometry.interface';
 import { TrialProgressionPlotDataInterface } from '../trial-progression-plot/trial-progression-plot.interface';
-import { assembleAudiometryResults } from './audiometry-combined-data.utility';
+import { assembleAudiometryResults } from './audiometry.utility';
 
 export enum ChaExamState {
   Ready = 1,

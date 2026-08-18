@@ -98,7 +98,7 @@ describe('BekesyLikeComponent', () => {
   });
 
   it('starts on the landing state and does not auto-begin the exam', () => {
-    expect(component.bekesyLikeState).toBe('start');
+    expect(component.state).toBe('start');
     expect(devicesService.queueExam).not.toHaveBeenCalled();
   });
 
@@ -108,7 +108,7 @@ describe('BekesyLikeComponent', () => {
     await component.beginExam();
 
     expect(devicesService.queueExam).toHaveBeenCalledWith(mockDevice, 'BekesyLike', jasmine.any(Object));
-    expect(component.bekesyLikeState).toBe('exam');
+    expect(component.state).toBe('exam');
   });
 
   it('does not queue an exam when no device is available', async () => {
@@ -137,7 +137,7 @@ describe('BekesyLikeComponent', () => {
     fixture.detectChanges();
 
     expect(devicesService.queueExam).toHaveBeenCalledWith(mockDevice, 'BekesyLike', jasmine.any(Object));
-    expect(component.bekesyLikeState).toBe('exam');
+    expect(component.state).toBe('exam');
     component.ngOnDestroy();
   }));
 
@@ -207,7 +207,7 @@ describe('BekesyLikeComponent', () => {
     fixture.detectChanges();
 
     expect(devicesService.stopMaskingNoise).toHaveBeenCalledWith(mockDevice);
-    expect(component.bekesyLikeState).not.toBe('exam');
+    expect(component.state).not.toBe('exam');
     component.ngOnDestroy();
   }));
 
@@ -262,9 +262,11 @@ describe('BekesyLikeComponent', () => {
       Units: 1,
       ResultType: 'Threshold',
     };
+    component.plotProperties.displayLevelProgression = true;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const data = (component as any).createLevelProgressionData(results);
+    (component as any).buildProgressionPlots(results);
+    const data = component.levelProgressionData!;
 
     expect(data.pointStyles).toEqual(['open', 'filled', 'filled', 'open', 'filled', 'filled']);
     expect(data.pointShape).toBe('circle');
@@ -285,9 +287,11 @@ describe('BekesyLikeComponent', () => {
       Units: 1,
       ResultType: 'Hearing Potentially Better than Calibrated Range',
     };
+    component.plotProperties.displayLevelProgression = true;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const data = (component as any).createLevelProgressionData(results);
+    (component as any).buildProgressionPlots(results);
+    const data = component.levelProgressionData!;
 
     expect(data.referenceLine).toBeUndefined();
     expect(data.title).toBe('Level Progression: Hearing Potentially Better than Calibrated Range (4 trials)');
@@ -313,7 +317,7 @@ describe('BekesyLikeComponent', () => {
     tick();
     fixture.detectChanges();
 
-    expect(component.bekesyLikeState).toBe('start');
+    expect(component.state).toBe('start');
     expect(component.retryMessage).toBeDefined();
     component.ngOnDestroy();
   }));
@@ -341,7 +345,7 @@ describe('BekesyLikeComponent', () => {
     tick();
     fixture.detectChanges();
 
-    expect(component.bekesyLikeState).toBe('notes');
+    expect(component.state).toBe('notes');
     component.ngOnDestroy();
   }));
 
@@ -367,7 +371,7 @@ describe('BekesyLikeComponent', () => {
     fixture.detectChanges();
 
     expect(component.noResponseMessage).toBeDefined();
-    expect(component.bekesyLikeState).toBe('results');
+    expect(component.state).toBe('results');
     component.ngOnDestroy();
   }));
 

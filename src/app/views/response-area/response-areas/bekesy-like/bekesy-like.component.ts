@@ -5,7 +5,7 @@ import { BekesyLikeResultsInterface, BekesyLikeExamPropertiesInterface, BekesyLi
 import { isWahtsResultsResponse } from '../../../../guards/type.guard';
 import { AudiometryCombinedDatum } from '../shared/audiometry/audiometry.interface';
 import { TrialPointStyle } from '../shared/trial-progression-plot/trial-progression-plot.interface';
-import { outputChannelToEarChannel } from '../shared/audiometry/audiometry-channel.utility';
+import { outputChannelToEarChannel } from '../shared/audiometry/audiometry.utility';
 import { AutomatedAudiometryExamComponentBase } from '../shared/audiometry/automated-audiometry-exam.base';
 
 const examSchema = bekesyLikeSchema.properties;
