@@ -148,9 +148,14 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
               admin: false,
               ...protocolContent,
             };
+            const protocolMetaData = getProtocolMetaData(protocol);
+            const previousEntry = this.disk.availableProtocolsMeta[protocolMetaData.name];
             const updated = await this.updateDiskModel(protocol);
             if (updated) {
-              await this.loadProtocol();
+              const loaded = await this.loadProtocol();
+              if (!loaded) {
+                this.rollbackAvailableProtocol(protocolMetaData.name, previousEntry);
+              }
             }
           }
         }
@@ -202,18 +207,24 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
         gitlabConfig: { ...config, tag: ref },
         ...protocolContent,
       };
+      const protocolMetaData = getProtocolMetaData(protocol);
+      const previousEntry = this.disk.availableProtocolsMeta[protocolMetaData.name];
       const updated = await this.updateDiskModel(protocol);
       if (!updated) {
         throw new Error('Unable to update the current protocol.');
       }
-      await firstValueFrom(
-        this.notifications.alert({
-          title: 'Success',
-          content: `Protocol '${protocol.name}' imported successfully from GitLab.`,
-          type: DialogType.Confirm,
-        })
-      );
-      await this.loadProtocol();
+      const loaded = await this.loadProtocol();
+      if (!loaded) {
+        this.rollbackAvailableProtocol(protocolMetaData.name, previousEntry);
+      } else {
+        await firstValueFrom(
+          this.notifications.alert({
+            title: 'Success',
+            content: `Protocol '${protocol.name}' imported successfully from GitLab.`,
+            type: DialogType.Confirm,
+          })
+        );
+      }
     } catch (error: any) {
       this.handleGitlabError(error);
     } finally {
@@ -283,8 +294,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
       const protocolMetaData = getProtocolMetaData(this.selected);
 
       if (!this.protocolModel.activeProtocol) {
-        await this.protocolService.load(protocolMetaData, true);
-        return true;
+        return await this.protocolService.load(protocolMetaData, true);
       }
 
       const msg: DialogDataInterface = {
@@ -300,9 +310,9 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
       if (result !== 'OK') {
         return false;
       }
-      await this.protocolService.load(protocolMetaData, true);
+      const loaded = await this.protocolService.load(protocolMetaData, true);
       this.examService.reset();
-      return true;
+      return loaded;
     } catch (e) {
       this.logger.debug('loadProtocol failed with error: ' + e);
       return false;
@@ -406,18 +416,24 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
         : MediaUpdateStatus.Skipped;
       await this.mediaRepositoryService.notifyStatus(mediaStatus);
 
+      const protocolMetaData = getProtocolMetaData(activeProtocol);
+      const previousEntry = this.disk.availableProtocolsMeta[protocolMetaData.name];
       const updated = await this.updateDiskModel(activeProtocol);
       if (!updated) {
         throw new Error('Unable to update the current protocol.');
       }
-      await firstValueFrom(
-        this.notifications.alert({
-          title: 'Success',
-          content: `Protocol '${this.selected?.name}' has been updated successfully.`,
-          type: DialogType.Confirm,
-        })
-      );
-      await this.loadProtocol();
+      const loaded = await this.loadProtocol();
+      if (!loaded) {
+        this.rollbackAvailableProtocol(protocolMetaData.name, previousEntry);
+      } else {
+        await firstValueFrom(
+          this.notifications.alert({
+            title: 'Success',
+            content: `Protocol '${protocolMetaData.name}' has been updated successfully.`,
+            type: DialogType.Confirm,
+          })
+        );
+      }
     } catch (error: any) {
       this.handleGitlabError(error);
     } finally {
@@ -502,6 +518,26 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
     this.protocolModel = this.protocolM.getProtocolModel();
     this.select(protocolMetaData);
     return true;
+  }
+
+  /**
+   * Undo a disk-model write from updateDiskModel() when the protocol subsequently fails to load.
+   * @summary Restore the previous metadata entry for this protocol name, or remove it entirely
+   * if there was no previous entry (i.e. it was a brand new protocol).
+   * @models protocol, disk
+   * @param name name of the protocol entry to roll back
+   * @param previousEntry the metadata entry that existed before the failed add/update, if any
+   */
+  private rollbackAvailableProtocol(name: string, previousEntry: ProtocolMetaInterface | undefined): void {
+    const availableMetaProtocols = this.disk.availableProtocolsMeta;
+    if (previousEntry) {
+      availableMetaProtocols[name] = previousEntry;
+    } else {
+      delete availableMetaProtocols[name];
+    }
+    this.diskModel.updateDiskModel({ availableProtocolsMeta: availableMetaProtocols });
+    this.protocolModel = this.protocolM.getProtocolModel();
+    this.selected = previousEntry;
   }
 
   toggleValidateProtocols() {
