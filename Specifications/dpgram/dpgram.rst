@@ -83,7 +83,7 @@ GUI
 The GUI should look like the image below with the following features.
 
 * The following parameters should be configurable in the protocol: Frequency array, frequency ratio, L1 and L2, input and output channels, window duration, minimum and maximum number of test averages, the minimum noise floor threshold and the SNR threshold (i.e., early termination conditions), the directory to store the full waveform, whether to output raw measurement, whether to show results, whether to auto submit each sweep.
-* The GUI should display the parameters from the protocol in a table similar to the one shown below
+* The GUI should display a subset of the parameters from the protocol (F2 Frequencies, Ratio, L1, L2, Noise Floor Threshold) in a table similar to the one shown below
 * There should be a `Submit` button to initiate the exam. The `Submit` button becomes inactive after initating the exam.
 * After initiating the exam, a progress bar appears and the `Submit` button is replaced with an inactive `Next` button (See screen 2 image below).
 * While the exam progresses, live results are plotted for the individual frequencies specfied in the `f2` array. The exam progresses automatically through each frequency. The DPOAE value is plotted as a blue circle and the noise value is plotted as a gray 'x'. The normative background plotting is displayed as background.
@@ -152,7 +152,6 @@ Results-View
 The GUI should display the results of the DP-gram exam:
 
 * Results are plotted in a manner similar to the plot shown below.
-* Below the plot, a table similar to the one shown below should summarize the results saved for the DP-gram exam.
 
 .. figure:: dpgram-GUI-Results.png
    :align: center
@@ -196,7 +195,7 @@ Algorithm
      - 
    * - The exam results are displayed.
      - Complete an exam normally. Then click the `Finish` button. Proceed to the results-view page.
-     - Verify that the DPOAE, noise floor, F1 and F2 are plotted in dB SPL as a function of F2. Verify that DpLow, DpHigh, F1, and F2 are displayed in table format.
+     - Verify that DpLow, noise floor, F1, and F2 are plotted in dB SPL as a function of F2.
      - 
 
 Data
