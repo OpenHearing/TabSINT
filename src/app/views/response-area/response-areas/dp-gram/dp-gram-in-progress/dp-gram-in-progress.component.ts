@@ -44,8 +44,32 @@ export class DpGramInProgressComponent extends DpoaeInProgressBaseComponent<DpGr
   /** Results merged across every f2 frequency completed so far. */
   private readonly accumulated: DpGramResultsInterface = { State: 'BUSY', PctComplete: 0 };
 
+  /**
+   * Set only on component teardown (not on user-initiated abort), so the in-flight
+   * pollSingleExamResult call can be told to stop immediately even though a soft abort
+   * (shouldAbort) is meant to let the current frequency finish naturally.
+   */
+  private isDestroyed = false;
+
   protected override startPolling(): void {
     this.runFrequencyLoop();
+  }
+
+  override ngOnDestroy(): void {
+    this.isDestroyed = true;
+    super.ngOnDestroy();
+  }
+
+  /**
+   * Stops the frequency loop from queueing any further f2s, but - unlike the base class's
+   * abort(), which is built around Swept DPOAE's single continuous exam - does not hard-abort
+   * the device exam that's currently in flight. That exam is a single (fast) point measurement,
+   * so it's simplest to let it finish and keep its result rather than discard partial data.
+   */
+  override async abort(): Promise<void> {
+    this.shouldAbort = true;
+    this.instructions = 'Abort pressed. Finishing the current frequency; no further frequencies will be tested.';
+    this.changeDetectorRef.detectChanges();
   }
 
   protected createProgressPlot(yScale: d3.ScaleLinear<number, number, never>) {
@@ -88,7 +112,12 @@ export class DpGramInProgressComponent extends DpoaeInProgressBaseComponent<DpGr
 
       const finalRaw = await this.pollSingleExamResult(raw => {
         const overallPct = ((i + (raw.PctComplete ?? 0) / 100) / total) * 100;
-        this.inProgressResultsSubject.next({ ...this.accumulated, State: 'BUSY', PctComplete: overallPct });
+        // Forward this frequency's real State, except a 'DONE' from anything but the last
+        // frequency just means that one point finished - report it as still BUSY so the overall
+        // multi-frequency exam isn't mistaken for fully complete.
+        const isFinalFrequency = i === total - 1;
+        const state = raw.State === 'DONE' && !isFinalFrequency ? 'BUSY' : raw.State;
+        this.inProgressResultsSubject.next({ ...this.accumulated, State: state, PctComplete: overallPct });
       });
       if (this.shouldAbort) break;
 
@@ -97,7 +126,16 @@ export class DpGramInProgressComponent extends DpoaeInProgressBaseComponent<DpGr
       this.inProgressResultsSubject.next({ ...this.accumulated });
     }
 
-    if (!this.shouldAbort) {
+    if (this.isDestroyed) return;
+
+    if (this.shouldAbort) {
+      // Push the final accumulated snapshot first, then let the base class's shared
+      // abort-completion helpers finalize it - matching Swept DPOAE/WAI's abort behavior exactly.
+      this.inProgressResultsSubject.next({ ...this.accumulated });
+      this.updateStateOnAbort();
+      this.updateInstructionsAfterAbortComplete();
+      this.resultsEvent.emit(this.inProgressResults);
+    } else {
       this.accumulated.State = 'DONE';
       this.accumulated.PctComplete = 100;
       this.inProgressResultsSubject.next({ ...this.accumulated });
@@ -110,12 +148,14 @@ export class DpGramInProgressComponent extends DpoaeInProgressBaseComponent<DpGr
 
   /**
    * Polls requestResults until the current single-frequency exam reports State 'DONE', calling
-   * onTick with every valid intermediate response so the caller can derive overall progress.
+   * onTick with every valid intermediate response so the caller can derive overall progress. Only
+   * stops early on component teardown (isDestroyed) - a user-initiated abort (shouldAbort) is
+   * handled by runFrequencyLoop declining to start the next frequency, not by cutting this one short.
    */
   private async pollSingleExamResult(onTick: (raw: DpGramResultsInterface) => void): Promise<DpGramResultsInterface> {
     return new Promise<DpGramResultsInterface>(resolve => {
       const poll = async () => {
-        if (this.shouldAbort) {
+        if (this.isDestroyed) {
           resolve(this.inProgressResults);
           return;
         }
@@ -124,7 +164,7 @@ export class DpGramInProgressComponent extends DpoaeInProgressBaseComponent<DpGr
         const resp = await this.devicesService.requestResults(this.device!);
         this.isRequestingResults = false;
 
-        if (this.shouldAbort) {
+        if (this.isDestroyed) {
           resolve(this.inProgressResults);
           return;
         }

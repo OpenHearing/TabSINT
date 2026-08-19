@@ -151,18 +151,18 @@ export abstract class DpoaeInProgressBaseComponent<TResults extends DpoaeResults
     }
   }
 
-  private updateInstructionsAfterAbortButtonPressed() {
+  protected updateInstructionsAfterAbortButtonPressed() {
     this.instructions =
       'Abort pressed, please wait while exam is aborted. This may take several minutes, but the data collected so far will be saved.';
     this.changeDetectorRef.detectChanges();
   }
 
-  private updateInstructionsAfterAbortComplete() {
+  protected updateInstructionsAfterAbortComplete() {
     this.instructions = "Exam aborted, press 'Next' to continue.";
     this.changeDetectorRef.detectChanges();
   }
 
-  private updateStateOnAbort() {
+  protected updateStateOnAbort() {
     this.stateModel.updateState({ isSubmittable: true });
     this.inProgressResults.State = 'ABORTED';
     this.shouldAbort = false;
