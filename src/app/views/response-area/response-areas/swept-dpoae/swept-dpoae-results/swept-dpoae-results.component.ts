@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import * as d3 from 'd3';
 import { DpoaeResultsBaseComponent } from '../../shared/dpoae/dpoae-results-base.component';
 import { SweptDpoaeResultsInterface } from '../swept-dpoae-exam/swept-dpoae-exam.interface';
-import { DPOAE_Y_AXIS_DOMAIN } from '../../shared/dpoae/dpoae-common.interface';
+import { DPOAE_LEGEND_DATA, DPOAE_SERIES_STYLE, DPOAE_Y_AXIS_DOMAIN } from '../../shared/dpoae/dpoae-common.interface';
 import { appendNormativeDataBand, createLegend, createOAEResultsChartSvg, plotDpoaeSeries } from '../../../../../utilities/d3-plot-functions';
 
 @Component({
@@ -35,23 +35,15 @@ export class SweptDpoaeResultsComponent extends DpoaeResultsBaseComponent<SweptD
 
     appendNormativeDataBand(svg, this.width, this.height, this.normativeData, this.xScale, yScale, yClampMin, yClampMax);
 
-    // Plot each series as open circle markers, all indexed by the nominal F2 test frequency
-    // (rather than each series' own measured frequency) so the four lines share a common x-axis
-    // position per test point. Only DPOAE gets a connecting line.
+    // Plot each series indexed by the nominal F2 test frequency (rather than each series' own
+    // measured frequency) so the four lines share a common x-axis position per test point.
     const f2Freq = filteredData.DpLow.F2Frequency;
-    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.DpLow.Amplitude, 'blue', false, yClampMin, yClampMax);
-    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.DpLow.NoiseFloor, 'red', true, yClampMin, yClampMax);
-    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.F2.Amplitude, '#9400d3', false, yClampMin, yClampMax);
-    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.F1.Amplitude, '#ffc107', false, yClampMin, yClampMax);
+    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.F1.Amplitude, { ...DPOAE_SERIES_STYLE.F1, yClampMin, yClampMax });
+    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.F2.Amplitude, { ...DPOAE_SERIES_STYLE.F2, yClampMin, yClampMax });
+    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.DpLow.Amplitude, { ...DPOAE_SERIES_STYLE.DpLow, yClampMin, yClampMax });
+    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.DpLow.NoiseFloor, { ...DPOAE_SERIES_STYLE.NoiseFloor, yClampMin, yClampMax });
 
-    const legendData = [
-      { label: 'DPOAE', color: 'blue', line: 'solid' },
-      { label: 'NF', color: 'red', line: 'dashed' },
-      { label: 'F2', color: '#9400d3', line: 'solid' },
-      { label: 'F1', color: '#ffc107', line: 'solid' },
-    ];
-
-    createLegend(svg, legendData, this.width, 85);
+    createLegend(svg, DPOAE_LEGEND_DATA, this.width, 85);
     return svg;
   }
 

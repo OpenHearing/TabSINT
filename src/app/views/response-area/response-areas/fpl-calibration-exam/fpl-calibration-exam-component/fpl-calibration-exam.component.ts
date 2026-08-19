@@ -67,11 +67,11 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   windowDuration: number = FPLcalibrationExamSchema.properties.windowDuration.default;
   numFrequencies: number = FPLcalibrationExamSchema.properties.numFrequencies.default;
   recordFileFolder: string | undefined = FPLcalibrationExamSchema.properties.recordFileFolder.default;
+  numSweeps: number = FPLcalibrationExamSchema.properties.numSweeps.default;
 
   // WAI parameters not specified from FPL calibration response area
   sweepType: string = waiSchema.properties.sweepType.default;
   l: number = waiSchema.properties.l.default;
-  numSweeps: number = waiSchema.properties.numSweeps.default;
   inputChannels: string[] = waiSchema.properties.inputChannels.default;
   aurenInsideDiameter: number = waiSchema.properties.aurenInsideDiameter.default;
   aurenLength: number = waiSchema.properties.aurenLength.default;

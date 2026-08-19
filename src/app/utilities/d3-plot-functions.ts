@@ -1,10 +1,12 @@
 import * as d3 from 'd3';
 import { NormativeDataInterface } from '../interfaces/normative-data-interface';
 import { WAIResultsPlotInterface } from '../views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.interface';
-interface LegendItemInterface {
+export type DpoaeMarker = 'dot' | 'circle' | 'X';
+
+export interface LegendItemInterface {
   label: string;
   color: string;
-  symbol?: string;
+  symbol?: DpoaeMarker;
   line?: string;
 }
 
@@ -15,8 +17,8 @@ export function createOAEResultsChartSvg(
   xTicks: number[],
   xScale: d3.ScaleLogarithmic<number, number, never>,
   yScale: d3.ScaleLinear<number, number, never>,
-  xAxisLabel: string = 'Frequency (Hz)',
-  yAxisLabel: string = 'Amplitude (dB SPL)'
+  xAxisLabel: string = 'F2 Frequency (Hz)',
+  yAxisLabel: string = 'Level (dB SPL)'
 ) {
   // Define axes
   const xAxisMinor = d3
@@ -319,21 +321,30 @@ export function createNormativeDataPath(
   return pathAreaGenerator(data);
 }
 
+export interface DpoaeSeriesStyle {
+  /** The stroke color for the line and markers */
+  color: string;
+  /** Marker shape at each point: filled 'dot', open 'circle' (default), or 'X' */
+  marker?: DpoaeMarker;
+  /** Draw the connecting line and marker outline dashed instead of solid */
+  dashed?: boolean;
+  /** Values below this are shifted up to it before plotting */
+  yClampMin?: number;
+  /** Values above this are shifted down to it before plotting */
+  yClampMax?: number;
+}
+
 /**
  * Plot a single DPOAE-family series (e.g. DPOAE, noise floor, F1, F2) as a connected line with
- * open circle markers, indexed by nominal F2 test frequency, with an optional dashed line/marker
- * outline (e.g. the noise floor trace). Any y value outside [yClampMin, yClampMax] is shifted to
- * the nearest bound rather than drawn off-chart, so out-of-range measurements stay visible at the
- * axis edge instead of being hidden or overflowing the plot border.
+ * markers, indexed by nominal F2 test frequency. Any y value outside [yClampMin, yClampMax] is
+ * shifted to the nearest bound rather than drawn off-chart, so out-of-range measurements stay
+ * visible at the axis edge instead of being hidden or overflowing the plot border.
  * @param svg The svg group to draw into
  * @param xScale The x-axis (frequency) scale
  * @param yScale The y-axis (amplitude) scale
  * @param xValues The x-axis value for each point
  * @param yValues The y-axis value for each point, index-aligned with xValues
- * @param color The stroke color for the line and markers
- * @param dashed Draw the connecting line and marker outline dashed instead of solid
- * @param yClampMin Values below this are shifted up to it before plotting
- * @param yClampMax Values above this are shifted down to it before plotting
+ * @param style Line/marker color and shape, dash style, and y-clamp bounds
  */
 export function plotDpoaeSeries(
   svg: d3.Selection<SVGGElement, unknown, HTMLElement, any>,
@@ -341,11 +352,9 @@ export function plotDpoaeSeries(
   yScale: d3.ScaleLinear<number, number, never>,
   xValues: number[],
   yValues: number[],
-  color: string,
-  dashed: boolean = false,
-  yClampMin?: number,
-  yClampMax?: number
+  style: DpoaeSeriesStyle
 ) {
+  const { color, marker = 'circle', dashed = false, yClampMin, yClampMax } = style;
   const minAllowableY = yClampMin ?? Number.NEGATIVE_INFINITY;
   const maxAllowableY = yClampMax ?? Number.POSITIVE_INFINITY;
   const clampedYValues = yValues.map(y => Math.min(Math.max(y, minAllowableY), maxAllowableY));
@@ -365,18 +374,31 @@ export function plotDpoaeSeries(
     .attr('stroke-width', 2)
     .attr('stroke-dasharray', dashArray);
 
-  svg
-    .selectAll(null)
-    .data(xValues)
-    .enter()
-    .append('circle')
-    .attr('cx', (_d, i) => xScale(xValues[i]))
-    .attr('cy', (_d, i) => yScale(clampedYValues[i]))
-    .attr('r', 4)
-    .style('fill', 'none')
-    .style('stroke', color)
-    .style('stroke-width', 2)
-    .style('stroke-dasharray', dashArray);
+  if (marker === 'X') {
+    const size = 4;
+    const markers = svg
+      .selectAll(null)
+      .data(xValues)
+      .enter()
+      .append('g')
+      .attr('transform', (_d, i) => `translate(${xScale(xValues[i])},${yScale(clampedYValues[i])})`);
+
+    markers.append('line').attr('x1', -size).attr('y1', -size).attr('x2', size).attr('y2', size).style('stroke', color).style('stroke-width', 2);
+    markers.append('line').attr('x1', -size).attr('y1', size).attr('x2', size).attr('y2', -size).style('stroke', color).style('stroke-width', 2);
+  } else {
+    svg
+      .selectAll(null)
+      .data(xValues)
+      .enter()
+      .append('circle')
+      .attr('cx', (_d, i) => xScale(xValues[i]))
+      .attr('cy', (_d, i) => yScale(clampedYValues[i]))
+      .attr('r', 4)
+      .style('fill', marker === 'dot' ? color : 'none')
+      .style('stroke', color)
+      .style('stroke-width', 2)
+      .style('stroke-dasharray', dashArray);
+  }
 }
 
 /**

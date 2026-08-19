@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 
 import { DpoaeInProgressBaseComponent } from '../../shared/dpoae/dpoae-in-progress-base.component';
 import { DPOAEDataInterface, SweptDpoaeResultsInterface } from '../swept-dpoae-exam/swept-dpoae-exam.interface';
-import { DPOAE_Y_AXIS_DOMAIN } from '../../shared/dpoae/dpoae-common.interface';
+import { DPOAE_LEGEND_DATA, DPOAE_SERIES_STYLE, DPOAE_Y_AXIS_DOMAIN } from '../../shared/dpoae/dpoae-common.interface';
 import { appendNormativeDataBand, createLegend, createOAEResultsChartSvg, plotDpoaeSeries } from '../../../../../utilities/d3-plot-functions';
 import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-dpoae.schema';
 
@@ -33,14 +33,7 @@ export class SweptDpoaeInProgressComponent extends DpoaeInProgressBaseComponent<
 
     appendNormativeDataBand(svg, this.width, this.height, this.normativeData, this.xScale, yScale, DPOAE_Y_AXIS_DOMAIN[0], DPOAE_Y_AXIS_DOMAIN[1]);
 
-    const legendData = [
-      { label: 'DPOAE', color: 'blue', line: 'solid' },
-      { label: 'NF', color: 'red', line: 'dashed' },
-      { label: 'F2', color: '#9400d3', line: 'solid' },
-      { label: 'F1', color: '#ffc107', line: 'solid' },
-    ];
-
-    createLegend(svg, legendData, this.width, 85);
+    createLegend(svg, DPOAE_LEGEND_DATA, this.width, 85);
 
     return svg;
   }
@@ -57,11 +50,27 @@ export class SweptDpoaeInProgressComponent extends DpoaeInProgressBaseComponent<
 
     this.svg = this.createProgressPlot(this.yScale);
 
-    plotDpoaeSeries(this.svg, this.xScale, this.yScale, filteredData['F2Frequency'], filteredData['Amplitude'], 'blue', false, yClampMin, yClampMax);
-    plotDpoaeSeries(this.svg, this.xScale, this.yScale, filteredData['F2Frequency'], filteredData['NoiseFloor'], 'red', true, yClampMin, yClampMax);
-    plotDpoaeSeries(this.svg, this.xScale, this.yScale, filteredData['F2Frequency'], filteredData['F2Amplitude'], '#9400d3', false, yClampMin, yClampMax);
+    plotDpoaeSeries(this.svg, this.xScale, this.yScale, filteredData['F2Frequency'], filteredData['Amplitude'], {
+      ...DPOAE_SERIES_STYLE.DpLow,
+      yClampMin,
+      yClampMax,
+    });
+    plotDpoaeSeries(this.svg, this.xScale, this.yScale, filteredData['F2Frequency'], filteredData['NoiseFloor'], {
+      ...DPOAE_SERIES_STYLE.NoiseFloor,
+      yClampMin,
+      yClampMax,
+    });
+    plotDpoaeSeries(this.svg, this.xScale, this.yScale, filteredData['F2Frequency'], filteredData['F2Amplitude'], {
+      ...DPOAE_SERIES_STYLE.F2,
+      yClampMin,
+      yClampMax,
+    });
     if (filteredData['F1Amplitude'].length) {
-      plotDpoaeSeries(this.svg, this.xScale, this.yScale, filteredData['F2Frequency'], filteredData['F1Amplitude'], '#ffc107', false, yClampMin, yClampMax);
+      plotDpoaeSeries(this.svg, this.xScale, this.yScale, filteredData['F2Frequency'], filteredData['F1Amplitude'], {
+        ...DPOAE_SERIES_STYLE.F1,
+        yClampMin,
+        yClampMax,
+      });
     }
   }
 
