@@ -1,10 +1,12 @@
 import * as d3 from 'd3';
 import { NormativeDataInterface } from '../interfaces/normative-data-interface';
 import { WAIResultsPlotInterface } from '../views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.interface';
-interface LegendItemInterface {
+export type DpoaeMarker = 'dot' | 'circle' | 'X';
+
+export interface LegendItemInterface {
   label: string;
   color: string;
-  symbol?: string;
+  symbol?: DpoaeMarker;
   line?: string;
 }
 
@@ -14,7 +16,9 @@ export function createOAEResultsChartSvg(
   chartHeight: number,
   xTicks: number[],
   xScale: d3.ScaleLogarithmic<number, number, never>,
-  yScale: d3.ScaleLinear<number, number, never>
+  yScale: d3.ScaleLinear<number, number, never>,
+  xAxisLabel: string = 'F2 Frequency (Hz)',
+  yAxisLabel: string = 'Level (dB SPL)'
 ) {
   // Define axes
   const xAxisMinor = d3
@@ -46,7 +50,7 @@ export function createOAEResultsChartSvg(
     .attr('y', 50)
     .style('text-anchor', 'middle')
     .attr('fill', 'black')
-    .text('Frequency (Hz)');
+    .text(xAxisLabel);
 
   svg
     .append('g')
@@ -60,7 +64,7 @@ export function createOAEResultsChartSvg(
     .attr('transform', 'rotate(-90)')
     .attr('fill', 'black')
     .style('text-anchor', 'middle')
-    .text('Amplitude (dB SPL)');
+    .text(yAxisLabel);
 
   // Major X Axis Gridlines
   svg
@@ -245,13 +249,13 @@ export function createLegend(
 
   function addSymbol(group: d3.Selection<SVGGElement, LegendItemInterface, null, undefined>, legendItem: LegendItemInterface) {
     const size = 5;
-    if (legendItem.symbol === 'circle') {
+    if (legendItem.symbol === 'circle' || legendItem.symbol === 'dot') {
       group
         .append('circle')
         .attr('cx', 10)
         .attr('cy', 0)
-        .attr('r', size)
-        .style('fill', 'none')
+        .attr('r', legendItem.symbol === 'dot' ? size - 1 : size)
+        .style('fill', legendItem.symbol === 'dot' ? legendItem.color : 'none')
         .style('stroke', legendItem.color)
         .style('stroke-width', 2);
     } else if (legendItem.symbol === 'X') {
@@ -315,4 +319,116 @@ export function createNormativeDataPath(
     .y1(d => yScale(Math.min(Math.max(d.yMax, minAllowableY), maxAllowableY)));
 
   return pathAreaGenerator(data);
+}
+
+export interface DpoaeSeriesStyle {
+  /** The stroke color for the line and markers */
+  color: string;
+  /** Marker shape at each point: filled 'dot', open 'circle' (default), or 'X' */
+  marker?: DpoaeMarker;
+  /** Draw the connecting line and marker outline dashed instead of solid */
+  dashed?: boolean;
+  /** Values below this are shifted up to it before plotting */
+  yClampMin?: number;
+  /** Values above this are shifted down to it before plotting */
+  yClampMax?: number;
+}
+
+/**
+ * Plot a single DPOAE-family series (e.g. DPOAE, noise floor, F1, F2) as a connected line with
+ * markers, indexed by nominal F2 test frequency. Any y value outside [yClampMin, yClampMax] is
+ * shifted to the nearest bound rather than drawn off-chart, so out-of-range measurements stay
+ * visible at the axis edge instead of being hidden or overflowing the plot border.
+ * @param svg The svg group to draw into
+ * @param xScale The x-axis (frequency) scale
+ * @param yScale The y-axis (amplitude) scale
+ * @param xValues The x-axis value for each point
+ * @param yValues The y-axis value for each point, index-aligned with xValues
+ * @param style Line/marker color and shape, dash style, and y-clamp bounds
+ */
+export function plotDpoaeSeries(
+  svg: d3.Selection<SVGGElement, unknown, HTMLElement, any>,
+  xScale: d3.ScaleLogarithmic<number, number, never>,
+  yScale: d3.ScaleLinear<number, number, never>,
+  xValues: number[],
+  yValues: number[],
+  style: DpoaeSeriesStyle
+) {
+  const { color, marker = 'circle', dashed = false, yClampMin, yClampMax } = style;
+  const minAllowableY = yClampMin ?? Number.NEGATIVE_INFINITY;
+  const maxAllowableY = yClampMax ?? Number.POSITIVE_INFINITY;
+  const clampedYValues = yValues.map(y => Math.min(Math.max(y, minAllowableY), maxAllowableY));
+  const dashArray = dashed ? '4,3' : '0';
+
+  const lineGenerator = d3
+    .line<number>()
+    .x((_d, i) => xScale(xValues[i]))
+    .y(d => yScale(d));
+
+  svg
+    .append('path')
+    .datum(clampedYValues)
+    .attr('d', lineGenerator)
+    .attr('fill', 'none')
+    .attr('stroke', color)
+    .attr('stroke-width', 2)
+    .attr('stroke-dasharray', dashArray);
+
+  if (marker === 'X') {
+    const size = 4;
+    const markers = svg
+      .selectAll(null)
+      .data(xValues)
+      .enter()
+      .append('g')
+      .attr('transform', (_d, i) => `translate(${xScale(xValues[i])},${yScale(clampedYValues[i])})`);
+
+    markers.append('line').attr('x1', -size).attr('y1', -size).attr('x2', size).attr('y2', size).style('stroke', color).style('stroke-width', 2);
+    markers.append('line').attr('x1', -size).attr('y1', size).attr('x2', size).attr('y2', -size).style('stroke', color).style('stroke-width', 2);
+  } else {
+    svg
+      .selectAll(null)
+      .data(xValues)
+      .enter()
+      .append('circle')
+      .attr('cx', (_d, i) => xScale(xValues[i]))
+      .attr('cy', (_d, i) => yScale(clampedYValues[i]))
+      .attr('r', 4)
+      .style('fill', marker === 'dot' ? color : 'none')
+      .style('stroke', color)
+      .style('stroke-width', 2)
+      .style('stroke-dasharray', dashArray);
+  }
+}
+
+/**
+ * Append a clip-pathed group containing the shaded normative-data band, sized to the chart area.
+ * @param svg The svg group to draw into
+ * @param width The chart width (for the clip rect)
+ * @param height The chart height (for the clip rect)
+ * @param normativeData The normative data for the area to draw
+ * @param xScale The x-axis (frequency) scale
+ * @param yScale The y-axis (amplitude) scale
+ * @param yClampMin Optional minimum y value to clamp the band above
+ * @param yClampMax Optional maximum y value to clamp the band below
+ */
+export function appendNormativeDataBand(
+  svg: d3.Selection<SVGGElement, unknown, HTMLElement, any>,
+  width: number,
+  height: number,
+  normativeData: NormativeDataInterface[],
+  xScale: d3.ScaleContinuousNumeric<number, number, never>,
+  yScale: d3.ScaleContinuousNumeric<number, number, never>,
+  yClampMin?: number,
+  yClampMax?: number
+) {
+  const defs = svg.append('defs');
+  defs.append('clipPath').attr('id', 'clipRect').append('rect').attr('x', 0).attr('y', 0).attr('height', height).attr('width', width);
+
+  const clippedGroup = svg.append('g').attr('clip-path', `url(#clipRect)`);
+
+  const normativePath = createNormativeDataPath(normativeData, xScale, yScale, yClampMin, yClampMax);
+  clippedGroup.append('path').attr('d', normativePath).attr('fill', 'gray').attr('stroke', 'gray').attr('stroke-width', 2);
+
+  return clippedGroup;
 }

@@ -22,6 +22,7 @@ export const FPLcalibrationExamSchema: JSONSchemaType<FPLCalibrationExamInterfac
       description: 'Duration of sweep, not including start and end ramps. In seconds.',
     },
     numFrequencies: { type: 'number', nullable: true, default: 64 },
+    numSweeps: { type: 'number', nullable: true, default: 10 },
   },
   required: ['type'],
 };

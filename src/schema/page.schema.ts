@@ -13,6 +13,7 @@ import { FPLcalibrationExamSchema } from './response-areas/fpl-calibration-exam.
 import { multipleInputSchema } from './response-areas/multiple-input.schema';
 import { likertSchema } from './response-areas/likert.schema';
 import { sweptDpoaeSchema } from './response-areas/swept-dpoae.schema';
+import { dpGramSchema } from './response-areas/dp-gram.schema';
 import { waiSchema } from './response-areas/wai.schema';
 import { mrtSchema } from './response-areas/mrt.schema';
 import { memrSchema } from './response-areas/memr.schema';
@@ -115,6 +116,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
         FPLcalibrationExamSchema,
         likertSchema,
         sweptDpoaeSchema,
+        dpGramSchema,
         waiSchema,
         mrtSchema,
         memrSchema,

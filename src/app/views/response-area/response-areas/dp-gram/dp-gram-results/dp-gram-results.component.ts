@@ -1,30 +1,26 @@
 import { Component, Input } from '@angular/core';
 import * as d3 from 'd3';
 import { DpoaeResultsBaseComponent } from '../../shared/dpoae/dpoae-results-base.component';
-import { SweptDpoaeResultsInterface } from '../swept-dpoae-exam/swept-dpoae-exam.interface';
+import { DpGramResultsInterface } from '../dp-gram-exam/dp-gram-exam.interface';
 import { DPOAE_LEGEND_DATA, DPOAE_SERIES_STYLE, DPOAE_Y_AXIS_DOMAIN } from '../../shared/dpoae/dpoae-common.interface';
 import { appendNormativeDataBand, createLegend, createOAEResultsChartSvg, plotDpoaeSeries } from '../../../../../utilities/d3-plot-functions';
 
 @Component({
-  selector: 'app-swept-dpoae-results',
-  templateUrl: './swept-dpoae-results.component.html',
-  styleUrl: './swept-dpoae-results.component.css',
+  selector: 'app-dp-gram-results',
+  templateUrl: './dp-gram-results.component.html',
 })
-export class SweptDpoaeResultsComponent extends DpoaeResultsBaseComponent<SweptDpoaeResultsInterface> {
-  @Input() f2Start!: number;
-  @Input() f2End!: number;
+export class DpGramResultsComponent extends DpoaeResultsBaseComponent<DpGramResultsInterface> {
   @Input() xScale!: d3.ScaleLogarithmic<number, number, never>;
   @Input() xTicks!: number[];
 
   protected createResultsPlot() {
-    // TODO: Do I need to filter data? Probably not after I get real firmware.
-    const filteredData = this.filterSweptDpoaeResults(this.results);
+    const filteredData = this.filterDpGramResults(this.results);
 
     const [yClampMin, yClampMax] = DPOAE_Y_AXIS_DOMAIN;
     const yScale = d3.scaleLinear().domain(DPOAE_Y_AXIS_DOMAIN).range([this.height, 0]);
 
     let svg = d3
-      .select('#dpoae-results-plot')
+      .select('#dp-gram-results-plot')
       .append('svg')
       .attr('width', this.width + this.margin.left + this.margin.right)
       .attr('height', this.height + this.margin.top + this.margin.bottom)
@@ -36,8 +32,9 @@ export class SweptDpoaeResultsComponent extends DpoaeResultsBaseComponent<SweptD
     appendNormativeDataBand(svg, this.width, this.height, this.normativeData, this.xScale, yScale, yClampMin, yClampMax);
 
     // Plot each series indexed by the nominal F2 test frequency (rather than each series' own
-    // measured frequency) so the four lines share a common x-axis position per test point.
-    const f2Freq = filteredData.DpLow.F2Frequency;
+    // measured frequency) so the four lines share a common x-axis position per test point,
+    // matching Swept DPOAE's results plot.
+    const f2Freq = filteredData.F2.Frequency;
     plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.F1.Amplitude, { ...DPOAE_SERIES_STYLE.F1, yClampMin, yClampMax });
     plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.F2.Amplitude, { ...DPOAE_SERIES_STYLE.F2, yClampMin, yClampMax });
     plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.DpLow.Amplitude, { ...DPOAE_SERIES_STYLE.DpLow, yClampMin, yClampMax });
@@ -47,8 +44,8 @@ export class SweptDpoaeResultsComponent extends DpoaeResultsBaseComponent<SweptD
     return svg;
   }
 
-  private filterSweptDpoaeResults(data: SweptDpoaeResultsInterface): {
-    DpLow: { Frequency: number[]; F2Frequency: number[]; Amplitude: number[]; NoiseFloor: number[] };
+  private filterDpGramResults(data: DpGramResultsInterface): {
+    DpLow: { Frequency: number[]; Amplitude: number[]; NoiseFloor: number[] };
     F2: { Frequency: number[]; Amplitude: number[] };
     F1: { Frequency: number[]; Amplitude: number[] };
   } {
@@ -56,7 +53,6 @@ export class SweptDpoaeResultsComponent extends DpoaeResultsBaseComponent<SweptD
     const filteredData = {
       DpLow: {
         Frequency: [],
-        F2Frequency: [],
         Amplitude: [],
         NoiseFloor: [],
       },
@@ -97,8 +93,6 @@ export class SweptDpoaeResultsComponent extends DpoaeResultsBaseComponent<SweptD
       filterAndPush(data.F1, filteredData.F1);
     }
 
-    // Update the DpLow frequencies for plotting
-    filteredData.DpLow.F2Frequency = filteredData.F2.Frequency;
     return filteredData;
   }
 }

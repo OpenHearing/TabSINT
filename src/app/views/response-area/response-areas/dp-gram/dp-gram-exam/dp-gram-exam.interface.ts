@@ -1,18 +1,14 @@
 import { DpoaeCommonInterface, DpoaeResultsCommonInterface, DPOAEDataInterface } from '../../shared/dpoae/dpoae-common.interface';
 
-export interface SweptDpoaeInterface extends DpoaeCommonInterface {
-  f2Start?: number;
-  f2End?: number;
-  sweepDuration?: number;
-  sweepType?: 'log' | 'linear';
-  minSweeps?: number;
-  maxSweeps?: number;
+export interface DpGramInterface extends DpoaeCommonInterface {
+  f2: number[];
   windowDuration?: number;
-  numFrequencies?: number;
+  minTestAverages?: number;
+  maxTestAverages?: number;
 }
 
-export interface SweptDpoaeResultsInterface extends DpoaeResultsCommonInterface {
-  NumSweeps?: number;
+export interface DpGramResultsInterface extends DpoaeResultsCommonInterface {
+  NumPoints?: number;
   DpLow?: DPOAEDataInterface;
   DpHigh?: DPOAEDataInterface;
   F1?: DPOAEDataInterface;

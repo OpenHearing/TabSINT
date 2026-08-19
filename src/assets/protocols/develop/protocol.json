@@ -48,6 +48,9 @@
                 "id": "Swept DPOAE Exam (FPL)"
               },
               {
+                "id": "DP-gram Exam"
+              },
+              {
                 "id": "WAI Exam (SPL)"
               },
               {
@@ -171,6 +174,12 @@
               "conditional": "result.response=='Swept DPOAE Exam (FPL)'",
               "target": {
                 "reference": "SweptDpoaeExamFPL"
+              }
+            },
+            {
+              "conditional": "result.response=='DP-gram Exam'",
+              "target": {
+                "reference": "DpGramExam"
               }
             },
             {
@@ -631,8 +640,8 @@
             "inputChannel": "EPSHIELD_LEFT_PDM_MIC1",
             "l1": 75,
             "l2": 65,
-            "f2Start": 500,
-            "f2End": 16000,
+            "f2Start": 1500,
+            "f2End": 8000,
             "frequencyRatio": 1.22,
             "sweepDuration": 10.0,
             "windowDuration": 0.1,
@@ -665,8 +674,8 @@
             "inputChannel": "EPSHIELD_LEFT_PDM_MIC1",
             "l1": 75,
             "l2": 65,
-            "f2Start": 500,
-            "f2End": 16000,
+            "f2Start": 1500,
+            "f2End": 8000,
             "frequencyRatio": 1.22,
             "sweepDuration": 10.0,
             "windowDuration": 0.1,
@@ -677,6 +686,33 @@
             "noiseFloorThreshold": -10,
             "outputRawMeasurements": false,
             "outputCalibrationType": "FPL"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "DpGramExam",
+      "pages": [
+        {
+          "id": "dp_gram_001",
+          "title": "DP-gram",
+          "responseArea": {
+            "type": "dpGramResponseArea",
+            "normativeDataPath": "swept-dpoae-normative-data-human.xlsx",
+            "outputChannel1": "HPL1",
+            "outputChannel2": "HPR1",
+            "inputChannel": "EPSHIELD_LEFT_PDM_MIC1",
+            "l1": 75,
+            "l2": 65,
+            "f2": [1500, 2000],
+            "ratio": 1.22,
+            "noiseFloorThreshold": -10,
+            "outputRawMeasurements": false,
+            "outputCalibrationType": "SPL"
           }
         },
         {

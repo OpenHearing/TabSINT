@@ -66,7 +66,7 @@ async function parseXlsxBuffer(xlsxFileContent: ArrayBuffer): Promise<NormativeD
  * @param meta The metadata associated with the protocol to determine the full file path information
  * @returns A promise that resolves to the updated response area.
  */
-export async function loadSweptDPOAENormativeData(responseArea: SweptDpoaeInterface, meta: ProtocolMetaInterface): Promise<SweptDpoaeInterface> {
+export async function loadDPOAENormativeData(responseArea: SweptDpoaeInterface, meta: ProtocolMetaInterface): Promise<SweptDpoaeInterface> {
   if (responseArea.normativeDataPath) {
     const normativeData = await loadNormativeDataXlsx(responseArea.normativeDataPath, meta);
     return { ...responseArea, normativeData: normativeData };
