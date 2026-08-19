@@ -159,6 +159,7 @@ export enum ResultType {
   Threshold = 'Threshold',
   Better = 'Hearing Potentially Better the Calibrated Range',
   Beyond = 'Hearing Potentially Beyond the Calibrated Range',
+  DNC = 'Failed to Converge',
 }
 
 export enum AudioChannel {

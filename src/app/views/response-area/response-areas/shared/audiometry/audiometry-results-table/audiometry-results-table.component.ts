@@ -43,6 +43,10 @@ export class AudiometryResultsTableComponent implements OnChanges {
    * Format a threshold for display.
    */
   formatThreshold(threshold: number | null, resultType: string): string {
+    if (resultType === ResultType.DNC) {
+      return 'DNC';
+    }
+
     if (threshold === null) {
       return '-';
     }

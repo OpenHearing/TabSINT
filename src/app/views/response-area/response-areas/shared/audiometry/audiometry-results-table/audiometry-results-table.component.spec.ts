@@ -60,6 +60,10 @@ describe('AudiometryResultsTableComponent', () => {
     expect(component.formatThreshold(25, ResultType.Threshold)).toBe('25');
   });
 
+  it('formats a failed-to-converge result as "DNC" instead of "-"', () => {
+    expect(component.formatThreshold(null, ResultType.DNC)).toBe('DNC');
+  });
+
   describe('formatChannelName', () => {
     it('capitalizes the first letter of a channel', () => {
       expect(component.formatChannelName(EarChannel.Left)).toBe('Left');
