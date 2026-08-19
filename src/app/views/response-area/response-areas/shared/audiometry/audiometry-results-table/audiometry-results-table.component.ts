@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges } from '@angular/core';
 
-import { AudiometryResultsInterface } from '../../../../../../interfaces/audiometry-results.interface';
+import { AudiometryResultsInterface, EarChannel } from '../../../../../../interfaces/audiometry-results.interface';
 import { ResultType } from '../../../../../../utilities/constants';
 
 /** A single frequency/threshold entry for one channel, ready for tabular display. */
@@ -13,7 +13,7 @@ interface AudiometryChannelRow {
 
 /** All rows belonging to a single channel (e.g. left/right/mono), sorted by frequency. */
 interface AudiometryChannelGroup {
-  channel: string;
+  channel: EarChannel;
   rows: AudiometryChannelRow[];
   hasMasking: boolean;
 }
@@ -62,7 +62,7 @@ export class AudiometryResultsTableComponent implements OnChanges {
    * @param channel The channel name.
    * @returns The formatted name.
    */
-  formatChannelName(channel: string) {
+  formatChannelName(channel: EarChannel) {
     if (!channel) return channel; // Handles empty strings, null, or undefined
     return channel
       .split('_')
@@ -75,13 +75,13 @@ export class AudiometryResultsTableComponent implements OnChanges {
    * @param channel The channel to check.
    * @returns The background color for the channel table.
    */
-  formatChannelColor(channel: string) {
+  formatChannelColor(channel: EarChannel) {
     switch (channel) {
-      case 'left':
-      case 'bone_left':
+      case EarChannel.Left:
+      case EarChannel.BoneLeft:
         return '#007bff';
-      case 'right':
-      case 'bone_right':
+      case EarChannel.Right:
+      case EarChannel.BoneRight:
         return '#dc3545';
       default:
         return 'black';
@@ -97,7 +97,7 @@ export class AudiometryResultsTableComponent implements OnChanges {
       return [];
     }
 
-    const rowsByChannel = new Map<string, AudiometryChannelRow[]>();
+    const rowsByChannel = new Map<EarChannel, AudiometryChannelRow[]>();
 
     dataStruct.frequencies.forEach((frequency, index) => {
       const channel = dataStruct.channels[index];

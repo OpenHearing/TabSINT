@@ -1,30 +1,30 @@
-import { AudiometryResultsInterface } from '../../../../../interfaces/audiometry-results.interface';
+import { AudiometryResultsInterface, EarChannel } from '../../../../../interfaces/audiometry-results.interface';
 import { AudiometryCombinedDatum, AudiometryOutputChannel } from './audiometry.interface';
 
 /**
- * Map a CHA audiometry OutputChannel (e.g. HPL0, HPR1, LINEL0 NONE) to the channel string
- * expected by AudiogramComponent/AudiometryResultsTableComponent.
+ * Map a CHA audiometry OutputChannel to the EarChannel expected by audiogram.
+ *
  * @param outputChannel The exam's configured output channel(s).
- * @returns 'left'/'right' for air conduction, 'bone_left'/'bone_right' for bone conduction, 'mono' otherwise.
+ * @returns Ear channel for the audiogram.
  */
-export function outputChannelToEarChannel(outputChannel: AudiometryOutputChannel | AudiometryOutputChannel[] | undefined): string {
+export function outputChannelToEarChannel(outputChannel: AudiometryOutputChannel | AudiometryOutputChannel[] | undefined): EarChannel {
   const channel = Array.isArray(outputChannel) ? outputChannel[0] : outputChannel;
   switch (channel) {
     case AudiometryOutputChannel.HPL0:
     case AudiometryOutputChannel.HPL1:
-      return 'left';
+      return EarChannel.Left;
     case AudiometryOutputChannel.HPR0:
     case AudiometryOutputChannel.HPR1:
-      return 'right';
+      return EarChannel.Right;
     case AudiometryOutputChannel.LINEL0_NONE:
-      return 'bone_left';
+      return EarChannel.BoneLeft;
     case AudiometryOutputChannel.NONE_LINEL0:
-      return 'bone_right';
+      return EarChannel.BoneRight;
     case AudiometryOutputChannel.LINEL0:
     case AudiometryOutputChannel.HPL0_HPR0:
-      return 'mono';
+      return EarChannel.Mono;
     default:
-      return 'mono';
+      return EarChannel.Mono;
   }
 }
 

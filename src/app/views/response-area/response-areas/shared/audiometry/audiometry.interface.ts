@@ -1,4 +1,5 @@
 import { CommonResponseAreaInterface } from '../../../../../interfaces/page-definition.interface';
+import { EarChannel } from '../../../../../interfaces/audiometry-results.interface';
 
 export enum AudiometryLevelUnits {
   dbHl = 'dB HL',
@@ -53,7 +54,7 @@ export interface PlotProperties {
 export interface AudiometryCombinedDatum {
   frequency: number;
   threshold: number | null;
-  channel: string;
+  channel: EarChannel;
   resultType: string;
   masking: boolean;
 }

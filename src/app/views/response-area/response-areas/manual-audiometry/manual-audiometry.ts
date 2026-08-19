@@ -7,7 +7,7 @@ import { ManualAudiometryInterface } from './manual-audiometry.interface';
 import { PageInterface } from '../../../../models/page/page.interface';
 import { ResultsInterface } from '../../../../models/results/results.interface';
 import { ProtocolModelInterface } from '../../../../models/protocol/protocol.interface';
-import { AudiometryResultsInterface, RetsplsInterface } from '../../../../interfaces/audiometry-results.interface';
+import { AudiometryResultsInterface, EarChannel, RetsplsInterface } from '../../../../interfaces/audiometry-results.interface';
 
 import { isManualAudiometryResponseArea } from '../../../../guards/type.guard';
 import { DevicesService } from '../../../../services/devices/devices.service';
@@ -241,7 +241,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
   }
 
   getEarData(ear: 'Left' | 'Right'): AudiometryResultsInterface {
-    const channel = ear === 'Left' ? 'left' : 'right';
+    const channel = ear === 'Left' ? EarChannel.Left : EarChannel.Right;
     return {
       frequencies: this.audiogramData.frequencies.filter((_, i) => this.audiogramData.channels[i] === channel),
       thresholds: this.audiogramData.thresholds.filter((_, i) => this.audiogramData.channels[i] === channel),
@@ -272,7 +272,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
   }
 
   private updateThreshold(ear: 'Left' | 'Right', frequency: number, threshold: number | null, resultType: ResultType = ResultType.Threshold) {
-    const channel = ear === 'Left' ? 'left' : 'right';
+    const channel = ear === 'Left' ? EarChannel.Left : EarChannel.Right;
 
     const index = this.audiogramData.frequencies.findIndex((f, i) => f === frequency && this.audiogramData.channels[i] === channel);
 

@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslocoTestingModule } from '@jsverse/transloco';
-import { AudiometryResultsInterface } from '../../../../../../interfaces/audiometry-results.interface';
+import { AudiometryResultsInterface, EarChannel } from '../../../../../../interfaces/audiometry-results.interface';
 import { ResultType } from '../../../../../../utilities/constants';
 import { AudiometryLegendComponent } from '../audiometry-legend/audiometry-legend.component';
 import { AudiometryResultsTableComponent } from './audiometry-results-table.component';
@@ -12,7 +12,7 @@ describe('AudiometryResultsTableComponent', () => {
   const dataStruct: AudiometryResultsInterface = {
     frequencies: [1000, 500, 2000],
     thresholds: [20, 15, null],
-    channels: ['left', 'left', 'right'],
+    channels: [EarChannel.Left, EarChannel.Left, EarChannel.Right],
     resultTypes: [ResultType.Threshold, ResultType.Threshold, ResultType.Threshold],
     masking: [false, false, false],
     levelUnits: 'dB HL',
@@ -40,7 +40,7 @@ describe('AudiometryResultsTableComponent', () => {
     component.ngOnChanges();
 
     expect(component.channelGroups.length).toBe(2);
-    const left = component.channelGroups.find(group => group.channel === 'left');
+    const left = component.channelGroups.find(group => group.channel === EarChannel.Left);
     expect(left?.rows.map(row => row.frequency)).toEqual([500, 1000]);
   });
 
@@ -62,12 +62,12 @@ describe('AudiometryResultsTableComponent', () => {
 
   describe('formatChannelName', () => {
     it('capitalizes the first letter of a channel', () => {
-      expect(component.formatChannelName('left')).toBe('Left');
-      expect(component.formatChannelName('right')).toBe('Right');
+      expect(component.formatChannelName(EarChannel.Left)).toBe('Left');
+      expect(component.formatChannelName(EarChannel.Right)).toBe('Right');
     });
 
     it('returns an empty string unchanged', () => {
-      expect(component.formatChannelName('')).toBe('');
+      expect(component.formatChannelName('' as EarChannel)).toBe('');
     });
   });
 
@@ -80,7 +80,7 @@ describe('AudiometryResultsTableComponent', () => {
       const dataStruct: AudiometryResultsInterface = {
         frequencies: [2000, 500, 1000],
         thresholds: [30, 20, 25],
-        channels: ['left', 'left', 'right'],
+        channels: [EarChannel.Left, EarChannel.Left, EarChannel.Right],
         resultTypes: [ResultType.Threshold, ResultType.Threshold, ResultType.Threshold],
         masking: [false, false, true],
         levelUnits: 'dB HL',
@@ -90,11 +90,11 @@ describe('AudiometryResultsTableComponent', () => {
 
       expect(groups.length).toBe(2);
 
-      const left = groups.find(group => group.channel === 'left');
+      const left = groups.find(group => group.channel === EarChannel.Left);
       expect(left?.rows.map(row => row.frequency)).toEqual([500, 2000]);
       expect(left?.hasMasking).toBe(false);
 
-      const right = groups.find(group => group.channel === 'right');
+      const right = groups.find(group => group.channel === EarChannel.Right);
       expect(right?.rows.map(row => row.frequency)).toEqual([1000]);
       expect(right?.hasMasking).toBe(true);
     });

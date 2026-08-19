@@ -1,22 +1,7 @@
 import { Component, ElementRef, OnInit, Input, SimpleChanges, OnChanges, inject } from '@angular/core';
 import * as d3 from 'd3';
-import { AudiogramDatumNoNullInterface, AudiometryResultsInterface } from '../../../../../interfaces/audiometry-results.interface';
+import { AudiogramDatumNoNullInterface, AudiometryResultsInterface, EarChannel } from '../../../../../interfaces/audiometry-results.interface';
 import { LevelUnits, ResultType } from '../../../../../utilities/constants';
-
-/**
- * Color for a channel's symbols/lines. Left-ear channels (air or bone conduction) are blue,
- * right-ear channels are red/tomato, and mono (binaural air, or bone conduction with no ear
- * specified) is black since it isn't associated with either ear.
- */
-function channelColor(channel: string): string {
-  if (channel === 'right' || channel === 'bone_right') {
-    return '#FF6347';
-  }
-  if (channel === 'mono') {
-    return 'black';
-  }
-  return 'blue'; // 'left' and 'bone_left'
-}
 
 // See https://www.asha.org/policy/GL1990-00006/ for audiogram specifications
 @Component({
@@ -47,6 +32,44 @@ export class AudiogramComponent implements OnInit, OnChanges {
     if (changes['selectedEar']) {
       this.updateGraphBorders();
     }
+  }
+
+  /**
+   * Color for a channel's symbols/lines.
+   */
+  channelColor(channel: EarChannel): string {
+    switch (channel) {
+      case EarChannel.Right:
+      case EarChannel.BoneRight:
+        return '#FF6347';
+      case EarChannel.Left:
+      case EarChannel.BoneLeft:
+        return 'blue';
+      default:
+        return 'black';
+    }
+  }
+
+  /**
+   * Draw a straight tail from (x, y) in the given direction, ending in a symmetric two-barb
+   * arrowhead centered on the tail's own axis.
+   */
+  arrowTail(x: number, y: number, angleDeg: number): string {
+    const tailLength = 10;
+    const headLength = 7;
+    const headSpreadDeg = 35;
+
+    const angle = (angleDeg * Math.PI) / 180;
+    const tipX = x + tailLength * Math.cos(angle);
+    const tipY = y + tailLength * Math.sin(angle);
+
+    const backAngle = angle + Math.PI;
+    const barb = (spreadDeg: number) => {
+      const barbAngle = backAngle + (spreadDeg * Math.PI) / 180;
+      return `${tipX + headLength * Math.cos(barbAngle)},${tipY + headLength * Math.sin(barbAngle)}`;
+    };
+
+    return `M ${x},${y} L ${tipX},${tipY} M ${tipX},${tipY} L ${barb(-headSpreadDeg)} M ${tipX},${tipY} L ${barb(headSpreadDeg)}`;
   }
 
   updateGraphBorders(): void {
@@ -112,74 +135,62 @@ export class AudiogramComponent implements OnInit, OnChanges {
     const xAxisMinor = d3.axisTop(xScale).tickFormat(d3.format(',.0f')).tickValues(xTicksMinor).tickSize(3);
     const yAxis = d3.axisLeft(yScale).tickValues(yTicks).tickSize(10);
 
-    const colorMap = (d: any) => channelColor(d.channel);
+    const colorMap = (d: any) => this.channelColor(d.channel);
     const strokeWidthMap = () => 2;
 
-    // Base symbol shapes, centered at the origin
-    const baseSymbol = (channel: string): string => {
+    // Base symbol shapes per ASHA audiogram convention, centered at the origin.
+    const baseSymbol = (channel: EarChannel, masking: boolean): string => {
       switch (channel) {
-        case 'left':
-          return 'M -4,-4 L 4,4 M -4,4 L 4,-4'; // X shape
-        case 'bone_left':
-          return 'M 4,-5 L -4,0 L 4,5'; // '<' shape
-        case 'bone_right':
-          return 'M -4,-5 L 4,0 L -4,5'; // '>' shape
-        case 'mono':
-          return 'M 0,-5 L 5,0 L 0,5 L -5,0 Z'; // Diamond shape
-        case 'right':
+        case EarChannel.Left:
+          return masking
+            ? 'M -5,-5 L 5,-5 L 5,5 L -5,5 Z' // masked AC left: square
+            : 'M -4,-4 L 4,4 M -4,4 L 4,-4'; // unmasked AC left: X
+        case EarChannel.Right:
+          return masking
+            ? 'M -5,5 L 5,5 L 0,-5 Z' // masked AC right: triangle, apex up
+            : (d3.symbol().type(d3.symbolCircle).size(50)() ?? ''); // unmasked AC right: circle
+        case EarChannel.BoneLeft:
+          return masking
+            ? 'M 0,-5 L -5,-5 L -5,5 L 0,5' // masked BC left: '[' bracket
+            : 'M 4,-5 L -4,0 L 4,5'; // unmasked BC left: '<'
+        case EarChannel.BoneRight:
+          return masking
+            ? 'M 0,-5 L 5,-5 L 5,5 L 0,5' // masked BC right: ']' bracket
+            : 'M -4,-5 L 4,0 L -4,5'; // unmasked BC right: '>'
+        case EarChannel.Mono:
         default:
-          return d3.symbol().type(d3.symbolCircle).size(50)() ?? '';
+          return 'M 0,-5 L 5,0 L 0,5 L -5,0 Z'; // Diamond shape
       }
     };
 
-    // "Beyond" points get the base symbol plus an arrowhead tail pointing away from its lowest point.
+    // "Beyond" points get the base symbol plus an arrowhead tail pointing away from its lowest point
+    const SOUTHEAST = 45;
+    const SOUTHWEST = 135;
+    const SOUTH = 90;
+
     const symbolMap = (d: any): string => {
-      const base = baseSymbol(d.channel);
+      const base = baseSymbol(d.channel, d.masking);
       if (d.resultType !== ResultType.Beyond) {
         return base;
       }
 
       switch (d.channel) {
-        case 'left':
-          // X with a proper southeast arrowhead
-          return `
-           M -4,-4 L 4,9
-           M -4,4 L 4, -4
-           M 4,9 L 6,4
-           M 4,9 L -2,8
-          `;
-        case 'bone_left':
-          // '<' with a southeast arrowhead tail
-          return `
-            ${base}
-            M 4,5 L 10,12
-            M 10,12 L 8,7
-            M 10,12 L 2,11
-          `;
-        case 'right':
-          // Circle with a proper southwest arrowhead
-          return `
-            ${base}
-            M 0,5 L -10,12
-            M -10,12 L -8,7
-            M -10,12 L -2,11
-          `;
-        case 'bone_right':
-          // '>' with a southwest arrowhead tail
-          return `
-            ${base}
-            M -4,5 L -10,12
-            M -10,12 L -8,7
-            M -10,12 L -2,11
-          `;
+        case EarChannel.Left:
+          // Square or X: tail from the bottom-right corner/tip, continuing southeast
+          return `${base} ${this.arrowTail(d.masking ? 5 : 4, d.masking ? 5 : 4, SOUTHEAST)}`;
+        case EarChannel.BoneLeft:
+          // '[' or '<': tail from the bottom-right corner/tip, continuing southeast
+          return `${base} ${this.arrowTail(d.masking ? 0 : 4, 5, SOUTHEAST)}`;
+        case EarChannel.Right:
+          // Triangle or circle: tail from the bottom of the shape, continuing southwest
+          return `${base} ${this.arrowTail(0, d.masking ? 5 : 4, SOUTHWEST)}`;
+        case EarChannel.BoneRight:
+          // ']' or '>': tail from the bottom-left corner/tip, continuing southwest
+          return `${base} ${this.arrowTail(d.masking ? 0 : -4, 5, SOUTHWEST)}`;
+        case EarChannel.Mono:
         default:
-          // mono: diamond with a downward arrowhead tail
-          return `
-            ${base}
-            M 0,5 L 0,12
-            M 0,12 L -3,7
-            M 0,12 L 3,7
-          `;
+          // Diamond: tail from the bottom vertex, continuing straight down
+          return `${base} ${this.arrowTail(0, 5, SOUTH)}`;
       }
     };
 
