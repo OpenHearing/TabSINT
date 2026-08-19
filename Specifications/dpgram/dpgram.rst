@@ -174,6 +174,10 @@ Algorithm
      - Initiate a DP-gram exam using the Submit button.
      - Verify that the emitted chirp is the correct frequency for each step of the sequence, frequency ratio, output levels for each frequency, sweep duration, and window duration.
      - 
+   * - The exam accurately computes F1, F2, DpLow, and Noise Floor from the raw firmware response records, using the Complex-Average Magnitude and Aggregated Noise Floor algorithms described above.
+     - Set `ouputRawMeasurements` to true and complete a DP-gram exam normally. For one frequency step, take the raw (amplitude, phase) samples recorded for the F1, F2, and DpLow records, and the raw DpLow.NoiseFloor samples, and calculate the expected F1, F2, DpLow, and Noise Floor values using the Complex-Average Magnitude and Aggregated Noise Floor formulas (use `\\olympus\projects\1010564-OPEN-HEARING\Technical Work\Testing\Data\2026-08-11-DPGram-NoiseFloor-AurenSN006\Analysis\test4_plot_dpgram_results.m`).
+     - Verify that the F1, F2, DpLow, and Noise Floor values displayed/exported by the app for that frequency step match the hand-calculated values (within floating-point tolerance).
+     -
    * - The exam presents a number of chirps greater than or equal to the Minimum Number of Sweeps and less than or equal to the Maximum Number of Sweeps.
      - Initiate a DP-gram exam using the Submit button. Intentionally prevent the exam from meeting the threshold criterion. 
      - Verify that the exam plays at least the Minimum Number of Sweeps and no more than the Maximum Number of Sweeps, then concludes.
