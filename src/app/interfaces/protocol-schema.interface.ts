@@ -12,7 +12,6 @@ export interface ProtocolSchemaInterface {
   instructionText?: string;
   helpText?: string;
   submitText?: string;
-  chaStream?: boolean;
   randomization?: 'WithoutReplacement';
   commonMediaRepository?: string;
   calibration?: ProtocolCalibrationInterface[];

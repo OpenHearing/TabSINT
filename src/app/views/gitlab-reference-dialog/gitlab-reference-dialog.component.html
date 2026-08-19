@@ -1,7 +1,7 @@
-<h2 mat-dialog-title>{{ "Select GitLab Reference" | transloco }}</h2>
+<h2 mat-dialog-title>{{ title | transloco }}</h2>
 
 <mat-dialog-content>
-  <div>{{ "Choose which reference source is used when pulling data from a GitLab repository." | transloco }}</div>
+  <div>{{ description | transloco }}</div>
   <mat-radio-group aria-label="Select Gitlab Reference" [(ngModel)]="selectedOption">
     <mat-radio-button [value]="optionTag">{{ "Latest Tag" | transloco }}</mat-radio-button>
     <mat-radio-button [value]="optionCommit">{{ "Latest Commit" | transloco }}</mat-radio-button>

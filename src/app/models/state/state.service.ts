@@ -28,6 +28,7 @@ export class StateModel {
       appLog: false,
       protocols: true,
       protocolsSource: true,
+      protocolsMedia: true,
       deviceAdvanced: false,
       completedExams: true,
       exportedAndUploadedResults: true,

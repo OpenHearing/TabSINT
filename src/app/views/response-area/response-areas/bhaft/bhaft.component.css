@@ -1,0 +1,40 @@
+.bhaft-container {
+  width: 100%;
+}
+
+.bhaft-start {
+  padding-top: 1rem;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
+
+.bhaft-button-row {
+  display: flex;
+  justify-content: center;
+  padding-top: 1rem;
+}
+
+.bhaft-results {
+  padding-top: 1rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bhaft-response {
+  padding-top: 0.5rem;
+  font-weight: bold;
+}
+
+.bhaft-notes {
+  padding-top: 1rem;
+  text-align: center;
+}
+
+.bhaft-notes-input {
+  width: 100%;
+  min-height: 100px;
+  margin-top: 0.5rem;
+}

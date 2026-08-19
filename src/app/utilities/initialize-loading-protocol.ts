@@ -6,6 +6,7 @@ import { Logger } from '../services/logger.service';
 import { FileService } from '../services/file.service';
 import { DiskInterface } from '../models/disk/disk.interface';
 import { CalibrationFileInterface } from '../interfaces/calibration-file.interface';
+import { MediaRepoProtocolTarget } from '../interfaces/media-repos.interface';
 
 export async function initializeLoadingProtocol(
   loading: LoadingProtocolInterface,
@@ -64,6 +65,7 @@ export async function initializeLoadingProtocol(
     if (loading.protocol.commonMediaRepository) {
       const midx = _.findIndex(disk.mediaRepos, {
         repository: loading.protocol.commonMediaRepository,
+        target: MediaRepoProtocolTarget,
       });
       if (midx !== -1) {
         loading.protocol.commonRepo = disk.mediaRepos[midx];

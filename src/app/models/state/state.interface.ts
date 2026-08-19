@@ -21,6 +21,7 @@ export interface StateInterface {
     appLog: boolean;
     protocols: boolean;
     protocolsSource: boolean;
+    protocolsMedia: boolean;
     deviceAdvanced: boolean;
     completedExams: boolean;
     exportedAndUploadedResults: boolean;

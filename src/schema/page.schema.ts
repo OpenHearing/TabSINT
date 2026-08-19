@@ -28,6 +28,7 @@ import { threeDigitSchema } from './response-areas/three-digit.schema';
 import { hintSchema } from './response-areas/hint.schema';
 import { gapSchema } from './response-areas/gap.schema';
 import { hughsonWestlakeSchema } from './response-areas/hughson-westlake.schema';
+import { bhaftSchema } from './response-areas/bhaft.schema';
 
 export const pageSchema: JSONSchemaType<PageDefinition> = {
   $id: 'page_base',
@@ -58,7 +59,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
       type: 'object',
       description:
         'A JS file/function to run before this page displays. The function receives no arguments; ' +
-        'it may inspect prior results/flags via window.tabsint.resultsModel and override this page\'s ' +
+        "it may inspect prior results/flags via window.tabsint.resultsModel and override this page's " +
         'variables (instructionText, responseArea config, etc.) by mutating window.tabsint.page directly.',
       properties: {
         filepath: { type: 'string', nullable: false },
@@ -77,7 +78,6 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
     },
     wavfiles: { type: 'array', items: pageWavfileSchema, nullable: true },
     chaWavFiles: { ...chaWavFilesSchema, nullable: true },
-    chaStream: { type: 'boolean', nullable: true, default: false },
     image: {
       type: 'object',
       properties: {
@@ -127,6 +127,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
         hintSchema,
         gapSchema,
         hughsonWestlakeSchema,
+        bhaftSchema,
       ],
       required: ['type'],
       nullable: true,

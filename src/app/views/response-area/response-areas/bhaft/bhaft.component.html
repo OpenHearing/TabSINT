@@ -1,0 +1,58 @@
+<div class="bhaft-container">
+  <!-- Properties: shown depending on the exam hide properties flag and current exam state. -->
+  <div *ngIf="showProperties">
+    <app-audiometry-properties
+      [level]="examProperties.Level"
+      levelLabel="Level"
+      levelUnits="dB SPL"
+      [frequency]="examProperties.Fstart"
+      frequencyUnits="Hz"
+      [ear]="examProperties.OutputChannel">
+    </app-audiometry-properties>
+  </div>
+
+  <!-- Landing page: shown until the subject presses begin. -->
+  <div *ngIf="bhaftState === ResponseAreaState.Start" class="bhaft-start">
+    <p *ngIf="retryMessage">{{ retryMessage | transloco }}</p>
+    <button class="btn btn-default" type="button" (click)="beginExam()">
+      {{ "Begin" | transloco }}
+    </button>
+  </div>
+
+  <!-- Running exam: shows the software response button while the device runs the exam. -->
+  <div *ngIf="bhaftState === ResponseAreaState.Exam" class="bhaft-exam">
+    <p class="instructions" *ngIf="examInstructions">{{ examInstructions | transloco }}</p>
+    <div *ngIf="useSoftwareButton" class="bhaft-button-row">
+      <app-software-button
+        [mode]="'hold'"
+        buttonText="Press and hold while you hear the tone"
+        buttonPressedText="Press and hold while you hear the tone"
+        (pressStart)="onPressStart()"
+        (pressEnd)="onPressEnd()">
+      </app-software-button>
+    </div>
+  </div>
+
+  <!-- Results: shown once the device reports the exam is complete. -->
+  <div *ngIf="bhaftState === ResponseAreaState.Results" class="bhaft-results">
+    <ng-container *ngIf="noResponseMessage; else bhaftNormalResults">
+      <div>{{ noResponseMessage | transloco }}</div>
+    </ng-container>
+    <ng-template #bhaftNormalResults>
+      <div>{{ resultMainText | transloco }}</div>
+      <div *ngIf="resultSubText">{{ resultSubText | transloco }}</div>
+    </ng-template>
+    <div *ngIf="results" class="bhaft-response">
+      <div>{{ "Frequency" | transloco }}: {{ round(results.ThresholdFrequency, 1) }} Hz</div>
+      <div>{{ "Threshold" | transloco }}: {{ round(results.ThresholdLevel, 2) }} dB SPL</div>
+    </div>
+    <app-trial-progression-plot *ngIf="frequencyProgressionData" [data]="frequencyProgressionData"></app-trial-progression-plot>
+    <app-trial-progression-plot *ngIf="levelProgressionData" [data]="levelProgressionData"></app-trial-progression-plot>
+  </div>
+
+  <!-- Notes: shown after the exam has failed twice in a row and getNotesIfFailedTwice is set. -->
+  <div *ngIf="bhaftState === ResponseAreaState.Notes" class="bhaft-notes">
+    <p>{{ "Audiometry Administrator Notes Message" | transloco }}</p>
+    <textarea class="bhaft-notes-input" [(ngModel)]="adminNotes"></textarea>
+  </div>
+</div>
