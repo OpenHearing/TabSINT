@@ -86,7 +86,7 @@ The GUI should look like the image below with the following features.
 * The GUI should display the parameters from the protocol in a table similar to the one shown below
 * There should be a `Submit` button to initiate the exam. The `Submit` button becomes inactive after initating the exam.
 * After initiating the exam, a progress bar appears and the `Submit` button is replaced with an inactive `Next` button (See screen 2 image below).
-* While the exam progresses, live results are plotted for the individual frequencies specfied in the `f2` array. The exam progresses automatically through each frequency. The DPOAE value is plotted as a blue circle and the noise value is plotted as a red 'x'. The normative background plotting is displayed as background.
+* While the exam progresses, live results are plotted for the individual frequencies specfied in the `f2` array. The exam progresses automatically through each frequency. The DPOAE value is plotted as a blue circle and the noise value is plotted as a gray 'x'. The normative background plotting is displayed as background.
 * The `Next` button becomes active after all of the frequencies of the DP-gram exam are completed.
 
 .. list-table::
@@ -105,7 +105,11 @@ The GUI should look like the image below with the following features.
      - [maxTestAverages]
    * - Frequency Ratio
      - [ratio]
-   * - Window Duration [s] 
+   * - L1 [dB]
+     - [l1]
+   * - L2 [dB]
+     - [l2]
+   * - Window Duration [s]
      - [windowDuration]
    * - Output Calibration Type
      - [outputCalibrationType]
@@ -114,7 +118,7 @@ The GUI should look like the image below with the following features.
    * - Output Channel 2
      - [outputChannel2]
    * - Input Channel
-     * [inputChannel]
+     - [inputChannel]
    * - Noise Floor Threshold
      - [noiseFloorThreshold]
    * - SNR Threshold
@@ -122,7 +126,7 @@ The GUI should look like the image below with the following features.
    * - Directory to store full waveform
      - [recordFileFolder]
    * - Whether to output raw measurements
-     - [ouputRawMeasurements]
+     - [outputRawMeasurements]
    * - Whether to show results
      - [showResults]
    * - Normative Data Path
@@ -175,7 +179,7 @@ Algorithm
      - Verify that the emitted chirp is the correct frequency for each step of the sequence, frequency ratio, output levels for each frequency, sweep duration, and window duration.
      - 
    * - The exam accurately computes F1, F2, DpLow, and Noise Floor from the raw firmware response records, using the Complex-Average Magnitude and Aggregated Noise Floor algorithms described above.
-     - Set `ouputRawMeasurements` to true and complete a DP-gram exam normally. For one frequency step, take the raw (amplitude, phase) samples recorded for the F1, F2, and DpLow records, and the raw DpLow.NoiseFloor samples, and calculate the expected F1, F2, DpLow, and Noise Floor values using the Complex-Average Magnitude and Aggregated Noise Floor formulas (use `\\olympus\projects\1010564-OPEN-HEARING\Technical Work\Testing\Data\2026-08-11-DPGram-NoiseFloor-AurenSN006\Analysis\test4_plot_dpgram_results.m`).
+     - Set `outputRawMeasurements` to true and complete a DP-gram exam normally. For one frequency step, take the raw (amplitude, phase) samples recorded for the F1, F2, and DpLow records, and the raw DpLow.NoiseFloor samples, and calculate the expected F1, F2, DpLow, and Noise Floor values using the Complex-Average Magnitude and Aggregated Noise Floor formulas (use `\\olympus\projects\1010564-OPEN-HEARING\Technical Work\Testing\Data\2026-08-11-DPGram-NoiseFloor-AurenSN006\Analysis\test4_plot_dpgram_results.m`).
      - Verify that the F1, F2, DpLow, and Noise Floor values displayed/exported by the app for that frequency step match the hand-calculated values (within floating-point tolerance).
      -
    * - The exam presents a number of chirps greater than or equal to the Minimum Number of Sweeps and less than or equal to the Maximum Number of Sweeps.
