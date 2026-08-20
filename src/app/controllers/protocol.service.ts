@@ -75,7 +75,7 @@ export class ProtocolService {
    * @param meta meta data for the protocol to load,
    * @param notify whether to use task banners to notify user about progress. Default: false.
    */
-  async load(meta: ProtocolMetaInterface, notify: boolean = false) {
+  async load(meta: ProtocolMetaInterface, notify: boolean = false): Promise<boolean> {
     this.loading.meta = meta;
     this.loading.notify = notify;
     this.tasks.register('Load Protocol', 'Load Protocol');
@@ -93,11 +93,14 @@ export class ProtocolService {
         if (loadError !== undefined || this.disk.preferences.validateProtocols) {
           this.notifyProtocolLoadError(allErrors);
           this.protocolModel.activeProtocol = undefined;
+          return false;
         } else {
           this.notifyProtocolLoadWarning(allErrors);
+          return true;
         }
       } else {
         this.notifyProtocolLoadSuccess();
+        return true;
       }
     } catch (error: unknown) {
       const err = error instanceof Error ? error.message : error;
@@ -110,6 +113,7 @@ export class ProtocolService {
           type: DialogType.Alert,
         })
         .subscribe();
+      return false;
     } finally {
       this.tasks.deregister('Load Protocol');
     }

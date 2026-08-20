@@ -75,7 +75,8 @@ describe('ProtocolService', () => {
     const protocolService = TestBed.inject(ProtocolService);
     let activeProtocol: ProtocolInterface | undefined = protocolService.protocolModel.activeProtocol;
     expect(activeProtocol).toBeUndefined();
-    await protocolService.load(protocolService.disk.availableProtocolsMeta['develop']);
+    const result = await protocolService.load(protocolService.disk.availableProtocolsMeta['develop']);
+    expect(result).toBeTrue();
     activeProtocol = protocolService.protocolModel.activeProtocol;
     expect(activeProtocol).toBeDefined();
     expect(activeProtocol?.pages.length).toBeGreaterThan(0);
@@ -120,11 +121,13 @@ describe('ProtocolService', () => {
   it('throws an error if the protocol does not meet schema', async () => {
     const protocolService = TestBed.inject(ProtocolService);
     protocolService.disk.availableProtocolsMeta['badTest'] = badTestProtocol;
+    let result: boolean | undefined;
     try {
-      await protocolService.load(protocolService.disk.availableProtocolsMeta['badTest']);
+      result = await protocolService.load(protocolService.disk.availableProtocolsMeta['badTest']);
     } catch {
       // Expected to fail
     }
+    expect(result).toBeFalse();
     expect(protocolService.protocolModel.activeProtocol).toBeUndefined();
     protocolService.delete(badTestProtocol);
   });
@@ -132,11 +135,13 @@ describe('ProtocolService', () => {
   it('puts validation error on active protocol if the protocol does not meet schema', async () => {
     const protocolService = TestBed.inject(ProtocolService);
     protocolService.disk.availableProtocolsMeta['badTest'] = badTestProtocol;
+    let result: boolean | undefined;
     try {
-      await protocolService.load(protocolService.disk.availableProtocolsMeta['badTest']);
+      result = await protocolService.load(protocolService.disk.availableProtocolsMeta['badTest']);
     } catch {
       /* empty */
     }
+    expect(result).toBeFalse();
     expect(protocolService.protocolModel.activeProtocol).toBeUndefined();
     protocolService.delete(badTestProtocol);
   });
@@ -164,12 +169,44 @@ describe('ProtocolService', () => {
     protocol.pages = badPages;
     protocolService.disk.availableProtocolsMeta['badTest'] = protocol;
 
+    let result: boolean | undefined;
     try {
-      await protocolService.load(protocolService.disk.availableProtocolsMeta['badTest']);
+      result = await protocolService.load(protocolService.disk.availableProtocolsMeta['badTest']);
     } catch {
       /* empty */
     }
+    expect(result).toBeFalse();
     expect(protocolService.protocolModel.activeProtocol).toBeUndefined();
+    protocolService.delete(protocol);
+  });
+
+  it('keeps the protocol active with a warning when validateProtocols is disabled despite errors', async () => {
+    const protocolService = TestBed.inject(ProtocolService);
+    const badPages = [
+      {
+        id: 'textbox',
+        title: 'Text Box',
+        instructionText: 'Test Cases',
+        wavfiles: [
+          {
+            weighting: 'A',
+            path: 'path.wav',
+            targetSPL: 65,
+          },
+        ],
+        responseArea: {
+          type: 'textboxResponseArea',
+        },
+      },
+    ];
+    const protocol = { ...testProtocol, name: 'badTest', pages: badPages };
+    protocolService.disk.availableProtocolsMeta['badTest'] = protocol;
+    protocolService.disk.preferences.validateProtocols = false;
+
+    const result = await protocolService.load(protocolService.disk.availableProtocolsMeta['badTest']);
+
+    expect(result).toBeTrue();
+    expect(protocolService.protocolModel.activeProtocol).toBeDefined();
     protocolService.delete(protocol);
   });
 });
