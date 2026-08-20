@@ -135,29 +135,10 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
       const resultFromListFiles = await this.fileService.listDirectory(protocolsFolderUri);
       if (!resultFromListFiles) {
         throw new Error('Unable to load protocol directory.');
-      } else {
-        const fileList = resultFromListFiles?.files;
-        for (const file of fileList) {
-          if (file.name == 'protocol.json') {
-            const protocolContent: ProtocolSchemaInterface = JSON.parse(file.content);
-            const protocol: ProtocolInterface = {
-              ...partialMetaDefaults,
-              name: protocolName!,
-              contentURI: protocolsFolderUri!,
-              server: ProtocolServer.LocalServer,
-              admin: false,
-              ...protocolContent,
-            };
-            const protocolMetaData = getProtocolMetaData(protocol);
-            const previousEntry = this.disk.availableProtocolsMeta[protocolMetaData.name];
-            const updated = await this.updateDiskModel(protocol);
-            if (updated) {
-              const loaded = await this.loadProtocol();
-              if (!loaded) {
-                this.rollbackAvailableProtocol(protocolMetaData.name, previousEntry);
-              }
-            }
-          }
+      }
+      for (const file of resultFromListFiles.files) {
+        if (file.name == 'protocol.json') {
+          await this.addLocalProtocolFile(file, protocolName!, protocolsFolderUri!);
         }
       }
     } catch (error: any) {
@@ -171,6 +152,40 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
         .subscribe();
     } finally {
       this.tasks.deregister('Add Local Protocol');
+    }
+  }
+
+  /**
+   * Build a protocol from a discovered protocol.json file, save it to disk, and load it.
+   * @summary Rolls the disk model entry back to its previous state if the newly added protocol fails to load.
+   * @models disk, protocol
+   * @param file the protocol.json file found in the chosen folder
+   * @param protocolName name of the protocol, taken from the chosen folder
+   * @param protocolsFolderUri content URI of the chosen folder
+   */
+  private async addLocalProtocolFile(
+    file: NonNullable<Awaited<ReturnType<FileService['listDirectory']>>>['files'][number],
+    protocolName: string,
+    protocolsFolderUri: string
+  ): Promise<void> {
+    const protocolContent: ProtocolSchemaInterface = JSON.parse(file.content);
+    const protocol: ProtocolInterface = {
+      ...partialMetaDefaults,
+      name: protocolName,
+      contentURI: protocolsFolderUri,
+      server: ProtocolServer.LocalServer,
+      admin: false,
+      ...protocolContent,
+    };
+    const protocolMetaData = getProtocolMetaData(protocol);
+    const previousEntry = this.disk.availableProtocolsMeta[protocolMetaData.name];
+    const updated = await this.updateDiskModel(protocol);
+    if (!updated) {
+      return;
+    }
+    const loadFailed = !(await this.loadProtocol());
+    if (loadFailed) {
+      this.rollbackAvailableProtocol(protocolMetaData.name, previousEntry);
     }
   }
 
@@ -213,8 +228,8 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
       if (!updated) {
         throw new Error('Unable to update the current protocol.');
       }
-      const loaded = await this.loadProtocol();
-      if (!loaded) {
+      const loadFailed = !(await this.loadProtocol());
+      if (loadFailed) {
         this.rollbackAvailableProtocol(protocolMetaData.name, previousEntry);
       } else {
         await firstValueFrom(
@@ -422,8 +437,8 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
       if (!updated) {
         throw new Error('Unable to update the current protocol.');
       }
-      const loaded = await this.loadProtocol();
-      if (!loaded) {
+      const loadFailed = !(await this.loadProtocol());
+      if (loadFailed) {
         this.rollbackAvailableProtocol(protocolMetaData.name, previousEntry);
       } else {
         await firstValueFrom(
