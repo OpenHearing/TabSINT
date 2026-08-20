@@ -94,6 +94,15 @@ export class BhaftComponent extends AutomatedAudiometryExamComponentBase<
    * @param results The final results returned by the device.
    */
   protected buildProgressionPlots(results: BhaftResultsInterface): void {
+    this.buildFrequencyPlot(results);
+    this.buildLevelPlot(results);
+  }
+
+  /**
+   * Build the frequency-progression plot if it should be displayed.
+   * @param results The final results returned by the device.
+   */
+  private buildFrequencyPlot(results: BhaftResultsInterface): void {
     if (this.plotProperties.displayFrequencyProgression && results.F) {
       const hasThreshold = results.ResultType === 'Threshold' && Number.isFinite(results.ThresholdFrequency);
       let title = `Frequency Progression: ${results.ResultType} (${results.F.length} trials)`;
@@ -115,7 +124,13 @@ export class BhaftComponent extends AutomatedAudiometryExamComponentBase<
         title,
       };
     }
+  }
 
+  /**
+   * Build the level-progression plot if it should be displayed.
+   * @param results The final results returned by the device.
+   */
+  private buildLevelPlot(results: BhaftResultsInterface): void {
     if (this.plotProperties.displayLevelProgression && results.L) {
       const hasThreshold = results.ResultType === 'Threshold' && Number.isFinite(results.ThresholdLevel);
       let title = `Level Progression: ${results.ResultType} (${results.L.length} trials)`;
