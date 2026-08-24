@@ -16,7 +16,9 @@ import { DeviceType, DialogType } from '../../../../utilities/constants';
 import { ISvantekDevice } from '../../../../interfaces/devices/svantek-device.interface';
 import { mpanlSchema } from '../../../../../schema/response-areas/mpanl.schema';
 import { MpanlDatumInterface, MpanlResponseAreaInterface, MpanlResultsInterface, MpanlStandard } from './mpanl.interface';
-import { createLegend, createOAEResultsChartSvg, plotDpoaeSeries } from '../../../../utilities/d3-plot-functions';
+
+/** Bar is colored red/yellow/green depending how close the estimated level under the headset is to the standard's limit. */
+const WITHIN_LIMIT_BAND_DB = 3;
 
 /** Octave band center frequencies, Hz - used to validate configured frequencies and to look up noise floors. */
 const OCTAVE_BAND_FREQUENCIES = new Set([125, 250, 500, 1000, 2000, 4000, 8000]);
@@ -284,6 +286,12 @@ export class MpanlComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Bar chart of estimated background noise level under the headset, one bar per octave band,
+   * colored by how it compares to that band's limit. Overlaid with a gray tick at the limit and a
+   * black tick at the dosimeter's own noise floor (referenced under the headset, i.e. floor minus
+   * attenuation). Ported from legacy TabSInt's `mpanlsPlot` (cha-plot.js).
+   */
   private createResultsPlot(): void {
     if (!this.mpanlResults) {
       return;
@@ -294,43 +302,125 @@ export class MpanlComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const margin = { top: 20, right: 20, bottom: 60, left: 60 };
-    const width = 550 - margin.left - margin.right;
-    const height = 400 - margin.top - margin.bottom;
+    const data = this.mpanlResults.data;
+    const freqs = data.map(d => d.freq);
 
-    const freqs = this.mpanlResults.data.map(d => d.freq);
+    const margin = { top: 20, right: 170, bottom: 60, left: 60 };
+    const width = 400;
+    const height = 350;
+
+    const yTicks = [-10, 0, 10, 20, 30, 40, 50, 60];
     const xScale = d3
-      .scaleLog()
-      .domain([freqs[0] / Math.pow(2, 1 / 3), freqs.at(-1)! * Math.pow(2, 1 / 3)])
-      .range([0, width]);
+      .scaleBand<number>()
+      .range([-15, width + 15])
+      .domain(freqs)
+      .padding(0.2);
     const yScale = d3.scaleLinear().domain([-10, 80]).range([height, 0]);
+    const xLog = d3
+      .scaleLog()
+      .base(2)
+      .domain([freqs[0] / Math.pow(2, 1 / 3), Math.pow(2, 1 / 3) * freqs.at(-1)!])
+      .range([0, width]);
 
-    let svg = plot
+    const svg = plot
       .append('svg')
       .attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom)
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
 
-    svg = createOAEResultsChartSvg(svg, width, height, freqs, xScale, yScale, 'Frequency (Hz)', 'Level (dB SPL)');
+    svg
+      .selectAll('.mpanl-bar')
+      .data(data)
+      .enter()
+      .append('rect')
+      .attr('x', d => xScale(d.freq)!)
+      .attr('y', d => yScale(d.levelUnderHeadset))
+      .attr('width', xScale.bandwidth())
+      .attr('height', d => height - yScale(d.levelUnderHeadset))
+      .attr('stroke', 'black')
+      .attr('fill', d => {
+        if (d.levelUnderHeadset > d.limit + WITHIN_LIMIT_BAND_DB) return '#FF6347';
+        if (d.levelUnderHeadset > d.limit - WITHIN_LIMIT_BAND_DB) return 'yellow';
+        return '#00FF7F';
+      });
 
-    const measured = this.mpanlResults.data.map(d => d.level);
-    const limit = this.mpanlResults.data.map(d => d.limit);
-    const underHeadset = this.mpanlResults.data.map(d => d.levelUnderHeadset);
+    svg
+      .selectAll('.mpanl-limit-tick')
+      .data(data)
+      .enter()
+      .append('rect')
+      .attr('x', d => xScale(d.freq)! - 3)
+      .attr('y', d => yScale(d.limit))
+      .attr('width', xScale.bandwidth() + 6)
+      .attr('height', 6)
+      .attr('stroke', 'black')
+      .attr('fill', 'rgb(150, 150, 150)');
 
-    plotDpoaeSeries(svg, xScale, yScale, freqs, limit, { color: '#d62728', marker: 'X', dashed: true });
-    plotDpoaeSeries(svg, xScale, yScale, freqs, measured, { color: '#1f77b4', marker: 'circle' });
-    plotDpoaeSeries(svg, xScale, yScale, freqs, underHeadset, { color: '#2ca02c', marker: 'dot' });
+    svg
+      .selectAll('.mpanl-noise-floor-tick')
+      .data(data)
+      .enter()
+      .append('rect')
+      .attr('x', d => xScale(d.freq)! - 3)
+      .attr('y', d => yScale((d.noiseFloor ?? 0) - d.attenuation))
+      .attr('width', xScale.bandwidth() + 6)
+      .attr('height', 2)
+      .attr('stroke', 'black')
+      .attr('fill', 'black');
 
-    createLegend(
-      svg,
-      [
-        { label: 'Measured level', color: '#1f77b4', symbol: 'circle' },
-        { label: 'Level under headset', color: '#2ca02c', symbol: 'dot' },
-        { label: 'Limit', color: '#d62728', symbol: 'X', line: '4,3' },
-      ],
-      width,
-      140
-    );
+    svg
+      .append('g')
+      .attr('transform', `translate(0,${height})`)
+      .call(d3.axisBottom(xLog).tickValues(freqs).tickSize(10).tickFormat(d3.format('d')));
+
+    svg.append('g').call(d3.axisLeft(yScale).tickValues(yTicks).tickSizeInner(10).tickSizeOuter(0));
+
+    svg
+      .append('text')
+      .attr('x', width / 2)
+      .attr('y', height + 45)
+      .attr('text-anchor', 'middle')
+      .text('Frequency (Hz)');
+
+    svg
+      .append('text')
+      .attr('transform', 'rotate(-90)')
+      .attr('x', -height / 2)
+      .attr('y', -45)
+      .attr('text-anchor', 'middle')
+      .text('Estimated Level Under the Earcup (dB SPL)');
+
+    const legendData = [
+      { text: 'Below Limit', color: '#00FF7F' },
+      { text: 'Within 3 dB SPL of Limit', color: 'yellow' },
+      { text: 'Above Limit', color: '#FF6347' },
+      { text: 'Limit', color: 'rgb(150, 150, 150)' },
+      { text: 'Dosimeter Noise Floor', color: 'black' },
+    ];
+
+    const legend = svg.append('g').attr('transform', `translate(${width + 15}, 10)`);
+
+    legend
+      .selectAll('rect')
+      .data(legendData)
+      .enter()
+      .append('rect')
+      .attr('x', 0)
+      .attr('y', (_d, i) => i * 22)
+      .attr('width', 12)
+      .attr('height', 12)
+      .style('fill', d => d.color)
+      .style('stroke', 'black');
+
+    legend
+      .selectAll('text')
+      .data(legendData)
+      .enter()
+      .append('text')
+      .attr('x', 16)
+      .attr('y', (_d, i) => i * 22 + 10)
+      .attr('font-size', 11)
+      .text(d => d.text);
   }
 }

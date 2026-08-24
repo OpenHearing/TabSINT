@@ -1,5 +1,6 @@
 <div class="mpanl-container">
   <div *ngIf="examState === 'start'" class="mpanl-start">
+    <p>{{ "Press 3 or 10 seconds and then wait quietly for measurement to complete." | transloco }}</p>
     <button
       *ngFor="let duration of durations"
       type="button"
@@ -14,6 +15,7 @@
   </div>
 
   <div *ngIf="examState === 'results' && mpanlResults" class="mpanl-results">
+    <h3>{{ "Background Noise Results" | transloco }}</h3>
     <p>
       {{ "Standard" | transloco }}: {{ mpanlResults.standard }}<br />
       {{ "Headset" | transloco }}: WAHTS
@@ -25,10 +27,9 @@
       <thead>
         <tr>
           <th scope="col">{{ "Frequency (Hz)" | transloco }}</th>
-          <th scope="col">{{ "Measured Level (dB SPL)" | transloco }}</th>
-          <th scope="col">{{ "Headset Attenuation (dB)" | transloco }}</th>
-          <th scope="col">{{ "Level Under Headset (dB SPL)" | transloco }}</th>
-          <th scope="col">{{ "Limit (dB SPL)" | transloco }}</th>
+          <th scope="col">{{ "Measured Noise Levels (dB SPL)" | transloco }}</th>
+          <th scope="col">{{ "WAHTS Attenuation (S12.6-2008) (dB SPL)" | transloco }}</th>
+          <th scope="col">{{ "Estimated Background Noise Levels Under WAHTS (dB SPL)" | transloco }}</th>
         </tr>
       </thead>
       <tbody>
@@ -36,17 +37,12 @@
           <td>{{ row.freq }}</td>
           <td>{{ row.level }}</td>
           <td>{{ row.attenuation }}</td>
-          <td [class.mpanl-exceeds-limit]="row.levelUnderHeadset > row.limit">{{ row.levelUnderHeadset }}</td>
-          <td>{{ row.limit }}</td>
+          <td>{{ row.levelUnderHeadset }}</td>
         </tr>
       </tbody>
     </table>
 
-    <button
-      *ngFor="let duration of durations"
-      type="button"
-      class="btn btn-block btn-lg btn-default btn-centered mpanl-duration-btn"
-      (click)="repeatMeasurement(duration)">
+    <button *ngFor="let duration of durations" type="button" class="btn btn-default mpanl-repeat-btn" (click)="repeatMeasurement(duration)">
       {{ "Repeat" | transloco }} {{ (duration / 1000).toString() }} {{ "sec. measurement" | transloco }}
     </button>
   </div>

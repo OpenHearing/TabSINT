@@ -2,7 +2,11 @@
   margin-bottom: 15px;
 }
 
-.mpanl-exceeds-limit {
-  color: #d62728;
-  font-weight: bold;
+.mpanl-repeat-btn {
+  margin-top: 15px;
+  margin-right: 10px;
+}
+
+#mpanl-results-plot {
+  overflow-x: auto;
 }
