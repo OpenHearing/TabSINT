@@ -19,7 +19,7 @@ import { MpanlDatumInterface, MpanlResponseAreaInterface, MpanlResultsInterface,
 import { createLegend, createOAEResultsChartSvg, plotDpoaeSeries } from '../../../../utilities/d3-plot-functions';
 
 /** Octave band center frequencies, Hz - used to validate configured frequencies and to look up noise floors. */
-const OCTAVE_BAND_FREQUENCIES = [125, 250, 500, 1000, 2000, 4000, 8000];
+const OCTAVE_BAND_FREQUENCIES = new Set([125, 250, 500, 1000, 2000, 4000, 8000]);
 
 /** Per-standard octave band frequencies, limits (dB), and WAHTS headset attenuation (dB). */
 const STANDARD_DEFAULTS: Record<MpanlStandard, { freqs: number[]; limits: number[]; wahtsAttenuation: number[] }> = {
@@ -155,7 +155,7 @@ export class MpanlComponent implements OnInit, OnDestroy {
     }
 
     freqs.forEach(freq => {
-      if (!OCTAVE_BAND_FREQUENCIES.includes(freq)) {
+      if (!OCTAVE_BAND_FREQUENCIES.has(freq)) {
         this.notifications
           .alert({
             title: 'Alert',
