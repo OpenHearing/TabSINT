@@ -10,3 +10,7 @@
 #mpanl-results-plot {
   overflow-x: auto;
 }
+
+.mpanl-results th {
+  text-align: center;
+}
