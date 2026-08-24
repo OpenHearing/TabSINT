@@ -372,6 +372,8 @@ export class ExamService {
     this.submitPartial = this.submitPartialDefault;
     this.navigateToTarget = this.navigateToTargetDefault;
     this.gradeResponses = this.gradeResponsesDefault;
+    this.skip = this.skipDefault;
+    this.back = this.backDefault;
   }
 
   /**

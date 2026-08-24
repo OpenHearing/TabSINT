@@ -1,0 +1,53 @@
+<div class="mpanl-container">
+  <div *ngIf="examState === 'start'" class="mpanl-start">
+    <button
+      *ngFor="let duration of durations"
+      type="button"
+      class="btn btn-block btn-lg btn-default btn-centered mpanl-duration-btn"
+      (click)="startMeasurement(duration)">
+      {{ (duration / 1000).toString() }} {{ "seconds" | transloco }}
+    </button>
+  </div>
+
+  <div *ngIf="examState === 'recording'" class="mpanl-recording">
+    <p>{{ "Please remain still and quiet while we measure the background noise levels." | transloco }}</p>
+  </div>
+
+  <div *ngIf="examState === 'results' && mpanlResults" class="mpanl-results">
+    <p>
+      {{ "Standard" | transloco }}: {{ mpanlResults.standard }}<br />
+      {{ "Headset" | transloco }}: WAHTS
+    </p>
+
+    <div id="mpanl-results-plot"></div>
+
+    <table class="table table-striped table-audiometry">
+      <thead>
+        <tr>
+          <th scope="col">{{ "Frequency (Hz)" | transloco }}</th>
+          <th scope="col">{{ "Measured Level (dB SPL)" | transloco }}</th>
+          <th scope="col">{{ "Headset Attenuation (dB)" | transloco }}</th>
+          <th scope="col">{{ "Level Under Headset (dB SPL)" | transloco }}</th>
+          <th scope="col">{{ "Limit (dB SPL)" | transloco }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of mpanlResults.data">
+          <td>{{ row.freq }}</td>
+          <td>{{ row.level }}</td>
+          <td>{{ row.attenuation }}</td>
+          <td [class.mpanl-exceeds-limit]="row.levelUnderHeadset > row.limit">{{ row.levelUnderHeadset }}</td>
+          <td>{{ row.limit }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <button
+      *ngFor="let duration of durations"
+      type="button"
+      class="btn btn-block btn-lg btn-default btn-centered mpanl-duration-btn"
+      (click)="repeatMeasurement(duration)">
+      {{ "Repeat" | transloco }} {{ (duration / 1000).toString() }} {{ "sec. measurement" | transloco }}
+    </button>
+  </div>
+</div>
