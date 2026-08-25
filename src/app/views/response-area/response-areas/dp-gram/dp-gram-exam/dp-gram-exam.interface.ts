@@ -5,6 +5,7 @@ export interface DpGramInterface extends DpoaeCommonInterface {
   windowDuration?: number;
   minTestAverages?: number;
   maxTestAverages?: number;
+  ear?: 'left' | 'right';
 }
 
 export interface DpGramResultsInterface extends DpoaeResultsCommonInterface {

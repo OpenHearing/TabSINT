@@ -21,6 +21,13 @@ export const dpGramSchema: JSONSchemaType<DpGramInterface> = {
       default: 20,
       description: 'Maximum number of overlapping analysis windows averaged per f2 frequency.',
     },
+    ear: {
+      type: 'string',
+      nullable: true,
+      enum: ['left', 'right'],
+      description:
+        'Which ear this DP-gram is for. Affects only plot line/marker color - left is blue with an X marker, right is red with a circle (o) marker.',
+    },
   },
   required: ['type', 'f2'],
 };

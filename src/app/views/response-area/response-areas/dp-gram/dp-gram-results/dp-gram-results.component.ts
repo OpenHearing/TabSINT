@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import * as d3 from 'd3';
 import { DpoaeResultsBaseComponent } from '../../shared/dpoae/dpoae-results-base.component';
 import { DpGramResultsInterface } from '../dp-gram-exam/dp-gram-exam.interface';
-import { DPOAE_LEGEND_DATA, DPOAE_SERIES_STYLE, DPOAE_Y_AXIS_DOMAIN } from '../../shared/dpoae/dpoae-common.interface';
+import { DPOAE_Y_AXIS_DOMAIN, getDpoaeLegendData, getDpoaeSeriesStyle } from '../../shared/dpoae/dpoae-common.interface';
 import { appendNormativeDataBand, createLegend, createOAEResultsChartSvg, plotDpoaeSeries } from '../../../../../utilities/d3-plot-functions';
 
 @Component({
@@ -12,9 +12,11 @@ import { appendNormativeDataBand, createLegend, createOAEResultsChartSvg, plotDp
 export class DpGramResultsComponent extends DpoaeResultsBaseComponent<DpGramResultsInterface> {
   @Input() xScale!: d3.ScaleLogarithmic<number, number, never>;
   @Input() xTicks!: number[];
+  @Input() ear?: 'left' | 'right';
 
   protected createResultsPlot() {
     const filteredData = this.filterDpGramResults(this.results);
+    const seriesStyle = getDpoaeSeriesStyle(this.ear);
 
     const [yClampMin, yClampMax] = DPOAE_Y_AXIS_DOMAIN;
     const yScale = d3.scaleLinear().domain(DPOAE_Y_AXIS_DOMAIN).range([this.height, 0]);
@@ -35,12 +37,12 @@ export class DpGramResultsComponent extends DpoaeResultsBaseComponent<DpGramResu
     // measured frequency) so the four lines share a common x-axis position per test point,
     // matching Swept DPOAE's results plot.
     const f2Freq = filteredData.F2.Frequency;
-    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.F1.Amplitude, { ...DPOAE_SERIES_STYLE.F1, yClampMin, yClampMax });
-    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.F2.Amplitude, { ...DPOAE_SERIES_STYLE.F2, yClampMin, yClampMax });
-    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.DpLow.Amplitude, { ...DPOAE_SERIES_STYLE.DpLow, yClampMin, yClampMax });
-    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.DpLow.NoiseFloor, { ...DPOAE_SERIES_STYLE.NoiseFloor, yClampMin, yClampMax });
+    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.F1.Amplitude, { ...seriesStyle.F1, yClampMin, yClampMax });
+    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.F2.Amplitude, { ...seriesStyle.F2, yClampMin, yClampMax });
+    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.DpLow.Amplitude, { ...seriesStyle.DpLow, yClampMin, yClampMax });
+    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.DpLow.NoiseFloor, { ...seriesStyle.NoiseFloor, yClampMin, yClampMax });
 
-    createLegend(svg, DPOAE_LEGEND_DATA, this.width, 85);
+    createLegend(svg, getDpoaeLegendData(this.ear), this.width, 85);
     return svg;
   }
 

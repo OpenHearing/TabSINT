@@ -19,6 +19,7 @@ export class DpGramExamComponent extends DpoaeExamBaseComponent<DpGramInterface,
   windowDuration: number = dpGramSchema.properties.windowDuration.default;
   minTestAverages: number = dpGramSchema.properties.minTestAverages.default;
   maxTestAverages: number = dpGramSchema.properties.maxTestAverages.default;
+  ear: DpGramInterface['ear'];
 
   // Set default dimensions and margins
   xTicks: number[] = [];
@@ -35,6 +36,7 @@ export class DpGramExamComponent extends DpoaeExamBaseComponent<DpGramInterface,
     this.windowDuration = responseArea.windowDuration ?? this.windowDuration;
     this.minTestAverages = responseArea.minTestAverages ?? this.minTestAverages;
     this.maxTestAverages = responseArea.maxTestAverages ?? this.maxTestAverages;
+    this.ear = responseArea.ear ?? this.ear;
 
     this.inputParameterMap = new Map([
       ['F2 Frequencies [Hz]', this.f2.join(', ')],
