@@ -19,7 +19,7 @@ export class DpGramExamComponent extends DpoaeExamBaseComponent<DpGramInterface,
   windowDuration: number = dpGramSchema.properties.windowDuration.default;
   minTestAverages: number = dpGramSchema.properties.minTestAverages.default;
   maxTestAverages: number = dpGramSchema.properties.maxTestAverages.default;
-  ear: DpGramInterface['ear'];
+  ear: DpGramInterface['ear'] = dpGramSchema.properties.ear.default;
 
   // Set default dimensions and margins
   xTicks: number[] = [];

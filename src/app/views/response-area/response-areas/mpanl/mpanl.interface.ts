@@ -21,7 +21,7 @@ export interface MpanlResponseAreaInterface extends CommonResponseAreaInterface 
 }
 
 /**
- * One octave-band row of MPANL results.
+ * One octave-band row of MPANL results. Units of dB SPL.
  */
 export interface MpanlDatumInterface {
   freq: number;

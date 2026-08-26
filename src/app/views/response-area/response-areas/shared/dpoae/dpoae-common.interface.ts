@@ -1,6 +1,7 @@
 import { NormativeDataInterface } from '../../../../../interfaces/normative-data-interface';
 import { CommonResponseAreaInterface } from '../../../../../interfaces/page-definition.interface';
 import { DpoaeSeriesStyle, LegendItemInterface } from '../../../../../utilities/d3-plot-functions';
+import { DPOAEAudioChannel } from '../../dp-gram/dp-gram-exam/dp-gram-exam.interface';
 
 /** Fixed Y-axis domain (dB) shared by every DPOAE-family plot (in-progress and results, DP-gram and Swept DPOAE). */
 export const DPOAE_Y_AXIS_DOMAIN: [number, number] = [-40, 100];
@@ -26,19 +27,19 @@ export const DPOAE_LEGEND_DATA: LegendItemInterface[] = [
  * DpLow series (the actual DP-gram trace): left is blue with an X marker, right is red with a
  * circle (o) marker.
  */
-const EAR_OVERRIDE_STYLE: Record<'left' | 'right', Omit<DpoaeSeriesStyle, 'yClampMin' | 'yClampMax'>> = {
+const EAR_OVERRIDE_STYLE: Record<DPOAEAudioChannel, Omit<DpoaeSeriesStyle, 'yClampMin' | 'yClampMax'>> = {
   left: { color: 'blue', marker: 'X' },
   right: { color: 'red', marker: 'circle' },
 };
 
 /** Resolves per-series plot style for a DPOAE-family plot, applying the ear override (DpLow only) when set. */
-export function getDpoaeSeriesStyle(ear?: 'left' | 'right'): typeof DPOAE_SERIES_STYLE {
+export function getDpoaeSeriesStyle(ear?: DPOAEAudioChannel): typeof DPOAE_SERIES_STYLE {
   if (!ear) return DPOAE_SERIES_STYLE;
   return { ...DPOAE_SERIES_STYLE, DpLow: EAR_OVERRIDE_STYLE[ear] };
 }
 
 /** Resolves legend entries for a DPOAE-family plot, applying the ear override when set. */
-export function getDpoaeLegendData(ear?: 'left' | 'right'): LegendItemInterface[] {
+export function getDpoaeLegendData(ear?: DPOAEAudioChannel): LegendItemInterface[] {
   const style = getDpoaeSeriesStyle(ear);
   return [
     { label: 'F1', color: style.F1.color, symbol: style.F1.marker, line: 'solid' },

@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import * as d3 from 'd3';
 import { DpoaeResultsBaseComponent } from '../../shared/dpoae/dpoae-results-base.component';
-import { DpGramResultsInterface } from '../dp-gram-exam/dp-gram-exam.interface';
+import { DpGramResultsInterface, DPOAEAudioChannel } from '../dp-gram-exam/dp-gram-exam.interface';
 import { DPOAE_Y_AXIS_DOMAIN, getDpoaeLegendData, getDpoaeSeriesStyle } from '../../shared/dpoae/dpoae-common.interface';
 import { appendNormativeDataBand, createLegend, createOAEResultsChartSvg, plotDpoaeSeries } from '../../../../../utilities/d3-plot-functions';
 
@@ -12,7 +12,7 @@ import { appendNormativeDataBand, createLegend, createOAEResultsChartSvg, plotDp
 export class DpGramResultsComponent extends DpoaeResultsBaseComponent<DpGramResultsInterface> {
   @Input() xScale!: d3.ScaleLogarithmic<number, number, never>;
   @Input() xTicks!: number[];
-  @Input() ear?: 'left' | 'right';
+  @Input() ear?: DPOAEAudioChannel;
 
   protected createResultsPlot() {
     const filteredData = this.filterDpGramResults(this.results);

@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import * as d3 from 'd3';
 
 import { DpoaeInProgressBaseComponent } from '../../shared/dpoae/dpoae-in-progress-base.component';
-import { DPOAEDataInterface, DpGramResultsInterface } from '../dp-gram-exam/dp-gram-exam.interface';
+import { DPOAEAudioChannel, DPOAEDataInterface, DpGramResultsInterface } from '../dp-gram-exam/dp-gram-exam.interface';
 import { DPOAE_Y_AXIS_DOMAIN, getDpoaeLegendData, getDpoaeSeriesStyle } from '../../shared/dpoae/dpoae-common.interface';
 import { appendNormativeDataBand, createLegend, createOAEResultsChartSvg, plotDpoaeSeries } from '../../../../../utilities/d3-plot-functions';
 import { getCurrentDatetime, handleOutputCalibration } from '../../../../../utilities/exam-helper-functions';
@@ -40,7 +40,7 @@ export class DpGramInProgressComponent extends DpoaeInProgressBaseComponent<DpGr
   @Input() SNRThreshold!: number;
   @Input() outputRawMeasurements!: boolean;
   @Input() recordFileFolder: string | undefined;
-  @Input() ear?: 'left' | 'right';
+  @Input() ear?: DPOAEAudioChannel;
 
   /** Results merged across every f2 frequency completed so far. */
   private readonly accumulated: DpGramResultsInterface = { State: 'BUSY', PctComplete: 0 };

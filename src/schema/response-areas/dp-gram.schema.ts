@@ -1,5 +1,5 @@
 import { JSONSchemaType } from 'ajv';
-import { DpGramInterface } from '../../app/views/response-area/response-areas/dp-gram/dp-gram-exam/dp-gram-exam.interface';
+import { DpGramInterface, DPOAEAudioChannel } from '../../app/views/response-area/response-areas/dp-gram/dp-gram-exam/dp-gram-exam.interface';
 import { dpoaeCommonSchemaProperties } from './dpoae-common.schema';
 
 export const dpGramSchema: JSONSchemaType<DpGramInterface> = {
@@ -24,7 +24,8 @@ export const dpGramSchema: JSONSchemaType<DpGramInterface> = {
     ear: {
       type: 'string',
       nullable: true,
-      enum: ['left', 'right'],
+      enum: DPOAEAudioChannel,
+      default: undefined,
       description:
         'Which ear this DP-gram is for. Affects only plot line/marker color - left is blue with an X marker, right is red with a circle (o) marker.',
     },
