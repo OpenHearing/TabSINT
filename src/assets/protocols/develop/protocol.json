@@ -699,7 +699,7 @@
       "pages": [
         {
           "id": "dp_gram_001",
-          "title": "DP-gram",
+          "title": "DP-gram (Left)",
           "responseArea": {
             "type": "dpGramResponseArea",
             "normativeDataPath": "swept-dpoae-normative-data-human.xlsx",
@@ -712,7 +712,27 @@
             "ratio": 1.22,
             "noiseFloorThreshold": -10,
             "outputRawMeasurements": false,
-            "outputCalibrationType": "SPL"
+            "outputCalibrationType": "SPL",
+            "ear": "left"
+          }
+        },
+        {
+          "id": "dp_gram_002",
+          "title": "DP-gram (Right)",
+          "responseArea": {
+            "type": "dpGramResponseArea",
+            "normativeDataPath": "swept-dpoae-normative-data-human.xlsx",
+            "outputChannel1": "HPL1",
+            "outputChannel2": "HPR1",
+            "inputChannel": "EPSHIELD_LEFT_PDM_MIC1",
+            "l1": 75,
+            "l2": 65,
+            "f2": [1500, 2000],
+            "ratio": 1.22,
+            "noiseFloorThreshold": -10,
+            "outputRawMeasurements": false,
+            "outputCalibrationType": "SPL",
+            "ear": "right"
           }
         },
         {

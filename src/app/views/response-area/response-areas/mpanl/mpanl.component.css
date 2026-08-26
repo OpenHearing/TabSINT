@@ -1,0 +1,16 @@
+.mpanl-duration-btn {
+  margin-bottom: 15px;
+}
+
+.mpanl-repeat-btn {
+  margin-top: 15px;
+  margin-right: 10px;
+}
+
+#mpanl-results-plot {
+  overflow-x: auto;
+}
+
+.mpanl-results th {
+  text-align: center;
+}

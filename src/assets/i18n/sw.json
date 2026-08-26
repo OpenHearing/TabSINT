@@ -400,5 +400,16 @@
   "Select GitLab Reference for Common Media": "Chagua Marejeleo ya GitLab kwa Media ya Kawaida",
   "Select GitLab Reference for Protocol": "Chagua Marejeleo ya GitLab kwa Protokali",
   "clear": "futa",
-  "submit": "wasilisha"
+  "submit": "wasilisha",
+  "Press 3 or 10 seconds and then wait quietly for measurement to complete.": "Bonyeza sekunde 3 au 10 kisha subiri kimya hadi kipimo kikamilike.",
+  "seconds": "sekunde",
+  "Please remain still and quiet while we measure the background noise levels.": "Tafadhali baki tuli na kimya wakati tunapima viwango vya kelele za mandharinyuma.",
+  "Background Noise Results": "Matokeo ya Kelele za Mandharinyuma",
+  "Standard": "Kiwango",
+  "Headset": "Vipokea sauti vya kichwa",
+  "Measured Noise Levels (dB SPL)": "Viwango vya Kelele Vilivyopimwa (dB SPL)",
+  "WAHTS Attenuation (S12.6-2008) (dB SPL)": "Upunguzaji wa WAHTS (S12.6-2008) (dB SPL)",
+  "Estimated Background Noise Levels Under WAHTS (dB SPL)": "Makadirio ya Viwango vya Kelele za Mandharinyuma Chini ya WAHTS (dB SPL)",
+  "Repeat": "Rudia",
+  "sec. measurement": "sek. ya kipimo"
 }

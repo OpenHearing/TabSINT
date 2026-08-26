@@ -1,5 +1,5 @@
 import { JSONSchemaType } from 'ajv';
-import { DpGramInterface } from '../../app/views/response-area/response-areas/dp-gram/dp-gram-exam/dp-gram-exam.interface';
+import { DpGramInterface, DPOAEAudioChannel } from '../../app/views/response-area/response-areas/dp-gram/dp-gram-exam/dp-gram-exam.interface';
 import { dpoaeCommonSchemaProperties } from './dpoae-common.schema';
 
 export const dpGramSchema: JSONSchemaType<DpGramInterface> = {
@@ -20,6 +20,14 @@ export const dpGramSchema: JSONSchemaType<DpGramInterface> = {
       nullable: true,
       default: 20,
       description: 'Maximum number of overlapping analysis windows averaged per f2 frequency.',
+    },
+    ear: {
+      type: 'string',
+      nullable: true,
+      enum: Object.values(DPOAEAudioChannel),
+      default: undefined,
+      description:
+        'Which ear this DP-gram is for. Affects only plot line/marker color - left is blue with an X marker, right is red with a circle (o) marker.',
     },
   },
   required: ['type', 'f2'],

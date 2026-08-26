@@ -2,8 +2,8 @@ import { Component, Input } from '@angular/core';
 import * as d3 from 'd3';
 
 import { DpoaeInProgressBaseComponent } from '../../shared/dpoae/dpoae-in-progress-base.component';
-import { DPOAEDataInterface, DpGramResultsInterface } from '../dp-gram-exam/dp-gram-exam.interface';
-import { DPOAE_LEGEND_DATA, DPOAE_SERIES_STYLE, DPOAE_Y_AXIS_DOMAIN } from '../../shared/dpoae/dpoae-common.interface';
+import { DPOAEAudioChannel, DPOAEDataInterface, DpGramResultsInterface } from '../dp-gram-exam/dp-gram-exam.interface';
+import { DPOAE_Y_AXIS_DOMAIN, getDpoaeLegendData, getDpoaeSeriesStyle } from '../../shared/dpoae/dpoae-common.interface';
 import { appendNormativeDataBand, createLegend, createOAEResultsChartSvg, plotDpoaeSeries } from '../../../../../utilities/d3-plot-functions';
 import { getCurrentDatetime, handleOutputCalibration } from '../../../../../utilities/exam-helper-functions';
 
@@ -40,6 +40,7 @@ export class DpGramInProgressComponent extends DpoaeInProgressBaseComponent<DpGr
   @Input() SNRThreshold!: number;
   @Input() outputRawMeasurements!: boolean;
   @Input() recordFileFolder: string | undefined;
+  @Input() ear?: DPOAEAudioChannel;
 
   /** Results merged across every f2 frequency completed so far. */
   private readonly accumulated: DpGramResultsInterface = { State: 'BUSY', PctComplete: 0 };
@@ -86,7 +87,7 @@ export class DpGramInProgressComponent extends DpoaeInProgressBaseComponent<DpGr
 
     appendNormativeDataBand(svg, this.width, this.height, this.normativeData, this.xScale, yScale, DPOAE_Y_AXIS_DOMAIN[0], DPOAE_Y_AXIS_DOMAIN[1]);
 
-    createLegend(svg, DPOAE_LEGEND_DATA, this.width, 85);
+    createLegend(svg, getDpoaeLegendData(this.ear), this.width, 85);
 
     return svg;
   }
@@ -320,25 +321,26 @@ export class DpGramInProgressComponent extends DpoaeInProgressBaseComponent<DpGr
     const [yClampMin, yClampMax] = DPOAE_Y_AXIS_DOMAIN;
 
     this.svg = this.createProgressPlot(this.yScale);
+    const seriesStyle = getDpoaeSeriesStyle(this.ear);
 
     plotDpoaeSeries(this.svg, this.xScale, this.yScale, filteredData['F2Frequency'], filteredData['Amplitude'], {
-      ...DPOAE_SERIES_STYLE.DpLow,
+      ...seriesStyle.DpLow,
       yClampMin,
       yClampMax,
     });
     plotDpoaeSeries(this.svg, this.xScale, this.yScale, filteredData['F2Frequency'], filteredData['NoiseFloor'], {
-      ...DPOAE_SERIES_STYLE.NoiseFloor,
+      ...seriesStyle.NoiseFloor,
       yClampMin,
       yClampMax,
     });
     plotDpoaeSeries(this.svg, this.xScale, this.yScale, filteredData['F2Frequency'], filteredData['F2Amplitude'], {
-      ...DPOAE_SERIES_STYLE.F2,
+      ...seriesStyle.F2,
       yClampMin,
       yClampMax,
     });
     if (filteredData['F1Amplitude'].length) {
       plotDpoaeSeries(this.svg, this.xScale, this.yScale, filteredData['F2Frequency'], filteredData['F1Amplitude'], {
-        ...DPOAE_SERIES_STYLE.F1,
+        ...seriesStyle.F1,
         yClampMin,
         yClampMax,
       });
