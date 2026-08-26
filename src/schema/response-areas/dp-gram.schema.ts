@@ -24,7 +24,7 @@ export const dpGramSchema: JSONSchemaType<DpGramInterface> = {
     ear: {
       type: 'string',
       nullable: true,
-      enum: DPOAEAudioChannel,
+      enum: Object.values(DPOAEAudioChannel),
       default: undefined,
       description:
         'Which ear this DP-gram is for. Affects only plot line/marker color - left is blue with an X marker, right is red with a circle (o) marker.',

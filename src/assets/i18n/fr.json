@@ -400,5 +400,16 @@
   "Select GitLab Reference for Common Media": "Sélectionner la référence GitLab pour les médias communs",
   "Select GitLab Reference for Protocol": "Sélectionner la référence GitLab pour le protocole",
   "clear": "effacer",
-  "submit": "soumettre"
+  "submit": "soumettre",
+  "Press 3 or 10 seconds and then wait quietly for measurement to complete.": "Appuyez sur 3 ou 10 secondes, puis attendez calmement la fin de la mesure.",
+  "seconds": "secondes",
+  "Please remain still and quiet while we measure the background noise levels.": "Veuillez rester immobile et silencieux pendant que nous mesurons les niveaux de bruit de fond.",
+  "Background Noise Results": "Résultats du Bruit de Fond",
+  "Standard": "Standard",
+  "Headset": "Casque",
+  "Measured Noise Levels (dB SPL)": "Niveaux de Bruit Mesurés (dB SPL)",
+  "WAHTS Attenuation (S12.6-2008) (dB SPL)": "Atténuation WAHTS (S12.6-2008) (dB SPL)",
+  "Estimated Background Noise Levels Under WAHTS (dB SPL)": "Niveaux de Bruit de Fond Estimés Sous WAHTS (dB SPL)",
+  "Repeat": "Répéter",
+  "sec. measurement": "s. de mesure"
 }

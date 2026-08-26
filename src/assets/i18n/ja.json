@@ -400,5 +400,16 @@
   "Select GitLab Reference for Common Media": "共通メディア用のGitLab参照を選択",
   "Select GitLab Reference for Protocol": "プロトコル用のGitLab参照を選択",
   "clear": "クリア",
-  "submit": "送信"
+  "submit": "送信",
+  "Press 3 or 10 seconds and then wait quietly for measurement to complete.": "3秒または10秒を押してから、測定が完了するまで静かにお待ちください。",
+  "seconds": "秒",
+  "Please remain still and quiet while we measure the background noise levels.": "背景騒音レベルを測定する間、静かにじっとしていてください。",
+  "Background Noise Results": "背景騒音の結果",
+  "Standard": "標準",
+  "Headset": "ヘッドセット",
+  "Measured Noise Levels (dB SPL)": "測定された騒音レベル (dB SPL)",
+  "WAHTS Attenuation (S12.6-2008) (dB SPL)": "WAHTS減衰量 (S12.6-2008) (dB SPL)",
+  "Estimated Background Noise Levels Under WAHTS (dB SPL)": "WAHTS装着時の推定背景騒音レベル (dB SPL)",
+  "Repeat": "繰り返す",
+  "sec. measurement": "秒測定"
 }
