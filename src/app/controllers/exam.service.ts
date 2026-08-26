@@ -32,6 +32,7 @@ import { DialogType, ExamState, AppState, DeviceType, DeviceState } from '../uti
 import { Notifications } from '../services/notifications.service';
 import { Logger } from '../services/logger.service';
 import { calculateElapsedTime, checkForSpecialReference, getDefaultResponseRequired } from '../utilities/exam-helper-functions';
+import { includesOrEquals } from '../utilities/response-area-helper-functions';
 import { ProtocolStackItem } from '../models/protocol/protocol-stack';
 import { ChoiceInterface } from '../interfaces/choice.interface';
 import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
@@ -162,7 +163,7 @@ export class ExamService {
       const choices: ChoiceInterface[] | undefined = this.results.currentPage.page.responseArea.choices;
       if (choices) {
         choices.forEach((choice: ChoiceInterface) => {
-          if (choice?.correct && JSON.stringify(this.results.currentPage.response.selected) === JSON.stringify([choice.id])) {
+          if (choice?.correct && includesOrEquals(this.results.currentPage.response.selected, choice.id)) {
             this.results.currentPage.correct = true;
           }
           if (choice?.correct && this.results.currentPage.correct === undefined) {
@@ -411,10 +412,8 @@ export class ExamService {
 
     const page: PageTypes = pageQueue[pageIndex];
     if (isProtocolReferenceInterface(page)) {
-      this.protocol.activeProtocolStack.updateCurrentProtocol({ pageIndex: pageIndex + 1 });
       this.handleProtocolReference(page);
     } else if (isProtocolSchemaInterface(page)) {
-      this.protocol.activeProtocolStack.updateCurrentProtocol({ pageIndex: pageIndex + 1 });
       this.handleProtocolSchema(page);
     } else if (page.skipIf && this.conditionalEvaluator(page.skipIf)) {
       this.advancePage();
