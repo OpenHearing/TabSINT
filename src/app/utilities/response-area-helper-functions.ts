@@ -1,6 +1,6 @@
 import { ChoiceInterface } from '../interfaces/choice.interface';
 
-function includesOrEquals(item: string[] | string | number, arg: string | number): boolean {
+export function includesOrEquals(item: string[] | string | number, arg: string | number): boolean {
   if (item === undefined) {
     return false;
   } else if (Array.isArray(item)) {

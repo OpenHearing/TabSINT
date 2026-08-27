@@ -399,6 +399,26 @@ describe('ExamService', () => {
       examService.gradeResponsesDefault();
       expect(examService.results.currentPage.correct).toBeFalse();
     });
+
+    it('sets correct to true when response.selected is a scalar matching the correct choice (multiple-choice response area)', () => {
+      examService.results.currentPage.page = {
+        id: 'test-page',
+        responseArea: { type: 'multipleChoiceResponseArea', choices: [{ id: 'a', correct: true }] },
+      };
+      examService.results.currentPage.response = { selected: 'a' };
+      examService.gradeResponsesDefault();
+      expect(examService.results.currentPage.correct).toBeTrue();
+    });
+
+    it('sets correct to false when response.selected is a scalar not matching the correct choice', () => {
+      examService.results.currentPage.page = {
+        id: 'test-page',
+        responseArea: { type: 'multipleChoiceResponseArea', choices: [{ id: 'a', correct: true }] },
+      };
+      examService.results.currentPage.response = { selected: 'b' };
+      examService.gradeResponsesDefault();
+      expect(examService.results.currentPage.correct).toBeFalse();
+    });
   });
 
   describe('isPageResponseRequired', () => {
@@ -553,6 +573,51 @@ describe('ExamService', () => {
       examService.submitDefault();
 
       expect(mockNotifications.alert).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('protocol reference navigation', () => {
+    function buildPage(id: string): PageDefinition {
+      return {
+        id,
+        instructionText: 'text',
+        responseArea: { type: 'textboxResponseArea', rows: 3, responseRequired: false },
+      } as unknown as PageDefinition;
+    }
+
+    it('does not skip the page following a protocol reference once the referenced sub-protocol completes', async () => {
+      const subProtocol = {
+        protocolId: 'sub',
+        name: 'Sub Protocol',
+        date: new Date().toISOString(),
+        version: '1.0',
+        server: ProtocolServer.LocalServer,
+        admin: true,
+        pages: [buildPage('sub_page')],
+      };
+      const rootProtocol = {
+        protocolId: 'root-protocol',
+        name: 'Root Protocol',
+        date: new Date().toISOString(),
+        version: '1.0',
+        server: ProtocolServer.LocalServer,
+        admin: true,
+        pages: [buildPage('intro'), { reference: 'sub' }, buildPage('after_sub_1'), buildPage('after_sub_2')],
+      };
+      examService.protocol.activeProtocol = rootProtocol as never;
+      examService.protocol.activeProtocolStack = new ProtocolStack();
+      examService.protocol.activeProtocolDictionary = { sub: subProtocol } as never;
+
+      await examService.begin();
+      examService.submitDefault(); // intro -> reference pushes sub protocol -> sub_page
+      examService.submitDefault(); // sub_page -> sub protocol completes, pops back to root
+
+      const shownIds = mockPageModel.updatePage.calls.allArgs().map(args => (args[0] as PageInterface).id);
+      expect(shownIds).toEqual(['intro', 'sub_page', 'after_sub_1']);
+
+      examService.submitDefault();
+      const shownIdsAfterNext = mockPageModel.updatePage.calls.allArgs().map(args => (args[0] as PageInterface).id);
+      expect(shownIdsAfterNext).toEqual(['intro', 'sub_page', 'after_sub_1', 'after_sub_2']);
     });
   });
 
