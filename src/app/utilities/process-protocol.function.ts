@@ -19,6 +19,66 @@ import { TabsintFs } from 'tabsintfs';
 import { loadCustomJS, loadFile } from './load-custom-js';
 import { CalibrationFileWavProperties } from '../interfaces/calibration-file.interface';
 
+/** Media-source configuration needed to resolve a wavfile's raw protocol-relative path to an on-device path. */
+export interface WavfileResolutionContext {
+  commonRepoPath?: string;
+  server?: ProtocolServer;
+  metaPath?: string;
+  contentURI?: string | null;
+}
+
+async function resolveFilePath(rootUri: string, filePath: string): Promise<string | undefined> {
+  return (await TabsintFs.getFileContentURI({ rootUri: rootUri, filePath: filePath }).catch(() => undefined))?.contentUri;
+}
+
+/**
+ * Resolve the on-device path for a wavfile's raw protocol-relative path, given the protocol's
+ * media-source configuration. Used both when a protocol is first loaded and, via
+ * `ExamService.resolvePageMediaPaths`, after a preprocess function reassigns `wavfile.path` at
+ * runtime. On a Developer server this resolves to a `public/assets/...` path, because wavfiles
+ * are handed off to the native/Java audio player, which reads from a different root than the web
+ * view's asset serving (see `assetPathExists` usage in `updatePageWavProperties` for the
+ * corresponding web-accessible path used to validate the file exists).
+ * @param rawPath The wavfile's protocol-relative path (i.e. `wavfile.path`).
+ * @param useCommonRepo Whether this wavfile is sourced from the protocol's common media repo.
+ * @param context The active protocol's media-source configuration.
+ * @returns The resolved path, or undefined if it could not be resolved.
+ */
+export async function resolveWavfilePath(
+  rawPath: string,
+  useCommonRepo: boolean | undefined,
+  context: WavfileResolutionContext
+): Promise<string | undefined> {
+  if (useCommonRepo) {
+    return context.commonRepoPath ? await resolveFilePath(context.commonRepoPath, rawPath) : undefined;
+  } else if (context.server === ProtocolServer.Developer) {
+    return 'public/assets/' + context.metaPath! + '/' + rawPath;
+  } else if (context.contentURI) {
+    return await resolveFilePath(context.contentURI, rawPath);
+  }
+  return undefined;
+}
+
+/**
+ * Resolve the on-device path for a video's raw protocol-relative path, given the protocol's
+ * media-source configuration. Used both when a protocol is first loaded and, via
+ * `ExamService.resolvePageMediaPaths`, after a preprocess function reassigns `video.path` at
+ * runtime. Unlike `resolveWavfilePath`, a Developer-server video resolves to a plain
+ * `assets/...` path (no `public/` prefix) since videos are played directly by the web view rather
+ * than handed off to a native player, and there's no common-repo concept for video.
+ * @param rawPath The video's protocol-relative path (i.e. `video.path`).
+ * @param context The active protocol's media-source configuration.
+ * @returns The resolved path, or undefined if it could not be resolved.
+ */
+export async function resolveVideoPath(rawPath: string, context: WavfileResolutionContext): Promise<string | undefined> {
+  if (context.server === ProtocolServer.Developer) {
+    return 'assets/' + context.metaPath! + '/' + rawPath;
+  } else if (context.contentURI) {
+    return await resolveFilePath(context.contentURI, rawPath);
+  }
+  return undefined;
+}
+
 /**
  * Adds variables to the active protocol and generates a stack of pages.
  * @summary Loops through each page and subprotocol, adds variables to the
@@ -69,10 +129,6 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
         await processPage(page);
       }
     }
-  }
-
-  async function resolveFilePath(rootUri: string, filePath: string): Promise<string | undefined> {
-    return (await TabsintFs.getFileContentURI({ rootUri: rootUri, filePath: filePath }).catch(() => undefined))?.contentUri;
   }
 
   /**
@@ -176,23 +232,30 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
       }
     }
 
+    const resolutionContext: WavfileResolutionContext = {
+      commonRepoPath: rootProtocol.commonRepo?.path,
+      server: loading.meta.server,
+      metaPath: loading.meta.path,
+      contentURI: loading.meta.contentURI,
+    };
+
     await Promise.all(
       (page.wavfiles ?? []).map(async wavfile => {
         if (wavfile.useCommonRepo) {
           if (rootProtocol.commonRepo?.path) {
-            wavfile._resolvedPath = await resolveFilePath(rootProtocol.commonRepo?.path, wavfile.path);
+            wavfile._resolvedPath = await resolveWavfilePath(wavfile.path, true, resolutionContext);
             if (wavfile._resolvedPath === undefined) {
               rootProtocol._unresolvedFilePathList?.push(wavfile.path);
             }
           }
         } else if (loading.meta.server == ProtocolServer.Developer) {
-          wavfile._resolvedPath = 'public/assets/' + loading.meta.path! + '/' + wavfile.path;
+          wavfile._resolvedPath = await resolveWavfilePath(wavfile.path, false, resolutionContext);
           // The asset path check needs to check a different path than the resolved path, as the resolved path is for Java use.
           if (!(await assetPathExists('assets/' + loading.meta.path! + '/' + wavfile.path))) {
             rootProtocol._unresolvedFilePathList?.push(wavfile.path);
           }
         } else if (loading.meta.contentURI) {
-          wavfile._resolvedPath = await resolveFilePath(loading.meta.contentURI, wavfile.path);
+          wavfile._resolvedPath = await resolveWavfilePath(wavfile.path, false, resolutionContext);
           if (wavfile._resolvedPath === undefined) {
             rootProtocol._unresolvedFilePathList?.push(wavfile.path);
           }
@@ -207,16 +270,16 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
    */
   async function updatePageVideoProperties(page: PageDefinition): Promise<void> {
     if (page.video) {
-      if (loading.meta.server == ProtocolServer.Developer) {
-        page.video._resolvedPath = 'assets/' + loading.meta.path! + '/' + page.video.path;
-        if (!(await assetPathExists(page.video._resolvedPath))) {
-          rootProtocol._unresolvedFilePathList?.push(page.video.path);
-        }
-      } else if (loading.meta.contentURI) {
-        page.video._resolvedPath = await resolveFilePath(loading.meta.contentURI, page.video.path);
-        if (page.video._resolvedPath === undefined) {
-          rootProtocol._unresolvedFilePathList?.push(page.video.path);
-        }
+      page.video._resolvedPath = await resolveVideoPath(page.video.path, {
+        server: loading.meta.server,
+        metaPath: loading.meta.path,
+        contentURI: loading.meta.contentURI,
+      });
+      const isUnresolved =
+        page.video._resolvedPath === undefined ||
+        (loading.meta.server == ProtocolServer.Developer && !(await assetPathExists(page.video._resolvedPath)));
+      if (isUnresolved) {
+        rootProtocol._unresolvedFilePathList?.push(page.video.path);
       }
     }
   }

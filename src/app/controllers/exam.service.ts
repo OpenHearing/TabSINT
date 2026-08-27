@@ -43,6 +43,7 @@ import { ISvantekDevice } from '../interfaces/devices/svantek-device.interface';
 import { pageSchema } from '../../schema/page.schema';
 import { AudioService } from '../services/audio.service';
 import { Tasks } from '../services/tasks.service';
+import { resolveVideoPath, resolveWavfilePath, WavfileResolutionContext } from '../utilities/process-protocol.function';
 
 @Injectable({
   providedIn: 'root',
@@ -136,18 +137,18 @@ export class ExamService {
     this.stateModel.updateState({ examState: ExamState.Testing });
     this.protocol.activeProtocolStack.addProtocol(this.protocol.activeProtocol!);
     this.audioService.setSystemVolume(1);
-    this.advancePage();
+    await this.advancePage();
   }
 
   /** Default submit function for exam pages.
    * @summary Appends current page results to current exam results, calls advancePage(), and resets.
    * @models results, state
    */
-  submitDefault() {
+  async submitDefault() {
     this.gradeResponses();
     this.resultsService.pushResults(this.results.currentPage);
     this.setFlags(this.results.currentPage);
-    this.advancePage();
+    await this.advancePage();
   }
 
   /** Submit function for exam pages. Can be overwritten by exams.
@@ -229,12 +230,12 @@ export class ExamService {
    * Default navigate to target function, which navigates to the specified subprotocol.
    * @param subProtocolID The sub protocol page identifier.
    */
-  navigateToTargetDefault(subProtocolID: string) {
+  async navigateToTargetDefault(subProtocolID: string) {
     // TODO: returnHereAfterward NOT IMPLEMENTED
     const referenceProtocol = this.protocol.activeProtocolDictionary![subProtocolID];
     this.protocol.activeProtocolStack.addProtocol(referenceProtocol);
     this.stateModel.updateState({ examState: ExamState.Testing });
-    this.advancePage();
+    await this.advancePage();
   }
 
   /**
@@ -336,7 +337,14 @@ export class ExamService {
     }
   }
 
-  private async handlePreProcessFunctions(page: PageDefinition) {
+  /**
+   * Runs a page's preprocess function, if any, and awaits its completion. A preprocess function
+   * may be declared `async` (e.g. to mutate `window.tabsint.page.wavfiles[i].path` after an
+   * awaited lookup); ordinary synchronous preprocess functions resolve with no added delay. Any
+   * wavfile/video path a preprocess function assigns is re-resolved automatically afterward by
+   * `resolvePageMediaPaths` — a preprocess function only ever needs to set `wavfile.path`/`video.path`.
+   */
+  private async handlePreProcessFunctions(page: PageDefinition): Promise<void> {
     if (page.preProcessFunction) {
       this.window.tabsint = {
         logger: this.logger,
@@ -351,8 +359,37 @@ export class ExamService {
         page,
       };
 
-      eval(page.preProcessFunction.js! + '\n' + page.preProcessFunction.function + '()');
+      await eval(page.preProcessFunction.js! + '\n' + page.preProcessFunction.function + '()');
     }
+  }
+
+  /**
+   * Re-resolves `_resolvedPath` (the on-device path playback actually reads) for every wavfile
+   * and the video on a page, using their raw `path`/`useCommonRepo`. Called after preprocess so
+   * that a preprocess function which reassigns `wavfile.path`/`video.path` doesn't need to know
+   * about `_resolvedPath` or call a resolver itself. Covers anything resolvable from the active
+   * protocol's media-source configuration (common repo, Developer assets, or contentURI) — not
+   * just wavfiles.
+   */
+  private async resolvePageMediaPaths(page: PageDefinition): Promise<void> {
+    const context: WavfileResolutionContext = {
+      commonRepoPath: this.protocol.activeProtocol?.commonRepo?.path,
+      server: this.protocol.activeProtocol?.server,
+      metaPath: this.protocol.activeProtocol?.path,
+      contentURI: this.protocol.activeProtocol?.contentURI,
+    };
+    await Promise.all([
+      ...(page.wavfiles ?? []).map(async wavfile => {
+        wavfile._resolvedPath = await resolveWavfilePath(wavfile.path, wavfile.useCommonRepo, context);
+      }),
+      ...(page.video
+        ? [
+            (async () => {
+              page.video!._resolvedPath = await resolveVideoPath(page.video!.path, context);
+            })(),
+          ]
+        : []),
+    ]);
   }
 
   /** Handles special references
@@ -406,19 +443,19 @@ export class ExamService {
         this.handleProtocolTimeout(currentProtocol, pageIndex);
       }
       this.protocol.activeProtocolStack.pop();
-      this.advancePage();
+      await this.advancePage();
       return;
     }
 
     const page: PageTypes = pageQueue[pageIndex];
     if (isProtocolReferenceInterface(page)) {
-      this.handleProtocolReference(page);
+      await this.handleProtocolReference(page);
     } else if (isProtocolSchemaInterface(page)) {
-      this.handleProtocolSchema(page);
+      await this.handleProtocolSchema(page);
     } else if (page.skipIf && this.conditionalEvaluator(page.skipIf)) {
-      this.advancePage();
+      await this.advancePage();
     } else {
-      this.initializeCurrentPage(page);
+      await this.initializeCurrentPage(page);
     }
   }
 
@@ -602,12 +639,15 @@ export class ExamService {
    * Initializes the provided page and set it as the current page.
    * @param pageDef The new page to initialize.
    */
-  private initializeCurrentPage(pageDef: PageDefinition) {
+  private async initializeCurrentPage(pageDef: PageDefinition): Promise<void> {
     // Clone so a preprocess function's overrides (via window.tabsint.page) apply only to this
     // render and never mutate the canonical page stored in the protocol's page queue.
     const page = { ...pageDef, _uuid: crypto.randomUUID() };
     const pageForRender = structuredClone(page);
-    this.handlePreProcessFunctions(pageForRender);
+
+    await this.handlePreProcessFunctions(pageForRender);
+    await this.resolvePageMediaPaths(pageForRender);
+
     this.pageModel.updatePage(pageForRender);
     this.stateModel.updateState({
       doesResponseExist: false,
@@ -641,15 +681,15 @@ export class ExamService {
    * Handle navigation for pages which are protocol references.
    * @param page The page to use for navigation.
    */
-  private handleProtocolReference(page: ProtocolReferenceInterface) {
+  private async handleProtocolReference(page: ProtocolReferenceInterface) {
     if (page.skipIf && this.conditionalEvaluator(page.skipIf)) {
-      this.advancePage();
+      await this.advancePage();
     } else if (checkForSpecialReference(page.reference)) {
       this.handleSpecialReferences(page.reference);
     } else {
       const referenceProtocol = this.protocol.activeProtocolDictionary![page?.reference];
       this.protocol.activeProtocolStack.addProtocol(referenceProtocol);
-      this.advancePage();
+      await this.advancePage();
     }
   }
 
@@ -657,9 +697,9 @@ export class ExamService {
    * Handle navigation for pages which are protocol schema.
    * @param page The page to use for navigation.
    */
-  private handleProtocolSchema(page: ProtocolSchemaInterface) {
+  private async handleProtocolSchema(page: ProtocolSchemaInterface) {
     this.protocol.activeProtocolStack.addProtocol(page);
-    this.advancePage();
+    await this.advancePage();
   }
 
   /**
