@@ -86,8 +86,8 @@ export class ExamComponent implements OnInit, OnDestroy {
     return typeof data === 'string';
   }
 
-  begin() {
-    this.examService.begin();
+  async begin() {
+    await this.examService.begin();
   }
 
   submit() {

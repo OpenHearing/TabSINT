@@ -451,12 +451,12 @@ describe('ExamService', () => {
       } as unknown as PageDefinition;
     }
 
-    it('applies overrides made via window.tabsint.page to the page passed to pageModel.updatePage', () => {
+    it('applies overrides made via window.tabsint.page to the page passed to pageModel.updatePage', async () => {
       const page = buildPageWithPreprocess(
         'function testOverride() { window.tabsint.page.instructionText = "overridden text"; window.tabsint.page.responseArea.rows = 8; }'
       );
 
-      (examService as unknown as { initializeCurrentPage: (page: PageDefinition) => void }).initializeCurrentPage(page);
+      await (examService as unknown as { initializeCurrentPage: (page: PageDefinition) => Promise<void> }).initializeCurrentPage(page);
 
       expect(mockPageModel.updatePage).toHaveBeenCalled();
       const renderedPage = mockPageModel.updatePage.calls.mostRecent().args[0] as PageDefinition;
@@ -464,15 +464,15 @@ describe('ExamService', () => {
       expect((renderedPage.responseArea as { rows: number }).rows).toBe(8);
     });
 
-    it('does not mutate the original page object', () => {
+    it('does not mutate the original page object', async () => {
       const page = buildPageWithPreprocess('function testOverride() { window.tabsint.page.instructionText = "overridden text"; }');
 
-      (examService as unknown as { initializeCurrentPage: (page: PageDefinition) => void }).initializeCurrentPage(page);
+      await (examService as unknown as { initializeCurrentPage: (page: PageDefinition) => Promise<void> }).initializeCurrentPage(page);
 
       expect(page.instructionText).toBe('original text');
     });
 
-    it('waits for an async preprocess function to resolve a new wavfile path via window.tabsint.resolveWavfilePath before rendering the page', async () => {
+    it('waits for an async preprocess function to reassign a wavfile path before rendering the page, and resolves _resolvedPath automatically', async () => {
       examService.protocol.activeProtocol = {
         ...examService.protocol.activeProtocol,
         server: ProtocolServer.Developer,
@@ -481,25 +481,81 @@ describe('ExamService', () => {
 
       const page = buildPageWithPreprocess(
         `async function testOverride() {
-          const wavfile = window.tabsint.page.wavfiles[0];
-          wavfile.path = 'new.wav';
-          wavfile._resolvedPath = await window.tabsint.resolveWavfilePath(wavfile.path);
+          await Promise.resolve();
+          window.tabsint.page.wavfiles[0].path = 'new.wav';
         }`
       );
       page.wavfiles = [{ path: 'original.wav', useCommonRepo: false, _resolvedPath: 'public/assets/my-protocol/original.wav' }];
 
-      (examService as unknown as { initializeCurrentPage: (page: PageDefinition) => void }).initializeCurrentPage(page);
+      const initializeCurrentPage = (
+        examService as unknown as { initializeCurrentPage: (page: PageDefinition) => Promise<void> }
+      ).initializeCurrentPage.bind(examService);
+      const initializePromise = initializeCurrentPage(page);
 
       // pageModel.updatePage must not be called until the async preprocess function resolves.
       expect(mockPageModel.updatePage).not.toHaveBeenCalled();
 
-      // Let the async preprocess function's microtasks (including resolveWavfilePath) flush.
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await initializePromise;
 
       expect(mockPageModel.updatePage).toHaveBeenCalled();
       const renderedPage = mockPageModel.updatePage.calls.mostRecent().args[0] as PageDefinition;
       expect(renderedPage.wavfiles![0].path).toBe('new.wav');
       expect(renderedPage.wavfiles![0]._resolvedPath).toBe('public/assets/my-protocol/new.wav');
+    });
+
+    it('resolves _resolvedPath for a page with wavfiles and no preprocess function', async () => {
+      examService.protocol.activeProtocol = {
+        ...examService.protocol.activeProtocol,
+        server: ProtocolServer.Developer,
+        path: 'my-protocol',
+      } as never;
+
+      const page: PageDefinition = {
+        id: 'no-preprocess-page',
+        responseArea: { type: 'textboxResponseArea', rows: 3, responseRequired: false },
+        wavfiles: [{ path: 'plain.wav', useCommonRepo: false }],
+      } as unknown as PageDefinition;
+
+      await (examService as unknown as { initializeCurrentPage: (page: PageDefinition) => Promise<void> }).initializeCurrentPage(page);
+
+      const renderedPage = mockPageModel.updatePage.calls.mostRecent().args[0] as PageDefinition;
+      expect(renderedPage.wavfiles![0]._resolvedPath).toBe('public/assets/my-protocol/plain.wav');
+    });
+
+    it('resolves _resolvedPath for a page video with no preprocess function, without the wavfile "public/" prefix', async () => {
+      examService.protocol.activeProtocol = {
+        ...examService.protocol.activeProtocol,
+        server: ProtocolServer.Developer,
+        path: 'my-protocol',
+      } as never;
+
+      const page: PageDefinition = {
+        id: 'video-page',
+        responseArea: { type: 'textboxResponseArea', rows: 3, responseRequired: false },
+        video: { path: 'clip.mp4' },
+      } as unknown as PageDefinition;
+
+      await (examService as unknown as { initializeCurrentPage: (page: PageDefinition) => Promise<void> }).initializeCurrentPage(page);
+
+      const renderedPage = mockPageModel.updatePage.calls.mostRecent().args[0] as PageDefinition;
+      expect(renderedPage.video!._resolvedPath).toBe('assets/my-protocol/clip.mp4');
+    });
+
+    it('re-resolves a video path reassigned by a preprocess function', async () => {
+      examService.protocol.activeProtocol = {
+        ...examService.protocol.activeProtocol,
+        server: ProtocolServer.Developer,
+        path: 'my-protocol',
+      } as never;
+
+      const page = buildPageWithPreprocess(`function testOverride() { window.tabsint.page.video.path = 'new-clip.mp4'; }`);
+      page.video = { path: 'original-clip.mp4' };
+
+      await (examService as unknown as { initializeCurrentPage: (page: PageDefinition) => Promise<void> }).initializeCurrentPage(page);
+
+      const renderedPage = mockPageModel.updatePage.calls.mostRecent().args[0] as PageDefinition;
+      expect(renderedPage.video!.path).toBe('new-clip.mp4');
+      expect(renderedPage.video!._resolvedPath).toBe('assets/my-protocol/new-clip.mp4');
     });
   });
 
@@ -512,28 +568,28 @@ describe('ExamService', () => {
       } as unknown as PageDefinition;
     }
 
-    it('assigns a fresh _uuid to the rendered page', () => {
+    it('assigns a fresh _uuid to the rendered page', async () => {
       const page = buildPage();
 
-      (examService as unknown as { initializeCurrentPage: (page: PageDefinition) => void }).initializeCurrentPage(page);
+      await (examService as unknown as { initializeCurrentPage: (page: PageDefinition) => Promise<void> }).initializeCurrentPage(page);
 
       const renderedPage = mockPageModel.updatePage.calls.mostRecent().args[0] as PageInterface;
       expect(renderedPage._uuid).toBeTruthy();
     });
 
-    it('assigns a new _uuid on every call, even for the exact same page reference navigated to twice in a row', () => {
+    it('assigns a new _uuid on every call, even for the exact same page reference navigated to twice in a row', async () => {
       // Simulates re-entering the same subprotocol/page during stack navigation (e.g. a followOn
       // that loops back onto the same reference), where the identical PageDefinition object is
       // initialized again without any different page in between.
       const page = buildPage();
-      const initializeCurrentPage = (examService as unknown as { initializeCurrentPage: (page: PageDefinition) => void }).initializeCurrentPage.bind(
-        examService
-      );
+      const initializeCurrentPage = (
+        examService as unknown as { initializeCurrentPage: (page: PageDefinition) => Promise<void> }
+      ).initializeCurrentPage.bind(examService);
 
-      initializeCurrentPage(page);
+      await initializeCurrentPage(page);
       const firstRenderedPage = mockPageModel.updatePage.calls.mostRecent().args[0] as PageInterface;
 
-      initializeCurrentPage(page);
+      await initializeCurrentPage(page);
       const secondRenderedPage = mockPageModel.updatePage.calls.mostRecent().args[0] as PageInterface;
 
       expect(firstRenderedPage.id).toBe(secondRenderedPage.id);
@@ -574,11 +630,11 @@ describe('ExamService', () => {
       expect(mockPageModel.updatePage).toHaveBeenCalledTimes(1);
       expect((mockPageModel.updatePage.calls.argsFor(0)[0] as PageInterface).id).toBe('p1');
 
-      examService.submitDefault();
+      await examService.submitDefault();
       expect(mockPageModel.updatePage).toHaveBeenCalledTimes(2);
       expect((mockPageModel.updatePage.calls.argsFor(1)[0] as PageInterface).id).toBe('p2');
 
-      examService.submitDefault();
+      await examService.submitDefault();
       expect(mockPageModel.updatePage).toHaveBeenCalledTimes(2);
       expect(examService['endExam' as keyof ExamService]).toHaveBeenCalled();
     });
@@ -588,8 +644,8 @@ describe('ExamService', () => {
       spyOn(examService, 'endExam' as never);
 
       await examService.begin();
-      examService.submitDefault();
-      examService.submitDefault();
+      await examService.submitDefault();
+      await examService.submitDefault();
 
       expect(mockNotifications.alert).toHaveBeenCalled();
     });
@@ -599,8 +655,8 @@ describe('ExamService', () => {
       spyOn(examService, 'endExam' as never);
 
       await examService.begin();
-      examService.submitDefault();
-      examService.submitDefault();
+      await examService.submitDefault();
+      await examService.submitDefault();
 
       expect(mockNotifications.alert).not.toHaveBeenCalled();
     });
@@ -639,13 +695,13 @@ describe('ExamService', () => {
       examService.protocol.activeProtocolDictionary = { sub: subProtocol } as never;
 
       await examService.begin();
-      examService.submitDefault(); // intro -> reference pushes sub protocol -> sub_page
-      examService.submitDefault(); // sub_page -> sub protocol completes, pops back to root
+      await examService.submitDefault(); // intro -> reference pushes sub protocol -> sub_page
+      await examService.submitDefault(); // sub_page -> sub protocol completes, pops back to root
 
       const shownIds = mockPageModel.updatePage.calls.allArgs().map(args => (args[0] as PageInterface).id);
       expect(shownIds).toEqual(['intro', 'sub_page', 'after_sub_1']);
 
-      examService.submitDefault();
+      await examService.submitDefault();
       const shownIdsAfterNext = mockPageModel.updatePage.calls.allArgs().map(args => (args[0] as PageInterface).id);
       expect(shownIdsAfterNext).toEqual(['intro', 'sub_page', 'after_sub_1', 'after_sub_2']);
     });

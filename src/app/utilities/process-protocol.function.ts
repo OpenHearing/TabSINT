@@ -33,8 +33,12 @@ async function resolveFilePath(rootUri: string, filePath: string): Promise<strin
 
 /**
  * Resolve the on-device path for a wavfile's raw protocol-relative path, given the protocol's
- * media-source configuration. Used both when a protocol is first loaded and by preprocess
- * functions (via `window.tabsint.resolveWavfilePath`) that swap a wavfile's path at runtime.
+ * media-source configuration. Used both when a protocol is first loaded and, via
+ * `ExamService.resolvePageMediaPaths`, after a preprocess function reassigns `wavfile.path` at
+ * runtime. On a Developer server this resolves to a `public/assets/...` path, because wavfiles
+ * are handed off to the native/Java audio player, which reads from a different root than the web
+ * view's asset serving (see `assetPathExists` usage in `updatePageWavProperties` for the
+ * corresponding web-accessible path used to validate the file exists).
  * @param rawPath The wavfile's protocol-relative path (i.e. `wavfile.path`).
  * @param useCommonRepo Whether this wavfile is sourced from the protocol's common media repo.
  * @param context The active protocol's media-source configuration.
@@ -49,6 +53,26 @@ export async function resolveWavfilePath(
     return context.commonRepoPath ? await resolveFilePath(context.commonRepoPath, rawPath) : undefined;
   } else if (context.server === ProtocolServer.Developer) {
     return 'public/assets/' + context.metaPath! + '/' + rawPath;
+  } else if (context.contentURI) {
+    return await resolveFilePath(context.contentURI, rawPath);
+  }
+  return undefined;
+}
+
+/**
+ * Resolve the on-device path for a video's raw protocol-relative path, given the protocol's
+ * media-source configuration. Used both when a protocol is first loaded and, via
+ * `ExamService.resolvePageMediaPaths`, after a preprocess function reassigns `video.path` at
+ * runtime. Unlike `resolveWavfilePath`, a Developer-server video resolves to a plain
+ * `assets/...` path (no `public/` prefix) since videos are played directly by the web view rather
+ * than handed off to a native player, and there's no common-repo concept for video.
+ * @param rawPath The video's protocol-relative path (i.e. `video.path`).
+ * @param context The active protocol's media-source configuration.
+ * @returns The resolved path, or undefined if it could not be resolved.
+ */
+export async function resolveVideoPath(rawPath: string, context: WavfileResolutionContext): Promise<string | undefined> {
+  if (context.server === ProtocolServer.Developer) {
+    return 'assets/' + context.metaPath! + '/' + rawPath;
   } else if (context.contentURI) {
     return await resolveFilePath(context.contentURI, rawPath);
   }
@@ -246,16 +270,16 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
    */
   async function updatePageVideoProperties(page: PageDefinition): Promise<void> {
     if (page.video) {
-      if (loading.meta.server == ProtocolServer.Developer) {
-        page.video._resolvedPath = 'assets/' + loading.meta.path! + '/' + page.video.path;
-        if (!(await assetPathExists(page.video._resolvedPath))) {
-          rootProtocol._unresolvedFilePathList?.push(page.video.path);
-        }
-      } else if (loading.meta.contentURI) {
-        page.video._resolvedPath = await resolveFilePath(loading.meta.contentURI, page.video.path);
-        if (page.video._resolvedPath === undefined) {
-          rootProtocol._unresolvedFilePathList?.push(page.video.path);
-        }
+      page.video._resolvedPath = await resolveVideoPath(page.video.path, {
+        server: loading.meta.server,
+        metaPath: loading.meta.path,
+        contentURI: loading.meta.contentURI,
+      });
+      const isUnresolved =
+        page.video._resolvedPath === undefined ||
+        (loading.meta.server == ProtocolServer.Developer && !(await assetPathExists(page.video._resolvedPath)));
+      if (isUnresolved) {
+        rootProtocol._unresolvedFilePathList?.push(page.video.path);
       }
     }
   }
