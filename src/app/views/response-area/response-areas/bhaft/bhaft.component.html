@@ -12,7 +12,7 @@
   </div>
 
   <!-- Landing page: shown until the subject presses begin. -->
-  <div *ngIf="bhaftState === ResponseAreaState.Start" class="bhaft-start">
+  <div *ngIf="state === ResponseAreaState.Start" class="bhaft-start">
     <p *ngIf="retryMessage">{{ retryMessage | transloco }}</p>
     <button class="btn btn-default" type="button" (click)="beginExam()">
       {{ "Begin" | transloco }}
@@ -20,7 +20,7 @@
   </div>
 
   <!-- Running exam: shows the software response button while the device runs the exam. -->
-  <div *ngIf="bhaftState === ResponseAreaState.Exam" class="bhaft-exam">
+  <div *ngIf="state === ResponseAreaState.Exam" class="bhaft-exam">
     <p class="instructions" *ngIf="examInstructions">{{ examInstructions | transloco }}</p>
     <div *ngIf="useSoftwareButton" class="bhaft-button-row">
       <app-software-button
@@ -34,7 +34,7 @@
   </div>
 
   <!-- Results: shown once the device reports the exam is complete. -->
-  <div *ngIf="bhaftState === ResponseAreaState.Results" class="bhaft-results">
+  <div *ngIf="state === ResponseAreaState.Results" class="bhaft-results">
     <ng-container *ngIf="noResponseMessage; else bhaftNormalResults">
       <div>{{ noResponseMessage | transloco }}</div>
     </ng-container>
@@ -53,11 +53,12 @@
       </div>
       <app-trial-progression-plot *ngIf="frequencyProgressionData" [data]="frequencyProgressionData"></app-trial-progression-plot>
       <app-trial-progression-plot *ngIf="levelProgressionData" [data]="levelProgressionData"></app-trial-progression-plot>
+      <app-audiometry-combined-results *ngIf="combinedAudiogramData" [dataStruct]="combinedAudiogramData"></app-audiometry-combined-results>
     </ng-container>
   </div>
 
   <!-- Notes: shown after the exam has failed twice in a row and getNotesIfFailedTwice is set. -->
-  <div *ngIf="bhaftState === ResponseAreaState.Notes" class="bhaft-notes">
+  <div *ngIf="state === ResponseAreaState.Notes" class="bhaft-notes">
     <p>{{ "Audiometry Administrator Notes Message" | transloco }}</p>
     <textarea class="bhaft-notes-input" [(ngModel)]="adminNotes"></textarea>
   </div>

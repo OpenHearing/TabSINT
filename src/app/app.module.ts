@@ -128,6 +128,7 @@ import { SoftwareButtonComponent } from './views/response-area/response-areas/sh
 import { AudiometryResultsTableComponent } from './views/response-area/response-areas/shared/audiometry/audiometry-results-table/audiometry-results-table.component';
 import { AudiometryPropertiesComponent } from './views/response-area/response-areas/shared/audiometry/audiometry-properties/audiometry-properties.component';
 import { AudiometryLegendComponent } from './views/response-area/response-areas/shared/audiometry/audiometry-legend/audiometry-legend.component';
+import { AudiometryCombinedResultsComponent } from './views/response-area/response-areas/shared/audiometry/audiometry-combined-results/audiometry-combined-results.component';
 
 @NgModule({
   declarations: [
@@ -213,6 +214,7 @@ import { AudiometryLegendComponent } from './views/response-area/response-areas/
     AudiometryResultsTableComponent,
     AudiometryPropertiesComponent,
     AudiometryLegendComponent,
+    AudiometryCombinedResultsComponent,
   ],
   imports: [
     BrowserModule,

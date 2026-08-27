@@ -38,3 +38,7 @@
   min-height: 100px;
   margin-top: 0.5rem;
 }
+
+app-audiometry-combined-results {
+  margin-top: 2rem;
+}
