@@ -52,17 +52,17 @@
   </mat-menu>
 </a>
 
-<!-- Svantek status -->
-<!-- <a href="javascript:" class="header-text svantek-indicator-height" title="Svantek status">
-    <span *ngIf="state.svantek === SvantekState.Connected || state.svantek === SvantekState.Recording">
-        <img [matMenuTriggerFor]= "DosimeterConnectedMenu" src="../../../assets/img/svantek-indicator.png" alt="Svantek indicator" />
-    </span>
-    <mat-menu #DosimeterConnectedMenu="matMenu">
-        <button mat-menu-item>
-            <div [innerHTML]="DosimeterConnectedPopover"></div>
-        </button>
-    </mat-menu>
-</a> -->
+<!-- svantek status -->
+<a href="javascript:" class="header-text" *ngIf="hasConnectedSvantek | async" title="Svantek Connected">
+  <span>
+    <i [matMenuTriggerFor]="SvantekConnectedMenu" class="svantek-logo"></i>
+  </span>
+  <mat-menu #SvantekConnectedMenu="matMenu">
+    <button mat-menu-item>
+      <div [innerHTML]="DosimeterConnectedPopover"></div>
+    </button>
+  </mat-menu>
+</a>
 
 <!-- bluetooth status -->
 <a href="javascript:" class="header-text" *ngIf="state.bluetoothConnected" title="Bluetooth status">

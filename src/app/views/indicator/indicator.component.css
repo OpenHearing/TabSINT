@@ -30,3 +30,14 @@
   background-repeat: no-repeat;
   background-size: contain;
 }
+
+.svantek-logo {
+  content: "";
+  background-image: url("/assets/img/svantek-indicator.png");
+  height: 1em;
+  width: 1em;
+  display: inline-block;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}

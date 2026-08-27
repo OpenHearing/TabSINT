@@ -8,7 +8,7 @@ import { StateInterface } from '../../models/state/state.interface';
 import { DiskModel } from '../../models/disk/disk.service';
 import { StateModel } from '../../models/state/state.service';
 
-import { DeviceState, DeviceType, SvantekState } from '../../utilities/constants';
+import { DeviceState, DeviceType } from '../../utilities/constants';
 import { DevicesService } from '../../services/devices/devices.service';
 
 @Component({
@@ -27,10 +27,10 @@ export class IndicatorComponent implements OnInit, OnDestroy {
   stateSubscription: Subscription | undefined;
   devicesSubscription: Subscription | undefined;
   state: StateInterface;
-  SvantekState = SvantekState;
   hasConnectedTympan: Observable<boolean>;
   hasConnectedWahts: Observable<boolean>;
   hasConnectedDuodose: Observable<boolean>;
+  hasConnectedSvantek: Observable<boolean>;
 
   constructor() {
     this.disk = this.diskModel.getDisk();
@@ -43,6 +43,9 @@ export class IndicatorComponent implements OnInit, OnDestroy {
     );
     this.hasConnectedDuodose = this.devicesService.devices.pipe(
       map(devices => devices.some(device => device.type === DeviceType.Duodose && device.state === DeviceState.Connected))
+    );
+    this.hasConnectedSvantek = this.devicesService.devices.pipe(
+      map(devices => devices.some(device => device.type === DeviceType.Svantek && device.state === DeviceState.Connected))
     );
   }
 
