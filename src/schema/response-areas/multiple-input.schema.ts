@@ -51,11 +51,6 @@ export const multipleInputSchema: JSONSchemaType<MultipleInputInterface> = {
             default: false,
             description: 'Determines if the page is submittable without a response for this input',
           },
-          exportToCSV: {
-            type: 'boolean',
-            nullable: true,
-            description: 'Whether result should be exported to CSV upon submitting exam results.',
-          },
           dateProperties: {
             type: 'object',
             nullable: true,

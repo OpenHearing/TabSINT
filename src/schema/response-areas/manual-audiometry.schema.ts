@@ -8,7 +8,6 @@ export const manualAudiometrySchema: JSONSchemaType<ManualAudiometryInterface> =
     enableSkip: { type: 'boolean', nullable: true, default: false },
     responseRequired: { type: 'boolean', nullable: true, default: false },
     type: { type: 'string', enum: ['manualAudiometryResponseArea'] },
-    exportToCSV: { type: 'boolean', nullable: true, default: false },
     tabsintId: { type: 'string', nullable: true },
     maxOutputLevel: { type: 'number', nullable: true, default: 110, description: 'In dB SPL' },
     minOutputLevel: { type: 'number', nullable: true, default: -10, description: 'In dB SPL' },

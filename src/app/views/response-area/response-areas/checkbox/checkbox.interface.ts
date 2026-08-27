@@ -7,5 +7,4 @@ export interface CheckboxInterface extends CommonResponseAreaInterface {
   feedback?: 'gradeResponse' | 'showCorrect';
   other?: string;
   verticalSpacing?: number;
-  exportToCSV?: boolean;
 }

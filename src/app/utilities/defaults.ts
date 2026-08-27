@@ -57,7 +57,6 @@ export const pageInterfaceDefaults: PageInterface = {
   subtitle: '',
   loadingRequired: false,
   loadingActive: false,
-  exportToCSV: false,
 };
 
 export const protocolDefaults: ProtocolInterface = {

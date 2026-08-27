@@ -48,12 +48,6 @@ export const mpanlSchema: JSONSchemaType<MpanlResponseAreaInterface> = {
       description:
         'Override the headset attenuation (in dB) at the octave band frequencies. Defaults to WAHTS attenuation values. Array length must match the number of octave band frequencies.',
     },
-    exportToCSV: {
-      type: 'boolean',
-      nullable: true,
-      default: false,
-      description: 'Whether result should be exported to CSV upon submitting exam results.',
-    },
   },
   required: ['type'],
 };

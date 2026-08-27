@@ -6,7 +6,6 @@ export const dpoaeCommonSchemaProperties: JSONSchemaType<DpoaeCommonInterface>['
   type: { type: 'string' },
   enableSkip: { type: 'boolean', nullable: true, default: false },
   responseRequired: { type: 'boolean', nullable: true, default: false },
-  exportToCSV: { type: 'boolean', nullable: true, default: false },
   tabsintId: { type: 'string', nullable: true },
   outputCalibrationType: { type: 'string', nullable: true, default: 'SPL' },
   outputChannel1: { type: 'string', nullable: true, default: 'HPL0' },

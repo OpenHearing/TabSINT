@@ -366,7 +366,6 @@
           "instructionText": "Page should only be submittable when there is a response",
           "responseArea": {
             "type": "textboxResponseArea",
-            "exportToCSV": true,
             "rows": 3,
             "responseRequired": true
           }
@@ -377,7 +376,6 @@
           "instructionText": "Page should only be submittable when there is a response",
           "responseArea": {
             "type": "textboxResponseArea",
-            "exportToCSV": true,
             "responseRequired": true
           }
         },

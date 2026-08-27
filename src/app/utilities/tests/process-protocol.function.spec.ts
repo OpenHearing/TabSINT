@@ -83,7 +83,6 @@ const testProt2 = {
       instructionText: 'Test Cases 002',
       responseArea: {
         type: 'textboxResponseArea',
-        exportToCSV: true,
         rows: 3,
         enableSkip: false,
         responseRequired: false,
@@ -102,7 +101,6 @@ const testProt2 = {
       instructionText: 'Test Cases 003',
       responseArea: {
         type: 'textboxResponseArea',
-        exportToCSV: true,
         enableSkip: false,
         responseRequired: false,
       },
@@ -196,10 +194,6 @@ describe('processProtocol', () => {
   });
 
   it('adds video path', () => {
-    //unimplemented
-  });
-
-  it('adds _exportToCSV if it exits', () => {
     //unimplemented
   });
 });

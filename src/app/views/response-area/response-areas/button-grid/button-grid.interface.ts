@@ -8,6 +8,5 @@ export interface ButtonGridInterface extends CommonResponseAreaInterface {
   verticalSpacing?: number;
   horizontalSpacing?: number;
   delayEnable?: number;
-  exportToCSV?: boolean;
   choices?: ChoiceInterface[];
 }

@@ -12,7 +12,6 @@ export interface InputListItem {
   text: string;
   options?: string[]; // Only for dropdown or multi-dropdown
   required?: boolean;
-  exportToCSV?: boolean;
   dateProperties?: {
     maxDate?: string; // ISO formatted string YYYY-MM-DD or 'today'
     minDate?: string; // ISO formatted string YYYY-MM-DD or 'today'

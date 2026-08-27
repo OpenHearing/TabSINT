@@ -9,7 +9,6 @@ export const FPLcalibrationExamSchema: JSONSchemaType<FPLCalibrationExamInterfac
     responseRequired: { type: 'boolean', nullable: true, default: false },
     type: { type: 'string', enum: ['fplCalibrationResponseArea'] },
     tabsintId: { type: 'string', nullable: true },
-    exportToCSV: { type: 'boolean', nullable: true, default: false },
     recordFileFolder: { type: 'string', nullable: true, default: undefined, description: 'Directory to store full waveform' },
     outputChannels: { type: 'array', nullable: false, items: { type: 'string' } },
     fStart: { type: 'number', nullable: true, default: 390 },

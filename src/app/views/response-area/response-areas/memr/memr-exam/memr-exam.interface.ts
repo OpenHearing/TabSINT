@@ -6,7 +6,6 @@ import { CommonResponseAreaInterface } from '../../../../../interfaces/page-defi
  * @extends {CommonResponseAreaInterface}
  *
  * @field tabsintId Id of the device for the exam to be queued to.
- * @field exportToCSV If true, export the results to a CSV.
  * @field soundFileName Path of the wav file to play on the Tympan, including a directory.
  * @field recordFileFolder Folder name on the tympan where recorded sound files are stored.
  * @field nRepeats Number of repeats at the trial or block level.
@@ -20,7 +19,6 @@ import { CommonResponseAreaInterface } from '../../../../../interfaces/page-defi
  */
 export interface MemrExamInterface extends CommonResponseAreaInterface {
   tabsintId?: string;
-  exportToCSV?: boolean;
   soundFileName?: string;
   recordFileFolder?: string;
   nRepeats?: number;

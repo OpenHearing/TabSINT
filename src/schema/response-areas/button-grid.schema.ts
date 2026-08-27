@@ -14,7 +14,6 @@ export const buttonGridSchema: JSONSchemaType<ButtonGridInterface> = {
     verticalSpacing: { type: 'number', nullable: true, default: 1 },
     horizontalSpacing: { type: 'number', nullable: true, default: 1 },
     delayEnable: { type: 'number', nullable: true, default: 0 },
-    exportToCSV: { type: 'boolean', nullable: true, default: false },
     choices: { type: 'array', items: choiceSchema, nullable: true },
   },
   required: ['type', 'rows'],

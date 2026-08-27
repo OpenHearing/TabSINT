@@ -50,7 +50,6 @@ export function getDpoaeLegendData(ear?: DPOAEAudioChannel): LegendItemInterface
 }
 
 export interface DpoaeCommonInterface extends CommonResponseAreaInterface {
-  exportToCSV?: boolean;
   tabsintId?: string;
   outputCalibrationType?: string;
   outputChannel1?: string;

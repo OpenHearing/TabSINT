@@ -13,7 +13,6 @@ export const checkboxSchema: JSONSchemaType<CheckboxInterface> = {
     feedback: { type: 'string', nullable: true, enum: ['showCorrect', 'gradeResponse'] },
     other: { type: 'string', nullable: true },
     verticalSpacing: { type: 'number', nullable: true, default: 1 },
-    exportToCSV: { type: 'boolean', nullable: true, default: false },
   },
   required: ['type', 'choices'],
 };
