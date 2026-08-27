@@ -1,4 +1,4 @@
-<div class="hw-container">
+<div class="bekesy-like-container">
   <!-- Properties: shown depending on the exam hide properties flag and current exam state. -->
   <div *ngIf="showProperties">
     <app-audiometry-properties
@@ -12,7 +12,7 @@
   </div>
 
   <!-- Landing page: shown until the subject presses begin. -->
-  <div *ngIf="state === ResponseAreaState.Start" class="hw-start">
+  <div *ngIf="state === ResponseAreaState.Start" class="bekesy-like-start">
     <p *ngIf="retryMessage">{{ retryMessage | transloco }}</p>
     <button class="btn btn-default" type="button" (click)="beginExam()">
       {{ "Begin" | transloco }}
@@ -20,29 +20,30 @@
   </div>
 
   <!-- Running exam: shows the software response button while the device runs the exam. -->
-  <div *ngIf="state === ResponseAreaState.Exam" class="hw-exam">
+  <div *ngIf="state === ResponseAreaState.Exam" class="bekesy-like-exam">
     <p class="instructions" *ngIf="examInstructions">{{ examInstructions | transloco }}</p>
-    <div *ngIf="useSoftwareButton" class="hw-button-row">
+    <div *ngIf="useSoftwareButton" class="bekesy-like-button-row">
       <app-software-button
-        [mode]="'tap'"
-        buttonText="Tap this button when you hear a set of sounds"
-        buttonPressedText="Tap this button when you hear a set of sounds"
-        (pressStart)="onPressStart()">
+        [mode]="'hold'"
+        buttonText="Press and hold while you hear the tone"
+        buttonPressedText="Press and hold while you hear the tone"
+        (pressStart)="onPressStart()"
+        (pressEnd)="onPressEnd()">
       </app-software-button>
     </div>
   </div>
 
   <!-- Results: shown once the device reports the exam is complete. -->
-  <div *ngIf="state === ResponseAreaState.Results" class="hw-results">
-    <ng-container *ngIf="noResponseMessage; else hwNormalResults">
+  <div *ngIf="state === ResponseAreaState.Results" class="bekesy-like-results">
+    <ng-container *ngIf="noResponseMessage; else bekesyLikeNormalResults">
       <div>{{ noResponseMessage | transloco }}</div>
     </ng-container>
-    <ng-template #hwNormalResults>
+    <ng-template #bekesyLikeNormalResults>
       <div>{{ resultMainText | transloco }}</div>
       <div *ngIf="resultSubText">{{ resultSubText | transloco }}</div>
     </ng-template>
-    <ng-container *ngIf="results && !examProperties.Screener">
-      <div *ngIf="results.ResultType === 'Threshold'" class="hw-response">
+    <ng-container *ngIf="results">
+      <div *ngIf="results.ResultType === 'Threshold'" class="bekesy-like-response">
         {{ "Threshold:" | transloco }} {{ round(results.Threshold, 2) }} {{ examProperties.LevelUnits }}
       </div>
       <div *ngIf="results.ResultType !== 'Threshold'">
@@ -55,8 +56,8 @@
   </div>
 
   <!-- Notes: shown after the exam has failed twice in a row and getNotesIfFailedTwice is set. -->
-  <div *ngIf="state === ResponseAreaState.Notes" class="hw-notes">
+  <div *ngIf="state === ResponseAreaState.Notes" class="bekesy-like-notes">
     <p>{{ "Audiometry Administrator Notes Message" | transloco }}</p>
-    <textarea class="hw-notes-input" [(ngModel)]="adminNotes"></textarea>
+    <textarea class="bekesy-like-notes-input" [(ngModel)]="adminNotes"></textarea>
   </div>
 </div>

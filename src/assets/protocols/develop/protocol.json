@@ -120,6 +120,9 @@
                 "id": "BHAFT"
               },
               {
+                "id": "Bekesy Like"
+              },
+              {
                 "id": "CHA Wav Test"
               },
               {
@@ -318,6 +321,12 @@
               "conditional": "result.response=='BHAFT'",
               "target": {
                 "reference": "bhaftResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='Bekesy Like'",
+              "target": {
+                "reference": "bekesyLikeResponseArea"
               }
             },
             {
@@ -1612,6 +1621,42 @@
           }
         },
         {
+          "id": "Hughson-Westlake-Threshold-2",
+          "title": "Hughson-Westlake Threshold",
+          "questionMainText": "Automated Threshold Audiometry",
+          "responseArea": {
+            "type": "hughsonWestlakeResponseArea",
+            "hideExamProperties": "during",
+            "autoBegin": true,
+            "repeatIfFailedOnce": true,
+            "getNotesIfFailedTwice": true,
+            "showMessageIfNoResponse": true,
+            "examInstructions": "Use the button to complete the exam.",
+            "resultMainText": "Automated threshold search complete.",
+            "resultSubText": "Press submit to continue.",
+            "examProperties": {
+              "Screener": false,
+              "TonePulseNumber": 3,
+              "LevelUnits": "dB HL",
+              "Lstart": 25,
+              "F": 2000,
+              "OutputChannel": "HPR0",
+              "UseSoftwareButton": true,
+              "PollingOffset": 1000,
+              "MinISI": 1000,
+              "MaxISI": 3000
+            },
+            "plotProperties": {
+              "displayLevelProgression": true,
+              "displayAudiogram": ["Hughson-Westlake-Threshold", "Hughson-Westlake-Threshold-2"]
+            },
+            "maskingNoise": {
+              "Type": "white",
+              "Level": [30, 30]
+            }
+          }
+        },
+        {
           "id": "backtomain",
           "reference": "MainMenu"
         }
@@ -1653,6 +1698,51 @@
             },
             "plotProperties": {
               "displayFrequencyProgression": true,
+              "displayLevelProgression": true
+            },
+            "maskingNoise": {
+              "Type": "white",
+              "Level": [30, 30]
+            }
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "bekesyLikeResponseArea",
+      "pages": [
+        {
+          "id": "BekesyLike",
+          "title": "Bekesy Like",
+          "questionMainText": "Automated Level Threshold Search",
+          "responseArea": {
+            "type": "bekesyLikeResponseArea",
+            "hideExamProperties": "during",
+            "autoBegin": false,
+            "repeatIfFailedOnce": true,
+            "getNotesIfFailedTwice": true,
+            "showMessageIfNoResponse": true,
+            "examInstructions": "Press and hold the button whenever you believe you hear the sound and release the button when you can no longer hear the sound.",
+            "resultMainText": "Automated level threshold search complete.",
+            "resultSubText": "Press submit to continue.",
+            "examProperties": {
+              "F": 1000,
+              "Lstart": 40,
+              "ReversalDiscard": 2,
+              "ReversalKeep": 6,
+              "IncrementStart": 4,
+              "IncrementNominal": 2,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPL0",
+              "UseSoftwareButton": true,
+              "PresentationMax": 100,
+              "BypassCalibrationLimit": true
+            },
+            "plotProperties": {
               "displayLevelProgression": true
             },
             "maskingNoise": {

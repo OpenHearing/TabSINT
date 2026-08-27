@@ -23,6 +23,11 @@
   align-items: center;
 }
 
+.hw-response {
+  padding-top: 0.5rem;
+  font-weight: bold;
+}
+
 .hw-notes {
   padding-top: 1rem;
   text-align: center;
@@ -32,4 +37,8 @@
   width: 100%;
   min-height: 100px;
   margin-top: 0.5rem;
+}
+
+app-audiometry-combined-results {
+  margin-top: 2rem;
 }

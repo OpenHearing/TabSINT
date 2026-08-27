@@ -1,6 +1,5 @@
 <div class="audiometry-container">
-  <app-audiogram [dataStruct]="audiogramData" [isManualExam]="false"></app-audiogram>
-  <app-audiometry-results-table [dataStruct]="audiogramData" [showLegend]="true"></app-audiometry-results-table>
+  <app-audiometry-combined-results [dataStruct]="audiogramData"></app-audiometry-combined-results>
 
   <div class="submit-container">
     <button class="submit-btn" (click)="submitResults()">{{ "Submit" | transloco }}</button>

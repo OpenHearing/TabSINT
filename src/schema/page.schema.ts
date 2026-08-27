@@ -30,6 +30,7 @@ import { gapSchema } from './response-areas/gap.schema';
 import { hughsonWestlakeSchema } from './response-areas/hughson-westlake.schema';
 import { bhaftSchema } from './response-areas/bhaft.schema';
 import { mpanlSchema } from './response-areas/mpanl.schema';
+import { bekesyLikeSchema } from './response-areas/bekesy-like.schema';
 
 export const pageSchema: JSONSchemaType<PageDefinition> = {
   $id: 'page_base',
@@ -130,6 +131,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
         hughsonWestlakeSchema,
         bhaftSchema,
         mpanlSchema,
+        bekesyLikeSchema,
       ],
       required: ['type'],
       nullable: true,

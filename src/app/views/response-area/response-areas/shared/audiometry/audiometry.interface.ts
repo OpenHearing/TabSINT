@@ -1,4 +1,5 @@
 import { CommonResponseAreaInterface } from '../../../../../interfaces/page-definition.interface';
+import { EarChannel } from '../../../../../interfaces/audiometry-results.interface';
 
 export enum AudiometryLevelUnits {
   dbHl = 'dB HL',
@@ -47,6 +48,15 @@ export interface PlotProperties {
   displayAudiogram?: string[];
   displayLevelProgression?: boolean;
   displayFrequencyProgression?: boolean;
+}
+
+/** Single frequency/threshold point contributed by a page toward a combined audiogram. */
+export interface AudiometryCombinedDatum {
+  frequency: number;
+  threshold: number | null;
+  channel: EarChannel;
+  resultType: string;
+  masking: boolean;
 }
 
 export interface AudiometryExamProperties {
