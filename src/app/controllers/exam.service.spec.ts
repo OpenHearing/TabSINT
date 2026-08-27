@@ -471,6 +471,36 @@ describe('ExamService', () => {
 
       expect(page.instructionText).toBe('original text');
     });
+
+    it('waits for an async preprocess function to resolve a new wavfile path via window.tabsint.resolveWavfilePath before rendering the page', async () => {
+      examService.protocol.activeProtocol = {
+        ...examService.protocol.activeProtocol,
+        server: ProtocolServer.Developer,
+        path: 'my-protocol',
+      } as never;
+
+      const page = buildPageWithPreprocess(
+        `async function testOverride() {
+          const wavfile = window.tabsint.page.wavfiles[0];
+          wavfile.path = 'new.wav';
+          wavfile._resolvedPath = await window.tabsint.resolveWavfilePath(wavfile.path);
+        }`
+      );
+      page.wavfiles = [{ path: 'original.wav', useCommonRepo: false, _resolvedPath: 'public/assets/my-protocol/original.wav' }];
+
+      (examService as unknown as { initializeCurrentPage: (page: PageDefinition) => void }).initializeCurrentPage(page);
+
+      // pageModel.updatePage must not be called until the async preprocess function resolves.
+      expect(mockPageModel.updatePage).not.toHaveBeenCalled();
+
+      // Let the async preprocess function's microtasks (including resolveWavfilePath) flush.
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockPageModel.updatePage).toHaveBeenCalled();
+      const renderedPage = mockPageModel.updatePage.calls.mostRecent().args[0] as PageDefinition;
+      expect(renderedPage.wavfiles![0].path).toBe('new.wav');
+      expect(renderedPage.wavfiles![0]._resolvedPath).toBe('public/assets/my-protocol/new.wav');
+    });
   });
 
   describe('page reinitialization (stack navigation)', () => {

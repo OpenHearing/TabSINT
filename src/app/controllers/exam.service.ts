@@ -43,6 +43,7 @@ import { ISvantekDevice } from '../interfaces/devices/svantek-device.interface';
 import { pageSchema } from '../../schema/page.schema';
 import { AudioService } from '../services/audio.service';
 import { Tasks } from '../services/tasks.service';
+import { resolveWavfilePath } from '../utilities/process-protocol.function';
 
 @Injectable({
   providedIn: 'root',
@@ -336,7 +337,13 @@ export class ExamService {
     }
   }
 
-  private async handlePreProcessFunctions(page: PageDefinition) {
+  /**
+   * Runs a page's preprocess function, if any, and returns whatever it returns. A preprocess
+   * function may be declared `async` (e.g. to call `window.tabsint.resolveWavfilePath`), in which
+   * case this returns a Promise the caller must await before relying on its overrides; ordinary
+   * synchronous preprocess functions return immediately, with no added delay.
+   */
+  private handlePreProcessFunctions(page: PageDefinition): unknown {
     if (page.preProcessFunction) {
       this.window.tabsint = {
         logger: this.logger,
@@ -349,10 +356,18 @@ export class ExamService {
         pageModel: this.pageModel,
         protocolModel: this.protocolModel,
         page,
+        resolveWavfilePath: (rawPath: string, useCommonRepo?: boolean) =>
+          resolveWavfilePath(rawPath, useCommonRepo, {
+            commonRepoPath: this.protocol.activeProtocol?.commonRepo?.path,
+            server: this.protocol.activeProtocol?.server,
+            metaPath: this.protocol.activeProtocol?.path,
+            contentURI: this.protocol.activeProtocol?.contentURI,
+          }),
       };
 
-      eval(page.preProcessFunction.js! + '\n' + page.preProcessFunction.function + '()');
+      return eval(page.preProcessFunction.js! + '\n' + page.preProcessFunction.function + '()');
     }
+    return undefined;
   }
 
   /** Handles special references
@@ -607,19 +622,34 @@ export class ExamService {
     // render and never mutate the canonical page stored in the protocol's page queue.
     const page = { ...pageDef, _uuid: crypto.randomUUID() };
     const pageForRender = structuredClone(page);
-    this.handlePreProcessFunctions(pageForRender);
-    this.pageModel.updatePage(pageForRender);
-    this.stateModel.updateState({
-      doesResponseExist: false,
-      isResponseRequired: this.isPageResponseRequired(pageForRender),
-    });
-    this.stateModel.setPageSubmittable();
-    this.resultsService.initializePageResults(pageForRender);
-    this.window.scrollTo({ top: 0, behavior: 'smooth' });
-    this.activateDosimeters(pageForRender);
-    this.activateSvantek(pageForRender);
-    this.activateMedia(pageForRender);
-    this.handleAutoSubmitDelay(pageForRender);
+    const preprocessResult = this.handlePreProcessFunctions(pageForRender);
+
+    const renderPage = () => {
+      this.pageModel.updatePage(pageForRender);
+      this.stateModel.updateState({
+        doesResponseExist: false,
+        isResponseRequired: this.isPageResponseRequired(pageForRender),
+      });
+      this.stateModel.setPageSubmittable();
+      this.resultsService.initializePageResults(pageForRender);
+      this.window.scrollTo({ top: 0, behavior: 'smooth' });
+      this.activateDosimeters(pageForRender);
+      this.activateSvantek(pageForRender);
+      this.activateMedia(pageForRender);
+      this.handleAutoSubmitDelay(pageForRender);
+    };
+
+    // A preprocess function declared `async` (e.g. to await window.tabsint.resolveWavfilePath)
+    // returns a thenable; wait for it so its overrides are fully applied before the page renders
+    // and media is activated. A synchronous preprocess function renders immediately, unchanged.
+    // Native async/await (used by an eval'd preprocess function) produces a real Promise that
+    // predates zone.js's patched global Promise, so `instanceof Promise` can't detect it here;
+    // duck-type on `.then` instead, and route it through `Promise.resolve` to re-enter the zone.
+    if (preprocessResult && typeof (preprocessResult as PromiseLike<unknown>).then === 'function') {
+      Promise.resolve(preprocessResult).then(renderPage);
+    } else {
+      renderPage();
+    }
   }
 
   /**

@@ -26,6 +26,16 @@ export interface TabsintWindow {
    * protocol variables for this render only.
    */
   page?: PageDefinition;
+  /**
+   * Resolves a raw protocol-relative wav file path (e.g. a new value assigned to
+   * `wavfile.path`) to the on-device path that audio playback actually reads, using this
+   * protocol's media-source configuration. A preprocess function that swaps a wavfile's path
+   * must also await this to set `wavfile._resolvedPath`, or the previous file keeps playing.
+   * @param rawPath The new protocol-relative path, e.g. `wavfile.path`.
+   * @param useCommonRepo Whether the wavfile is sourced from the protocol's common media repo
+   * (i.e. `wavfile.useCommonRepo`).
+   */
+  resolveWavfilePath?: (rawPath: string, useCommonRepo?: boolean) => Promise<string | undefined>;
 }
 export interface AppWindow extends Window {
   tabsint?: TabsintWindow;

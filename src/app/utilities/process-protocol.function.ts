@@ -19,6 +19,42 @@ import { TabsintFs } from 'tabsintfs';
 import { loadCustomJS, loadFile } from './load-custom-js';
 import { CalibrationFileWavProperties } from '../interfaces/calibration-file.interface';
 
+/** Media-source configuration needed to resolve a wavfile's raw protocol-relative path to an on-device path. */
+export interface WavfileResolutionContext {
+  commonRepoPath?: string;
+  server?: ProtocolServer;
+  metaPath?: string;
+  contentURI?: string | null;
+}
+
+async function resolveFilePath(rootUri: string, filePath: string): Promise<string | undefined> {
+  return (await TabsintFs.getFileContentURI({ rootUri: rootUri, filePath: filePath }).catch(() => undefined))?.contentUri;
+}
+
+/**
+ * Resolve the on-device path for a wavfile's raw protocol-relative path, given the protocol's
+ * media-source configuration. Used both when a protocol is first loaded and by preprocess
+ * functions (via `window.tabsint.resolveWavfilePath`) that swap a wavfile's path at runtime.
+ * @param rawPath The wavfile's protocol-relative path (i.e. `wavfile.path`).
+ * @param useCommonRepo Whether this wavfile is sourced from the protocol's common media repo.
+ * @param context The active protocol's media-source configuration.
+ * @returns The resolved path, or undefined if it could not be resolved.
+ */
+export async function resolveWavfilePath(
+  rawPath: string,
+  useCommonRepo: boolean | undefined,
+  context: WavfileResolutionContext
+): Promise<string | undefined> {
+  if (useCommonRepo) {
+    return context.commonRepoPath ? await resolveFilePath(context.commonRepoPath, rawPath) : undefined;
+  } else if (context.server === ProtocolServer.Developer) {
+    return 'public/assets/' + context.metaPath! + '/' + rawPath;
+  } else if (context.contentURI) {
+    return await resolveFilePath(context.contentURI, rawPath);
+  }
+  return undefined;
+}
+
 /**
  * Adds variables to the active protocol and generates a stack of pages.
  * @summary Loops through each page and subprotocol, adds variables to the
@@ -69,10 +105,6 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
         await processPage(page);
       }
     }
-  }
-
-  async function resolveFilePath(rootUri: string, filePath: string): Promise<string | undefined> {
-    return (await TabsintFs.getFileContentURI({ rootUri: rootUri, filePath: filePath }).catch(() => undefined))?.contentUri;
   }
 
   /**
@@ -176,23 +208,30 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
       }
     }
 
+    const resolutionContext: WavfileResolutionContext = {
+      commonRepoPath: rootProtocol.commonRepo?.path,
+      server: loading.meta.server,
+      metaPath: loading.meta.path,
+      contentURI: loading.meta.contentURI,
+    };
+
     await Promise.all(
       (page.wavfiles ?? []).map(async wavfile => {
         if (wavfile.useCommonRepo) {
           if (rootProtocol.commonRepo?.path) {
-            wavfile._resolvedPath = await resolveFilePath(rootProtocol.commonRepo?.path, wavfile.path);
+            wavfile._resolvedPath = await resolveWavfilePath(wavfile.path, true, resolutionContext);
             if (wavfile._resolvedPath === undefined) {
               rootProtocol._unresolvedFilePathList?.push(wavfile.path);
             }
           }
         } else if (loading.meta.server == ProtocolServer.Developer) {
-          wavfile._resolvedPath = 'public/assets/' + loading.meta.path! + '/' + wavfile.path;
+          wavfile._resolvedPath = await resolveWavfilePath(wavfile.path, false, resolutionContext);
           // The asset path check needs to check a different path than the resolved path, as the resolved path is for Java use.
           if (!(await assetPathExists('assets/' + loading.meta.path! + '/' + wavfile.path))) {
             rootProtocol._unresolvedFilePathList?.push(wavfile.path);
           }
         } else if (loading.meta.contentURI) {
-          wavfile._resolvedPath = await resolveFilePath(loading.meta.contentURI, wavfile.path);
+          wavfile._resolvedPath = await resolveWavfilePath(wavfile.path, false, resolutionContext);
           if (wavfile._resolvedPath === undefined) {
             rootProtocol._unresolvedFilePathList?.push(wavfile.path);
           }
