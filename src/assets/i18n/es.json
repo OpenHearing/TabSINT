@@ -373,6 +373,7 @@
   "Presentation": "Presentación",
   "Retry Audiometry No Button Pressed": "Parece que no pulsaste el botón en absoluto durante la última prueba. Por favor, inténtalo de nuevo y asegúrate de pulsar el botón si escuchas algún sonido.",
   "Retry Audiometry Button Pressed": "Buen trabajo, pero tenemos que repetir esa prueba. Por favor, asegúrate de escuchar con atención.",
+  "Retry Audiometry Button Pressed Hold": "Buen trabajo, pero tenemos que repetir esa prueba. Pulsa y mantén pulsado el botón en cuanto escuches el tono, y suéltalo en cuanto dejes de oírlo. Por favor, asegúrate de escuchar con atención.",
   "Select All": "Seleccionar todo",
   "Svantek Dosimeter": "Svantek Dosimeter",
   "Tap this button when you hear a set of sounds": "Presione este botón cuando escuche una serie de sonidos",

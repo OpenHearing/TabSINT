@@ -1,34 +1,30 @@
 import { Component } from '@angular/core';
 
-import { hughsonWestlakeSchema } from '../../../../../schema/response-areas/hughson-westlake.schema';
-import {
-  HughsonWestlakeResultsInterface,
-  HughsonWestlakeExamPropertiesInterface,
-  HughsonWestlakeResponseAreaInterface,
-} from './hughson-westlake.interface';
+import { bekesyLikeSchema } from '../../../../../schema/response-areas/bekesy-like.schema';
+import { BekesyLikeResultsInterface, BekesyLikeExamPropertiesInterface, BekesyLikeResponseAreaInterface } from './bekesy-like.interface';
 import { isWahtsResultsResponse } from '../../../../guards/type.guard';
 import { AudiometryCombinedDatum } from '../shared/audiometry/audiometry.interface';
+import { TrialPointStyle } from '../shared/trial-progression-plot/trial-progression-plot.interface';
 import { outputChannelToEarChannel } from '../shared/audiometry/audiometry.utility';
 import { AutomatedAudiometryExamComponentBase } from '../shared/audiometry/automated-audiometry-exam.base';
 
-const examSchema = hughsonWestlakeSchema.properties;
-const examPropSchema = hughsonWestlakeSchema.properties.examProperties.properties;
+const examSchema = bekesyLikeSchema.properties;
+const examPropSchema = bekesyLikeSchema.properties.examProperties.properties;
 
 @Component({
-  selector: 'app-hughson-westlake-exam',
-  templateUrl: './hughson-westlake.component.html',
-  styleUrl: './hughson-westlake.component.css',
+  selector: 'app-bekesy-like-exam',
+  templateUrl: './bekesy-like.component.html',
+  styleUrl: './bekesy-like.component.css',
 })
-export class HughsonWestlakeComponent extends AutomatedAudiometryExamComponentBase<
-  HughsonWestlakeResultsInterface,
-  HughsonWestlakeExamPropertiesInterface,
-  HughsonWestlakeResponseAreaInterface
+export class BekesyLikeComponent extends AutomatedAudiometryExamComponentBase<
+  BekesyLikeResultsInterface,
+  BekesyLikeExamPropertiesInterface,
+  BekesyLikeResponseAreaInterface
 > {
-  protected readonly examName = 'HughsonWestlake';
-  protected readonly responseAreaType = 'hughsonWestlakeResponseArea' as const;
-  protected readonly examLabel = 'Hughson-Westlake exam';
-  protected readonly pressMode = 'tap' as const;
-  protected override readonly retryMessageWithPress = 'Retry Audiometry Button Pressed';
+  protected readonly examName = 'BekesyLike';
+  protected readonly responseAreaType = 'bekesyLikeResponseArea' as const;
+  protected readonly examLabel = 'Bekesy Like exam';
+  protected readonly pressMode = 'hold' as const;
 
   // Configuration
   override autoSubmit: boolean = examSchema.autoSubmit.default;
@@ -46,16 +42,11 @@ export class HughsonWestlakeComponent extends AutomatedAudiometryExamComponentBa
     displayLevelProgression: examSchema.plotProperties.properties.displayLevelProgression.default,
   };
 
-  protected examProperties: HughsonWestlakeExamPropertiesInterface = {
-    Screener: examPropSchema.Screener.default,
-    StepSize: examPropSchema.StepSize.default,
-    TonePulseNumber: examPropSchema.TonePulseNumber.default,
-    PollingOffset: examPropSchema.PollingOffset.default,
-    MinISI: examPropSchema.MinISI.default,
-    MaxISI: examPropSchema.MaxISI.default,
-    NumCorrectReq: examPropSchema.NumCorrectReq.default,
-    SemiAutomaticMode: examPropSchema.SemiAutomaticMode.default,
-    UseReducedInitialIncrement: examPropSchema.UseReducedInitialIncrement.default,
+  protected examProperties: BekesyLikeExamPropertiesInterface = {
+    ReversalDiscard: examPropSchema.ReversalDiscard.default,
+    ReversalKeep: examPropSchema.ReversalKeep.default,
+    IncrementStart: examPropSchema.IncrementStart.default,
+    IncrementNominal: examPropSchema.IncrementNominal.default,
 
     // Audiometry Level
     F: examPropSchema.F.default,
@@ -82,75 +73,34 @@ export class HughsonWestlakeComponent extends AutomatedAudiometryExamComponentBa
   };
 
   /**
-   * A converged 'Threshold' result is a success; in screener mode a converged result is remapped
-   * to 'Pass' by postProcessResults before this runs, so both are accepted here.
    * @param results The final results returned by the device.
    */
-  protected isResultSuccessful(results: HughsonWestlakeResultsInterface | undefined): boolean {
-    return results?.ResultType === 'Pass' || results?.ResultType === 'Threshold';
-  }
-
-  /**
-   * When running as a screener (pass/fail at Lstart instead of a full threshold search), remap
-   * the device's raw ResultType to the screener's pass/fail vocabulary: a converged "Threshold"
-   * result means the screener passed, an out-of-range result is unused, and anything else that
-   * failed to converge is a fail.
-   * @param results The results to remap in place.
-   */
-  protected override postProcessResults(results: HughsonWestlakeResultsInterface): void {
-    if (!this.examProperties.Screener) {
-      return;
-    }
-    if (results.ResultType === 'Threshold') {
-      results.ResultType = 'Pass';
-    } else if (results.ResultType === 'Hearing Potentially Outside Measurable Range') {
-      results.ResultType = 'Unused';
-    } else if (results.ResultType === 'Failed to Converge') {
-      results.ResultType = 'Fail';
-    }
-  }
-
-  /**
-   * The combined audiogram has no meaning for a pass/fail screener, which has no threshold to plot.
-   */
-  protected override shouldBuildCombinedAudiogram(): boolean {
-    return !this.examProperties.Screener;
+  protected isResultSuccessful(results: BekesyLikeResultsInterface | undefined): boolean {
+    return results?.ResultType === 'Threshold';
   }
 
   /**
    * Build the data structure consumed by the shared trial-progression plot: one point per
-   * presentation (dB level on the y axis), styled by whether the subject responded and whether
-   * the presentation was one of the responses that confirmed the threshold (2-of-3 at the
-   * threshold level). Level progression plotting should not be shown for a screener exam.
-   *
-   * The CHA firmware only populates `Threshold` when `ResultType` is `'Threshold'` — for any
-   * other result (e.g. "Failed to Converge", out-of-range results) it is left undefined, so that
-   * case is treated as "no confirmed threshold" rather than trusting a stray/undefined value.
+   * presentation (dB level on the y axis), styled by whether the level was pulled down (a hit -
+   * the subject held the button because they heard the tone) or pushed up (a miss) between that
+   * presentation and the next - see classifyLevelDirection.
    * @param results The final results returned by the device.
    */
-  protected buildProgressionPlots(results: HughsonWestlakeResultsInterface): void {
-    if (this.examProperties.Screener || !this.plotProperties.displayLevelProgression || !results.L) {
+  protected buildProgressionPlots(results: BekesyLikeResultsInterface): void {
+    if (!this.plotProperties.displayLevelProgression || !results.L) {
       return;
     }
     const hasThreshold = results.ResultType === 'Threshold' && Number.isFinite(results.Threshold);
-    const pointStyles = results.L.map((level, i) => {
-      const heard = (results.ResponseTime?.[i] ?? 0) > 0;
-      if (hasThreshold && heard && level === results.Threshold) {
-        return 'highlight' as const;
-      }
-      return heard ? ('filled' as const) : ('open' as const);
-    });
     const levelUnits = this.getLevelUnits();
     let title = `Level Progression: ${results.ResultType} (${results.L.length} trials)`;
     if (hasThreshold) {
       title = `Threshold at ${this.round(results.Threshold, 2)} ${levelUnits} (${results.L.length} trials)`;
     }
-    // Scale the y axis to the levels actually presented
     const maxLevel = results.L.length ? Math.max(...results.L) : undefined;
     this.levelProgressionData = {
       y: results.L,
-      pointStyles,
-      pointShape: 'diamond',
+      pointStyles: this.classifyLevelDirection(results.L),
+      pointShape: 'circle',
       connectLine: true,
       maxY: maxLevel === undefined ? 200 : maxLevel + 10,
       referenceLine: hasThreshold ? results.Threshold : undefined,
@@ -161,14 +111,32 @@ export class HughsonWestlakeComponent extends AutomatedAudiometryExamComponentBa
   }
 
   /**
+   * Classify each presentation as a 'filled' hit (the subject held the button, pulling the level
+   * down) or an 'open' miss (the subject released the button, letting the level climb back up).
+   * @param levels The level track (LevelUnits).
+   * @returns One style per presentation ('filled' for a hit, 'open' for a miss), in the same order.
+   */
+  private classifyLevelDirection(levels: number[]): TrialPointStyle[] {
+    if (levels.length < 2) {
+      return levels.map(() => 'filled');
+    }
+    return levels.map((level, i) => {
+      if (i < levels.length - 1) {
+        return levels[i + 1] < level ? 'filled' : 'open';
+      }
+      return level < levels[i - 1] ? 'filled' : 'open';
+    });
+  }
+
+  /**
    * Map one page's frequency/channel configuration and device result into a single combined
    * audiogram datum, or null if that page has no usable frequency/result to plot.
    * @param examProperties The page's configured exam properties.
    * @param results The page's device result.
    */
   protected buildAudiogramDatum(
-    examProperties: HughsonWestlakeExamPropertiesInterface,
-    results: HughsonWestlakeResultsInterface | undefined
+    examProperties: BekesyLikeExamPropertiesInterface,
+    results: BekesyLikeResultsInterface | undefined
   ): AudiometryCombinedDatum | null {
     if (examProperties.F === undefined || !results) {
       return null;
@@ -183,17 +151,17 @@ export class HughsonWestlakeComponent extends AutomatedAudiometryExamComponentBa
   }
 
   /**
-   * Request results from the device and extract the Hughson-Westlake results payload.
+   * Request results from the device and extract the Bekesy Like results payload.
    * @param timeoutMs Optional override for how long to wait for the results response.
    * @returns The results, or undefined if the response was not usable.
    */
-  protected async requestExamResults(timeoutMs?: number): Promise<HughsonWestlakeResultsInterface | undefined> {
+  protected async requestExamResults(timeoutMs?: number): Promise<BekesyLikeResultsInterface | undefined> {
     if (!this.device) {
       return undefined;
     }
     const resp = await this.devicesService.requestResults(this.device, timeoutMs);
     if (resp?.msg && isWahtsResultsResponse(resp)) {
-      const results = resp.msg[1] as HughsonWestlakeResultsInterface;
+      const results = resp.msg[1] as BekesyLikeResultsInterface;
       this.logger.debug(`${this.examLabel}: requestResults Threshold=${results.Threshold}, ResultType=${results.ResultType}`);
       return results;
     }

@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnInit, Input, SimpleChanges, OnChanges, inject } from '@angular/core';
 import * as d3 from 'd3';
-import { AudiogramDatumNoNullInterface, AudiometryResultsInterface } from '../../../../../interfaces/audiometry-results.interface';
+import { AudiogramDatumNoNullInterface, AudiometryResultsInterface, EarChannel } from '../../../../../interfaces/audiometry-results.interface';
 import { LevelUnits, ResultType } from '../../../../../utilities/constants';
 
 // See https://www.asha.org/policy/GL1990-00006/ for audiogram specifications
@@ -14,8 +14,6 @@ export class AudiogramComponent implements OnInit, OnChanges {
   dataStruct!: AudiometryResultsInterface;
 
   @Input() selectedEar: string | null = null;
-
-  @Input() earChannel: 'left' | 'right' = 'left';
 
   @Input() isManualExam: boolean = false;
 
@@ -34,6 +32,44 @@ export class AudiogramComponent implements OnInit, OnChanges {
     if (changes['selectedEar']) {
       this.updateGraphBorders();
     }
+  }
+
+  /**
+   * Color for a channel's symbols/lines.
+   */
+  channelColor(channel: EarChannel): string {
+    switch (channel) {
+      case EarChannel.Right:
+      case EarChannel.BoneRight:
+        return '#FF6347';
+      case EarChannel.Left:
+      case EarChannel.BoneLeft:
+        return 'blue';
+      default:
+        return 'black';
+    }
+  }
+
+  /**
+   * Draw a straight tail from (x, y) in the given direction, ending in a symmetric two-barb
+   * arrowhead centered on the tail's own axis.
+   */
+  arrowTail(x: number, y: number, angleDeg: number): string {
+    const tailLength = 10;
+    const headLength = 7;
+    const headSpreadDeg = 35;
+
+    const angle = (angleDeg * Math.PI) / 180;
+    const tipX = x + tailLength * Math.cos(angle);
+    const tipY = y + tailLength * Math.sin(angle);
+
+    const backAngle = angle + Math.PI;
+    const barb = (spreadDeg: number) => {
+      const barbAngle = backAngle + (spreadDeg * Math.PI) / 180;
+      return `${tipX + headLength * Math.cos(barbAngle)},${tipY + headLength * Math.sin(barbAngle)}`;
+    };
+
+    return `M ${x},${y} L ${tipX},${tipY} M ${tipX},${tipY} L ${barb(-headSpreadDeg)} M ${tipX},${tipY} L ${barb(headSpreadDeg)}`;
   }
 
   updateGraphBorders(): void {
@@ -89,7 +125,6 @@ export class AudiogramComponent implements OnInit, OnChanges {
     }
     const width = baseWidth - margin.left - margin.right;
     const height = width * aspectRatio - 20;
-    const graphBorderColor = this.dataStruct.channels[0] === 'left' ? 'blue' : 'red';
     const xScale = d3.scaleLog().base(2).range([0, width]).domain([93.75, 24000]);
     const yScale = d3
       .scaleLinear()
@@ -100,37 +135,63 @@ export class AudiogramComponent implements OnInit, OnChanges {
     const xAxisMinor = d3.axisTop(xScale).tickFormat(d3.format(',.0f')).tickValues(xTicksMinor).tickSize(3);
     const yAxis = d3.axisLeft(yScale).tickValues(yTicks).tickSize(10);
 
-    const colorMap = (d: any) => (d.channel.includes('left') ? 'blue' : '#FF6347');
+    const colorMap = (d: any) => this.channelColor(d.channel);
     const strokeWidthMap = () => 2;
-    // M -10,12 L -8,7
+
+    // Base symbol shapes per ASHA audiogram convention, centered at the origin.
+    const baseSymbol = (channel: EarChannel, masking: boolean): string => {
+      switch (channel) {
+        case EarChannel.Left:
+          return masking
+            ? 'M -5,-5 L 5,-5 L 5,5 L -5,5 Z' // masked AC left: square
+            : 'M -4,-4 L 4,4 M -4,4 L 4,-4'; // unmasked AC left: X
+        case EarChannel.Right:
+          return masking
+            ? 'M -5,5 L 5,5 L 0,-5 Z' // masked AC right: triangle, apex up
+            : (d3.symbol().type(d3.symbolCircle).size(50)() ?? ''); // unmasked AC right: circle
+        case EarChannel.BoneLeft:
+          return masking
+            ? 'M 0,-5 L -5,-5 L -5,5 L 0,5' // masked BC left: '[' bracket
+            : 'M 4,-5 L -4,0 L 4,5'; // unmasked BC left: '<'
+        case EarChannel.BoneRight:
+          return masking
+            ? 'M 0,-5 L 5,-5 L 5,5 L 0,5' // masked BC right: ']' bracket
+            : 'M -4,-5 L 4,0 L -4,5'; // unmasked BC right: '>'
+        case EarChannel.Mono:
+        default:
+          return 'M 0,-5 L 5,0 L 0,5 L -5,0 Z'; // Diamond shape
+      }
+    };
+
+    // "Beyond" points get the base symbol plus an arrowhead tail pointing away from its lowest point
+    const SOUTHEAST = 45;
+    const SOUTHWEST = 135;
+    const SOUTH = 90;
+
     const symbolMap = (d: any): string => {
-      if (d.resultType === ResultType.Beyond) {
-        if (d.channel === 'left') {
-          // X with a proper southeast arrowhead
-          return `
-           M -4,-4 L 4,9
-           M -4,4 L 4, -4
-           M 4,9 L 6,4
-           M 4,9 L -2,8
-          `;
-        } else if (d.channel === 'right') {
-          // Circle with a proper southwest arrowhead
-          return `
-            M 0,-5 A 5,5 0 1,0 0,5 A 5,5 0 1,0 0,-5
-            M 0,5 L -10,12
-            M -10,12 L -8,7
-            M -10,12 L -2,11
-          `;
-        }
-      } else {
-        // Default symbols for Threshold points
-        if (d.channel === 'left') {
-          return 'M -4,-4 L 4,4 M -4,4 L 4,-4'; // X Shape
-        }
-        return d3.symbol().type(d3.symbolCircle).size(50)() ?? '';
+      const base = baseSymbol(d.channel, d.masking);
+      if (d.resultType !== ResultType.Beyond) {
+        return base;
       }
 
-      return ''; // Return an empty string as a fallback
+      switch (d.channel) {
+        case EarChannel.Left:
+          // Square or X: tail from the bottom-right corner/tip, continuing southeast
+          return `${base} ${this.arrowTail(d.masking ? 5 : 4, d.masking ? 5 : 4, SOUTHEAST)}`;
+        case EarChannel.BoneLeft:
+          // '[' or '<': tail from the bottom-right corner/tip, continuing southeast
+          return `${base} ${this.arrowTail(d.masking ? 0 : 4, 5, SOUTHEAST)}`;
+        case EarChannel.Right:
+          // Triangle or circle: tail from the bottom of the shape, continuing southwest
+          return `${base} ${this.arrowTail(0, d.masking ? 5 : 4, SOUTHWEST)}`;
+        case EarChannel.BoneRight:
+          // ']' or '>': tail from the bottom-left corner/tip, continuing southwest
+          return `${base} ${this.arrowTail(d.masking ? 0 : -4, 5, SOUTHWEST)}`;
+        case EarChannel.Mono:
+        default:
+          // Diamond: tail from the bottom vertex, continuing straight down
+          return `${base} ${this.arrowTail(0, 5, SOUTH)}`;
+      }
     };
 
     // Chart Area
@@ -199,7 +260,6 @@ export class AudiogramComponent implements OnInit, OnChanges {
       .attr('height', height)
       .attr('width', width)
       .attr('class', 'graph-border')
-      .style('stroke', graphBorderColor) // Use the color you defined earlier
       .style('fill', 'none')
       .style('stroke-width', '1px');
 

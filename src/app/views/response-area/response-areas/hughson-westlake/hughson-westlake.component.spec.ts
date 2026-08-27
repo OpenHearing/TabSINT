@@ -83,7 +83,7 @@ describe('HughsonWestlakeComponent', () => {
   });
 
   it('starts on the landing state and does not auto-begin the exam', () => {
-    expect(component.hwState).toBe('start');
+    expect(component.state).toBe('start');
     expect(devicesService.queueExam).not.toHaveBeenCalled();
   });
 
@@ -93,7 +93,7 @@ describe('HughsonWestlakeComponent', () => {
     await component.beginExam();
 
     expect(devicesService.queueExam).toHaveBeenCalledWith(mockDevice, 'HughsonWestlake', jasmine.any(Object));
-    expect(component.hwState).toBe('exam');
+    expect(component.state).toBe('exam');
   });
 
   it('does not queue an exam when no device is available', async () => {
@@ -122,7 +122,7 @@ describe('HughsonWestlakeComponent', () => {
     fixture.detectChanges();
 
     expect(devicesService.queueExam).toHaveBeenCalledWith(mockDevice, 'HughsonWestlake', jasmine.any(Object));
-    expect(component.hwState).toBe('exam');
+    expect(component.state).toBe('exam');
     component.ngOnDestroy();
   }));
 
@@ -192,7 +192,7 @@ describe('HughsonWestlakeComponent', () => {
     fixture.detectChanges();
 
     expect(devicesService.stopMaskingNoise).toHaveBeenCalledWith(mockDevice);
-    expect(component.hwState).not.toBe('exam');
+    expect(component.state).not.toBe('exam');
     component.ngOnDestroy();
   }));
 
@@ -217,9 +217,11 @@ describe('HughsonWestlakeComponent', () => {
       Units: 0,
       ResultType: 'Threshold',
     };
+    component.plotProperties.displayLevelProgression = true;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const data = (component as any).createLevelProgressionData(results);
+    (component as any).buildProgressionPlots(results);
+    const data = component.levelProgressionData!;
 
     expect(data.pointStyles).toEqual(['filled', 'filled', 'open', 'highlight', 'highlight']);
     expect(data.referenceLine).toBe(30);
@@ -242,9 +244,11 @@ describe('HughsonWestlakeComponent', () => {
       Units: 0,
       ResultType: 'Failed to Converge',
     };
+    component.plotProperties.displayLevelProgression = true;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const data = (component as any).createLevelProgressionData(results);
+    (component as any).buildProgressionPlots(results);
+    const data = component.levelProgressionData!;
 
     expect(data.pointStyles).toEqual(['filled', 'filled', 'filled', 'filled', 'open']);
     expect(data.referenceLine).toBeUndefined();
@@ -260,11 +264,11 @@ describe('HughsonWestlakeComponent', () => {
     const unusedResults = { ResultType: 'Hearing Potentially Outside Measurable Range' } as HughsonWestlakeResultsInterface;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).applyScreenerResultType(passResults);
+    (component as any).postProcessResults(passResults);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).applyScreenerResultType(failResults);
+    (component as any).postProcessResults(failResults);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).applyScreenerResultType(unusedResults);
+    (component as any).postProcessResults(unusedResults);
 
     expect(passResults.ResultType).toBe('Pass');
     expect(failResults.ResultType).toBe('Fail');
@@ -275,8 +279,60 @@ describe('HughsonWestlakeComponent', () => {
     const results = { ResultType: 'Threshold' } as HughsonWestlakeResultsInterface;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).applyScreenerResultType(results);
+    (component as any).postProcessResults(results);
 
     expect(results.ResultType).toBe('Threshold');
   });
+
+  it('shows the device response (threshold only, rounded) as text once results are available', fakeAsync(() => {
+    const pageModel = TestBed.inject(PageModel);
+    devicesService.requestResults.and.resolveTo({
+      deviceId: mockDevice.deviceId,
+      msg: ['Result', { Threshold: 30.789, ResultType: 'Threshold' }],
+    });
+
+    pageModel.updatePage({
+      ...pageInterfaceDefaults,
+      id: 'hw',
+      responseArea: { type: 'hughsonWestlakeResponseArea', autoBegin: true, examProperties: { F: 1000, LevelUnits: 'dB HL' } } as ResponseArea,
+    });
+    tick();
+    fixture.detectChanges();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (component as any).fetchAndFinishExam();
+    tick();
+    fixture.detectChanges();
+
+    const responseText: string = fixture.nativeElement.querySelector('.hw-response')?.textContent ?? '';
+    expect(responseText).not.toContain('1000');
+    expect(responseText).toContain('30.79');
+    component.ngOnDestroy();
+  }));
+
+  it('shows "Test Unsuccessful" with the ResultType when the result does not converge', fakeAsync(() => {
+    const pageModel = TestBed.inject(PageModel);
+    devicesService.requestResults.and.resolveTo({
+      deviceId: mockDevice.deviceId,
+      msg: ['Result', { Threshold: NaN, ResultType: 'Failed to Converge' }],
+    });
+
+    pageModel.updatePage({
+      ...pageInterfaceDefaults,
+      id: 'hw',
+      responseArea: { type: 'hughsonWestlakeResponseArea', autoBegin: true, examProperties: { F: 1000, LevelUnits: 'dB HL' } } as ResponseArea,
+    });
+    tick();
+    fixture.detectChanges();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (component as any).fetchAndFinishExam();
+    tick();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.hw-response')).toBeNull();
+    expect(fixture.nativeElement.textContent).toContain('Test Unsuccessful');
+    expect(fixture.nativeElement.textContent).toContain('Failed to Converge');
+    component.ngOnDestroy();
+  }));
 });

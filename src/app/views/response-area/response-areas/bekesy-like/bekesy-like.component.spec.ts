@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testin
 import { FormsModule } from '@angular/forms';
 import { TranslocoTestingModule } from '@jsverse/transloco';
 
-import { BhaftComponent } from './bhaft.component';
+import { BekesyLikeComponent } from './bekesy-like.component';
 import { PageModel } from '../../../../models/page/page.service';
 import { ResultsModel } from '../../../../models/results/results-model.service';
 import { StateModel } from '../../../../models/state/state.service';
@@ -12,16 +12,16 @@ import { DevicesService } from '../../../../services/devices/devices.service';
 import { DeviceStatus, DeviceType } from '../../../../utilities/constants';
 import { IDevice } from '../../../../interfaces/devices/device.interface';
 import { pageInterfaceDefaults } from '../../../../utilities/defaults';
-import { BhaftResultsInterface } from './bhaft.interface';
+import { BekesyLikeResultsInterface } from './bekesy-like.interface';
 import { ResponseArea } from '../../../../interfaces/page-definition.interface';
 import { SoftwareButtonComponent } from '../shared/audiometry/software-button/software-button.component';
 import { AudiometryPropertiesComponent } from '../shared/audiometry/audiometry-properties/audiometry-properties.component';
 import { InputParametersComponent } from '../shared/input-parameters/input-parameters.component';
 import { TrialProgressionPlotComponent } from '../shared/trial-progression-plot/trial-progression-plot.component';
 
-describe('BhaftComponent', () => {
-  let component: BhaftComponent;
-  let fixture: ComponentFixture<BhaftComponent>;
+describe('BekesyLikeComponent', () => {
+  let component: BekesyLikeComponent;
+  let fixture: ComponentFixture<BekesyLikeComponent>;
   let devicesService: jasmine.SpyObj<DevicesService>;
   let examService: jasmine.SpyObj<ExamService>;
 
@@ -47,7 +47,7 @@ describe('BhaftComponent', () => {
     devicesService.queueExam.and.resolveTo(undefined);
     devicesService.requestResults.and.resolveTo({
       deviceId: mockDevice.deviceId,
-      msg: ['Result', { ThresholdFrequency: 8000, ThresholdLevel: 65, F: [8000], L: [80], ResultType: 'Threshold' }],
+      msg: ['Result', { RetSPL: 10, L: [40, 44, 40, 36], MaximumExcursion: 8, Slope: -0.06, Threshold: 40, Units: 1, ResultType: 'Threshold' }],
     });
     devicesService.requestStatus.and.resolveTo({ deviceId: mockDevice.deviceId, msg: ['Status', { state: 1 }] });
     devicesService.setSoftwareButtonState.and.resolveTo(undefined);
@@ -63,7 +63,13 @@ describe('BhaftComponent', () => {
     ]);
 
     await TestBed.configureTestingModule({
-      declarations: [BhaftComponent, SoftwareButtonComponent, AudiometryPropertiesComponent, InputParametersComponent, TrialProgressionPlotComponent],
+      declarations: [
+        BekesyLikeComponent,
+        SoftwareButtonComponent,
+        AudiometryPropertiesComponent,
+        InputParametersComponent,
+        TrialProgressionPlotComponent,
+      ],
       imports: [
         FormsModule,
         TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
@@ -78,7 +84,7 @@ describe('BhaftComponent', () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(BhaftComponent);
+    fixture = TestBed.createComponent(BekesyLikeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -96,12 +102,12 @@ describe('BhaftComponent', () => {
     expect(devicesService.queueExam).not.toHaveBeenCalled();
   });
 
-  it('queues a BHAFT exam on the device when Begin is pressed', async () => {
+  it('queues a BekesyLike exam on the device when Begin is pressed', async () => {
     component.device = mockDevice;
 
     await component.beginExam();
 
-    expect(devicesService.queueExam).toHaveBeenCalledWith(mockDevice, 'BHAFT', jasmine.any(Object));
+    expect(devicesService.queueExam).toHaveBeenCalledWith(mockDevice, 'BekesyLike', jasmine.any(Object));
     expect(component.state).toBe('exam');
   });
 
@@ -124,13 +130,13 @@ describe('BhaftComponent', () => {
 
     pageModel.updatePage({
       ...pageInterfaceDefaults,
-      id: 'bhaft',
-      responseArea: { type: 'bhaftResponseArea', autoBegin: true },
+      id: 'bekesy-like',
+      responseArea: { type: 'bekesyLikeResponseArea', autoBegin: true },
     });
     tick();
     fixture.detectChanges();
 
-    expect(devicesService.queueExam).toHaveBeenCalledWith(mockDevice, 'BHAFT', jasmine.any(Object));
+    expect(devicesService.queueExam).toHaveBeenCalledWith(mockDevice, 'BekesyLike', jasmine.any(Object));
     expect(component.state).toBe('exam');
     component.ngOnDestroy();
   }));
@@ -140,9 +146,9 @@ describe('BhaftComponent', () => {
 
     pageModel.updatePage({
       ...pageInterfaceDefaults,
-      id: 'bhaft',
+      id: 'bekesy-like',
       responseArea: {
-        type: 'bhaftResponseArea',
+        type: 'bekesyLikeResponseArea',
         resultMainText: 'Custom main text',
         resultSubText: 'Custom sub text',
       },
@@ -160,9 +166,9 @@ describe('BhaftComponent', () => {
 
     pageModel.updatePage({
       ...pageInterfaceDefaults,
-      id: 'bhaft',
+      id: 'bekesy-like',
       responseArea: {
-        type: 'bhaftResponseArea',
+        type: 'bekesyLikeResponseArea',
         maskingNoise: { Type: 'White', Level: [30, 30] },
       } as ResponseArea,
     });
@@ -185,9 +191,9 @@ describe('BhaftComponent', () => {
 
     pageModel.updatePage({
       ...pageInterfaceDefaults,
-      id: 'bhaft',
+      id: 'bekesy-like',
       responseArea: {
-        type: 'bhaftResponseArea',
+        type: 'bekesyLikeResponseArea',
         maskingNoise: { Type: 'White', Level: [30, 30] },
       } as ResponseArea,
     });
@@ -215,7 +221,7 @@ describe('BhaftComponent', () => {
     expect(devicesService.stopMaskingNoise).not.toHaveBeenCalled();
   });
 
-  it("forwards a press to the device and does not auto-release (hold mode, unlike Hughson-Westlake's tap)", async () => {
+  it('forwards a press to the device and does not auto-release (hold mode)', async () => {
     component.device = mockDevice;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (component as any).examActive = true;
@@ -236,83 +242,72 @@ describe('BhaftComponent', () => {
     expect(devicesService.setSoftwareButtonState).toHaveBeenCalledWith(mockDevice, 0);
   });
 
-  it('computes frequency-progression point styles: filled for a hit, open for a miss, with a reference line at the confirmed threshold', () => {
-    const results: BhaftResultsInterface = {
-      ThresholdFrequency: 11000,
-      ThresholdLevel: 65,
-      F: [8000, 9000, 11000, 10000, 9500, 11000],
-      L: [80, 80, 80, 80, 80, 80],
+  it('classifyLevelDirection: a level decrease into the next presentation is a hit (filled), an increase is a miss (open)', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const classify = (levels: number[]) => (component as any).classifyLevelDirection(levels);
+
+    expect(classify([40, 38, 35, 37, 39, 36])).toEqual(['filled', 'filled', 'open', 'open', 'filled', 'filled']);
+    expect(classify([40, 44])).toEqual(['open', 'open']);
+    expect(classify([40])).toEqual(['filled']);
+    expect(classify([])).toEqual([]);
+  });
+
+  it('computes level-progression point styles and a reference line at the confirmed threshold', () => {
+    const results: BekesyLikeResultsInterface = {
+      RetSPL: 10,
+      L: [40, 44, 40, 36, 40, 36],
+      MaximumExcursion: 8,
+      Slope: -0.06,
+      Threshold: 38.456,
+      Units: 1,
       ResultType: 'Threshold',
     };
-    component.plotProperties.displayFrequencyProgression = true;
+    component.plotProperties.displayLevelProgression = true;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (component as any).buildProgressionPlots(results);
-    const data = component.frequencyProgressionData!;
+    const data = component.levelProgressionData!;
 
-    expect(data.pointStyles).toEqual(['filled', 'filled', 'open', 'open', 'filled', 'filled']);
-    expect(data.referenceLine).toBe(11000);
-    expect(data.referenceLineColor).toBe('#FF0000');
+    expect(data.pointStyles).toEqual(['open', 'filled', 'filled', 'open', 'filled', 'filled']);
+    expect(data.pointShape).toBe('circle');
+    expect(data.referenceLine).toBe(38.456);
     expect(data.connectLine).toBe(true);
-    expect(data.y).toEqual(results.F);
+    expect(data.y).toEqual(results.L);
     expect(data.xLabel).toBe('Presentation');
-    expect(data.yLabel).toBe('Hz');
-    expect(data.title).toBe('Frequency Threshold at 11000 Hz (6 trials)');
+    expect(data.title).toContain('Threshold at 38.46');
   });
 
-  it('falls back to the result type, with no reference line, when frequency did not converge', () => {
-    const results: BhaftResultsInterface = {
-      ThresholdFrequency: NaN,
-      ThresholdLevel: NaN,
-      F: [8000, 9000, 10000, 11000, 12000],
-      L: [80, 80, 80, 80, 80],
-      ResultType: 'Failed to Converge',
+  it('falls back to the result type, with no reference line, when the exam did not converge', () => {
+    const results: BekesyLikeResultsInterface = {
+      RetSPL: 10,
+      L: [40, 44, 48, 52],
+      MaximumExcursion: 8,
+      Slope: 0.1,
+      Threshold: NaN,
+      Units: 1,
+      ResultType: 'Hearing Potentially Better than Calibrated Range',
     };
-    component.plotProperties.displayFrequencyProgression = true;
+    component.plotProperties.displayLevelProgression = true;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (component as any).buildProgressionPlots(results);
-    const data = component.frequencyProgressionData!;
+    const data = component.levelProgressionData!;
 
     expect(data.referenceLine).toBeUndefined();
-    expect(data.title).toBe('Frequency Progression: Failed to Converge (5 trials)');
-  });
-
-  it('classifyHitOrMiss: FLFT phase (frequency varying) — filled for a hit (frequency rises), open for a miss (frequency falls)', () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const classify = (frequencies: number[], levels: number[]) => (component as any).classifyHitOrMiss(frequencies, levels);
-    const flatLevels = [0, 0, 0, 0, 0, 0]; // irrelevant while frequency is doing the moving
-
-    expect(classify([10, 12, 15, 13, 11, 14], flatLevels)).toEqual(['filled', 'filled', 'open', 'open', 'filled', 'filled']);
-    expect(classify([10, 5], [0, 0])).toEqual(['open', 'open']);
-    expect(classify([5], [0])).toEqual(['filled']);
-    expect(classify([], [])).toEqual([]);
-  });
-
-  it('classifyHitOrMiss: falls back to level once frequency hits the ceiling and holds flat (FFLT phase) — filled for a hit (level falls), open for a miss (level rises)', () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const classify = (frequencies: number[], levels: number[]) => (component as any).classifyHitOrMiss(frequencies, levels);
-
-    // Presentations 0-1: FLFT, frequency climbing on hits. Presentation 2 hits the ceiling
-    // (10000) and stays there for the rest — from here, level is what's actually moving: it falls
-    // on the two hits (indices 2 and 4) and rises on the one miss (index 3).
-    const frequencies = [8000, 9000, 10000, 10000, 10000, 10000];
-    const levels = [80, 80, 80, 75, 80, 78];
-
-    expect(classify(frequencies, levels)).toEqual(['filled', 'filled', 'filled', 'open', 'filled', 'filled']);
+    expect(data.title).toBe('Level Progression: Hearing Potentially Better than Calibrated Range (4 trials)');
   });
 
   it('repeats the exam on the first failure to converge when repeatIfFailedOnce is set', fakeAsync(() => {
     const pageModel = TestBed.inject(PageModel);
     devicesService.requestResults.and.resolveTo({
       deviceId: mockDevice.deviceId,
-      msg: ['Result', { ThresholdFrequency: NaN, ThresholdLevel: NaN, F: [], L: [], ResultType: 'Failed to Converge' }],
+      msg: ['Result', { RetSPL: NaN, L: [], MaximumExcursion: NaN, Slope: NaN, Threshold: NaN, Units: 1, ResultType: 'Failed to Converge' }],
     });
 
     pageModel.updatePage({
       ...pageInterfaceDefaults,
-      id: 'bhaft',
-      responseArea: { type: 'bhaftResponseArea', autoBegin: true, repeatIfFailedOnce: true },
+      id: 'bekesy-like',
+      responseArea: { type: 'bekesyLikeResponseArea', autoBegin: true, repeatIfFailedOnce: true },
     });
     tick();
     fixture.detectChanges();
@@ -331,13 +326,13 @@ describe('BhaftComponent', () => {
     const pageModel = TestBed.inject(PageModel);
     devicesService.requestResults.and.resolveTo({
       deviceId: mockDevice.deviceId,
-      msg: ['Result', { ThresholdFrequency: NaN, ThresholdLevel: NaN, F: [], L: [], ResultType: 'Failed to Converge' }],
+      msg: ['Result', { RetSPL: NaN, L: [], MaximumExcursion: NaN, Slope: NaN, Threshold: NaN, Units: 1, ResultType: 'Failed to Converge' }],
     });
 
     pageModel.updatePage({
       ...pageInterfaceDefaults,
-      id: 'bhaft',
-      responseArea: { type: 'bhaftResponseArea', autoBegin: true, repeatIfFailedOnce: true, getNotesIfFailedTwice: true },
+      id: 'bekesy-like',
+      responseArea: { type: 'bekesyLikeResponseArea', autoBegin: true, repeatIfFailedOnce: true, getNotesIfFailedTwice: true },
     });
     tick();
     fixture.detectChanges();
@@ -359,9 +354,9 @@ describe('BhaftComponent', () => {
 
     pageModel.updatePage({
       ...pageInterfaceDefaults,
-      id: 'bhaft',
+      id: 'bekesy-like',
       responseArea: {
-        type: 'bhaftResponseArea',
+        type: 'bekesyLikeResponseArea',
         autoBegin: true,
         showMessageIfNoResponse: true,
         examProperties: { UseSoftwareButton: true },
@@ -380,17 +375,21 @@ describe('BhaftComponent', () => {
     component.ngOnDestroy();
   }));
 
-  it('shows the device response (frequency/threshold) as visible text once results are available', fakeAsync(() => {
+  it('shows the device response (threshold only, rounded) as text, while the stored results keep full precision', fakeAsync(() => {
     const pageModel = TestBed.inject(PageModel);
     devicesService.requestResults.and.resolveTo({
       deviceId: mockDevice.deviceId,
-      msg: ['Result', { ThresholdFrequency: 9500, ThresholdLevel: 72, F: [8000, 9500], L: [80, 72], ResultType: 'Threshold' }],
+      msg: ['Result', { RetSPL: 10, L: [40, 36], MaximumExcursion: 4, Slope: -0.05, Threshold: 39.567, Units: 1, ResultType: 'Threshold' }],
     });
 
     pageModel.updatePage({
       ...pageInterfaceDefaults,
-      id: 'bhaft',
-      responseArea: { type: 'bhaftResponseArea', autoBegin: true },
+      id: 'bekesy-like',
+      responseArea: {
+        type: 'bekesyLikeResponseArea',
+        autoBegin: true,
+        examProperties: { F: 1000, LevelUnits: 'dB HL' },
+      } as ResponseArea,
     });
     tick();
     fixture.detectChanges();
@@ -400,9 +399,10 @@ describe('BhaftComponent', () => {
     tick();
     fixture.detectChanges();
 
-    const responseText: string = fixture.nativeElement.querySelector('.bhaft-response')?.textContent ?? '';
-    expect(responseText).toContain('9500');
-    expect(responseText).toContain('72');
+    const responseText: string = fixture.nativeElement.querySelector('.bekesy-like-response')?.textContent ?? '';
+    expect(responseText).not.toContain('1000');
+    expect(responseText).toContain('39.57');
+    expect(component.results?.Threshold).toBe(39.567);
     component.ngOnDestroy();
   }));
 
@@ -410,13 +410,20 @@ describe('BhaftComponent', () => {
     const pageModel = TestBed.inject(PageModel);
     devicesService.requestResults.and.resolveTo({
       deviceId: mockDevice.deviceId,
-      msg: ['Result', { ThresholdFrequency: NaN, ThresholdLevel: NaN, F: [8000, 9500], L: [80, 72], ResultType: 'Failed to Converge' }],
+      msg: [
+        'Result',
+        { RetSPL: NaN, L: [40, 44, 48, 52, 56], MaximumExcursion: NaN, Slope: NaN, Threshold: NaN, Units: 1, ResultType: 'Failed to Converge' },
+      ],
     });
 
     pageModel.updatePage({
       ...pageInterfaceDefaults,
-      id: 'bhaft',
-      responseArea: { type: 'bhaftResponseArea', autoBegin: true },
+      id: 'bekesy-like',
+      responseArea: {
+        type: 'bekesyLikeResponseArea',
+        autoBegin: true,
+        examProperties: { F: 1000, LevelUnits: 'dB HL' },
+      } as ResponseArea,
     });
     tick();
     fixture.detectChanges();
@@ -426,7 +433,7 @@ describe('BhaftComponent', () => {
     tick();
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.querySelector('.bhaft-response')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.bekesy-like-response')).toBeNull();
     expect(fixture.nativeElement.textContent).toContain('Test Unsuccessful');
     expect(fixture.nativeElement.textContent).toContain('Failed to Converge');
     component.ngOnDestroy();

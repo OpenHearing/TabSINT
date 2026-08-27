@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslocoTestingModule } from '@jsverse/transloco';
 import { BekesyComponent } from './bekesy.component';
+import { SoftwareButtonComponent } from '../shared/audiometry/software-button/software-button.component';
 import { PageModel } from '../../../../models/page/page.service';
 import { ResultsModel } from '../../../../models/results/results-model.service';
 import { StateModel } from '../../../../models/state/state.service';
@@ -14,7 +15,7 @@ describe('BekesyComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [BekesyComponent],
+      declarations: [BekesyComponent, SoftwareButtonComponent],
       imports: [
         TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
       ],

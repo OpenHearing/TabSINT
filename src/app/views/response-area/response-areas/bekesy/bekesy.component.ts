@@ -34,7 +34,6 @@ export class BekesyComponent implements OnInit, OnDestroy {
 
   private readonly bekesyResponse: BekesyResultsInterface[] = [];
   private readonly bekesyRefreshInterval = 25;
-  buttonPressed: boolean = false;
   buttonText: string = bekesyResponseAreaSchema.properties.buttonText.default;
 
   bekesyResponseParameter: BekesyRequirements = {
@@ -293,9 +292,6 @@ export class BekesyComponent implements OnInit, OnDestroy {
       this.bekesyStepSize = this.bekesyResponseParameter.levelRate * (this.bekesyRefreshInterval / 1000);
     }
 
-    this.buttonPressed = true;
-    this.buttonText = this.bekesyResponseParameter.buttonPressedText;
-
     this.bekesyDirection *= -1;
     this.reversals++;
 
@@ -303,18 +299,9 @@ export class BekesyComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Update exam properties when a user moves on a button.
-   */
-  touchmoveFun() {
-    this.buttonPressed = true;
-    this.buttonText = this.bekesyResponseParameter.buttonPressedText;
-  }
-
-  /**
    * Update exam properties when a user ends interaction on a button.
    */
   touchendFun() {
-    this.buttonPressed = false;
     this.buttonText = this.bekesyResponseParameter.buttonReleasedText;
 
     this.bekesyDirection *= -1;
