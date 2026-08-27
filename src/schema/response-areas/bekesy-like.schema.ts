@@ -28,12 +28,6 @@ export const bekesyLikeSchema: JSONSchemaType<BekesyLikeResponseAreaInterface> =
       default: false,
       description: "Go straight into the exam, without having to press the 'Begin' button.",
     },
-    exportToCSV: {
-      type: 'boolean',
-      nullable: true,
-      default: false,
-      description: 'Whether result should be exported to CSV upon submitting exam results.',
-    },
     examInstructions: {
       type: 'string',
       nullable: true,

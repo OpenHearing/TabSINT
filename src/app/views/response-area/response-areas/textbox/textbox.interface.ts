@@ -2,5 +2,4 @@ import { CommonResponseAreaInterface } from '../../../../interfaces/page-definit
 
 export interface TextBoxInterface extends CommonResponseAreaInterface {
   rows: number;
-  exportToCSV?: boolean;
 }

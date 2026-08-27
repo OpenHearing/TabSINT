@@ -19,7 +19,6 @@ export interface BekesyLikeResponseAreaInterface extends AudiometryResponseArea 
   tabsintId?: string;
   autoSubmit?: boolean;
   autoBegin?: boolean;
-  exportToCSV?: boolean;
   examInstructions?: string;
   resultMainText?: string;
   resultSubText?: string;

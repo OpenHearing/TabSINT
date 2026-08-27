@@ -17,7 +17,6 @@ export interface MpanlResponseAreaInterface extends CommonResponseAreaInterface 
   F?: number[];
   MPANL?: number[];
   attenuation?: number[];
-  exportToCSV?: boolean;
 }
 
 /**

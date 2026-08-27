@@ -2,7 +2,6 @@ import { PageDefinition } from '../../interfaces/page-definition.interface';
 
 export interface PageInterface extends PageDefinition {
   _uuid: string;
-  exportToCSV?: boolean;
   name?: string;
   filename?: string;
   units?: string;

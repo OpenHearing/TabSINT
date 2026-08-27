@@ -50,12 +50,6 @@ export const threeDigitSchema: JSONSchemaType<ThreeDigitResponseAreaInterface> =
       nullable: true,
       description: 'Replaces the top-level instruction text on the CHA exam pages (each page after starting page)',
     },
-    exportToCSV: {
-      type: 'boolean',
-      nullable: true,
-      default: false,
-      description: 'Whether result should be exported to CSV upon submitting exam results.',
-    },
     examProperties: {
       type: 'object',
       nullable: true,

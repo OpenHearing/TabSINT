@@ -2,5 +2,4 @@ import { CommonResponseAreaInterface } from '../../../../interfaces/page-definit
 
 export interface SubjectIdInterface extends CommonResponseAreaInterface {
   generate: boolean;
-  exportToCSV?: boolean;
 }

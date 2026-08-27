@@ -9,7 +9,6 @@ export const calibrationExamSchema: JSONSchemaType<CalibrationExamInterface> = {
     responseRequired: { type: 'boolean', nullable: true, default: false },
     type: { type: 'string', enum: ['calibrationResponseArea'] },
     tabsintId: { type: 'string', nullable: true },
-    exportToCSV: { type: 'boolean', nullable: true, default: false },
     frequencies: {
       type: 'array',
       items: { type: 'number' },

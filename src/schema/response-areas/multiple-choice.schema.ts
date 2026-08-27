@@ -13,7 +13,6 @@ export const multipleChoiceSchema: JSONSchemaType<MultipleChoiceInterface> = {
     verticalSpacing: { type: 'number', nullable: true, default: 1 },
     delayEnable: { type: 'number', nullable: true, default: 0 },
     feedback: { type: 'string', enum: ['gradeResponse', 'showCorrect'], nullable: true },
-    exportToCSV: { type: 'boolean', nullable: true, default: false },
   },
   required: ['type'],
 };

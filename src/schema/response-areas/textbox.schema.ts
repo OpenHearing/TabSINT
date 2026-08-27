@@ -9,7 +9,6 @@ export const textBoxSchema: JSONSchemaType<TextBoxInterface> = {
     responseRequired: { type: 'boolean', nullable: true, default: true },
     type: { type: 'string', enum: ['textboxResponseArea'] },
     rows: { type: 'number', default: 1 },
-    exportToCSV: { type: 'boolean', nullable: true, default: false },
   },
   required: ['type'],
 };

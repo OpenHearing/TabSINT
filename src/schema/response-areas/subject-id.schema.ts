@@ -8,7 +8,6 @@ export const subjectIdSchema: JSONSchemaType<SubjectIdInterface> = {
     responseRequired: { type: 'boolean', nullable: true, default: true },
     type: { type: 'string', enum: ['subjectIdResponseArea'] },
     generate: { type: 'boolean', default: false },
-    exportToCSV: { type: 'boolean', nullable: true, default: false },
   },
   required: ['type'],
 };

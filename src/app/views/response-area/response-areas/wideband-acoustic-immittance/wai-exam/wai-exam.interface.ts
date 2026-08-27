@@ -2,7 +2,6 @@ import { NormativeDataInterface } from '../../../../../interfaces/normative-data
 import { CommonResponseAreaInterface } from '../../../../../interfaces/page-definition.interface';
 
 export interface WAIInterface extends CommonResponseAreaInterface {
-  exportToCSV?: boolean;
   tabsintId?: string;
   outputCalibrationType?: string;
   fStart?: number;

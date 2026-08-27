@@ -43,7 +43,6 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     enableSkip: memrSchema.properties.enableSkip.default,
     responseRequired: memrSchema.properties.responseRequired.default,
     tabsintId: memrSchema.properties.tabsintId.default,
-    exportToCSV: memrSchema.properties.exportToCSV.default,
     soundFileName: memrSchema.properties.soundFileName.default,
     recordFileFolder: memrSchema.properties.recordFileFolder.default,
     nRepeats: memrSchema.properties.nRepeats.default,

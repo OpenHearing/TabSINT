@@ -1,7 +1,6 @@
 import { CommonResponseAreaInterface } from '../../../../../interfaces/page-definition.interface';
 
 export interface MrtExamInterface extends CommonResponseAreaInterface {
-  exportToCSV?: boolean;
   tabsintId?: string;
   examDefinitionFilename: string;
   outputChannel?: string[] | string;

@@ -55,7 +55,6 @@ export interface ThreeDigitResponseAreaInterface extends CommonResponseAreaInter
   feedback?: boolean;
   feedbackDelay?: number;
   examInstructions?: string;
-  exportToCSV?: boolean;
   examProperties?: ThreeDigitExamPropertiesInterface;
 }
 
