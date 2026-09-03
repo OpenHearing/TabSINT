@@ -721,7 +721,6 @@ export class ChaAdapter implements IDeviceAdapter {
         await waitForResponse;
 
         const fileContents = await this.readFromAppStorage(fname);
-        console.log('fileContents', fileContents);
         deviceResponse = { deviceId: device.deviceId, msg: [fileContents] };
       } catch (err) {
         this.logger.error('Failed to write to CHA', err);

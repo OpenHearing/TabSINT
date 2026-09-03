@@ -72,7 +72,7 @@ export function safeParse<T>(jsonString: string, schema: JSONSchemaType<T>): T |
     const parsedObject = JSON.parse(jsonString);
     return deepFix(parsedObject, schema, undefined);
   } catch (err) {
-    console.log('Error safe parsing the supplied JSON data: ' + err);
+    console.error('Error safe parsing the supplied JSON data: ' + err);
   }
   return undefined;
 }
