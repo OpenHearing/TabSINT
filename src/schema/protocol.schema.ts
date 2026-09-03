@@ -39,11 +39,10 @@ const protocolSchemaBase: JSONSchemaType<ProtocolSchemaInterface> = {
     enableBackButton: { type: 'boolean', default: false, nullable: true },
     navMenu: { type: 'array', items: navMenuSchema, nullable: true },
     pages: {
-      oneOf: [
-        { type: 'array', items: pageSchema },
-        { type: 'array', items: protocolReferenceSchema },
-        { type: 'array', items: { type: 'object', $ref: 'schema_base', required: ['pages'] } },
-      ],
+      type: 'array',
+      items: {
+        oneOf: [pageSchema, protocolReferenceSchema, { type: 'object', $ref: 'schema_base', required: ['pages'] }],
+      },
     },
     subProtocols: {
       type: 'array',
