@@ -4,6 +4,7 @@ import { WINDOW } from '../../utilities/window';
 import { Subscription } from 'rxjs';
 import { PageInterface } from '../../models/page/page.interface';
 import { PageModel } from '../../models/page/page.service';
+import { StateModel } from '../../models/state/state.service';
 
 @Component({
   selector: 'app-exam-testing-view',
@@ -13,6 +14,7 @@ import { PageModel } from '../../models/page/page.service';
 export class ExamTestingComponent implements OnInit, OnDestroy {
   private readonly examService = inject(ExamService);
   private readonly pageModel = inject(PageModel);
+  private readonly stateModel = inject(StateModel);
 
   pageSubscription: Subscription | undefined;
   questionPreMainTextClass?: object;
@@ -25,6 +27,10 @@ export class ExamTestingComponent implements OnInit, OnDestroy {
   examType?: string;
   imageBytes: string = '';
   imageWidth: string = '100%';
+  videoSrc: string = '';
+  videoWidth: string = '100%';
+  videoAutoplay: boolean = false;
+  videoNoSkip: boolean = false;
 
   constructor(@Inject(WINDOW) private readonly window: Window) {} // eslint-disable-line
 
@@ -45,6 +51,20 @@ export class ExamTestingComponent implements OnInit, OnDestroy {
         this.imageBytes = '';
         this.imageWidth = '100%';
       }
+      if (updatedPage?.video?._resolvedPath) {
+        this.videoSrc = updatedPage.video._resolvedPath;
+        this.videoWidth = updatedPage.video.width ?? '100%';
+        this.videoAutoplay = updatedPage.video.autoplay ?? false;
+        this.videoNoSkip = updatedPage.video.noSkip ?? false;
+        if (this.videoNoSkip) {
+          this.stateModel.updateState({ isSubmittable: false });
+        }
+      } else {
+        this.videoSrc = '';
+        this.videoWidth = '100%';
+        this.videoAutoplay = false;
+        this.videoNoSkip = false;
+      }
     });
     this.examService.restartActivePage();
   }
@@ -52,6 +72,15 @@ export class ExamTestingComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.examService.cancelBackgroundProcesses();
     this.pageSubscription?.unsubscribe();
+  }
+
+  /**
+   * Re-enable the submit button once a `noSkip` video finishes playing.
+   */
+  onVideoEnded(): void {
+    if (this.videoNoSkip) {
+      this.stateModel.updateState({ isSubmittable: true });
+    }
   }
 
   shrinkTitleIfTooLong(text: string | undefined) {

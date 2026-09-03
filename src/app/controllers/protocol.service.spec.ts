@@ -50,6 +50,7 @@ describe('ProtocolService', () => {
     name: 'develop',
     path: 'protocols/develop',
   };
+  const builtInProtocolNames = ['develop', 'tabsint-example', 'tympan-example', 'wahts-example'];
 
   beforeEach(async () => {
     matDialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
@@ -80,6 +81,17 @@ describe('ProtocolService', () => {
     activeProtocol = protocolService.protocolModel.activeProtocol;
     expect(activeProtocol).toBeDefined();
     expect(activeProtocol?.pages.length).toBeGreaterThan(0);
+  });
+
+  it('loads every built-in developer protocol without schema or calibration errors', async () => {
+    const protocolService = TestBed.inject(ProtocolService);
+    for (const name of builtInProtocolNames) {
+      const meta = { ...partialMetaDefaults, creator: 'Creare', name, path: `protocols/${name}` };
+      protocolService.disk.availableProtocolsMeta[name] = meta;
+      const result = await protocolService.load(protocolService.disk.availableProtocolsMeta[name]);
+      expect(result).withContext(name).toBeTrue();
+      expect(protocolService.protocolModel.activeProtocol?.errors ?? []).withContext(name).toEqual([]);
+    }
   });
 
   it('initializes protocol', async () => {

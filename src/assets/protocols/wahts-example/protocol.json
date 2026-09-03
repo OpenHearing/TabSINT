@@ -1,0 +1,662 @@
+{
+  "title": "WAHTS Example Protocol",
+  "subtitle": "Every response area usable with a WAHTS device.",
+  "instructionText": "This protocol demonstrates all response areas available for the WAHTS device.",
+  "navMenu": [
+    {
+      "text": "Back to Main Menu",
+      "target": {
+        "reference": "MainMenu"
+      },
+      "returnHereAfterward": false
+    }
+  ],
+  "pages": [
+    {
+      "protocolId": "MainMenu",
+      "title": "Main Menu",
+      "pages": [
+        {
+          "id": "choose",
+          "title": "Response Area Testing",
+          "questionMainText": "Please select a WAHTS response area to test:",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "choices": [
+              {
+                "id": "MPANL"
+              },
+              {
+                "id": "Dosimetry"
+              },
+              {
+                "id": "Svantek"
+              },
+              {
+                "id": "Duodose Data Download"
+              },
+              {
+                "id": "CHA Wav Test"
+              },
+              {
+                "id": "Manual Audiometry"
+              },
+              {
+                "id": "Bekesy"
+              },
+              {
+                "id": "Bekesy Like"
+              },
+              {
+                "id": "Hughson-Westlake Screener"
+              },
+              {
+                "id": "Hughson-Westlake Threshold"
+              },
+              {
+                "id": "GAP"
+              },
+              {
+                "id": "HINT"
+              },
+              {
+                "id": "BHAFT"
+              },
+              {
+                "id": "Three Digit Test"
+              },
+              {
+                "id": "MRT Exam"
+              },
+              {
+                "id": "End All"
+              }
+            ]
+          },
+          "followOns": [
+            {
+              "conditional": "result.response=='MPANL'",
+              "target": {
+                "reference": "mpanlResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='Dosimetry'",
+              "target": {
+                "reference": "dosimetryResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='Svantek'",
+              "target": {
+                "reference": "textBoxResponseAreaWithSvantek"
+              }
+            },
+            {
+              "conditional": "result.response=='Duodose Data Download'",
+              "target": {
+                "reference": "duodoseDownloadResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='CHA Wav Test'",
+              "target": {
+                "reference": "PlayChaWavTest"
+              }
+            },
+            {
+              "conditional": "result.response=='Manual Audiometry'",
+              "target": {
+                "reference": "ManualAudiometry"
+              }
+            },
+            {
+              "conditional": "result.response=='Bekesy'",
+              "target": {
+                "reference": "bekesyResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='Bekesy Like'",
+              "target": {
+                "reference": "bekesyLikeResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='Hughson-Westlake Screener'",
+              "target": {
+                "reference": "hughsonWestlakeScreenerResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='Hughson-Westlake Threshold'",
+              "target": {
+                "reference": "hughsonWestlakeThresholdResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='GAP'",
+              "target": {
+                "reference": "gapResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='HINT'",
+              "target": {
+                "reference": "hintResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='BHAFT'",
+              "target": {
+                "reference": "bhaftResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='Three Digit Test'",
+              "target": {
+                "reference": "threeDigitResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='MRT Exam'",
+              "target": {
+                "reference": "MRTExam"
+              }
+            },
+            {
+              "conditional": "result.response=='End All'",
+              "target": {
+                "reference": "@END_ALL"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "subProtocols": [
+    {
+      "protocolId": "mpanlResponseArea",
+      "pages": [
+        {
+          "id": "mpanl_001",
+          "title": "MPANL",
+          "instructionText": "Measures Maximum Permissible Ambient Noise Levels with a Svantek dosimeter, reported under WAHTS headset attenuation.",
+          "responseArea": {
+            "type": "mpanlResponseArea"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "dosimetryResponseArea",
+      "pages": [
+        {
+          "id": "dosimetryResponseArea",
+          "title": "Dosimetry testing",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": false
+          },
+          "dosimetry": {}
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "textBoxResponseAreaWithSvantek",
+      "pages": [
+        {
+          "id": "textBoxResponseAreaWithSvantek",
+          "title": "Svantek testing",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": false
+          },
+          "svantek": true
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "duodoseDownloadResponseArea",
+      "pages": [
+        {
+          "id": "duodoseDownloadResponseArea",
+          "title": "Duodose Data Download",
+          "responseArea": {
+            "type": "duodoseDownloadResponseArea",
+            "test": "test",
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "PlayChaWavTest",
+      "pages": [
+        {
+          "id": "chaWavMultiChoice",
+          "title": "Cha Wav Test",
+          "questionMainText": "This page plays a wav file stored on the CHA",
+          "chaWavFiles": {
+            "wavfiles": [
+              {
+                "path": "C:HINT/LIST1/TIS003.WAV",
+                "Leq": [0, 0, 0, 0]
+              },
+              {
+                "path": "C:HINT/LIST1/TIS004.WAV",
+                "Leq": [50, 0, 0, 0]
+              }
+            ]
+          },
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "choices": [
+              {
+                "id": "A",
+                "text": "Big dogs can be dangerous"
+              },
+              {
+                "id": "B",
+                "text": "Her shoes were very dirty"
+              },
+              {
+                "id": "C",
+                "text": "Two Sentences"
+              },
+              {
+                "id": "D",
+                "text": "Nothing or Something Else"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "protocolId": "ManualAudiometry",
+      "pages": [
+        {
+          "id": "audiometry_001",
+          "title": "Manual Audiometry Test",
+          "instructionText": "Test manual audiometry response area",
+          "responseArea": {
+            "type": "manualAudiometryResponseArea",
+            "frequencies": [500, 1000, 2000, 3000, 4000, 6000, 8000],
+            "adjustmentStepSize": 2,
+            "incrementRatioMultiplier": 2,
+            "retspls": {
+              "500": 11.0,
+              "1000": 5.5,
+              "2000": 4.5,
+              "3000": 2.5,
+              "4000": 9.5,
+              "6000": 17.0,
+              "8000": 17.5
+            }
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "bekesyResponseArea",
+      "pages": [
+        {
+          "id": "bekesyResponseArea",
+          "title": "Bekesy",
+          "wavfiles": [
+            {
+              "weighting": "A",
+              "path": "Background sounds inside crowded cafeteria _AOS01244.wav",
+              "targetSPL": 65
+            }
+          ],
+          "responseArea": {
+            "type": "bekesyResponseArea",
+            "numberReversals": 6,
+            "startSPL": 65,
+            "minTargetLevel": 40,
+            "maxTargetLevel": 75,
+            "timeout": 30,
+            "levelRate": 2,
+            "isSubmittable": true
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "bekesyLikeResponseArea",
+      "pages": [
+        {
+          "id": "BekesyLike",
+          "title": "Bekesy Like",
+          "questionMainText": "Automated Level Threshold Search",
+          "responseArea": {
+            "type": "bekesyLikeResponseArea",
+            "hideExamProperties": "during",
+            "autoBegin": false,
+            "repeatIfFailedOnce": true,
+            "getNotesIfFailedTwice": true,
+            "showMessageIfNoResponse": true,
+            "examInstructions": "Press and hold the button whenever you believe you hear the sound and release the button when you can no longer hear the sound.",
+            "resultMainText": "Automated level threshold search complete.",
+            "resultSubText": "Press submit to continue.",
+            "examProperties": {
+              "F": 1000,
+              "Lstart": 40,
+              "ReversalDiscard": 2,
+              "ReversalKeep": 6,
+              "IncrementStart": 4,
+              "IncrementNominal": 2,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPL0",
+              "UseSoftwareButton": true,
+              "PresentationMax": 100,
+              "BypassCalibrationLimit": true
+            },
+            "plotProperties": {
+              "displayLevelProgression": true
+            },
+            "maskingNoise": {
+              "Type": "white",
+              "Level": [30, 30]
+            }
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "hughsonWestlakeScreenerResponseArea",
+      "pages": [
+        {
+          "id": "Hughson-Westlake-Screener",
+          "title": "Hughson-Westlake Screener",
+          "questionMainText": "Automated Hearing Screener",
+          "responseArea": {
+            "type": "hughsonWestlakeResponseArea",
+            "hideExamProperties": "during",
+            "autoBegin": true,
+            "repeatIfFailedOnce": true,
+            "getNotesIfFailedTwice": true,
+            "showMessageIfNoResponse": true,
+            "examInstructions": "Use the button to complete the exam.",
+            "resultMainText": "Screener complete.",
+            "resultSubText": "Press submit to continue.",
+            "examProperties": {
+              "Screener": true,
+              "TonePulseNumber": 3,
+              "PresentationMax": 5,
+              "NumCorrectReq": 3,
+              "LevelUnits": "dB HL",
+              "Lstart": 25,
+              "F": 1000,
+              "OutputChannel": "HPL0",
+              "UseSoftwareButton": true,
+              "PollingOffset": 1000,
+              "MinISI": 1000,
+              "MaxISI": 3000
+            },
+            "maskingNoise": {
+              "Type": "white",
+              "Level": [30, 30]
+            }
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "hughsonWestlakeThresholdResponseArea",
+      "pages": [
+        {
+          "id": "Hughson-Westlake-Threshold",
+          "title": "Hughson-Westlake Threshold",
+          "questionMainText": "Automated Threshold Audiometry",
+          "responseArea": {
+            "type": "hughsonWestlakeResponseArea",
+            "hideExamProperties": "during",
+            "autoBegin": true,
+            "repeatIfFailedOnce": true,
+            "getNotesIfFailedTwice": true,
+            "showMessageIfNoResponse": true,
+            "examInstructions": "Use the button to complete the exam.",
+            "resultMainText": "Automated threshold search complete.",
+            "resultSubText": "Press submit to continue.",
+            "examProperties": {
+              "Screener": false,
+              "TonePulseNumber": 3,
+              "LevelUnits": "dB HL",
+              "Lstart": 25,
+              "F": 1000,
+              "OutputChannel": "HPL0",
+              "UseSoftwareButton": true,
+              "PollingOffset": 1000,
+              "MinISI": 1000,
+              "MaxISI": 3000
+            },
+            "plotProperties": {
+              "displayLevelProgression": true
+            },
+            "maskingNoise": {
+              "Type": "white",
+              "Level": [30, 30]
+            }
+          }
+        },
+        {
+          "id": "Hughson-Westlake-Threshold-2",
+          "title": "Hughson-Westlake Threshold",
+          "questionMainText": "Automated Threshold Audiometry",
+          "responseArea": {
+            "type": "hughsonWestlakeResponseArea",
+            "hideExamProperties": "during",
+            "autoBegin": true,
+            "repeatIfFailedOnce": true,
+            "getNotesIfFailedTwice": true,
+            "showMessageIfNoResponse": true,
+            "examInstructions": "Use the button to complete the exam.",
+            "resultMainText": "Automated threshold search complete.",
+            "resultSubText": "Press submit to continue.",
+            "examProperties": {
+              "Screener": false,
+              "TonePulseNumber": 3,
+              "LevelUnits": "dB HL",
+              "Lstart": 25,
+              "F": 2000,
+              "OutputChannel": "HPR0",
+              "UseSoftwareButton": true,
+              "PollingOffset": 1000,
+              "MinISI": 1000,
+              "MaxISI": 3000
+            },
+            "plotProperties": {
+              "displayLevelProgression": true,
+              "displayAudiogram": ["Hughson-Westlake-Threshold", "Hughson-Westlake-Threshold-2"]
+            },
+            "maskingNoise": {
+              "Type": "white",
+              "Level": [30, 30]
+            }
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "gapResponseArea",
+      "pages": [
+        {
+          "id": "gapResponseArea",
+          "title": "GAP",
+          "questionMainText": "Gap Detection Test",
+          "responseArea": {
+            "type": "gapResponseArea",
+            "training": true,
+            "examInstructions": "Select a gap length to run a training trial, then press 'Begin Exam' to run the full test.",
+            "trainingAllowableGapLengths": [40, 20, 12, 6, 0],
+            "examProperties": {
+              "Channel": 0,
+              "TimePres": 4000,
+              "LNoise": 65,
+              "UseSoftwareButton": 1,
+              "NReversals": 8,
+              "NReversalsCalc": 4
+            }
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "hintResponseArea",
+      "pages": [
+        {
+          "id": "hintResponseArea",
+          "title": "HINT",
+          "questionMainText": "Hearing In Noise Test",
+          "responseArea": {
+            "type": "hintResponseArea",
+            "examInstructions": "Select all the words that the subject heard correctly.",
+            "examProperties": {
+              "Direction": "front",
+              "ListNumber": 2,
+              "NumberOfPresentations": 4
+            }
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "bhaftResponseArea",
+      "pages": [
+        {
+          "id": "BHAFT",
+          "title": "Bekesy Highest Audible Frequency Threshold",
+          "questionMainText": "Automated Highest Audible Frequency Search",
+          "responseArea": {
+            "type": "bhaftResponseArea",
+            "hideExamProperties": "during",
+            "autoBegin": false,
+            "repeatIfFailedOnce": true,
+            "getNotesIfFailedTwice": true,
+            "showMessageIfNoResponse": true,
+            "examInstructions": "Press and hold the button whenever you believe you hear the sound and release the button when you can no longer hear the sound.",
+            "resultMainText": "Automated frequency threshold search complete.",
+            "resultSubText": "Press submit to continue.",
+            "examProperties": {
+              "Fstart": 8000,
+              "MaximumOutputFrequency": 16000,
+              "Level": 80,
+              "ReversalDiscard": 2,
+              "ReversalKeep": 6,
+              "IncrementStartMultiplierFrequency": 2,
+              "IncrementNominalFrequency": 0.08333,
+              "IncrementStartMultiplierLevel": 2,
+              "IncrementNominalLevel": 4,
+              "SemiAutomaticMode": false,
+              "LevelUnits": "dB SPL",
+              "OutputChannel": "HPL0",
+              "UseSoftwareButton": true,
+              "PresentationMax": 100,
+              "BypassCalibrationLimit": true
+            },
+            "plotProperties": {
+              "displayFrequencyProgression": true,
+              "displayLevelProgression": true
+            },
+            "maskingNoise": {
+              "Type": "white",
+              "Level": [30, 30]
+            }
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "threeDigitResponseArea",
+      "pages": [
+        {
+          "id": "threeDigitResponseArea",
+          "title": "Three Digit Test",
+          "questionMainText": "Three Digit Test",
+          "instructionText": "Enter the three digits you hear.",
+          "responseArea": {
+            "type": "threeDigitResponseArea",
+            "examInstructions": "Enter the three digits you hear",
+            "feedback": true,
+            "examProperties": {
+              "nPresentations": 5,
+              "correctStep": -4,
+              "fixedLevel": 50
+            }
+          }
+        }
+      ]
+    },
+    {
+      "protocolId": "MRTExam",
+      "pages": [
+        {
+          "id": "MRT",
+          "title": "Modified Rhyme Test",
+          "responseArea": {
+            "type": "mrtResponseArea",
+            "examDefinitionFilename": "mrt-exam-definition.csv"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    }
+  ]
+}

@@ -14,5 +14,17 @@
     <img [src]="imageBytes" class="img-responsive img-rounded" alt="" style="margin:0 auto;max-height:40vh;" />
   </div>
 
+  <!-- Video -->
+  <div class="multimedia" *ngIf="videoSrc.length > 0" [style.width]="videoWidth">
+    <video
+      [src]="videoSrc"
+      [autoplay]="videoAutoplay"
+      (ended)="onVideoEnded()"
+      controls
+      class="img-responsive img-rounded"
+      style="margin:0 auto;max-height:40vh;width:100%;"
+    ></video>
+  </div>
+
   <app-response-area></app-response-area>
 </div>

@@ -107,7 +107,7 @@ Testing Procedures
 Device Tests
 ^^^^^^^^^^^^
 
-The ``wahts-device-test`` protocol in TabSINT includes a Bekesy Highest Audible Frequency exam to test for tone-generation in each ear, software-button functionality and distortion coincident with tone generation.
+The ``wahts-example`` protocol in TabSINT includes a Bekesy Highest Audible Frequency exam to test for tone-generation in each ear, software-button functionality and distortion coincident with tone generation.
 
 .. rubric:: HITL
 

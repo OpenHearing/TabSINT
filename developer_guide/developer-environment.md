@@ -332,7 +332,7 @@ To build an android package you need the following tools:
   - Make sure the following directories within the Android SDK root directory are on your system path:
     - `[path-to-sdk]/tools/`
     - `[path-to-sdk]/platform-tools/`
-    - `[path-to-sdk]/build-tools/[sdk-version]/` where `[sdk-version]` is the SDK version you have installed (36 as of TabsINT v5.0.0).
+    - `[path-to-sdk]/build-tools/[sdk-version]/` where `[sdk-version]` is the SDK version you have installed (36 as of TabSINT v5.0.0).
     - **NOTE: if using the Android Studio (Windows) sdkmanager to install the tools, platform-tools and build-tools, the installed files might be found in the C:\Users\User\AppData\Local\Android\Sdk directory. To fix this issue I copied these folders to my C:\Program Files\Android\Android Studio directory.**
 - [Gradle](https://gradle.org/install/)
   - Current version recommended is Version >= 8.7.2.
