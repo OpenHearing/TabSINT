@@ -19,8 +19,9 @@ import { VersionModel } from '../models/version/version.service';
 import { DevicesService } from '../services/devices/devices.service';
 import { IDeviceMetadata } from '../interfaces/devices/device-metadata.interface';
 import { IDevice } from '../interfaces/devices/device.interface';
-import { DeviceState } from '../utilities/constants';
+import { DeviceState, ProtocolServer } from '../utilities/constants';
 import { EncryptResultsService } from '../utilities/encrypt-results.service';
+import { ResultsUploadService } from './results-upload.service';
 
 @Injectable({
   providedIn: 'root',

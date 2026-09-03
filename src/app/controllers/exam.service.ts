@@ -559,10 +559,14 @@ export class ExamService {
     }
   }
 
-  // Ignore the below functions for now
-
+  /**
+   * Show the current page's help text, if any, in an alert dialog.
+   */
   help() {
-    // TODO: Implement this!
+    const helpText = this.pageModel.getPage().helpText;
+    if (helpText) {
+      this.notifications.alert({ title: 'Help', content: helpText, type: DialogType.Alert }).subscribe();
+    }
   }
 
   /**

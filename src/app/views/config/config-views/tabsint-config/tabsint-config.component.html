@@ -178,36 +178,96 @@
   <div class="col-6">
     <label for="showTympan">{{ "Tympan:" | transloco }}</label>
   </div>
-  <div class="col-2">
-    <input id="showTympan" type="checkbox" [ngModel]="disk.preferences.showTympanPanel ?? true" (change)="toggleShowTympanPanel()" />
+  <div class="col-2" [title]="isTympanConnected ? ('Cannot Hide Connected Device' | transloco) : ''">
+    <input
+      id="showTympan"
+      type="checkbox"
+      [ngModel]="disk.preferences.showTympanPanel ?? true"
+      [disabled]="isTympanConnected"
+      (change)="toggleShowTympanPanel()" />
   </div>
+  <div class="col-2"></div>
+  <div class="col-1"></div>
+  <div class="col-1" title="{{ 'Show Tympan Help' | transloco }}">
+    <i [matMenuTriggerFor]="showTympanMenu" class="ion-help-circled"></i>
+  </div>
+  <mat-menu #showTympanMenu="matMenu">
+    <button mat-menu-item>
+      <div [innerHTML]="showTympanPopover"></div>
+    </button>
+  </mat-menu>
 </div>
 
 <div class="row pad-top">
   <div class="col-6">
     <label for="showWahts">{{ "WAHTS:" | transloco }}</label>
   </div>
-  <div class="col-2">
-    <input id="showWahts" type="checkbox" [ngModel]="disk.preferences.showWahtsPanel ?? true" (change)="toggleShowWahtsPanel()" />
+  <div class="col-2" [title]="isWahtsConnected ? ('Cannot Hide Connected Device' | transloco) : ''">
+    <input
+      id="showWahts"
+      type="checkbox"
+      [ngModel]="disk.preferences.showWahtsPanel ?? true"
+      [disabled]="isWahtsConnected"
+      (change)="toggleShowWahtsPanel()" />
   </div>
+  <div class="col-2"></div>
+  <div class="col-1"></div>
+  <div class="col-1" title="{{ 'Show WAHTS Help' | transloco }}">
+    <i [matMenuTriggerFor]="showWahtsMenu" class="ion-help-circled"></i>
+  </div>
+  <mat-menu #showWahtsMenu="matMenu">
+    <button mat-menu-item>
+      <div [innerHTML]="showWahtsPopover"></div>
+    </button>
+  </mat-menu>
 </div>
 
 <div class="row pad-top">
   <div class="col-6">
     <label for="showDuodose">{{ "Duodose:" | transloco }}</label>
   </div>
-  <div class="col-2">
-    <input id="showDuodose" type="checkbox" [ngModel]="disk.preferences.showDuodosePanel ?? true" (change)="toggleShowDuodosePanel()" />
+  <div class="col-2" [title]="isDuodoseConnected ? ('Cannot Hide Connected Device' | transloco) : ''">
+    <input
+      id="showDuodose"
+      type="checkbox"
+      [ngModel]="disk.preferences.showDuodosePanel ?? true"
+      [disabled]="isDuodoseConnected"
+      (change)="toggleShowDuodosePanel()" />
   </div>
+  <div class="col-2"></div>
+  <div class="col-1"></div>
+  <div class="col-1" title="{{ 'Show Duodose Help' | transloco }}">
+    <i [matMenuTriggerFor]="showDuodoseMenu" class="ion-help-circled"></i>
+  </div>
+  <mat-menu #showDuodoseMenu="matMenu">
+    <button mat-menu-item>
+      <div [innerHTML]="showDuodosePopover"></div>
+    </button>
+  </mat-menu>
 </div>
 
 <div class="row pad-top">
   <div class="col-6">
     <label for="showSvantek">{{ "Svantek:" | transloco }}</label>
   </div>
-  <div class="col-2">
-    <input id="showSvantek" type="checkbox" [ngModel]="disk.preferences.showSvantekPanel ?? true" (change)="toggleShowSvantekPanel()" />
+  <div class="col-2" [title]="isSvantekConnected ? ('Cannot Hide Connected Device' | transloco) : ''">
+    <input
+      id="showSvantek"
+      type="checkbox"
+      [ngModel]="disk.preferences.showSvantekPanel ?? true"
+      [disabled]="isSvantekConnected"
+      (change)="toggleShowSvantekPanel()" />
   </div>
+  <div class="col-2"></div>
+  <div class="col-1"></div>
+  <div class="col-1" title="{{ 'Show Svantek Help' | transloco }}">
+    <i [matMenuTriggerFor]="showSvantekMenu" class="ion-help-circled"></i>
+  </div>
+  <mat-menu #showSvantekMenu="matMenu">
+    <button mat-menu-item>
+      <div [innerHTML]="showSvantekPopover"></div>
+    </button>
+  </mat-menu>
 </div>
 
 <!-- QR Code Generation -->

@@ -7,7 +7,7 @@ import { PageModel } from '../models/page/page.service';
 import { StateModel } from '../models/state/state.service';
 import { Notifications } from '../services/notifications.service';
 import { Logger } from '../services/logger.service';
-import { AppState, ExamState, ProtocolServer, ProtocolState } from '../utilities/constants';
+import { AppState, DialogType, ExamState, ProtocolServer, ProtocolState } from '../utilities/constants';
 import { BehaviorSubject, of } from 'rxjs';
 import { PageInterface } from '../models/page/page.interface';
 import { PageDefinition } from '../interfaces/page-definition.interface';
@@ -370,6 +370,30 @@ describe('ExamService', () => {
       examService.protocol.activeProtocolStack.clear();
       examService.switchToExamView();
       expect(mockStateModel.updateState).toHaveBeenCalledWith({ examState: ExamState.Ready });
+    });
+  });
+
+  describe('help', () => {
+    it('shows an alert with the current page helpText when it is defined', () => {
+      const mockPage = { helpText: 'Example help text' } as PageInterface;
+      mockPageModel.getPage.and.returnValue(mockPage);
+
+      examService.help();
+
+      expect(mockNotifications.alert).toHaveBeenCalledWith({
+        title: 'Help',
+        content: 'Example help text',
+        type: DialogType.Alert,
+      });
+    });
+
+    it('does not show an alert when the current page has no helpText', () => {
+      const mockPage = { helpText: '' } as PageInterface;
+      mockPageModel.getPage.and.returnValue(mockPage);
+
+      examService.help();
+
+      expect(mockNotifications.alert).not.toHaveBeenCalled();
     });
   });
 

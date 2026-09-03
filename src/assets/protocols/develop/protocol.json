@@ -138,6 +138,9 @@
                 "id": "Video"
               },
               {
+                "id": "Help Text Example"
+              },
+              {
                 "id": "End All"
               }
             ]
@@ -369,6 +372,12 @@
               "conditional": "result.response=='Video'",
               "target": {
                 "reference": "videoDemo"
+              }
+            },
+            {
+              "conditional": "result.response=='Help Text Example'",
+              "target": {
+                "reference": "helpTextExample"
               }
             },
             {
@@ -1926,6 +1935,26 @@
             "autoplay": false,
             "noSkip": false
           },
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "helpTextExample",
+      "pages": [
+        {
+          "id": "help_text_001",
+          "title": "Help Text Example",
+          "instructionText": "Tap the Help button below to see this page's help text.",
+          "helpText": "This is the help text for this page. It is shown in a popup when the Help button is tapped, and is greyed out when a page has no help text defined.",
           "responseArea": {
             "type": "textboxResponseArea",
             "rows": 3,

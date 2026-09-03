@@ -12,7 +12,7 @@ import { Logger } from '../../../../services/logger.service';
 import { VersionModel } from '../../../../models/version/version.service';
 import { StateModel } from '../../../../models/state/state.service';
 
-import { AppState, DialogType, Headset } from '../../../../utilities/constants';
+import { AppState, DeviceState, DeviceType, DialogType, Headset } from '../../../../utilities/constants';
 import { ChangePinComponent } from '../../../change-pin/change-pin.component';
 import { ChangeMaxLogLengthComponent } from '../../../change-max-log-length/change-max-log-length.component';
 import { QrService } from '../../../../services/qr.service';
@@ -21,6 +21,8 @@ import { TabsintFs } from 'tabsintfs';
 import { Notifications } from '../../../../services/notifications.service';
 import { AudioService } from '../../../../services/audio.service';
 import { DialogDataInterface } from '../../../../interfaces/dialog-data.interface';
+import { DevicesService } from '../../../../services/devices/devices.service';
+import { IDevice } from '../../../../interfaces/devices/device.interface';
 
 @Component({
   selector: 'app-tabsint-config-view',
@@ -39,6 +41,7 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   private readonly fileService = inject(FileService);
   private readonly notifications = inject(Notifications);
   private readonly audioService = inject(AudioService);
+  private readonly devicesService = inject(DevicesService);
 
   disk: DiskInterface;
   state: StateInterface;
@@ -47,12 +50,14 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
   headset = Headset.None;
   qrPreferencesString?: string = undefined;
   displayPreferencesQrCode: boolean = false;
+  connectedDeviceTypes = new Set<DeviceType>();
 
   @ViewChild('qrCanvas', { read: ElementRef })
   qrCanvas!: ElementRef;
 
   diskSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
+  devicesSubscription: Subscription | undefined;
 
   constructor() {
     this.state = this.stateModel.getState();
@@ -68,12 +73,16 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
     this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
+    this.devicesSubscription = this.devicesService.devices.subscribe((devices: IDevice[]) => {
+      this.connectedDeviceTypes = new Set(devices.filter(device => device.state === DeviceState.Connected).map(device => device.type));
+    });
     this.stateModel.updateState({ appState: AppState.Admin });
   }
 
   ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();
+    this.devicesSubscription?.unsubscribe();
   }
 
   /**
@@ -133,19 +142,47 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
     this.diskModel.updatePreferences({ debugMode: !this.disk.preferences.debugMode });
   }
 
+  get isTympanConnected(): boolean {
+    return this.connectedDeviceTypes.has(DeviceType.Tympan);
+  }
+
+  get isWahtsConnected(): boolean {
+    return this.connectedDeviceTypes.has(DeviceType.Wahts);
+  }
+
+  get isDuodoseConnected(): boolean {
+    return this.connectedDeviceTypes.has(DeviceType.Duodose);
+  }
+
+  get isSvantekConnected(): boolean {
+    return this.connectedDeviceTypes.has(DeviceType.Svantek);
+  }
+
   toggleShowTympanPanel() {
+    if (this.isTympanConnected) {
+      return;
+    }
     this.diskModel.updatePreferences({ showTympanPanel: !(this.disk.preferences.showTympanPanel ?? true) });
   }
 
   toggleShowWahtsPanel() {
+    if (this.isWahtsConnected) {
+      return;
+    }
     this.diskModel.updatePreferences({ showWahtsPanel: !(this.disk.preferences.showWahtsPanel ?? true) });
   }
 
   toggleShowDuodosePanel() {
+    if (this.isDuodoseConnected) {
+      return;
+    }
     this.diskModel.updatePreferences({ showDuodosePanel: !(this.disk.preferences.showDuodosePanel ?? true) });
   }
 
   toggleShowSvantekPanel() {
+    if (this.isSvantekConnected) {
+      return;
+    }
     this.diskModel.updatePreferences({ showSvantekPanel: !(this.disk.preferences.showSvantekPanel ?? true) });
   }
 
@@ -329,6 +366,22 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
 
   get disableVolumePopover() {
     return this.transloco.translate('Automatic Volume Control Popover');
+  }
+
+  get showTympanPopover() {
+    return this.transloco.translate('Show Tympan Popover');
+  }
+
+  get showWahtsPopover() {
+    return this.transloco.translate('Show WAHTS Popover');
+  }
+
+  get showDuodosePopover() {
+    return this.transloco.translate('Show Duodose Popover');
+  }
+
+  get showSvantekPopover() {
+    return this.transloco.translate('Show Svantek Popover');
   }
 
   get gainPopover() {
