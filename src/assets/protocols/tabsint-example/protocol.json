@@ -1,6 +1,6 @@
 {
-  "title": "TabsInt Example Protocol",
-  "subtitle": "Every device-agnostic TabsInt response area and platform feature (questionnaires, branching logic, media).",
+  "title": "TabSINT Example Protocol",
+  "subtitle": "Every device-agnostic TabSINT response area and platform feature (questionnaires, branching logic, media).",
   "instructionText": "instructionText goes here",
   "navMenu": [
     {
