@@ -214,6 +214,7 @@ export class ExamService {
     this.gradeResponses();
     this.resultsService.pushResults(this.results.currentPage);
     this.setFlags(this.results.currentPage);
+    this.resultsModel.updateCurrentExam({ partialresults: true });
     this.resetProtocolStack();
     if (this.protocol.activeProtocolDictionary!['@PARTIAL'] === undefined) {
       this.endExam();

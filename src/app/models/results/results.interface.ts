@@ -36,7 +36,7 @@ export interface ExamResults {
   elapsedTime?: string;
   exportLocation?: ProtocolServer;
   responses: any;
-  partialresults?: any;
+  partialresults?: boolean;
   softwareVersion: VersionInterface;
   tabletLocation: {
     latitude?: number;

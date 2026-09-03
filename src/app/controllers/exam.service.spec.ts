@@ -59,7 +59,7 @@ describe('ExamService', () => {
     const mockProtocolDictionary = { 'test-protocol': mockProtocol };
 
     mockResultsService = jasmine.createSpyObj('ResultsService', ['initializeExamResults', 'pushResults', 'save', 'initializePageResults']);
-    mockResultsModel = jasmine.createSpyObj('ResultsModel', ['getResults']);
+    mockResultsModel = jasmine.createSpyObj('ResultsModel', ['getResults', 'updateCurrentExam']);
     mockPageModel = jasmine.createSpyObj('PageModel', ['getPage', 'stack', 'updatePage']);
     mockPageModel.currentPageObservable = new BehaviorSubject<PageInterface>(mockPage).asObservable();
     mockProtocolModel = jasmine.createSpyObj('ProtocolModel', ['getProtocolModel']);
@@ -174,7 +174,7 @@ describe('ExamService', () => {
         elapsedTime: '00:30:00',
         exportLocation: ProtocolServer.LocalServer,
         responses: [],
-        partialresults: [],
+        partialresults: false,
         softwareVersion: {
           tabsint: '1.0.0',
           date: new Date().toISOString(),
@@ -228,7 +228,7 @@ describe('ExamService', () => {
         elapsedTime: '00:30:00',
         exportLocation: ProtocolServer.LocalServer,
         responses: [],
-        partialresults: [],
+        partialresults: false,
         softwareVersion: {
           tabsint: '1.0.0',
           date: new Date().toISOString(),
@@ -340,6 +340,13 @@ describe('ExamService', () => {
 
     examService.submitPartial();
     expect(examService['endExam' as keyof ExamService]).toHaveBeenCalled();
+  });
+
+  it('should flag the exam results as partial when submitting partial results', () => {
+    spyOn(examService, 'endExam' as never);
+
+    examService.submitPartial();
+    expect(mockResultsModel.updateCurrentExam).toHaveBeenCalledWith({ partialresults: true });
   });
 
   it('should navigate to target protocol and advancePage', () => {
