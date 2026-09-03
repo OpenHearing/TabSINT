@@ -13,6 +13,7 @@ import { SqLite } from '../services/sqLite.service';
 import { VersionModel } from '../models/version/version.service';
 import { DevicesService } from '../services/devices/devices.service';
 import { EncryptResultsService } from '../utilities/encrypt-results.service';
+import { ResultsUploadService } from './results-upload.service';
 import { BehaviorSubject, of } from 'rxjs';
 import { ProtocolStack } from '../models/protocol/protocol-stack';
 import { ProtocolServer } from '../utilities/constants';
@@ -140,6 +141,7 @@ describe('ResultsService (mocked)', () => {
   let mockVersionModel: { version: object };
   let mockDevicesService: jasmine.SpyObj<DevicesService>;
   let mockEncrypt: jasmine.SpyObj<EncryptResultsService>;
+  let mockResultsUploadService: jasmine.SpyObj<ResultsUploadService>;
   let mockDisk: DiskInterface;
   let mockResultsState: ResultsInterface;
 
@@ -172,6 +174,8 @@ describe('ResultsService (mocked)', () => {
 
     mockDisk = {
       preferences: {
+        autoUpload: false,
+        server: ProtocolServer.LocalServer,
         servers: { localServer: { resultsDir: 'tabsint-results', resultsDirUri: '' } },
       },
       tabletLocation: {},
@@ -205,6 +209,9 @@ describe('ResultsService (mocked)', () => {
 
     mockEncrypt = jasmine.createSpyObj('EncryptResultsService', ['encryptForStorage', 'decryptFromStorage', 'encryptForUpload']);
 
+    mockResultsUploadService = jasmine.createSpyObj('ResultsUploadService', ['uploadResult']);
+    mockResultsUploadService.uploadResult.and.resolveTo({ success: true, message: 'ok' });
+
     TestBed.configureTestingModule({
       providers: [
         ResultsService,
@@ -217,6 +224,7 @@ describe('ResultsService (mocked)', () => {
         { provide: VersionModel, useValue: mockVersionModel },
         { provide: DevicesService, useValue: mockDevicesService },
         { provide: EncryptResultsService, useValue: mockEncrypt },
+        { provide: ResultsUploadService, useValue: mockResultsUploadService },
       ],
     });
 
@@ -248,6 +256,55 @@ describe('ResultsService (mocked)', () => {
       const result = makeExamResult();
       await service.save(result);
       expect(mockFileService.writeFile).toHaveBeenCalled();
+    });
+
+    it('does not auto-export or upload when autoUpload is disabled', async () => {
+      mockDisk.preferences.autoUpload = false;
+      mockSqLite.getAllResultsRaw.and.resolveTo(['result-json']);
+
+      await service.save(makeExamResult());
+
+      expect(mockSqLite.getAllResultsRaw).not.toHaveBeenCalled();
+      expect(mockResultsUploadService.uploadResult).not.toHaveBeenCalled();
+      expect(mockSqLite.deleteSingleResult).not.toHaveBeenCalled();
+    });
+
+    it('auto-exports the just-saved result to local storage when autoUpload is enabled and server is Local Server', async () => {
+      mockDisk.preferences.autoUpload = true;
+      mockDisk.preferences.server = ProtocolServer.LocalServer;
+      const result = makeExamResult();
+      mockSqLite.getAllResultsRaw.and.resolveTo(['a', 'b']);
+      mockSqLite.getSingleResult.and.resolveTo([JSON.stringify(result)]);
+
+      await service.save(result);
+
+      expect(mockResultsUploadService.uploadResult).not.toHaveBeenCalled();
+      expect(mockFileService.writeFile).toHaveBeenCalled();
+      expect(mockSqLite.deleteSingleResult).toHaveBeenCalledWith(1);
+    });
+
+    it('auto-uploads the just-saved result to Gitlab when autoUpload is enabled and server is Gitlab', async () => {
+      mockDisk.preferences.autoUpload = true;
+      mockDisk.preferences.server = ProtocolServer.Gitlab;
+      const result = makeExamResult();
+      mockSqLite.getAllResultsRaw.and.resolveTo(['a']);
+
+      await service.save(result);
+
+      expect(mockResultsUploadService.uploadResult).toHaveBeenCalledWith(result);
+      expect(mockSqLite.deleteSingleResult).toHaveBeenCalledWith(0);
+    });
+
+    it('does not delete the result from SQLite when the Gitlab auto-upload fails', async () => {
+      mockDisk.preferences.autoUpload = true;
+      mockDisk.preferences.server = ProtocolServer.Gitlab;
+      mockResultsUploadService.uploadResult.and.resolveTo({ success: false, message: 'network error' });
+      mockSqLite.getAllResultsRaw.and.resolveTo(['a']);
+
+      await service.save(makeExamResult());
+
+      expect(mockSqLite.deleteSingleResult).not.toHaveBeenCalled();
+      expect(mockLogger.error).toHaveBeenCalled();
     });
   });
 

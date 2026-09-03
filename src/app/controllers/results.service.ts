@@ -34,6 +34,7 @@ export class ResultsService {
   private readonly logger = inject(Logger);
   private readonly protocolM = inject(ProtocolModel);
   private readonly resultsModel = inject(ResultsModel);
+  private readonly resultsUploadService = inject(ResultsUploadService);
   private readonly sqLite = inject(SqLite);
   private readonly versionModel = inject(VersionModel);
 
@@ -149,6 +150,34 @@ export class ResultsService {
       await this.sqLite.store('results', JSON.stringify(result));
     }
     await this.backup(result);
+
+    if (this.disk.preferences.autoUpload) {
+      await this.autoOutputResult(result);
+    }
+  }
+
+  /**
+   * Automatically export or upload the just-saved result per the configured server preference,
+   * removing it from the pending results queue on success.
+   * @param result Completed exam result that was just saved to SQLite.
+   */
+  private async autoOutputResult(result: ExamResults) {
+    const rawResults = await this.sqLite.getAllResultsRaw();
+    const index = rawResults.length - 1;
+    if (index < 0) {
+      return;
+    }
+
+    if (this.disk.preferences.server === ProtocolServer.Gitlab) {
+      const uploadResult = await this.resultsUploadService.uploadResult(result);
+      if (uploadResult.success) {
+        await this.sqLite.deleteSingleResult(index);
+      } else {
+        this.logger.error('Automatic upload failed: ' + uploadResult.message);
+      }
+    } else {
+      await this.exportSingleResult(index);
+    }
   }
 
   /**
