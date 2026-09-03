@@ -34,7 +34,7 @@
     </div>
   </div>
   <div class="row mt-4" *ngIf="showLogs">
-    <div class="col-12 log-textarea">
+    <div class="col-12 log-textarea" #logContainer>
       <div *ngFor="let log of logs; let i = index">
         <div class="log-entry">
           <pre>{{ log }}</pre>
