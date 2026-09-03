@@ -113,22 +113,26 @@ export const LevelUnits = {
   dB_HL: 'dB HL',
 };
 
-// import PurdueShakedown from '../../assets/protocols/purdue-shakedown/protocol.json';
 import develop from '../../assets/protocols/develop/protocol.json';
-import mini_pcc from '../../assets/protocols/mini_pcc/protocol.json';
+import tabsintExample from '../../assets/protocols/tabsint-example/protocol.json';
+import tympanExample from '../../assets/protocols/tympan-example/protocol.json';
+import wahtsExample from '../../assets/protocols/wahts-example/protocol.json';
 import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
 export const DeveloperProtocols: Record<string, ProtocolSchemaInterface> = {
-  // "Purdue Shakedown": PurdueShakedown,
   develop: develop as unknown as ProtocolSchemaInterface,
-  mini_pcc: mini_pcc as unknown as ProtocolSchemaInterface,
+  'tabsint-example': tabsintExample as unknown as ProtocolSchemaInterface,
+  'tympan-example': tympanExample as unknown as ProtocolSchemaInterface,
+  'wahts-example': wahtsExample as unknown as ProtocolSchemaInterface,
 };
 
-import WahtsDeviceTestCalibration from '../../assets/protocols/wahts-device-test/calibration.json';
 import DevelopCalibration from '../../assets/protocols/develop/calibration.json';
+import TympanExampleCalibration from '../../assets/protocols/tympan-example/calibration.json';
+import WahtsExampleCalibration from '../../assets/protocols/wahts-example/calibration.json';
 import { CalibrationFileInterface } from '../interfaces/calibration-file.interface';
 export const DeveloperProtocolsCalibration: Record<string, CalibrationFileInterface> = {
-  'wahts-device-test': WahtsDeviceTestCalibration as unknown as CalibrationFileInterface,
   develop: DevelopCalibration as unknown as CalibrationFileInterface,
+  'tympan-example': TympanExampleCalibration as unknown as CalibrationFileInterface,
+  'wahts-example': WahtsExampleCalibration as unknown as CalibrationFileInterface,
 };
 
 export const bluetoothTimeout = 5000;

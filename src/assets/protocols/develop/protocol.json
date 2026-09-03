@@ -126,6 +126,18 @@
                 "id": "CHA Wav Test"
               },
               {
+                "id": "MPANL"
+              },
+              {
+                "id": "Yes/No"
+              },
+              {
+                "id": "Integer"
+              },
+              {
+                "id": "Video"
+              },
+              {
                 "id": "End All"
               }
             ]
@@ -333,6 +345,30 @@
               "conditional": "result.response=='CHA Wav Test'",
               "target": {
                 "reference": "PlayChaWavTest"
+              }
+            },
+            {
+              "conditional": "result.response=='MPANL'",
+              "target": {
+                "reference": "mpanlResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='Yes/No'",
+              "target": {
+                "reference": "Yes/No"
+              }
+            },
+            {
+              "conditional": "result.response=='Integer'",
+              "target": {
+                "reference": "Integer"
+              }
+            },
+            {
+              "conditional": "result.response=='Video'",
+              "target": {
+                "reference": "videoDemo"
               }
             },
             {
@@ -1812,6 +1848,93 @@
             "labels": ["Not at all", "Perfectly"],
             "questions": ["Question 1", "Question 2", "Question 3"]
           }
+        }
+      ]
+    },
+    {
+      "protocolId": "mpanlResponseArea",
+      "pages": [
+        {
+          "id": "mpanl_001",
+          "title": "MPANL",
+          "instructionText": "Measures Maximum Permissible Ambient Noise Levels with a Svantek dosimeter, reported under WAHTS headset attenuation.",
+          "responseArea": {
+            "type": "mpanlResponseArea"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "Yes/No",
+      "pages": [
+        {
+          "id": "yes_no",
+          "title": "Yes/No",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "inputList": [
+              {
+                "text": "Answer yes or no to this question",
+                "inputType": "dropdown",
+                "options": ["yes", "no"]
+              }
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "Integer",
+      "pages": [
+        {
+          "id": "integer",
+          "title": "Integer",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "inputList": [
+              {
+                "text": "Here you can input an integer",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "videoDemo",
+      "pages": [
+        {
+          "id": "video_001",
+          "title": "Video",
+          "instructionText": "Plays a page-level video attachment.",
+          "video": {
+            "path": "example_video.mp4",
+            "width": "100%",
+            "autoplay": false,
+            "noSkip": false
+          },
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
         }
       ]
     }
