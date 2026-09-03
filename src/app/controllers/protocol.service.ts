@@ -26,6 +26,7 @@ import { loadingProtocolDefaults } from '../utilities/defaults';
 import { checkCalibrationFiles, checkControllers, checkUnresolvedFilePaths, protocolHasWavFiles } from '../utilities/protocol-checks.function';
 import { processProtocol } from '../utilities/process-protocol.function';
 import { initializeLoadingProtocol } from '../utilities/initialize-loading-protocol';
+import { sanitizeJsonString } from '../utilities/sanitize-json-string.function';
 
 import { protocolSchema } from '../../schema/protocol.schema';
 import { calibrationFileSchema } from '../../schema/definitions/calibration-file.schema';
@@ -155,7 +156,7 @@ export class ProtocolService {
       } else {
         const response = await this.fileService.readFile('protocol.json', this.loading.meta.contentURI);
         protocol = response?.content;
-        finalProtocol = protocol ? JSON.parse(protocol) : undefined;
+        finalProtocol = protocol ? JSON.parse(sanitizeJsonString(protocol)) : undefined;
       }
 
       if (!_.isUndefined(protocol)) {
@@ -285,7 +286,7 @@ export class ProtocolService {
       // The loaded calibration file is validated as necessary in validateIfCalledFor
       const calibrationFile = await this.fileService.readFile('calibration.json', this.loading.meta.contentURI);
       calibration = calibrationFile?.content;
-      this.loading.calibration = calibration ? JSON.parse(calibration) : undefined;
+      this.loading.calibration = calibration ? JSON.parse(sanitizeJsonString(calibration)) : undefined;
     }
   }
 
