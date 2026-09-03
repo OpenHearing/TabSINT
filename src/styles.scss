@@ -1657,6 +1657,14 @@ nav .dropdown-menu > li > a i {
   margin-bottom: 0px;
   box-shadow: 0 1px 6px 0px rgba(0, 0, 0, 0.25);
 }
+
+/* Bootstrap's .sticky-top sets z-index: 1020 on the app bar, which sits above
+   Angular Material's CDK overlay container (z-index: 1000). Without this, any
+   mat-menu/mat-dialog opened from the app bar (e.g. device indicator popovers)
+   renders behind the app bar instead of on top of it. */
+.cdk-overlay-container {
+  z-index: 1030;
+}
 @media (max-width: 500px) {
   .navbar-fixed-top {
     padding-top: 8px;
