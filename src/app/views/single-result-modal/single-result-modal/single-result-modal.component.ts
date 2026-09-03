@@ -10,6 +10,7 @@ import { Notifications } from '../../../services/notifications.service';
 import { Logger } from '../../../services/logger.service';
 import { DialogType } from '../../../utilities/constants';
 import { ResultsUploadService } from '../../../controllers/results-upload.service';
+import { DialogDataInterface } from '../../../interfaces/dialog-data.interface';
 
 @Component({
   selector: 'app-single-result-modal',
@@ -85,6 +86,22 @@ export class SingleResultModalComponent implements OnInit, OnDestroy {
   async export() {
     await this.resultsService.exportSingleResult(this.index);
     this.close();
+  }
+
+  /**
+   * Prompt for confirmation, then delete single exam result from tabsint.
+   */
+  confirmDelete() {
+    const msg: DialogDataInterface = {
+      title: 'Confirm',
+      content: 'Are you sure you want to delete this result?',
+      type: DialogType.Confirm,
+    };
+    this.notifications.alert(msg).subscribe(result => {
+      if (result === 'OK') {
+        this.delete();
+      }
+    });
   }
 
   /**
