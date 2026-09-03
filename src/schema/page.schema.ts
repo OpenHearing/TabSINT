@@ -35,6 +35,10 @@ import { bekesyLikeSchema } from './response-areas/bekesy-like.schema';
 export const pageSchema: JSONSchemaType<PageDefinition> = {
   $id: 'page_base',
   type: 'object',
+  // A page carrying "reference" is a ProtocolReferenceInterface, not a full page, regardless of
+  // whether it also has "id" (see isPageDefinition in type.guard.ts) - excluded here so the two
+  // stay distinguishable under oneOf even when both fields are present on one object.
+  not: { required: ['reference'] },
   properties: {
     id: { type: 'string' },
     skipIf: { type: 'string', nullable: true },
