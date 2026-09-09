@@ -68,6 +68,10 @@ export class ExamService {
   results: ResultsInterface;
   state: StateInterface;
 
+  /** True while a feedback-delayed submit is counting down, so response areas can show feedback. */
+  isShowingFeedback = false;
+  private static readonly feedbackDelayMs = 1250;
+
   pageSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
@@ -159,6 +163,20 @@ export class ExamService {
    */
   submit() {
     this.submitDefault();
+  }
+
+  /** Overwrite submit with one that leaves feedback on screen before advancing.
+   * @summary Raises isShowingFeedback, waits feedbackDelayMs, then restores and calls submitDefault.
+   */
+  delaySubmitForFeedback() {
+    this.submit = () => {
+      this.isShowingFeedback = true;
+      setTimeout(() => {
+        this.submit = this.submitDefault;
+        this.submit();
+        this.isShowingFeedback = false;
+      }, ExamService.feedbackDelayMs);
+    };
   }
 
   gradeResponsesDefault() {
@@ -408,6 +426,7 @@ export class ExamService {
   }
 
   private resetFunctionsToDefaults() {
+    this.isShowingFeedback = false;
     this.reset = this.resetDefault;
     this.submit = this.submitDefault;
     this.submitPartial = this.submitPartialDefault;
