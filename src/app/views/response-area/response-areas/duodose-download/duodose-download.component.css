@@ -1,7 +1,7 @@
 .tableDiv {
-  height:30vh; 
-  display:inline-block; 
-  overflow-y:scroll;
+  height: 30vh;
+  display: inline-block;
+  overflow-y: scroll;
 }
 
 table {
@@ -14,7 +14,7 @@ table thead tr th {
   position: sticky;
   z-index: 1;
   top: 0;
-  background: #fff; 
+  background: #fff;
 }
 
 thead th {

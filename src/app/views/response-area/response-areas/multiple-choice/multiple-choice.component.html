@@ -1,13 +1,16 @@
 <div>
   <span class="multi-choice-container">
-    <div class="row" *ngFor="let choice of choices" [ngStyle]="{'padding-bottom':paddingBottom}">
+    <div class="row" *ngFor="let choice of choices" [ngStyle]="{ 'padding-bottom': paddingBottom }">
       <button
         [class]="multipleChoiceBtnClass(choice)"
-        [ngStyle]="{'font-size':choice.fontSize,'background':(choice.backgroundColor)||(choice.disable&&'#cccccc'),'color':(choice.textColor)||(choice.disable&&'#666666')}" 
+        [ngStyle]="{
+          'font-size': choice.fontSize,
+          background: choice.backgroundColor || (choice.disable && '#cccccc'),
+          color: choice.textColor || (choice.disable && '#666666'),
+        }"
         (click)="choose(choice.id)"
         name="{{ choice.text }}"
-        [innerHtml]="choice.text"> 
-      </button>
+        [innerHtml]="choice.text"></button>
     </div>
 
     <div class="row" *ngIf="otherSelected">

@@ -1,9 +1,9 @@
 function testPreprocess() {
-    window.tabsint.resultsModel.getResults().currentExam.flags["integerFlag2"]=5;
-    window.tabsint.resultsModel.getResults().currentExam.flags["integerFlag"]+=1;
-    window.tabsint.logger.debug("Custom preprocess function running");
-    Object.keys(window.tabsint.resultsModel.getResults().currentExam.flags).forEach(key => {
-        const value = window.tabsint.resultsModel.getResults().currentExam.flags[key];
-        window.tabsint.logger.debug(`flag variable: ${key} is ${value}`);
-    });
+  window.tabsint.resultsModel.getResults().currentExam.flags["integerFlag2"] = 5;
+  window.tabsint.resultsModel.getResults().currentExam.flags["integerFlag"] += 1;
+  window.tabsint.logger.debug("Custom preprocess function running");
+  Object.keys(window.tabsint.resultsModel.getResults().currentExam.flags).forEach(key => {
+    const value = window.tabsint.resultsModel.getResults().currentExam.flags[key];
+    window.tabsint.logger.debug(`flag variable: ${key} is ${value}`);
+  });
 }

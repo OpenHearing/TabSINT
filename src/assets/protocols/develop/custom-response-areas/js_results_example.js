@@ -16,6 +16,6 @@ resDisp.innerHTML = JSON.stringify(window.tabsint.resultsModel.getResults().curr
 
 // Adding a div html field that displays if 1+1=2
 const conditionalEle = document.getElementById("conditionalDiv");
-if (1+1==2) {
-    conditionalEle.style.display = "block";
+if (1 + 1 == 2) {
+  conditionalEle.style.display = "block";
 }

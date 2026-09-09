@@ -90,7 +90,9 @@ describe('ProtocolService', () => {
       protocolService.disk.availableProtocolsMeta[name] = meta;
       const result = await protocolService.load(protocolService.disk.availableProtocolsMeta[name]);
       expect(result).withContext(name).toBeTrue();
-      expect(protocolService.protocolModel.activeProtocol?.errors ?? []).withContext(name).toEqual([]);
+      expect(protocolService.protocolModel.activeProtocol?.errors ?? [])
+        .withContext(name)
+        .toEqual([]);
     }
   });
 
