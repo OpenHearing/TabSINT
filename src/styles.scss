@@ -481,13 +481,6 @@ h2.welcome {
   width: 100%;
 }
 
-.modal-body .ngx-json-viewer[_ngcontent-ng-c153363216] {
-  font-size: 22px;
-  background-color: #ffffff;
-  height: 300px;
-  overflow-y: auto;
-}
-
 @media (max-width: 500px) {
   .modal-body {
     font-size: 18px;
@@ -1608,12 +1601,6 @@ nav .dropdown-menu > li > a i {
   align-items: center;
 }
 
-.nav-link.ng-binding {
-  display: flex;
-  align-self: stretch;
-  align-items: center;
-}
-
 .skip-to-content {
   background: #31708f;
   left: 45%;
@@ -1999,64 +1986,6 @@ table.fixed .row-Server.results {
   background-color: white;
   opacity: 0.5;
   filter: alpha(opacity=50);
-}
-
-.sample-show-hide {
-  position: relative;
-  display: block;
-  width: 100%;
-  height: 1000px;
-}
-
-.sample-show-hide.ng-animate {
-  transition: all 0.3s ease-in-out;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  opacity: 1;
-  width: 100%;
-  overflow: hidden;
-}
-
-.sample-show-hide.ng-hide {
-  opacity: 0;
-}
-
-.animate-switch-container {
-  position: relative;
-  display: block;
-  width: 100%;
-  height: 1000px;
-}
-
-.animate-switch.ng-animate {
-  transition: all 0.3s ease-in-out;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  overflow: hidden;
-}
-
-.animate-switch.ng-leave.ng-leave-active {
-  left: -100%;
-  opacity: 0;
-}
-.animate-switch.ng-enter {
-  left: 100%;
-  opacity: 0;
-}
-.animate-switch.ng-leave {
-  left: 0;
-  opacity: 1;
-}
-.animate-switch.ng-enter.ng-enter-active {
-  left: 0;
-  opacity: 1;
 }
 
 .axis path,
