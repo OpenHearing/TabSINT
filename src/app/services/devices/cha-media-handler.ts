@@ -14,6 +14,31 @@ import { Tasks } from '../tasks.service';
 import { DirectoryEntryObject } from '../../interfaces/devices/device-responses.interface';
 
 /**
+ * Attribute bit set on directory entries in a CHA directory listing. Entries without it are files.
+ */
+const DIRECTORY_ATTRIBUTE_MASK = 0x10;
+
+/**
+ * Determine whether a CHA directory listing entry is a directory rather than a file.
+ *
+ * @param entry The directory listing entry to check.
+ * @returns True if the entry is a directory.
+ */
+function isDirectoryEntry(entry: DirectoryEntryObject): boolean {
+  return (entry.Attributes & DIRECTORY_ATTRIBUTE_MASK) !== 0;
+}
+
+/**
+ * Determine whether a CHA directory listing entry is a file rather than a directory.
+ *
+ * @param entry The directory listing entry to check.
+ * @returns True if the entry is a file.
+ */
+function isFileEntry(entry: DirectoryEntryObject): boolean {
+  return !isDirectoryEntry(entry);
+}
+
+/**
  * CHA supporting class which handles logic for media transferring with device adapter.
  */
 export class ChaMediaHandler {
@@ -151,12 +176,8 @@ export class ChaMediaHandler {
     // Make the directories and file CRC lists at the current level
     const entries: DirectoryEntryObject[] = response['msg'][1];
     if (entries.length > 0) {
-      chaCrcs = entries.filter(function (entry) {
-        return !(entry.Attributes & 16);
-      });
-      chaDirCrcs = entries.filter(function (entry) {
-        return entry.Attributes & 16;
-      });
+      chaCrcs = entries.filter(isFileEntry);
+      chaDirCrcs = entries.filter(isDirectoryEntry);
     } else {
       const response = await this.adapter.makeDirectory(device, chaDirectoryName, 0x2000);
       if (!isValidDeviceResponse(response)) {
@@ -174,12 +195,8 @@ export class ChaMediaHandler {
       if (isGetDirectoryResponse(response)) {
         const entries = response['msg'][1];
         if (entries.length > 0) {
-          chaFiles = entries.filter(function (entry) {
-            return !(entry.Attributes & 16);
-          });
-          chaDirectories = entries.filter(function (entry) {
-            return entry.Attributes & 16;
-          });
+          chaFiles = entries.filter(isFileEntry);
+          chaDirectories = entries.filter(isDirectoryEntry);
         } else {
           chaDirectories = [];
           chaFiles = [];
@@ -201,18 +218,14 @@ export class ChaMediaHandler {
         tabletDirectories.push(info.uri); // save this for recursion later
 
         // is the directory already on the cha?
-        const tmpIndCrc = chaDirCrcs.findIndex(function (chaDirCrc) {
-          return chaDirCrc.Path === dirCrc;
-        });
+        const tmpIndCrc = chaDirCrcs.findIndex(chaDirCrc => chaDirCrc.Path === dirCrc);
         if (tmpIndCrc >= 0) {
           mutableLists.equalDirList.push(chaTarget); // for debugging
           // remove from the directories list.
           chaDirCrcs.splice(tmpIndCrc, 1); // any remaining should be deleted if deleting non-empty directories by crc ever becomes possible
 
           // messy, but have to build a human-readable path list separately - can't recurse into a dir to delete files using the crc because we don't know the actual name!
-          const tmpIndDir = chaDirectories.findIndex(function (chaDir) {
-            return chaDir.Path === fileNameUpper;
-          });
+          const tmpIndDir = chaDirectories.findIndex(chaDir => chaDir.Path === fileNameUpper);
           if (tmpIndDir >= 0) {
             chaDirectories.splice(tmpIndDir, 1); // remove from the list it is already on device
           }
@@ -233,17 +246,13 @@ export class ChaMediaHandler {
         const fileCrc = numberToHex(calculateCRC32(combinedArray));
         const fileSize = await this.getFileSize(this.joinPath(currentPath, info.name));
         // Find out if this file is on the cha already
-        const tmpInd = chaCrcs.findIndex(function (chaCrc) {
-          return chaCrc.Path === fileCrc;
-        });
+        const tmpInd = chaCrcs.findIndex(chaCrc => chaCrc.Path === fileCrc);
         if (tmpInd >= 0) {
           mutableLists.equalFileList.push(chaTarget); // for debugging
           chaCrcs.splice(tmpInd, 1); // remove from the chaCrcs list.  any remaining after this entries.forEach loop should be deleted.
 
           // messy, but have to build a human-readable path list separately
-          const tmpIndFile = chaFiles.findIndex(function (chaFile) {
-            return chaFile.Path === info.name.toUpperCase();
-          });
+          const tmpIndFile = chaFiles.findIndex(chaFile => chaFile.Path === info.name.toUpperCase());
           if (tmpIndFile >= 0) {
             chaFiles.splice(tmpIndFile, 1); // remove from the list it is already on device
           }
@@ -337,7 +346,7 @@ export class ChaMediaHandler {
     let bytesToTransfer = 0;
     let bytesTransferred = 0;
     let previousFileBytes = 0;
-    transferList.forEach(function (singleFile) {
+    transferList.forEach(singleFile => {
       bytesToTransfer += singleFile.fileSize;
     });
     const kBytesToTransfer = Math.round(bytesToTransfer / 1024);
@@ -427,16 +436,12 @@ export class ChaMediaHandler {
       if (isGetDirectoryResponse(response)) {
         const entries: DirectoryEntryObject[] = response['msg'][1];
         if (entries.length > 0) {
-          const files = entries.filter(function (entry) {
-            return !(entry.Attributes & 16);
-          });
+          const files = entries.filter(isFileEntry);
           for (const file of files) {
             const fullFilePath = this.joinPath(currentDirectory, file.Path);
             await this.adapter.deleteFile(device, fullFilePath);
           }
-          const dirs = entries.filter(function (entry) {
-            return entry.Attributes & 16;
-          });
+          const dirs = entries.filter(isDirectoryEntry);
           for (const dir of dirs) {
             const fullDirectoryPath = this.joinPath(currentDirectory, dir.Path);
             await deleteRecursively(fullDirectoryPath);

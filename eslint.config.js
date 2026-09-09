@@ -32,10 +32,17 @@ module.exports = tseslint.config(
           style: "kebab-case",
         },
       ],
-      "@typescript-eslint/no-inferrable-types": ["error", {
-        "ignoreParameters": true,
-        "ignoreProperties": true
-      }]
+      "@typescript-eslint/no-inferrable-types": [
+        "error",
+        {
+          ignoreParameters: true,
+          ignoreProperties: true,
+        },
+      ],
+      // Prefer arrow callbacks so `this` keeps its lexical meaning. Callbacks that
+      // reference `this` are exempt, which covers d3's `.each()`/`.on()` handlers
+      // where d3 binds `this` to the DOM node.
+      "prefer-arrow-callback": ["error", { allowNamedFunctions: true }],
     },
   },
   {
