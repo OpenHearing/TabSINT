@@ -25,6 +25,18 @@ const FREQUENCIES = [
 const EXPECTED_DATA_BYTES = 62;
 
 /**
+ * Whether a rejection from BleClient is the transient "Write failed" the Svantek reports when it is
+ * not yet ready for the next command. The message arrives either as an Error or as a plain object
+ * with a `msg` field, depending on where in the BLE stack it originated.
+ */
+function isWriteFailedError(error: unknown): boolean {
+  if (error instanceof Error) {
+    return error.message.includes('Write failed');
+  }
+  return typeof error === 'object' && error !== null && (error as { msg?: unknown }).msg === '"Write failed"';
+}
+
+/**
  * Svantek dosimeter device manager. Uses raw BLE via BleClient (same pattern as TympanManager).
  * Does not use the tabsintcha plugin — the Svantek protocol is entirely different from CHA devices.
  */
@@ -201,8 +213,8 @@ export class SvantekManager implements IDeviceManager {
   async startRecording(device: IDevice): Promise<void> {
     try {
       await this.writeAscii(device.deviceId, CHAR_EXCHANGE_UUID, '#1,S1;');
-    } catch (e: any) {
-      if (e?.message?.includes('Write failed') || e?.msg === '"Write failed"') {
+    } catch (e: unknown) {
+      if (isWriteFailedError(e)) {
         await new Promise(resolve => setTimeout(resolve, 200));
         await this.writeAscii(device.deviceId, CHAR_EXCHANGE_UUID, '#1,S1;');
       } else {

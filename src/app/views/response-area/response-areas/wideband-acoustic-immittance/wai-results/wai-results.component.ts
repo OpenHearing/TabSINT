@@ -17,7 +17,7 @@ export class WAIResultsComponent implements AfterViewInit {
   @Input() margin!: { top: number; right: number; bottom: number; left: number; spacerW: number; spacerH: number };
   @Input() normativeAbsorbanceData!: NormativeDataInterface[];
 
-  svg: any;
+  svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, unknown> | undefined;
 
   ngAfterViewInit(): void {
     this.svg = this.createResultsPlot();

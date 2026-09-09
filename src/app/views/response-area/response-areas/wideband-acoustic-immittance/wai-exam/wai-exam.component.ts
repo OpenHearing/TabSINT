@@ -7,7 +7,7 @@ import { ResultsModel } from '../../../../../models/results/results-model.servic
 import { ExamService } from '../../../../../controllers/exam.service';
 import { ResultsInterface } from '../../../../../models/results/results.interface';
 import { PageInterface } from '../../../../../models/page/page.interface';
-import { WAIInterface, WAIResultsInterface } from './wai-exam.interface';
+import { WAIExamProperties, WAIInterface, WAIResultsInterface } from './wai-exam.interface';
 import { NormativeDataInterface } from '../../../../../interfaces/normative-data-interface';
 import { ButtonTextService } from '../../../../../controllers/button-text.service';
 import { IDevice } from '../../../../../interfaces/devices/device.interface';
@@ -187,7 +187,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
     const deviceList = await this.devicesService.getDeviceOrDefault(this.tabsintId, this.allowableDevices);
     this.device = await this.devicesService.confirmSingleDevice(deviceList);
     if (this.device) {
-      const examProperties: any = {
+      const examProperties: WAIExamProperties = {
         FStart: this.fStart,
         FEnd: this.fEnd,
         SweepDuration: this.sweepDuration,
@@ -206,7 +206,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
         WriteFPLCalibration: this.writeFPLCalibration,
       };
       if (this.recordFileFolder != undefined) {
-        examProperties['Filename'] = this.recordFileFolder + '/' + getCurrentDatetime() + '.WAV';
+        examProperties.Filename = this.recordFileFolder + '/' + getCurrentDatetime() + '.WAV';
       }
       await this.devicesService.queueExam(this.device, 'WAI', examProperties);
     } else {

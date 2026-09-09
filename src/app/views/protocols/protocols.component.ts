@@ -88,7 +88,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
       .map(([key, value]) => ({ key, value }));
   }
 
-  trackByIndex(index: number, item: any): number {
+  trackByIndex(index: number, item: unknown): number {
     return index;
   }
 
@@ -141,7 +141,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
           await this.addLocalProtocolFile(file, protocolName!, protocolsFolderUri!);
         }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.logger.error('Error when adding protocol:' + JSON.stringify(error));
       this.notifications
         .alert({
@@ -240,7 +240,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
           })
         );
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.handleGitlabError(error);
     } finally {
       this.tasks.deregister('Add Gitlab Protocol');
@@ -449,7 +449,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
           })
         );
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.handleGitlabError(error);
     } finally {
       this.tasks.deregister('Update Protocol');

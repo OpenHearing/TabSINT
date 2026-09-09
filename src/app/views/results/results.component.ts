@@ -70,7 +70,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
     this.results = await this.resultsService.getAllResults();
   }
 
-  trackByIndex(index: number, item: any): number {
+  trackByIndex(index: number, item: unknown): number {
     return index;
   }
 

@@ -196,10 +196,9 @@ export class ResultsUploadService {
       this.logger.debug(`Successfully uploaded exam result to '${folderName}'.`);
 
       return { success: true, message: `Successfully uploaded result to GitLab at ${gitlabGroup}/results` };
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.logger.error('Upload failed: ' + error);
-      return { success: false, message: error.message };
+      return { success: false, message: error instanceof Error ? error.message : String(error) };
     }
   }
 

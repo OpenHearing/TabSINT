@@ -226,7 +226,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     return this.isPaused ? 'visible' : 'hidden';
   }
 
-  trackByIndex(index: number, item: any): number {
+  trackByIndex(index: number, item: unknown): number {
     return index;
   }
 
