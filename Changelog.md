@@ -1,10 +1,11 @@
 Changelog
 =========
 
-v5.0.0   
+v5.0.0
 ------
 
 Feature
+
 - Upgrade to Angular 17 and Typescript
 - Re-architected source code
 - Connection with a Tympan

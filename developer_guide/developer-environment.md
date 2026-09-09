@@ -4,71 +4,72 @@
 
 To build and develop the TabSINT software, you must set up your local machine with the appropriate developer dependencies.
 
-All the following commands should be run on your WSL machine unless specified otherwise. 
+All the following commands should be run on your WSL machine unless specified otherwise.
 
 ### Install [Git](https://git-scm.com/)
 
 ### Install NVM (Node Version Manager)
 
 1. **Install `curl`**: First, ensure you have `curl` installed. Run the following command:
-   
-    ```bash
-    sudo apt install curl
-    ```
+
+   ```bash
+   sudo apt install curl
+   ```
 
 2. **Download and Install nvm**: Use `curl` to download and install nvm version 0.39.4:
 
-    ```bash
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh | bash
-    ```
+   ```bash
+   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh | bash
+   ```
 
 3. **Load nvm**: To start using `nvm`, add the following lines to your `.bashrc` file:
 
-    ```bash
-    export NVM_DIR="$HOME/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-    ```
+   ```bash
+   export NVM_DIR="$HOME/.nvm"
+   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+   [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+   ```
 
 4. **Reload .bashrc**: Apply the changes made to `.bashrc`:
 
-    ```bash
-    source ~/.bashrc
-    ```
+   ```bash
+   source ~/.bashrc
+   ```
 
 5. **Verify nvm Installation**: Confirm that `nvm` is installed correctly by checking its version:
 
-    ```bash
-    nvm -v
-    ```
-  (If nvm -v does not work, try restarting the terminal and trying nvm -v or command -v nvm)
+   ```bash
+   nvm -v
+   ```
 
-  ### Install Node.js and npm after installing Nvm
+(If nvm -v does not work, try restarting the terminal and trying nvm -v or command -v nvm)
+
+### Install Node.js and npm after installing Nvm
 
 1. **Install the Latest Node.js Version**: Use `nvm` to install the latest version of Node.js, which includes npm:
 
-    ```bash
-    nvm install node
-    ```
+   ```bash
+   nvm install node
+   ```
 
 2. **Install a Specific Node.js Version**: The project requires a version of Node.js >= 22.0.0 (e.g., 22.4.0), install it using:
 
-    ```bash
-    nvm install v22.4.0
-    ```
+   ```bash
+   nvm install v22.4.0
+   ```
 
 3. **Verify Node.js and npm Installation**: Check the installed versions of Node.js and npm:
 
-    ```bash
-    node -v
-    npm -v
-    ```
+   ```bash
+   node -v
+   npm -v
+   ```
 
 4. **Set Default Node.js Version**: Use the installed version:
 
-    ```bash
-    nvm use v22.4.0
-    ```
+   ```bash
+   nvm use v22.4.0
+   ```
 
 By following these steps, you will have nvm, Node.js, and npm installed and properly configured on your system.
 
@@ -76,26 +77,28 @@ By following these steps, you will have nvm, Node.js, and npm installed and prop
 
 1. **Install OpenJDK 21**: The project requires Java Version 21 Use the following command to install OpenJDK 21:
 
-    ```bash
-    sudo apt-get install openjdk-21-jdk
-    ```
+   ```bash
+   sudo apt-get install openjdk-21-jdk
+   ```
 
 2. **Verify Java Installation**: Confirm the Java installation by checking its version:
 
-    ```bash
-    java -version
+   ```bash
+   java -version
+
+   ```
 
 3. **Export JAVA_HOME Variable**: Set the `JAVA_HOME` environment variable to the root of the JDK directory. Add the following line to your `.bashrc` file:
 
-    ```bash
-    export JAVA_HOME="/usr/lib/jvm/java-21-openjdk-amd64"
-    ```
+   ```bash
+   export JAVA_HOME="/usr/lib/jvm/java-21-openjdk-amd64"
+   ```
 
-    After adding the line, reload your `.bashrc` file to apply the changes:
+   After adding the line, reload your `.bashrc` file to apply the changes:
 
-    ```bash
-    source ~/.bashrc
-    ``` 
+   ```bash
+   source ~/.bashrc
+   ```
 
 You should see output similar to the following:
 
@@ -109,104 +112,103 @@ OpenJDK 64-Bit Server VM (build 21.0.11+10-1-24.04.2-Ubuntu, mixed mode, sharing
 
 1. **Download Command Line Tools**:
 
-    ```bash
-    curl https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -o /tmp/cmd-tools.zip
-    ```
+   ```bash
+   curl https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -o /tmp/cmd-tools.zip
+   ```
 
 2. **Create Directory for Android Tools**:
 
-    ```bash
-    mkdir -p $HOME/android/cmdline-tools
-    ```
+   ```bash
+   mkdir -p $HOME/android/cmdline-tools
+   ```
 
 3. **Unzip the Downloaded File**:
 
-    ```bash
-    unzip /tmp/cmd-tools.zip -d $HOME/android/cmdline-tools
-    mv $HOME/android/cmdline-tools/cmdline-tools $HOME/android/cmdline-tools/latest
-    rm /tmp/cmd-tools.zip
-    ```
+   ```bash
+   unzip /tmp/cmd-tools.zip -d $HOME/android/cmdline-tools
+   mv $HOME/android/cmdline-tools/cmdline-tools $HOME/android/cmdline-tools/latest
+   rm /tmp/cmd-tools.zip
+   ```
 
 4. **Update Your .bashrc File**:
 
-    ```bash
-    export ANDROID_HOME="$HOME/android"
-    export ANDROID_SDK_ROOT="${ANDROID_HOME}"
-    export PATH="${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${PATH}"
-    ```
+   ```bash
+   export ANDROID_HOME="$HOME/android"
+   export ANDROID_SDK_ROOT="${ANDROID_HOME}"
+   export PATH="${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${PATH}"
+   ```
 
 5. **Reload .bashrc**:
 
-    ```bash
-    source ~/.bashrc
-    ```
+   ```bash
+   source ~/.bashrc
+   ```
 
 ### Install Android Platform Tools, Platforms, and Build Tools (Version 36)
 
 1. **Download and Install Platform Tools Version 36**:
 
-    ```bash
-    curl https://dl.google.com/android/repository/platform-tools_r36.0.2-linux.zip -o /tmp/platform-tools.zip
-    unzip /tmp/platform-tools.zip -d $HOME/android/
-    rm /tmp/platform-tools.zip
-    ```
+   ```bash
+   curl https://dl.google.com/android/repository/platform-tools_r36.0.2-linux.zip -o /tmp/platform-tools.zip
+   unzip /tmp/platform-tools.zip -d $HOME/android/
+   rm /tmp/platform-tools.zip
+   ```
 
 2. **Install Platforms and Build Tools Using sdkmanager**:
 
-    ```bash
-    sdkmanager "platforms;android-36" "build-tools;36.0.0"
-    ```
+   ```bash
+   sdkmanager "platforms;android-36" "build-tools;36.0.0"
+   ```
 
 ### Verify the Installation
 
 1. **Check ADB Version**:
 
-    ```bash
-    adb version
-    ```
+   ```bash
+   adb version
+   ```
 
-    It should look something like this:
+   It should look something like this:
 
-    ```
-    Android Debug Bridge version 1.0.41
-    Version 36.0.0-13206524
-    Installed as /usr/local/android-sdk/platform-tools/adb
-    Running on Linux 5.15.167.4-microsoft-standard-WSL2 (x86_64)
-    ```
+   ```
+   Android Debug Bridge version 1.0.41
+   Version 36.0.0-13206524
+   Installed as /usr/local/android-sdk/platform-tools/adb
+   Running on Linux 5.15.167.4-microsoft-standard-WSL2 (x86_64)
+   ```
 
 2. **Check Build Tools and Platforms**:
 
-    ```bash
-    ls $ANDROID_HOME/build-tools/
-    ls $ANDROID_HOME/platforms/
-    ```
+   ```bash
+   ls $ANDROID_HOME/build-tools/
+   ls $ANDROID_HOME/platforms/
+   ```
 
 3. **Additional Setup for Windows**:
-   
-    The ADB platform-tools should be installed on Windows as well. Use the Android Studio Steps in the Windows -> Android section of this document.
+
+   The ADB platform-tools should be installed on Windows as well. Use the Android Studio Steps in the Windows -> Android section of this document.
 
 4. **Set Up ADB Server on Windows**:
 
-    Once Android is installed properly on Windows, run the following commands in a Windows Terminal:
+   Once Android is installed properly on Windows, run the following commands in a Windows Terminal:
 
-    ```bash
-    adb kill-server
-    adb -a nodaemon server
-    ```
+   ```bash
+   adb kill-server
+   adb -a nodaemon server
+   ```
 
 5. **Connect ADB from WSL**:
 
-    Then run the following commands on WSL:
+   Then run the following commands on WSL:
 
-    ```bash
-    export ADB_SERVER_SOCKET=tcp:$(tail -1 /etc/resolv.conf | cut -d' ' -f2):5037 or export ADB_SERVER_SOCKET=<your ip-address>:5037
-    adb devices
-    ```
+   ```bash
+   export ADB_SERVER_SOCKET=tcp:$(tail -1 /etc/resolv.conf | cut -d' ' -f2):5037 or export ADB_SERVER_SOCKET=<your ip-address>:5037
+   adb devices
+   ```
 
-    If you have a device connected, it should show up in the list of devices. The export command can be added to your `.bashrc` file if needed, or you can run it when using WSL.
+   If you have a device connected, it should show up in the list of devices. The export command can be added to your `.bashrc` file if needed, or you can run it when using WSL.
 
-
-<!-- ### Install ADB 
+<!-- ### Install ADB
 
 **Versions need to match from WSL to Windows in order for this to work properly; version currently used 1.0.41**
 
@@ -214,21 +216,21 @@ OpenJDK 64-Bit Server VM (build 21.0.11+10-1-24.04.2-Ubuntu, mixed mode, sharing
 mkdir -p /usr/local/android-sdk
 cd /usr/local/android-sdk/
 curl -OL https://dl.google.com/android/repository/platform-tools-latest-linux.zip
-unzip platform-tools-latest-linux.zip 
-rm -f platform-tools-latest-linux.zip 
+unzip platform-tools-latest-linux.zip
+rm -f platform-tools-latest-linux.zip
 ln -s /usr/local/android-sdk/platform-tools/adb /usr/bin/adb  # it's okay if this one doesn't work
-export PATH=/usr/local/android-sdk/platform-tools:${PATH} 
+export PATH=/usr/local/android-sdk/platform-tools:${PATH}
 echo "export PATH=/usr/local/android-sdk/platform-tools:${PATH}"
 adb version
 
 ```
 The ADB platform-tools should be installed on Windows as well. Use the Android Studio Steps in the Windows -> Android section of this document.
-Once Android is installed properly on windows, run the following commands in a Windows Terminal: 
+Once Android is installed properly on windows, run the following commands in a Windows Terminal:
 ```bash
 adb kill-server
 adb -a nodaemon server
-```  
-Then run the following commands on WSL: 
+```
+Then run the following commands on WSL:
 ```bash
 export ADB_SERVER_SOCKET=tcp:$(tail -1 /etc/resolv.conf | cut -d' ' -f2):5037
 adb devices
@@ -237,27 +239,27 @@ adb devices
 If you have a device connected it should show up in the list of devices. The export command can be added to your .bashrc file is needed or you can run it when running WSL.
 
 ### Repositories
-Make sure you have both the tabsint and the cordova-plugin-creare-cha repositories on your machine. 
-Setup a `tabsint.json` file in the config folder in tabsint similar to the following: 
+Make sure you have both the tabsint and the cordova-plugin-creare-cha repositories on your machine.
+Setup a `tabsint.json` file in the config folder in tabsint similar to the following:
 ```json
 {
 
     "build": "tabsint",
-  
+
     "description": "Official tabsint release for android",
-  
+
     "cordovaPlugins": [
-  
+
       {
-  
+
         "package": "com.creare.cordova.cha",
-  
+
         "src": "/home/<username>/repos/cordova-plugin-creare-cha/"
-  
+
       }
-  
+
     ]
-  
+
 }
 ```
 Change the `src` to work with your file path. -->
@@ -290,6 +292,7 @@ export PLATFORM_TOOLS="/usr/local/android-sdk/platform-tools"
 export JAVA_HOME="/usr/lib/jvm/java-1.21.0-openjdk-amd64/"
 export PATH="$ANDROID_HOME/cmdline-tools:$ANDROID_HOME/cmdline-tools/bin:$PLATFORM_TOOLS:$JAVA_HOME:$PATH"
 ``` -->
+
 ### Gradle
 
 Install Gradle using 'apt install gradle'

@@ -24,7 +24,7 @@ This model can be used to interact with the TabSINT results to read and/or write
 
 ### Page Model
 
-The page model contains everything about the current page. To grab information about the page, use the following command: `window.tabsint.pageModel.getPage();`. See `src/app/models/page/page.service.ts` and its adjacent interface for more details. 
+The page model contains everything about the current page. To grab information about the page, use the following command: `window.tabsint.pageModel.getPage();`. See `src/app/models/page/page.service.ts` and its adjacent interface for more details.
 
 ### Protocol Model
 
