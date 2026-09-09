@@ -1,5 +1,4 @@
 import { CalibrationExamInterface } from '../views/response-area/response-areas/calibration-exam/calibration-exam-component/calibration-exam.interface';
-import { PageTypes } from '../types/custom-types';
 import { ManualAudiometryInterface } from '../views/response-area/response-areas/manual-audiometry/manual-audiometry.interface';
 import { MultipleChoiceInterface } from '../views/response-area/response-areas/multiple-choice/multiple-choice.interface';
 import { TextBoxResultViewerInterface } from '../views/response-area/response-areas/textbox-result-viewer/textbox-result-viewer.interface';
@@ -126,7 +125,12 @@ export interface DosimetryInterface {
 
 export interface FollowOnInterface {
   conditional: string;
-  target: PageTypes;
+
+  /**
+   * The sub-protocol or page to queue when the conditional matches. Only protocol references are
+   * supported; inline pages and inline sub-protocols are rejected by the schema.
+   */
+  target: ProtocolReferenceInterface;
 }
 
 export interface ProtocolReferenceInterface {

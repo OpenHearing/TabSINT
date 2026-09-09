@@ -155,7 +155,6 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
     }
 
     if (page.responseArea) {
-      // TODO: deal with specific response area processing here
       switch (page.responseArea.type) {
         case 'mrtResponseArea': {
           const responseArea = page.responseArea as MrtExamInterface;

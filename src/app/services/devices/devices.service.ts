@@ -114,7 +114,9 @@ export class DevicesService {
       metadata.model = info.model ?? 'Unknown';
       metadata.os = info.operatingSystem;
       metadata.other = `Battery level: ${batteryInfo.batteryLevel ?? 'Unknown'}, Language: ${languageCode.value ?? 'Unknown'}`;
-      // TODO: Need to determine metadata.diskSpace following realDiskFree removal in Capacitor V7
+      // metadata.diskSpace is left unset: @capacitor/device exposes no disk API since realDiskFree
+      // was removed, so populating it needs a native getFreeDiskSpace() added to the tabsintfs
+      // plugin. Legacy TabSINT reported free space in MB and warned operators below 200 MB.
       this.hostMetadataSubject.next(metadata);
       this.logger.debug('Device info processed -- \n' + JSON.stringify(metadata));
     } catch (err) {

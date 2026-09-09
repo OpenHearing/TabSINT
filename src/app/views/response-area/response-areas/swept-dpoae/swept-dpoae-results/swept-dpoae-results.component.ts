@@ -17,8 +17,7 @@ export class SweptDpoaeResultsComponent extends DpoaeResultsBaseComponent<SweptD
   @Input() xTicks!: number[];
 
   protected createResultsPlot() {
-    // TODO: Do I need to filter data? Probably not after I get real firmware.
-    const filteredData = this.filterSweptDpoaeResults(this.results);
+    const series = this.plottableSeries(this.results);
 
     const [yClampMin, yClampMax] = DPOAE_Y_AXIS_DOMAIN;
     const yScale = d3.scaleLinear().domain(DPOAE_Y_AXIS_DOMAIN).range([this.height, 0]);
@@ -37,68 +36,27 @@ export class SweptDpoaeResultsComponent extends DpoaeResultsBaseComponent<SweptD
 
     // Plot each series indexed by the nominal F2 test frequency (rather than each series' own
     // measured frequency) so the four lines share a common x-axis position per test point.
-    const f2Freq = filteredData.DpLow.F2Frequency;
-    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.F1.Amplitude, { ...DPOAE_SERIES_STYLE.F1, yClampMin, yClampMax });
-    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.F2.Amplitude, { ...DPOAE_SERIES_STYLE.F2, yClampMin, yClampMax });
-    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.DpLow.Amplitude, { ...DPOAE_SERIES_STYLE.DpLow, yClampMin, yClampMax });
-    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, filteredData.DpLow.NoiseFloor, { ...DPOAE_SERIES_STYLE.NoiseFloor, yClampMin, yClampMax });
+    const f2Freq = series.f2Freq;
+    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, series.F1, { ...DPOAE_SERIES_STYLE.F1, yClampMin, yClampMax });
+    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, series.F2, { ...DPOAE_SERIES_STYLE.F2, yClampMin, yClampMax });
+    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, series.DpLow, { ...DPOAE_SERIES_STYLE.DpLow, yClampMin, yClampMax });
+    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, series.NoiseFloor, { ...DPOAE_SERIES_STYLE.NoiseFloor, yClampMin, yClampMax });
 
     createLegend(svg, DPOAE_LEGEND_DATA, this.width, 85);
     return svg;
   }
 
-  private filterSweptDpoaeResults(data: SweptDpoaeResultsInterface): {
-    DpLow: { Frequency: number[]; F2Frequency: number[]; Amplitude: number[]; NoiseFloor: number[] };
-    F2: { Frequency: number[]; Amplitude: number[] };
-    F1: { Frequency: number[]; Amplitude: number[] };
-  } {
-    // Initialize filtered data
-    const filteredData = {
-      DpLow: {
-        Frequency: [],
-        F2Frequency: [],
-        Amplitude: [],
-        NoiseFloor: [],
-      },
-      F2: {
-        Frequency: [],
-        Amplitude: [],
-      },
-      F1: {
-        Frequency: [],
-        Amplitude: [],
-      },
+  /**
+   * Reduce the device results to the four amplitude series the plot draws, defaulting any series
+   * the device omitted to an empty array.
+   */
+  private plottableSeries(data: SweptDpoaeResultsInterface) {
+    return {
+      f2Freq: data.F2?.Frequency ?? [],
+      F1: data.F1?.Amplitude ?? [],
+      F2: data.F2?.Amplitude ?? [],
+      DpLow: data.DpLow?.Amplitude ?? [],
+      NoiseFloor: data.DpLow?.NoiseFloor ?? [],
     };
-
-    // Helper function to filter and populate
-    const filterAndPush = (
-      source: { Frequency: number[]; Amplitude: number[]; NoiseFloor?: number[] },
-      target: { Frequency: number[]; Amplitude: number[]; NoiseFloor?: number[] }
-    ) => {
-      for (let i = 0; i < source.Frequency.length; i++) {
-        const freq = source.Frequency[i];
-        target.Frequency.push(freq);
-        target.Amplitude.push(source.Amplitude[i]);
-        if (source.NoiseFloor && target.NoiseFloor) {
-          target.NoiseFloor.push(source.NoiseFloor[i]);
-        }
-      }
-    };
-
-    if (data.DpLow) {
-      filterAndPush(data.DpLow, filteredData.DpLow);
-    }
-
-    if (data.F2) {
-      filterAndPush(data.F2, filteredData.F2);
-    }
-
-    if (data.F1) {
-      filterAndPush(data.F1, filteredData.F1);
-    }
-
-    // Update the DpLow frequencies for plotting
-    filteredData.DpLow.F2Frequency = filteredData.F2.Frequency;
-    return filteredData;
   }
 }

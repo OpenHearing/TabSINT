@@ -6,13 +6,7 @@ export const followOnSchema: JSONSchemaType<FollowOnInterface> = {
   type: 'object',
   properties: {
     conditional: { type: 'string' },
-    target: {
-      oneOf: [
-        { type: 'object', $ref: 'page_base', required: ['id'] },
-        protocolReferenceSchema,
-        { type: 'object', $ref: 'schema_base', required: ['pages'] },
-      ],
-    },
+    target: protocolReferenceSchema,
   },
   required: ['conditional', 'target'],
 };

@@ -38,6 +38,7 @@ import { ChoiceInterface } from '../interfaces/choice.interface';
 import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
 import { DevicesService } from '../services/devices/devices.service';
 import { IDevice } from '../interfaces/devices/device.interface';
+import { IDeviceResponse } from '../interfaces/devices/device-response.interface';
 import { DosimeterResultsInterface } from '../interfaces/dosimeter-results.interface';
 import { ISvantekDevice } from '../interfaces/devices/svantek-device.interface';
 import { pageSchema } from '../../schema/page.schema';
@@ -77,6 +78,7 @@ export class ExamService {
   private activeSvantekDevice: ISvantekDevice | undefined = undefined;
   private svantekResultPoll: ReturnType<typeof setInterval> | undefined = undefined;
   private svantekWarned = false;
+  private dosimeterWarned = false;
 
   constructor() {
     this.results = this.resultsModel.getResults();
@@ -133,6 +135,7 @@ export class ExamService {
   async begin() {
     this.resetProtocolStack();
     this.svantekWarned = false;
+    this.dosimeterWarned = false;
     this.resultsService.initializeExamResults();
     this.stateModel.updateState({ examState: ExamState.Testing });
     this.protocol.activeProtocolStack.addProtocol(this.protocol.activeProtocol!);
@@ -232,7 +235,6 @@ export class ExamService {
    * @param subProtocolID The sub protocol page identifier.
    */
   async navigateToTargetDefault(subProtocolID: string) {
-    // TODO: returnHereAfterward NOT IMPLEMENTED
     const referenceProtocol = this.protocol.activeProtocolDictionary![subProtocolID];
     this.protocol.activeProtocolStack.addProtocol(referenceProtocol);
     this.stateModel.updateState({ examState: ExamState.Testing });
@@ -461,7 +463,8 @@ export class ExamService {
   }
 
   /** Finds followOn from current page.
-   * @summary Finds and returns the followOn ID from a page specified from a response.
+   * @summary Finds and returns the followOn ID from a page specified from a response. Every
+   * followOn is evaluated, so when several conditionals match, the last one listed wins.
    * @models state, results
    * @returns followOn ID: string or undefined
    */
@@ -470,10 +473,7 @@ export class ExamService {
     page.followOns?.forEach((followOn: FollowOnInterface) => {
       // backward compatibility
       if (followOn.conditional && this.conditionalEvaluator(followOn.conditional)) {
-        // TODO: handle if target is protocol or page
-        if (isProtocolReferenceInterface(followOn.target)) {
-          id = followOn.target.reference;
-        }
+        id = followOn.target.reference;
       }
     });
     return id;
@@ -734,28 +734,58 @@ export class ExamService {
       dosimeters = await this.devicesService.getDeviceOrDefault(undefined, [DeviceType.Duodose]);
     } else {
       dosimeters = [];
-      page.dosimetry.tabsintId.forEach(async tabsintId => {
+      for (const tabsintId of page.dosimetry.tabsintId) {
         const devices = await this.devicesService.getDeviceOrDefault(tabsintId, []);
         if (devices.length === 1) {
           dosimeters.push(devices[0]);
         }
-      });
+      }
     }
     if (dosimeters.length === 0) {
       this.logger.error('Failed to start dosimetry: No dosimeter was available.');
       return;
     }
     this.logger.debug('Starting Dosimetry');
-    this.resultsModel.updateCurrentPage({ dosimetry: [] });
-    dosimeters.forEach(async dosimeter => {
-      await this.devicesService.abortExams(dosimeter);
-      this.resultsModel.updateCurrentPage({ response: [] });
-      const queueResp = await this.devicesService.queueExam(dosimeter, 'DosimeterRecord', {});
-      // TODO: add error handling for above line?
-      if (queueResp!.msg[1] != 'ERROR') {
-        this.dosimeterResultsPoll[dosimeter.tabsintId] = setInterval(this.pollForDosimeterResults.bind(this), 500, dosimeter);
-      }
-    });
+    this.resultsModel.updateCurrentPage({ dosimetry: [], response: [] });
+    for (const dosimeter of dosimeters) {
+      await this.startDosimeterRecording(dosimeter);
+    }
+  }
+
+  /**
+   * Queue the recording exam on a single dosimeter and begin polling it for results. A dosimeter
+   * that fails to start is reported but does not block exam progression.
+   * @param dosimeter The dosimeter to start recording on.
+   */
+  private async startDosimeterRecording(dosimeter: IDevice) {
+    await this.devicesService.abortExams(dosimeter);
+    const queueResp = await this.devicesService.queueExam(dosimeter, 'DosimeterRecord', {});
+    if (queueResp === undefined || queueResp.msg[1] === 'ERROR') {
+      this.reportDosimeterFailure(dosimeter, queueResp);
+      return;
+    }
+    this.dosimeterResultsPoll[dosimeter.tabsintId] = setInterval(this.pollForDosimeterResults.bind(this), 500, dosimeter);
+  }
+
+  /**
+   * Log a dosimeter that failed to start recording, and alert the user once per exam.
+   * @param dosimeter The dosimeter which failed to start.
+   * @param queueResp The response returned by queueExam, if any.
+   */
+  private reportDosimeterFailure(dosimeter: IDevice, queueResp: IDeviceResponse | undefined) {
+    const reason = queueResp === undefined ? 'the device does not support dosimetry recording' : JSON.stringify(queueResp.msg);
+    this.logger.error(`Failed to start dosimetry on ${dosimeter.tabsintId}: ${reason}`);
+    if (this.dosimeterWarned) {
+      return;
+    }
+    this.notifications
+      .alert({
+        title: 'Alert',
+        content: 'TabSINT could not start recording on a dosimeter, no dosimetry data will be collected for it.',
+        type: DialogType.Alert,
+      })
+      .subscribe();
+    this.dosimeterWarned = true;
   }
 
   /**
