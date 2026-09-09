@@ -36,7 +36,6 @@ $tabsint-training-site-theme: mat.define-light-theme(
 
 @import "../node_modules/bootstrap/dist/css/bootstrap.css";
 @import "../node_modules/ionicons/css/ionicons.css";
-@import "../node_modules/jsonformatter/dist/json-formatter.min.css";
 @import "../node_modules/bootstrap-icons/font/bootstrap-icons.min.css";
 
 @font-face {
@@ -856,10 +855,7 @@ h1.surveytitle {
   padding-top: 40px;
   text-align: right;
 }
-debug-view,
-.well,
-.json-formatter-dark.json-formatter-row,
-.json-formatter-row {
+.well {
   font-family: Lucidatypewriter, monospace;
 }
 
@@ -1036,12 +1032,6 @@ input[type="checkbox"] {
   float: right !important;
   right: 0;
   left: auto;
-}
-table.keypad button.symbol .glyphicon {
-  color: rgb(60, 60, 60);
-  font-weight: 400;
-  font-size: 20px;
-  line-height: 0.9;
 }
 
 /* needs to match .btn-default bg color */
@@ -2185,9 +2175,6 @@ table.fixed {
   text-align: left;
 }
 
-.panel-group .panel + .panel {
-  margin-top: 15px;
-}
 .panel-body h5 {
   border-bottom: 1px solid #ddd;
   margin-bottom: 10px;
