@@ -352,21 +352,10 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
 
     this.protocolService.delete(this.selected);
     this.selected = undefined;
-    // notifications.alert(
-    //     "Delete protocol ") +
-    //     this.selected.name +
-    //     " and remove protocol files from disk?"),
-    //     (buttonIndex) => {
-    //         if (buttonIndex === 1) {
-    //             protocol.delete(this.selected);
-    //             this.selected = undefined;
-    //         }
-    //     }
-    // );
   }
 
   async update(): Promise<void> {
-    if (!this.selected || this.selected.server !== ProtocolServer.Gitlab) {
+    if (this.selected?.server !== ProtocolServer.Gitlab) {
       this.notifications.alert({
         title: 'Error',
         content: 'Selected protocol was not imported from GitLab.',
@@ -497,13 +486,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
    * @returns whether protocol is active: boolean
    */
   private isActive(p: ProtocolMetaInterface | undefined): boolean {
-    return (
-      (this.protocolModel.activeProtocol &&
-        p &&
-        this.protocolModel.activeProtocol.name == p.name &&
-        this.protocolModel.activeProtocol.path == p.path) ||
-      false
-    );
+    return (this.protocolModel?.activeProtocol?.name == p?.name && this.protocolModel?.activeProtocol?.path == p?.path) || false;
   }
 
   private async updateDiskModel(protocol: ProtocolInterface): Promise<boolean> {

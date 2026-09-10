@@ -13,7 +13,6 @@ interface InternalField {
 @Component({
   selector: 'app-gitlab-form-view',
   templateUrl: './gitlab-form.component.html',
-  styleUrl: './gitlab-form.component.css',
 })
 export class GitlabFormComponent {
   @Input() initialConfig?: Partial<GitlabConfigInterface>;

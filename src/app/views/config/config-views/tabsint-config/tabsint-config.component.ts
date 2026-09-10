@@ -197,7 +197,9 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
    */
   async toggleDisableVolume(event: Event) {
     const checkbox = event.target as HTMLInputElement;
-    if (!this.disk.preferences.disableVolume) {
+    if (this.disk.preferences.disableVolume) {
+      this.diskModel.updatePreferences({ disableVolume: !this.disk.preferences.disableVolume });
+    } else {
       const msg: DialogDataInterface = {
         title: 'Disable Automatic Volume Control',
         content: `
@@ -214,8 +216,6 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
         // Reset checkbox checked state for since we are aren't changing the value
         checkbox.checked = this.disk.preferences.disableVolume;
       }
-    } else {
-      this.diskModel.updatePreferences({ disableVolume: !this.disk.preferences.disableVolume });
     }
   }
 
@@ -225,7 +225,7 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
    */
   updateTabletGain(gain: number | string) {
     const gainNumber = Number(gain);
-    if (isNaN(gainNumber)) {
+    if (Number.isNaN(gainNumber)) {
       this.logger.debug('Invalid user tablet gain value entered.');
     } else {
       this.diskModel.updatePreferences({ tabletGain: gainNumber });
@@ -237,10 +237,10 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
    */
   negateTabletGain() {
     const currentUserGain = this.disk.preferences.tabletGain;
-    if (currentUserGain !== undefined) {
-      this.diskModel.updatePreferences({ tabletGain: -currentUserGain });
-    } else {
+    if (currentUserGain === undefined) {
       this.logger.debug('Cannot negate undefined user tablet gain.');
+    } else {
+      this.diskModel.updatePreferences({ tabletGain: -currentUserGain });
     }
   }
 

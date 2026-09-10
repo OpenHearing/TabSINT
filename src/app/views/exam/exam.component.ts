@@ -82,6 +82,10 @@ export class ExamComponent implements OnInit, OnDestroy {
     this.stateSubscription?.unsubscribe();
   }
 
+  get showSkipButton(): boolean {
+    return (this.disk.preferences.debugMode && this.disk.preferences.adminSkipMode) || !!this.currentPage.responseArea?.enableSkip;
+  }
+
   isString(data: unknown): boolean {
     return typeof data === 'string';
   }

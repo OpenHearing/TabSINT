@@ -122,7 +122,7 @@ export class LikertComponent implements OnInit, OnDestroy {
   }
 
   onSliderChange(questionIndex: number, event: Event): void {
-    const value = parseFloat((event.target as HTMLInputElement).value);
+    const value = Number.parseFloat((event.target as HTMLInputElement).value);
     this.sliderValue[questionIndex] = value;
     this.onResponseChange(questionIndex, value);
   }

@@ -71,7 +71,7 @@ export class CheckboxComponent implements OnInit, OnDestroy {
         const updatedCheckboxResponseArea = updatedPage.responseArea as CheckboxInterface;
         if (updatedCheckboxResponseArea) {
           this.otherSelected = false;
-          this.choices = _.cloneDeep(updatedCheckboxResponseArea.choices);
+          this.choices = structuredClone(updatedCheckboxResponseArea.choices);
           this.choices.forEach(choice => {
             choice.text = choice.text ?? String(choice.id);
           });

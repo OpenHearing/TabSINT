@@ -15,7 +15,6 @@ export interface GitlabReferenceDialogData {
   selector: 'app-gitlab-dialog',
   standalone: true,
   templateUrl: './gitlab-reference-dialog.component.html',
-  styleUrl: './gitlab-reference-dialog.component.css',
   imports: [CommonModule, FormsModule, TranslocoPipe, MatDialogModule, MatRadioModule, MatButtonModule],
 })
 export class GitlabReferenceDialog {
