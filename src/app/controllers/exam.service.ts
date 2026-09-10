@@ -162,7 +162,7 @@ export class ExamService {
    * @models results, state
    */
   submit() {
-    this.submitDefault();
+    void this.submitDefault();
   }
 
   /** Overwrite submit with one that leaves feedback on screen before advancing.
@@ -172,7 +172,7 @@ export class ExamService {
     this.submit = () => {
       this.isShowingFeedback = true;
       setTimeout(() => {
-        this.submit = this.submitDefault;
+        this.submit = () => void this.submitDefault();
         this.submit();
         this.isShowingFeedback = false;
       }, ExamService.feedbackDelayMs);
@@ -428,7 +428,7 @@ export class ExamService {
   private resetFunctionsToDefaults() {
     this.isShowingFeedback = false;
     this.reset = this.resetDefault;
-    this.submit = this.submitDefault;
+    this.submit = () => void this.submitDefault();
     this.submitPartial = this.submitPartialDefault;
     this.navigateToTarget = this.navigateToTargetDefault;
     this.gradeResponses = this.gradeResponsesDefault;

@@ -1,20 +1,18 @@
 <div style="width: 100%">
-  <table style="width: 100%">
-    <tr *ngFor="let row of rows; let i = index" class="button-grid">
-      <div
-        *ngFor="let choice of row.choices; let j = index"
-        [ngStyle]="{ 'padding-bottom': paddingBottom, 'padding-left': paddingLeft, 'padding-right': paddingRight }">
-        <button
-          [class]="buttonGridBtnClass(choice)"
-          [ngStyle]="{
-            'font-size': choice.fontSize,
-            background: choice.backgroundColor || (choice.disable && '#cccccc'),
-            color: choice.textColor || (choice.disable && '#666666'),
-          }"
-          (click)="choiceSelected(choice.id)">
-          {{ choice.text }}
-        </button>
-      </div>
-    </tr>
-  </table>
+  <div *ngFor="let row of rows" class="button-grid">
+    <div
+      *ngFor="let choice of row.choices"
+      [ngStyle]="{ 'padding-bottom': paddingBottom, 'padding-left': paddingLeft, 'padding-right': paddingRight }">
+      <button
+        [class]="buttonGridBtnClass(choice)"
+        [ngStyle]="{
+          'font-size': choice.fontSize,
+          background: choice.backgroundColor || (choice.disable && '#cccccc'),
+          color: choice.textColor || (choice.disable && '#666666'),
+        }"
+        (click)="choiceSelected(choice.id)">
+        {{ choice.text }}
+      </button>
+    </div>
+  </div>
 </div>

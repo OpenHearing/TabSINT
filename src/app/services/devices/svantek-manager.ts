@@ -56,7 +56,7 @@ export class SvantekManager implements IDeviceManager {
 
   // Per-device state for BLE notification message accumulation, polling intervals, and latest results
   private readonly msgBuffers = new Map<string, Int8Array>();
-  private readonly pollingIntervals = new Map<string, number>();
+  private readonly pollingIntervals = new Map<string, ReturnType<typeof setInterval>>();
   private readonly latestResults = new Map<string, SvantekResultInterface>();
 
   /**
@@ -228,7 +228,7 @@ export class SvantekManager implements IDeviceManager {
       this.accumulatePacket(device.deviceId, dataView);
     });
 
-    const interval = window.setInterval(async () => {
+    const interval = setInterval(async () => {
       this.interpretMessage(device.deviceId);
       await this.writeAscii(device.deviceId, CHAR_EXCHANGE_UUID, '#3;');
     }, 500);

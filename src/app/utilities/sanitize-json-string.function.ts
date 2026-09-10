@@ -10,5 +10,5 @@ const LEADING_BOM = /^﻿/;
  * @returns The sanitized string, safe to pass to JSON.parse.
  */
 export function sanitizeJsonString(input: string): string {
-  return input.replace(LEADING_BOM, '').replace(CONTROL_CHARACTERS, '').trim();
+  return input.replace(LEADING_BOM, '').replaceAll(CONTROL_CHARACTERS, '').trim();
 }
