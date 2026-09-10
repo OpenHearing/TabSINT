@@ -136,7 +136,7 @@ export class ResultsUploadService {
       const folderName = protocol.gitlabConfig?.repository;
       const info = await Device.getId();
       const fileUuid = info.identifier;
-      const timeStamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const timeStamp = new Date().toISOString().replaceAll(/[:.]/g, '-');
       const publicKey = protocol.publicKey;
 
       if (publicKey && singleExamResult.testDateTime) {

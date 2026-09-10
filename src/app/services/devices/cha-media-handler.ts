@@ -1,4 +1,4 @@
-import { Buffer } from 'buffer';
+import { Buffer } from 'node:buffer';
 import { BluetoothType, ChaDeviceType, DialogType } from '../../utilities/constants';
 import { Logger } from '../logger.service';
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
@@ -404,7 +404,7 @@ export class ChaMediaHandler {
         const mainMsg = 'Transferring Media Files to CHA.';
         this.tasks.register(deviceTransferTask, mainMsg + ' ' + subMessage);
 
-        if (fileURL.indexOf('file://') > -1) {
+        if (fileURL.includes('file://')) {
           fileURL = fileURL.slice(7);
         }
         this.logger.debug('CHA - Transferring media file: ' + fileURL + ' to ' + targetURL);

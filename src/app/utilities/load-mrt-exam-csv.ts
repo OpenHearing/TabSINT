@@ -88,7 +88,7 @@ async function parseCsvString(csvFileContent: string): Promise<any> {
 async function parseLeveldBSpl(line: any[]) {
   let level: number[];
   try {
-    level = typeof line[2] === 'number' ? [line[2]] : [parseInt(line[2].split(',')[0]), parseInt(line[2].split(',')[1])];
+    level = typeof line[2] === 'number' ? [line[2]] : [Number.parseInt(line[2].split(',')[0]), Number.parseInt(line[2].split(',')[1])];
   } catch {
     throw new Error('Failed to parse leveldBSpl from MRT csv');
   }

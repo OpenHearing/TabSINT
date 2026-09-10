@@ -75,7 +75,7 @@ export class AudioService {
   async playPhrase(): Promise<void> {
     await this.stopPlaying();
     const assetPath = 'public/assets/wavs/word01_norm.wav';
-    await this.startPlaying(assetPath, 1.0, 1.0);
+    await this.startPlaying(assetPath, 1, 1);
   }
 
   /**
@@ -84,7 +84,7 @@ export class AudioService {
   async playCompAudio(): Promise<void> {
     await this.stopPlaying();
     const assetPath = 'public/assets/wavs/CompAudioTest.wav';
-    await this.startPlaying(assetPath, 1.0, 1.0);
+    await this.startPlaying(assetPath, 1, 1);
   }
 
   /**
@@ -93,7 +93,7 @@ export class AudioService {
   async playCompAudioLinear(): Promise<void> {
     await this.stopPlaying();
     const assetPath = 'public/assets/wavs/CompAudioTestLinear.wav';
-    await this.startPlaying(assetPath, 1.0, 1.0);
+    await this.startPlaying(assetPath, 1, 1);
   }
 
   /**
@@ -346,14 +346,14 @@ export class AudioService {
     }
 
     const gain = this.getTabletGain(wavfile.cal);
-    wavfile.targetSPL = typeof wavfile.targetSPL === 'string' ? parseFloat(wavfile.targetSPL) : wavfile.targetSPL;
-    let level = wavfile.targetSPL ? wavfile.targetSPL : 65.0;
+    wavfile.targetSPL = typeof wavfile.targetSPL === 'string' ? Number.parseFloat(wavfile.targetSPL) : wavfile.targetSPL;
+    let level = wavfile.targetSPL ? wavfile.targetSPL : 65;
     level = level + gain;
     const method = wavfile.playbackMethod ?? PlaybackMethod.Arbitrary;
     const weighting = wavfile.weighting ?? WavfileWeighting.Z;
 
     if (method === PlaybackMethod.Arbitrary && wavfile.cal.scaleFactor !== undefined) {
-      const specifiedPaRMS = 20e-6 * Math.pow(10, level / 20.0);
+      const specifiedPaRMS = 20e-6 * Math.pow(10, level / 20);
       const waveformRMS = specifiedPaRMS * wavfile.cal.scaleFactor;
       volume = waveformRMS / (wavfile.cal[('wavRMS' + weighting) as keyof typeof wavfile.cal] as number);
     } else if (
@@ -393,11 +393,11 @@ export class AudioService {
         content: msg,
         type: DialogType.Alert,
       });
-      volume = 1.0;
-    } else if (volume > 1.0) {
+      volume = 1;
+    } else if (volume > 1) {
       // Catches a common floating-point rounding error case where volume is *slightly* greater than 1.0.
       // There's nothing wrong with this, it is expected.
-      volume = 1.0;
+      volume = 1;
     }
 
     if (0 <= volume && volume <= 1) {
@@ -441,7 +441,7 @@ export class AudioService {
       tabletGain = gainMap.WAHTS;
     } else if (!hostData) {
       tabletGain = gainMap['Nexus 7'];
-    } else if (Object.keys(gainMap).indexOf(hostData.model ?? '') > -1) {
+    } else if (Object.keys(gainMap).includes(hostData.model ?? '')) {
       tabletGain = gainMap[hostData.model as keyof typeof gainMap];
     } else if (hostData.model === 'SAMSUNG-SM-T377A') {
       tabletGain = gainMap.SamsungTabE;

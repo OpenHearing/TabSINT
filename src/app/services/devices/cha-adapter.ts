@@ -649,7 +649,7 @@ export class ChaAdapter implements IDeviceAdapter {
       let fixedDirName = dirName;
       if (dirName.endsWith('/')) {
         // weird cha behavior - returns all '00000000's for crcs if trailing '/'
-        fixedDirName = dirName.slice(0, dirName.length - 1);
+        fixedDirName = dirName.slice(0, -1);
       }
       const requestDirectoryOptions = {
         name: device.deviceId,

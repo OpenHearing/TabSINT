@@ -1,5 +1,5 @@
 import { Directory, Filesystem } from '@capacitor/filesystem';
-import { Buffer } from 'buffer';
+import { Buffer } from 'node:buffer';
 import { firstValueFrom } from 'rxjs';
 import { WahtsDevice } from '../../models/devices/wahts-device';
 import { SavedDevice } from '../../models/disk/disk.interface';

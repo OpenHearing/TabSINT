@@ -64,7 +64,7 @@ export function stringToUint8Array(str: string): Uint8Array {
   const buf = new ArrayBuffer(str.length); // 1 bytes for each char
   const bufView = new Uint8Array(buf);
   for (let i = 0; i < str.length; i++) {
-    bufView[i] = str.charCodeAt(i);
+    bufView[i] = str.codePointAt(i) ?? 0;
   }
   return new Uint8Array(buf);
 }

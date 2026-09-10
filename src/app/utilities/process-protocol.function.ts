@@ -119,7 +119,7 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
   }
 
   async function iterateThroughPages(pages: PageTypes | PageTypes[]) {
-    pages = !Array.isArray(pages) ? [pages] : pages;
+    pages = Array.isArray(pages) ? pages : [pages];
     for (const page of pages) {
       if (isProtocolSchemaInterface(page)) {
         await processSubProtocol(page);
@@ -318,7 +318,7 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
         resolve(reader.result as string);
       };
       reader.onerror = () => {
-        reject(reader.error);
+        reject(new Error(`Failed to read the file: ${reader.error?.message ?? 'unknown error'}`));
       };
       reader.readAsDataURL(blob);
     });

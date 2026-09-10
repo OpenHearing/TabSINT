@@ -25,7 +25,7 @@ export class EncryptResultsService {
   }
 
   private base64ToUint8(b64: string): Uint8Array {
-    return new Uint8Array(Array.from(atob(b64), c => c.charCodeAt(0)));
+    return new Uint8Array(Array.from(atob(b64), c => c.codePointAt(0) ?? 0));
   }
 
   /**
@@ -77,7 +77,7 @@ export class EncryptResultsService {
   }
 
   private async importPublicKey(pem: string): Promise<CryptoKey> {
-    const b64 = pem.replace(/-----[^-]+-----/g, '').replace(/\s+/g, '');
+    const b64 = pem.replaceAll(/-----[^-]+-----/g, '').replaceAll(/\s+/g, '');
     const bytes = this.base64ToUint8(b64);
     const buffer = new ArrayBuffer(bytes.length);
     new Uint8Array(buffer).set(bytes);

@@ -402,9 +402,29 @@ export abstract class ChaManager implements IDeviceManager {
       serialNumber = serialNumber + 0xffffffff + 1;
     }
     device.metadata.serialNumber = serialNumber.toString();
-    const dateRegex = /.*(([0-9]{4})-?(1[0-2]|0[1-9])-?(3[01]|0[1-9]|[12][0-9])).*$/;
-    device.metadata.calibrationDate = dateRegex.exec(idResponse.description!)?.[1] ?? 'N/A';
+    device.metadata.calibrationDate = ChaManager.parseCalibrationDate(idResponse.description);
     this.updateDevice(device);
+  }
+
+  /**
+   * Extract the calibration date from a device's free-text description.
+   * @summary Returns the last date-like substring in the description, where "last" means the one
+   * starting at the highest index. Candidate start positions are tried explicitly with a sticky
+   * regex rather than with a leading `.*`, which would backtrack at quadratic cost.
+   * @param description The device description to search, if the device reported one.
+   * @returns The date as written in the description, or 'N/A' when it holds no date.
+   */
+  private static parseCalibrationDate(description?: string): string {
+    if (!description) {
+      return 'N/A';
+    }
+    const dateRegex = /\d{4}-?(?:1[0-2]|0[1-9])-?(?:3[01]|0[1-9]|[12]\d)/y;
+    let calibrationDate = 'N/A';
+    for (let i = 0; i < description.length; i++) {
+      dateRegex.lastIndex = i;
+      calibrationDate = dateRegex.exec(description)?.[0] ?? calibrationDate;
+    }
+    return calibrationDate;
   }
 
   /**

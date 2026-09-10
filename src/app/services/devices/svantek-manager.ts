@@ -3,7 +3,6 @@ import { IDeviceManager } from '../../interfaces/devices/device-manager.interfac
 import { BleClient, ScanResult } from '@capacitor-community/bluetooth-le';
 import { SvantekDevice } from '../../models/devices/svantek-device';
 import { DeviceState, DialogType } from '../../utilities/constants';
-import { StateModel } from '../../models/state/state.service';
 import { Notifications } from '../notifications.service';
 import { TranslocoService } from '@jsverse/transloco';
 import { Tasks } from '../tasks.service';
@@ -290,9 +289,7 @@ export class SvantekManager implements IDeviceManager {
     const statusByte = msgBuff[3];
     const dataArray = msgBuff.slice(6);
 
-    if (dataArray.length !== EXPECTED_DATA_BYTES) {
-      this.logger.warning(`Svantek ${deviceId}: unexpected data length ${dataArray.length}, expected ${EXPECTED_DATA_BYTES}`);
-    } else {
+    if (dataArray.length === EXPECTED_DATA_BYTES) {
       const Leq: number[] = [];
       for (let i = 0; i < dataArray.length - 1; i += 2) {
         Leq.push(this.asI16(dataArray.slice(i, i + 2)) / 100);
@@ -309,6 +306,8 @@ export class SvantekManager implements IDeviceManager {
         overallAmbientNoise: Leq[28],
       };
       this.latestResults.set(deviceId, result);
+    } else {
+      this.logger.warning(`Svantek ${deviceId}: unexpected data length ${dataArray.length}, expected ${EXPECTED_DATA_BYTES}`);
     }
 
     this.msgBuffers.delete(deviceId);

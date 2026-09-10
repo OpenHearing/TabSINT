@@ -45,7 +45,7 @@ export function safeParse<T>(jsonString: string, schema: JSONSchemaType<T>): T |
     const validate = safeParseAjv.compile(copySchema);
     if (validate(copyData)) return copyData;
 
-    if (schema && schema.type === 'object' && data && typeof data === 'object') {
+    if (schema?.type === 'object' && data && typeof data === 'object') {
       // Loop through object properties and apply fixes
       const fixed: Record<string, unknown> = {};
       const properties = schema.properties || {};
