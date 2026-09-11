@@ -4,7 +4,9 @@ const storedResponseCell = document.getElementById("storedResponse");
 const recordButton = document.getElementById("recordButton");
 
 globalKeysCell.textContent = Object.keys(globalThis.tabsint).sort().join(", ");
-sameObjectCell.textContent = String(globalThis.tabsint === globalThis.tabsint);
+// The `window` spelling is deliberate here — the point of this example is to show
+// that `window.tabsint` and `globalThis.tabsint` are the same object.
+sameObjectCell.textContent = String(window.tabsint === globalThis.tabsint); // NOSONAR
 storedResponseCell.textContent = "none yet";
 
 // Nothing has been answered yet, so hold the page until the button below is pressed.

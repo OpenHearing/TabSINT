@@ -31,11 +31,6 @@
             "assets": ["src/assets", "src/protocols"],
             "styles": ["src/styles.scss", "./node_modules/material-icons-font/material-icons-font.css"],
             "scripts": [],
-            "server": "src/main.server.ts",
-            "prerender": true,
-            "ssr": {
-              "entry": "server.ts"
-            },
             "allowedCommonJsDependencies": ["lodash"]
           },
           "configurations": {

@@ -35,7 +35,7 @@ We recommend you read their licenses, as their terms may differ from the terms d
 
 ### Application framework and platform
 
-- Angular — animations, cdk, common, compiler, core, forms, material, platform-browser, platform-browser-dynamic, platform-server, router, ssr (MIT, [angular/angular](https://github.com/angular/angular), [angular/components](https://github.com/angular/components), [angular/angular-cli](https://github.com/angular/angular-cli))
+- Angular — animations, cdk, common, compiler, core, forms, material, platform-browser, platform-browser-dynamic, router (MIT, [angular/angular](https://github.com/angular/angular), [angular/components](https://github.com/angular/components), [angular/angular-cli](https://github.com/angular/angular-cli))
 - Capacitor — core, android, ios (MIT, [ionic-team/capacitor](https://github.com/ionic-team/capacitor))
 - Capacitor plugins — app, device, filesystem, keyboard, network, screen-orientation (MIT, [ionic-team/capacitor-plugins](https://github.com/ionic-team/capacitor-plugins))
 - @capacitor/angular (MIT, [ionic-team/capacitor-angular-toolkit](https://github.com/ionic-team/capacitor-angular-toolkit))
@@ -74,7 +74,6 @@ We recommend you read their licenses, as their terms may differ from the terms d
 - SheetJS xlsx (Apache-2.0, [SheetJS/sheetjs](https://github.com/SheetJS/sheetjs))
 - buffer (MIT, [feross/buffer](https://github.com/feross/buffer))
 - simple-git (MIT, [steveukx/git-js](https://github.com/steveukx/git-js))
-- Express (MIT, [expressjs/express](https://github.com/expressjs/express))
 
 ### Build tooling
 
