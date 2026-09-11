@@ -61,7 +61,8 @@ page submittable, drops any submit override a response area installed, and advan
 something more specific (`mpanlResponseArea` does).
 
 The Skip button also appears for every page when the `debugMode` and `adminSkipMode` preferences are
-both on, which is the intended way to click through an exam during development.
+both on, which is the intended way to click through an exam during development. Both are checkboxes
+on the TabSINT configuration page: turn on **Admin Mode**, then **Admin Skip Mode** underneath it.
 
 **Not related to `skipIf`.** `skipIf` is a conditional on a page or protocol reference that skips the
 page outright at navigation time, with no button and no result recorded.
@@ -105,6 +106,18 @@ protocol that still carries `exportToCSV` validates cleanly and the field is sil
 | `bhaftResponseArea`               | `false`            | `false`      | `false`      |
 | `mpanlResponseArea`               | `false`            | `true`       | `false`      |
 | `bekesyLikeResponseArea`          | `false`            | `false`      | `false`      |
+
+## Demo pages
+
+The built-in develop protocol (`src/assets/protocols/develop/protocol.json`) exercises all four
+parameters from its Main Menu:
+
+- **Skip Page** — `enableSkip` with a required response, over a graded response area, absent, and on
+  a page with `followOns`.
+- **Auto Submit / Response Required** — `autoSubmit` on and off for multiple choice and button grid,
+  `autoSubmit` with `other`, `responseRequired` set and omitted, and both `autoSubmitDelay` cases.
+- **Custom Response Area** — the _TabSINT Globals_ page pairs `enableSkip` with custom JS that holds
+  Submit disabled, so Skip has an override to bypass.
 
 `calibrationResponseAreaResultViewer` has a schema in
 `src/schema/definitions/protocol-calibration.schema.ts` but no component and no entry in

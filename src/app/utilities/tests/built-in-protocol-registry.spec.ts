@@ -51,7 +51,15 @@ const EXPECTED_PAGE_FEATURES = [
   'chaWavFiles',
   'dosimetry',
   'svantek',
+  'helpText',
+  'autoSubmitDelay',
 ];
+
+/**
+ * Response-area parameters that change how a page is submitted. They are collected the same way as
+ * the page-level features, since the collector walks into `responseArea` objects too.
+ */
+const EXPECTED_SUBMIT_FEATURES = ['responseRequired', 'autoSubmit', 'enableSkip'];
 
 const BUILT_IN_PROTOCOL_NAMES = ['develop', 'tabsint-example', 'tympan-example', 'wahts-example'];
 
@@ -103,5 +111,13 @@ describe('Built-in protocol registry content coverage', () => {
 
     const missing = EXPECTED_PAGE_FEATURES.filter(feature => !found.has(feature));
     expect(missing).withContext('page-level features missing from every built-in protocol').toEqual([]);
+  });
+
+  it('demonstrates every submit-behavior parameter in at least one built-in protocol', () => {
+    const found = new Set<string>();
+    BUILT_IN_PROTOCOL_NAMES.forEach(name => collectPageFeatures(DeveloperProtocols[name], EXPECTED_SUBMIT_FEATURES, found));
+
+    const missing = EXPECTED_SUBMIT_FEATURES.filter(feature => !found.has(feature));
+    expect(missing).withContext('submit-behavior parameters missing from every built-in protocol').toEqual([]);
   });
 });

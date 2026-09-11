@@ -141,6 +141,12 @@
                 "id": "Help Text Example"
               },
               {
+                "id": "Skip Page"
+              },
+              {
+                "id": "Auto Submit / Response Required"
+              },
+              {
                 "id": "End All"
               }
             ]
@@ -378,6 +384,18 @@
               "conditional": "result.response=='Help Text Example'",
               "target": {
                 "reference": "helpTextExample"
+              }
+            },
+            {
+              "conditional": "result.response=='Skip Page'",
+              "target": {
+                "reference": "skipDemo"
+              }
+            },
+            {
+              "conditional": "result.response=='Auto Submit / Response Required'",
+              "target": {
+                "reference": "submitBehavior"
               }
             },
             {
@@ -1400,6 +1418,17 @@
           }
         },
         {
+          "id": "customResponseArea6",
+          "title": "TabSINT Globals",
+          "instructionText": "Custom JS reaches TabSINT through globalThis.tabsint. This page also has enableSkip set, so Skip should leave it even while the custom JS holds Submit disabled.",
+          "responseArea": {
+            "type": "customResponseArea",
+            "enableSkip": true,
+            "htmlFilePath": "custom-response-areas/html_globals_example.html",
+            "jsFilePath": "custom-response-areas/js_globals_example.js"
+          }
+        },
+        {
           "id": "backtomain",
           "reference": "MainMenu"
         }
@@ -1958,6 +1987,277 @@
           "responseArea": {
             "type": "textboxResponseArea",
             "rows": 3,
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "skipDemo",
+      "pages": [
+        {
+          "id": "skip_001",
+          "title": "Skip with a required response",
+          "instructionText": "Submit stays disabled until text is entered, but Skip is always enabled. Skipping saves this page with isSkipped set to true and no response.",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": true,
+            "enableSkip": true
+          }
+        },
+        {
+          "id": "skip_002",
+          "title": "Skip past a graded response area",
+          "instructionText": "Choosing an answer holds the graded colors on screen for about 1.25 seconds before advancing. Skip must advance immediately instead, bypassing that delay.",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "enableSkip": true,
+            "autoSubmit": false,
+            "feedback": "gradeResponse",
+            "choices": [
+              {
+                "id": "Correct answer",
+                "correct": true
+              },
+              {
+                "id": "Wrong answer"
+              }
+            ]
+          }
+        },
+        {
+          "id": "skip_003",
+          "title": "Skip button disabled",
+          "instructionText": "enableSkip is not set on this page, so no Skip button should appear unless both Admin Mode and Admin Skip Mode are checked in the TabSINT configuration.",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "skip_004",
+          "title": "Skip instead of following a branch",
+          "instructionText": "Answering sends you to the branch page. Skipping records no response, so no followOn conditional matches and the exam continues straight to the next page here.",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "enableSkip": true,
+            "choices": [
+              {
+                "id": "Go to the branch page"
+              }
+            ]
+          },
+          "followOns": [
+            {
+              "conditional": "result.response=='Go to the branch page'",
+              "target": {
+                "reference": "skipDemoBranch"
+              }
+            }
+          ]
+        },
+        {
+          "id": "skip_005",
+          "title": "End of the skip examples",
+          "instructionText": "The branch page above is shown only when the previous page was answered, never when it was skipped.",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 2,
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "skipDemoBranch",
+      "pages": [
+        {
+          "id": "skip_branch_001",
+          "title": "Branch page",
+          "instructionText": "You reached this page through a followOn, which means the previous page was answered rather than skipped.",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 2,
+            "responseRequired": false
+          }
+        }
+      ]
+    },
+    {
+      "protocolId": "submitBehavior",
+      "pages": [
+        {
+          "id": "autosubmit_mc_default",
+          "title": "Multiple choice, autoSubmit not set",
+          "instructionText": "autoSubmit defaults to true, so tapping a choice should advance to the next page without pressing Submit.",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "choices": [
+              {
+                "id": "Advance now"
+              },
+              {
+                "id": "Advance now as well"
+              }
+            ]
+          }
+        },
+        {
+          "id": "autosubmit_mc_off",
+          "title": "Multiple choice, autoSubmit false",
+          "instructionText": "With autoSubmit false the selection is kept on screen and can be changed. Only Submit advances the page.",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "autoSubmit": false,
+            "choices": [
+              {
+                "id": "First choice"
+              },
+              {
+                "id": "Second choice"
+              },
+              {
+                "id": "Third choice"
+              }
+            ]
+          }
+        },
+        {
+          "id": "autosubmit_mc_other",
+          "title": "Multiple choice, autoSubmit with other",
+          "instructionText": "Tapping a listed choice advances immediately, but tapping Other must stay on the page so the free text can be typed first.",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "autoSubmit": true,
+            "other": "Something else",
+            "choices": [
+              {
+                "id": "Listed choice"
+              },
+              {
+                "id": "Another listed choice"
+              }
+            ]
+          }
+        },
+        {
+          "id": "autosubmit_grid_off",
+          "title": "Button grid, autoSubmit false",
+          "instructionText": "With autoSubmit false several buttons can be selected and deselected, and the page advances only on Submit.",
+          "responseArea": {
+            "type": "buttonGridResponseArea",
+            "autoSubmit": false,
+            "verticalSpacing": 20,
+            "rows": [
+              {
+                "choices": [
+                  {
+                    "id": "One"
+                  },
+                  {
+                    "id": "Two"
+                  },
+                  {
+                    "id": "Three"
+                  }
+                ]
+              },
+              {
+                "choices": [
+                  {
+                    "id": "Four"
+                  },
+                  {
+                    "id": "Five"
+                  },
+                  {
+                    "id": "Six"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "autosubmit_grid_feedback",
+          "title": "Button grid, autoSubmit with feedback",
+          "instructionText": "autoSubmit defaults to true here. Tapping a button should color it green or red for about 1.25 seconds before the page advances.",
+          "responseArea": {
+            "type": "buttonGridResponseArea",
+            "feedback": "gradeResponse",
+            "rows": [
+              {
+                "choices": [
+                  {
+                    "id": "Correct",
+                    "correct": true
+                  },
+                  {
+                    "id": "Incorrect"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "required_default",
+          "title": "responseRequired not set",
+          "instructionText": "The textbox schema defaults responseRequired to true, so Submit should stay disabled until something is typed.",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3
+          }
+        },
+        {
+          "id": "required_false",
+          "title": "responseRequired false",
+          "instructionText": "Submit should be enabled as soon as the page opens, with or without an answer.",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "autosubmitdelay_short",
+          "title": "autoSubmitDelay of 3 seconds",
+          "instructionText": "Do not touch anything. This page submits itself three seconds after it opens.",
+          "autoSubmitDelay": 3000,
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 2,
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "autosubmitdelay_long",
+          "title": "autoSubmitDelay of 10 seconds",
+          "instructionText": "Press Submit right away. The pending ten second timer must be cancelled so that it cannot submit the following page.",
+          "autoSubmitDelay": 10000,
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 2,
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "autosubmitdelay_after",
+          "title": "No autoSubmitDelay",
+          "instructionText": "This page has no autoSubmitDelay. It must stay on screen until Submit is pressed, including when the previous page was submitted early.",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 2,
             "responseRequired": false
           }
         },

@@ -4,7 +4,7 @@ const storedResponseCell = document.getElementById("storedResponse");
 const recordButton = document.getElementById("recordButton");
 
 globalKeysCell.textContent = Object.keys(globalThis.tabsint).sort().join(", ");
-sameObjectCell.textContent = String(window.tabsint === globalThis.tabsint);
+sameObjectCell.textContent = String(globalThis.tabsint === globalThis.tabsint);
 storedResponseCell.textContent = "none yet";
 
 // Nothing has been answered yet, so hold the page until the button below is pressed.
