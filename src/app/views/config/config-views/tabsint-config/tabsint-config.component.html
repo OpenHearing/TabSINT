@@ -49,6 +49,25 @@
   </mat-menu>
 </div>
 
+<!-- Admin Skip Mode. Only has an effect while Admin Mode is on, so it is only offered there. -->
+<div class="row pad-top" *ngIf="disk.preferences.debugMode">
+  <div class="col-6">
+    <label for="adminSkipMode">{{ "Admin Skip Mode:" | transloco }}</label>
+  </div>
+  <div class="col-2">
+    <input id="adminSkipMode" type="checkbox" [ngModel]="disk.preferences.adminSkipMode" (change)="toggleAdminSkipMode()" />
+  </div>
+  <div class="col-2"></div>
+  <div class="col-1" title="{{ 'Admin Skip Mode Help' | transloco }}">
+    <i [matMenuTriggerFor]="adminSkipHelpMenu" class="ion-help-circled"></i>
+  </div>
+  <mat-menu #adminSkipHelpMenu="matMenu">
+    <button mat-menu-item>
+      <div [innerHTML]="adminSkipModePopover"></div>
+    </button>
+  </mat-menu>
+</div>
+
 <div class="row pad-top">
   <div class="col-6">{{ "Admin PIN:" | transloco }}</div>
   <div class="col-2">{{ disk.preferences.pin }}</div>

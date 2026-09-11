@@ -142,6 +142,10 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
     this.diskModel.updatePreferences({ debugMode: !this.disk.preferences.debugMode });
   }
 
+  toggleAdminSkipMode() {
+    this.diskModel.updatePreferences({ adminSkipMode: !this.disk.preferences.adminSkipMode });
+  }
+
   get isTympanConnected(): boolean {
     return this.connectedDeviceTypes.has(DeviceType.Tympan);
   }
@@ -338,6 +342,10 @@ export class TabsintConfigComponent implements OnInit, OnDestroy {
 
   get adminPopover() {
     return this.transloco.translate('Admin Mode Popover');
+  }
+
+  get adminSkipModePopover() {
+    return this.transloco.translate('Admin Skip Mode Popover');
   }
 
   get adminPinPopover() {

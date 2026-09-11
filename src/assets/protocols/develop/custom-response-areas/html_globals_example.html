@@ -1,0 +1,47 @@
+<div>
+  <div class="spacer"></div>
+  <div>
+    TabSINT internals are exposed on <code>globalThis.tabsint</code>. The same object is still reachable as
+    <code>window.tabsint</code> in a browser, and the check below reports whether the two are identical.
+  </div>
+
+  <div class="spacer"></div>
+  <table style="margin: 0 auto">
+    <tr>
+      <th>Check</th>
+      <th>Value</th>
+    </tr>
+    <tr>
+      <td>globalThis.tabsint keys</td>
+      <td id="globalKeys"></td>
+    </tr>
+    <tr>
+      <td>window.tabsint === globalThis.tabsint</td>
+      <td id="sameObject"></td>
+    </tr>
+    <tr>
+      <td>Response written to results</td>
+      <td id="storedResponse"></td>
+    </tr>
+  </table>
+
+  <div class="spacer"></div>
+  <div>Submit is blocked until this page records a response through the results model.</div>
+  <div class="spacer"></div>
+  <button type="button" id="recordButton">Record a response</button>
+</div>
+
+<style>
+  .spacer {
+    height: 2em;
+  }
+  td,
+  th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+  tr:nth-child(even) {
+    background-color: #dddddd;
+  }
+</style>
