@@ -12,6 +12,7 @@ import { PageInterface } from '../../models/page/page.interface';
 import { PageModel } from '../../models/page/page.service';
 import { ButtonTextService } from '../../controllers/button-text.service';
 import { ProtocolModel } from '../../models/protocol/protocol-model.service';
+import { getDefaultEnableSkip } from '../../utilities/exam-helper-functions';
 
 @Component({
   selector: 'app-exam-view',
@@ -23,6 +24,9 @@ export class ExamComponent implements OnInit, OnDestroy {
   buttonText: string = 'Submit';
   isKeyboardVisible = false;
   showProgressBar: boolean = false;
+  // Resolved per page: ajv does not apply defaults inside the responseArea oneOf, so the schema
+  // default has to be read here when the protocol omits enableSkip.
+  private enableSkip = false;
 
   // Models
   disk: DiskInterface;
@@ -59,6 +63,8 @@ export class ExamComponent implements OnInit, OnDestroy {
     });
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       this.currentPage = updatedPage;
+      const responseArea = updatedPage.responseArea;
+      this.enableSkip = responseArea ? (responseArea.enableSkip ?? getDefaultEnableSkip(responseArea.type)) : false;
     });
     this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
@@ -83,7 +89,7 @@ export class ExamComponent implements OnInit, OnDestroy {
   }
 
   get showSkipButton(): boolean {
-    return (this.disk.preferences.debugMode && this.disk.preferences.adminSkipMode) || !!this.currentPage.responseArea?.enableSkip;
+    return (this.disk.preferences.debugMode && this.disk.preferences.adminSkipMode) || this.enableSkip;
   }
 
   isString(data: unknown): boolean {

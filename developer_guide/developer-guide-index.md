@@ -9,6 +9,7 @@ We welcome contributions and feedback from the community to help improve the sof
 - [Conventions](conventions.md)
 - [Contributing Guidelines](contributing.md)
 - [Migration Guide from TabSINT Classic](migration-guide.md)
+- [Common Response Area Parameters](response-area-parameters.md)
 - [CustomJS Guide](custom-js.md)
 - [Result Encryption](encryption.md)
 - [Translations](translations.md)

@@ -13,6 +13,12 @@ export const multipleChoiceSchema: JSONSchemaType<MultipleChoiceInterface> = {
     verticalSpacing: { type: 'number', nullable: true, default: 1 },
     delayEnable: { type: 'number', nullable: true, default: 0 },
     feedback: { type: 'string', enum: ['gradeResponse', 'showCorrect'], nullable: true },
+    autoSubmit: {
+      type: 'boolean',
+      nullable: true,
+      default: true,
+      description: 'Submit the page as soon as a choice is selected, instead of waiting for the submit button.',
+    },
   },
   required: ['type'],
 };

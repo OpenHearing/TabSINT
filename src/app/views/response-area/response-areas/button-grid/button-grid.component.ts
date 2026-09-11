@@ -32,6 +32,7 @@ export class ButtonGridComponent implements OnInit, OnDestroy {
   verticalSpacing: number = buttonGridSchema.properties.verticalSpacing.default;
   horizontalSpacing: number = buttonGridSchema.properties.horizontalSpacing.default;
   delayEnable: number = buttonGridSchema.properties.delayEnable.default;
+  autoSubmit: boolean = buttonGridSchema.properties.autoSubmit.default;
   choices: ChoiceInterface[] = [];
   disableButtons = true;
   paddingBottom: string = '1px';
@@ -81,6 +82,7 @@ export class ButtonGridComponent implements OnInit, OnDestroy {
           this.verticalSpacing = updatedButtonGridResponseArea.verticalSpacing ?? buttonGridSchema.properties.verticalSpacing.default;
           this.horizontalSpacing = updatedButtonGridResponseArea.horizontalSpacing ?? buttonGridSchema.properties.horizontalSpacing.default;
           this.delayEnable = updatedButtonGridResponseArea.delayEnable ?? buttonGridSchema.properties.delayEnable.default;
+          this.autoSubmit = updatedButtonGridResponseArea.autoSubmit ?? buttonGridSchema.properties.autoSubmit.default;
 
           this.paddingBottom = this.verticalSpacing.toString() + 'px';
           this.paddingLeft = (this.horizontalSpacing / 2).toString() + 'px';
@@ -127,7 +129,9 @@ export class ButtonGridComponent implements OnInit, OnDestroy {
       this.stateModel.updateState({ doesResponseExist: false });
     }
     this.stateModel.setPageSubmittable();
-    this.examService.submit();
+    if (this.autoSubmit) {
+      this.examService.submit();
+    }
   }
 
   buttonGridBtnClass(choice: ChoiceInterface) {

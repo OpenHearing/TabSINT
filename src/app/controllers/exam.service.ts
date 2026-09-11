@@ -31,7 +31,12 @@ import { DiskModel } from '../models/disk/disk.service';
 import { DialogType, ExamState, AppState, DeviceType, DeviceState } from '../utilities/constants';
 import { Notifications } from '../services/notifications.service';
 import { Logger } from '../services/logger.service';
-import { calculateElapsedTime, checkForSpecialReference, getDefaultResponseRequired } from '../utilities/exam-helper-functions';
+import {
+  calculateElapsedTime,
+  checkForSpecialReference,
+  findResponseAreaSchema,
+  getDefaultResponseRequired,
+} from '../utilities/exam-helper-functions';
 import { includesOrEquals } from '../utilities/response-area-helper-functions';
 import { ProtocolStackItem } from '../models/protocol/protocol-stack';
 import { ChoiceInterface } from '../interfaces/choice.interface';
@@ -201,12 +206,25 @@ export class ExamService {
     this.gradeResponsesDefault();
   }
 
+  /** Default skip function for exam pages.
+   * @summary Flags the page result as skipped, drops any response area submit override, and submits.
+   * @models results, state
+   */
   skipDefault() {
-    // noop
+    this.logger.debug('Skipping page');
+    this.resultsModel.updateCurrentPage({ isSkipped: true });
+    // A skipped page submits regardless of whether its response requirement was met, and must
+    // bypass any submit a response area installed (for example one that demands notes first).
+    this.stateModel.updateState({ isSubmittable: true });
+    this.submit = () => void this.submitDefault();
+    void this.submitDefault();
   }
 
+  /** Skip function for exam pages. Can be overwritten by exams.
+   * @models results, state
+   */
   skip() {
-    // can be used/overwritten in exams
+    this.skipDefault();
   }
 
   backDefault() {
@@ -298,12 +316,11 @@ export class ExamService {
    */
   isPageResponseRequired(page: PageInterface): boolean {
     if (page?.responseArea) {
-      let responseRequired = page.responseArea.responseRequired;
-      if (responseRequired === undefined) {
-        const responseType = page.responseArea.type;
-        responseRequired = getDefaultResponseRequired(responseType);
+      const responseType = page.responseArea.type;
+      if (!findResponseAreaSchema(responseType)) {
+        this.logger.error(`TabSINT does not recognize the response area type "${responseType}" on page "${page.id}".`);
       }
-      return responseRequired;
+      return page.responseArea.responseRequired ?? getDefaultResponseRequired(responseType);
     }
     return false;
   }

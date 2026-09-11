@@ -4,6 +4,8 @@ import {
   handleOutputCalibration,
   checkIfCanGoBack,
   getDefaultResponseRequired,
+  getDefaultEnableSkip,
+  findResponseAreaSchema,
   getCurrentDatetime,
 } from '../exam-helper-functions';
 
@@ -77,6 +79,34 @@ describe('exam-helper-functions', () => {
 
     it('returns true for multipleChoiceResponseArea', () => {
       expect(getDefaultResponseRequired('multipleChoiceResponseArea')).toBeTrue();
+    });
+
+    it('returns false instead of throwing for an unregistered type', () => {
+      expect(getDefaultResponseRequired('notARealResponseArea')).toBeFalse();
+    });
+  });
+
+  describe('findResponseAreaSchema', () => {
+    it('finds the branch for a registered type', () => {
+      expect(findResponseAreaSchema('textboxResponseArea')).toBeDefined();
+    });
+
+    it('returns undefined for an unregistered type', () => {
+      expect(findResponseAreaSchema('notARealResponseArea')).toBeUndefined();
+    });
+  });
+
+  describe('getDefaultEnableSkip', () => {
+    it('returns false for textboxResponseArea', () => {
+      expect(getDefaultEnableSkip('textboxResponseArea')).toBeFalse();
+    });
+
+    it('returns true for mpanlResponseArea', () => {
+      expect(getDefaultEnableSkip('mpanlResponseArea')).toBeTrue();
+    });
+
+    it('returns false instead of throwing for an unregistered type', () => {
+      expect(getDefaultEnableSkip('notARealResponseArea')).toBeFalse();
     });
   });
 

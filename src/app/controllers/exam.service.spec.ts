@@ -265,7 +265,7 @@ describe('ExamService', () => {
 
     mockNotifications = jasmine.createSpyObj('Notifications', ['alert']);
     mockNotifications.alert.and.returnValue(of('OK'));
-    mockLogger = jasmine.createSpyObj('Logger', ['debug']);
+    mockLogger = jasmine.createSpyObj('Logger', ['debug', 'error', 'warning']);
     mockDevicesService = jasmine.createSpyObj('DevicesService', ['getDeviceOrDefault', 'abortExams', 'queueExam', 'requestResults']);
     mockAudioService = jasmine.createSpyObj('AudioService', ['stopAudio', 'playWav', 'setSystemVolume']);
 
@@ -452,6 +452,46 @@ describe('ExamService', () => {
     });
   });
 
+  describe('skipDefault', () => {
+    beforeEach(() => {
+      mockResultsService.pushResults.and.stub();
+      spyOn(examService, 'advancePage' as never);
+    });
+
+    it('flags the page result as skipped', () => {
+      examService.skipDefault();
+      expect(mockResultsModel.updateCurrentPage).toHaveBeenCalledWith({ isSkipped: true });
+    });
+
+    it('forces the page submittable so an unmet response requirement cannot block the skip', () => {
+      examService.skipDefault();
+      expect(mockStateModel.updateState).toHaveBeenCalledWith({ isSubmittable: true });
+    });
+
+    it('advances the page', () => {
+      examService.skipDefault();
+      expect(examService['advancePage' as keyof ExamService]).toHaveBeenCalled();
+    });
+
+    it('bypasses a submit override installed by a response area', () => {
+      const overriddenSubmit = jasmine.createSpy('overriddenSubmit');
+      examService.submit = overriddenSubmit;
+
+      examService.skipDefault();
+
+      expect(overriddenSubmit).not.toHaveBeenCalled();
+      expect(mockResultsService.pushResults).toHaveBeenCalled();
+    });
+  });
+
+  describe('skip', () => {
+    it('delegates to skipDefault', () => {
+      const skipDefaultSpy = spyOn(examService, 'skipDefault');
+      examService.skip();
+      expect(skipDefaultSpy).toHaveBeenCalled();
+    });
+  });
+
   describe('isPageResponseRequired', () => {
     it('returns false when the page has no responseArea', () => {
       expect(examService.isPageResponseRequired({} as PageInterface)).toBeFalse();
@@ -465,6 +505,17 @@ describe('ExamService', () => {
     it('returns false when responseRequired is explicitly false', () => {
       const page = { responseArea: { responseRequired: false, type: 'textboxResponseArea' } } as PageInterface;
       expect(examService.isPageResponseRequired(page)).toBeFalse();
+    });
+
+    it('falls back to the schema default when responseRequired is omitted', () => {
+      const page = { responseArea: { type: 'textboxResponseArea' } } as PageInterface;
+      expect(examService.isPageResponseRequired(page)).toBeTrue();
+    });
+
+    it('logs an error and returns false for an unregistered response area type', () => {
+      const page = { id: 'bad-page', responseArea: { type: 'notARealResponseArea' } } as PageInterface;
+      expect(examService.isPageResponseRequired(page)).toBeFalse();
+      expect(mockLogger.error).toHaveBeenCalled();
     });
   });
 

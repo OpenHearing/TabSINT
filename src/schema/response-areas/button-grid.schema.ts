@@ -15,6 +15,12 @@ export const buttonGridSchema: JSONSchemaType<ButtonGridInterface> = {
     horizontalSpacing: { type: 'number', nullable: true, default: 1 },
     delayEnable: { type: 'number', nullable: true, default: 0 },
     choices: { type: 'array', items: choiceSchema, nullable: true },
+    autoSubmit: {
+      type: 'boolean',
+      nullable: true,
+      default: true,
+      description: 'Submit the page as soon as a choice is tapped. Set false to allow selecting several choices before submitting.',
+    },
   },
   required: ['type', 'rows'],
 };

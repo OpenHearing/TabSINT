@@ -49,6 +49,7 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
   feedback: string = multipleChoiceSchema.properties.feedback.default;
   delayEnable: number = multipleChoiceSchema.properties.delayEnable.default;
   other: string = multipleChoiceSchema.properties.other.default;
+  autoSubmit: boolean = multipleChoiceSchema.properties.autoSubmit.default;
 
   choices: ChoiceInterface[] = [];
   otherSelected: boolean = false;
@@ -95,6 +96,7 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
           this.verticalSpacing = updatedMultipleChoiceResponseArea.verticalSpacing ?? multipleChoiceSchema.properties.verticalSpacing.default;
           this.delayEnable = updatedMultipleChoiceResponseArea.delayEnable ?? multipleChoiceSchema.properties.delayEnable.default;
           this.other = updatedMultipleChoiceResponseArea.other ?? multipleChoiceSchema.properties.other.default;
+          this.autoSubmit = updatedMultipleChoiceResponseArea.autoSubmit ?? multipleChoiceSchema.properties.autoSubmit.default;
 
           this.paddingBottom = this.verticalSpacing.toString() + 'px';
 
@@ -144,7 +146,7 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
     this.resultsModel.updateCurrentPage({ response: this.results.currentPage.response });
     this.stateModel.updateState({ doesResponseExist: true });
     this.stateModel.setPageSubmittable();
-    if (this.state.isSubmittable && !isOther) {
+    if (this.autoSubmit && this.state.isSubmittable && !isOther) {
       this.examService.submit();
     }
   }

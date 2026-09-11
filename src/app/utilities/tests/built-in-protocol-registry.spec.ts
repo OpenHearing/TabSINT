@@ -3,10 +3,6 @@ import { DeveloperProtocols } from '../constants';
 /**
  * Canonical list of response-area types, mirrored from every `*ngSwitchCase` in
  * `src/app/views/response-area/response-area.component.html`. Keep in sync with that file.
- *
- * `manualAudiometryResponseAreaResultViewer` is intentionally excluded: it's not yet a valid
- * schema-registered type (see `page.schema.ts`'s `oneOf` list) and can't be demonstrated in any
- * protocol until that's fixed separately.
  */
 const EXPECTED_RESPONSE_AREA_TYPES = [
   'textboxResponseArea',
