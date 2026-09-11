@@ -1,5 +1,4 @@
 import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import * as _ from 'lodash';
 import { Subscription } from 'rxjs';
 import { ResultsInterface } from '../../../../models/results/results.interface';
 import { PageInterface } from '../../../../models/page/page.interface';

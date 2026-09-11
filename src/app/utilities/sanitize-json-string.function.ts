@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-control-regex
 const CONTROL_CHARACTERS = /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g;
-const LEADING_BOM = /^﻿/;
+const LEADING_BOM = /^\uFEFF/;
 
 /**
  * Strips a leading byte-order mark, stray control characters, and surrounding whitespace
