@@ -74,6 +74,8 @@ export abstract class DpoaeExamBaseComponent<TResponseArea extends DpoaeCommonIn
   protected abstract readonly responseAreaType: string;
   protected abstract readonly examLabel: string;
 
+  // Not DI: subclasses pass their own schema `properties` object explicitly via super().
+  // eslint-disable-next-line @angular-eslint/prefer-inject
   protected constructor(commonSchemaProperties: DpoaeCommonSchemaProperties) {
     this.tabsintId = commonSchemaProperties.tabsintId.default as string;
     this.outputCalibrationType = commonSchemaProperties.outputCalibrationType.default as string;
