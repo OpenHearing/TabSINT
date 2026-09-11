@@ -2262,6 +2262,27 @@
           }
         },
         {
+          "id": "submit_text_override",
+          "title": "submitText override",
+          "instructionText": "This page sets submitText, so the button below should read \"Finish this section\" instead of Submit. The next page leaves submitText unset and must read Submit again.",
+          "submitText": "Finish this section",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 2,
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "submit_text_default",
+          "title": "submitText not set",
+          "instructionText": "No submitText here. The button must be back to the translated default Submit label, not the previous page's text.",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 2,
+            "responseRequired": false
+          }
+        },
+        {
           "id": "backtomain",
           "reference": "MainMenu"
         }

@@ -53,6 +53,7 @@ const EXPECTED_PAGE_FEATURES = [
   'svantek',
   'helpText',
   'autoSubmitDelay',
+  'submitText',
 ];
 
 /**
