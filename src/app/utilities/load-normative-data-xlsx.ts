@@ -2,7 +2,7 @@ import { TabsintFs } from 'tabsintfs';
 import { ProtocolMetaInterface } from '../models/protocol/protocol.interface';
 import { NormativeDataInterface } from '../interfaces/normative-data-interface';
 import { ProtocolServer } from './constants';
-import { Buffer } from 'node:buffer';
+import { Buffer } from 'buffer'; //NOSONAR - browser polyfill, not the node builtin
 import * as XLSX from 'xlsx';
 import { WAIInterface } from '../views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.interface';
 import { SweptDpoaeInterface } from '../views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/swept-dpoae-exam.interface';

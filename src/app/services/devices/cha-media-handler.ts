@@ -1,4 +1,4 @@
-import { Buffer } from 'node:buffer';
+import { Buffer } from 'buffer'; //NOSONAR - browser polyfill, not the node builtin
 import { BluetoothType, ChaDeviceType, DialogType } from '../../utilities/constants';
 import { Logger } from '../logger.service';
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';

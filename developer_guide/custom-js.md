@@ -2,7 +2,7 @@
 
 This is a WIP guide for how to use customJS response areas. This customJS response area framework allows users to input their own html and js files to be injected into TabSINT. It should be noted that when using your own html and js files that TabSINT may not function as expected. Additionally, errors inside the html and js users generate may be incorrect and error out without the errors propagating back to TabSINT. As a result the customJS response area can be unpredictable, challenging to debug, and used at the developers' own risk. Developers will not be able to leverage Angular or its syntax as the app is compiled ahead of time. This means developers can only rely on html and js code and anything they import themselves. Examples can be found in the built in develop protocol (`src/assets/protocols/develop/protocol.json`) after selecting the `Custom Response Area` subprotocol. These examples provide simple ways to interact with various TabSINT functionality and reviewing the html and js files serves as basic documentation. A brief description of each the html and js files are outlined in Example Usage section below.
 
-When using the customResponseArea, the `window` variable will be updated to contain the `tabsint` property. Note that this property will get overwritten each time you call a customJS response area so user defined variables inside the `tabsint` property may be deleted. As a result we recommend storing variables that need to persist somehwere else. Additionally, `window.tabsint` itself and the following `window.tabsint` variables should never be overwritten from the customJS code as overwritting them would eliminate access to them and potentially cause major issues when running tabsint:
+When using the customResponseArea, the global object will be updated to contain the `tabsint` property, accessed as `globalThis.tabsint`. Note that this property will get overwritten each time you call a customJS response area so user defined variables inside the `tabsint` property may be deleted. As a result we recommend storing variables that need to persist somehwere else. Additionally, `globalThis.tabsint` itself and the following `globalThis.tabsint` variables should never be overwritten from the customJS code as overwritting them would eliminate access to them and potentially cause major issues when running tabsint:
 
 - logger
 - resultsService
@@ -20,11 +20,11 @@ These properties provide access to TabSINT's built in functionality and should b
 
 ### Results Model
 
-This model can be used to interact with the TabSINT results to read and/or write to the results from the customJS response area. To view the results, use the following command: `window.tabsint.resultsModel.getResults();`. To set results, use the following command: `window.tabsint.resultsModel.updateCurrentPage({ response: myResponse });`. See `src/app/models/results/results-model.service.ts` and its adjacent interface for more details about how to use the getter and setter for the results model.
+This model can be used to interact with the TabSINT results to read and/or write to the results from the customJS response area. To view the results, use the following command: `globalThis.tabsint.resultsModel.getResults();`. To set results, use the following command: `globalThis.tabsint.resultsModel.updateCurrentPage({ response: myResponse });`. See `src/app/models/results/results-model.service.ts` and its adjacent interface for more details about how to use the getter and setter for the results model.
 
 ### Page Model
 
-The page model contains everything about the current page. To grab information about the page, use the following command: `window.tabsint.pageModel.getPage();`. See `src/app/models/page/page.service.ts` and its adjacent interface for more details.
+The page model contains everything about the current page. To grab information about the page, use the following command: `globalThis.tabsint.pageModel.getPage();`. See `src/app/models/page/page.service.ts` and its adjacent interface for more details.
 
 ### Protocol Model
 
