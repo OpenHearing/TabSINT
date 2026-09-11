@@ -81,6 +81,7 @@ export class ExamService {
   private activeWavfileDevice: string | undefined = undefined;
   private activeSvantekDevice: ISvantekDevice | undefined = undefined;
   private svantekResultPoll: ReturnType<typeof setInterval> | undefined = undefined;
+  private autoSubmitTimer: ReturnType<typeof setTimeout> | undefined = undefined;
   private svantekWarned = false;
   private dosimeterWarned = false;
 
@@ -552,6 +553,7 @@ export class ExamService {
    * @models state
    */
   private endExam() {
+    this.cancelAutoSubmitDelay();
     this.resultsModel.updateCurrentExam({ elapsedTime: calculateElapsedTime(this.results.currentExam.testDateTime!) });
     this.resultsService.save(this.results.currentExam);
     this.stateModel.updateState({ examState: ExamState.Finalized });
@@ -664,6 +666,7 @@ export class ExamService {
    * @param pageDef The new page to initialize.
    */
   private async initializeCurrentPage(pageDef: PageDefinition): Promise<void> {
+    this.cancelAutoSubmitDelay();
     // Clone so a preprocess function's overrides (via window.tabsint.page) apply only to this
     // render and never mutate the canonical page stored in the protocol's page queue.
     const page = { ...pageDef, _uuid: crypto.randomUUID() };
@@ -732,10 +735,23 @@ export class ExamService {
    */
   private handleAutoSubmitDelay(page: PageDefinition) {
     if (page?.autoSubmitDelay) {
-      setTimeout(() => {
+      this.autoSubmitTimer = setTimeout(() => {
+        this.autoSubmitTimer = undefined;
         this.submit();
       }, page.autoSubmitDelay);
     }
+  }
+
+  /**
+   * Cancel a pending autoSubmitDelay timer so it cannot submit a page the exam has already left.
+   * Idempotent - safe to call when no timer is pending.
+   */
+  private cancelAutoSubmitDelay() {
+    if (this.autoSubmitTimer === undefined) {
+      return;
+    }
+    clearTimeout(this.autoSubmitTimer);
+    this.autoSubmitTimer = undefined;
   }
 
   /**

@@ -59,7 +59,7 @@ describe('ExamService', () => {
     const mockProtocolDictionary = { 'test-protocol': mockProtocol };
 
     mockResultsService = jasmine.createSpyObj('ResultsService', ['initializeExamResults', 'pushResults', 'save', 'initializePageResults']);
-    mockResultsModel = jasmine.createSpyObj('ResultsModel', ['getResults', 'updateCurrentExam']);
+    mockResultsModel = jasmine.createSpyObj('ResultsModel', ['getResults', 'updateCurrentExam', 'updateCurrentPage']);
     mockPageModel = jasmine.createSpyObj('PageModel', ['getPage', 'stack', 'updatePage']);
     mockPageModel.currentPageObservable = new BehaviorSubject<PageInterface>(mockPage).asObservable();
     mockProtocolModel = jasmine.createSpyObj('ProtocolModel', ['getProtocolModel']);
@@ -773,6 +773,59 @@ describe('ExamService', () => {
       const progress = (call.args[0] as Partial<StateInterface>).examProgress;
       expect(progress).toBeGreaterThan(0);
       expect(progress).toBeLessThanOrEqual(100);
+    });
+  });
+  describe('autoSubmitDelay', () => {
+    interface InitializePage {
+      initializeCurrentPage: (page: PageDefinition) => Promise<void>;
+    }
+
+    function buildPage(id: string, autoSubmitDelay?: number): PageDefinition {
+      return {
+        id,
+        instructionText: 'text',
+        autoSubmitDelay,
+        responseArea: { type: 'textboxResponseArea', rows: 3, responseRequired: false },
+      } as unknown as PageDefinition;
+    }
+
+    beforeEach(() => {
+      jasmine.clock().install();
+      spyOn(examService, 'submit');
+    });
+
+    afterEach(() => {
+      jasmine.clock().uninstall();
+    });
+
+    it('submits the page once the delay elapses', async () => {
+      await (examService as unknown as InitializePage).initializeCurrentPage(buildPage('delayed', 100));
+
+      jasmine.clock().tick(99);
+      expect(examService.submit).not.toHaveBeenCalled();
+
+      jasmine.clock().tick(1);
+      expect(examService.submit).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not submit the next page when the user submits before the delay elapses', async () => {
+      const initializeCurrentPage = (examService as unknown as InitializePage).initializeCurrentPage.bind(examService);
+
+      await initializeCurrentPage(buildPage('delayed', 1000));
+      // The user answers and submits well before the timer fires, moving on to a page of their own.
+      await initializeCurrentPage(buildPage('next'));
+
+      jasmine.clock().tick(1000);
+      expect(examService.submit).not.toHaveBeenCalled();
+    });
+
+    it('does not submit after the exam has ended', async () => {
+      await (examService as unknown as InitializePage).initializeCurrentPage(buildPage('delayed', 1000));
+
+      examService.submitPartial();
+
+      jasmine.clock().tick(1000);
+      expect(examService.submit).not.toHaveBeenCalled();
     });
   });
 });
