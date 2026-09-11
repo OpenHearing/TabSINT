@@ -17,7 +17,7 @@ export const hintSchema: JSONSchemaType<HintResponseAreaInterface> = {
     autoSubmit: {
       type: 'boolean',
       nullable: true,
-      default: false,
+      default: true,
       description: 'Go straight to next page once this page is complete',
     },
     examInstructions: {

@@ -191,9 +191,9 @@ export abstract class DpoaeExamBaseComponent<TResponseArea extends DpoaeCommonIn
    * handling their own response-area-specific fields.
    */
   protected applyCommonFields(responseArea: DpoaeCommonInterface): void {
-    // Note: showResults and autoSubmit are deliberately NOT re-read here, matching today's swept
-    // behavior - they're seeded once from schema defaults in the constructor and never re-applied
-    // from a live responseArea.
+    // Note: showResults is not re-read here because no code path consumes it yet - it is seeded once
+    // from the schema default in the constructor.
+    this.autoSubmit = responseArea.autoSubmit ?? this.autoSubmit;
     this.tabsintId = responseArea.tabsintId ?? this.tabsintId;
     this.outputCalibrationType = responseArea.outputCalibrationType ?? this.outputCalibrationType;
     this.outputChannel1 = responseArea.outputChannel1 ?? this.outputChannel1;

@@ -48,9 +48,7 @@ export class TextboxComponent implements OnInit, OnDestroy {
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type == 'textboxResponseArea') {
         const updatedTextboxResponseArea = updatedPage.responseArea as TextBoxInterface;
-        if (updatedTextboxResponseArea) {
-          this.rows = updatedTextboxResponseArea?.rows;
-        }
+        this.rows = updatedTextboxResponseArea.rows ?? textBoxSchema.properties.rows.default;
       }
     });
   }

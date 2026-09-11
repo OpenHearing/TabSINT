@@ -57,6 +57,7 @@ export class HintComponent implements OnInit, OnDestroy {
   private readonly allowableDevices = [DeviceType.Wahts];
   examInstructions: string | undefined;
   numberOfPresentations = examPropSchema.NumberOfPresentations.default;
+  autoSubmit = hintSchema.properties.autoSubmit.default;
 
   // Exam UI state
   device: IDevice | undefined;
@@ -119,6 +120,7 @@ export class HintComponent implements OnInit, OnDestroy {
     this.responseArea = responseArea;
     this.examInstructions = responseArea.examInstructions;
     // Overlay the protocol's values on top of the schema defaults seeded at construction.
+    this.autoSubmit = responseArea.autoSubmit ?? this.autoSubmit;
     this.examProperties = { ...this.examProperties, ...responseArea.examProperties };
     this.numberOfPresentations = this.examProperties.NumberOfPresentations ?? this.numberOfPresentations;
 
@@ -210,7 +212,9 @@ export class HintComponent implements OnInit, OnDestroy {
       this.resultsModel.updateCurrentPage({ response });
       this.examService.submit = this.examService.submitDefault.bind(this.examService);
       this.stateModel.updateState({ isSubmittable: true });
-      this.examService.submitDefault();
+      if (this.autoSubmit) {
+        this.examService.submitDefault();
+      }
     } else {
       // The device has not produced a usable presentation yet; try again shortly.
       this.pollTimeout = setTimeout(() => this.getPresentationInfo(), POLL_INTERVAL_MS);

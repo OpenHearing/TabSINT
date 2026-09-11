@@ -9,7 +9,7 @@ export const bekesyResponseAreaSchema: JSONSchemaType<BekesyResponseAreaInterfac
     enableSkip: { type: 'boolean', nullable: true, default: false },
     responseRequired: { type: 'boolean', nullable: true, default: true },
     type: { type: 'string', enum: ['bekesyResponseArea'] },
-    autoSubmit: { type: 'boolean', nullable: true, default: false },
+    autoSubmit: { type: 'boolean', nullable: true, default: true },
     enableSubmit: { type: 'boolean', nullable: true, default: false },
     buttonBehavior: { type: 'string', nullable: true, enum: ['lowerOnClick', 'higherOnClick'], default: 'lowerOnClick' },
     saturatedRollOver: { type: 'boolean', nullable: true, default: true },

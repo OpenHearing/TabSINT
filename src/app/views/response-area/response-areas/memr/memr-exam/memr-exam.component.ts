@@ -118,7 +118,6 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'memrResponseArea') {
         setTimeout(() => {
-          this.memrExamProperties.autoSubmit = (updatedPage.responseArea as MemrExamInterface)?.autoSubmit;
           this.initializeResponseArea(updatedPage.responseArea as MemrExamInterface);
           this.setupDevice(updatedPage.responseArea as MemrExamInterface);
         });

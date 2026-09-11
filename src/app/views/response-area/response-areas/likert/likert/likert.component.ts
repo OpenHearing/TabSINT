@@ -86,7 +86,8 @@ export class LikertComponent implements OnInit, OnDestroy {
     });
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type == 'likertResponseArea') {
-        this.likertExamProperties.autoSubmit = (updatedPage.responseArea as LikertInterface)?.autoSubmit;
+        this.likertExamProperties.autoSubmit =
+          (updatedPage.responseArea as LikertInterface)?.autoSubmit ?? likertSchema.properties.autoSubmit.default;
         setTimeout(() => {
           this.initializeResponseArea(updatedPage.responseArea as LikertInterface);
         });

@@ -868,9 +868,9 @@
         {
           "id": "MEMR",
           "title": "MEMR Exam (Within Block)",
-          "autoSubmit": false,
           "responseArea": {
             "type": "memrResponseArea",
+            "autoSubmit": false,
             "soundFileName": "/PurdueMEMR/MEMR_Sinc16_2ch.wav",
             "recordFileFolder": "MEMR_REC_WITHIN",
             "nRepeats": 5,
@@ -897,9 +897,9 @@
         {
           "id": "MEMR",
           "title": "MEMR Exam (Between Blocks)",
-          "autoSubmit": false,
           "responseArea": {
             "type": "memrResponseArea",
+            "autoSubmit": false,
             "soundFileName": "/PurdueMEMR/MEMR_Sinc16_2ch.wav",
             "recordFileFolder": "MEMR_REC_BETWEEN",
             "nRepeats": 5,

@@ -51,7 +51,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   leftEarData: Record<number, EarData> = {};
   rightEarData: Record<number, EarData> = {};
   results: ResultsInterface;
-  showResults: boolean = true;
+  showResults: boolean = calibrationExamSchema.properties.showResults.default;
   navigationHistory: { step: string; frequencyIndex: number; earCup: string }[] = [];
   userInput: number | null = null;
   poppedHistory: { step: string; frequencyIndex: number; earCup: string }[] = [];
@@ -99,7 +99,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
           this.batchFrequencies = calibrationResponse.batchFrequencies ?? this.batchFrequencies;
           this.initializeEarData();
           this.updateFrequencyAndTargetLevel();
-          this.showResults = calibrationResponse.showResults ?? true;
+          this.showResults = calibrationResponse.showResults ?? calibrationExamSchema.properties.showResults.default;
           await this.setupDevice(calibrationResponse);
         }
       }

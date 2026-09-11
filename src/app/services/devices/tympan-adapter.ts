@@ -629,13 +629,13 @@ export class TympanAdapter implements IDeviceAdapter {
     let esc_next = false;
     byte_array.forEach((byte: number) => {
       if (esc_next) {
-        unescaped_byte_array = new Uint8Array([...unescaped_byte_array, ...[byte ^ 128]]);
+        unescaped_byte_array = new Uint8Array([...unescaped_byte_array, byte ^ 128]);
         esc_next = false;
       } else {
         if (byte == 3) {
           esc_next = true;
         } else {
-          unescaped_byte_array = new Uint8Array([...unescaped_byte_array, ...[byte]]);
+          unescaped_byte_array = new Uint8Array([...unescaped_byte_array, byte]);
         }
       }
     });

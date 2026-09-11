@@ -430,7 +430,7 @@ export class ExamService {
     this.reset = this.resetDefault;
     this.submit = () => void this.submitDefault();
     this.submitPartial = this.submitPartialDefault;
-    this.navigateToTarget = () => void this.navigateToTargetDefault;
+    this.navigateToTarget = this.navigateToTargetDefault;
     this.gradeResponses = this.gradeResponsesDefault;
     this.skip = this.skipDefault;
     this.back = this.backDefault;
