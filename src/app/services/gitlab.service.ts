@@ -5,14 +5,12 @@ import { FileTransfer } from '@capacitor/file-transfer';
 import { GitlabConfigInterface } from '../models/disk/disk.interface';
 import { FileService } from './file.service';
 import { Directory, Filesystem } from '@capacitor/filesystem';
-import { Logger } from './logger.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GitlabService {
   private readonly fileService = inject(FileService);
-  private readonly logger = inject(Logger);
 
   /**
    * Fetch a gitlab repository and download the files to a specified local directory.
@@ -235,30 +233,15 @@ export class GitlabService {
    * @returns The project identifier for the repository.
    */
   private async _getGitlabProjectId(host: string, repository: string, group: string, headers: { Authorization: string }): Promise<number> {
-    let projects: { id: number; name: string; namespace: { full_path: string } }[] = [];
+    const encodedPath = encodeURIComponent(`${group}/${repository}`);
 
-    try {
-      // First try the users own repositories to limit the search space on common names.
-      projects = (
-        await this._fetchGitlabResponse(
-          { url: `${host}/api/v4/projects?search=${repository}&membership=true`, headers: headers },
-          'Failed to fetch project list: '
-        )
-      ).data;
-    } catch (err) {
-      // Fallback on all repositories. If there are too many with similar names this may fail.
-      this.logger.error('Failed Gitlab search with membership trying without', err);
-      projects = (
-        await this._fetchGitlabResponse({ url: `${host}/api/v4/projects?search=${repository}`, headers: headers }, 'Failed to fetch project list: ')
-      ).data;
-    }
+    const project: { id: number } = (
+      await this._fetchGitlabResponse(
+        { url: `${host}/api/v4/projects/${encodedPath}`, headers: headers },
+        'Project not found. Check the repository name and group:'
+      )
+    ).data;
 
-    const matchedProject = projects.find(project => project.name === repository && project.namespace.full_path.toLowerCase() === group.toLowerCase());
-
-    if (!matchedProject) {
-      throw new Error('Project not found. Check the repository name and group.');
-    }
-
-    return matchedProject.id;
+    return project.id;
   }
 }
