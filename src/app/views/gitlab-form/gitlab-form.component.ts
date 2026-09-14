@@ -23,7 +23,7 @@ export class GitlabFormComponent {
   private readonly notifications = inject(Notifications);
 
   protected repository: InternalField = {
-    placeholder: 'Name',
+    placeholder: 'path-name',
     popover: this.gitlabAddPopover,
     value: this.initialConfig?.repository,
   };
@@ -73,12 +73,12 @@ export class GitlabFormComponent {
         .subscribe();
       return undefined;
     }
-    // Detect if there "/" in the repository name and alert user
+    // Detect if there "/" in the repository path name and alert user
     if (this.repository.value.includes('/')) {
       this.notifications
         .alert({
           title: 'Alert',
-          content: "Repository name should not contain any '/'. If applicable, please move the parent directories to the group field.",
+          content: "Repository path name should not contain any '/'. If applicable, please move the parent directories to the group field.",
           type: DialogType.Alert,
         })
         .subscribe();
@@ -115,7 +115,7 @@ export class GitlabFormComponent {
 
   get gitlabAddPopover() {
     return this.transloco.translate(
-      'Type in the name of the repository located on the host and group. If applicable, put all parent directories in the group field.'
+      'Type in the path name of the repository located on the host and group. If applicable, put all parent directories in the group field.'
     );
   }
   get gitlabAddVersionPopover() {
