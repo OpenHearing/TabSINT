@@ -227,7 +227,7 @@ export class GitlabService {
   /**
    * Private method for determining the project identifier for a gitlab reference.
    * @param host The host of the Gitlab repository.
-   * @param repository The repository name.
+   * @param repository The repository path name.
    * @param group The group containing the repository.
    * @param headers Authorization headers for the request.
    * @returns The project identifier for the repository.
@@ -238,7 +238,7 @@ export class GitlabService {
     const project: { id: number } = (
       await this._fetchGitlabResponse(
         { url: `${host}/api/v4/projects/${encodedPath}`, headers: headers },
-        'Project not found. Check the repository name and group:'
+        'Project not found. Check the repository path name and group:'
       )
     ).data;
 

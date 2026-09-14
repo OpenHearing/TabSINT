@@ -53,7 +53,7 @@ describe('GitlabService', () => {
       mockFetchResponse(404, {});
 
       await expectAsync(gitlabService['_getGitlabProjectId'](host, 'missing-repo', 'my-group', headers)).toBeRejectedWithError(
-        'Project not found. Check the repository name and group: 404'
+        'Project not found. Check the repository path name and group: 404'
       );
       expect(globalThis.fetch).toHaveBeenCalledWith(`${host}/api/v4/projects/${encodedPath}`, jasmine.anything());
     });
