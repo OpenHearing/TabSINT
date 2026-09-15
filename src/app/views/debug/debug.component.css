@@ -57,8 +57,9 @@
   padding: 15px;
   border-top: 1px solid #eee;
   transition: all 0.3s ease;
-  max-height: 1000px;
-  overflow: hidden;
+  max-height: 60vh;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .debug-section-content.section-collapsed {
@@ -66,11 +67,19 @@
   padding-top: 0;
   padding-bottom: 0;
   border-top: none;
+  overflow: hidden;
 }
 
 /* JSON viewer styling within sections */
 .debug-section-content ngx-json-viewer {
   font-size: 12px;
+}
+
+/* ngx-json-viewer caps itself at height:100%/overflow:hidden internally;
+   let the section content above be the single scroll container instead. */
+.debug-section-content ::ng-deep .ngx-json-viewer {
+  height: auto !important;
+  overflow: visible !important;
 }
 
 /* Override default margins for better spacing */
