@@ -301,7 +301,7 @@ export class MediaManagementComponent implements OnInit, OnDestroy {
   }
   get gitlabAddMediaPopover() {
     return this.transloco.translate(
-      'Type in the name of media repository located on the host in the group defined in the <b>Gitlab Configuration</b> pane under the <i>Configuration</i> tab.'
+      'Type in the path name of the media repository located on the host in the group defined in the <b>Gitlab Configuration</b> pane under the <i>Configuration</i> tab.'
     );
   }
   get gitlabAddMediaVersionPopover() {

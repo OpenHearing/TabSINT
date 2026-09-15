@@ -533,6 +533,9 @@ export class DevicesService {
    * @param device The device to check firmware for.
    */
   async checkForFirmwareUpdate(device: IDevice): Promise<void> {
+    if (device.name.toLowerCase().includes('oaesp')) {
+      return;
+    }
     const disk = await firstValueFrom(this.diskModel.diskSubject);
     const firmwareAsset = await this.getApplicationFirmware(device.type);
     if (

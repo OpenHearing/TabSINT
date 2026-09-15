@@ -22,7 +22,7 @@ const protocolSchemaBase: JSONSchemaType<ProtocolSchemaInterface> = {
     commonMediaRepository: {
       type: 'string',
       description:
-        'Name of a separate gitlab repository to be used for playing some or all media files. This repository will be automatically downloaded after the protocol is downloaded. This repository must be in the same group (a.k.a. namespace) as the protocol.',
+        'Path name of a separate gitlab repository to be used for playing some or all media files. This repository will be automatically downloaded after the protocol is downloaded. This repository must be in the same group (a.k.a. namespace) as the protocol.',
       nullable: true,
     },
     calibration: { type: 'array', items: protocolCalibrationSchema, nullable: true },

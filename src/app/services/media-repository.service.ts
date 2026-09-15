@@ -27,7 +27,7 @@ export class MediaRepositoryService {
 
   /**
    * Download or refresh a media repository from Gitlab and store it in disk.mediaRepos.
-   * A repository name is only unique per target, so the same repository can be downloaded
+   * A repository path name is only unique per target, so the same repository can be downloaded
    * separately for the protocol and for one or more device types without conflicting.
    * Repos targeted at 'Protocol' are saved externally, the same way protocols themselves are downloaded.
    * @param config The configuration used to download the repository.
@@ -156,7 +156,7 @@ export class MediaRepositoryService {
    * Handle the download/update logic for a common media repository.
    * Failures are logged and surfaced as a non-blocking warning.
    * @param gitlabConfig The protocol's own Gitlab configuration (host/group/token are reused).
-   * @param commonMediaRepository The name of the common media repository declared by the protocol.
+   * @param commonMediaRepository The path name of the common media repository declared by the protocol.
    * @returns The outcome of the update.
    */
   async processCommonMedia(gitlabConfig: GitlabConfigInterface, commonMediaRepository: string | undefined): Promise<MediaUpdateStatus> {
