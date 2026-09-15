@@ -16,8 +16,6 @@ export interface WAIInterface extends CommonResponseAreaInterface {
   outputRawMeasurements?: boolean;
   outputChannel?: string;
   inputChannels?: string[];
-  aurenInsideDiameter?: number;
-  aurenLength?: number;
   earCanalDiameter?: number;
   earCanalLength?: number;
   writeFPLCalibration?: boolean;
