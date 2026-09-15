@@ -14,23 +14,23 @@ npx cap sync
 
 <docgen-index>
 
-- [`configure(...)`](#configure)
-- [`preload(...)`](#preload)
-- [`play(...)`](#play)
-- [`pause(...)`](#pause)
-- [`resume(...)`](#resume)
-- [`loop(...)`](#loop)
-- [`stop(...)`](#stop)
-- [`unload(...)`](#unload)
-- [`setVolume(...)`](#setvolume)
-- [`setSystemVolume(...)`](#setsystemvolume)
-- [`getSystemVolume()`](#getsystemvolume)
-- [`seekTo(...)`](#seekto)
-- [`getCurrentTime(...)`](#getcurrenttime)
-- [`getDuration(...)`](#getduration)
-- [`isPlaying(...)`](#isplaying)
-- [`addListener('complete', ...)`](#addlistenercomplete-)
-- [Interfaces](#interfaces)
+* [`configure(...)`](#configure)
+* [`preload(...)`](#preload)
+* [`play(...)`](#play)
+* [`pause(...)`](#pause)
+* [`resume(...)`](#resume)
+* [`loop(...)`](#loop)
+* [`stop(...)`](#stop)
+* [`unload(...)`](#unload)
+* [`setVolume(...)`](#setvolume)
+* [`setSystemVolume(...)`](#setsystemvolume)
+* [`getSystemVolume()`](#getsystemvolume)
+* [`seekTo(...)`](#seekto)
+* [`getCurrentTime(...)`](#getcurrenttime)
+* [`getDuration(...)`](#getduration)
+* [`isPlaying(...)`](#isplaying)
+* [`addListener('complete', ...)`](#addlistenercomplete-)
+* [Interfaces](#interfaces)
 
 </docgen-index>
 
@@ -47,7 +47,8 @@ configure(options: ConfigureOptions) => Promise<void>
 | ------------- | ------------------------------------------------------------- |
 | **`options`** | <code><a href="#configureoptions">ConfigureOptions</a></code> |
 
----
+--------------------
+
 
 ### preload(...)
 
@@ -59,7 +60,8 @@ preload(options: PreloadOptions) => Promise<void>
 | ------------- | --------------------------------------------------------- |
 | **`options`** | <code><a href="#preloadoptions">PreloadOptions</a></code> |
 
----
+--------------------
+
 
 ### play(...)
 
@@ -71,7 +73,8 @@ play(options: { assetId: string; time?: number; }) => Promise<void>
 | ------------- | ------------------------------------------------ |
 | **`options`** | <code>{ assetId: string; time?: number; }</code> |
 
----
+--------------------
+
 
 ### pause(...)
 
@@ -83,7 +86,8 @@ pause(options: { assetId: string; }) => Promise<void>
 | ------------- | --------------------------------- |
 | **`options`** | <code>{ assetId: string; }</code> |
 
----
+--------------------
+
 
 ### resume(...)
 
@@ -95,7 +99,8 @@ resume(options: { assetId: string; }) => Promise<void>
 | ------------- | --------------------------------- |
 | **`options`** | <code>{ assetId: string; }</code> |
 
----
+--------------------
+
 
 ### loop(...)
 
@@ -107,7 +112,8 @@ loop(options: { assetId: string; }) => Promise<void>
 | ------------- | --------------------------------- |
 | **`options`** | <code>{ assetId: string; }</code> |
 
----
+--------------------
+
 
 ### stop(...)
 
@@ -119,7 +125,8 @@ stop(options: { assetId: string; }) => Promise<void>
 | ------------- | --------------------------------- |
 | **`options`** | <code>{ assetId: string; }</code> |
 
----
+--------------------
+
 
 ### unload(...)
 
@@ -131,7 +138,8 @@ unload(options: { assetId: string; }) => Promise<void>
 | ------------- | --------------------------------- |
 | **`options`** | <code>{ assetId: string; }</code> |
 
----
+--------------------
+
 
 ### setVolume(...)
 
@@ -143,7 +151,8 @@ setVolume(options: { assetId: string; volume: number | number[]; }) => Promise<v
 | ------------- | ------------------------------------------------------------- |
 | **`options`** | <code>{ assetId: string; volume: number \| number[]; }</code> |
 
----
+--------------------
+
 
 ### setSystemVolume(...)
 
@@ -155,7 +164,8 @@ setSystemVolume(options: { volume: number; }) => Promise<void>
 | ------------- | -------------------------------- |
 | **`options`** | <code>{ volume: number; }</code> |
 
----
+--------------------
+
 
 ### getSystemVolume()
 
@@ -165,7 +175,8 @@ getSystemVolume() => Promise<{ volume: number; }>
 
 **Returns:** <code>Promise&lt;{ volume: number; }&gt;</code>
 
----
+--------------------
+
 
 ### seekTo(...)
 
@@ -177,7 +188,8 @@ seekTo(options: { assetId: string; time: number; }) => Promise<void>
 | ------------- | ----------------------------------------------- |
 | **`options`** | <code>{ assetId: string; time: number; }</code> |
 
----
+--------------------
+
 
 ### getCurrentTime(...)
 
@@ -191,7 +203,8 @@ getCurrentTime(options: { assetId: string; }) => Promise<{ currentTime: number; 
 
 **Returns:** <code>Promise&lt;{ currentTime: number; }&gt;</code>
 
----
+--------------------
+
 
 ### getDuration(...)
 
@@ -205,7 +218,8 @@ getDuration(options: { assetId: string; }) => Promise<{ duration: number; }>
 
 **Returns:** <code>Promise&lt;{ duration: number; }&gt;</code>
 
----
+--------------------
+
 
 ### isPlaying(...)
 
@@ -219,7 +233,8 @@ isPlaying(options: { assetId: string; }) => Promise<{ isPlaying: boolean; }>
 
 **Returns:** <code>Promise&lt;{ isPlaying: boolean; }&gt;</code>
 
----
+--------------------
+
 
 ### addListener('complete', ...)
 
@@ -238,9 +253,11 @@ Listen for asset completed playing event
 
 **Since:** 5.0.1
 
----
+--------------------
+
 
 ### Interfaces
+
 
 #### ConfigureOptions
 
@@ -248,6 +265,7 @@ Listen for asset completed playing event
 | ----------- | -------------------- | ------------------------------------------------- | ------------------ |
 | **`fade`**  | <code>boolean</code> | Indicating whether or not to fade audio.          | <code>false</code> |
 | **`focus`** | <code>boolean</code> | Indicating whether or not to disable mixed audio. | <code>false</code> |
+
 
 #### PreloadOptions
 
@@ -258,6 +276,7 @@ Listen for asset completed playing event
 | **`volume`**          | <code>number \| number[]</code> |
 | **`audioChannelNum`** | <code>number</code>             |
 | **`isUrl`**           | <code>boolean</code>            |
+
 
 #### PluginListenerHandle
 

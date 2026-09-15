@@ -15,3 +15,9 @@ dist/
 # Miscellaneous
 /.angular/cache
 /coverage
+
+# Generated Files
+copyright-year.md
+tabsintfs/README.md
+tabsintcha/README.md
+tabsintaudio/README.md
