@@ -99,7 +99,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
           this.batchFrequencies = calibrationResponse.batchFrequencies ?? this.batchFrequencies;
           this.initializeEarData();
           this.updateFrequencyAndTargetLevel();
-          this.showResults = calibrationResponse.showResults ?? calibrationExamSchema.properties.showResults.default;
+          this.showResults = calibrationResponse.showResults ?? this.showResults;
           await this.setupDevice(calibrationResponse);
         }
       }

@@ -446,7 +446,7 @@ export class ExamService {
   private resetFunctionsToDefaults() {
     this.isShowingFeedback = false;
     this.reset = this.resetDefault;
-    this.submit = () => void this.submitDefault();
+    this.submit = this.submitDefault;
     this.submitPartial = this.submitPartialDefault;
     this.navigateToTarget = this.navigateToTargetDefault;
     this.gradeResponses = this.gradeResponsesDefault;
