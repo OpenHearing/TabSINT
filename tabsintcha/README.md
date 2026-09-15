@@ -22,61 +22,61 @@ npx cap sync
 
 <docgen-index>
 
-* [`addListener(string, ...)`](#addlistenerstring-)
-* [`removeAllListeners()`](#removealllisteners)
-* [`checkPermissions(...)`](#checkpermissions)
-* [`requestPermissions(...)`](#requestpermissions)
-* [`getDeviceDiscoveryEventName(...)`](#getdevicediscoveryeventname)
-* [`getDeviceResponseEventName(...)`](#getdeviceresponseeventname)
-* [`getBluetoothAdapterState(...)`](#getbluetoothadapterstate)
-* [`setBluetoothAdapterState(...)`](#setbluetoothadapterstate)
-* [`getBuildVersion(...)`](#getbuildversion)
-* [`startChaSearch(...)`](#startchasearch)
-* [`cancelChaSearch(...)`](#cancelchasearch)
-* [`connect(...)`](#connect)
-* [`disconnect(...)`](#disconnect)
-* [`requestAssociatedA2DP(...)`](#requestassociateda2dp)
-* [`startListener(...)`](#startlistener)
-* [`stopListener(...)`](#stoplistener)
-* [`requestCalibrationList(...)`](#requestcalibrationlist)
-* [`requestCalibrationEntry(...)`](#requestcalibrationentry)
-* [`startCalibrationWrite(...)`](#startcalibrationwrite)
-* [`requestId(...)`](#requestid)
-* [`requestProbeId(...)`](#requestprobeid)
-* [`requestStatus(...)`](#requeststatus)
-* [`queueExam(...)`](#queueexam)
-* [`examSubmission(...)`](#examsubmission)
-* [`setSoftwareButtonState(...)`](#setsoftwarebuttonstate)
-* [`abortExams(...)`](#abortexams)
-* [`requestResults(...)`](#requestresults)
-* [`requestSdBytesFree(...)`](#requestsdbytesfree)
-* [`reprogram(...)`](#reprogram)
-* [`reboot(...)`](#reboot)
-* [`shutdown(...)`](#shutdown)
-* [`deleteFile(...)`](#deletefile)
-* [`startFileWrite(...)`](#startfilewrite)
-* [`startFileRead(...)`](#startfileread)
-* [`requestDirectory(...)`](#requestdirectory)
-* [`getLfnFromSfn(...)`](#getlfnfromsfn)
-* [`makeDirectory(...)`](#makedirectory)
-* [`cancelFileOperation(...)`](#cancelfileoperation)
-* [`format(...)`](#format)
-* [`a2dpIsPaired(...)`](#a2dpispaired)
-* [`a2dpIsConnected(...)`](#a2dpisconnected)
-* [`a2dpBeginPairing(...)`](#a2dpbeginpairing)
-* [`a2dpUnpair(...)`](#a2dpunpair)
-* [`a2dpBeginConnection(...)`](#a2dpbeginconnection)
-* [`a2dpDisconnect(...)`](#a2dpdisconnect)
-* [`noiseFeatureStart(...)`](#noisefeaturestart)
-* [`noiseFeaturePause(...)`](#noisefeaturepause)
-* [`noiseFeatureResume(...)`](#noisefeatureresume)
-* [`noiseFeatureStop(...)`](#noisefeaturestop)
-* [`noiseFeatureChangeLevel(...)`](#noisefeaturechangelevel)
-* [`requestSetting(...)`](#requestsetting)
-* [`writeSetting(...)`](#writesetting)
-* [`requestExamId(...)`](#requestexamid)
-* [Interfaces](#interfaces)
-* [Type Aliases](#type-aliases)
+- [`addListener(string, ...)`](#addlistenerstring-)
+- [`removeAllListeners()`](#removealllisteners)
+- [`checkPermissions(...)`](#checkpermissions)
+- [`requestPermissions(...)`](#requestpermissions)
+- [`getDeviceDiscoveryEventName(...)`](#getdevicediscoveryeventname)
+- [`getDeviceResponseEventName(...)`](#getdeviceresponseeventname)
+- [`getBluetoothAdapterState(...)`](#getbluetoothadapterstate)
+- [`setBluetoothAdapterState(...)`](#setbluetoothadapterstate)
+- [`getBuildVersion(...)`](#getbuildversion)
+- [`startChaSearch(...)`](#startchasearch)
+- [`cancelChaSearch(...)`](#cancelchasearch)
+- [`connect(...)`](#connect)
+- [`disconnect(...)`](#disconnect)
+- [`requestAssociatedA2DP(...)`](#requestassociateda2dp)
+- [`startListener(...)`](#startlistener)
+- [`stopListener(...)`](#stoplistener)
+- [`requestCalibrationList(...)`](#requestcalibrationlist)
+- [`requestCalibrationEntry(...)`](#requestcalibrationentry)
+- [`startCalibrationWrite(...)`](#startcalibrationwrite)
+- [`requestId(...)`](#requestid)
+- [`requestProbeId(...)`](#requestprobeid)
+- [`requestStatus(...)`](#requeststatus)
+- [`queueExam(...)`](#queueexam)
+- [`examSubmission(...)`](#examsubmission)
+- [`setSoftwareButtonState(...)`](#setsoftwarebuttonstate)
+- [`abortExams(...)`](#abortexams)
+- [`requestResults(...)`](#requestresults)
+- [`requestSdBytesFree(...)`](#requestsdbytesfree)
+- [`reprogram(...)`](#reprogram)
+- [`reboot(...)`](#reboot)
+- [`shutdown(...)`](#shutdown)
+- [`deleteFile(...)`](#deletefile)
+- [`startFileWrite(...)`](#startfilewrite)
+- [`startFileRead(...)`](#startfileread)
+- [`requestDirectory(...)`](#requestdirectory)
+- [`getLfnFromSfn(...)`](#getlfnfromsfn)
+- [`makeDirectory(...)`](#makedirectory)
+- [`cancelFileOperation(...)`](#cancelfileoperation)
+- [`format(...)`](#format)
+- [`a2dpIsPaired(...)`](#a2dpispaired)
+- [`a2dpIsConnected(...)`](#a2dpisconnected)
+- [`a2dpBeginPairing(...)`](#a2dpbeginpairing)
+- [`a2dpUnpair(...)`](#a2dpunpair)
+- [`a2dpBeginConnection(...)`](#a2dpbeginconnection)
+- [`a2dpDisconnect(...)`](#a2dpdisconnect)
+- [`noiseFeatureStart(...)`](#noisefeaturestart)
+- [`noiseFeaturePause(...)`](#noisefeaturepause)
+- [`noiseFeatureResume(...)`](#noisefeatureresume)
+- [`noiseFeatureStop(...)`](#noisefeaturestop)
+- [`noiseFeatureChangeLevel(...)`](#noisefeaturechangelevel)
+- [`requestSetting(...)`](#requestsetting)
+- [`writeSetting(...)`](#writesetting)
+- [`requestExamId(...)`](#requestexamid)
+- [Interfaces](#interfaces)
+- [Type Aliases](#type-aliases)
 
 </docgen-index>
 
@@ -98,8 +98,7 @@ Add a listener for plugin events.
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
---------------------
-
+---
 
 ### removeAllListeners()
 
@@ -109,8 +108,7 @@ removeAllListeners() => Promise<void>
 
 Remove all listeners for plugin events.
 
---------------------
-
+---
 
 ### checkPermissions(...)
 
@@ -126,8 +124,7 @@ Get the current status of permissions in the plugin.
 
 **Returns:** <code>Promise&lt;<a href="#permissionstatus">PermissionStatus</a>&gt;</code>
 
---------------------
-
+---
 
 ### requestPermissions(...)
 
@@ -143,8 +140,7 @@ Prompts the end user for permission to use the platform APIs that the plugin req
 
 **Returns:** <code>Promise&lt;<a href="#permissionstatus">PermissionStatus</a>&gt;</code>
 
---------------------
-
+---
 
 ### getDeviceDiscoveryEventName(...)
 
@@ -160,8 +156,7 @@ Get the device discovery event name needed for creating listeners for device sea
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### getDeviceResponseEventName(...)
 
@@ -177,8 +172,7 @@ Get the device response event name needed for creating listeners for device resp
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### getBluetoothAdapterState(...)
 
@@ -194,8 +188,7 @@ Query state of the Bluetooth adapter.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### setBluetoothAdapterState(...)
 
@@ -211,8 +204,7 @@ Enable/disable the Bluetooth adapter.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### getBuildVersion(...)
 
@@ -228,8 +220,7 @@ Get the build version of the CHA device.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### startChaSearch(...)
 
@@ -237,7 +228,7 @@ Get the build version of the CHA device.
 startChaSearch(options: StartChaSearchOptions) => Promise<{ value: string; }>
 ```
 
-Begin discovery of available CHAs.  This will continue until cancelled.
+Begin discovery of available CHAs. This will continue until cancelled.
 The messages can be observed using PluginName.addListener('TabsintChaDiscovery', callback).
 The discovery will first check if permissions are available before continuing with the search.
 
@@ -247,8 +238,7 @@ The discovery will first check if permissions are available before continuing wi
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### cancelChaSearch(...)
 
@@ -264,8 +254,7 @@ Abort discovery process.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### connect(...)
 
@@ -281,8 +270,7 @@ Connect to the specified CHA device.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### disconnect(...)
 
@@ -298,8 +286,7 @@ Disconnect from the specified CHA device.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### requestAssociatedA2DP(...)
 
@@ -315,8 +302,7 @@ Request an A2DP interface to the CHA, that is associated with this CHA.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### startListener(...)
 
@@ -333,8 +319,7 @@ The messages can be observed using PluginName.addListener('TabsintChaDevice', ca
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### stopListener(...)
 
@@ -350,8 +335,7 @@ Remove the listener for the specified CHA device to stop receiving notifications
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### requestCalibrationList(...)
 
@@ -367,8 +351,7 @@ Request the list of available calibrations from the specified CHA device.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### requestCalibrationEntry(...)
 
@@ -384,8 +367,7 @@ Request the indexed section of the calibration entry from the specified CHA devi
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### startCalibrationWrite(...)
 
@@ -401,8 +383,7 @@ Begin writing a calibration entry to a specified CHA device.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### requestId(...)
 
@@ -418,8 +399,7 @@ Request the ID information of the specified CHA device.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### requestProbeId(...)
 
@@ -435,8 +415,7 @@ Request the ID information of the attached probe for the specified CHA device.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### requestStatus(...)
 
@@ -452,8 +431,7 @@ Request the status information of the specified CHA device.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### queueExam(...)
 
@@ -469,8 +447,7 @@ Add the exam object to a specified CHA device's queue.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### examSubmission(...)
 
@@ -486,8 +463,7 @@ Send user input for the current exam to a specified CHA device.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### setSoftwareButtonState(...)
 
@@ -503,8 +479,7 @@ Set the state of the software button for a specified CHA device.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### abortExams(...)
 
@@ -520,8 +495,7 @@ Cancel all exams queued for the specified CHA device.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### requestResults(...)
 
@@ -537,8 +511,7 @@ Request the results for an exam from the specified CHA device.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### requestSdBytesFree(...)
 
@@ -554,8 +527,7 @@ Request the available SD space in bytes from the specified CHA device.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### reprogram(...)
 
@@ -572,8 +544,7 @@ The CRC32 value will be checked against the CHA computed CRC32 and reject the re
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### reboot(...)
 
@@ -589,8 +560,7 @@ Reboot the specified CHA device.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### shutdown(...)
 
@@ -607,8 +577,7 @@ The command is ignored for USB connected devices.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### deleteFile(...)
 
@@ -625,8 +594,7 @@ The directory is relative to the USER directory.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### startFileWrite(...)
 
@@ -642,8 +610,7 @@ Begin writing a file to the specified CHA device.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### startFileRead(...)
 
@@ -659,8 +626,7 @@ Begin reading a file from the specified CHA device.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### requestDirectory(...)
 
@@ -676,8 +642,7 @@ Request the specified CHA device transmits the contents of a directory.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### getLfnFromSfn(...)
 
@@ -693,8 +658,7 @@ Convert the short file name returned by the directory function into a long file 
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### makeDirectory(...)
 
@@ -710,8 +674,7 @@ Create a directory on the specified CHA device.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### cancelFileOperation(...)
 
@@ -727,8 +690,7 @@ Cancel an ongoing streamable operations on the specified CHA device.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### format(...)
 
@@ -744,8 +706,7 @@ Command the specified CHA device to format its SD card.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### a2dpIsPaired(...)
 
@@ -761,8 +722,7 @@ Whether the specified A2DP device is paired or not.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### a2dpIsConnected(...)
 
@@ -778,8 +738,7 @@ Whether the specified A2DP device is connected or not.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### a2dpBeginPairing(...)
 
@@ -795,8 +754,7 @@ Begin pairing the specified A2DP device.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### a2dpUnpair(...)
 
@@ -812,8 +770,7 @@ Unpair the specified A2DP device.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### a2dpBeginConnection(...)
 
@@ -829,8 +786,7 @@ Begin connection to the specified A2DP device.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### a2dpDisconnect(...)
 
@@ -846,8 +802,7 @@ Disconnect to the specified A2DP device.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### noiseFeatureStart(...)
 
@@ -863,8 +818,7 @@ Start playback of noise for the specified CHA device.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### noiseFeaturePause(...)
 
@@ -880,8 +834,7 @@ Pause the playback of noise for the specified CHA device.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### noiseFeatureResume(...)
 
@@ -897,8 +850,7 @@ Resume the playback of noise for the specified CHA device.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### noiseFeatureStop(...)
 
@@ -914,8 +866,7 @@ Stop the playback of noise for the specified CHA device.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### noiseFeatureChangeLevel(...)
 
@@ -931,8 +882,7 @@ Change the volume of the background noise without interrupting playback for the 
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### requestSetting(...)
 
@@ -948,8 +898,7 @@ Request a setting by its index in the setting table from the specified CHA devic
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### writeSetting(...)
 
@@ -965,8 +914,7 @@ Write a setting by its index in the setting table to the specified CHA device.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### requestExamId(...)
 
@@ -982,11 +930,9 @@ Request the current exam id from the specified CHA device.
 
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
---------------------
-
+---
 
 ### Interfaces
-
 
 #### PluginListenerHandle
 
@@ -994,13 +940,11 @@ Request the current exam id from the specified CHA device.
 | ------------ | ----------------------------------------- |
 | **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
 
-
 #### PermissionStatus
 
 | Prop            | Type                                                        | Description                  |
 | --------------- | ----------------------------------------------------------- | ---------------------------- |
 | **`bluetooth`** | <code><a href="#permissionstate">PermissionState</a></code> | Bluetooth permission status. |
-
 
 #### SetBluetoothAdapterStateOptions
 
@@ -1008,13 +952,11 @@ Request the current exam id from the specified CHA device.
 | -------------- | ------------------- | -------------------------------------------------------- |
 | **`newState`** | <code>string</code> | The new state for the bluetooth adapter ("on" or "off"). |
 
-
 #### StartChaSearchOptions
 
 | Prop         | Type                | Description                                                                                             |
 | ------------ | ------------------- | ------------------------------------------------------------------------------------------------------- |
 | **`infStr`** | <code>string</code> | The CHA interface argument for the search. This indicates the type of connection to search for devices. |
-
 
 #### NameOptions
 
@@ -1022,13 +964,11 @@ Request the current exam id from the specified CHA device.
 | ---------- | ------------------- | -------------------- |
 | **`name`** | <code>string</code> | The CHA device name. |
 
-
 #### RequestCalibrationEntryOptions
 
 | Prop        | Type                | Description                                    |
 | ----------- | ------------------- | ---------------------------------------------- |
 | **`index`** | <code>number</code> | The index for the calibration entry to stream. |
-
 
 #### StartCalibrationWriteOptions
 
@@ -1039,14 +979,12 @@ Request the current exam id from the specified CHA device.
 | **`dataArgs`**    | <code>object</code> | The calibration data arguments.                             |
 | **`speakerArgs`** | <code>object</code> | Speaker data arguments to be added to the calibration data. |
 
-
 #### QueueExamOptions
 
 | Prop           | Type                | Description                    |
 | -------------- | ------------------- | ------------------------------ |
 | **`examName`** | <code>string</code> | The name of the exam to queue. |
 | **`params`**   | <code>object</code> | The parameters for the exam.   |
-
 
 #### ExamSubmissionOptions
 
@@ -1055,13 +993,11 @@ Request the current exam id from the specified CHA device.
 | **`submissionName`** | <code>string</code> | The name of the exam submission.        |
 | **`params`**         | <code>object</code> | The parameters for the exam submission. |
 
-
 #### SetSoftwareButtonStateOptions
 
 | Prop        | Type                | Description                                              |
 | ----------- | ------------------- | -------------------------------------------------------- |
 | **`state`** | <code>number</code> | The new state of the software button to be set (0 or 1). |
-
 
 #### ReprogramOptions
 
@@ -1069,14 +1005,12 @@ Request the current exam id from the specified CHA device.
 | ----------- | ------------------- | -------------------------------------------------------------------------- |
 | **`crc32`** | <code>number</code> | The CRC32 checksum value to be used for validation in a reprogram request. |
 
-
 #### DeleteFileOptions
 
 | Prop             | Type                | Description                                  |
 | ---------------- | ------------------- | -------------------------------------------- |
 | **`remoteFile`** | <code>string</code> | The remote file on the device to be deleted. |
 | **`flags`**      | <code>number</code> | Modification flags for request.              |
-
 
 #### StartFileWriteOptions
 
@@ -1086,14 +1020,12 @@ Request the current exam id from the specified CHA device.
 | **`remoteFile`** | <code>string</code> | The path on the CHA to read.                  |
 | **`flags`**      | <code>number</code> | Modification flags for request.               |
 
-
 #### StartFileReadOptions
 
 | Prop             | Type                | Description                                   |
 | ---------------- | ------------------- | --------------------------------------------- |
 | **`localFile`**  | <code>string</code> | The path to the file on the device to create. |
 | **`remoteFile`** | <code>string</code> | The path on the CHA to read.                  |
-
 
 #### RequestDirectoryOptions
 
@@ -1102,13 +1034,11 @@ Request the current exam id from the specified CHA device.
 | **`remotePath`** | <code>string</code> | The directory on the CHA to read. |
 | **`flags`**      | <code>number</code> | Modification flags for request.   |
 
-
 #### GetLfnFromSfnOptions
 
 | Prop           | Type                | Description                      |
 | -------------- | ------------------- | -------------------------------- |
 | **`fullPath`** | <code>string</code> | The full path to the short file. |
-
 
 #### MakeDirectoryOptions
 
@@ -1117,13 +1047,11 @@ Request the current exam id from the specified CHA device.
 | **`remotePath`** | <code>string</code> | The directory on the CHA to create. |
 | **`flags`**      | <code>number</code> | Modification flags for request.     |
 
-
 #### NoiseFeatureStartOptions
 
 | Prop         | Type                | Description                                 |
 | ------------ | ------------------- | ------------------------------------------- |
 | **`params`** | <code>object</code> | The configuration parameters for the noise. |
-
 
 #### NoiseFeatureChangeLevelOptions
 
@@ -1131,13 +1059,11 @@ Request the current exam id from the specified CHA device.
 | ------------ | --------------------- | ------------------------------------------------ |
 | **`levels`** | <code>number[]</code> | An array of length two of levels for left/right. |
 
-
 #### RequestSettingOptions
 
 | Prop              | Type                | Description                      |
 | ----------------- | ------------------- | -------------------------------- |
 | **`settingName`** | <code>string</code> | The name of the setting to read. |
-
 
 #### WriteSettingOptions
 
@@ -1146,14 +1072,11 @@ Request the current exam id from the specified CHA device.
 | **`settingName`** | <code>string</code> | The name of the setting to modify. |
 | **`value`**       | <code>number</code> | The new value for the setting.     |
 
-
 ### Type Aliases
-
 
 #### ListenerCallback
 
 <code>(err: any, ...args: any[]): void</code>
-
 
 #### PermissionState
 

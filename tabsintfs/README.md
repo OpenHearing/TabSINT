@@ -13,15 +13,15 @@ npx cap sync
 
 <docgen-index>
 
-* [`chooseFolder()`](#choosefolder)
-* [`createPath(...)`](#createpath)
-* [`getDirectoryStructure(...)`](#getdirectorystructure)
-* [`copyFileOrFolder(...)`](#copyfileorfolder)
-* [`readFile(...)`](#readfile)
-* [`getFileContentURI(...)`](#getfilecontenturi)
-* [`deletePath(...)`](#deletepath)
-* [`listFilesInDirectory(...)`](#listfilesindirectory)
-* [`unzip(...)`](#unzip)
+- [`chooseFolder()`](#choosefolder)
+- [`createPath(...)`](#createpath)
+- [`getDirectoryStructure(...)`](#getdirectorystructure)
+- [`copyFileOrFolder(...)`](#copyfileorfolder)
+- [`readFile(...)`](#readfile)
+- [`getFileContentURI(...)`](#getfilecontenturi)
+- [`deletePath(...)`](#deletepath)
+- [`listFilesInDirectory(...)`](#listfilesindirectory)
+- [`unzip(...)`](#unzip)
 
 </docgen-index>
 
@@ -36,8 +36,7 @@ chooseFolder() => Promise<{ uri: string; name: string; }>
 
 **Returns:** <code>Promise&lt;{ uri: string; name: string; }&gt;</code>
 
---------------------
-
+---
 
 ### createPath(...)
 
@@ -51,8 +50,7 @@ createPath(options: { rootUri: string | null | undefined; path: string; content?
 
 **Returns:** <code>Promise&lt;{ uri: string; }&gt;</code>
 
---------------------
-
+---
 
 ### getDirectoryStructure(...)
 
@@ -66,8 +64,7 @@ getDirectoryStructure(options: { rootUri: string | null | undefined; path?: stri
 
 **Returns:** <code>Promise&lt;{ structure: any; }&gt;</code>
 
---------------------
-
+---
 
 ### copyFileOrFolder(...)
 
@@ -81,8 +78,7 @@ copyFileOrFolder(options: { rootUri: string | null | undefined; sourcePath: stri
 
 **Returns:** <code>Promise&lt;{ success: boolean; message: string; }&gt;</code>
 
---------------------
-
+---
 
 ### readFile(...)
 
@@ -96,8 +92,7 @@ readFile(options: { rootUri?: string | null; filePath?: string | null; fileUri?:
 
 **Returns:** <code>Promise&lt;{ contentUri: string; mimeType: string; name: string; size: number; content: string; }&gt;</code>
 
---------------------
-
+---
 
 ### getFileContentURI(...)
 
@@ -111,8 +106,7 @@ getFileContentURI(options: { rootUri: string; filePath: string; }) => Promise<{ 
 
 **Returns:** <code>Promise&lt;{ contentUri: string; }&gt;</code>
 
---------------------
-
+---
 
 ### deletePath(...)
 
@@ -126,8 +120,7 @@ deletePath(options: { rootUri: string | null | undefined; path: string; }) => Pr
 
 **Returns:** <code>Promise&lt;{ success: boolean; message: string; }&gt;</code>
 
---------------------
-
+---
 
 ### listFilesInDirectory(...)
 
@@ -141,8 +134,7 @@ listFilesInDirectory(options: { rootUri?: string | null; folderPath?: string | n
 
 **Returns:** <code>Promise&lt;{ files: { name: string; uri: string; mimeType: string; size: number; content: string; }[]; }&gt;</code>
 
---------------------
-
+---
 
 ### unzip(...)
 
@@ -156,6 +148,6 @@ unzip(options: { sourcePath: string; destinationPath: string; ignoreRoot: boolea
 
 **Returns:** <code>Promise&lt;{ success: boolean; message: string; }&gt;</code>
 
---------------------
+---
 
 </docgen-api>

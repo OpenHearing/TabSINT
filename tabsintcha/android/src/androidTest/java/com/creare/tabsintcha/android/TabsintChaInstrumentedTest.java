@@ -18,8 +18,7 @@ public class TabsintChaInstrumentedTest {
 
   @Test
   public void useAppContext() throws Exception {
-    Context appContext =
-      InstrumentationRegistry.getInstrumentation().getTargetContext();
+    Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
     assertEquals("com.creare.tabsintcha", appContext.getPackageName());
   }
 }

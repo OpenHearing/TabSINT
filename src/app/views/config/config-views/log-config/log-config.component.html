@@ -2,8 +2,7 @@
   <div class="col-12">{{ "Number of log messages" | transloco }}: {{ logsCount }}</div>
 </div>
 <div class="row pad-top">
-  <div class="col-4">
-  </div>
+  <div class="col-4"></div>
   <div class="col-4">
     <button class="btn btn-block btn-primary" (click)="logExportSave()"><span class="ion-document"></span> {{ "Export" | transloco }}</button>
   </div>
@@ -16,8 +15,7 @@
 
 <div class="row pad-top" *ngIf="showLogs">
   <div class="col-12">
-    <div class="well admin-log-display">
-    </div>
+    <div class="well admin-log-display"></div>
   </div>
   <div class="row mt-4" *ngIf="showLogs">
     <div class="col-12 log-textarea" #logContainer>
