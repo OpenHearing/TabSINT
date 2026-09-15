@@ -29,7 +29,9 @@ export class AdminService implements OnDestroy {
   }
 
   onAdminViewClick(): void {
-    if (!this.disk.preferences.debugMode) {
+    if (this.disk.preferences.debugMode) {
+      this.router.navigate(['/admin']);
+    } else {
       const dialogRef = this.dialog.open(ChangePinComponent);
       dialogRef.componentInstance.setValidationMode(true);
       dialogRef.componentInstance.pinValidated.subscribe((isValid: boolean) => {
@@ -37,8 +39,6 @@ export class AdminService implements OnDestroy {
           this.router.navigate(['/admin']);
         }
       });
-    } else {
-      this.router.navigate(['/admin']);
     }
   }
 }

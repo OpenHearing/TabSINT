@@ -49,10 +49,10 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
   feedback: string = multipleChoiceSchema.properties.feedback.default;
   delayEnable: number = multipleChoiceSchema.properties.delayEnable.default;
   other: string = multipleChoiceSchema.properties.other.default;
+  autoSubmit: boolean = multipleChoiceSchema.properties.autoSubmit.default;
 
   choices: ChoiceInterface[] = [];
   otherSelected: boolean = false;
-  submitted: boolean = false;
   disableButtons: boolean = true;
   enableOther: boolean = false;
   paddingBottom: string = '1px';
@@ -96,6 +96,7 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
           this.verticalSpacing = updatedMultipleChoiceResponseArea.verticalSpacing ?? multipleChoiceSchema.properties.verticalSpacing.default;
           this.delayEnable = updatedMultipleChoiceResponseArea.delayEnable ?? multipleChoiceSchema.properties.delayEnable.default;
           this.other = updatedMultipleChoiceResponseArea.other ?? multipleChoiceSchema.properties.other.default;
+          this.autoSubmit = updatedMultipleChoiceResponseArea.autoSubmit ?? multipleChoiceSchema.properties.autoSubmit.default;
 
           this.paddingBottom = this.verticalSpacing.toString() + 'px';
 
@@ -120,16 +121,9 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
               };
             }
             (this.results.currentPage.page.responseArea as MultipleChoiceInterface).choices = this.choices;
-            // Allow for 1250ms delay if feedback is present
+            // Hold the graded buttons on screen before advancing, if feedback is present
             if (this.feedback) {
-              this.examService.submit = () => {
-                this.submitted = true;
-                setTimeout(() => {
-                  this.examService.submit = this.examService.submitDefault;
-                  this.examService.submit();
-                  this.submitted = false;
-                }, 1250);
-              };
+              this.examService.delaySubmitForFeedback();
             }
           }, 100);
         }
@@ -152,7 +146,7 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
     this.resultsModel.updateCurrentPage({ response: this.results.currentPage.response });
     this.stateModel.updateState({ doesResponseExist: true });
     this.stateModel.setPageSubmittable();
-    if (this.state.isSubmittable && !isOther) {
+    if (this.autoSubmit && this.state.isSubmittable && !isOther) {
       this.examService.submit();
     }
   }
@@ -176,7 +170,7 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
 
   multipleChoiceBtnClass(choice: ChoiceInterface) {
     const options = {
-      feedback: this.submitted ? this.feedback : undefined,
+      feedback: this.examService.isShowingFeedback ? this.feedback : undefined,
       disableButton: this.disableButtons,
     };
     return choiceBtnClassHelper(choice, this.results.currentPage.response, options);

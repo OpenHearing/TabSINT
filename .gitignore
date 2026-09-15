@@ -51,3 +51,5 @@ Thumbs.db
 .claude/settings.json
 tools/tabsint.pem
 tools/tabsint.pub
+.problems/toon/*
+CLAUDE.md

@@ -18,7 +18,7 @@ describe('StateModel', () => {
     expect(stateModel.getState().wifiConnected).toBeTrue();
   });
 
-  it('updateState emits via subject', (done) => {
+  it('updateState emits via subject', done => {
     stateModel.stateSubject.subscribe(state => {
       if (state.wifiConnected) {
         expect(state.wifiConnected).toBeTrue();

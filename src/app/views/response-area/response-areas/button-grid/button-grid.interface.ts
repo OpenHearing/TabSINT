@@ -9,4 +9,5 @@ export interface ButtonGridInterface extends CommonResponseAreaInterface {
   horizontalSpacing?: number;
   delayEnable?: number;
   choices?: ChoiceInterface[];
+  autoSubmit?: boolean; // Submit the page as soon as a choice is tapped
 }

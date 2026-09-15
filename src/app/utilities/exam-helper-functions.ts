@@ -24,11 +24,34 @@ export function calculateElapsedTime(startTimeString: string) {
   return hoursFormatted + ':' + minutesFormatted + ':' + secondsFormatted;
 }
 
-export function getDefaultResponseRequired(responseType: string): boolean {
-  const responseAreaSchema = pageSchema.properties.responseArea.oneOf.find((responseAreaType: JSONSchemaType<any>) => {
+/** Finds the schema branch that describes a response area type.
+ * @summary Looks up a response area type in the page schema's responseArea oneOf list
+ * @returns the matching branch schema, or undefined when the type is not registered
+ */
+export function findResponseAreaSchema(responseType: string) {
+  return pageSchema.properties.responseArea.oneOf.find((responseAreaType: JSONSchemaType<any>) => {
     return responseAreaType.properties.type.enum.includes(responseType);
   });
-  return responseAreaSchema.properties.responseRequired.default ?? true;
+}
+
+/** Default for a response area's responseRequired.
+ * @summary Reads the schema default, since ajv does not apply defaults inside a oneOf
+ * @returns the schema default, or false when the type is not registered
+ */
+export function getDefaultResponseRequired(responseType: string): boolean {
+  const responseAreaSchema = findResponseAreaSchema(responseType);
+  // An unregistered type renders nothing; defaulting to true would leave the page permanently
+  // unsubmittable, so fall back to false and let the caller report the unknown type.
+  return responseAreaSchema?.properties.responseRequired?.default ?? false;
+}
+
+/** Default for a response area's enableSkip.
+ * @summary Reads the schema default, since ajv does not apply defaults inside a oneOf
+ * @returns the schema default, or false when the type is not registered
+ */
+export function getDefaultEnableSkip(responseType: string): boolean {
+  const responseAreaSchema = findResponseAreaSchema(responseType);
+  return responseAreaSchema?.properties.enableSkip?.default ?? false;
 }
 
 /** Checks for special references

@@ -42,8 +42,9 @@ export class QrCodeResponseAreaComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type == 'qrCodeResponseArea') {
-        this.qrExamProperties.scope = (updatedPage.responseArea as QrCodeResponseAreaInterface).scope;
-        this.qrExamProperties.autoSubmit = (updatedPage.responseArea as QrCodeResponseAreaInterface).autoSubmit;
+        const updatedResponseArea = updatedPage.responseArea as QrCodeResponseAreaInterface;
+        this.qrExamProperties.scope = updatedResponseArea.scope ?? qrCodeResponseAreaSchema.properties.scope.default;
+        this.qrExamProperties.autoSubmit = updatedResponseArea.autoSubmit ?? qrCodeResponseAreaSchema.properties.autoSubmit.default;
       }
     });
   }

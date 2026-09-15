@@ -116,7 +116,7 @@ export class AudiogramComponent implements OnInit, OnChanges {
     const yTicks = [-20, -10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120];
     const aspectRatio = (yTicks.length - 1) / 2 / (xTicks.length - 1); // maintain 20dB/octave ratio
     const margin = this.isManualExam ? { top: 50, right: 60, bottom: 60, left: 80 } : { top: 55, right: 60, bottom: 60, left: 80 };
-    const landscapeWidth = Math.max(window.innerWidth, window.innerHeight);
+    const landscapeWidth = Math.max(globalThis.innerWidth, globalThis.innerHeight);
     let baseWidth;
     if (landscapeWidth > 1200) {
       baseWidth = this.isManualExam ? landscapeWidth * 0.35 : 540;

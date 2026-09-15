@@ -1,65 +1,65 @@
-<div class="text-center" style="margin-top: 15px; padding: 10px 0 0;">
-    <a href="javascript:" (click)="advancedExpanded = !advancedExpanded">
+<div class="text-center" style="margin-top: 15px; padding: 10px 0 0">
+  <a href="javascript:" (click)="advancedExpanded = !advancedExpanded">
     <span *ngIf="advancedExpanded">
-        {{ "Hide Advanced Settings" | transloco }}
-        <i class="ion-chevron-up"></i>
+      {{ "Hide Advanced Settings" | transloco }}
+      <i class="ion-chevron-up"></i>
     </span>
     <span *ngIf="!advancedExpanded">
-        {{ "Show Advanced Settings" | transloco }}
-        <i class="ion-chevron-down"></i>
+      {{ "Show Advanced Settings" | transloco }}
+      <i class="ion-chevron-down"></i>
     </span>
-    </a>
+  </a>
 </div>
 
 <div *ngIf="advancedExpanded">
-    <div class="row pad-top">
+  <div class="row pad-top">
     <div class="col-12">
-        <h5>{{ "Preferences" | transloco }}</h5>
+      <h5>{{ "Preferences" | transloco }}</h5>
 
-        <div class="row pad-top">
+      <div class="row pad-top">
         <div class="col-6">
-            <label for="wahtsConnectionType">{{ "WAHTS Connection Type:" | transloco }}</label>
+          <label for="wahtsConnectionType">{{ "WAHTS Connection Type:" | transloco }}</label>
         </div>
         <div ngbDropdown class="col-2 dropdown-width" display="dynamic">
-            <button type="button" class="btn btn-default btn-block dropdown-toggle" id="wahtsConnectionType" ngbDropdownToggle>
+          <button type="button" class="btn btn-default btn-block dropdown-toggle" id="wahtsConnectionType" ngbDropdownToggle>
             {{ disk.preferences.wahtsConnectionType }}
-            </button>
-            <div ngbDropdownMenu aria-labelledby="wahtsConnectionType">
+          </button>
+          <div ngbDropdownMenu aria-labelledby="wahtsConnectionType">
             <button *ngFor="let bt of BluetoothType | keyvalue" ngbDropdownItem (click)="changeChaConnectionType(bt.value)">
-                {{ bt.value }}
+              {{ bt.value }}
             </button>
-            </div>
+          </div>
         </div>
-        </div>
+      </div>
 
-        <div class="row pad-top">
+      <div class="row pad-top">
         <div class="col-6">
-            <label for="ignoreFirmwareUpdates">{{ "Ignore Firmware Updates:" | transloco }}</label>
+          <label for="ignoreFirmwareUpdates">{{ "Ignore Firmware Updates:" | transloco }}</label>
         </div>
         <div class="col-2">
-            <input
+          <input
             id="ignoreFirmwareUpdates"
             type="checkbox"
             [ngModel]="disk.preferences.ignoreFirmwareUpdates"
             (change)="toggleIgnoreFirmwareUpdates()" />
         </div>
-        </div>
+      </div>
     </div>
-    </div>
+  </div>
 
-    <div class="row pad-top">
+  <div class="row pad-top">
     <div class="col-12">
-        <h5>{{ "Firmware" | transloco }}</h5>
+      <h5>{{ "Firmware" | transloco }}</h5>
 
-        <div class="row pad-top">
+      <div class="row pad-top">
         <div class="col-6">{{ "WAHTS Firmware Tag:" | transloco }}</div>
         <div class="col-4">{{ (wahtsFirmwareAsset | async)?.version ?? "--" }}</div>
-        </div>
+      </div>
 
-        <div class="row pad-top">
+      <div class="row pad-top">
         <div class="col-6">{{ "WAHTS Firmware Build Time:" | transloco }}</div>
         <div class="col-4">{{ (wahtsFirmwareAsset | async)?.buildDatetime ?? "--" }}</div>
-        </div>
+      </div>
     </div>
-    </div>
+  </div>
 </div>

@@ -7,7 +7,6 @@ import { Component, Input, OnChanges } from '@angular/core';
 @Component({
   selector: 'app-audiometry-properties',
   templateUrl: './audiometry-properties.component.html',
-  styleUrl: './audiometry-properties.component.css',
 })
 export class AudiometryPropertiesComponent implements OnChanges {
   @Input() level?: number | string;

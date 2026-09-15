@@ -26,6 +26,34 @@ export interface WAIInterface extends CommonResponseAreaInterface {
   normativeAbsorbanceData?: NormativeDataInterface[];
 }
 
+/**
+ * Properties sent to the device for a WAI firmware exam, used by both the WAI response area and
+ * the FPL calibration exam. Field names match the firmware's expected keys, so they are
+ * PascalCase rather than camelCase.
+ */
+export interface WAIExamProperties {
+  OutputChannel: string;
+  FStart: number;
+  FEnd: number;
+  SweepDuration: number;
+  SweepType: string;
+  L: number;
+  NumSweeps: number;
+  WindowDuration: number;
+  NumFrequencies: number;
+  OutputRawMeasurements: boolean;
+  InputChannels: string[];
+  AurenInsideDiameter: number;
+  AurenLength: number;
+  EarCanalDiameter: number;
+  EarCanalLength: number;
+  WriteFPLCalibration: boolean;
+  /** Set only by the FPL calibration exam, which reads the measurement data back off the device. */
+  ReturnResultData?: boolean;
+  /** Set only when the protocol asks for the exam audio to be recorded. */
+  Filename?: string;
+}
+
 export interface WAIResultsInterface {
   State: string;
   PctComplete: number;
@@ -45,7 +73,7 @@ export interface WAIResultsInterface {
 }
 
 export interface WAIResultsPlotInterface {
-  svg: any;
+  svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, unknown>;
   chartX: number;
   chartY: number;
   chartWidth: number;

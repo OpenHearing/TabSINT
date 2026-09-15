@@ -79,3 +79,29 @@ export interface DPOAEDataInterface {
   Phase: number[];
   NoiseFloor?: number[];
 }
+
+/**
+ * Properties sent to the device for a DPOAE-family firmware exam (Swept DPOAE and DP-gram).
+ * Field names match the firmware's expected keys, so they are PascalCase rather than camelCase.
+ */
+export interface DpoaeExamProperties {
+  OutputChannel1: string;
+  OutputChannel2: string;
+  InputChannel: string;
+  F2Start: number;
+  F2End: number;
+  Ratio: number;
+  SweepDuration: number;
+  SweepType: 'log' | 'linear';
+  WindowDuration: number;
+  MinSweeps: number;
+  MaxSweeps: number;
+  NumFrequencies: number;
+  L1: number;
+  L2: number;
+  NoiseFloorThreshold: number;
+  SNRThreshold: number;
+  OutputRawMeasurements: boolean;
+  /** Set only when the protocol asks for the exam audio to be recorded. */
+  Filename?: string;
+}

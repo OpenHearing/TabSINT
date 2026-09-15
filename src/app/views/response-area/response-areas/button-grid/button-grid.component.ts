@@ -32,8 +32,8 @@ export class ButtonGridComponent implements OnInit, OnDestroy {
   verticalSpacing: number = buttonGridSchema.properties.verticalSpacing.default;
   horizontalSpacing: number = buttonGridSchema.properties.horizontalSpacing.default;
   delayEnable: number = buttonGridSchema.properties.delayEnable.default;
+  autoSubmit: boolean = buttonGridSchema.properties.autoSubmit.default;
   choices: ChoiceInterface[] = [];
-  submitted = false;
   disableButtons = true;
   paddingBottom: string = '1px';
   paddingLeft: string = '1px';
@@ -82,6 +82,7 @@ export class ButtonGridComponent implements OnInit, OnDestroy {
           this.verticalSpacing = updatedButtonGridResponseArea.verticalSpacing ?? buttonGridSchema.properties.verticalSpacing.default;
           this.horizontalSpacing = updatedButtonGridResponseArea.horizontalSpacing ?? buttonGridSchema.properties.horizontalSpacing.default;
           this.delayEnable = updatedButtonGridResponseArea.delayEnable ?? buttonGridSchema.properties.delayEnable.default;
+          this.autoSubmit = updatedButtonGridResponseArea.autoSubmit ?? buttonGridSchema.properties.autoSubmit.default;
 
           this.paddingBottom = this.verticalSpacing.toString() + 'px';
           this.paddingLeft = (this.horizontalSpacing / 2).toString() + 'px';
@@ -94,16 +95,9 @@ export class ButtonGridComponent implements OnInit, OnDestroy {
           // delay 100ms to allow results and exam defaults to be set before we override them
           setTimeout(() => {
             (this.results.currentPage.page.responseArea as ButtonGridInterface).choices = this.choices;
-            // Allow for 1250ms delay if feedback is present
+            // Hold the graded buttons on screen before advancing, if feedback is present
             if (this.feedback) {
-              this.examService.submit = () => {
-                this.submitted = true;
-                setTimeout(() => {
-                  this.examService.submit = this.examService.submitDefault;
-                  this.examService.submit();
-                  this.submitted = false;
-                }, 1250);
-              };
+              this.examService.delaySubmitForFeedback();
             }
           }, 100);
         }
@@ -135,12 +129,14 @@ export class ButtonGridComponent implements OnInit, OnDestroy {
       this.stateModel.updateState({ doesResponseExist: false });
     }
     this.stateModel.setPageSubmittable();
-    this.examService.submit();
+    if (this.autoSubmit) {
+      this.examService.submit();
+    }
   }
 
   buttonGridBtnClass(choice: ChoiceInterface) {
     const options = {
-      feedback: this.submitted ? this.feedback : undefined,
+      feedback: this.examService.isShowingFeedback ? this.feedback : undefined,
       disableButton: this.disableButtons,
     };
     return choiceBtnClassHelper(choice, this.results.currentPage.response, options);

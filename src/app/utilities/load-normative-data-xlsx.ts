@@ -2,7 +2,7 @@ import { TabsintFs } from 'tabsintfs';
 import { ProtocolMetaInterface } from '../models/protocol/protocol.interface';
 import { NormativeDataInterface } from '../interfaces/normative-data-interface';
 import { ProtocolServer } from './constants';
-import { Buffer } from 'buffer';
+import { Buffer } from 'buffer'; //NOSONAR - browser polyfill, not the node builtin
 import * as XLSX from 'xlsx';
 import { WAIInterface } from '../views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.interface';
 import { SweptDpoaeInterface } from '../views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/swept-dpoae-exam.interface';
@@ -50,9 +50,9 @@ async function parseXlsxBuffer(xlsxFileContent: ArrayBuffer): Promise<NormativeD
   lines.slice(headerIndex + 1).forEach((line: any[], idx: number) => {
     if (line.length >= 3) {
       dataList.push({
-        x: parseFloat(line[0]),
-        yMin: parseFloat(line[1]),
-        yMax: parseFloat(line[2]),
+        x: Number.parseFloat(line[0]),
+        yMin: Number.parseFloat(line[1]),
+        yMax: Number.parseFloat(line[2]),
       });
     }
   });

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { SqLite } from '../../../../services/sqLite.service';
 import { StateModel } from '../../../../models/state/state.service';
@@ -22,6 +22,8 @@ export class LogConfigComponent implements OnInit, OnDestroy {
   private readonly sqLite = inject(SqLite);
   private readonly fileService = inject(FileService);
   private readonly notifications = inject(Notifications);
+
+  @ViewChild('logContainer') logContainer?: ElementRef<HTMLDivElement>;
 
   state: StateInterface;
   showLogs: boolean;
@@ -54,6 +56,16 @@ export class LogConfigComponent implements OnInit, OnDestroy {
 
   async displayLogs() {
     this.showLogs = !this.showLogs;
+    if (this.showLogs) {
+      setTimeout(() => this.scrollToBottom());
+    }
+  }
+
+  private scrollToBottom(): void {
+    const container = this.logContainer?.nativeElement;
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
   }
 
   // async logExportUpload() {

@@ -148,9 +148,9 @@ export class TympanManager implements IDeviceManager {
             results.push(tympanDevice);
           }
           const devices = this.devicesSubject.getValue();
-          const deviceIds = devices.map(device => device.deviceId);
+          const deviceIds = new Set(devices.map(device => device.deviceId));
           results.forEach(device => {
-            if (!deviceIds.includes(device.deviceId)) {
+            if (!deviceIds.has(device.deviceId)) {
               devices.push(device);
             }
           });

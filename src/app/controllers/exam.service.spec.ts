@@ -7,7 +7,7 @@ import { PageModel } from '../models/page/page.service';
 import { StateModel } from '../models/state/state.service';
 import { Notifications } from '../services/notifications.service';
 import { Logger } from '../services/logger.service';
-import { AppState, ExamState, ProtocolServer, ProtocolState } from '../utilities/constants';
+import { AppState, DialogType, ExamState, ProtocolServer, ProtocolState } from '../utilities/constants';
 import { BehaviorSubject, of } from 'rxjs';
 import { PageInterface } from '../models/page/page.interface';
 import { PageDefinition } from '../interfaces/page-definition.interface';
@@ -59,7 +59,7 @@ describe('ExamService', () => {
     const mockProtocolDictionary = { 'test-protocol': mockProtocol };
 
     mockResultsService = jasmine.createSpyObj('ResultsService', ['initializeExamResults', 'pushResults', 'save', 'initializePageResults']);
-    mockResultsModel = jasmine.createSpyObj('ResultsModel', ['getResults']);
+    mockResultsModel = jasmine.createSpyObj('ResultsModel', ['getResults', 'updateCurrentExam', 'updateCurrentPage']);
     mockPageModel = jasmine.createSpyObj('PageModel', ['getPage', 'stack', 'updatePage']);
     mockPageModel.currentPageObservable = new BehaviorSubject<PageInterface>(mockPage).asObservable();
     mockProtocolModel = jasmine.createSpyObj('ProtocolModel', ['getProtocolModel']);
@@ -174,7 +174,7 @@ describe('ExamService', () => {
         elapsedTime: '00:30:00',
         exportLocation: ProtocolServer.LocalServer,
         responses: [],
-        partialresults: [],
+        partialresults: false,
         softwareVersion: {
           tabsint: '1.0.0',
           date: new Date().toISOString(),
@@ -228,7 +228,7 @@ describe('ExamService', () => {
         elapsedTime: '00:30:00',
         exportLocation: ProtocolServer.LocalServer,
         responses: [],
-        partialresults: [],
+        partialresults: false,
         softwareVersion: {
           tabsint: '1.0.0',
           date: new Date().toISOString(),
@@ -265,7 +265,7 @@ describe('ExamService', () => {
 
     mockNotifications = jasmine.createSpyObj('Notifications', ['alert']);
     mockNotifications.alert.and.returnValue(of('OK'));
-    mockLogger = jasmine.createSpyObj('Logger', ['debug']);
+    mockLogger = jasmine.createSpyObj('Logger', ['debug', 'error', 'warning']);
     mockDevicesService = jasmine.createSpyObj('DevicesService', ['getDeviceOrDefault', 'abortExams', 'queueExam', 'requestResults']);
     mockAudioService = jasmine.createSpyObj('AudioService', ['stopAudio', 'playWav', 'setSystemVolume']);
 
@@ -342,6 +342,13 @@ describe('ExamService', () => {
     expect(examService['endExam' as keyof ExamService]).toHaveBeenCalled();
   });
 
+  it('should flag the exam results as partial when submitting partial results', () => {
+    spyOn(examService, 'endExam' as never);
+
+    examService.submitPartial();
+    expect(mockResultsModel.updateCurrentExam).toHaveBeenCalledWith({ partialresults: true });
+  });
+
   it('should navigate to target protocol and advancePage', () => {
     spyOn(examService, 'advancePage' as never);
 
@@ -370,6 +377,30 @@ describe('ExamService', () => {
       examService.protocol.activeProtocolStack.clear();
       examService.switchToExamView();
       expect(mockStateModel.updateState).toHaveBeenCalledWith({ examState: ExamState.Ready });
+    });
+  });
+
+  describe('help', () => {
+    it('shows an alert with the current page helpText when it is defined', () => {
+      const mockPage = { helpText: 'Example help text' } as PageInterface;
+      mockPageModel.getPage.and.returnValue(mockPage);
+
+      examService.help();
+
+      expect(mockNotifications.alert).toHaveBeenCalledWith({
+        title: 'Help',
+        content: 'Example help text',
+        type: DialogType.Alert,
+      });
+    });
+
+    it('does not show an alert when the current page has no helpText', () => {
+      const mockPage = { helpText: '' } as PageInterface;
+      mockPageModel.getPage.and.returnValue(mockPage);
+
+      examService.help();
+
+      expect(mockNotifications.alert).not.toHaveBeenCalled();
     });
   });
 
@@ -421,6 +452,46 @@ describe('ExamService', () => {
     });
   });
 
+  describe('skipDefault', () => {
+    beforeEach(() => {
+      mockResultsService.pushResults.and.stub();
+      spyOn(examService, 'advancePage' as never);
+    });
+
+    it('flags the page result as skipped', () => {
+      examService.skipDefault();
+      expect(mockResultsModel.updateCurrentPage).toHaveBeenCalledWith({ isSkipped: true });
+    });
+
+    it('forces the page submittable so an unmet response requirement cannot block the skip', () => {
+      examService.skipDefault();
+      expect(mockStateModel.updateState).toHaveBeenCalledWith({ isSubmittable: true });
+    });
+
+    it('advances the page', () => {
+      examService.skipDefault();
+      expect(examService['advancePage' as keyof ExamService]).toHaveBeenCalled();
+    });
+
+    it('bypasses a submit override installed by a response area', () => {
+      const overriddenSubmit = jasmine.createSpy('overriddenSubmit');
+      examService.submit = overriddenSubmit;
+
+      examService.skipDefault();
+
+      expect(overriddenSubmit).not.toHaveBeenCalled();
+      expect(mockResultsService.pushResults).toHaveBeenCalled();
+    });
+  });
+
+  describe('skip', () => {
+    it('delegates to skipDefault', () => {
+      const skipDefaultSpy = spyOn(examService, 'skipDefault');
+      examService.skip();
+      expect(skipDefaultSpy).toHaveBeenCalled();
+    });
+  });
+
   describe('isPageResponseRequired', () => {
     it('returns false when the page has no responseArea', () => {
       expect(examService.isPageResponseRequired({} as PageInterface)).toBeFalse();
@@ -434,6 +505,17 @@ describe('ExamService', () => {
     it('returns false when responseRequired is explicitly false', () => {
       const page = { responseArea: { responseRequired: false, type: 'textboxResponseArea' } } as PageInterface;
       expect(examService.isPageResponseRequired(page)).toBeFalse();
+    });
+
+    it('falls back to the schema default when responseRequired is omitted', () => {
+      const page = { responseArea: { type: 'textboxResponseArea' } } as PageInterface;
+      expect(examService.isPageResponseRequired(page)).toBeTrue();
+    });
+
+    it('logs an error and returns false for an unregistered response area type', () => {
+      const page = { id: 'bad-page', responseArea: { type: 'notARealResponseArea' } } as PageInterface;
+      expect(examService.isPageResponseRequired(page)).toBeFalse();
+      expect(mockLogger.error).toHaveBeenCalled();
     });
   });
 
@@ -742,6 +824,59 @@ describe('ExamService', () => {
       const progress = (call.args[0] as Partial<StateInterface>).examProgress;
       expect(progress).toBeGreaterThan(0);
       expect(progress).toBeLessThanOrEqual(100);
+    });
+  });
+  describe('autoSubmitDelay', () => {
+    interface InitializePage {
+      initializeCurrentPage: (page: PageDefinition) => Promise<void>;
+    }
+
+    function buildPage(id: string, autoSubmitDelay?: number): PageDefinition {
+      return {
+        id,
+        instructionText: 'text',
+        autoSubmitDelay,
+        responseArea: { type: 'textboxResponseArea', rows: 3, responseRequired: false },
+      } as unknown as PageDefinition;
+    }
+
+    beforeEach(() => {
+      jasmine.clock().install();
+      spyOn(examService, 'submit');
+    });
+
+    afterEach(() => {
+      jasmine.clock().uninstall();
+    });
+
+    it('submits the page once the delay elapses', async () => {
+      await (examService as unknown as InitializePage).initializeCurrentPage(buildPage('delayed', 100));
+
+      jasmine.clock().tick(99);
+      expect(examService.submit).not.toHaveBeenCalled();
+
+      jasmine.clock().tick(1);
+      expect(examService.submit).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not submit the next page when the user submits before the delay elapses', async () => {
+      const initializeCurrentPage = (examService as unknown as InitializePage).initializeCurrentPage.bind(examService);
+
+      await initializeCurrentPage(buildPage('delayed', 1000));
+      // The user answers and submits well before the timer fires, moving on to a page of their own.
+      await initializeCurrentPage(buildPage('next'));
+
+      jasmine.clock().tick(1000);
+      expect(examService.submit).not.toHaveBeenCalled();
+    });
+
+    it('does not submit after the exam has ended', async () => {
+      await (examService as unknown as InitializePage).initializeCurrentPage(buildPage('delayed', 1000));
+
+      examService.submitPartial();
+
+      jasmine.clock().tick(1000);
+      expect(examService.submit).not.toHaveBeenCalled();
     });
   });
 });

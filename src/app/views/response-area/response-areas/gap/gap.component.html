@@ -3,7 +3,7 @@
 
   <!-- Software response button, shown while an exam (full or training trial) is running -->
   <div *ngIf="gapState === 'exam' && useSoftwareButton" class="gap-button-row">
-    <button class="gap-response-btn" [class.button-pressed]="buttonPressed" (click)="tapSoftwareButton()">
+    <button class="btn btn-default gap-response-btn" [class.button-pressed]="buttonPressed" (click)="tapSoftwareButton()">
       {{ buttonText | transloco }}
     </button>
   </div>

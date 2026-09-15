@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 
 import { DpoaeInProgressBaseComponent } from '../../shared/dpoae/dpoae-in-progress-base.component';
 import { DPOAEAudioChannel, DPOAEDataInterface, DpGramResultsInterface } from '../dp-gram-exam/dp-gram-exam.interface';
-import { DPOAE_Y_AXIS_DOMAIN, getDpoaeLegendData, getDpoaeSeriesStyle } from '../../shared/dpoae/dpoae-common.interface';
+import { DPOAE_Y_AXIS_DOMAIN, DpoaeExamProperties, getDpoaeLegendData, getDpoaeSeriesStyle } from '../../shared/dpoae/dpoae-common.interface';
 import { appendNormativeDataBand, createLegend, createOAEResultsChartSvg, plotDpoaeSeries } from '../../../../../utilities/d3-plot-functions';
 import { getCurrentDatetime, handleOutputCalibration } from '../../../../../utilities/exam-helper-functions';
 
@@ -190,7 +190,7 @@ export class DpGramInProgressComponent extends DpoaeInProgressBaseComponent<DpGr
     });
   }
 
-  private buildExamProperties(freq: number, index: number): object {
+  private buildExamProperties(freq: number, index: number): DpoaeExamProperties {
     // 50% overlap between successive analysis windows: NumFrequencies windows span
     // MaxTestAverages window-widths of the sweep.
     let sweepDuration = Math.round(this.maxTestAverages * this.windowDuration);
@@ -199,7 +199,7 @@ export class DpGramInProgressComponent extends DpoaeInProgressBaseComponent<DpGr
     }
     const numFrequencies = 2 * this.maxTestAverages - 1;
 
-    const examProperties: any = {
+    const examProperties: DpoaeExamProperties = {
       OutputChannel1: handleOutputCalibration(this.outputChannel1, this.outputCalibrationType),
       OutputChannel2: handleOutputCalibration(this.outputChannel2, this.outputCalibrationType),
       InputChannel: this.inputChannel,
@@ -219,7 +219,7 @@ export class DpGramInProgressComponent extends DpoaeInProgressBaseComponent<DpGr
       OutputRawMeasurements: this.outputRawMeasurements,
     };
     if (this.recordFileFolder != undefined) {
-      examProperties['Filename'] = `${this.recordFileFolder}/${getCurrentDatetime()}_f2-${index}-${freq}Hz.WAV`;
+      examProperties.Filename = `${this.recordFileFolder}/${getCurrentDatetime()}_f2-${index}-${freq}Hz.WAV`;
     }
     return examProperties;
   }

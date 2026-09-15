@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslocoTestingModule } from '@jsverse/transloco';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatMenuModule } from '@angular/material/menu';
-import { TympanDevice } from '../../../../models/devices/tympan-device';
 import { MediaManagementComponent } from './media-management.component';
 
 describe('MediaManagementComponent', () => {

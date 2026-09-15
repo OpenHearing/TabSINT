@@ -32,5 +32,5 @@ export interface AppWindow extends Window {
 }
 
 export const WINDOW = new InjectionToken<AppWindow>('Global window object', {
-  factory: () => window as AppWindow,
+  factory: () => globalThis as unknown as AppWindow,
 });

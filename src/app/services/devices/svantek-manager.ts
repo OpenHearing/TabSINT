@@ -3,7 +3,6 @@ import { IDeviceManager } from '../../interfaces/devices/device-manager.interfac
 import { BleClient, ScanResult } from '@capacitor-community/bluetooth-le';
 import { SvantekDevice } from '../../models/devices/svantek-device';
 import { DeviceState, DialogType } from '../../utilities/constants';
-import { StateModel } from '../../models/state/state.service';
 import { Notifications } from '../notifications.service';
 import { TranslocoService } from '@jsverse/transloco';
 import { Tasks } from '../tasks.service';
@@ -19,8 +18,22 @@ const CHAR_EXCHANGE_UUID = 'e7add780-b042-4876-aae1-112855353cc1';
 const CHAR_START_UUID = '014e3c91-3326-488d-a20a-a2963d5984cc';
 const CHAR_PIN_UUID = '15da06a2-c25f-4f20-ad8f-5c2e992fba76';
 const DEVICE_NAME_FILTERS = ['SV 104A', 'SV 973'];
-const FREQUENCIES = [20, 25, 31.5, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500, 3150, 4000, 5000, 6300, 8000, 10000];
+const FREQUENCIES = [
+  20, 25, 31.5, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500, 3150, 4000, 5000, 6300, 8000, 10000,
+];
 const EXPECTED_DATA_BYTES = 62;
+
+/**
+ * Whether a rejection from BleClient is the transient "Write failed" the Svantek reports when it is
+ * not yet ready for the next command. The message arrives either as an Error or as a plain object
+ * with a `msg` field, depending on where in the BLE stack it originated.
+ */
+function isWriteFailedError(error: unknown): boolean {
+  if (error instanceof Error) {
+    return error.message.includes('Write failed');
+  }
+  return typeof error === 'object' && error !== null && (error as { msg?: unknown }).msg === '"Write failed"';
+}
 
 /**
  * Svantek dosimeter device manager. Uses raw BLE via BleClient (same pattern as TympanManager).
@@ -42,7 +55,7 @@ export class SvantekManager implements IDeviceManager {
 
   // Per-device state for BLE notification message accumulation, polling intervals, and latest results
   private readonly msgBuffers = new Map<string, Int8Array>();
-  private readonly pollingIntervals = new Map<string, number>();
+  private readonly pollingIntervals = new Map<string, ReturnType<typeof setInterval>>();
   private readonly latestResults = new Map<string, SvantekResultInterface>();
 
   /**
@@ -199,8 +212,8 @@ export class SvantekManager implements IDeviceManager {
   async startRecording(device: IDevice): Promise<void> {
     try {
       await this.writeAscii(device.deviceId, CHAR_EXCHANGE_UUID, '#1,S1;');
-    } catch (e: any) {
-      if (e?.message?.includes('Write failed') || e?.msg === '"Write failed"') {
+    } catch (e: unknown) {
+      if (isWriteFailedError(e)) {
         await new Promise(resolve => setTimeout(resolve, 200));
         await this.writeAscii(device.deviceId, CHAR_EXCHANGE_UUID, '#1,S1;');
       } else {
@@ -214,7 +227,7 @@ export class SvantekManager implements IDeviceManager {
       this.accumulatePacket(device.deviceId, dataView);
     });
 
-    const interval = window.setInterval(async () => {
+    const interval = setInterval(async () => {
       this.interpretMessage(device.deviceId);
       await this.writeAscii(device.deviceId, CHAR_EXCHANGE_UUID, '#3;');
     }, 500);
@@ -276,9 +289,7 @@ export class SvantekManager implements IDeviceManager {
     const statusByte = msgBuff[3];
     const dataArray = msgBuff.slice(6);
 
-    if (dataArray.length !== EXPECTED_DATA_BYTES) {
-      this.logger.warning(`Svantek ${deviceId}: unexpected data length ${dataArray.length}, expected ${EXPECTED_DATA_BYTES}`);
-    } else {
+    if (dataArray.length === EXPECTED_DATA_BYTES) {
       const Leq: number[] = [];
       for (let i = 0; i < dataArray.length - 1; i += 2) {
         Leq.push(this.asI16(dataArray.slice(i, i + 2)) / 100);
@@ -295,6 +306,8 @@ export class SvantekManager implements IDeviceManager {
         overallAmbientNoise: Leq[28],
       };
       this.latestResults.set(deviceId, result);
+    } else {
+      this.logger.warning(`Svantek ${deviceId}: unexpected data length ${dataArray.length}, expected ${EXPECTED_DATA_BYTES}`);
     }
 
     this.msgBuffers.delete(deviceId);

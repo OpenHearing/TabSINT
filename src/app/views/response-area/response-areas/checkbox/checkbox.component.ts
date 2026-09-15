@@ -1,5 +1,4 @@
 import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import * as _ from 'lodash';
 import { Subscription } from 'rxjs';
 import { ResultsInterface } from '../../../../models/results/results.interface';
 import { PageInterface } from '../../../../models/page/page.interface';
@@ -34,7 +33,6 @@ export class CheckboxComponent implements OnInit, OnDestroy {
   other: string | undefined;
   verticalSpacing: number;
   otherSelected: boolean = false;
-  submitted = false;
 
   @ViewChild('otherResponse')
   set otherResponse(textarea: ElementRef<HTMLTextAreaElement> | undefined) {
@@ -72,7 +70,7 @@ export class CheckboxComponent implements OnInit, OnDestroy {
         const updatedCheckboxResponseArea = updatedPage.responseArea as CheckboxInterface;
         if (updatedCheckboxResponseArea) {
           this.otherSelected = false;
-          this.choices = _.cloneDeep(updatedCheckboxResponseArea.choices);
+          this.choices = structuredClone(updatedCheckboxResponseArea.choices);
           this.choices.forEach(choice => {
             choice.text = choice.text ?? String(choice.id);
           });
@@ -90,17 +88,11 @@ export class CheckboxComponent implements OnInit, OnDestroy {
           // Overwrite the gradeResponses default
           this.examService.gradeResponses = this.gradeResponses.bind(this);
 
-          // Allow for 1250ms delay if feedback is present
+          // Hold the graded buttons on screen before advancing, if feedback is present
+          // delay 100ms to allow exam defaults to be set before we override them
           if (this.feedback) {
             setTimeout(() => {
-              this.examService.submit = () => {
-                this.submitted = true;
-                setTimeout(() => {
-                  this.examService.submit = this.examService.submitDefault;
-                  this.examService.submit();
-                  this.submitted = false;
-                }, 1250);
-              };
+              this.examService.delaySubmitForFeedback();
             }, 100);
           }
         }
@@ -194,7 +186,7 @@ export class CheckboxComponent implements OnInit, OnDestroy {
   checkboxBtnClass(choice: ChoiceInterface) {
     const options = {
       buttonScheme: this.buttonScheme,
-      feedback: this.submitted ? this.feedback : undefined,
+      feedback: this.examService.isShowingFeedback ? this.feedback : undefined,
     };
     return choiceBtnClassHelper(choice, this.results.currentPage.response, options);
   }

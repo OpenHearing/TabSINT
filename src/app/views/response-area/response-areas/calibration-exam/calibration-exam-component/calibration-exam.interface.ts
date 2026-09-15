@@ -25,3 +25,9 @@ export interface ExamResponse {
   response: string;
   responseArea: string;
 }
+
+export interface CalibrationNavigationEntry {
+  step: string;
+  frequencyIndex: number;
+  earCup: string;
+}

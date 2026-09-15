@@ -1,7 +1,5 @@
 <br />
 
-<!-- <results-warnings></results-warnings> -->
-
 <div mat-accordion multi>
   <mat-expansion-panel class="panel panel-default" [(expanded)]="state.isPaneOpen.completedExams">
     <mat-expansion-panel-header>
@@ -46,7 +44,7 @@
             [disabled]="sqLite.count['results'] === 0"
             class="btn btn-primary"
             (click)="exportAll()">
-            <span class="glyphicon glyphicon-floppy-disk"></span> {{ "Export" | transloco }}
+            <span class="bi bi-floppy"></span> {{ "Export" | transloco }}
           </button>
 
           <button

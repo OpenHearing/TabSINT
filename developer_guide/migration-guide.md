@@ -19,6 +19,6 @@ See [CustomJS](custom-js.md)
 
 [PREVIOUS: Repository Organization](organization.md)
 
-[NEXT: CustomJS Response Area Guide](custom-js.md)
+[NEXT: Common Response Area Parameters](response-area-parameters.md)
 
 [BACK TO INDEX](developer-guide-index.md)

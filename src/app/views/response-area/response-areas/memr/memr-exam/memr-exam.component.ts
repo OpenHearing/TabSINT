@@ -118,7 +118,6 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'memrResponseArea') {
         setTimeout(() => {
-          this.memrExamProperties.autoSubmit = (updatedPage.responseArea as MemrExamInterface)?.autoSubmit;
           this.initializeResponseArea(updatedPage.responseArea as MemrExamInterface);
           this.setupDevice(updatedPage.responseArea as MemrExamInterface);
         });
@@ -352,8 +351,11 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     };
     if (this.device) {
       await this.devicesService.examSubmission(this.device, examProperties);
-      // TODO: Remove this below band-aid (eventually)
-      await this.delay(this.memrExamProperties.elicitorLevelArray!.length * this.memrExamProperties.bleDelayPerTrial!);
+      // The device keeps reporting READY for a short while after a submission is written over BLE.
+      // Pausing for the block's expected duration stops startPollingResults() from reading that
+      // stale READY and cascading through every remaining block at once. Replacing this with a
+      // poll-until-State-is-not-READY handshake needs verification against real hardware.
+      await this.delay((this.memrExamProperties.elicitorLevelArray?.length ?? this.trialsPerBlock) * this.memrExamProperties.bleDelayPerTrial!);
     } else {
       await this.finishExam();
       this.logger.error('Error in the examSubmission, finishing exam.');

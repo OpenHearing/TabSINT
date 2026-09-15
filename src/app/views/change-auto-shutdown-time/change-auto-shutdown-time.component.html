@@ -5,10 +5,14 @@
   <label for="shutdownTime">
     <span>Enter new auto shutdown time (minutes):</span>
   </label>
-  <input id="shutdownTime" type="number" min="1" step="1"
-         [(ngModel)]="shutdownTime"
-         [placeholder]="device?.metadata?.autoShutdownTime ?? ''"
-         autofocus="true" />
+  <input
+    id="shutdownTime"
+    type="number"
+    min="1"
+    step="1"
+    [(ngModel)]="shutdownTime"
+    [placeholder]="device?.metadata?.autoShutdownTime ?? ''"
+    autofocus="true" />
 </div>
 <br />
 <div class="modal-footer">

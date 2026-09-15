@@ -12,7 +12,7 @@ import { ExamService } from '../../../../../controllers/exam.service';
 import { ButtonTextService } from '../../../../../controllers/button-text.service';
 import { FPLcalibrationExamSchema } from '../../../../../../schema/response-areas/fpl-calibration-exam.schema';
 import { waiSchema } from '../../../../../../schema/response-areas/wai.schema';
-import { WAIResultsInterface } from '../../wideband-acoustic-immittance/wai-exam/wai-exam.interface';
+import { WAIExamProperties, WAIResultsInterface } from '../../wideband-acoustic-immittance/wai-exam/wai-exam.interface';
 import { StateModel } from '../../../../../models/state/state.service';
 import { StateInterface } from '../../../../../models/state/state.interface';
 import { getCurrentDatetime } from '../../../../../utilities/exam-helper-functions';
@@ -170,7 +170,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
 
   async startWAIExam() {
     if (this.device) {
-      const examProperties: any = {
+      const examProperties: WAIExamProperties = {
         OutputChannel: this.outputChannel,
         FStart: this.fStart,
         FEnd: this.fEnd,
@@ -190,7 +190,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
         ReturnResultData: this.returnResultData,
       };
       if (this.recordFileFolder != undefined) {
-        examProperties['Filename'] = this.recordFileFolder + '/' + getCurrentDatetime() + '.WAV';
+        examProperties.Filename = this.recordFileFolder + '/' + getCurrentDatetime() + '.WAV';
       }
       this.stateModel.updateState({ isSubmittable: false });
       const resp = await this.devicesService.queueExam(this.device, 'WAI', examProperties);

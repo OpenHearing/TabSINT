@@ -6,6 +6,8 @@ import { ResultsModel } from '../../../../models/results/results-model.service';
 import { ExamService } from '../../../../controllers/exam.service';
 import { StateModel } from '../../../../models/state/state.service';
 import { PageModel } from '../../../../models/page/page.service';
+import { pageInterfaceDefaults } from '../../../../utilities/defaults';
+import { ResponseArea } from '../../../../interfaces/page-definition.interface';
 
 describe('TextboxComponent', () => {
   let component: TextboxComponent;
@@ -28,5 +30,29 @@ describe('TextboxComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('falls back to the schema default row count when the protocol omits rows', () => {
+    const pageModel = TestBed.inject(PageModel);
+    pageModel.updatePage({
+      ...pageInterfaceDefaults,
+      id: 'textbox',
+      responseArea: { type: 'textboxResponseArea' } as ResponseArea,
+    });
+    fixture.detectChanges();
+
+    expect(component.rows).toBe(1);
+  });
+
+  it('uses the row count supplied by the protocol', () => {
+    const pageModel = TestBed.inject(PageModel);
+    pageModel.updatePage({
+      ...pageInterfaceDefaults,
+      id: 'textbox',
+      responseArea: { type: 'textboxResponseArea', rows: 5 } as ResponseArea,
+    });
+    fixture.detectChanges();
+
+    expect(component.rows).toBe(5);
   });
 });

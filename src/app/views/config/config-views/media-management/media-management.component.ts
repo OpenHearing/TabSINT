@@ -22,7 +22,6 @@ import { GitlabReferenceDialog } from '../../../gitlab-reference-dialog/gitlab-r
 @Component({
   selector: 'app-media-management-view',
   templateUrl: './media-management.component.html',
-  styleUrl: './media-management.component.css',
 })
 export class MediaManagementComponent implements OnInit, OnDestroy {
   private readonly diskModel = inject(DiskModel);
@@ -107,12 +106,12 @@ export class MediaManagementComponent implements OnInit, OnDestroy {
     this.syncingMedia = true;
     try {
       const remotePath = this.getRemoteMediaPath(this.device.type);
-      if (remotePath !== undefined) {
+      if (remotePath === undefined) {
+        this.logger.error('Remote path not found for media transfer');
+      } else {
         await this.devicesService.abortExams(this.device);
         const response = await this.devicesService.transferDirectory(this.device, mediaRepo.path, remotePath);
         transferSuccess = isValidDeviceResponse(response);
-      } else {
-        this.logger.error('Remote path not found for media transfer');
       }
     } catch (e) {
       this.logger.error('Error caught when transferring files', e);

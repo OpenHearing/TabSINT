@@ -11,11 +11,7 @@ describe('ResultsModel', () => {
     loggerSpy = jasmine.createSpyObj('Logger', ['debug', 'warning', 'error']);
 
     TestBed.configureTestingModule({
-      providers: [
-        ResultsModel,
-        { provide: Logger, useValue: loggerSpy },
-        { provide: VersionModel, useValue: { version: {} } },
-      ],
+      providers: [ResultsModel, { provide: Logger, useValue: loggerSpy }, { provide: VersionModel, useValue: { version: {} } }],
     });
     resultsModel = TestBed.inject(ResultsModel);
   });
@@ -54,7 +50,7 @@ describe('ResultsModel', () => {
     });
   });
 
-  it('emits via resultsSubject when updated', (done) => {
+  it('emits via resultsSubject when updated', done => {
     resultsModel.resultsSubject.subscribe(results => {
       if (results.currentPage.pageId === 'emitted') {
         expect(results.currentPage.pageId).toBe('emitted');

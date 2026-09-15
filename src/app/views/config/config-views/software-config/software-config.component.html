@@ -19,18 +19,6 @@
     <b>{{ "Rev" | transloco }}:</b>
     <span>{{ version.rev }}</span>
   </li>
-  <!-- <li (click)="toggleAppDeveloperMode()">
-        <b>{{'Build Name' | transloco}}:</b>
-        <span>
-            <span *ngIf="disk.preferences.appDeveloperMode">
-                - App-Developer Mode is on <button class="btn btn-default"
-                    (click)="toggleAppDeveloperMode()">Turn Off</button>
-            </span>
-            <span *ngIf="!disk.preferences.appDeveloperMode && disk.appDeveloperModeCount > 1">
-                - Tap {{5-disk.appDeveloperModeCount}} more times to turn on App-Developer Mode
-            </span>
-        </span>
-    </li> -->
   <li>
     <b>{{ "Build Date" | transloco }}:</b>
     <span>{{ version.date | date: "yyyy-MM-dd HH:mm:ss" }}</span>
@@ -50,10 +38,6 @@
       <b>{{ "Device UUID" | transloco }}:</b>
       <span>{{ metadata.uuid }}</span>
     </li>
-    <!-- <li>
-        <b>{{'TabSINT UUID' | transloco}}:</b>
-        <span>{{devices.tabsintUUID}}</span>
-    </li> -->
     <li>
       <b>{{ "Device Model" | transloco }}:</b>
       <span>{{ metadata.model }}</span>
@@ -75,19 +59,6 @@
 </ul>
 
 <br />
-
-<!-- <div class="row">
-    <div class="col-12">
-        <h5>{{'Plugins' | transloco}}</h5>
-    </div>
-</div> -->
-<!-- <ul class="admin-info">
-    <div *ngFor="let plugin of version.plugins">
-        <li>
-            <span>{{plugin}}</span>
-        </li>
-    </div>
-</ul> -->
 
 <br />
 

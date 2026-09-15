@@ -16,5 +16,5 @@ export enum QrCodeResponseAreaScope {
  */
 export interface QrCodeResponseAreaInterface extends CommonResponseAreaInterface {
   scope: QrCodeResponseAreaScope;
-  autoSubmit?: true;
+  autoSubmit?: boolean;
 }

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import * as d3 from 'd3';
 
 import { DpoaeExamBaseComponent } from '../../shared/dpoae/dpoae-exam-base.component';
-import { DPOAE_Y_AXIS_DOMAIN } from '../../shared/dpoae/dpoae-common.interface';
+import { DPOAE_Y_AXIS_DOMAIN, DpoaeExamProperties } from '../../shared/dpoae/dpoae-common.interface';
 import { SweptDpoaeInterface, SweptDpoaeResultsInterface } from './swept-dpoae-exam.interface';
 import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-dpoae.schema';
 import { handleOutputCalibration, getCurrentDatetime } from '../../../../../utilities/exam-helper-functions';
@@ -67,7 +67,7 @@ export class SweptDpoaeExamComponent extends DpoaeExamBaseComponent<SweptDpoaeIn
   protected async beginExam(): Promise<void> {
     this.device = await this.resolveDevice();
     if (this.device) {
-      const examProperties: any = {
+      const examProperties: DpoaeExamProperties = {
         OutputChannel1: handleOutputCalibration(this.outputChannel1, this.outputCalibrationType),
         OutputChannel2: handleOutputCalibration(this.outputChannel2, this.outputCalibrationType),
         InputChannel: this.inputChannel,
@@ -87,7 +87,7 @@ export class SweptDpoaeExamComponent extends DpoaeExamBaseComponent<SweptDpoaeIn
         OutputRawMeasurements: this.outputRawMeasurements,
       };
       if (this.recordFileFolder != undefined) {
-        examProperties['Filename'] = this.recordFileFolder + '/' + getCurrentDatetime() + '.WAV';
+        examProperties.Filename = this.recordFileFolder + '/' + getCurrentDatetime() + '.WAV';
       }
       await this.devicesService.queueExam(this.device, 'SweptDPOAE', examProperties);
     }

@@ -35,6 +35,7 @@ export class BekesyComponent implements OnInit, OnDestroy {
   private readonly bekesyResponse: BekesyResultsInterface[] = [];
   private readonly bekesyRefreshInterval = 25;
   buttonText: string = bekesyResponseAreaSchema.properties.buttonText.default;
+  examComplete = false;
 
   bekesyResponseParameter: BekesyRequirements = {
     autoSubmit: bekesyResponseAreaSchema.properties.autoSubmit.default,
@@ -108,6 +109,26 @@ export class BekesyComponent implements OnInit, OnDestroy {
   finishExam() {
     this.resultsModel.updateCurrentPage({ response: this.bekesyResponse });
     this.examService.submitDefault();
+  }
+
+  /**
+   * Handle the exam ending on its own, either on timeout or once enough reversals have been
+   * recorded. Stops the exam, then advances only when autoSubmit is set; otherwise the page waits
+   * for the user to press submit.
+   */
+  completeExam() {
+    if (this.examComplete) {
+      return;
+    }
+    this.examComplete = true;
+    this.bekesyTimeoutTimer?.unsubscribe();
+    this.activeInterval?.unsubscribe();
+    this.examService.submit = this.examService.submitDefault.bind(this.examService);
+    this.resultsModel.updateCurrentPage({ response: this.bekesyResponse });
+    this.stateModel.updateState({ isSubmittable: true });
+    if (this.bekesyResponseParameter.autoSubmit) {
+      this.examService.submitDefault();
+    }
   }
 
   /**
@@ -187,7 +208,7 @@ export class BekesyComponent implements OnInit, OnDestroy {
     // Activate new subscriptions
     this.bekesyTimeoutTimer = timer(1000 * bekesyResponseArea.timeout).subscribe(() => {
       this.pushResponse(-1);
-      this.finishExam();
+      this.completeExam();
     });
     this.activeInterval = interval(this.bekesyRefreshInterval).subscribe(() => {
       this.updateLevelInterval();
@@ -307,11 +328,11 @@ export class BekesyComponent implements OnInit, OnDestroy {
     this.bekesyDirection *= -1;
     this.reversals++;
 
-    if (this.reversals >= this.bekesyResponseParameter.numberReversals) {
-      this.finishExam();
-    }
-
     this.pushResponse(0);
+
+    if (this.reversals >= this.bekesyResponseParameter.numberReversals) {
+      this.completeExam();
+    }
   }
 
   /**

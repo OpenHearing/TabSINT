@@ -136,7 +136,7 @@ export class ResultsUploadService {
       const folderName = protocol.gitlabConfig?.repository;
       const info = await Device.getId();
       const fileUuid = info.identifier;
-      const timeStamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const timeStamp = new Date().toISOString().replaceAll(/[:.]/g, '-');
       const publicKey = protocol.publicKey;
 
       if (publicKey && singleExamResult.testDateTime) {
@@ -196,10 +196,9 @@ export class ResultsUploadService {
       this.logger.debug(`Successfully uploaded exam result to '${folderName}'.`);
 
       return { success: true, message: `Successfully uploaded result to GitLab at ${gitlabGroup}/results` };
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.logger.error('Upload failed: ' + error);
-      return { success: false, message: error.message };
+      return { success: false, message: error instanceof Error ? error.message : String(error) };
     }
   }
 

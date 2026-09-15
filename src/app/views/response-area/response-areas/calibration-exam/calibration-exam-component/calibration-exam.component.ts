@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, EventEmitter, Output, inject } from '@angular/core';
 import { PageModel } from '../../../../../models/page/page.service';
 import { Subscription } from 'rxjs';
-import { CalibrationExamInterface, EarData, ExamResponse } from './calibration-exam.interface';
+import { CalibrationExamInterface, CalibrationNavigationEntry, EarData, ExamResponse } from './calibration-exam.interface';
 import { PageInterface } from '../../../../../models/page/page.interface';
 import { DevicesService } from '../../../../../services/devices/devices.service';
 import { Logger } from '../../../../../services/logger.service';
@@ -51,10 +51,10 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   leftEarData: Record<number, EarData> = {};
   rightEarData: Record<number, EarData> = {};
   results: ResultsInterface;
-  showResults: boolean = true;
-  navigationHistory: { step: string; frequencyIndex: number; earCup: string }[] = [];
+  showResults: boolean = calibrationExamSchema.properties.showResults.default;
+  navigationHistory: CalibrationNavigationEntry[] = [];
   userInput: number | null = null;
-  poppedHistory: { step: string; frequencyIndex: number; earCup: string }[] = [];
+  poppedHistory: CalibrationNavigationEntry[] = [];
   batchFrequencies: boolean = calibrationExamSchema.properties.batchFrequencies.default;
 
   constructor() {
@@ -99,7 +99,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
           this.batchFrequencies = calibrationResponse.batchFrequencies ?? this.batchFrequencies;
           this.initializeEarData();
           this.updateFrequencyAndTargetLevel();
-          this.showResults = calibrationResponse.showResults ?? true;
+          this.showResults = calibrationResponse.showResults ?? this.showResults;
           await this.setupDevice(calibrationResponse);
         }
       }
@@ -312,13 +312,13 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     });
   }
 
-  private restorePreviousState(previousState: any): void {
+  private restorePreviousState(previousState: CalibrationNavigationEntry): void {
     this.currentStep = previousState.step;
     this.currentFrequencyIndex = previousState.frequencyIndex;
     this.earCup = previousState.earCup;
   }
 
-  private isStepOrEarCupChanged(previousState: any): boolean {
+  private isStepOrEarCupChanged(previousState: CalibrationNavigationEntry): boolean {
     return previousState.earCup !== this.earCup || this.currentStep === 'finished';
   }
 

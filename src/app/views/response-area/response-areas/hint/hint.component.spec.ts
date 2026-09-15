@@ -11,6 +11,8 @@ import { Logger } from '../../../../services/logger.service';
 import { DevicesService } from '../../../../services/devices/devices.service';
 import { DeviceStatus, DeviceType } from '../../../../utilities/constants';
 import { IDevice } from '../../../../interfaces/devices/device.interface';
+import { pageInterfaceDefaults } from '../../../../utilities/defaults';
+import { ResponseArea } from '../../../../interfaces/page-definition.interface';
 
 describe('HintComponent', () => {
   let component: HintComponent;
@@ -18,6 +20,7 @@ describe('HintComponent', () => {
   let devicesService: jasmine.SpyObj<DevicesService>;
   let examService: jasmine.SpyObj<ExamService>;
   let stateModel: StateModel;
+  let pageModel: PageModel;
 
   const mockDevice = { deviceId: 'WAHTS-1', type: DeviceType.Wahts, status: DeviceStatus.Ready } as unknown as IDevice;
 
@@ -66,6 +69,7 @@ describe('HintComponent', () => {
     fixture = TestBed.createComponent(HintComponent);
     component = fixture.componentInstance;
     stateModel = TestBed.inject(StateModel);
+    pageModel = TestBed.inject(PageModel);
     fixture.detectChanges();
   });
 
@@ -138,5 +142,36 @@ describe('HintComponent', () => {
 
     expect(stateModel.getState().isSubmittable).toBeTrue();
     expect(examService.submitDefault).toHaveBeenCalled();
+  });
+
+  it('advances on completion when the protocol omits autoSubmit', async () => {
+    devicesService.requestResults.and.resolveTo({ deviceId: mockDevice.deviceId, msg: ['Result', { State: 2 }] });
+    pageModel.updatePage({
+      ...pageInterfaceDefaults,
+      id: 'hint',
+      responseArea: { type: 'hintResponseArea' } as ResponseArea,
+    });
+    component.device = mockDevice;
+
+    await component.startExam();
+
+    expect(component.autoSubmit).toBeTrue();
+    expect(examService.submitDefault).toHaveBeenCalled();
+  });
+
+  it('waits for the user to submit on completion when autoSubmit is turned off', async () => {
+    devicesService.requestResults.and.resolveTo({ deviceId: mockDevice.deviceId, msg: ['Result', { State: 2 }] });
+    pageModel.updatePage({
+      ...pageInterfaceDefaults,
+      id: 'hint',
+      responseArea: { type: 'hintResponseArea', autoSubmit: false } as ResponseArea,
+    });
+    component.device = mockDevice;
+
+    await component.startExam();
+
+    expect(component.autoSubmit).toBeFalse();
+    expect(stateModel.getState().isSubmittable).toBeTrue();
+    expect(examService.submitDefault).not.toHaveBeenCalled();
   });
 });

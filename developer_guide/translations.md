@@ -4,12 +4,12 @@ TabSINT uses [@jsverse/transloco](https://jsverse.github.io/transloco/) v7 for i
 
 ## Supported languages
 
-| Code | Language |
-|------|----------|
+| Code | Language          |
+| ---- | ----------------- |
 | `en` | English (default) |
-| `fr` | French |
-| `ja` | Japanese |
-| `es` | Spanish |
+| `fr` | French            |
+| `ja` | Japanese          |
+| `es` | Spanish           |
 
 ## Translation files
 
@@ -30,15 +30,15 @@ The English file is the source of truth. Every key that exists anywhere in the a
 Use the `transloco` pipe:
 
 ```html
-{{ "Save" | transloco }}
-{{ "Select Language:" | transloco }}
+{{ "Save" | transloco }} {{ "Select Language:" | transloco }}
 ```
 
 For `title` / `alt` attributes use interpolation:
 
 ```html
 <div title="{{ 'Help' | transloco }}">
-<img alt="{{ 'QR code logo' | transloco }}" />
+  <img alt="{{ 'QR code logo' | transloco }}" />
+</div>
 ```
 
 ## Using translations in TypeScript
@@ -46,13 +46,13 @@ For `title` / `alt` attributes use interpolation:
 Inject `TranslocoService` and call `.translate()`:
 
 ```typescript
-import { TranslocoService } from '@jsverse/transloco';
+import { TranslocoService } from "@jsverse/transloco";
 
 export class MyComponent {
   private readonly transloco = inject(TranslocoService);
 
   doSomething() {
-    const msg = this.transloco.translate('Protocol did not load properly. Please validate your protocol before trying to load again.');
+    const msg = this.transloco.translate("Protocol did not load properly. Please validate your protocol before trying to load again.");
   }
 }
 ```
@@ -125,13 +125,13 @@ Language selection is persisted in `disk.preferences.language`. The user changes
 Use `TranslocoTestingModule.forRoot(...)` in spec files. Non-standalone component specs configure it in `TestBed`:
 
 ```typescript
-import { TranslocoTestingModule } from '@jsverse/transloco';
+import { TranslocoTestingModule } from "@jsverse/transloco";
 
 TestBed.configureTestingModule({
   imports: [
     TranslocoTestingModule.forRoot({
       langs: { en: {} },
-      translocoConfig: { availableLangs: ['en'], defaultLang: 'en' },
+      translocoConfig: { availableLangs: ["en"], defaultLang: "en" },
       preloadLangs: true,
     }),
   ],
@@ -144,7 +144,7 @@ Standalone component specs import both the component and the testing module:
 TestBed.configureTestingModule({
   imports: [
     MyStandaloneComponent,
-    TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
+    TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ["en"], defaultLang: "en" }, preloadLangs: true }),
   ],
 });
 ```

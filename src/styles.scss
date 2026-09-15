@@ -36,7 +36,6 @@ $tabsint-training-site-theme: mat.define-light-theme(
 
 @import "../node_modules/bootstrap/dist/css/bootstrap.css";
 @import "../node_modules/ionicons/css/ionicons.css";
-@import "../node_modules/jsonformatter/dist/json-formatter.min.css";
 @import "../node_modules/bootstrap-icons/font/bootstrap-icons.min.css";
 
 @font-face {
@@ -482,13 +481,6 @@ h2.welcome {
   width: 100%;
 }
 
-.modal-body .ngx-json-viewer[_ngcontent-ng-c153363216] {
-  font-size: 22px;
-  background-color: #ffffff;
-  height: 300px;
-  overflow-y: auto;
-}
-
 @media (max-width: 500px) {
   .modal-body {
     font-size: 18px;
@@ -856,10 +848,7 @@ h1.surveytitle {
   padding-top: 40px;
   text-align: right;
 }
-debug-view,
-.well,
-.json-formatter-dark.json-formatter-row,
-.json-formatter-row {
+.well {
   font-family: Lucidatypewriter, monospace;
 }
 
@@ -1036,12 +1025,6 @@ input[type="checkbox"] {
   float: right !important;
   right: 0;
   left: auto;
-}
-table.keypad button.symbol .glyphicon {
-  color: rgb(60, 60, 60);
-  font-weight: 400;
-  font-size: 20px;
-  line-height: 0.9;
 }
 
 /* needs to match .btn-default bg color */
@@ -1618,12 +1601,6 @@ nav .dropdown-menu > li > a i {
   align-items: center;
 }
 
-.nav-link.ng-binding {
-  display: flex;
-  align-self: stretch;
-  align-items: center;
-}
-
 .skip-to-content {
   background: #31708f;
   left: 45%;
@@ -1656,6 +1633,14 @@ nav .dropdown-menu > li > a i {
   border: none;
   margin-bottom: 0px;
   box-shadow: 0 1px 6px 0px rgba(0, 0, 0, 0.25);
+}
+
+/* Bootstrap's .sticky-top sets z-index: 1020 on the app bar, which sits above
+   Angular Material's CDK overlay container (z-index: 1000). Without this, any
+   mat-menu/mat-dialog opened from the app bar (e.g. device indicator popovers)
+   renders behind the app bar instead of on top of it. */
+.cdk-overlay-container {
+  z-index: 1030;
 }
 @media (max-width: 500px) {
   .navbar-fixed-top {
@@ -2003,64 +1988,6 @@ table.fixed .row-Server.results {
   filter: alpha(opacity=50);
 }
 
-.sample-show-hide {
-  position: relative;
-  display: block;
-  width: 100%;
-  height: 1000px;
-}
-
-.sample-show-hide.ng-animate {
-  transition: all 0.3s ease-in-out;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  opacity: 1;
-  width: 100%;
-  overflow: hidden;
-}
-
-.sample-show-hide.ng-hide {
-  opacity: 0;
-}
-
-.animate-switch-container {
-  position: relative;
-  display: block;
-  width: 100%;
-  height: 1000px;
-}
-
-.animate-switch.ng-animate {
-  transition: all 0.3s ease-in-out;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  overflow: hidden;
-}
-
-.animate-switch.ng-leave.ng-leave-active {
-  left: -100%;
-  opacity: 0;
-}
-.animate-switch.ng-enter {
-  left: 100%;
-  opacity: 0;
-}
-.animate-switch.ng-leave {
-  left: 0;
-  opacity: 1;
-}
-.animate-switch.ng-enter.ng-enter-active {
-  left: 0;
-  opacity: 1;
-}
-
 .axis path,
 .axis line {
   fill: none;
@@ -2177,9 +2104,6 @@ table.fixed {
   text-align: left;
 }
 
-.panel-group .panel + .panel {
-  margin-top: 15px;
-}
 .panel-body h5 {
   border-bottom: 1px solid #ddd;
   margin-bottom: 10px;

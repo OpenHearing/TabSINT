@@ -61,7 +61,7 @@ export class SqLite {
         this.countSubject.next(this.count);
       }
     } catch (e) {
-      console.log('SQLITE Error storing ' + tableName + ' with error ' + e);
+      console.error('SQLITE Error storing ' + tableName + ' with error ' + e);
     }
   }
 
@@ -97,7 +97,7 @@ export class SqLite {
       this.count['results'] -= 1;
       this.countSubject.next(this.count);
     } catch (e) {
-      console.log('SQLITE Error deleting result ' + index + ' with error ' + e);
+      console.error('SQLITE Error deleting result ' + index + ' with error ' + e);
     }
   }
 
@@ -108,7 +108,7 @@ export class SqLite {
       this.count[tableName] = 0;
       this.countSubject.next(this.count);
     } catch (e) {
-      console.log('SQLITE Error deleting all ' + tableName + ' with error: ' + e);
+      console.error('SQLITE Error deleting all ' + tableName + ' with error: ' + e);
     }
   }
 
@@ -120,7 +120,7 @@ export class SqLite {
         this.count['logs'] -= delCount;
         this.countSubject.next(this.count);
       } catch (e) {
-        console.log('SQLITE Error deleting ' + delCount + ' logs with error ' + e);
+        console.error('SQLITE Error deleting ' + delCount + ' logs with error ' + e);
       }
     }
   }

@@ -44,16 +44,16 @@ export class CalibrationScreenComponent implements OnChanges {
   }
 
   validateAndProceed(): boolean {
-    if (this.userInput !== null) {
+    if (this.userInput === null) {
+      this.showValidationError = true;
+      this.validationMessage = 'Please enter a value to proceed.';
+      return false;
+    } else {
       this.showValidationError = false;
       this.validationMessage = '';
       this.measurementUpdated.emit(this.userInput);
       this.userInput = null;
       return true;
-    } else {
-      this.showValidationError = true;
-      this.validationMessage = 'Please enter a value to proceed.';
-      return false;
     }
   }
 

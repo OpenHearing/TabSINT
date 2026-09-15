@@ -82,10 +82,7 @@ export class QrService {
       const dataType = parts[0].split(':')[1];
       const realData = parts[1];
       const byteCharacters = atob(realData);
-      const uInt8Array = new Uint8Array(byteCharacters.length);
-      for (let i = 0; i < byteCharacters.length; ++i) {
-        uInt8Array[i] = byteCharacters.charCodeAt(i);
-      }
+      const uInt8Array = Uint8Array.from(byteCharacters, character => character.codePointAt(0) ?? 0);
       return new Blob([uInt8Array], { type: dataType });
     }
     return undefined;

@@ -1,6 +1,5 @@
-import { Component, inject, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ExamService } from '../../controllers/exam.service';
-import { WINDOW } from '../../utilities/window';
 import { Subscription } from 'rxjs';
 import { PageInterface } from '../../models/page/page.interface';
 import { PageModel } from '../../models/page/page.service';
@@ -31,8 +30,6 @@ export class ExamTestingComponent implements OnInit, OnDestroy {
   videoWidth: string = '100%';
   videoAutoplay: boolean = false;
   videoNoSkip: boolean = false;
-
-  constructor(@Inject(WINDOW) private readonly window: Window) {} // eslint-disable-line
 
   ngOnInit(): void {
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {

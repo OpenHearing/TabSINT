@@ -1,6 +1,6 @@
 <div *ngIf="disk.preferences.debugMode">
   <div *ngIf="device.metadata.diskSpace !== undefined && Number(device.metadata.diskSpace) < 200">
-    <span class="glyphicon glyphicon-exclamation-sign warn-red"></span>
+    <span class="bi bi-exclamation-circle-fill warn-red"></span>
     {{ "The device has less than 200 MB of disk space left. Please make more disk space available before adding more media." | transloco }}
   </div>
 

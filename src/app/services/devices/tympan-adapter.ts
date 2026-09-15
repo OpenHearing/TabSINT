@@ -56,8 +56,8 @@ export class TympanAdapter implements IDeviceAdapter {
   private readonly defaultErrorMsg: string[] = ['ERROR', 'Failed to write message to tympan. Make sure Tympan is connected and try again.'];
 
   /**
-   * The default timeout for initial byte responses (milliseconds).
-   * TODO: This value should be lowered to expect quicker responses.
+   * The default ceiling on receiving a complete, parsed response from a device (milliseconds).
+   * Callers of requestResults() and friends may override it per command.
    */
   private readonly defaultTimeoutTimeMs = 10000;
 
@@ -67,8 +67,10 @@ export class TympanAdapter implements IDeviceAdapter {
   private readonly innerByteTimeout = 1000;
 
   /**
-   * The default timeout for first byte responses (milliseconds).
-   * TODO: This value should be lowered to expect quicker responses.
+   * The timeout for receiving the first byte of a response (milliseconds).
+   * waitForResponse() arms this before the outgoing message is written, so the budget covers the
+   * chunked BLE write as well as the device's response latency; tightening it risks spurious
+   * timeouts on long messages.
    */
   private readonly firstByteTimeout = 500;
 
@@ -416,7 +418,9 @@ export class TympanAdapter implements IDeviceAdapter {
    * @param device The device to stop byte accumulation for.
    */
   private stopAccumulatingBytes(device: TympanDevice) {
-    // TODO: Should we always clear with this call?
+    // Both callers need the buffer emptied: a completed message has already been copied out by
+    // parseCompletedMsg(), and a byte-gap timeout leaves a partial message behind that would
+    // otherwise prefix and corrupt the next response.
     this.clearTMPBuffer(device);
     const firstByteReceived = this.firstByteReceivedSubject.getValue();
     firstByteReceived[device.deviceId] = false;
@@ -607,9 +611,9 @@ export class TympanAdapter implements IDeviceAdapter {
     let escaped_byte_array: Uint8Array = new Uint8Array();
     byte_array.forEach(byte => {
       if (byte <= 31) {
-        escaped_byte_array = new Uint8Array([...escaped_byte_array, ...[3, 128 ^ byte]]);
+        escaped_byte_array = new Uint8Array([...escaped_byte_array, 3, 128 ^ byte]);
       } else {
-        escaped_byte_array = new Uint8Array([...escaped_byte_array, ...[byte]]);
+        escaped_byte_array = new Uint8Array([...escaped_byte_array, byte]);
       }
     });
     return escaped_byte_array;
@@ -624,15 +628,15 @@ export class TympanAdapter implements IDeviceAdapter {
     let unescaped_byte_array: Uint8Array = new Uint8Array();
     let esc_next = false;
     byte_array.forEach((byte: number) => {
-      if (!esc_next) {
+      if (esc_next) {
+        unescaped_byte_array = new Uint8Array([...unescaped_byte_array, byte ^ 128]);
+        esc_next = false;
+      } else {
         if (byte == 3) {
           esc_next = true;
         } else {
-          unescaped_byte_array = new Uint8Array([...unescaped_byte_array, ...[byte]]);
+          unescaped_byte_array = new Uint8Array([...unescaped_byte_array, byte]);
         }
-      } else {
-        unescaped_byte_array = new Uint8Array([...unescaped_byte_array, ...[byte ^ 128]]);
-        esc_next = false;
       }
     });
     return unescaped_byte_array;

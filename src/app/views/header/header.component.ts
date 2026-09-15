@@ -110,12 +110,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   navigateToNavMenuItem(navMenuItem: NavMenuInterface) {
-    const contentStr = navMenuItem.returnHereAfterward
-      ? 'TabSINT will navigate to the selected sub-protocol, then return to this page and resume the current series of questions after that sub-protocol is complete.'
-      : 'Results from this page will be lost and the current series of questions will be aborted.';
+    // returnHereAfterward is not currently honored: navigation always pushes the target onto the
+    // protocol stack, so the current series resumes once the target completes. Aborting instead
+    // would follow the resetProtocolStack() pattern in ExamService.submitPartialDefault().
     const msg: DialogDataInterface = {
       title: navMenuItem.text + '?',
-      content: contentStr,
+      content:
+        'TabSINT will navigate to the selected sub-protocol. Responses on this page will not be recorded, and the current series of questions will resume on the following page once that sub-protocol is complete.',
       type: DialogType.Confirm,
     };
     this.notifications.alert(msg).subscribe(async (result: string) => {

@@ -1,5 +1,5 @@
 import { Directory, Filesystem } from '@capacitor/filesystem';
-import { Buffer } from 'buffer';
+import { Buffer } from 'buffer'; //NOSONAR - browser polyfill, not the node builtin
 import { firstValueFrom } from 'rxjs';
 import { WahtsDevice } from '../../models/devices/wahts-device';
 import { SavedDevice } from '../../models/disk/disk.interface';

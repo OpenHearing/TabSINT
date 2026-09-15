@@ -12,7 +12,6 @@ export interface MediaConflictDialogData {
   selector: 'app-media-conflict-dialog',
   standalone: true,
   templateUrl: './media-conflict-dialog.component.html',
-  styleUrl: './media-conflict-dialog.component.css',
   imports: [CommonModule, TranslocoPipe, MatDialogModule, MatButtonModule],
 })
 export class MediaConflictDialog {

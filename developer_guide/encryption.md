@@ -6,11 +6,11 @@ TabSINT supports optional hybrid encryption of exam results. When enabled, resul
 
 Encryption is opt-in and configured per-protocol via the `publicKey` field in the protocol meta. When present, encryption is applied automatically throughout the results lifecycle:
 
-| Stage | What happens |
-|---|---|
-| Save to SQLite | AES-256-CBC encrypted with PBKDF2-derived key |
-| Read from SQLite | Transparently decrypted before use |
-| Export / upload | Hybrid encrypted: AES data + RSA-wrapped key |
+| Stage            | What happens                                  |
+| ---------------- | --------------------------------------------- |
+| Save to SQLite   | AES-256-CBC encrypted with PBKDF2-derived key |
+| Read from SQLite | Transparently decrypted before use            |
+| Export / upload  | Hybrid encrypted: AES data + RSA-wrapped key  |
 
 ## Encryption Scheme
 
@@ -81,6 +81,7 @@ Each `*.json.enc` / `*.json.key.enc` pair is decrypted to a plain `*.json` file.
 The encryption logic lives in [`src/app/utilities/encrypt-results.service.ts`](../src/app/utilities/encrypt-results.service.ts) and uses the browser's built-in [Web Crypto API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API) — no third-party crypto dependencies.
 
 Key derivation parameters:
+
 - Algorithm: PBKDF2
 - Hash: SHA-256
 - Iterations: 100,000

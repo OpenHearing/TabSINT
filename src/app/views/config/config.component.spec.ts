@@ -18,12 +18,7 @@ describe('ConfigComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        ConfigComponent,
-        TabsintConfigComponent,
-        SoftwareConfigComponent,
-        LogConfigComponent,
-      ],
+      declarations: [ConfigComponent, TabsintConfigComponent, SoftwareConfigComponent, LogConfigComponent],
       schemas: [NO_ERRORS_SCHEMA],
       imports: [
         FormsModule,

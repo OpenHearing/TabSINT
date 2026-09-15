@@ -649,7 +649,7 @@ export class ChaAdapter implements IDeviceAdapter {
       let fixedDirName = dirName;
       if (dirName.endsWith('/')) {
         // weird cha behavior - returns all '00000000's for crcs if trailing '/'
-        fixedDirName = dirName.slice(0, dirName.length - 1);
+        fixedDirName = dirName.slice(0, -1);
       }
       const requestDirectoryOptions = {
         name: device.deviceId,
@@ -721,7 +721,6 @@ export class ChaAdapter implements IDeviceAdapter {
         await waitForResponse;
 
         const fileContents = await this.readFromAppStorage(fname);
-        console.log('fileContents', fileContents);
         deviceResponse = { deviceId: device.deviceId, msg: [fileContents] };
       } catch (err) {
         this.logger.error('Failed to write to CHA', err);
