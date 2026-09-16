@@ -41,8 +41,6 @@ export interface WAIExamProperties {
   NumFrequencies: number;
   OutputRawMeasurements: boolean;
   InputChannels: string[];
-  AurenInsideDiameter: number;
-  AurenLength: number;
   EarCanalDiameter: number;
   EarCanalLength: number;
   WriteFPLCalibration: boolean;
