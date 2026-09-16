@@ -52,13 +52,21 @@ export class DebugComponent implements OnInit, OnDestroy {
       this.disk = updatedDisk;
     });
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
-      this.currentPage = updatedPage;
+      // Skip updates while expanded so the json-viewer isn't handed a new object reference
+      // mid-inspection - that resets every node back to collapsed. See toggleSection().
+      if (!this.sectionExpanded.page) {
+        this.currentPage = updatedPage;
+      }
     });
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe((updatedResults: ResultsInterface) => {
-      this.results = updatedResults;
+      if (!this.sectionExpanded.pageResults && !this.sectionExpanded.examResults) {
+        this.results = updatedResults;
+      }
     });
     this.stateSubscription = this.stateModel.stateSubject.subscribe((updatedState: StateInterface) => {
-      this.state = updatedState;
+      if (!this.sectionExpanded.state) {
+        this.state = updatedState;
+      }
     });
   }
 
