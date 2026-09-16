@@ -76,18 +76,22 @@ export class SvantekManager implements IDeviceManager {
   onDisconnectCallback = (deviceId: string): void => {
     this.zone.run(() => {
       const devices = structuredClone(this.devicesSubject.getValue());
-      const updated = devices.map(d => (d.deviceId === deviceId ? { ...d, state: DeviceState.Disconnected } : d));
-      this.devicesSubject.next(updated);
-      if (!this.requestedDisconnectionIds.has(deviceId)) {
-        this.notifications.alert({
-          title: 'Alert',
-          content: this.transloco.translate("The Svantek device's connection has timed out."),
-          type: DialogType.Alert,
-        });
+      const deviceExists = devices.some(device => device.deviceId === deviceId);
+      // Ensure it is a device this manager handles
+      if (deviceExists) {
+        const newDevices = devices.map(device => (device.deviceId === deviceId ? { ...device, state: DeviceState.Disconnected } : device));
+        this.devicesSubject.next(newDevices);
+        if (!this.requestedDisconnectionIds.has(deviceId)) {
+          this.notifications.alert({
+            title: 'Alert',
+            content: this.transloco.translate("The svantek device's connection has timed out."),
+            type: DialogType.Alert,
+          });
+        }
+        this.logger.debug(`Svantek device ${deviceId} disconnected`);
       }
       this.requestedDisconnectionIds.delete(deviceId);
     });
-    this.logger.debug(`Svantek device ${deviceId} disconnected`);
   };
 
   createDevice(savedDevice: SavedDevice): SvantekDevice {
