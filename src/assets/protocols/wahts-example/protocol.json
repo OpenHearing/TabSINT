@@ -42,9 +42,6 @@
                 "id": "Manual Audiometry"
               },
               {
-                "id": "Bekesy"
-              },
-              {
                 "id": "Bekesy Like"
               },
               {
@@ -108,12 +105,6 @@
               "conditional": "result.response=='Manual Audiometry'",
               "target": {
                 "reference": "ManualAudiometry"
-              }
-            },
-            {
-              "conditional": "result.response=='Bekesy'",
-              "target": {
-                "reference": "bekesyResponseArea"
               }
             },
             {
@@ -313,36 +304,6 @@
               "6000": 17.0,
               "8000": 17.5
             }
-          }
-        },
-        {
-          "id": "backtomain",
-          "reference": "MainMenu"
-        }
-      ]
-    },
-    {
-      "protocolId": "bekesyResponseArea",
-      "pages": [
-        {
-          "id": "bekesyResponseArea",
-          "title": "Bekesy",
-          "wavfiles": [
-            {
-              "weighting": "A",
-              "path": "Background sounds inside crowded cafeteria _AOS01244.wav",
-              "targetSPL": 65
-            }
-          ],
-          "responseArea": {
-            "type": "bekesyResponseArea",
-            "numberReversals": 6,
-            "startSPL": 65,
-            "minTargetLevel": 40,
-            "maxTargetLevel": 75,
-            "timeout": 30,
-            "levelRate": 2,
-            "isSubmittable": true
           }
         },
         {
