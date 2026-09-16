@@ -28,7 +28,7 @@
           <i class="section-icon" [ngClass]="sectionExpanded.pageResults ? 'ion-chevron-up' : 'ion-chevron-down'"></i>
         </button>
         <div [ngClass]="{ 'section-collapsed': !sectionExpanded.pageResults }" class="debug-section-content">
-          <ngx-json-viewer [json]="results.currentPage" [expanded]="false" aria-labelledby="pageResults"> </ngx-json-viewer>
+          <ngx-json-viewer [json]="pageResults" [expanded]="false" aria-labelledby="pageResults"> </ngx-json-viewer>
         </div>
       </div>
 
@@ -39,7 +39,7 @@
           <i class="section-icon" [ngClass]="sectionExpanded.examResults ? 'ion-chevron-up' : 'ion-chevron-down'"></i>
         </button>
         <div [ngClass]="{ 'section-collapsed': !sectionExpanded.examResults }" class="debug-section-content">
-          <ngx-json-viewer [json]="results.currentExam" [expanded]="false" aria-labelledby="examResults"> </ngx-json-viewer>
+          <ngx-json-viewer [json]="examResults" [expanded]="false" aria-labelledby="examResults"> </ngx-json-viewer>
         </div>
       </div>
 

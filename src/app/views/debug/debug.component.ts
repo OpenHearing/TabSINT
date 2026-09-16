@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import _ from 'lodash';
 import { Subscription } from 'rxjs';
 
 import { DiskInterface } from '../../models/disk/disk.interface';
@@ -6,7 +7,7 @@ import { DiskModel } from '../../models/disk/disk.service';
 import { PageInterface } from '../../models/page/page.interface';
 import { PageModel } from '../../models/page/page.service';
 import { ResultsModel } from '../../models/results/results-model.service';
-import { ResultsInterface } from '../../models/results/results.interface';
+import { CurrentResults, ExamResults, ResultsInterface } from '../../models/results/results.interface';
 import { StateModel } from '../../models/state/state.service';
 import { StateInterface } from '../../models/state/state.interface';
 @Component({
@@ -22,7 +23,8 @@ export class DebugComponent implements OnInit, OnDestroy {
 
   disk: DiskInterface;
   currentPage: PageInterface;
-  results: ResultsInterface;
+  pageResults: CurrentResults;
+  examResults: ExamResults;
   state: StateInterface;
   isCollapsed: boolean = true;
 
@@ -43,7 +45,9 @@ export class DebugComponent implements OnInit, OnDestroy {
   constructor() {
     this.disk = this.diskModel.getDisk();
     this.currentPage = this.pageModel.getPage();
-    this.results = this.resultsModel.getResults();
+    const results = this.resultsModel.getResults();
+    this.pageResults = structuredClone(results.currentPage);
+    this.examResults = structuredClone(results.currentExam);
     this.state = this.stateModel.getState();
   }
 
@@ -52,19 +56,27 @@ export class DebugComponent implements OnInit, OnDestroy {
       this.disk = updatedDisk;
     });
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
-      // Skip updates while expanded so the json-viewer isn't handed a new object reference
-      // mid-inspection - that resets every node back to collapsed. See toggleSection().
-      if (!this.sectionExpanded.page) {
+      // Only replace the reference when the content actually changed - the json-viewer
+      // rebuilds its expand state from scratch whenever it's handed a new object reference.
+      if (!_.isEqual(this.currentPage, updatedPage)) {
         this.currentPage = updatedPage;
       }
     });
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe((updatedResults: ResultsInterface) => {
-      if (!this.sectionExpanded.pageResults && !this.sectionExpanded.examResults) {
-        this.results = updatedResults;
+      // resultsModel mutates its object in place and re-emits the same top-level reference,
+      // so clone the parts we display before comparing - otherwise we'd be comparing the
+      // (already-mutated) object against itself and every update would look like a no-op.
+      const updatedPageResults = structuredClone(updatedResults.currentPage);
+      if (!_.isEqual(this.pageResults, updatedPageResults)) {
+        this.pageResults = updatedPageResults;
+      }
+      const updatedExamResults = structuredClone(updatedResults.currentExam);
+      if (!_.isEqual(this.examResults, updatedExamResults)) {
+        this.examResults = updatedExamResults;
       }
     });
     this.stateSubscription = this.stateModel.stateSubject.subscribe((updatedState: StateInterface) => {
-      if (!this.sectionExpanded.state) {
+      if (!_.isEqual(this.state, updatedState)) {
         this.state = updatedState;
       }
     });
