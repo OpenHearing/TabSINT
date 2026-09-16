@@ -232,12 +232,9 @@ export class DevicesService {
   async getDeviceOrDefault(tabsintId: string | undefined, defaultTypes: DeviceType[]): Promise<IDevice[]> {
     const devices = await firstValueFrom(this.devices);
     const availableDevices: IDevice[] = [];
-    if (tabsintId !== undefined) {
-      const foundDevices = devices.filter(device => defaultTypes.includes(device.type) && device.state === DeviceState.Connected);
-      const device = foundDevices.find(device => device.tabsintId == tabsintId);
-      if (device) {
-        availableDevices.push(structuredClone(device));
-      }
+    const device = tabsintId === undefined ? undefined : devices.find(device => device.tabsintId == tabsintId);
+    if (device) {
+      availableDevices.push(structuredClone(device));
     } else {
       const foundDevices = devices.filter(device => defaultTypes.includes(device.type) && device.state === DeviceState.Connected);
       foundDevices.forEach(dev => {
