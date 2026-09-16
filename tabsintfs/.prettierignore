@@ -1,2 +1,9 @@
-build
-dist
+# Compiled output
+build/
+dist/
+
+# Node
+/node_modules
+
+# Generated Files
+README.md

@@ -8,12 +8,20 @@ export class TabsintFsWeb extends WebPlugin implements TabsintFsPlugin {
     return { uri: '', name: '' };
   }
 
-  async createPath(options: { rootUri: string | null | undefined; path: string; content?: string; asBase64?: boolean }): Promise<{ uri: string }> {
+  async createPath(options: {
+    rootUri: string | null | undefined;
+    path: string;
+    content?: string;
+    asBase64?: boolean;
+  }): Promise<{ uri: string }> {
     console.log('createPath not implemented for web', options);
     return { uri: '' };
   }
 
-  async getDirectoryStructure(_options: { rootUri: string | null | undefined; path: string }): Promise<{ structure: any }> {
+  async getDirectoryStructure(_options: {
+    rootUri: string | null | undefined;
+    path: string;
+  }): Promise<{ structure: any }> {
     console.log('getDirectoryStructure not implemented for web');
     return { structure: null };
   }
@@ -27,7 +35,12 @@ export class TabsintFsWeb extends WebPlugin implements TabsintFsPlugin {
     return { success: false, message: 'Not implemented on web' };
   }
 
-  async readFile(options: { rootUri?: string | null; fileUri?: string | null; filePath?: string | null; asBase64?: boolean | null }): Promise<{
+  async readFile(options: {
+    rootUri?: string | null;
+    fileUri?: string | null;
+    filePath?: string | null;
+    asBase64?: boolean | null;
+  }): Promise<{
     contentUri: string;
     mimeType: string;
     name: string;
@@ -43,12 +56,19 @@ export class TabsintFsWeb extends WebPlugin implements TabsintFsPlugin {
     return { contentUri: '' };
   }
 
-  async deletePath(_options: { rootUri: string | null | undefined; path: string }): Promise<{ success: boolean; message: string }> {
+  async deletePath(_options: {
+    rootUri: string | null | undefined;
+    path: string;
+  }): Promise<{ success: boolean; message: string }> {
     console.log('deletePath not implemented for web');
     return { success: false, message: 'Not implemented on web' };
   }
 
-  async listFilesInDirectory(_options: { rootUri?: string | null; folderPath?: string | null; contentUri?: string | null }): Promise<{
+  async listFilesInDirectory(_options: {
+    rootUri?: string | null;
+    folderPath?: string | null;
+    contentUri?: string | null;
+  }): Promise<{
     files: {
       name: string;
       uri: string;
@@ -61,7 +81,11 @@ export class TabsintFsWeb extends WebPlugin implements TabsintFsPlugin {
     return { files: [] };
   }
 
-  async unzip(_options: { sourcePath: string; destinationPath: string; ignoreRoot: boolean }): Promise<{ success: boolean; message: string }> {
+  async unzip(_options: {
+    sourcePath: string;
+    destinationPath: string;
+    ignoreRoot: boolean;
+  }): Promise<{ success: boolean; message: string }> {
     console.log('unzip not implemented for web');
     return { success: false, message: 'Not implemented on web' };
   }

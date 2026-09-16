@@ -12,8 +12,8 @@ import static com.creare.tabsintaudio.Constant.ERROR_INVALID_VOLUME;
 import static com.creare.tabsintaudio.Constant.LOOP;
 import static com.creare.tabsintaudio.Constant.OPT_FADE_MUSIC;
 import static com.creare.tabsintaudio.Constant.OPT_FOCUS_AUDIO;
-import static com.creare.tabsintaudio.Constant.VOLUME;
 import static com.creare.tabsintaudio.Constant.TIME;
+import static com.creare.tabsintaudio.Constant.VOLUME;
 
 import android.Manifest;
 import android.content.Context;
@@ -340,9 +340,9 @@ public class TabsintAudioPlugin extends Plugin implements AudioManager.OnAudioFo
     try {
       double volume = call.getDouble(VOLUME);
       int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-      int sysVolume = Math.round(((float) volume) * (maxVolume));
+      int sysVolume = Math.round((float) volume * maxVolume);
       if (sysVolume > maxVolume) {
-          sysVolume = maxVolume;
+        sysVolume = maxVolume;
       }
       audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, sysVolume, 0);
       call.resolve();
@@ -514,6 +514,6 @@ public class TabsintAudioPlugin extends Plugin implements AudioManager.OnAudioFo
   }
 
   private boolean isStringValid(String value) {
-    return (value != null && !value.isEmpty() && !value.equals("null"));
+    return value != null && !value.isEmpty() && !value.equals("null");
   }
 }

@@ -142,11 +142,11 @@ public class AudioDispatcher implements MediaPlayer.OnPreparedListener, MediaPla
         seek(time);
       } else {
         if (mediaState == PREPARED) {
-          mediaState = (loop ? PENDING_LOOP : PENDING_PLAY);
+          mediaState = loop ? PENDING_LOOP : PENDING_PLAY;
           onPrepared(mediaPlayer);
           seek(time);
         } else {
-          mediaState = (loop ? PENDING_LOOP : PENDING_PLAY);
+          mediaState = loop ? PENDING_LOOP : PENDING_PLAY;
           mediaPlayer.setLooping(loop);
           seek(time);
         }

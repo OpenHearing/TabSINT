@@ -4,3 +4,6 @@ dist/
 
 # Node
 /node_modules
+
+# Generated Files
+README.md
