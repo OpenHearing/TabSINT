@@ -169,6 +169,7 @@
   "Select One": "選択してください",
   "Bluetooth radio disabled": "Bluetoothが無効です",
   "Scanning for devices...": "デバイスをスキャン中...",
+  "Finish or cancel other device scans": "他のデバイススキャンを終了またはキャンセルしてください",
   "Preferences": "設定",
   "Firmware": "ファームウェア",
   "WAHTS Firmware Tag:": "WAHTSファームウェアタグ：",
