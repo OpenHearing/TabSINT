@@ -901,12 +901,19 @@ export class ExamService {
   /**
    * Stop polling results for all dosimeters.
    */
-  stopDosimetry() {
-    Object.keys(this.dosimeterResultsPoll).forEach(key => {
-      this.logger.debug('Stopping dosimetry for: ' + key);
-      clearInterval(this.dosimeterResultsPoll[key]);
-      delete this.dosimeterResultsPoll[key];
-    });
+  async stopDosimetry() {
+    const dosimetryTabsintIds = Object.keys(this.dosimeterResultsPoll);
+    for (const tabsintId of dosimetryTabsintIds) {
+      this.logger.debug('Stopping dosimetry for: ' + tabsintId);
+      clearInterval(this.dosimeterResultsPoll[tabsintId]);
+      delete this.dosimeterResultsPoll[tabsintId];
+      const devices = await this.devicesService.getDeviceOrDefault(tabsintId, []);
+      if (devices.length === 1) {
+        await this.devicesService.abortExams(devices[0]);
+      } else {
+        this.logger.debug('Failed to find device to abort dosimetry exam: ' + tabsintId);
+      }
+    }
   }
 
   /**
