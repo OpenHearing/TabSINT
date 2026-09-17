@@ -5,7 +5,7 @@ import { WahtsDevice } from '../../models/devices/wahts-device';
 import { SavedDevice } from '../../models/disk/disk.interface';
 import { ChaManager } from './cha-manager';
 import { ChaDeviceType, DeviceState } from '../../utilities/constants';
-import { DiscoveryResponse, TabsintCha } from 'tabsintcha';
+import { DiscoveryResponse } from 'tabsintcha';
 import { FirmwareAsset } from '../../interfaces/firmware-asset.interface';
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
 import { StatusObject } from '../../interfaces/devices/device-responses.interface';
@@ -53,11 +53,7 @@ export class WahtsManager extends ChaManager {
    * @param deviceType The type of device the search should be started for.
    */
   override async startDeviceSearch(): Promise<void> {
-    if (this.scanning) {
-      return;
-    }
     try {
-      this.scanning = true;
       const connectionType = (await firstValueFrom(this.diskModel.diskSubject)).preferences.wahtsConnectionType;
       const connectionTypeKey = this.getConnectionKey(connectionType);
       this.discoveryListener = (response: DiscoveryResponse) => {
@@ -68,10 +64,8 @@ export class WahtsManager extends ChaManager {
           this.addDevice(newDevice);
         }
       };
-      TabsintCha.addListener('TabsintChaDiscovery', response => this.discoveryListener?.(response));
-      await TabsintCha.startChaSearch({ infStr: connectionTypeKey });
+      await this.adapter.startSearch(connectionTypeKey, response => this.discoveryListener?.(response));
     } catch (error) {
-      this.scanning = false;
       throw new Error('Error starting BLE scan: ' + JSON.stringify(error));
     }
   }

@@ -76,18 +76,22 @@ export class SvantekManager implements IDeviceManager {
   onDisconnectCallback = (deviceId: string): void => {
     this.zone.run(() => {
       const devices = structuredClone(this.devicesSubject.getValue());
-      const updated = devices.map(d => (d.deviceId === deviceId ? { ...d, state: DeviceState.Disconnected } : d));
-      this.devicesSubject.next(updated);
-      if (!this.requestedDisconnectionIds.has(deviceId)) {
-        this.notifications.alert({
-          title: 'Alert',
-          content: this.transloco.translate("The Svantek device's connection has timed out."),
-          type: DialogType.Alert,
-        });
+      const deviceExists = devices.some(device => device.deviceId === deviceId);
+      // Ensure it is a device this manager handles
+      if (deviceExists) {
+        const newDevices = devices.map(device => (device.deviceId === deviceId ? { ...device, state: DeviceState.Disconnected } : device));
+        this.devicesSubject.next(newDevices);
+        if (!this.requestedDisconnectionIds.has(deviceId)) {
+          this.notifications.alert({
+            title: 'Alert',
+            content: this.transloco.translate("The svantek device's connection has timed out."),
+            type: DialogType.Alert,
+          });
+        }
+        this.logger.debug(`Svantek device ${deviceId} disconnected`);
       }
       this.requestedDisconnectionIds.delete(deviceId);
     });
-    this.logger.debug(`Svantek device ${deviceId} disconnected`);
   };
 
   createDevice(savedDevice: SavedDevice): SvantekDevice {
@@ -114,9 +118,6 @@ export class SvantekManager implements IDeviceManager {
   }
 
   async startDeviceSearch(): Promise<void> {
-    if (this.scanning) {
-      return;
-    }
     try {
       this.scanning = true;
       const seen = new Set<string>();
@@ -151,8 +152,11 @@ export class SvantekManager implements IDeviceManager {
   }
 
   async stopDeviceSearch(): Promise<void> {
-    await BleClient.stopLEScan();
-    this.scanning = false;
+    try {
+      await BleClient.stopLEScan();
+    } finally {
+      this.scanning = false;
+    }
     const devices = this.devicesSubject.getValue().filter(d => d.state !== DeviceState.Discovery);
     this.devicesSubject.next(devices);
   }
@@ -164,13 +168,14 @@ export class SvantekManager implements IDeviceManager {
    * 3. Write measurement control string to set 1/3 octave mode with Z-filter
    */
   async connect(device: IDevice): Promise<void> {
+    const connectTask = `Connect Device: ${device.tabsintId}`;
     try {
-      this.tasks.register('Connect Device', 'Connecting to Svantek...');
+      this.tasks.register(connectTask, 'Connecting to Svantek...');
       await BleClient.connect(device.deviceId, deviceId => this.onDisconnectCallback(deviceId));
       await this.writeBytes(device.deviceId, CHAR_START_UUID, new Int8Array([1]));
       await this.writeBytes(device.deviceId, CHAR_PIN_UUID, new Int8Array([1, 2, 3, 4]));
       await this.writeAscii(device.deviceId, CHAR_EXCHANGE_UUID, '#1,M3,f1;');
-      this.tasks.deregister('Connect Device');
+      this.tasks.deregister(connectTask);
       const devices = this.devicesSubject.getValue();
       const liveDevice = devices.find(dev => dev.deviceId === device.deviceId);
       if (liveDevice) {
@@ -178,7 +183,7 @@ export class SvantekManager implements IDeviceManager {
         this.devicesSubject.next(devices);
       }
     } catch (err) {
-      this.tasks.deregister('Connect Device');
+      this.tasks.deregister(connectTask);
       const devices = this.devicesSubject.getValue();
       const liveDevice = devices.find(dev => dev.deviceId === device.deviceId);
       if (liveDevice) {
