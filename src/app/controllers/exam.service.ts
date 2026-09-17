@@ -165,18 +165,18 @@ export class ExamService {
   /** Submit function for exam pages. Can be overwritten by exams.
    * @models results, state
    */
-  submit() {
-    void this.submitDefault();
+  async submit(): Promise<void> {
+    await this.submitDefault();
   }
 
   /** Overwrite submit with one that leaves feedback on screen before advancing.
    * @summary Raises isShowingFeedback, waits feedbackDelayMs, then restores and calls submitDefault.
    */
   delaySubmitForFeedback() {
-    this.submit = () => {
+    this.submit = async () => {
       this.isShowingFeedback = true;
       setTimeout(() => {
-        this.submit = () => void this.submitDefault();
+        this.submit = () => this.submitDefault();
         this.submit();
         this.isShowingFeedback = false;
       }, ExamService.feedbackDelayMs);
@@ -214,7 +214,7 @@ export class ExamService {
     // A skipped page submits regardless of whether its response requirement was met, and must
     // bypass any submit a response area installed (for example one that demands notes first).
     this.stateModel.updateState({ isSubmittable: true });
-    this.submit = () => void this.submitDefault();
+    this.submit = () => this.submitDefault();
     void this.submitDefault();
   }
 
@@ -225,30 +225,30 @@ export class ExamService {
     this.skipDefault();
   }
 
-  backDefault() {
+  async backDefault(): Promise<void> {
     // noop
   }
 
-  back() {
+  async back(): Promise<void> {
     // used/overwritten by calibration-exam
   }
 
   /**
    * Default reset function for exam pages.
    */
-  resetDefault() {
+  async resetDefault(): Promise<void> {
     this.stateModel.updateState({ examState: ExamState.Ready });
     this.resetProtocolStack();
   }
 
-  reset() {
-    this.resetDefault();
+  async reset(): Promise<void> {
+    await this.resetDefault();
   }
 
   /**
    * Default submit partial function for exam pages.
    */
-  submitPartialDefault() {
+  async submitPartialDefault(): Promise<void> {
     this.gradeResponses();
     this.resultsService.pushResults(this.results.currentPage);
     this.setFlags(this.results.currentPage);
@@ -257,19 +257,19 @@ export class ExamService {
     if (this.protocol.activeProtocolDictionary!['@PARTIAL'] === undefined) {
       this.endExam();
     } else {
-      this.navigateToTarget('@PARTIAL');
+      await this.navigateToTarget('@PARTIAL');
     }
   }
 
-  submitPartial() {
-    this.submitPartialDefault();
+  async submitPartial(): Promise<void> {
+    await this.submitPartialDefault();
   }
 
   /**
    * Default navigate to target function, which navigates to the specified subprotocol.
    * @param subProtocolID The sub protocol page identifier.
    */
-  async navigateToTargetDefault(subProtocolID: string) {
+  async navigateToTargetDefault(subProtocolID: string): Promise<void> {
     const referenceProtocol = this.protocol.activeProtocolDictionary![subProtocolID];
     this.protocol.activeProtocolStack.addProtocol(referenceProtocol);
     this.stateModel.updateState({ examState: ExamState.Testing });
@@ -280,8 +280,8 @@ export class ExamService {
    * Navigate to target function. Can be overwritten by exams.
    * @param subProtocolID The sub protocol page identifier.
    */
-  navigateToTarget(subProtocolID: string) {
-    this.navigateToTargetDefault(subProtocolID);
+  async navigateToTarget(subProtocolID: string): Promise<void> {
+    await this.navigateToTargetDefault(subProtocolID);
   }
 
   /**

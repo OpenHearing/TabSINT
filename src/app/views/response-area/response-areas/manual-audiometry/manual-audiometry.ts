@@ -364,7 +364,7 @@ export class ManualAudiometryComponent implements OnInit, OnDestroy {
     }
 
     if (updatedAudiometryResponseArea.showResults ?? manualAudiometrySchema.properties.showResults.default) {
-      this.examService.submit = this.submitResults.bind(this);
+      this.examService.submit = async () => this.submitResults();
     }
   }
 

@@ -303,9 +303,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
               this.nextStep();
             }
           }
-        : () => {
-            this.examService.submitDefault();
-          };
+        : () => this.examService.submitDefault();
     this.examService.back = async () => {
       if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.previousStep();

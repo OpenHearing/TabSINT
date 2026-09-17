@@ -133,7 +133,7 @@ export abstract class AutomatedAudiometryExamComponentBase<
 
   ngOnInit(): void {
     this.stateModel.updateState({ isSubmittable: false });
-    this.examService.submit = () => this.submitWithNotes();
+    this.examService.submit = async () => this.submitWithNotes();
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === this.responseAreaType) {
         this.currentPageId = updatedPage.id;

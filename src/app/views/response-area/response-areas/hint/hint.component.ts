@@ -150,7 +150,7 @@ export class HintComponent implements OnInit, OnDestroy {
       return;
     }
     // Submit advances each sentence rather than the whole page while the exam runs.
-    this.examService.submit = () => this.processSelectedWords();
+    this.examService.submit = async () => this.processSelectedWords();
 
     // ListNumber 0 (the schema default) means "no list chosen"; pick one client-side for traceability.
     if (!this.examProperties.ListNumber) {
