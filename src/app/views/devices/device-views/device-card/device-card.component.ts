@@ -1,11 +1,12 @@
 import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { BluetoothType, DeviceState, DeviceType } from '../../../../utilities/constants';
+import { BluetoothType, DeviceState, DeviceType, DialogType } from '../../../../utilities/constants';
 import { IDevice } from '../../../../interfaces/devices/device.interface';
 import { DiskInterface } from '../../../../models/disk/disk.interface';
 import { DiskModel } from '../../../../models/disk/disk.service';
 import { DevicesService } from '../../../../services/devices/devices.service';
 import { Logger } from '../../../../services/logger.service';
+import { Notifications } from '../../../../services/notifications.service';
 
 @Component({
   selector: 'app-device-card',
@@ -19,6 +20,7 @@ export class DeviceCardComponent implements OnInit, OnDestroy {
   private readonly devicesService = inject(DevicesService);
   private readonly diskModel = inject(DiskModel);
   private readonly logger = inject(Logger);
+  private readonly notifications = inject(Notifications);
 
   BluetoothType = BluetoothType;
   DeviceState = DeviceState;
@@ -44,7 +46,19 @@ export class DeviceCardComponent implements OnInit, OnDestroy {
 
   async reconnect(): Promise<void> {
     this.logger.debug('reconnecting to device: ' + this.device.deviceId);
-    await this.devicesService.connect(this.device);
+    try {
+      await this.devicesService.connect(this.device);
+    } catch (err) {
+      this.logger.debug('Device reconnection failed', err);
+      this.notifications
+        .alert({
+          title: 'Connection Failed',
+          content: `Failed to connect to ${this.device.tabsintId}.`,
+          type: DialogType.Alert,
+        })
+        .subscribe();
+      return;
+    }
     await this.devicesService.checkForFirmwareUpdate(this.device);
   }
 

@@ -2,7 +2,8 @@ import { ChaDeviceType, DeviceStatus } from '../../utilities/constants';
 import { IDeviceAdapter } from '../../interfaces/devices/device-adapter.interface';
 import { Logger } from '../logger.service';
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
-import { DeviceResponse, TabsintCha } from 'tabsintcha';
+import { DeviceResponse, DiscoveryResponse, TabsintCha } from 'tabsintcha';
+import { PluginListenerHandle } from '@capacitor/core';
 import { BehaviorSubject, catchError, filter, firstValueFrom, of, skip, Subject, timeout } from 'rxjs';
 import { FirmwareAsset } from '../../interfaces/firmware-asset.interface';
 import { isDirectoryEntryResponse, isStatusResponse, isSuccessfulFileOperation } from '../../guards/type.guard';
@@ -20,7 +21,7 @@ export class ChaAdapter implements IDeviceAdapter {
   /**
    * Behavioral subject which emits message responses for all devices.
    */
-  private readonly responseSubject = new BehaviorSubject<IDeviceResponse | undefined>(undefined);
+  private static readonly responseSubject = new BehaviorSubject<IDeviceResponse | undefined>(undefined);
 
   /**
    * The default timeout for responses (milliseconds).
@@ -28,34 +29,34 @@ export class ChaAdapter implements IDeviceAdapter {
   private readonly defaultTimeoutTimeMs = 3000;
 
   /**
-   * Whether a device listener has been set for CHA plugin.
+   * Whether a device listener has been set for the CHA plugin.
    */
-  private isDeviceListenerSet = false;
+  private static isDeviceListenerSet = false;
 
   /**
-   * Callback invoked when a disconnection event occurs for the given device identifier.
+   * Callbacks invoked when a disconnection event occurs for the given device identifier.
    */
-  private onDisconnect: ((id: string) => void) | undefined;
+  private static readonly disconnectCallbacks: ((id: string) => void)[] = [];
 
   /**
-   * Callback invoked when a device property needs to be updated for the given device.
+   * Callbacks invoked when a device property needs to be updated for the given device.
    */
-  private onDeviceUpdate: ((device: ChaDeviceType) => void) | undefined;
+  private static readonly deviceUpdateCallbacks: ((device: ChaDeviceType) => void)[] = [];
 
   /**
-   * Set the callback for disconnection events.
+   * Register a callback for disconnection events.
    * @param disconnectCallback The callback for disconnect events.
    */
-  setDisconnectCallback(disconnectCallback: (id: string) => void) {
-    this.onDisconnect = disconnectCallback;
+  registerDisconnectCallback(disconnectCallback: (id: string) => void) {
+    ChaAdapter.disconnectCallbacks.push(disconnectCallback);
   }
 
   /**
-   * Set the callback for device update events.
+   * Register a callback for device update events.
    * @param onDeviceUpdate The callback for device state change events.
    */
-  setDeviceUpdate(onDeviceUpdate: (device: ChaDeviceType) => void) {
-    this.onDeviceUpdate = onDeviceUpdate;
+  registerDeviceUpdateCallback(onDeviceUpdate: (device: ChaDeviceType) => void) {
+    ChaAdapter.deviceUpdateCallbacks.push(onDeviceUpdate);
   }
 
   /**
@@ -63,9 +64,10 @@ export class ChaAdapter implements IDeviceAdapter {
    * @param device The device to be connected to.
    */
   async connect(device: ChaDeviceType): Promise<void> {
-    if (!this.isDeviceListenerSet) {
-      await TabsintCha.addListener('TabsintChaDevice', response => this.deviceEventListener(response));
-      this.isDeviceListenerSet = true;
+    if (!ChaAdapter.isDeviceListenerSet) {
+      const logger = this.logger;
+      await TabsintCha.addListener('TabsintChaDevice', response => ChaAdapter.deviceEventListener(response, logger));
+      ChaAdapter.isDeviceListenerSet = true;
     }
     const nameOptions = { name: device.deviceId };
     await TabsintCha.connect(nameOptions);
@@ -456,20 +458,52 @@ export class ChaAdapter implements IDeviceAdapter {
   private async runWithStateChanges<T>(device: ChaDeviceType, func: () => Promise<T>): Promise<T> {
     device.msgId++;
     device.status = DeviceStatus.Busy;
-    this.onDeviceUpdate?.(device);
+    ChaAdapter.notifyDeviceUpdate(device, this.logger);
     let response = undefined;
 
     try {
       response = await func();
     } catch (err) {
       device.status = DeviceStatus.Ready;
-      this.onDeviceUpdate?.(device);
+      ChaAdapter.notifyDeviceUpdate(device, this.logger);
       throw err;
     }
 
     device.status = DeviceStatus.Ready;
-    this.onDeviceUpdate?.(device);
+    ChaAdapter.notifyDeviceUpdate(device, this.logger);
     return response;
+  }
+
+  /**
+   * Broadcast a device update to every registered callback, isolating each one so a single
+   * misbehaving manager's callback can't stop the others from being notified.
+   * @param device The device to broadcast the update for.
+   * @param logger The logger to report a failing callback to.
+   */
+  private static notifyDeviceUpdate(device: ChaDeviceType, logger: Logger): void {
+    for (const callback of ChaAdapter.deviceUpdateCallbacks) {
+      try {
+        callback(device);
+      } catch (err) {
+        logger.error('Device update callback failed', err);
+      }
+    }
+  }
+
+  /**
+   * Broadcast a device disconnection to every registered callback, isolating each one so a
+   * single misbehaving manager's callback can't stop the others from being notified.
+   * @param deviceId The identifier of the device which disconnected.
+   * @param logger The logger to report a failing callback to.
+   */
+  private static notifyDisconnect(deviceId: string, logger: Logger): void {
+    for (const callback of ChaAdapter.disconnectCallbacks) {
+      try {
+        callback(deviceId);
+      } catch (err) {
+        logger.error('Disconnect callback failed', err);
+      }
+    }
   }
 
   /**
@@ -486,7 +520,7 @@ export class ChaAdapter implements IDeviceAdapter {
     timeoutTimeMs: number = this.defaultTimeoutTimeMs
   ): Promise<IDeviceResponse | undefined> {
     const response = await firstValueFrom(
-      this.responseSubject.pipe(
+      ChaAdapter.responseSubject.pipe(
         skip(1),
         filter(response => response?.deviceId === device.deviceId && (response.msg[0] == identifier || response.msg[0] == 'Error')),
         timeout(timeoutTimeMs),
@@ -519,7 +553,7 @@ export class ChaAdapter implements IDeviceAdapter {
     timeoutMs?: number
   ): Promise<IDeviceResponse | undefined> {
     const finalResponseSubject = new Subject<IDeviceResponse | undefined>();
-    const subscription = this.responseSubject
+    const subscription = ChaAdapter.responseSubject
       .pipe(
         skip(1),
         filter(
@@ -560,12 +594,13 @@ export class ChaAdapter implements IDeviceAdapter {
   /**
    * Device event listener which handles incoming responses from devices.
    * @param response The device response to handle.
+   * @param logger The logger to report a failing callback to.
    */
-  private deviceEventListener(response: DeviceResponse) {
+  private static deviceEventListener(response: DeviceResponse, logger: Logger) {
     if (response.res[0] === 'Disconnected') {
-      this.onDisconnect?.(response.name);
+      ChaAdapter.notifyDisconnect(response.name, logger);
     } else {
-      this.responseSubject.next({ deviceId: response.name, msg: typeof response.res === 'string' ? [response.res] : response.res });
+      ChaAdapter.responseSubject.next({ deviceId: response.name, msg: typeof response.res === 'string' ? [response.res] : response.res });
     }
   }
 
@@ -752,5 +787,62 @@ export class ChaAdapter implements IDeviceAdapter {
       encoding: Encoding.UTF8,
     });
     return result.data as string;
+  }
+
+  /**
+   * Handle for the native discovery listener, registered exactly once for the app's lifetime.
+   */
+  private static discoveryListenerHandle: PluginListenerHandle | undefined;
+
+  /**
+   * The discovery callback for whichever caller currently owns the scan.
+   */
+  private static activeDiscoveryCallback: ((response: DiscoveryResponse) => void) | undefined;
+
+  /**
+   * Whether a CHA discovery scan is currently in progress.
+   */
+  private static scanActive = false;
+
+  /**
+   * Start a CHA discovery scan. Registers the native discovery listener once for the app's
+   * lifetime and routes each discovery event to whichever callback most recently started a scan,
+   * rather than stacking a new native listener on every call. Throws if a scan is already active.
+   * @param infStr The BluetoothType key to scan for.
+   * @param onDiscovery Callback invoked for each discovered device while this scan is active.
+   */
+  async startSearch(infStr: string, onDiscovery: (response: DiscoveryResponse) => void): Promise<void> {
+    if (ChaAdapter.scanActive) {
+      throw new Error('A CHA device search is already in progress.');
+    }
+    ChaAdapter.scanActive = true;
+    ChaAdapter.activeDiscoveryCallback = onDiscovery;
+    try {
+      ChaAdapter.discoveryListenerHandle ??= await TabsintCha.addListener('TabsintChaDiscovery', response =>
+        ChaAdapter.activeDiscoveryCallback?.(response)
+      );
+      await TabsintCha.startChaSearch({ infStr });
+    } catch (err) {
+      ChaAdapter.scanActive = false;
+      ChaAdapter.activeDiscoveryCallback = undefined;
+      throw err;
+    }
+  }
+
+  /**
+   * Stop the current CHA discovery scan. A no-op if no scan is active. The lock is always
+   * released, even if the native cancel call fails, so a failure here can't permanently block
+   * every future search.
+   */
+  async stopSearch(): Promise<void> {
+    if (!ChaAdapter.scanActive) {
+      return;
+    }
+    try {
+      await TabsintCha.cancelChaSearch(new Object());
+    } finally {
+      ChaAdapter.scanActive = false;
+      ChaAdapter.activeDiscoveryCallback = undefined;
+    }
   }
 }
