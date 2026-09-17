@@ -9,7 +9,7 @@ import { Tasks } from '../tasks.service';
 import { inject, NgZone } from '@angular/core';
 import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
 import { ChaAdapter } from './cha-adapter';
-import { DiscoveryResponse, TabsintCha } from 'tabsintcha';
+import { DiscoveryResponse } from 'tabsintcha';
 import { SavedDevice } from '../../models/disk/disk.interface';
 import { DiskModel } from '../../models/disk/disk.service';
 
@@ -29,11 +29,6 @@ export abstract class ChaManager implements IDeviceManager {
   protected readonly notifications = inject(Notifications);
   protected readonly transloco = inject(TranslocoService);
   protected readonly tasks = inject(Tasks);
-
-  /**
-   * Whether a BLE scan is currently in progress.
-   */
-  protected scanning = false;
 
   /**
    * The timeout used for BLE scans.
@@ -71,8 +66,8 @@ export abstract class ChaManager implements IDeviceManager {
   protected discoveryListener: ((response: DiscoveryResponse) => void) | undefined = undefined;
 
   constructor() {
-    this.adapter.setDisconnectCallback(this.onDisconnectCallback);
-    this.adapter.setDeviceUpdate(this.updateDevice);
+    this.adapter.registerDisconnectCallback(this.onDisconnectCallback);
+    this.adapter.registerDeviceUpdateCallback(this.updateDevice);
   }
 
   /**
@@ -154,8 +149,7 @@ export abstract class ChaManager implements IDeviceManager {
    * Stop an ongoing device search.
    */
   async stopDeviceSearch(): Promise<void> {
-    await TabsintCha.cancelChaSearch(new Object());
-    this.scanning = false;
+    await this.adapter.stopSearch();
     // Remove discovered devices which were added but not selected during the search
     let devices = this.devicesSubject.getValue();
     devices = devices.filter(device => device.state !== DeviceState.Discovery);
@@ -200,20 +194,20 @@ export abstract class ChaManager implements IDeviceManager {
             deviceSubject.next(device);
           }
         };
-        TabsintCha.addListener('TabsintChaDiscovery', response => listener(response));
-        await TabsintCha.startChaSearch({ infStr: this.getConnectionKey(device.connectionType) });
+        await this.adapter.startSearch(this.getConnectionKey(device.connectionType), listener);
         await firstValueFrom(
           deviceSubject.pipe(
             timeout(this.SCAN_TIMEOUT),
             catchError(() => of(undefined))
           )
         );
-        await TabsintCha.cancelChaSearch(new Object());
+        await this.adapter.stopSearch();
         await this.adapter.connect(device);
       }
     };
+    const connectTask = `Connect Device: ${device.tabsintId}`;
     try {
-      this.tasks.register('Connect Device', 'Connecting to Device...');
+      this.tasks.register(connectTask, 'Connecting to Device...');
       await connectWithRetry();
       await this.adapter.abortExams(device);
 
@@ -236,11 +230,11 @@ export abstract class ChaManager implements IDeviceManager {
         throw new Error('Connection failed.');
       }
 
-      this.tasks.deregister('Connect Device');
+      this.tasks.deregister(connectTask);
       device.state = DeviceState.Connected;
       this.updateDevice(device);
     } catch (err) {
-      this.tasks.deregister('Connect Device');
+      this.tasks.deregister(connectTask);
       device.state = DeviceState.Disconnected;
       this.updateDevice(device);
       throw err;

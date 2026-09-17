@@ -138,9 +138,6 @@ export class TympanManager implements IDeviceManager {
    * @param deviceType The type of device the search should be started for.
    */
   async startDeviceSearch(): Promise<void> {
-    if (this.scanning) {
-      return;
-    }
     try {
       this.scanning = true;
       const results: TympanDevice[] = [];
@@ -178,8 +175,11 @@ export class TympanManager implements IDeviceManager {
    * Stop an ongoing device search.
    */
   async stopDeviceSearch(): Promise<void> {
-    await BleClient.stopLEScan();
-    this.scanning = false;
+    try {
+      await BleClient.stopLEScan();
+    } finally {
+      this.scanning = false;
+    }
     // Remove discovered devices which were added but not selected during the search
     let devices = this.devicesSubject.getValue();
     devices = devices.filter(device => device.state !== DeviceState.Discovery);
@@ -202,8 +202,9 @@ export class TympanManager implements IDeviceManager {
    * @param device The device to be connected to.
    */
   async connect(device: TympanDevice): Promise<void> {
+    const connectTask = `Connect Device: ${device.tabsintId}`;
     try {
-      this.tasks.register('Connect Device', 'Connecting to Device...');
+      this.tasks.register(connectTask, 'Connecting to Device...');
       await this.tympanAdapter.connect(device);
       await this.tympanAdapter.abortExams(device);
       const resp = await this.tympanAdapter.requestId(device);
@@ -212,11 +213,11 @@ export class TympanManager implements IDeviceManager {
         throw new Error('Reconnection failed.');
       }
       this.updateDeviceMetadata(device, resp.msg[1]);
-      this.tasks.deregister('Connect Device');
+      this.tasks.deregister(connectTask);
       device.state = DeviceState.Connected;
       this.updateDevice(device);
     } catch (err) {
-      this.tasks.deregister('Connect Device');
+      this.tasks.deregister(connectTask);
       device.state = DeviceState.Disconnected;
       this.updateDevice(device);
       throw err;

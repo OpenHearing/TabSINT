@@ -61,6 +61,16 @@ export class DevicesService {
    */
   readonly devices: Observable<IDevice[]>;
 
+  /**
+   * Behavioral subject for the device type which currently owns the single, app-wide device search.
+   */
+  private readonly activeScanTypeSubject = new BehaviorSubject<DeviceType | undefined>(undefined);
+
+  /**
+   * Observable for the device type which currently owns the single, app-wide device search.
+   */
+  readonly activeScanType: Observable<DeviceType | undefined> = this.activeScanTypeSubject.asObservable();
+
   constructor() {
     // Define the manager registry and create a device list from each managers device observable
     this.managerRegistry = {
@@ -153,15 +163,23 @@ export class DevicesService {
         .pipe(
           concatMap(async (device: IDevice | undefined) => {
             if (device != undefined) {
-              this.tasks.register('Connect Device', `Connecting to Device... `);
+              const connectTask = `Connect Device: ${device.tabsintId}`;
+              this.tasks.register(connectTask, `Connecting to Device... `);
               try {
                 await this.getManager(deviceType).connect(device);
                 await this.saveDevice(device);
                 await this.checkForFirmwareUpdate(device);
               } catch (err) {
                 this.logger.debug('Device connection failed', err);
+                this.notifications
+                  .alert({
+                    title: 'Connection Failed',
+                    content: `Failed to connect to ${device.tabsintId}.`,
+                    type: DialogType.Alert,
+                  })
+                  .subscribe();
               }
-              this.tasks.deregister('Connect Device');
+              this.tasks.deregister(connectTask);
             }
             return device;
           })
@@ -317,17 +335,42 @@ export class DevicesService {
 
   /**
    * Start a device search to retrieve available devices for the specified device type.
+   * Only one device search may be active at a time app-wide, since the underlying native scans
+   * (CHA plugin, BLE) are each a single shared resource rather than one per device type.
    * @param deviceType The type of device the search should be started for.
    */
   async startDeviceSearch(deviceType: DeviceType): Promise<void> {
-    return this.getManager(deviceType).startDeviceSearch();
+    const activeType = this.activeScanTypeSubject.getValue();
+    if (activeType !== undefined) {
+      throw new Error(`Cannot start a device search while another search is in progress.`);
+    }
+    this.activeScanTypeSubject.next(deviceType);
+    try {
+      await this.getManager(deviceType).startDeviceSearch();
+    } catch (err) {
+      this.activeScanTypeSubject.next(undefined);
+      throw err;
+    }
   }
 
   /**
-   * Stop an ongoing device search.
+   * Stop an ongoing device search. A no-op unless this device type currently owns the search.
+   * The native scans backing each manager (CHA plugin, BLE) are shared resources, not one per
+   * device type, so calling stop for a type that isn't the current owner could otherwise cancel
+   * a different, unrelated device's search. The lock is always released if this type owns it,
+   * even if the manager fails to stop cleanly, so a failure here can't permanently block every
+   * future search.
+   * @param deviceType The type of device the search should be stopped for.
    */
   async stopDeviceSearch(deviceType: DeviceType): Promise<void> {
-    return this.getManager(deviceType).stopDeviceSearch();
+    if (this.activeScanTypeSubject.getValue() !== deviceType) {
+      return;
+    }
+    try {
+      await this.getManager(deviceType).stopDeviceSearch();
+    } finally {
+      this.activeScanTypeSubject.next(undefined);
+    }
   }
 
   /**
