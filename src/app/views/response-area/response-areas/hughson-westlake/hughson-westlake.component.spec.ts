@@ -24,8 +24,7 @@ describe('HughsonWestlakeComponent', () => {
 
   beforeEach(async () => {
     devicesService = jasmine.createSpyObj<DevicesService>('DevicesService', [
-      'getDeviceOrDefault',
-      'confirmSingleDevice',
+      'confirmSingleDeviceId',
       'deviceNotFound',
       'abortExams',
       'queueExam',
@@ -35,8 +34,7 @@ describe('HughsonWestlakeComponent', () => {
       'startMaskingNoise',
       'stopMaskingNoise',
     ]);
-    devicesService.getDeviceOrDefault.and.resolveTo([mockDevice]);
-    devicesService.confirmSingleDevice.and.resolveTo(mockDevice);
+    devicesService.confirmSingleDeviceId.and.resolveTo(mockDevice.deviceId);
     devicesService.deviceNotFound.and.resolveTo(undefined);
     devicesService.abortExams.and.resolveTo(undefined);
     devicesService.queueExam.and.resolveTo(undefined);
@@ -88,16 +86,16 @@ describe('HughsonWestlakeComponent', () => {
   });
 
   it('queues a HughsonWestlake exam on the device when Begin is pressed', async () => {
-    component.device = mockDevice;
+    component.deviceId = mockDevice.deviceId;
 
     await component.beginExam();
 
-    expect(devicesService.queueExam).toHaveBeenCalledWith(mockDevice, 'HughsonWestlake', jasmine.any(Object));
+    expect(devicesService.queueExam).toHaveBeenCalledWith(mockDevice.deviceId, 'HughsonWestlake', jasmine.any(Object));
     expect(component.state).toBe('exam');
   });
 
   it('does not queue an exam when no device is available', async () => {
-    component.device = undefined;
+    component.deviceId = undefined;
 
     await component.beginExam();
 
@@ -121,7 +119,7 @@ describe('HughsonWestlakeComponent', () => {
     tick();
     fixture.detectChanges();
 
-    expect(devicesService.queueExam).toHaveBeenCalledWith(mockDevice, 'HughsonWestlake', jasmine.any(Object));
+    expect(devicesService.queueExam).toHaveBeenCalledWith(mockDevice.deviceId, 'HughsonWestlake', jasmine.any(Object));
     expect(component.state).toBe('exam');
     component.ngOnDestroy();
   }));
@@ -165,10 +163,10 @@ describe('HughsonWestlakeComponent', () => {
     tick();
     fixture.detectChanges();
 
-    expect(devicesService.startMaskingNoise).toHaveBeenCalledWith(mockDevice, jasmine.objectContaining({ Type: 'White' }));
+    expect(devicesService.startMaskingNoise).toHaveBeenCalledWith(mockDevice.deviceId, jasmine.objectContaining({ Type: 'White' }));
 
     component.ngOnDestroy();
-    expect(devicesService.stopMaskingNoise).toHaveBeenCalledWith(mockDevice);
+    expect(devicesService.stopMaskingNoise).toHaveBeenCalledWith(mockDevice.deviceId);
   }));
 
   it('stops masking noise as soon as the exam completes, not just on teardown', fakeAsync(() => {
@@ -191,13 +189,13 @@ describe('HughsonWestlakeComponent', () => {
     tick();
     fixture.detectChanges();
 
-    expect(devicesService.stopMaskingNoise).toHaveBeenCalledWith(mockDevice);
+    expect(devicesService.stopMaskingNoise).toHaveBeenCalledWith(mockDevice.deviceId);
     expect(component.state).not.toBe('exam');
     component.ngOnDestroy();
   }));
 
   it('does not start or stop masking noise when maskingNoise is not configured', async () => {
-    component.device = mockDevice;
+    component.deviceId = mockDevice.deviceId;
 
     await component.beginExam();
     component.ngOnDestroy();

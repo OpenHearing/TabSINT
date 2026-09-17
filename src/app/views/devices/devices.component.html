@@ -9,8 +9,8 @@
 
     <app-device-panel [deviceType]="DeviceType.Tympan">
       <ng-container *ngFor="let tympanDevice of tympanDevices$ | async; trackBy: trackByDeviceId">
-        <app-device-card [device]="tympanDevice" [connected]="state.bluetoothConnected">
-          <app-tympan-settings [device]="tympanDevice"></app-tympan-settings>
+        <app-device-card [deviceId]="tympanDevice.deviceId" [connected]="state.bluetoothConnected">
+          <app-tympan-settings [deviceId]="tympanDevice.deviceId"></app-tympan-settings>
         </app-device-card>
       </ng-container>
     </app-device-panel>
@@ -29,10 +29,10 @@
     <app-device-panel [deviceType]="DeviceType.Wahts">
       <ng-container *ngFor="let wahtsDevice of wahtsDevices$ | async; trackBy: trackByDeviceId">
         <app-device-card
-          [device]="wahtsDevice"
+          [deviceId]="wahtsDevice.deviceId"
           [connected]="state.bluetoothConnected"
           [enabled]="wahtsDevice.connectionType === disk.preferences.wahtsConnectionType">
-          <app-wahts-settings [device]="wahtsDevice"></app-wahts-settings>
+          <app-wahts-settings [deviceId]="wahtsDevice.deviceId"></app-wahts-settings>
         </app-device-card>
       </ng-container>
       <app-wahts-advanced-settings></app-wahts-advanced-settings>
@@ -51,8 +51,8 @@
 
     <app-device-panel [deviceType]="DeviceType.Duodose">
       <ng-container *ngFor="let duodoseDevice of duodoseDevices$ | async; trackBy: trackByDeviceId">
-        <app-device-card [device]="duodoseDevice" [connected]="state.bluetoothConnected">
-          <app-duodose-settings [device]="duodoseDevice"></app-duodose-settings>
+        <app-device-card [deviceId]="duodoseDevice.deviceId" [connected]="state.bluetoothConnected">
+          <app-duodose-settings [deviceId]="duodoseDevice.deviceId"></app-duodose-settings>
         </app-device-card>
       </ng-container>
     </app-device-panel>
@@ -70,7 +70,7 @@
 
     <app-device-panel [deviceType]="DeviceType.Svantek">
       <ng-container *ngFor="let svantekDevice of svantekDevices$ | async; trackBy: trackByDeviceId">
-        <app-device-card [device]="svantekDevice" [connected]="state.bluetoothConnected"> </app-device-card>
+        <app-device-card [deviceId]="svantekDevice.deviceId" [connected]="state.bluetoothConnected"> </app-device-card>
       </ng-container>
     </app-device-panel>
   </mat-expansion-panel>

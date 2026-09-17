@@ -266,7 +266,7 @@ describe('ExamService', () => {
     mockNotifications = jasmine.createSpyObj('Notifications', ['alert']);
     mockNotifications.alert.and.returnValue(of('OK'));
     mockLogger = jasmine.createSpyObj('Logger', ['debug', 'error', 'warning']);
-    mockDevicesService = jasmine.createSpyObj('DevicesService', ['getDeviceOrDefault', 'abortExams', 'queueExam', 'requestResults']);
+    mockDevicesService = jasmine.createSpyObj('DevicesService', ['getDeviceIdOrDefault', 'abortExams', 'queueExam', 'requestResults']);
     mockAudioService = jasmine.createSpyObj('AudioService', ['stopAudio', 'playWav', 'setSystemVolume']);
 
     TestBed.configureTestingModule({

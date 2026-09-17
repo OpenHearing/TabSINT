@@ -9,7 +9,6 @@ import { ExamService } from '../../../../../controllers/exam.service';
 import { ResultsInterface } from '../../../../../models/results/results.interface';
 import { PageInterface } from '../../../../../models/page/page.interface';
 import { ButtonTextService } from '../../../../../controllers/button-text.service';
-import { IDevice } from '../../../../../interfaces/devices/device.interface';
 import { DeviceType } from '../../../../../utilities/constants';
 import { NormativeDataInterface } from '../../../../../interfaces/normative-data-interface';
 import { DpoaeCommonInterface, DpoaeResultsCommonInterface } from './dpoae-common.interface';
@@ -61,7 +60,7 @@ export abstract class DpoaeExamBaseComponent<TResponseArea extends DpoaeCommonIn
   pageSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
   currentStep: string = 'input-parameters';
-  device: IDevice | undefined;
+  deviceId: string | undefined;
   examResults: TResults;
   inputParameterMap = new Map<string, string>();
   allowableDevices = [DeviceType.Tympan];
@@ -97,23 +96,23 @@ export abstract class DpoaeExamBaseComponent<TResponseArea extends DpoaeCommonIn
     this.examResults = { State: 'READY', PctComplete: 0 } as TResults;
     this.results = this.resultsModel.getResults();
 
-    this.examService.submit = () => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.submit = async () => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.nextStep();
       }
     };
-    this.examService.reset = () => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.reset = async () => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.examService.resetDefault();
       }
     };
-    this.examService.submitPartial = () => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.submitPartial = async () => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.examService.submitPartialDefault();
       }
     };
-    this.examService.navigateToTarget = subProtocolId => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.navigateToTarget = async subProtocolId => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.examService.navigateToTargetDefault(subProtocolId);
       }
     };
@@ -145,7 +144,7 @@ export abstract class DpoaeExamBaseComponent<TResponseArea extends DpoaeCommonIn
    * Function to be called by ngOnDestroy to handle any asynchronous operations.
    */
   private async asyncNgOnDestroy(): Promise<void> {
-    await this.devicesService.abortExams(this.device!);
+    await this.devicesService.abortExams(this.deviceId!);
   }
 
   async nextStep(): Promise<void> {
@@ -174,17 +173,17 @@ export abstract class DpoaeExamBaseComponent<TResponseArea extends DpoaeCommonIn
   }
 
   /**
-   * Resolves the target device for this exam, surfacing the standard not-found error/log if none
-   * is available. Subclasses call this from beginExam() before building their exam-specific properties.
+   * Resolves the target device id for this exam, surfacing the standard not-found error/log if
+   * none is available. Subclasses call this from beginExam() before building their exam-specific
+   * properties.
    */
-  protected async resolveDevice(): Promise<IDevice | undefined> {
-    const deviceList = await this.devicesService.getDeviceOrDefault(this.tabsintId, this.allowableDevices);
-    const device = await this.devicesService.confirmSingleDevice(deviceList);
-    if (!device) {
+  protected async resolveDevice(): Promise<string | undefined> {
+    const deviceId = await this.devicesService.confirmSingleDeviceId(this.tabsintId, this.allowableDevices);
+    if (!deviceId) {
       await this.devicesService.deviceNotFound();
       this.logger.error(`Error setting up ${this.examLabel} exam`);
     }
-    return device;
+    return deviceId;
   }
 
   /**

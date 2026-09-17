@@ -37,6 +37,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
 
   allowableDevices = [DeviceType.Tympan];
   currentStep: string = 'landing';
+  deviceId: string | undefined;
   device: IDevice | undefined;
   tabsintId: string = FPLcalibrationExamSchema.properties.tabsintId.default;
   results: ResultsInterface;
@@ -55,6 +56,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   inProgressResultsSubscription: Subscription | undefined;
   pageSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
+  deviceSubscription: Subscription | undefined;
 
   // Default to WAI default, but this will be overwritten with FPL response area values
   outputChannels: string[] = [];
@@ -83,28 +85,28 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
 
   constructor() {
     this.results = this.resultsModel.getResults();
-    this.examService.submit = () => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.submit = async () => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.nextStep();
       }
     };
-    this.examService.back = () => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.back = async () => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.previousStep();
       }
     };
-    this.examService.reset = () => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.reset = async () => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.examService.resetDefault();
       }
     };
-    this.examService.submitPartial = () => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.submitPartial = async () => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.examService.submitPartialDefault();
       }
     };
-    this.examService.navigateToTarget = subProtocolId => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.navigateToTarget = async subProtocolId => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.examService.navigateToTargetDefault(subProtocolId);
       }
     };
@@ -130,11 +132,11 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
         this.numFrequencies = responseArea.numFrequencies ?? this.numFrequencies;
         this.sweepDuration = responseArea.sweepDuration ?? this.sweepDuration;
         this.windowDuration = responseArea.windowDuration ?? this.windowDuration;
-        const deviceList = await this.devicesService.getDeviceOrDefault(responseArea.tabsintId, this.allowableDevices);
-        this.device = await this.devicesService.confirmSingleDevice(deviceList);
-        if (!this.device) {
+        this.deviceId = await this.devicesService.confirmSingleDeviceId(responseArea.tabsintId, this.allowableDevices);
+        if (!this.deviceId) {
           return;
         }
+        this.deviceSubscription = this.devicesService.getDeviceById$(this.deviceId).subscribe(device => (this.device = device));
         if (this.outputChannels.length < 1) {
           this.logger.error('Error setting up FPL Calibration exam, no outputChannel(s) specified.');
         }
@@ -157,17 +159,18 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
     this.pageSubscription?.unsubscribe();
     this.inProgressResultsSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();
+    this.deviceSubscription?.unsubscribe();
   }
 
   /**
    * Function to be called by ngOnDestroy to handle any asynchronous operations.
    */
   private async asyncNgOnDestroy(): Promise<void> {
-    await this.devicesService.abortExams(this.device!);
+    await this.devicesService.abortExams(this.deviceId!);
   }
 
   async startWAIExam() {
-    if (this.device) {
+    if (this.deviceId) {
       const examProperties: WAIExamProperties = {
         OutputChannel: this.outputChannel,
         FStart: this.fStart,
@@ -189,7 +192,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
         examProperties.Filename = this.recordFileFolder + '/' + getCurrentDatetime() + '.WAV';
       }
       this.stateModel.updateState({ isSubmittable: false });
-      const resp = await this.devicesService.queueExam(this.device, 'WAI', examProperties);
+      const resp = await this.devicesService.queueExam(this.deviceId, 'WAI', examProperties);
       if (resp!.msg[1] != 'ERROR') {
         await this.waitForWAIExamCompletion();
       }
@@ -204,7 +207,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
       if (this.shouldAbort) return;
 
       this.isRequestingResults = true;
-      const resp = await this.devicesService.requestResults(this.device!);
+      const resp = await this.devicesService.requestResults(this.deviceId!);
       this.isRequestingResults = false;
 
       if (this.shouldAbort) return;
@@ -230,7 +233,7 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
     this.shouldAbort = true;
     this.updateTextAfterAbortButtonPressed();
     await this.waitForRequestResultsDone();
-    await this.devicesService.abortExams(this.device!);
+    await this.devicesService.abortExams(this.deviceId!);
     this.shouldAbort = false;
     this.updateTextAfterAbortComplete();
     this.updateStateOnAbort();
@@ -295,16 +298,16 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   private resetCalibrationExam() {
     this.examService.submit =
       this.outputChannelIndex < this.outputChannels.length - 1
-        ? () => {
-            if (!this.devicesService.isDeviceMessagePending(this.device)) {
+        ? async () => {
+            if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
               this.nextStep();
             }
           }
         : () => {
             this.examService.submitDefault();
           };
-    this.examService.back = () => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.back = async () => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.previousStep();
       }
     };

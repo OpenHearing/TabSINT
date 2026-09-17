@@ -360,10 +360,3 @@ export function calculateSvantekBandLevel(result: SvantekResultInterface, freque
   }
   return undefined;
 }
-
-/**
- * Type guard for ISvantekDevice.
- */
-export function isSvantekDevice(device: IDevice): device is ISvantekDevice {
-  return device.type === 'Svantek';
-}

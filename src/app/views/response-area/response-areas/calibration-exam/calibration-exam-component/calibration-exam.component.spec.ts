@@ -19,8 +19,7 @@ describe('CalibrationExamComponent', () => {
 
   beforeEach(async () => {
     devicesService = jasmine.createSpyObj<DevicesService>('DevicesService', [
-      'getDeviceOrDefault',
-      'confirmSingleDevice',
+      'confirmSingleDeviceId',
       'deviceNotFound',
       'abortExams',
       'examSubmission',
@@ -28,13 +27,12 @@ describe('CalibrationExamComponent', () => {
       'isDeviceMessagePending',
       'deviceMessagePendingError',
     ]);
-    devicesService.getDeviceOrDefault.and.resolveTo([]);
-    devicesService.confirmSingleDevice.and.resolveTo(undefined);
+    devicesService.confirmSingleDeviceId.and.resolveTo(undefined);
     devicesService.deviceNotFound.and.resolveTo(undefined);
     devicesService.abortExams.and.resolveTo(undefined);
     devicesService.examSubmission.and.resolveTo(undefined);
     devicesService.queueExam.and.resolveTo(undefined);
-    devicesService.isDeviceMessagePending.and.returnValue(false);
+    devicesService.isDeviceMessagePending.and.resolveTo(false);
 
     examService = jasmine.createSpyObj<ExamService>('ExamService', [
       'submit',

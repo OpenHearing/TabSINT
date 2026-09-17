@@ -45,6 +45,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   pageSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
   devicesSubscription: Subscription | undefined;
+  deviceId: string | undefined;
   device: IDevice | undefined;
   earCup: string = 'Left';
   isPlaying: boolean = false;
@@ -59,28 +60,28 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
 
   constructor() {
     this.results = this.resultsModel.getResults();
-    this.examService.submit = () => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.submit = async () => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.nextStep();
       }
     };
-    this.examService.back = () => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.back = async () => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.previousStep();
       }
     };
-    this.examService.reset = () => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.reset = async () => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.examService.resetDefault();
       }
     };
-    this.examService.submitPartial = () => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.submitPartial = async () => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.examService.submitPartialDefault();
       }
     };
-    this.examService.navigateToTarget = subProtocolId => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.navigateToTarget = async subProtocolId => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.examService.navigateToTargetDefault(subProtocolId);
       }
     };
@@ -119,6 +120,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
 
     this.pageSubscription?.unsubscribe();
     this.resultsSubscription?.unsubscribe();
+    this.devicesSubscription?.unsubscribe();
   }
 
   /**
@@ -127,19 +129,20 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   private async asyncNgOnDestroy(): Promise<void> {
     this.isPlaying = false;
     await this.stopTone();
-    await this.devicesService.abortExams(this.device!);
+    await this.devicesService.abortExams(this.deviceId!);
   }
 
   private async setupDevice(updatedResponseArea: CalibrationExamInterface) {
-    const deviceList = await this.devicesService.getDeviceOrDefault(updatedResponseArea.tabsintId, this.allowableDevices);
-    this.device = await this.devicesService.confirmSingleDevice(deviceList);
-    if (this.device === undefined) {
+    this.deviceId = await this.devicesService.confirmSingleDeviceId(updatedResponseArea.tabsintId, this.allowableDevices);
+    if (this.deviceId === undefined) {
       return;
-    } else if (this.devicesService.isDeviceMessagePending(this.device, false)) {
+    }
+    this.devicesSubscription = this.devicesService.getDeviceById$(this.deviceId).subscribe(device => (this.device = device));
+    if (await this.devicesService.isDeviceMessagePending(this.deviceId, false)) {
       await this.devicesService.deviceMessagePendingError();
       this.logger.error('Error setting up HNCalibration exam: Device message pending');
     } else {
-      await this.devicesService.queueExam(this.device, 'HNCalibration', { OutputChannel: this.earCup == 'Left' ? 'HPL0' : 'HPR0' });
+      await this.devicesService.queueExam(this.deviceId, 'HNCalibration', { OutputChannel: this.earCup == 'Left' ? 'HPL0' : 'HPR0' });
     }
   }
 
@@ -255,8 +258,8 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     this.currentFrequency = +entry.frequency;
     this.earCup = entry.ear;
     this.currentFrequencyIndex = frequencyIndex;
-    await this.devicesService.abortExams(this.device!);
-    await this.devicesService.queueExam(this.device!, 'HNCalibration', { OutputChannel: this.earCup == 'Left' ? 'HPL0' : 'HPR0' });
+    await this.devicesService.abortExams(this.deviceId!);
+    await this.devicesService.queueExam(this.deviceId!, 'HNCalibration', { OutputChannel: this.earCup == 'Left' ? 'HPL0' : 'HPR0' });
     this.updateUserInputBasedOnStep();
     this.updateButtonLabel();
     while (this.navigationHistory.length > 0) {
@@ -268,8 +271,8 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       }
       this.poppedHistory.push(this.navigationHistory.pop()!); // Store popped entries
     }
-    this.examService.submit = () => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.submit = async () => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.nextStep();
       }
     };
@@ -299,15 +302,15 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   }
 
   private async handleFinishedStep(): Promise<void> {
-    this.examService.submit = () => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.submit = async () => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.nextStep();
       }
     };
 
-    await this.devicesService.abortExams(this.device!);
+    await this.devicesService.abortExams(this.deviceId!);
 
-    await this.devicesService.queueExam(this.device!, 'HNCalibration', {
+    await this.devicesService.queueExam(this.deviceId!, 'HNCalibration', {
       OutputChannel: this.earCup === 'Left' ? 'HPL0' : 'HPR0',
     });
   }
@@ -323,8 +326,8 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   }
 
   private async handleStepOrEarCupChange(): Promise<void> {
-    await this.devicesService.abortExams(this.device!);
-    await this.devicesService.queueExam(this.device!, 'HNCalibration', {
+    await this.devicesService.abortExams(this.deviceId!);
+    await this.devicesService.queueExam(this.deviceId!, 'HNCalibration', {
       OutputChannel: this.earCup === 'Left' ? 'HPL0' : 'HPR0',
     });
   }
@@ -384,8 +387,8 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       this.isPlaying = false;
       await this.stopTone();
       await this.writeCalibrationResults();
-      await this.devicesService.abortExams(this.device!);
-      await this.devicesService.queueExam(this.device!, 'HNCalibration', { OutputChannel: this.earCup == 'Left' ? 'HPL0' : 'HPR0' });
+      await this.devicesService.abortExams(this.deviceId!);
+      await this.devicesService.queueExam(this.deviceId!, 'HNCalibration', { OutputChannel: this.earCup == 'Left' ? 'HPL0' : 'HPR0' });
     } else {
       this.isPlaying = false;
       await this.stopTone();
@@ -435,7 +438,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       RequestedLevel: requestedLevel,
       EnableOutput: enableOutput,
     };
-    await this.devicesService.examSubmission(this.device!, examProperties);
+    await this.devicesService.examSubmission(this.deviceId!, examProperties);
   }
 
   private async sendExamSubmission(mode: 'MaximumOutputLevel' | 'CalibrationFactor'): Promise<void> {
@@ -454,7 +457,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       Mode: mode,
     };
 
-    await this.devicesService.examSubmission(this.device!, examProperties);
+    await this.devicesService.examSubmission(this.deviceId!, examProperties);
   }
 
   private getMeasuredLevelForFrequency(currentFrequency: number) {
@@ -468,7 +471,7 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
   }
 
   private async stopTone() {
-    await this.devicesService.examSubmission(this.device!, { EnableOutput: false });
+    await this.devicesService.examSubmission(this.deviceId!, { EnableOutput: false });
   }
 
   private saveResults(): void {
@@ -489,6 +492,6 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
     const calibrationData = {
       WriteCalibration: true,
     };
-    await this.devicesService.examSubmission(this.device!, calibrationData);
+    await this.devicesService.examSubmission(this.deviceId!, calibrationData);
   }
 }

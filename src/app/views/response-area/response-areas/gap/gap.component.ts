@@ -8,7 +8,6 @@ import { ExamService } from '../../../../controllers/exam.service';
 import { DevicesService } from '../../../../services/devices/devices.service';
 import { Logger } from '../../../../services/logger.service';
 import { PageInterface } from '../../../../models/page/page.interface';
-import { IDevice } from '../../../../interfaces/devices/device.interface';
 import { DeviceType } from '../../../../utilities/constants';
 import { gapSchema } from '../../../../../schema/response-areas/gap.schema';
 import { GapExamPropertiesInterface, GapResponseAreaInterface, GapResultsInterface } from './gap.interface';
@@ -52,7 +51,7 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
   gapState: 'start' | 'exam' | 'results' = 'start';
   noiseLevel = gapSchema.properties.examProperties.properties.LNoise.default;
   buttonPressed = false;
-  device: IDevice | undefined;
+  deviceId: string | undefined;
   gapResultsData: TrialProgressionPlotDataInterface | undefined;
   showResults = false;
 
@@ -121,7 +120,7 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
     this.examInstructions = responseArea.examInstructions ?? this.examInstructions;
 
     await this.setupDevice(responseArea);
-    if (!this.device) {
+    if (!this.deviceId) {
       return;
     }
 
@@ -135,9 +134,8 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param responseArea The gap response area definition.
    */
   private async setupDevice(responseArea: GapResponseAreaInterface): Promise<void> {
-    const deviceList = await this.devicesService.getDeviceOrDefault(responseArea.tabsintId, this.allowableDevices);
-    this.device = await this.devicesService.confirmSingleDevice(deviceList);
-    if (!this.device) {
+    this.deviceId = await this.devicesService.confirmSingleDeviceId(responseArea.tabsintId, this.allowableDevices);
+    if (!this.deviceId) {
       this.logger.error('Gap exam: no WAHTS device available.');
     }
   }
@@ -148,7 +146,7 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
    * Queue and run the full gap detection exam, polling until the device reports completion.
    */
   async startFullExam(): Promise<void> {
-    if (!this.device) {
+    if (!this.deviceId) {
       await this.devicesService.deviceNotFound();
       return;
     }
@@ -158,8 +156,8 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
     this.gapState = 'exam';
     this.stateModel.updateState({ isSubmittable: false });
 
-    await this.devicesService.abortExams(this.device);
-    await this.devicesService.queueExam(this.device, EXAM_NAME, this.examProperties);
+    await this.devicesService.abortExams(this.deviceId);
+    await this.devicesService.queueExam(this.deviceId, EXAM_NAME, this.examProperties);
     this.examActive = true;
     // Poll lightweight status (not results) while the adaptive exam runs, matching the legacy
     // flow; hammering requestResults mid-exam disrupts the device state machine. Fetch the
@@ -204,7 +202,7 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param noiseLevel The presentation level, in dBA.
    */
   async startTrainingTrial(gapLength: number, noiseLevel: number): Promise<void> {
-    if (!this.device) {
+    if (!this.deviceId) {
       await this.devicesService.deviceNotFound();
       return;
     }
@@ -235,8 +233,8 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
     this.gapState = 'exam';
     this.stateModel.updateState({ isSubmittable: false });
 
-    await this.devicesService.abortExams(this.device);
-    await this.devicesService.queueExam(this.device, EXAM_NAME, props);
+    await this.devicesService.abortExams(this.deviceId);
+    await this.devicesService.queueExam(this.deviceId, EXAM_NAME, props);
     this.examActive = true;
 
     // Drive the animation and hit/miss from the polling loop. The CHA rejects a
@@ -368,17 +366,17 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
    * Register a subject response by toggling the device software button.
    */
   async tapSoftwareButton(): Promise<void> {
-    if (!this.device || !this.examActive) {
+    if (!this.deviceId || !this.examActive) {
       return;
     }
     this.buttonPressed = true;
-    await this.devicesService.setSoftwareButtonState(this.device, 1);
+    await this.devicesService.setSoftwareButtonState(this.deviceId, 1);
     setTimeout(() => {
       this.buttonPressed = false;
     }, 150);
     setTimeout(async () => {
-      if (this.device && this.examActive) {
-        await this.devicesService.setSoftwareButtonState(this.device, 0);
+      if (this.deviceId && this.examActive) {
+        await this.devicesService.setSoftwareButtonState(this.deviceId, 0);
       }
     }, 50);
   }
@@ -394,7 +392,7 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
   private startStatusPolling(onComplete: () => void): void {
     this.examPlaying = false;
     const poll = async () => {
-      if (!this.examActive || !this.device) {
+      if (!this.examActive || !this.deviceId) {
         return;
       }
       try {
@@ -423,10 +421,10 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
    * @returns The device state, or undefined if the response was not usable.
    */
   private async requestGapStatus(): Promise<number | undefined> {
-    if (!this.device) {
+    if (!this.deviceId) {
       return undefined;
     }
-    const resp = await this.devicesService.requestStatus(this.device);
+    const resp = await this.devicesService.requestStatus(this.deviceId);
     if (isStatusResponse(resp)) {
       const state = (resp.msg[1] as { state: number }).state;
       this.logger.debug(`Gap exam: requestStatus state=${state}`);
@@ -444,7 +442,7 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   private startPollingResults(onProgress: (results: GapResultsInterface) => void, onComplete: (results: GapResultsInterface) => void): void {
     const poll = async () => {
-      if (!this.examActive || !this.device) {
+      if (!this.examActive || !this.deviceId) {
         return;
       }
       try {
@@ -472,10 +470,10 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
    * @returns The gap results, or undefined if the response was not usable.
    */
   private async requestGapResults(timeoutMs?: number): Promise<GapResultsInterface | undefined> {
-    if (!this.device) {
+    if (!this.deviceId) {
       return undefined;
     }
-    const resp = await this.devicesService.requestResults(this.device, timeoutMs);
+    const resp = await this.devicesService.requestResults(this.deviceId, timeoutMs);
     if (resp?.msg && isGapResults(resp.msg[1])) {
       const results = resp.msg[1];
       this.logger.debug(`Gap exam: requestResults State=${results.State}, HitOrMiss=${results.HitOrMiss}, PlayPosition=${results.PlayPosition}`);
@@ -502,8 +500,8 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
       clearTimeout(this.pollTimeout);
       this.pollTimeout = undefined;
     }
-    if (this.device) {
-      this.devicesService.abortExams(this.device);
+    if (this.deviceId) {
+      this.devicesService.abortExams(this.deviceId);
     }
   }
 

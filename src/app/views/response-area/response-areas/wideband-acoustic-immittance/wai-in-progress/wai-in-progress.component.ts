@@ -6,7 +6,6 @@ import { StateModel } from '../../../../../models/state/state.service';
 import { StateInterface } from '../../../../../models/state/state.interface';
 import { WAIResultsInterface } from '../wai-exam/wai-exam.interface';
 import { Logger } from '../../../../../services/logger.service';
-import { IDevice } from '../../../../../interfaces/devices/device.interface';
 import { IDeviceResponse } from '../../../../../interfaces/devices/device-response.interface';
 
 @Component({
@@ -20,7 +19,7 @@ export class WAIInProgressComponent implements OnInit, OnDestroy {
   private readonly logger = inject(Logger);
   private readonly stateModel = inject(StateModel);
 
-  @Input() device: IDevice | undefined;
+  @Input() deviceId!: string;
   @Input() parameterMap!: Map<string, string>;
   @Output() WAIResultsEvent = new EventEmitter<WAIResultsInterface>();
 
@@ -64,7 +63,7 @@ export class WAIInProgressComponent implements OnInit, OnDestroy {
     this.shouldAbort = true;
     this.updateInstructionsAfterAbortButtonPressed();
     await this.waitForRequestResultsDone();
-    await this.devicesService.abortExams(this.device!);
+    await this.devicesService.abortExams(this.deviceId);
     this.updateInstructionsAfterAbortComplete();
     this.updateStateOnAbort();
     this.WAIResultsEvent.emit(this.inProgressResults);
@@ -75,7 +74,7 @@ export class WAIInProgressComponent implements OnInit, OnDestroy {
       if (this.shouldAbort) return;
 
       this.isRequestingResults = true;
-      const resp = await this.devicesService.requestResults(this.device!);
+      const resp = await this.devicesService.requestResults(this.deviceId);
       this.isRequestingResults = false;
 
       if (this.shouldAbort) return;
