@@ -73,8 +73,6 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
   sweepType: string = waiSchema.properties.sweepType.default;
   l: number = waiSchema.properties.l.default;
   inputChannels: string[] = waiSchema.properties.inputChannels.default;
-  aurenInsideDiameter: number = waiSchema.properties.aurenInsideDiameter.default;
-  aurenLength: number = waiSchema.properties.aurenLength.default;
   earCanalDiameter: number = waiSchema.properties.earCanalDiameter.default;
   earCanalLength: number = waiSchema.properties.earCanalLength.default;
   outputRawMeasurements: boolean = waiSchema.properties.outputRawMeasurements.default;
@@ -182,8 +180,6 @@ export class FPLCalibrationExamComponent implements OnInit, OnDestroy {
         NumFrequencies: this.numFrequencies,
         OutputRawMeasurements: this.outputRawMeasurements,
         InputChannels: this.inputChannels,
-        AurenInsideDiameter: this.aurenInsideDiameter,
-        AurenLength: this.aurenLength,
         EarCanalDiameter: this.earCanalDiameter,
         EarCanalLength: this.earCanalLength,
         WriteFPLCalibration: this.writeFPLCalibration,

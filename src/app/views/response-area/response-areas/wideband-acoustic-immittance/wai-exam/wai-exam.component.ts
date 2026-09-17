@@ -42,8 +42,6 @@ export class WAIExamComponent implements OnInit, OnDestroy {
   outputRawMeasurements: boolean = waiSchema.properties.outputRawMeasurements.default;
   outputChannel: string = waiSchema.properties.outputChannel.default;
   inputChannels: string[] = waiSchema.properties.inputChannels.default;
-  aurenInsideDiameter: number = waiSchema.properties.aurenInsideDiameter.default;
-  aurenLength: number = waiSchema.properties.aurenLength.default;
   earCanalDiameter: number = waiSchema.properties.earCanalDiameter.default;
   earCanalLength: number = waiSchema.properties.earCanalLength.default;
   writeFPLCalibration: boolean = waiSchema.properties.writeFPLCalibration.default;
@@ -113,8 +111,6 @@ export class WAIExamComponent implements OnInit, OnDestroy {
         this.outputRawMeasurements = responseArea.outputRawMeasurements ?? this.outputRawMeasurements;
         this.outputChannel = responseArea.outputChannel ?? this.outputChannel;
         this.inputChannels = responseArea.inputChannels ?? this.inputChannels;
-        this.aurenInsideDiameter = responseArea.aurenInsideDiameter ?? this.aurenInsideDiameter;
-        this.aurenLength = responseArea.aurenLength ?? this.aurenLength;
         this.earCanalDiameter = responseArea.earCanalDiameter ?? this.earCanalDiameter;
         this.earCanalLength = responseArea.earCanalLength ?? this.earCanalLength;
         this.writeFPLCalibration = responseArea.writeFPLCalibration ?? this.writeFPLCalibration;
@@ -199,8 +195,6 @@ export class WAIExamComponent implements OnInit, OnDestroy {
         OutputRawMeasurements: this.outputRawMeasurements,
         OutputChannel: handleOutputCalibration(this.outputChannel, this.outputCalibrationType),
         InputChannels: this.inputChannels,
-        AurenInsideDiameter: this.aurenInsideDiameter,
-        AurenLength: this.aurenLength,
         EarCanalDiameter: this.earCanalDiameter,
         EarCanalLength: this.earCanalLength,
         WriteFPLCalibration: this.writeFPLCalibration,

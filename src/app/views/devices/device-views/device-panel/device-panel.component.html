@@ -7,13 +7,19 @@
   </div>
 
   <ng-container *ngIf="devices$ | async as devices">
-    <div class="row device-new-connection-row" *ngIf="!scanning && devices.length < maxDevices">
+    <div class="row device-new-connection-row" *ngIf="activeScanType === undefined && devices.length < maxDevices">
       <div class="col-12">
         <button class="btn btn-primary" (click)="addNewConnection()">+ {{ "New Connection" | transloco }}</button>
       </div>
     </div>
 
-    <div class="row device-new-connection-row" *ngIf="scanning">
+    <div class="row device-new-connection-row" *ngIf="activeScanType !== undefined && activeScanType !== deviceType">
+      <div class="col-12 text-warning">
+        <em>{{ "Finish or cancel other device scans" | transloco }}</em>
+      </div>
+    </div>
+
+    <div class="row device-new-connection-row" *ngIf="activeScanType === deviceType">
       <div class="col-6">
         <em>{{ "Scanning for devices..." | transloco }}</em>
       </div>
