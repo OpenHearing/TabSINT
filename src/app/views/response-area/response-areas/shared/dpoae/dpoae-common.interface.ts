@@ -11,7 +11,7 @@ export const DPOAE_SERIES_STYLE: Record<'F1' | 'F2' | 'DpLow' | 'NoiseFloor', Om
   F1: { color: '#9400d3', marker: 'dot' },
   F2: { color: '#ff9800', marker: 'dot' },
   DpLow: { color: 'blue', marker: 'circle' },
-  NoiseFloor: { color: 'darkgray', marker: 'X' },
+  NoiseFloor: { color: 'dimgray', marker: 'X' },
 };
 
 /** Legend entries matching DPOAE_SERIES_STYLE, in on-screen order. */
