@@ -75,7 +75,6 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   blocksComplete: number = 0;
   shouldAbort: boolean = false;
   isRequestingResults: boolean = false;
-  private abortPromise: Promise<void> | undefined;
   datestring: string | undefined;
 
   // Subscriptions
@@ -242,20 +241,14 @@ export class MemrExamComponent implements OnInit, OnDestroy {
 
   /**
    * Abort the exam and cancel any ongoing tasks.
-   * Idempotent: the first call sends the abort command to the device, and any later
-   * callers (e.g. finishExam and ngOnDestroy racing each other) wait on that same promise
-   * instead of sending a second command.
    */
-  private abortExam(): Promise<void> {
-    this.abortPromise ??= (async () => {
-      this.shouldAbort = true;
-      this.currentStep = 'Complete';
-      await this.waitForRequestResultsDone();
-      if (this.device) {
-        await this.devicesService.abortExams(this.device);
-      }
-    })();
-    return this.abortPromise;
+  private async abortExam(): Promise<void> {
+    this.shouldAbort = true;
+    this.currentStep = 'Complete';
+    await this.waitForRequestResultsDone();
+    if (this.device) {
+      await this.devicesService.abortExams(this.device);
+    }
   }
 
   /**
