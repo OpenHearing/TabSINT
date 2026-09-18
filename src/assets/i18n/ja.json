@@ -166,6 +166,8 @@
   "Not Connected": "未接続",
   "Connecting...": "接続中...",
   "Disconnect": "切断",
+  "Disconnecting...": "切断中...",
+  "Removing...": "削除中...",
   "Select One": "選択してください",
   "Bluetooth radio disabled": "Bluetoothが無効です",
   "Scanning for devices...": "デバイスをスキャン中...",

@@ -166,6 +166,8 @@
   "Not Connected": "Haijaunganishwa",
   "Connecting...": "Inaunganisha...",
   "Disconnect": "Tenganisha",
+  "Disconnecting...": "Inatenganisha...",
+  "Removing...": "Inaondoa...",
   "Select One": "Chagua Kimoja",
   "Bluetooth radio disabled": "Redio ya Bluetooth imezimwa",
   "Scanning for devices...": "Inatafuta vifaa...",
