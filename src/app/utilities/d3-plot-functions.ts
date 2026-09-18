@@ -428,7 +428,7 @@ export function appendNormativeDataBand(
   const clippedGroup = svg.append('g').attr('clip-path', `url(#clipRect)`);
 
   const normativePath = createNormativeDataPath(normativeData, xScale, yScale, yClampMin, yClampMax);
-  clippedGroup.append('path').attr('d', normativePath).attr('fill', 'gray').attr('stroke', 'gray').attr('stroke-width', 2);
+  clippedGroup.append('path').attr('d', normativePath).attr('fill', 'lightgray').attr('stroke', 'lightgray').attr('stroke-width', 2);
 
   return clippedGroup;
 }
