@@ -208,11 +208,3 @@ export function findSessionByStart(log: DuodoseLog, start: Date): DoseSessionRec
   const target = start.getTime();
   return log.sessions.find(session => Date.parse(session.startTime) === target);
 }
-
-/**
- * Human-readable label for a metric. Legacy channels carry a single metric so the metric label alone is
- * unambiguous; grouped channels are prefixed with the channel name.
- */
-export function metricDisplayLabel(channel: DoseChannel, metric: DoseMetric, format: DoseRowFormat): string {
-  return format === 'legacy' ? metric.label : `${channel.name}: ${metric.label}`;
-}

@@ -228,13 +228,9 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
       headers: table.headers,
       sessions: table.sessions,
       combined: table.combined,
-      records: this.selectedRecords,
     };
     this.resultsModel.updateCurrentPage({ response: this.results.currentPage.response });
   }
-
-  /** Structured records for the sessions shown in the results table, kept for saving with the response. */
-  private selectedRecords: DoseSessionRecord[] = [];
 
   /**
    * Read the device log and build the results table for the selected sessions.
@@ -244,7 +240,6 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
     this.resultsFields = this.resultsFieldsDefault.slice();
     this.resultsValues = this.resultsValuesDefault.slice();
     this.resultsList = [];
-    this.selectedRecords = [];
 
     if (this.isDosBusy || !this.dosimeter) return undefined;
     const selectedEntries = this.availableFiles.filter(entry => entry.selected);
@@ -273,7 +268,6 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
           this.logger.error(`Duodose session ${entry.longName} was not found in ${fileToRead}.`);
         }
       }
-      this.selectedRecords = records;
       return buildDoseResultsTable(records, deviceName);
     } catch (error) {
       this.logger.error(`Error reading duodose data: ${JSON.stringify(error)}`);

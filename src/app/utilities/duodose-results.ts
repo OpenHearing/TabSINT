@@ -1,4 +1,4 @@
-import { DoseSessionRecord, metricDisplayLabel } from './duodose-log-parser';
+import { DoseChannel, DoseMetric, DoseSessionRecord } from './duodose-log-parser';
 
 /**
  * Table of results for one or more DuoDose sessions, in the shape stored on the results page.
@@ -75,20 +75,60 @@ function formatValue(value: number | string | null | undefined): string {
   return String(value);
 }
 
+/** Labels are shown as the old display did: commas replaced by spaces, e.g. `LAeq 8hr`. */
+export function displayLabel(label: string): string {
+  return label.replace(/,/g, ' ');
+}
+
 /**
- * Build the results table for the given sessions. Metric headers are the union of the sessions' metric
- * labels in order of first appearance, followed by the fixed peak/impulse/device/duration/start rows.
+ * The metric shown for a channel when the channel carries several. Prefers the 8-hour equivalent level
+ * (`TWA` or `...8hr`, not a projected value), then the first metric with a value, then the first metric.
+ */
+export function primaryMetric(channel: DoseChannel): DoseMetric | undefined {
+  const isEightHour = (m: DoseMetric) => {
+    const lower = m.label.toLowerCase();
+    return !lower.startsWith('projected') && (lower === 'twa' || lower.endsWith('8hr'));
+  };
+  return channel.metrics.find(isEightHour) ?? channel.metrics.find(m => m.value !== null) ?? channel.metrics[0];
+}
+
+interface DisplayMetric {
+  /** Table header. Legacy channels use the metric label; grouped channels prefix the channel name. */
+  header: string;
+  /** Raw metric label, used to choose the combine rule. */
+  label: string;
+  value: number | string | null;
+}
+
+/**
+ * One display row per channel, matching the original four-channel layout for both row formats.
+ */
+function displayMetrics(record: DoseSessionRecord): DisplayMetric[] {
+  const rows: DisplayMetric[] = [];
+  for (const channel of record.channels) {
+    const metric = record.format === 'legacy' ? channel.metrics[0] : primaryMetric(channel);
+    if (!metric) continue;
+    const header = record.format === 'legacy' ? displayLabel(metric.label) : `${channel.name} ${displayLabel(metric.label)}`;
+    rows.push({ header, label: metric.label, value: metric.value });
+  }
+  return rows;
+}
+
+/**
+ * Build the results table for the given sessions: one row per channel (the union across sessions in
+ * order of first appearance), followed by the fixed peak/impulse/device/duration/start rows.
  */
 export function buildDoseResultsTable(records: DoseSessionRecord[], deviceName: string): DoseResultsTable {
   const metricHeaders: string[] = [];
+  const labelsByHeader = new Map<string, string>();
   const perSessionMetrics = records.map(record => {
     const metrics = new Map<string, number | string | null>();
-    for (const channel of record.channels) {
-      for (const metric of channel.metrics) {
-        const header = metricDisplayLabel(channel, metric, record.format);
-        if (!metricHeaders.includes(header)) metricHeaders.push(header);
-        metrics.set(header, metric.value);
+    for (const row of displayMetrics(record)) {
+      if (!metricHeaders.includes(row.header)) {
+        metricHeaders.push(row.header);
+        labelsByHeader.set(row.header, row.label);
       }
+      metrics.set(row.header, row.value);
     }
     return metrics;
   });
@@ -103,13 +143,14 @@ export function buildDoseResultsTable(records: DoseSessionRecord[], deviceName: 
     formatStartTime(record.startTime),
   ]);
 
-  const combined = records.length === 0 ? [] : combineRecords(records, metricHeaders, perSessionMetrics, deviceName);
+  const combined = records.length === 0 ? [] : combineRecords(records, metricHeaders, labelsByHeader, perSessionMetrics, deviceName);
   return { headers, sessions, combined };
 }
 
 function combineRecords(
   records: DoseSessionRecord[],
   metricHeaders: string[],
+  labelsByHeader: Map<string, string>,
   perSessionMetrics: Map<string, number | string | null>[],
   deviceName: string
 ): string[] {
@@ -122,8 +163,7 @@ function combineRecords(
     if (single) return formatValue(values[0]);
     const numeric = values.map(v => (typeof v === 'number' ? v : null));
     if (numeric.some(v => v === null)) return '';
-    const label = header.split(': ').at(-1) ?? header;
-    const rule = combineRuleForLabel(label);
+    const rule = combineRuleForLabel(labelsByHeader.get(header) ?? header);
     return rule ? formatValue(rule(numeric as number[], durations)) : '';
   });
 

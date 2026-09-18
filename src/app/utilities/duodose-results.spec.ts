@@ -1,6 +1,14 @@
 import { parseDuodoseLog } from './duodose-log-parser';
 import { SAMPLE_LOG } from './duodose-log-parser.spec';
-import { buildDoseResultsTable, combineLevelsAverage, combineLevelsTotal, combineRuleForLabel, formatDuration } from './duodose-results';
+import {
+  buildDoseResultsTable,
+  combineLevelsAverage,
+  combineLevelsTotal,
+  combineRuleForLabel,
+  displayLabel,
+  formatDuration,
+  primaryMetric,
+} from './duodose-results';
 
 describe('duodose results combination rules', () => {
   it('energy-sums 8hr levels', () => {
@@ -21,6 +29,43 @@ describe('duodose results combination rules', () => {
     expect(combineRuleForLabel('Channel 1 Check:')).toBeUndefined();
   });
 
+  it('displays labels with spaces in place of commas, as the original display did', () => {
+    expect(displayLabel('LAeq,8hr')).toBe('LAeq 8hr');
+    expect(displayLabel('L_OSHA,60s,max')).toBe('L_OSHA 60s max');
+  });
+
+  it("picks the 8-hour equivalent metric as a grouped channel's primary value", () => {
+    expect(
+      primaryMetric({
+        name: 'OSHA PEL',
+        metrics: [
+          { label: 'L_OSHA,60s,max', value: null },
+          { label: 'TWA', value: 20.9 },
+          { label: 'Projected TWA', value: 75 },
+        ],
+      })?.label
+    ).toBe('TWA');
+    expect(
+      primaryMetric({
+        name: 'NIOSH REL',
+        metrics: [
+          { label: 'LAeq,60s,max', value: 70 },
+          { label: 'Projected LAeq,8hr', value: 86 },
+          { label: 'LAeq,8hr', value: 53 },
+        ],
+      })?.label
+    ).toBe('LAeq,8hr');
+    expect(
+      primaryMetric({
+        name: 'x',
+        metrics: [
+          { label: 'a', value: null },
+          { label: 'b', value: 1 },
+        ],
+      })?.label
+    ).toBe('b');
+  });
+
   it('formats durations', () => {
     expect(formatDuration(48)).toBe('48 sec');
     expect(formatDuration(141)).toBe('2.4 min');
@@ -35,10 +80,10 @@ describe('buildDoseResultsTable', () => {
   it('renders a single legacy session with the same headers as before', () => {
     const table = buildDoseResultsTable([legacyA], 'A0000001');
     expect(table.headers).toEqual([
-      'LAeq,8hr',
-      'LAeq,session',
-      'LCeq,session',
-      'LZeq,session',
+      'LAeq 8hr',
+      'LAeq session',
+      'LCeq session',
+      'LZeq session',
       'Peak Sounds Pressure Level (dBP)',
       'Number of Impulses',
       'Device ID',
@@ -59,21 +104,36 @@ describe('buildDoseResultsTable', () => {
     expect(table.combined[8]).toContain('2026'); // earliest start
   });
 
-  it('renders grouped sessions with channel-prefixed headers and blanks for nan', () => {
+  it('renders grouped sessions in the same nine-row layout with one primary metric per channel', () => {
     const table = buildDoseResultsTable([grouped], 'A0000001');
-    expect(table.headers[0]).toBe('OSHA PEL: L_OSHA,60s,max');
-    expect(table.headers).toContain('NIOSH REL: LAeq,8hr');
-    expect(table.sessions[0][0]).toBe('');
-    expect(table.sessions[0][table.headers.indexOf('NIOSH REL: Dose %')]).toBe('0.07159');
-    expect(table.combined[table.headers.indexOf('OSHA PEL: TWA')]).toBe('20.93'); // single session passes through uncombinable metrics
+    expect(table.headers).toEqual([
+      'OSHA PEL TWA',
+      'OSHA AL TWA',
+      'NIOSH REL LAeq 8hr',
+      'Freq_A_CL_85dBA_ER_3dB LAeq 8hr',
+      'Peak Sounds Pressure Level (dBP)',
+      'Number of Impulses',
+      'Device ID',
+      'Duration',
+      'Start Time',
+    ]);
+    expect(table.sessions[0].slice(0, 6)).toEqual(['20.93', '28.95', '53.55', '53.6', '131.2', '0']);
+    expect(table.combined.slice(0, 4)).toEqual(['20.93', '28.95', '53.55', '53.6']); // single session passes through
   });
 
-  it('leaves non-shared or non-combinable metrics blank when mixing formats', () => {
+  it('combines two grouped sessions per channel rule and leaves TWA blank', () => {
+    const table = buildDoseResultsTable([grouped, grouped], 'A0000001');
+    expect(table.combined[0]).toBe(''); // TWA is not combinable
+    expect(Number(table.combined[2])).toBeCloseTo(56.56, 2); // LAeq,8hr energy sum of 53.55 twice
+    expect(table.combined[4]).toBe('131.2');
+  });
+
+  it('leaves non-shared metrics blank when mixing formats', () => {
     const table = buildDoseResultsTable([legacyA, grouped], 'A0000001');
-    expect(table.headers).toContain('LAeq,8hr');
-    expect(table.headers).toContain('OSHA PEL: TWA');
-    expect(table.combined[table.headers.indexOf('LAeq,8hr')]).toBe('');
-    expect(table.combined[table.headers.indexOf('OSHA PEL: TWA')]).toBe('');
+    expect(table.headers).toContain('LAeq 8hr');
+    expect(table.headers).toContain('OSHA PEL TWA');
+    expect(table.combined[table.headers.indexOf('LAeq 8hr')]).toBe('');
+    expect(table.combined[table.headers.indexOf('OSHA PEL TWA')]).toBe('');
     expect(table.combined[table.headers.indexOf('Peak Sounds Pressure Level (dBP)')]).toBe('137.4');
   });
 
