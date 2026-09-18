@@ -28,6 +28,7 @@ export class DeviceCardComponent implements OnInit, OnDestroy {
   settingsExpanded = false;
   disk: DiskInterface;
   device!: IDevice;
+  transitionLabel: string | undefined;
 
   private diskSubscription: Subscription | undefined;
   private deviceSubscription: Subscription | undefined;
@@ -53,6 +54,10 @@ export class DeviceCardComponent implements OnInit, OnDestroy {
   }
 
   async reconnect(): Promise<void> {
+    if (this.isTransitioning) {
+      return;
+    }
+    this.transitionLabel = 'Connecting...';
     this.logger.debug('reconnecting to device: ' + this.deviceId);
     try {
       await this.devicesService.connect(this.deviceId);
@@ -66,24 +71,64 @@ export class DeviceCardComponent implements OnInit, OnDestroy {
         })
         .subscribe();
       return;
+    } finally {
+      this.transitionLabel = undefined;
     }
     await this.devicesService.checkForFirmwareUpdate(this.deviceId);
   }
 
   async disconnect(): Promise<void> {
+    if (this.isTransitioning) {
+      return;
+    }
+    this.transitionLabel = 'Disconnecting...';
     this.logger.debug('disconnecting from device: ' + this.deviceId);
-    await this.devicesService.disconnect(this.deviceId);
+    try {
+      await this.devicesService.disconnect(this.deviceId);
+    } finally {
+      this.transitionLabel = undefined;
+    }
   }
 
   async remove(): Promise<void> {
-    this.logger.debug('removing device: ' + this.deviceId);
-    if (this.device.state !== DeviceState.Disconnected) {
-      await this.devicesService.disconnect(this.deviceId);
+    if (this.isTransitioning) {
+      return;
     }
-    await this.devicesService.removeSavedDevice(this.deviceId);
+    this.transitionLabel = 'Removing...';
+    this.logger.debug('removing device: ' + this.deviceId);
+    try {
+      if (this.device.state !== DeviceState.Disconnected) {
+        await this.devicesService.disconnect(this.deviceId);
+      }
+      await this.devicesService.removeSavedDevice(this.deviceId);
+    } finally {
+      this.transitionLabel = undefined;
+    }
   }
 
   toggleSettings(): void {
     this.settingsExpanded = !this.settingsExpanded;
+  }
+
+  get isTransitioning(): boolean {
+    return this.transitionLabel !== undefined;
+  }
+
+  get stateLabel(): string {
+    if (this.transitionLabel) {
+      return this.transitionLabel;
+    }
+    switch (this.device.state) {
+      case DeviceState.Connected:
+        return 'Connected';
+      case DeviceState.Disconnected:
+        return 'Not Connected';
+      default:
+        return '';
+    }
+  }
+
+  get connectDisabled(): boolean {
+    return !this.enabled || !this.connected || this.isTransitioning;
   }
 }

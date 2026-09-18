@@ -180,7 +180,17 @@ class TabsintCha {
       CHA cha = getCha(name);
 
       // Attempt to connect:
-      cha.connect();
+      // Resolve successfully when asked to connect to an already-connected device.
+      // This avoids a connection being reported as a failure which the application
+      // would assume to mean the device is still disconnected.
+      try {
+        cha.connect();
+      } catch (Exception ex) {
+        String message = ex.getMessage();
+        if (message == null || !message.toLowerCase().contains("already connected")) {
+          throw ex;
+        }
+      }
       chaConnectedSet.add(cha.toString());
 
       return createValueObject("Connected to " + name);

@@ -166,6 +166,8 @@
   "Not Connected": "Not Connected",
   "Connecting...": "Connecting...",
   "Disconnect": "Disconnect",
+  "Disconnecting...": "Disconnecting...",
+  "Removing...": "Removing...",
   "Select One": "Select One",
   "Bluetooth radio disabled": "Bluetooth radio disabled",
   "Scanning for devices...": "Scanning for devices...",
