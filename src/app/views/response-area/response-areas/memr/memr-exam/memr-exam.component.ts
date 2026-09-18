@@ -74,7 +74,9 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   instructions: string = 'Press submit to start the exam.';
   pctComplete: number = 0;
   blocksComplete: number = 0;
-  examActive: boolean = false;
+  shouldAbort: boolean = false;
+  isRequestingResults: boolean = false;
+  private abortPromise: Promise<void> | undefined;
   datestring: string | undefined;
 
   // Subscriptions
@@ -110,7 +112,6 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.examActive = true;
     this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
@@ -129,7 +130,6 @@ export class MemrExamComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.abortExam();
-    this.examActive = false;
     this.examService.submit = this.examService.submitDefault.bind(this.examService);
     this.examService.reset = this.examService.resetDefault.bind(this.examService);
     this.examService.submitPartial = this.examService.submitPartialDefault.bind(this.examService);
@@ -245,11 +245,28 @@ export class MemrExamComponent implements OnInit, OnDestroy {
 
   /**
    * Abort the exam and cancel any ongoing tasks.
+   * Idempotent: the first call sends the abort command to the device, and any later
+   * callers (e.g. finishExam and ngOnDestroy racing each other) wait on that same promise
+   * instead of sending a second command.
    */
-  private async abortExam(): Promise<void> {
-    this.currentStep = 'Complete';
-    if (this.deviceId) {
-      await this.devicesService.abortExams(this.deviceId);
+  private abortExam(): Promise<void> {
+    this.abortPromise ??= (async () => {
+      this.shouldAbort = true;
+      this.currentStep = 'Complete';
+      await this.waitForRequestResultsDone();
+      if (this.deviceId) {
+        await this.devicesService.abortExams(this.deviceId);
+      }
+    })();
+    return this.abortPromise;
+  }
+
+  /**
+   * Wait until any in-flight results request has completed.
+   */
+  private async waitForRequestResultsDone(): Promise<void> {
+    while (this.isRequestingResults) {
+      await new Promise(resolve => setTimeout(resolve, 10));
     }
   }
 
@@ -314,7 +331,6 @@ export class MemrExamComponent implements OnInit, OnDestroy {
         RecordChannels: this.memrExamProperties.recordChannels,
       };
       await this.devicesService.queueExam(this.deviceId, 'PlayRecordExam', examProperties);
-      this.examActive = true;
       this.datestring = getCurrentDatetime();
       this.startPollingResults();
     } else {
@@ -396,8 +412,15 @@ export class MemrExamComponent implements OnInit, OnDestroy {
    */
   private startPollingResults(): void {
     const pollResults = async () => {
+      if (this.shouldAbort) return;
+
       try {
+        this.isRequestingResults = true;
         const resp = this.deviceId ? await this.devicesService.requestResults(this.deviceId) : undefined;
+        this.isRequestingResults = false;
+
+        if (this.shouldAbort) return;
+
         if (
           resp?.msg &&
           typeof resp.msg[1] === 'object' &&
@@ -419,6 +442,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
           await this.finishExam();
         }
       } catch (error) {
+        this.isRequestingResults = false;
         this.logger.error('Error running exam submissions: ' + error);
         await this.finishExam();
       }
