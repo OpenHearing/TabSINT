@@ -247,16 +247,14 @@ export class MemrExamComponent implements OnInit, OnDestroy {
    * instead of sending a second command.
    */
   private abortExam(): Promise<void> {
-    if (!this.abortPromise) {
-      this.abortPromise = (async () => {
-        this.shouldAbort = true;
-        this.currentStep = 'Complete';
-        await this.waitForRequestResultsDone();
-        if (this.device) {
-          await this.devicesService.abortExams(this.device);
-        }
-      })();
-    }
+    this.abortPromise ??= (async () => {
+      this.shouldAbort = true;
+      this.currentStep = 'Complete';
+      await this.waitForRequestResultsDone();
+      if (this.device) {
+        await this.devicesService.abortExams(this.device);
+      }
+    })();
     return this.abortPromise;
   }
 
