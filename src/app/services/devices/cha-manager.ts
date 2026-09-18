@@ -13,7 +13,13 @@ import { DiscoveryResponse } from 'tabsintcha';
 import { SavedDevice } from '../../models/disk/disk.interface';
 import { DiskModel } from '../../models/disk/disk.service';
 
-import { DirectoryEntryObject, RequestIdObject, RequestSettingObject, StatusObject } from '../../interfaces/devices/device-responses.interface';
+import {
+  DirectoryEntryObject,
+  DirectoryLongNamesResponse,
+  RequestIdObject,
+  RequestSettingObject,
+  StatusObject,
+} from '../../interfaces/devices/device-responses.interface';
 import { MaskingNoise } from '../../views/response-area/response-areas/shared/audiometry/audiometry.interface';
 import { isGetDirectoryResponse, isLongNameResponse, isRequestIdResponse, isRequestSettingResponse, isStatusResponse } from '../../guards/type.guard';
 import { ChaMediaHandler } from './cha-media-handler';
@@ -483,25 +489,28 @@ export abstract class ChaManager implements IDeviceManager {
    * @param device The device to request the long directory names from.
    * @param baseDir The directory to request long directory names from.
    */
-  async getDirectoryLongNames(device: ChaDeviceType, baseDir: string): Promise<IDeviceResponse> {
+  async getDirectoryLongNames(device: ChaDeviceType, baseDir: string): Promise<DirectoryLongNamesResponse> {
     const longNames: string[] = [];
     let entries: DirectoryEntryObject[] = [];
     const getDirectoryResponse = await this.adapter.getDirectory(device, baseDir);
     await this.deviceErrorHandler(getDirectoryResponse);
     if (isGetDirectoryResponse(getDirectoryResponse)) {
-      entries = getDirectoryResponse['msg'][1];
+      entries = getDirectoryResponse.msg[1];
     }
+    this.logger.debug(`getDirectoryLongNames: ${entries.length} entries in ${baseDir}`);
 
     for (const entry of entries) {
       const longNameResponse = await this.adapter.getChaLongName(device, baseDir + entry.Path);
       await this.deviceErrorHandler(longNameResponse);
-      if (isLongNameResponse(longNameResponse) && longNameResponse['msg'][0] !== '') {
-        longNames.push(longNameResponse['msg'][0] as string);
+      if (isLongNameResponse(longNameResponse)) {
+        // Newer firmware lists full names directly and returns an empty long name; fall back to the listed path.
+        longNames.push(longNameResponse.msg[0] || entry.Path);
+      } else {
+        this.logger.debug(`getDirectoryLongNames: unexpected long name response for ${entry.Path}: ${JSON.stringify(longNameResponse)}`);
       }
     }
 
-    const resp = { deviceId: device.deviceId, msg: ['Success', longNames] };
-    return resp;
+    return { deviceId: device.deviceId, msg: ['Success', longNames] };
   }
 
   /**

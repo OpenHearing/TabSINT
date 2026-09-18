@@ -11,6 +11,7 @@ import { DuodoseDownloadInterface, DoseFile } from './duodose-download.interface
 import { DevicesService } from '../../../../services/devices/devices.service';
 import { DeviceType } from '../../../../utilities/constants';
 import { IDevice } from '../../../../interfaces/devices/device.interface';
+import { isDirectoryLongNamesResponse } from '../../../../guards/type.guard';
 
 @Component({
   selector: 'app-duodose-download',
@@ -63,6 +64,8 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
 
   isDosBusy = true;
 
+  private static readonly SESSION_NAME_RE = /^(?<device>.+?)_(?<datetime>\d{8}T\d{6}\.\d{3}Z)_(?<session>.*)$/;
+
   constructor() {
     this.results = this.resultsModel.getResults();
     this.state = this.stateModel.getState();
@@ -95,60 +98,67 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
   }
 
   async getDosimeterFiles() {
-    let dosimeters: IDevice[];
-
-    if (this.tabsintId === undefined) {
-      dosimeters = await this.devicesService.getDeviceOrDefault(undefined, [DeviceType.Duodose]);
-    } else {
-      dosimeters = await this.devicesService.getDeviceOrDefault(this.tabsintId, [DeviceType.Duodose]);
-    }
-
-    if (dosimeters.length === 0) {
-      this.logger.error('Error with duodose data download: No dosimeter was available.');
-      return;
-    } else if (dosimeters.length >= 2) {
-      this.logger.error('Error with duodose data download: Multiple devices available and one was not specified.');
-      return;
-    } else {
-      this.dosimeter = dosimeters[0];
-    }
-
-    const resp1 = await this.devicesService.requestSdBytesFree(this.dosimeter);
-    if (resp1?.msg && typeof resp1.msg[1] === 'object' && resp1.msg[1] !== null && 'BytesFree' in resp1.msg[1]) {
-      [this.bytesFree, this.bytesFreeUnits] = this.parseFreeSpace(resp1.msg[1].BytesFree as string);
-    } else {
-      this.logger.error('Error with duodose data download requesting free space.');
-      return;
-    }
-
-    const resp2 = await this.devicesService.getDirectoryLongNames(this.dosimeter, this.baseDir);
-    if (!(resp2?.msg && typeof resp2.msg[1] === 'object' && resp2.msg[1] !== null)) {
-      this.logger.error('Error with duodose data download getting directory names.');
-      return;
-    }
-
-    for (const value of Object.entries(resp2.msg[1] as any) as any) {
-      const re = /_\d{8}T\d{6}\.\d{3}Z_/;
-      const ok = re.exec(value);
-
-      if (ok) {
-        this.logger.debug('duodose download, regex for filename ok: ' + JSON.stringify(ok));
-        const newFile = {
-          longName: value,
-          selected: false,
-          deviceName: value.slice(0, ok.index),
-          sessionName: value.slice(ok.index + 22),
-          datetime: value.slice(ok.index + 1, ok.index + 21),
-          parsedDatetime: this.parseDatetime(value.slice(ok.index + 1, ok.index + 21)).toLocaleString('UTC', { timeZone: 'UTC' }),
-        };
-        this.availableFiles.push(newFile);
-      } else {
-        this.logger.debug('duodose download, ignoring file/folder that does not contain data');
-        // Not a folder containing data, can be ignored
-        // Eventually will want to add log file and CONFIG
+    this.isDosBusy = true;
+    this.availableFiles = [];
+    try {
+      const dosimeters = await this.devicesService.getDeviceOrDefault(this.tabsintId, [DeviceType.Duodose]);
+      if (dosimeters.length === 0) {
+        this.logger.error('Error with duodose data download: No dosimeter was available.');
+        return;
       }
+      if (dosimeters.length >= 2) {
+        this.logger.error('Error with duodose data download: Multiple devices available and one was not specified.');
+        return;
+      }
+      this.dosimeter = dosimeters[0];
+
+      const freeSpaceResponse = await this.devicesService.requestSdBytesFree(this.dosimeter);
+      const freeSpace = freeSpaceResponse?.msg?.[1];
+      if (typeof freeSpace === 'object' && freeSpace !== null && 'BytesFree' in freeSpace) {
+        [this.bytesFree, this.bytesFreeUnits] = this.parseFreeSpace(freeSpace.BytesFree as string);
+      } else {
+        this.logger.error('Error with duodose data download requesting free space.');
+        return;
+      }
+
+      const namesResponse = await this.devicesService.getDirectoryLongNames(this.dosimeter, this.baseDir);
+      if (!isDirectoryLongNamesResponse(namesResponse)) {
+        this.logger.error('Error with duodose data download getting directory names.');
+        return;
+      }
+
+      for (const name of namesResponse.msg[1]) {
+        const doseFile = this.parseDoseFileName(name);
+        if (doseFile) {
+          this.availableFiles.push(doseFile);
+        } else {
+          // Not a folder containing data (e.g. CONFIG, the log CSV). Eventually may want to add log file and CONFIG.
+          this.logger.debug(`duodose download, ignoring entry without session data: ${name}`);
+        }
+      }
+    } catch (error) {
+      this.logger.error(`Error with duodose data download listing files: ${JSON.stringify(error)}`);
+    } finally {
+      this.isDosBusy = false;
     }
-    this.isDosBusy = false;
+  }
+
+  /**
+   * Parse a session folder name of the form `<device>_<yyyymmddThhmmss.sssZ>_<session>`.
+   * @returns The parsed file, or undefined when the name is not a session folder.
+   */
+  parseDoseFileName(name: string): DoseFile | undefined {
+    const match = DuodoseDownloadComponent.SESSION_NAME_RE.exec(name);
+    if (!match?.groups) return undefined;
+    const { device, datetime, session } = match.groups;
+    return {
+      longName: name,
+      selected: false,
+      deviceName: device,
+      sessionName: session,
+      datetime,
+      parsedDatetime: this.parseDatetime(datetime).toLocaleString('UTC', { timeZone: 'UTC' }),
+    };
   }
 
   parseFreeSpace(byteString: string): [number, string] {
