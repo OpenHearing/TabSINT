@@ -6,7 +6,6 @@ import { DevicesService } from '../../../../../services/devices/devices.service'
 import { StateModel } from '../../../../../models/state/state.service';
 import { StateInterface } from '../../../../../models/state/state.interface';
 import { Logger } from '../../../../../services/logger.service';
-import { IDevice } from '../../../../../interfaces/devices/device.interface';
 import { IDeviceResponse } from '../../../../../interfaces/devices/device-response.interface';
 import { NormativeDataInterface } from '../../../../../interfaces/normative-data-interface';
 import { DpoaeResultsCommonInterface } from './dpoae-common.interface';
@@ -24,7 +23,7 @@ export abstract class DpoaeInProgressBaseComponent<TResults extends DpoaeResults
   protected readonly logger = inject(Logger);
   protected readonly stateModel = inject(StateModel);
 
-  @Input() device: IDevice | undefined;
+  @Input() deviceId!: string;
   @Input() yScale!: d3.ScaleLinear<number, number, never>;
   @Input() width!: number;
   @Input() height!: number;
@@ -97,7 +96,7 @@ export abstract class DpoaeInProgressBaseComponent<TResults extends DpoaeResults
     this.shouldAbort = true;
     this.updateInstructionsAfterAbortButtonPressed();
     await this.waitForRequestResultsDone();
-    await this.devicesService.abortExams(this.device!);
+    await this.devicesService.abortExams(this.deviceId);
     this.updateInstructionsAfterAbortComplete();
     this.updateStateOnAbort();
     this.resultsEvent.emit(this.inProgressResults);
@@ -108,7 +107,7 @@ export abstract class DpoaeInProgressBaseComponent<TResults extends DpoaeResults
       if (this.shouldAbort) return;
 
       this.isRequestingResults = true;
-      const resp = await this.devicesService.requestResults(this.device!);
+      const resp = await this.devicesService.requestResults(this.deviceId);
       this.isRequestingResults = false;
 
       if (this.shouldAbort) return;

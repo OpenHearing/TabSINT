@@ -33,7 +33,7 @@ export class MediaManagementComponent implements OnInit, OnDestroy {
   private readonly logger = inject(Logger);
   private readonly dialog = inject(MatDialog);
 
-  @Input() device!: IDevice;
+  @Input() deviceId!: string;
   DeviceState = DeviceState;
   disk: DiskInterface;
   enableMediaManagement: boolean = false;
@@ -43,6 +43,8 @@ export class MediaManagementComponent implements OnInit, OnDestroy {
   syncingMedia: boolean = false;
   gitlabConfig: Partial<GitlabConfigInterface> = {};
   diskSubscription: Subscription | undefined;
+  deviceSubscription: Subscription | undefined;
+  device!: IDevice;
   Number = Number;
 
   constructor() {
@@ -54,10 +56,16 @@ export class MediaManagementComponent implements OnInit, OnDestroy {
       this.disk = updatedDisk;
       this.mediaRepos = updatedDisk.mediaRepos;
     });
+    this.deviceSubscription = this.devicesService.getDeviceById$(this.deviceId).subscribe(device => {
+      if (device) {
+        this.device = device;
+      }
+    });
   }
 
   ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
+    this.deviceSubscription?.unsubscribe();
     this.cancelMediaSync();
   }
 
@@ -71,7 +79,7 @@ export class MediaManagementComponent implements OnInit, OnDestroy {
     this.logger.debug('Cancelling Media Repo Sync');
     this.tasks.register('cancelMediaSync', 'Cancelling CHA Media Sync.');
     try {
-      await this.devicesService.cancelFileOperation(this.device);
+      await this.devicesService.cancelFileOperation(this.deviceId);
     } catch (e) {
       this.logger.error('Error caught when cancelling file operation', e);
     } finally {
@@ -109,8 +117,8 @@ export class MediaManagementComponent implements OnInit, OnDestroy {
       if (remotePath === undefined) {
         this.logger.error('Remote path not found for media transfer');
       } else {
-        await this.devicesService.abortExams(this.device);
-        const response = await this.devicesService.transferDirectory(this.device, mediaRepo.path, remotePath);
+        await this.devicesService.abortExams(this.deviceId);
+        const response = await this.devicesService.transferDirectory(this.deviceId, mediaRepo.path, remotePath);
         transferSuccess = isValidDeviceResponse(response);
       }
     } catch (e) {

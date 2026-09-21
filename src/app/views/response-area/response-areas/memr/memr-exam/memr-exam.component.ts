@@ -60,6 +60,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   trialsPerBlock: number = 0;
   blockCount: number = 0;
   currentBlockIndex: number = -1;
+  deviceId: string | undefined;
   device: IDevice | undefined;
 
   // Configuration Variables
@@ -82,27 +83,28 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   pageSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
+  deviceSubscription: Subscription | undefined;
 
   constructor() {
     this.state = this.stateModel.getState();
     this.results = this.resultsModel.getResults();
-    this.examService.submit = () => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.submit = async () => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.nextStep();
       }
     };
-    this.examService.reset = () => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.reset = async () => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.examService.resetDefault();
       }
     };
-    this.examService.submitPartial = () => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.submitPartial = async () => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.examService.submitPartialDefault();
       }
     };
-    this.examService.navigateToTarget = subProtocolId => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.navigateToTarget = async subProtocolId => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.examService.navigateToTargetDefault(subProtocolId);
       }
     };
@@ -135,6 +137,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
     this.pageSubscription?.unsubscribe();
     this.resultsSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();
+    this.deviceSubscription?.unsubscribe();
   }
 
   /**
@@ -251,8 +254,8 @@ export class MemrExamComponent implements OnInit, OnDestroy {
       this.shouldAbort = true;
       this.currentStep = 'Complete';
       await this.waitForRequestResultsDone();
-      if (this.device) {
-        await this.devicesService.abortExams(this.device);
+      if (this.deviceId) {
+        await this.devicesService.abortExams(this.deviceId);
       }
     })();
     return this.abortPromise;
@@ -312,20 +315,22 @@ export class MemrExamComponent implements OnInit, OnDestroy {
    * @param updatedResponseArea The response area used to determine the device id.
    */
   private async setupDevice(updatedResponseArea: MemrExamInterface): Promise<void> {
-    const deviceList = await this.devicesService.getDeviceOrDefault(updatedResponseArea.tabsintId, this.allowableDevices);
-    this.device = await this.devicesService.confirmSingleDevice(deviceList);
+    this.deviceId = await this.devicesService.confirmSingleDeviceId(updatedResponseArea.tabsintId, this.allowableDevices);
+    if (this.deviceId) {
+      this.deviceSubscription = this.devicesService.getDeviceById$(this.deviceId).subscribe(device => (this.device = device));
+    }
   }
 
   /**
    * Begin the exam for the connected device.
    */
   private async beginExam(): Promise<void> {
-    if (this.device) {
+    if (this.deviceId) {
       const examProperties: MemrQueueExamInterface = {
         PlaybackChannels: [...this.memrExamProperties.elicitorOutputChannel!, ...this.memrExamProperties.probeOutputChannel!],
         RecordChannels: this.memrExamProperties.recordChannels,
       };
-      await this.devicesService.queueExam(this.device, 'PlayRecordExam', examProperties);
+      await this.devicesService.queueExam(this.deviceId, 'PlayRecordExam', examProperties);
       this.datestring = getCurrentDatetime();
       this.startPollingResults();
     } else {
@@ -365,8 +370,8 @@ export class MemrExamComponent implements OnInit, OnDestroy {
       RecordFileName: this.getRecordBlockPath(this.currentBlockIndex),
       SubmissionInterval_ms: this.memrExamProperties.submissionIntervalMs,
     };
-    if (this.device) {
-      await this.devicesService.examSubmission(this.device, examProperties);
+    if (this.deviceId) {
+      await this.devicesService.examSubmission(this.deviceId, examProperties);
       // The device keeps reporting READY for a short while after a submission is written over BLE.
       // Pausing for the block's expected duration stops startPollingResults() from reading that
       // stale READY and cascading through every remaining block at once. Replacing this with a
@@ -411,7 +416,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
 
       try {
         this.isRequestingResults = true;
-        const resp = this.device ? await this.devicesService.requestResults(this.device) : undefined;
+        const resp = this.deviceId ? await this.devicesService.requestResults(this.deviceId) : undefined;
         this.isRequestingResults = false;
 
         if (this.shouldAbort) return;

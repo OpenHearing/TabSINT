@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, inject } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 
@@ -19,7 +19,7 @@ import { AppColor } from '../../../../utilities/color';
   selector: 'app-cha-settings',
   templateUrl: './cha-settings.component.html',
 })
-export class ChaSettingsComponent implements OnInit, OnDestroy, OnChanges {
+export class ChaSettingsComponent implements OnInit, OnDestroy {
   private readonly diskModel = inject(DiskModel);
   private readonly stateModel = inject(StateModel);
   private readonly transloco = inject(TranslocoService);
@@ -27,16 +27,17 @@ export class ChaSettingsComponent implements OnInit, OnDestroy, OnChanges {
   private readonly devicesService = inject(DevicesService);
   readonly ColorPalette = AppColor;
 
-  @Input() device!: ChaDeviceType;
+  @Input() deviceId!: string;
   DeviceState = DeviceState;
 
   disk: DiskInterface;
   state: StateInterface;
   firmwareMatch: boolean | undefined = undefined;
+  device!: ChaDeviceType;
 
   diskSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
-  devicesSubscription: Subscription | undefined;
+  deviceSubscription: Subscription | undefined;
 
   constructor() {
     this.disk = this.diskModel.getDisk();
@@ -51,25 +52,26 @@ export class ChaSettingsComponent implements OnInit, OnDestroy, OnChanges {
       this.state = updatedState;
     });
     this.stateModel.updateState({ appState: AppState.Admin });
+    this.deviceSubscription = this.devicesService.getDeviceById$(this.deviceId).subscribe(device => {
+      if (device) {
+        this.device = device as ChaDeviceType;
+        this.updateFirmwareMatch();
+      }
+    });
   }
 
   ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['device']) {
-      this.updateFirmwareMatch();
-    }
+    this.deviceSubscription?.unsubscribe();
   }
 
   editTabsintId(device: ChaDeviceType): void {
-    this.dialog.open(ChangeTabsintIdComponent, { data: device });
+    this.dialog.open(ChangeTabsintIdComponent, { data: device.deviceId });
   }
 
   changeAutoShutdownTime(device: ChaDeviceType): void {
-    this.dialog.open(ChangeAutoShutdownTimeComponent, { data: device });
+    this.dialog.open(ChangeAutoShutdownTimeComponent, { data: device.deviceId });
   }
 
   /**
@@ -77,7 +79,7 @@ export class ChaSettingsComponent implements OnInit, OnDestroy, OnChanges {
    * @param device The device to reprogram.
    */
   reprogramFirmware(device: ChaDeviceType) {
-    this.devicesService.reprogramFirmwareDialog(device);
+    this.devicesService.reprogramFirmwareDialog(device.deviceId);
   }
 
   /**

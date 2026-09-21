@@ -203,7 +203,7 @@ describe('ResultsService (mocked)', () => {
 
     mockVersionModel = { version: {} };
 
-    mockDevicesService = jasmine.createSpyObj('DevicesService', ['getDeviceOrDefault', 'abortExams', 'queueExam', 'requestResults']);
+    mockDevicesService = jasmine.createSpyObj('DevicesService', ['getDeviceIdOrDefault', 'abortExams', 'queueExam', 'requestResults']);
     (mockDevicesService as any).hostMetadata = of({ uuid: 'device-uuid-123456' });
     (mockDevicesService as any).devices = of([]);
 

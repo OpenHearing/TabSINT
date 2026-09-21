@@ -26,16 +26,14 @@ describe('HintComponent', () => {
 
   beforeEach(async () => {
     devicesService = jasmine.createSpyObj<DevicesService>('DevicesService', [
-      'getDeviceOrDefault',
-      'confirmSingleDevice',
+      'confirmSingleDeviceId',
       'deviceNotFound',
       'abortExams',
       'queueExam',
       'examSubmission',
       'requestResults',
     ]);
-    devicesService.getDeviceOrDefault.and.resolveTo([mockDevice]);
-    devicesService.confirmSingleDevice.and.resolveTo(mockDevice);
+    devicesService.confirmSingleDeviceId.and.resolveTo(mockDevice.deviceId);
     devicesService.deviceNotFound.and.resolveTo(undefined);
     devicesService.abortExams.and.resolveTo(undefined);
     devicesService.queueExam.and.resolveTo(undefined);
@@ -82,16 +80,16 @@ describe('HintComponent', () => {
   });
 
   it('queues a HINT exam on the device when the exam starts', async () => {
-    component.device = mockDevice;
+    component.deviceId = mockDevice.deviceId;
 
     await component.startExam();
 
-    expect(devicesService.abortExams).toHaveBeenCalledWith(mockDevice);
-    expect(devicesService.queueExam).toHaveBeenCalledWith(mockDevice, 'HINT', jasmine.any(Object));
+    expect(devicesService.abortExams).toHaveBeenCalledWith(mockDevice.deviceId);
+    expect(devicesService.queueExam).toHaveBeenCalledWith(mockDevice.deviceId, 'HINT', jasmine.any(Object));
   });
 
   it('does not queue an exam when no device is available', async () => {
-    component.device = undefined;
+    component.deviceId = undefined;
 
     await component.startExam();
 
@@ -120,7 +118,7 @@ describe('HintComponent', () => {
   });
 
   it('submits the selected words as a bitmask and requests the next presentation', fakeAsync(() => {
-    component.device = mockDevice;
+    component.deviceId = mockDevice.deviceId;
     component.listOfWords = ['the', 'big', 'dog'];
     component.wordsDisabled = false;
     (component as unknown as { examActive: boolean }).examActive = true;
@@ -131,11 +129,11 @@ describe('HintComponent', () => {
     flush();
     flushMicrotasks();
 
-    expect(devicesService.examSubmission).toHaveBeenCalledWith(mockDevice, { name: 'HINT$Submission', CorrectWords: 5, WordCount: 3 });
+    expect(devicesService.examSubmission).toHaveBeenCalledWith(mockDevice.deviceId, { name: 'HINT$Submission', CorrectWords: 5, WordCount: 3 });
   }));
 
   it('restores submit and advances the page when the device reports the exam is complete', async () => {
-    component.device = mockDevice;
+    component.deviceId = mockDevice.deviceId;
     devicesService.requestResults.and.resolveTo({ deviceId: mockDevice.deviceId, msg: ['Result', { State: 2 }] });
 
     await component.startExam();
@@ -151,7 +149,7 @@ describe('HintComponent', () => {
       id: 'hint',
       responseArea: { type: 'hintResponseArea' } as ResponseArea,
     });
-    component.device = mockDevice;
+    component.deviceId = mockDevice.deviceId;
 
     await component.startExam();
 
@@ -166,7 +164,7 @@ describe('HintComponent', () => {
       id: 'hint',
       responseArea: { type: 'hintResponseArea', autoSubmit: false } as ResponseArea,
     });
-    component.device = mockDevice;
+    component.deviceId = mockDevice.deviceId;
 
     await component.startExam();
 

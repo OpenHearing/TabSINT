@@ -29,8 +29,7 @@ describe('BekesyLikeComponent', () => {
 
   beforeEach(async () => {
     devicesService = jasmine.createSpyObj<DevicesService>('DevicesService', [
-      'getDeviceOrDefault',
-      'confirmSingleDevice',
+      'confirmSingleDeviceId',
       'deviceNotFound',
       'abortExams',
       'queueExam',
@@ -40,8 +39,7 @@ describe('BekesyLikeComponent', () => {
       'startMaskingNoise',
       'stopMaskingNoise',
     ]);
-    devicesService.getDeviceOrDefault.and.resolveTo([mockDevice]);
-    devicesService.confirmSingleDevice.and.resolveTo(mockDevice);
+    devicesService.confirmSingleDeviceId.and.resolveTo(mockDevice.deviceId);
     devicesService.deviceNotFound.and.resolveTo(undefined);
     devicesService.abortExams.and.resolveTo(undefined);
     devicesService.queueExam.and.resolveTo(undefined);
@@ -103,16 +101,16 @@ describe('BekesyLikeComponent', () => {
   });
 
   it('queues a BekesyLike exam on the device when Begin is pressed', async () => {
-    component.device = mockDevice;
+    component.deviceId = mockDevice.deviceId;
 
     await component.beginExam();
 
-    expect(devicesService.queueExam).toHaveBeenCalledWith(mockDevice, 'BekesyLike', jasmine.any(Object));
+    expect(devicesService.queueExam).toHaveBeenCalledWith(mockDevice.deviceId, 'BekesyLike', jasmine.any(Object));
     expect(component.state).toBe('exam');
   });
 
   it('does not queue an exam when no device is available', async () => {
-    component.device = undefined;
+    component.deviceId = undefined;
 
     await component.beginExam();
 
@@ -136,7 +134,7 @@ describe('BekesyLikeComponent', () => {
     tick();
     fixture.detectChanges();
 
-    expect(devicesService.queueExam).toHaveBeenCalledWith(mockDevice, 'BekesyLike', jasmine.any(Object));
+    expect(devicesService.queueExam).toHaveBeenCalledWith(mockDevice.deviceId, 'BekesyLike', jasmine.any(Object));
     expect(component.state).toBe('exam');
     component.ngOnDestroy();
   }));
@@ -180,10 +178,10 @@ describe('BekesyLikeComponent', () => {
     tick();
     fixture.detectChanges();
 
-    expect(devicesService.startMaskingNoise).toHaveBeenCalledWith(mockDevice, jasmine.objectContaining({ Type: 'White' }));
+    expect(devicesService.startMaskingNoise).toHaveBeenCalledWith(mockDevice.deviceId, jasmine.objectContaining({ Type: 'White' }));
 
     component.ngOnDestroy();
-    expect(devicesService.stopMaskingNoise).toHaveBeenCalledWith(mockDevice);
+    expect(devicesService.stopMaskingNoise).toHaveBeenCalledWith(mockDevice.deviceId);
   }));
 
   it('stops masking noise as soon as the exam completes, not just on teardown', fakeAsync(() => {
@@ -206,13 +204,13 @@ describe('BekesyLikeComponent', () => {
     tick();
     fixture.detectChanges();
 
-    expect(devicesService.stopMaskingNoise).toHaveBeenCalledWith(mockDevice);
+    expect(devicesService.stopMaskingNoise).toHaveBeenCalledWith(mockDevice.deviceId);
     expect(component.state).not.toBe('exam');
     component.ngOnDestroy();
   }));
 
   it('does not start or stop masking noise when maskingNoise is not configured', async () => {
-    component.device = mockDevice;
+    component.deviceId = mockDevice.deviceId;
 
     await component.beginExam();
     component.ngOnDestroy();
@@ -222,24 +220,24 @@ describe('BekesyLikeComponent', () => {
   });
 
   it('forwards a press to the device and does not auto-release (hold mode)', async () => {
-    component.device = mockDevice;
+    component.deviceId = mockDevice.deviceId;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (component as any).examActive = true;
 
     await component.onPressStart();
 
-    expect(devicesService.setSoftwareButtonState).toHaveBeenCalledWith(mockDevice, 1);
-    expect(devicesService.setSoftwareButtonState).not.toHaveBeenCalledWith(mockDevice, 0);
+    expect(devicesService.setSoftwareButtonState).toHaveBeenCalledWith(mockDevice.deviceId, 1);
+    expect(devicesService.setSoftwareButtonState).not.toHaveBeenCalledWith(mockDevice.deviceId, 0);
   });
 
   it('forwards a release to the device only when the button is released', async () => {
-    component.device = mockDevice;
+    component.deviceId = mockDevice.deviceId;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (component as any).examActive = true;
 
     await component.onPressEnd();
 
-    expect(devicesService.setSoftwareButtonState).toHaveBeenCalledWith(mockDevice, 0);
+    expect(devicesService.setSoftwareButtonState).toHaveBeenCalledWith(mockDevice.deviceId, 0);
   });
 
   it('classifyLevelDirection: a level decrease into the next presentation is a hit (filled), an increase is a miss (open)', () => {

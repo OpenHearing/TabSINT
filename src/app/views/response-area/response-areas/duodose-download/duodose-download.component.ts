@@ -43,7 +43,7 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
   resultsSubscription: Subscription | undefined;
 
   tabsintId: string | undefined;
-  dosimeter: IDevice | undefined;
+  dosimeterId: string | undefined;
   availableFiles: DoseFile[] = [];
   viewingFile = false;
   resultsFieldsDefault = [

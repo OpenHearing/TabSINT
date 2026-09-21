@@ -59,6 +59,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   pctComplete: number = 0;
   nbTrials: number = 0;
   waitingMs: number = 2000;
+  deviceId: string | undefined;
   device: IDevice | undefined;
 
   // Subscriptions
@@ -66,27 +67,28 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   pageSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
+  deviceSubscription: Subscription | undefined;
 
   constructor() {
     this.state = this.stateModel.getState();
     this.results = this.resultsModel.getResults();
-    this.examService.submit = () => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.submit = async () => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.nextStep();
       }
     };
-    this.examService.reset = () => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.reset = async () => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.examService.resetDefault();
       }
     };
-    this.examService.submitPartial = () => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.submitPartial = async () => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.examService.submitPartialDefault();
       }
     };
-    this.examService.navigateToTarget = subProtocolId => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.navigateToTarget = async subProtocolId => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.examService.navigateToTargetDefault(subProtocolId);
       }
     };
@@ -121,13 +123,14 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     this.pageSubscription?.unsubscribe();
     this.resultsSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();
+    this.deviceSubscription?.unsubscribe();
   }
 
   /**
    * Function to be called by ngOnDestroy to handle any asynchronous operations.
    */
   private async asyncNgOnDestroy(): Promise<void> {
-    await this.devicesService.abortExams(this.device!);
+    await this.devicesService.abortExams(this.deviceId!);
   }
 
   async nextStep(): Promise<void> {
@@ -188,7 +191,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
     } else {
       this.examService.submitDefault();
     }
-    await this.devicesService.abortExams(this.device!);
+    await this.devicesService.abortExams(this.deviceId!);
   }
 
   async pauseExam() {
@@ -246,11 +249,12 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   }
 
   private async setupDevice(updatedResponseArea: MrtExamInterface) {
-    const deviceList = await this.devicesService.getDeviceOrDefault(updatedResponseArea.tabsintId, this.allowableDevices);
-    this.device = await this.devicesService.confirmSingleDevice(deviceList);
-    if (!this.device) {
+    this.deviceId = await this.devicesService.confirmSingleDeviceId(updatedResponseArea.tabsintId, this.allowableDevices);
+    if (!this.deviceId) {
       return;
-    } else if (this.devicesService.isDeviceMessagePending(this.device, false)) {
+    }
+    this.deviceSubscription = this.devicesService.getDeviceById$(this.deviceId).subscribe(device => (this.device = device));
+    if (await this.devicesService.isDeviceMessagePending(this.deviceId, false)) {
       await this.devicesService.deviceMessagePendingError();
       this.logger.error('Error setting up MRT exam: Device message pending');
     } else {
@@ -259,11 +263,11 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   }
 
   private async beginExam() {
-    if (this.device) {
+    if (this.deviceId) {
       const examProperties = {
         OutputChannel: this.outputChannel,
       };
-      await this.devicesService.queueExam(this.device, 'MrtExam', examProperties);
+      await this.devicesService.queueExam(this.deviceId, 'MrtExam', examProperties);
     } else {
       await this.devicesService.deviceNotFound();
       this.logger.error('Error setting up MRT exam');
@@ -276,14 +280,14 @@ export class MrtExamComponent implements OnInit, OnDestroy {
       LeveldBSpl: mrtTrial.leveldBSpl,
       UseMetaRMS: mrtTrial.useMeta,
     };
-    await this.devicesService.examSubmission(this.device!, examProperties);
+    await this.devicesService.examSubmission(this.deviceId!, examProperties);
   }
 
   private async waitForReadyState(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       const pollResults = async () => {
         try {
-          const resp = await this.devicesService.requestResults(this.device!);
+          const resp = await this.devicesService.requestResults(this.deviceId!);
           if (resp?.msg && typeof resp.msg[1] === 'object' && resp.msg[1] !== null && 'State' in resp.msg[1]) {
             if (resp.msg[1].State === 'PLAYING') {
               setTimeout(pollResults, 500);

@@ -213,10 +213,10 @@ export class BhaftComponent extends AutomatedAudiometryExamComponentBase<
    * @returns The results, or undefined if the response was not usable.
    */
   protected async requestExamResults(timeoutMs?: number): Promise<BhaftResultsInterface | undefined> {
-    if (!this.device) {
+    if (!this.deviceId) {
       return undefined;
     }
-    const resp = await this.devicesService.requestResults(this.device, timeoutMs);
+    const resp = await this.devicesService.requestResults(this.deviceId, timeoutMs);
     if (resp?.msg && isWahtsResultsResponse(resp)) {
       const results = resp.msg[1] as BhaftResultsInterface;
       this.logger.debug(

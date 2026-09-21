@@ -23,8 +23,7 @@ describe('GapComponent', () => {
 
   beforeEach(async () => {
     devicesService = jasmine.createSpyObj<DevicesService>('DevicesService', [
-      'getDeviceOrDefault',
-      'confirmSingleDevice',
+      'confirmSingleDeviceId',
       'deviceNotFound',
       'abortExams',
       'queueExam',
@@ -32,8 +31,7 @@ describe('GapComponent', () => {
       'requestStatus',
       'setSoftwareButtonState',
     ]);
-    devicesService.getDeviceOrDefault.and.resolveTo([mockDevice]);
-    devicesService.confirmSingleDevice.and.resolveTo(mockDevice);
+    devicesService.confirmSingleDeviceId.and.resolveTo(mockDevice.deviceId);
     devicesService.deviceNotFound.and.resolveTo(undefined);
     devicesService.abortExams.and.resolveTo(undefined);
     devicesService.queueExam.and.resolveTo(undefined);
@@ -79,16 +77,16 @@ describe('GapComponent', () => {
   });
 
   it('queues a GAP exam on the device when the full exam starts', async () => {
-    component.device = mockDevice;
+    component.deviceId = mockDevice.deviceId;
 
     await component.startFullExam();
 
-    expect(devicesService.queueExam).toHaveBeenCalledWith(mockDevice, 'GAP', jasmine.any(Object));
+    expect(devicesService.queueExam).toHaveBeenCalledWith(mockDevice.deviceId, 'GAP', jasmine.any(Object));
     expect(component.gapState).toBe('exam');
   });
 
   it('does not queue an exam when no device is available', async () => {
-    component.device = undefined;
+    component.deviceId = undefined;
 
     await component.startFullExam();
 
@@ -97,24 +95,24 @@ describe('GapComponent', () => {
   });
 
   it('runs a single-gap-length trial, sending the CHA an integer UseSoftwareButton flag', async () => {
-    component.device = mockDevice;
+    component.deviceId = mockDevice.deviceId;
 
     await component.startTrainingTrial(40, 70);
 
     const [device, examName, properties] = devicesService.queueExam.calls.mostRecent().args;
-    expect(device).toBe(mockDevice);
+    expect(device).toBe(mockDevice.deviceId);
     expect(examName).toBe('GAP');
     // The CHA GAP exam expects UseSoftwareButton as an integer (1/0), not a boolean.
     expect(properties).toEqual(jasmine.objectContaining({ AllowableGapLengths: [40], LNoise: 70, UseSoftwareButton: 1 }));
   });
 
   it('toggles the device software button when the response button is tapped', async () => {
-    component.device = mockDevice;
+    component.deviceId = mockDevice.deviceId;
     (component as unknown as { examActive: boolean }).examActive = true;
 
     await component.tapSoftwareButton();
 
-    expect(devicesService.setSoftwareButtonState).toHaveBeenCalledWith(mockDevice, 1);
+    expect(devicesService.setSoftwareButtonState).toHaveBeenCalledWith(mockDevice.deviceId, 1);
     expect(component.buttonPressed).toBeTrue();
   });
 });

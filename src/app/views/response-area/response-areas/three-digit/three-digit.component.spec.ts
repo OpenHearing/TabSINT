@@ -24,16 +24,14 @@ describe('ThreeDigitComponent', () => {
 
   beforeEach(async () => {
     devicesService = jasmine.createSpyObj<DevicesService>('DevicesService', [
-      'getDeviceOrDefault',
-      'confirmSingleDevice',
+      'confirmSingleDeviceId',
       'deviceNotFound',
       'abortExams',
       'queueExam',
       'examSubmission',
       'requestResults',
     ]);
-    devicesService.getDeviceOrDefault.and.resolveTo([mockDevice]);
-    devicesService.confirmSingleDevice.and.resolveTo(mockDevice);
+    devicesService.confirmSingleDeviceId.and.resolveTo(mockDevice.deviceId);
     devicesService.deviceNotFound.and.resolveTo(undefined);
     devicesService.abortExams.and.resolveTo(undefined);
     devicesService.queueExam.and.resolveTo(undefined);
@@ -80,16 +78,16 @@ describe('ThreeDigitComponent', () => {
   });
 
   it('queues a ThreeDigit exam on the device when the exam starts', async () => {
-    component.device = mockDevice;
+    component.deviceId = mockDevice.deviceId;
 
     await component.startExam();
 
-    expect(devicesService.abortExams).toHaveBeenCalledWith(mockDevice);
-    expect(devicesService.queueExam).toHaveBeenCalledWith(mockDevice, 'ThreeDigit', jasmine.any(Object));
+    expect(devicesService.abortExams).toHaveBeenCalledWith(mockDevice.deviceId);
+    expect(devicesService.queueExam).toHaveBeenCalledWith(mockDevice.deviceId, 'ThreeDigit', jasmine.any(Object));
   });
 
   it('does not queue an exam when no device is available', async () => {
-    component.device = undefined;
+    component.deviceId = undefined;
 
     await component.startExam();
 
@@ -116,7 +114,7 @@ describe('ThreeDigitComponent', () => {
   });
 
   it('grades entered digits against the presentation answer when the device is ready', fakeAsync(() => {
-    component.device = mockDevice;
+    component.deviceId = mockDevice.deviceId;
     component.autoSubmitPresentation = false;
     (component as unknown as { examActive: boolean }).examActive = true;
     (component as unknown as { readyToProcess: boolean }).readyToProcess = true;
@@ -135,11 +133,11 @@ describe('ThreeDigitComponent', () => {
     flush();
     flushMicrotasks();
 
-    expect(devicesService.examSubmission).toHaveBeenCalledWith(mockDevice, { name: 'ThreeDigit$Submission', nCorrect: 2 });
+    expect(devicesService.examSubmission).toHaveBeenCalledWith(mockDevice.deviceId, { name: 'ThreeDigit$Submission', nCorrect: 2 });
   }));
 
   it('stores the full device results and auto-submits when the exam completes', async () => {
-    component.device = mockDevice;
+    component.deviceId = mockDevice.deviceId;
     component.autoSubmit = true;
     const finalResults = {
       State: 2,
@@ -163,7 +161,7 @@ describe('ThreeDigitComponent', () => {
   });
 
   it('records the per-presentation SNR and masker with the graded response', fakeAsync(() => {
-    component.device = mockDevice;
+    component.deviceId = mockDevice.deviceId;
     component.autoSubmitPresentation = false;
     // First requestResults (during startExam) delivers the presentation context.
     devicesService.requestResults.and.resolveTo({
@@ -188,6 +186,6 @@ describe('ThreeDigitComponent', () => {
     expect(firstPresentation).toEqual(
       jasmine.objectContaining({ currentSNR: -4, currentMasker: 'positivePhase', currentPresentation: 'P1.wav', correct: true })
     );
-    expect(devicesService.examSubmission).toHaveBeenCalledWith(mockDevice, { name: 'ThreeDigit$Submission', nCorrect: 3 });
+    expect(devicesService.examSubmission).toHaveBeenCalledWith(mockDevice.deviceId, { name: 'ThreeDigit$Submission', nCorrect: 3 });
   }));
 });

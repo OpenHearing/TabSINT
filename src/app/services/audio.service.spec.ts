@@ -7,7 +7,7 @@ import { DiskInterface } from '../models/disk/disk.interface';
 import { DevicesService } from './devices/devices.service';
 import { Notifications } from './notifications.service';
 import { AudioService } from './audio.service';
-import { PageWavfileCalInterface, PageWavfileInterface } from '../interfaces/page-definition.interface';
+import { PageWavfileInterface } from '../interfaces/page-definition.interface';
 import { CalibrationFilter, DeveloperProtocolsCalibration, PlaybackMethod, WavfileWeighting } from '../utilities/constants';
 import { TabsintAudioPlugin } from 'tabsintaudio';
 
@@ -148,8 +148,8 @@ describe('AudioService', () => {
 
   it('get tablet gain returns zero for nexus 7', () => {
     const gain = audioService.getTabletGain({
-      _tablet: DeveloperProtocolsCalibration['develop'].tablet,
-      _headset: DeveloperProtocolsCalibration['develop'].headset,
+      _tablet: DeveloperProtocolsCalibration['develop']?.tablet,
+      _headset: DeveloperProtocolsCalibration['develop']?.headset,
     });
     expect(gain).toEqual(0.0);
   });
