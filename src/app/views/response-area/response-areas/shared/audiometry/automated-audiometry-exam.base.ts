@@ -9,7 +9,6 @@ import { DevicesService } from '../../../../../services/devices/devices.service'
 import { Logger } from '../../../../../services/logger.service';
 import { PageInterface } from '../../../../../models/page/page.interface';
 import { CurrentResults } from '../../../../../models/results/results.interface';
-import { IDevice } from '../../../../../interfaces/devices/device.interface';
 import { DeviceType } from '../../../../../utilities/constants';
 import { round } from '../../../../../utilities/math';
 import { isStatusResponse } from '../../../../../guards/type.guard';
@@ -111,7 +110,7 @@ export abstract class AutomatedAudiometryExamComponentBase<
 
   // State
   state: ResponseAreaState = ResponseAreaState.Start;
-  device: IDevice | undefined;
+  deviceId: string | undefined;
   results: TResults | undefined;
   levelProgressionData: TrialProgressionPlotDataInterface | undefined;
   frequencyProgressionData: TrialProgressionPlotDataInterface | undefined;
@@ -134,7 +133,7 @@ export abstract class AutomatedAudiometryExamComponentBase<
 
   ngOnInit(): void {
     this.stateModel.updateState({ isSubmittable: false });
-    this.examService.submit = () => this.submitWithNotes();
+    this.examService.submit = async () => this.submitWithNotes();
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe(async (updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === this.responseAreaType) {
         this.currentPageId = updatedPage.id;
@@ -178,7 +177,7 @@ export abstract class AutomatedAudiometryExamComponentBase<
 
     await this.setupDevice(responseArea);
 
-    if (this.autoBegin && this.device) {
+    if (this.autoBegin && this.deviceId) {
       await this.beginExam();
     }
   }
@@ -188,9 +187,8 @@ export abstract class AutomatedAudiometryExamComponentBase<
    * @param responseArea The exam's response area definition.
    */
   private async setupDevice(responseArea: TResponseArea): Promise<void> {
-    const deviceList = await this.devicesService.getDeviceOrDefault(responseArea.tabsintId, this.allowableDevices);
-    this.device = await this.devicesService.confirmSingleDevice(deviceList);
-    if (!this.device) {
+    this.deviceId = await this.devicesService.confirmSingleDeviceId(responseArea.tabsintId, this.allowableDevices);
+    if (!this.deviceId) {
       this.logger.error(`${this.examLabel}: no device available.`);
     }
   }
@@ -199,7 +197,7 @@ export abstract class AutomatedAudiometryExamComponentBase<
    * Queue and run the exam on the device, polling until it reports completion.
    */
   async beginExam(): Promise<void> {
-    if (!this.device) {
+    if (!this.deviceId) {
       await this.devicesService.deviceNotFound();
       return;
     }
@@ -208,11 +206,11 @@ export abstract class AutomatedAudiometryExamComponentBase<
     this.retryMessage = undefined;
     this.noResponseMessage = undefined;
     this.stateModel.updateState({ isSubmittable: false });
-    await this.devicesService.abortExams(this.device);
+    await this.devicesService.abortExams(this.deviceId);
     if (this.maskingNoise) {
-      await this.devicesService.startMaskingNoise(this.device, this.maskingNoise);
+      await this.devicesService.startMaskingNoise(this.deviceId, this.maskingNoise);
     }
-    await this.devicesService.queueExam(this.device, this.examName, this.examProperties);
+    await this.devicesService.queueExam(this.deviceId, this.examName, this.examProperties);
     this.examActive = true;
 
     // Poll status (not results) while the adaptive exam runs.
@@ -223,8 +221,8 @@ export abstract class AutomatedAudiometryExamComponentBase<
    * Fetch the final results once the exam has completed and move to the results view.
    */
   private async fetchAndFinishExam(): Promise<void> {
-    if (this.device && this.maskingNoise) {
-      await this.devicesService.stopMaskingNoise(this.device);
+    if (this.deviceId && this.maskingNoise) {
+      await this.devicesService.stopMaskingNoise(this.deviceId);
     }
     const results = await this.requestExamResults(this.finalResultsTimeoutMs);
     if (results) {
@@ -362,17 +360,17 @@ export abstract class AutomatedAudiometryExamComponentBase<
    * onPressEnd; in 'tap' mode it auto-releases shortly after being pressed.
    */
   async onPressStart(): Promise<void> {
-    if (!this.device || !this.examActive) {
+    if (!this.deviceId || !this.examActive) {
       return;
     }
     this.buttonPressCount++;
-    await this.devicesService.setSoftwareButtonState(this.device, 1);
+    await this.devicesService.setSoftwareButtonState(this.deviceId, 1);
     if (this.pressMode === 'tap') {
       setTimeout(async () => {
-        if (!this.device || !this.examActive) {
+        if (!this.deviceId || !this.examActive) {
           return;
         }
-        await this.devicesService.setSoftwareButtonState(this.device, 0);
+        await this.devicesService.setSoftwareButtonState(this.deviceId, 0);
       }, 20);
     }
   }
@@ -382,10 +380,10 @@ export abstract class AutomatedAudiometryExamComponentBase<
    * No-op in 'tap' mode, which releases itself.
    */
   async onPressEnd(): Promise<void> {
-    if (this.pressMode !== 'hold' || !this.device || !this.examActive) {
+    if (this.pressMode !== 'hold' || !this.deviceId || !this.examActive) {
       return;
     }
-    await this.devicesService.setSoftwareButtonState(this.device, 0);
+    await this.devicesService.setSoftwareButtonState(this.deviceId, 0);
   }
 
   /**
@@ -396,7 +394,7 @@ export abstract class AutomatedAudiometryExamComponentBase<
   private startStatusPolling(onComplete: () => void): void {
     this.examPlaying = false;
     const poll = async () => {
-      if (!this.examActive || !this.device) {
+      if (!this.examActive || !this.deviceId) {
         return;
       }
       try {
@@ -425,10 +423,10 @@ export abstract class AutomatedAudiometryExamComponentBase<
    * @returns The device state, or undefined if the response was not usable.
    */
   private async requestExamStatus(): Promise<number | undefined> {
-    if (!this.device) {
+    if (!this.deviceId) {
       return undefined;
     }
-    const resp = await this.devicesService.requestStatus(this.device);
+    const resp = await this.devicesService.requestStatus(this.deviceId);
     if (isStatusResponse(resp)) {
       return resp.msg[1].state;
     }
@@ -445,10 +443,10 @@ export abstract class AutomatedAudiometryExamComponentBase<
       clearTimeout(this.pollTimeout);
       this.pollTimeout = undefined;
     }
-    if (this.device) {
-      this.devicesService.abortExams(this.device);
+    if (this.deviceId) {
+      this.devicesService.abortExams(this.deviceId);
       if (this.maskingNoise) {
-        this.devicesService.stopMaskingNoise(this.device);
+        this.devicesService.stopMaskingNoise(this.deviceId);
       }
     }
   }

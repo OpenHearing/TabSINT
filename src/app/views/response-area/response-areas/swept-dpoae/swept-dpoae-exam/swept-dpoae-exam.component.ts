@@ -65,8 +65,8 @@ export class SweptDpoaeExamComponent extends DpoaeExamBaseComponent<SweptDpoaeIn
   }
 
   protected async beginExam(): Promise<void> {
-    this.device = await this.resolveDevice();
-    if (this.device) {
+    this.deviceId = await this.resolveDevice();
+    if (this.deviceId) {
       const examProperties: DpoaeExamProperties = {
         OutputChannel1: handleOutputCalibration(this.outputChannel1, this.outputCalibrationType),
         OutputChannel2: handleOutputCalibration(this.outputChannel2, this.outputCalibrationType),
@@ -89,7 +89,7 @@ export class SweptDpoaeExamComponent extends DpoaeExamBaseComponent<SweptDpoaeIn
       if (this.recordFileFolder != undefined) {
         examProperties.Filename = this.recordFileFolder + '/' + getCurrentDatetime() + '.WAV';
       }
-      await this.devicesService.queueExam(this.device, 'SweptDPOAE', examProperties);
+      await this.devicesService.queueExam(this.deviceId, 'SweptDPOAE', examProperties);
     }
   }
 }

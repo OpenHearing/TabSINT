@@ -108,7 +108,7 @@ export class DpGramInProgressComponent extends DpoaeInProgressBaseComponent<DpGr
     const total = this.f2.length;
     for (let i = 0; i < total && !this.shouldAbort; i++) {
       const freq = this.f2[i];
-      await this.devicesService.queueExam(this.device!, 'SweptDPOAE', this.buildExamProperties(freq, i));
+      await this.devicesService.queueExam(this.deviceId, 'SweptDPOAE', this.buildExamProperties(freq, i));
       if (this.shouldAbort) break;
 
       const finalRaw = await this.pollSingleExamResult(raw => {
@@ -162,7 +162,7 @@ export class DpGramInProgressComponent extends DpoaeInProgressBaseComponent<DpGr
         }
 
         this.isRequestingResults = true;
-        const resp = await this.devicesService.requestResults(this.device!);
+        const resp = await this.devicesService.requestResults(this.deviceId);
         this.isRequestingResults = false;
 
         if (this.isDestroyed) {

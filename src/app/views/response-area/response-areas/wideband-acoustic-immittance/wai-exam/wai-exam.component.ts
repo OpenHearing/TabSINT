@@ -10,7 +10,6 @@ import { PageInterface } from '../../../../../models/page/page.interface';
 import { WAIExamProperties, WAIInterface, WAIResultsInterface } from './wai-exam.interface';
 import { NormativeDataInterface } from '../../../../../interfaces/normative-data-interface';
 import { ButtonTextService } from '../../../../../controllers/button-text.service';
-import { IDevice } from '../../../../../interfaces/devices/device.interface';
 import { waiSchema } from '../../../../../../schema/response-areas/wai.schema';
 import { handleOutputCalibration, getCurrentDatetime } from '../../../../../utilities/exam-helper-functions';
 import { DeviceType } from '../../../../../utilities/constants';
@@ -52,7 +51,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
   pageSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
   currentStep: string = 'input-parameters';
-  device: IDevice | undefined;
+  deviceId: string | undefined;
   waiResults: WAIResultsInterface = {
     State: 'READY',
     PctComplete: 0,
@@ -68,23 +67,23 @@ export class WAIExamComponent implements OnInit, OnDestroy {
 
   constructor() {
     this.results = this.resultsModel.getResults();
-    this.examService.submit = () => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.submit = async () => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.nextStep();
       }
     };
-    this.examService.reset = () => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.reset = async () => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.examService.resetDefault();
       }
     };
-    this.examService.submitPartial = () => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.submitPartial = async () => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.examService.submitPartialDefault();
       }
     };
-    this.examService.navigateToTarget = subProtocolId => {
-      if (!this.devicesService.isDeviceMessagePending(this.device)) {
+    this.examService.navigateToTarget = async subProtocolId => {
+      if (!(await this.devicesService.isDeviceMessagePending(this.deviceId))) {
         this.examService.navigateToTargetDefault(subProtocolId);
       }
     };
@@ -150,7 +149,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
    * Function to be called by ngOnDestroy to handle any asynchronous operations.
    */
   private async asyncNgOnDestroy(): Promise<void> {
-    await this.devicesService.abortExams(this.device!);
+    await this.devicesService.abortExams(this.deviceId!);
   }
 
   async nextStep(): Promise<void> {
@@ -180,9 +179,8 @@ export class WAIExamComponent implements OnInit, OnDestroy {
   }
 
   private async beginExam() {
-    const deviceList = await this.devicesService.getDeviceOrDefault(this.tabsintId, this.allowableDevices);
-    this.device = await this.devicesService.confirmSingleDevice(deviceList);
-    if (this.device) {
+    this.deviceId = await this.devicesService.confirmSingleDeviceId(this.tabsintId, this.allowableDevices);
+    if (this.deviceId) {
       const examProperties: WAIExamProperties = {
         FStart: this.fStart,
         FEnd: this.fEnd,
@@ -202,7 +200,7 @@ export class WAIExamComponent implements OnInit, OnDestroy {
       if (this.recordFileFolder != undefined) {
         examProperties.Filename = this.recordFileFolder + '/' + getCurrentDatetime() + '.WAV';
       }
-      await this.devicesService.queueExam(this.device, 'WAI', examProperties);
+      await this.devicesService.queueExam(this.deviceId, 'WAI', examProperties);
     } else {
       await this.devicesService.deviceNotFound();
       this.logger.error('Error setting up WAI exam');

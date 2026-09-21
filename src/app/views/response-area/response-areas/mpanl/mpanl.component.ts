@@ -11,9 +11,8 @@ import { ExamService } from '../../../../controllers/exam.service';
 import { Logger } from '../../../../services/logger.service';
 import { Notifications } from '../../../../services/notifications.service';
 import { DevicesService } from '../../../../services/devices/devices.service';
-import { calculateSvantekBandLevel, isSvantekDevice } from '../../../../services/devices/svantek-manager';
+import { calculateSvantekBandLevel } from '../../../../services/devices/svantek-manager';
 import { DeviceType, DialogType } from '../../../../utilities/constants';
-import { ISvantekDevice } from '../../../../interfaces/devices/svantek-device.interface';
 import { mpanlSchema } from '../../../../../schema/response-areas/mpanl.schema';
 import { MpanlDatumInterface, MpanlResponseAreaInterface, MpanlResultsInterface, MpanlStandard } from './mpanl.interface';
 
@@ -83,7 +82,7 @@ export class MpanlComponent implements OnInit, OnDestroy {
   private freqs: number[] = [];
   private limits: number[] = [];
   private attenuation: number[] = [];
-  private device: ISvantekDevice | undefined;
+  private deviceId: string | undefined;
   private recordingTimeout: ReturnType<typeof setTimeout> | undefined;
   private isDestroyed = false;
 
@@ -130,8 +129,8 @@ export class MpanlComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.isDestroyed = true;
     this.clearRecordingTimeout();
-    if (this.device) {
-      this.devicesService.stopRecording(this.device).catch(err => this.logger.debug('Failed to stop Svantek recording on destroy', err));
+    if (this.deviceId) {
+      this.devicesService.stopRecording(this.deviceId).catch(err => this.logger.debug('Failed to stop Svantek recording on destroy', err));
     }
     this.pageSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();
@@ -182,11 +181,11 @@ export class MpanlComponent implements OnInit, OnDestroy {
   }
 
   async startMeasurement(duration: number): Promise<void> {
-    const devices = await this.devicesService.getDeviceOrDefault(this.tabsintId, [DeviceType.Svantek]);
-    if (devices.length === 0) {
+    const deviceIds = await this.devicesService.getDeviceIdOrDefault(this.tabsintId, [DeviceType.Svantek]);
+    if (deviceIds.length === 0) {
       this.notifications.alert({ title: 'Alert', content: 'A Svantek dosimeter is not connected.', type: DialogType.Alert }).subscribe();
       return;
-    } else if (devices.length >= 2) {
+    } else if (deviceIds.length >= 2) {
       this.notifications
         .alert({
           title: 'Alert',
@@ -196,26 +195,21 @@ export class MpanlComponent implements OnInit, OnDestroy {
         .subscribe();
       return;
     }
-    const candidate = devices[0];
-    if (!isSvantekDevice(candidate)) {
-      this.logger.error('Resolved device is not a Svantek dosimeter.', candidate);
-      return;
-    }
-    this.device = candidate;
+    this.deviceId = deviceIds[0];
 
     this.examState = 'recording';
     this.mpanlResults = undefined;
     this.stateModel.updateState({ isSubmittable: false });
 
     try {
-      await this.devicesService.startRecording(this.device);
+      await this.devicesService.startRecording(this.deviceId);
     } catch (err) {
       this.logger.error('Failed to start recording from the Svantek dosimeter.', err);
       this.notifications
         .alert({ title: 'Alert', content: 'Failed to start recording from the Svantek dosimeter.', type: DialogType.Alert })
         .subscribe();
       this.examState = 'start';
-      this.device = undefined;
+      this.deviceId = undefined;
       return;
     }
 
@@ -226,18 +220,18 @@ export class MpanlComponent implements OnInit, OnDestroy {
 
   private async finishMeasurement(duration: number): Promise<void> {
     this.clearRecordingTimeout();
-    const device = this.device;
-    if (!device) {
+    const deviceId = this.deviceId;
+    if (!deviceId) {
       return;
     }
 
     try {
-      await this.devicesService.stopRecording(device);
+      await this.devicesService.stopRecording(deviceId);
     } catch (err) {
       this.logger.error('Failed to stop recording from the Svantek dosimeter.', err);
     }
-    const svantekResult = this.devicesService.getSvantekResult(device);
-    this.device = undefined;
+    const svantekResult = await this.devicesService.getSvantekResult(deviceId);
+    this.deviceId = undefined;
 
     if (this.isDestroyed) {
       return;

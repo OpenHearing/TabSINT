@@ -42,10 +42,8 @@ import { ProtocolStackItem } from '../models/protocol/protocol-stack';
 import { ChoiceInterface } from '../interfaces/choice.interface';
 import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
 import { DevicesService } from '../services/devices/devices.service';
-import { IDevice } from '../interfaces/devices/device.interface';
 import { IDeviceResponse } from '../interfaces/devices/device-response.interface';
 import { DosimeterResultsInterface } from '../interfaces/dosimeter-results.interface';
-import { ISvantekDevice } from '../interfaces/devices/svantek-device.interface';
 import { pageSchema } from '../../schema/page.schema';
 import { AudioService } from '../services/audio.service';
 import { Tasks } from '../services/tasks.service';
@@ -84,7 +82,7 @@ export class ExamService {
   // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
   dosimeterResultsPoll: { [name: string]: ReturnType<typeof setInterval> } = {};
   private activeWavfileDevice: string | undefined = undefined;
-  private activeSvantekDevice: ISvantekDevice | undefined = undefined;
+  private activeSvantekDeviceId: string | undefined = undefined;
   private svantekResultPoll: ReturnType<typeof setInterval> | undefined = undefined;
   private autoSubmitTimer: ReturnType<typeof setTimeout> | undefined = undefined;
   private svantekWarned = false;
@@ -167,18 +165,18 @@ export class ExamService {
   /** Submit function for exam pages. Can be overwritten by exams.
    * @models results, state
    */
-  submit() {
-    void this.submitDefault();
+  async submit(): Promise<void> {
+    await this.submitDefault();
   }
 
   /** Overwrite submit with one that leaves feedback on screen before advancing.
    * @summary Raises isShowingFeedback, waits feedbackDelayMs, then restores and calls submitDefault.
    */
   delaySubmitForFeedback() {
-    this.submit = () => {
+    this.submit = async () => {
       this.isShowingFeedback = true;
       setTimeout(() => {
-        this.submit = () => void this.submitDefault();
+        this.submit = () => this.submitDefault();
         this.submit();
         this.isShowingFeedback = false;
       }, ExamService.feedbackDelayMs);
@@ -216,7 +214,7 @@ export class ExamService {
     // A skipped page submits regardless of whether its response requirement was met, and must
     // bypass any submit a response area installed (for example one that demands notes first).
     this.stateModel.updateState({ isSubmittable: true });
-    this.submit = () => void this.submitDefault();
+    this.submit = () => this.submitDefault();
     void this.submitDefault();
   }
 
@@ -227,30 +225,30 @@ export class ExamService {
     this.skipDefault();
   }
 
-  backDefault() {
+  async backDefault(): Promise<void> {
     // noop
   }
 
-  back() {
+  async back(): Promise<void> {
     // used/overwritten by calibration-exam
   }
 
   /**
    * Default reset function for exam pages.
    */
-  resetDefault() {
+  async resetDefault(): Promise<void> {
     this.stateModel.updateState({ examState: ExamState.Ready });
     this.resetProtocolStack();
   }
 
-  reset() {
-    this.resetDefault();
+  async reset(): Promise<void> {
+    await this.resetDefault();
   }
 
   /**
    * Default submit partial function for exam pages.
    */
-  submitPartialDefault() {
+  async submitPartialDefault(): Promise<void> {
     this.gradeResponses();
     this.resultsService.pushResults(this.results.currentPage);
     this.setFlags(this.results.currentPage);
@@ -259,19 +257,19 @@ export class ExamService {
     if (this.protocol.activeProtocolDictionary!['@PARTIAL'] === undefined) {
       this.endExam();
     } else {
-      this.navigateToTarget('@PARTIAL');
+      await this.navigateToTarget('@PARTIAL');
     }
   }
 
-  submitPartial() {
-    this.submitPartialDefault();
+  async submitPartial(): Promise<void> {
+    await this.submitPartialDefault();
   }
 
   /**
    * Default navigate to target function, which navigates to the specified subprotocol.
    * @param subProtocolID The sub protocol page identifier.
    */
-  async navigateToTargetDefault(subProtocolID: string) {
+  async navigateToTargetDefault(subProtocolID: string): Promise<void> {
     const referenceProtocol = this.protocol.activeProtocolDictionary![subProtocolID];
     this.protocol.activeProtocolStack.addProtocol(referenceProtocol);
     this.stateModel.updateState({ examState: ExamState.Testing });
@@ -282,8 +280,8 @@ export class ExamService {
    * Navigate to target function. Can be overwritten by exams.
    * @param subProtocolID The sub protocol page identifier.
    */
-  navigateToTarget(subProtocolID: string) {
-    this.navigateToTargetDefault(subProtocolID);
+  async navigateToTarget(subProtocolID: string): Promise<void> {
+    await this.navigateToTargetDefault(subProtocolID);
   }
 
   /**
@@ -779,54 +777,58 @@ export class ExamService {
    * @param page The page to use for navigation.
    */
   private async activateDosimeters(page: PageDefinition) {
-    let dosimeters: IDevice[];
+    let tabsintIds: string[];
     if (page?.dosimetry === undefined) {
       return;
     } else if (page.dosimetry.tabsintId === undefined) {
-      dosimeters = await this.devicesService.getDeviceOrDefault(undefined, [DeviceType.Duodose]);
+      const devices = await firstValueFrom(this.devicesService.devices);
+      tabsintIds = devices
+        .filter(device => device.state === DeviceState.Connected && device.type === DeviceType.Duodose)
+        .map(device => device.tabsintId);
     } else {
-      dosimeters = [];
-      for (const tabsintId of page.dosimetry.tabsintId) {
-        const devices = await this.devicesService.getDeviceOrDefault(tabsintId, []);
-        if (devices.length === 1) {
-          dosimeters.push(devices[0]);
-        }
-      }
+      tabsintIds = page.dosimetry.tabsintId;
     }
-    if (dosimeters.length === 0) {
+    if (tabsintIds.length === 0) {
       this.logger.error('Failed to start dosimetry: No dosimeter was available.');
       return;
     }
     this.logger.debug('Starting Dosimetry');
     this.resultsModel.updateCurrentPage({ dosimetry: [], response: [] });
-    for (const dosimeter of dosimeters) {
-      await this.startDosimeterRecording(dosimeter);
+    for (const tabsintId of tabsintIds) {
+      await this.startDosimeterRecording(tabsintId);
     }
   }
 
   /**
-   * Queue the recording exam on a single dosimeter and begin polling it for results. A dosimeter
-   * that fails to start is reported but does not block exam progression.
-   * @param dosimeter The dosimeter to start recording on.
+   * Resolve the dosimeter for a tabsintId, queue the recording exam on it, and begin polling it
+   * for results. A dosimeter that can't be resolved or fails to start is reported but does not
+   * block exam progression.
+   * @param tabsintId The TabSINT identifier of the dosimeter to start recording on.
    */
-  private async startDosimeterRecording(dosimeter: IDevice) {
-    await this.devicesService.abortExams(dosimeter);
-    const queueResp = await this.devicesService.queueExam(dosimeter, 'DosimeterRecord', {});
-    if (queueResp === undefined || queueResp.msg[1] === 'ERROR') {
-      this.reportDosimeterFailure(dosimeter, queueResp);
+  private async startDosimeterRecording(tabsintId: string) {
+    const deviceIds = await this.devicesService.getDeviceIdOrDefault(tabsintId, []);
+    if (deviceIds.length !== 1) {
+      this.logger.error(`Failed to start dosimetry on ${tabsintId}: no dosimeter was available.`);
       return;
     }
-    this.dosimeterResultsPoll[dosimeter.tabsintId] = setInterval(this.pollForDosimeterResults.bind(this), 500, dosimeter);
+    const deviceId = deviceIds[0];
+    await this.devicesService.abortExams(deviceId);
+    const queueResp = await this.devicesService.queueExam(deviceId, 'DosimeterRecord', {});
+    if (queueResp === undefined || queueResp.msg[1] === 'ERROR') {
+      this.reportDosimeterFailure(tabsintId, queueResp);
+      return;
+    }
+    this.dosimeterResultsPoll[tabsintId] = setInterval(this.pollForDosimeterResults.bind(this), 500, deviceId, tabsintId);
   }
 
   /**
    * Log a dosimeter that failed to start recording, and alert the user once per exam.
-   * @param dosimeter The dosimeter which failed to start.
+   * @param tabsintId The TabSINT identifier of the dosimeter which failed to start.
    * @param queueResp The response returned by queueExam, if any.
    */
-  private reportDosimeterFailure(dosimeter: IDevice, queueResp: IDeviceResponse | undefined) {
+  private reportDosimeterFailure(tabsintId: string, queueResp: IDeviceResponse | undefined) {
     const reason = queueResp === undefined ? 'the device does not support dosimetry recording' : JSON.stringify(queueResp.msg);
-    this.logger.error(`Failed to start dosimetry on ${dosimeter.tabsintId}: ${reason}`);
+    this.logger.error(`Failed to start dosimetry on ${tabsintId}: ${reason}`);
     if (this.dosimeterWarned) {
       return;
     }
@@ -850,8 +852,8 @@ export class ExamService {
     if (!page.svantek) {
       return;
     }
-    const devices = await this.devicesService.getDeviceOrDefault(undefined, [DeviceType.Svantek]);
-    if (devices.length === 0) {
+    const deviceIds = await this.devicesService.getDeviceIdOrDefault(undefined, [DeviceType.Svantek]);
+    if (deviceIds.length === 0) {
       this.logger.warning('A Svantek dosimeter is not connected, no Svantek data will be collected.');
       if (!this.svantekWarned) {
         this.notifications
@@ -865,18 +867,18 @@ export class ExamService {
       }
       return;
     }
-    this.activeSvantekDevice = devices[0];
+    this.activeSvantekDeviceId = deviceIds[0];
     try {
-      await this.devicesService.startRecording(this.activeSvantekDevice);
-      this.svantekResultPoll = setInterval(() => {
-        const result = this.devicesService.getSvantekResult(this.activeSvantekDevice!);
+      await this.devicesService.startRecording(this.activeSvantekDeviceId);
+      this.svantekResultPoll = setInterval(async () => {
+        const result = await this.devicesService.getSvantekResult(this.activeSvantekDeviceId!);
         if (result) {
           this.resultsModel.updateCurrentPage({ svantek: result });
         }
       }, 500);
     } catch (err) {
       this.logger.error('Failed to start Svantek recording', err);
-      this.activeSvantekDevice = undefined;
+      this.activeSvantekDeviceId = undefined;
     }
   }
 
@@ -885,17 +887,17 @@ export class ExamService {
    * Idempotent — safe to call when no Svantek recording is active.
    */
   stopSvantek() {
-    if (!this.activeSvantekDevice) {
+    if (!this.activeSvantekDeviceId) {
       return;
     }
     if (this.svantekResultPoll !== undefined) {
       clearInterval(this.svantekResultPoll);
       this.svantekResultPoll = undefined;
     }
-    this.devicesService.stopRecording(this.activeSvantekDevice).catch(err => {
+    this.devicesService.stopRecording(this.activeSvantekDeviceId).catch(err => {
       this.logger.error('Failed to stop Svantek recording', err);
     });
-    this.activeSvantekDevice = undefined;
+    this.activeSvantekDeviceId = undefined;
   }
 
   /**
@@ -907,9 +909,9 @@ export class ExamService {
       this.logger.debug('Stopping dosimetry for: ' + tabsintId);
       clearInterval(this.dosimeterResultsPoll[tabsintId]);
       delete this.dosimeterResultsPoll[tabsintId];
-      const devices = await this.devicesService.getDeviceOrDefault(tabsintId, []);
-      if (devices.length === 1) {
-        await this.devicesService.abortExams(devices[0]);
+      const deviceIds = await this.devicesService.getDeviceIdOrDefault(tabsintId, []);
+      if (deviceIds.length === 1) {
+        await this.devicesService.abortExams(deviceIds[0]);
       } else {
         this.logger.debug('Failed to find device to abort dosimetry exam: ' + tabsintId);
       }
@@ -923,10 +925,10 @@ export class ExamService {
     if (this.activeWavfileDevice) {
       const device = (await firstValueFrom(this.devicesService.devices)).find(device => device.deviceId === this.activeWavfileDevice);
       if (device?.state === DeviceState.Connected) {
-        const response = await this.devicesService.requestStatus(device);
+        const response = await this.devicesService.requestStatus(device.deviceId);
         // Cancel any ongoing exams for the active wav file device
         if (isStatusResponse(response) && response.msg[1].state === 2) {
-          this.devicesService.abortExams(device);
+          this.devicesService.abortExams(device.deviceId);
         }
       }
       this.activeWavfileDevice = undefined;
@@ -935,11 +937,12 @@ export class ExamService {
 
   /**
    * Polling function to get results from dosimeter.
-   * @param dosimeter The dosimeter to get results from.
+   * @param deviceId The identifier of the dosimeter to get results from.
+   * @param tabsintId The TabSINT identifier of the dosimeter, used for logging.
    */
-  async pollForDosimeterResults(dosimeter: IDevice) {
+  async pollForDosimeterResults(deviceId: string, tabsintId: string) {
     try {
-      const resp = await this.devicesService.requestResults(dosimeter);
+      const resp = await this.devicesService.requestResults(deviceId);
       const res = resp?.msg[1] as any;
       const time = new Date().toJSON();
       const dosimeterResults: DosimeterResultsInterface = {
@@ -956,7 +959,7 @@ export class ExamService {
       };
       this.resultsModel.pushDosimeterData(structuredClone(dosimeterResults));
     } catch {
-      this.logger.debug('Failed requesting results during dosimetry for device: ' + dosimeter.tabsintId);
+      this.logger.debug('Failed requesting results during dosimetry for device: ' + tabsintId);
     }
   }
 
@@ -966,18 +969,17 @@ export class ExamService {
    */
   async playChaWavFile(chaWavfiles: ChaWavfilesInterface) {
     const allowableDevices = [DeviceType.Wahts];
-    const deviceList = await this.devicesService.getDeviceOrDefault(chaWavfiles.tabsintId, allowableDevices);
-    const device = await this.devicesService.confirmSingleDevice(deviceList);
-    if (!device) {
+    const deviceId = await this.devicesService.confirmSingleDeviceId(chaWavfiles.tabsintId, allowableDevices);
+    if (!deviceId) {
       this.logger.error('Error playing CHA files, check the provided wav files and connected device.');
       return;
     }
     try {
-      const status = await this.devicesService.requestStatus(device);
+      const status = await this.devicesService.requestStatus(deviceId);
       if (isStatusResponse(status)) {
         if (status.msg[1].state === 2) {
           this.logger.warning('CHA exam is still running while user queues an exam. Aborting exams...');
-          await this.devicesService.abortExams(device);
+          await this.devicesService.abortExams(deviceId);
         } else if (status.msg[1].state !== 1) {
           this.logger.error('Unexpected device status, CHA wav files will not be played.');
           return;
@@ -999,8 +1001,8 @@ export class ExamService {
           SecondLeq: this.resizeLeq(chaWavfiles.wavfiles[1].Leq),
         };
       }
-      await this.devicesService.queueExam(device, 'PlaySound', playSoundProperties);
-      this.activeWavfileDevice = device.deviceId;
+      await this.devicesService.queueExam(deviceId, 'PlaySound', playSoundProperties);
+      this.activeWavfileDevice = deviceId;
     } catch (err) {
       this.activeWavfileDevice = undefined;
       this.logger.error('Failed to play CHA wav files', err);

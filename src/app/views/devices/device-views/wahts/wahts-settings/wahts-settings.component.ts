@@ -11,7 +11,6 @@ import { StateModel } from '../../../../../models/state/state.service';
 import { AppState, DeviceState } from '../../../../../utilities/constants';
 import { MatDialog } from '@angular/material/dialog';
 import { DevicesService } from '../../../../../services/devices/devices.service';
-import { IWahtsDevice } from '../../../../../interfaces/devices/wahts-device.interface';
 
 @Component({
   selector: 'app-wahts-settings',
@@ -24,7 +23,7 @@ export class WahtsSettingsComponent implements OnInit, OnDestroy {
   private readonly dialog = inject(MatDialog);
   private readonly devicesService = inject(DevicesService);
 
-  @Input() device!: IWahtsDevice;
+  @Input() deviceId!: string;
   DeviceState = DeviceState;
 
   disk: DiskInterface;
