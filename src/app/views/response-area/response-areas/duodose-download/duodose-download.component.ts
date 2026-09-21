@@ -74,7 +74,7 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
   isDosBusy = true;
 
   /** Set in ngOnDestroy so in-flight device requests stop issuing further adapter calls once the page is left. */
-  private destroyed = false;
+  private examActive = false;
 
   private static readonly SESSION_NAME_RE = /^(?<device>.+?)_(?<datetime>\d{8}T\d{6}\.\d{3}Z)_(?<session>.*)$/;
 
@@ -104,19 +104,19 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroyed = true;
+    this.examActive = true;
     this.pageSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();
     this.resultsSubscription?.unsubscribe();
   }
 
   async getDosimeterFiles() {
-    if (this.destroyed) return;
+    if (this.examActive) return;
     this.isDosBusy = true;
     this.availableFiles = [];
     try {
       const dosimeters = await this.devicesService.getDeviceOrDefault(this.tabsintId, [DeviceType.Duodose]);
-      if (this.destroyed) return;
+      if (this.examActive) return;
       if (dosimeters.length === 0) {
         this.logger.error('Error with duodose data download: No dosimeter was available.');
         return;
@@ -129,7 +129,7 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
       const device = this.dosimeter;
 
       const freeSpaceResponse = await this.devicesService.requestSdBytesFree(device);
-      if (this.destroyed) return;
+      if (this.examActive) return;
       const freeSpace = freeSpaceResponse?.msg?.[1];
       if (typeof freeSpace === 'object' && freeSpace !== null && 'BytesFree' in freeSpace) {
         [this.bytesFree, this.bytesFreeUnits] = this.parseFreeSpace(freeSpace.BytesFree as string);
@@ -148,7 +148,7 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
 
   /**
    * List the session folders on a device, resolving each entry's long file name.
-   * Checks `destroyed` before each device request so leaving the page stops the loop from
+   * Checks `examActive` before each device request so leaving the page stops the loop from
    * issuing further adapter calls once the response area is gone.
    * @param device The device to list session folders from.
    * @returns The parsed session folders found so far; may be incomplete if the page was left mid-loop.
@@ -157,16 +157,16 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
     const files: DoseFile[] = [];
 
     const dirResponse = await this.devicesService.getDirectory(device, this.baseDir);
-    if (this.destroyed) return files;
+    if (this.examActive) return files;
     if (!isGetDirectoryResponse(dirResponse)) {
       this.logger.error('Error with duodose data download getting directory names.');
       return files;
     }
 
     for (const entry of dirResponse.msg[1]) {
-      if (this.destroyed) return files;
+      if (this.examActive) return files;
       const longNameResponse = await this.devicesService.getChaLongName(device, this.baseDir + entry.Path);
-      if (this.destroyed) return files;
+      if (this.examActive) return files;
 
       if (!isLongNameResponse(longNameResponse)) {
         this.logger.debug(`duodose download, unexpected long name response for ${entry.Path}: ${JSON.stringify(longNameResponse)}`);
