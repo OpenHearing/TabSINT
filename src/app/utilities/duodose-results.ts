@@ -162,14 +162,14 @@ function combineRecords(
     const values = perSessionMetrics.map(m => m.get(header));
     if (single) return formatValue(values[0]);
     const numeric = values.map(v => (typeof v === 'number' ? v : null));
-    if (numeric.some(v => v === null)) return '';
+    if (numeric.includes(null)) return '';
     const rule = combineRuleForLabel(labelsByHeader.get(header) ?? header);
     return rule ? formatValue(rule(numeric as number[], durations)) : '';
   });
 
   const peaks = records.map(r => r.peakLevel).filter((p): p is number => p !== null);
   const impulses = records.map(r => r.numImpulses).filter((n): n is number => n !== null);
-  const earliestStart = records.map(r => r.startTime).reduce((a, b) => (Date.parse(b) < Date.parse(a) ? b : a));
+  const earliestStart = records.map(r => r.startTime).reduce((a, b) => (Date.parse(b) < Date.parse(a) ? b : a), records[0].startTime);
 
   return [
     ...combinedMetrics,

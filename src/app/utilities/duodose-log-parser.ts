@@ -61,27 +61,24 @@ export function splitCsvLine(line: string): string[] {
   const cells: string[] = [];
   let current = '';
   let quoted = false;
-  for (let i = 0; i < line.length; i++) {
+  let i = 0;
+  while (i < line.length) {
     const char = line[i];
-    if (quoted) {
-      if (char === '"') {
-        if (line[i + 1] === '"') {
-          current += '"';
-          i++;
-        } else {
-          quoted = false;
-        }
-      } else {
-        current += char;
-      }
-    } else if (char === '"') {
-      quoted = true;
-    } else if (char === ',') {
+    const nextChar = line[i + 1];
+    if (quoted && char === '"' && nextChar === '"') {
+      current += '"';
+      i += 2;
+      continue;
+    }
+    if (char === '"') {
+      quoted = !quoted;
+    } else if (char === ',' && !quoted) {
       cells.push(current.trim());
       current = '';
     } else {
       current += char;
     }
+    i += 1;
   }
   cells.push(current.trim());
   return cells;
@@ -107,56 +104,82 @@ function toNumberOrNull(cell: string | undefined): number | null {
   return typeof value === 'number' ? value : null;
 }
 
+type RowTail = Pick<DoseSessionRecord, 'channels' | 'numImpulses' | 'peakLevel' | 'format'>;
+
+interface TailState extends RowTail {
+  current?: DoseChannel;
+  bareNumbers: string[];
+}
+
+function trimTrailingEmptyCells(cells: string[]): string[] {
+  let end = cells.length;
+  while (end > 0 && cells[end - 1] === '') end--;
+  return cells.slice(0, end);
+}
+
+/** Legacy rows start straight in with a metric label followed by its value. */
+function detectRowFormat(cells: string[]): DoseRowFormat {
+  return cells.length > 0 && !isNumericCell(cells[0]) && isValueCell(cells[1]) ? 'legacy' : 'grouped';
+}
+
+function addMetricToChannel(state: TailState, metric: DoseMetric): void {
+  if (state.format === 'legacy') {
+    state.channels.push({ name: `Channel ${state.channels.length + 1}`, metrics: [metric] });
+    return;
+  }
+  if (!state.current) {
+    state.current = { name: `Channel ${state.channels.length + 1}`, metrics: [] };
+    state.channels.push(state.current);
+  }
+  state.current.metrics.push(metric);
+}
+
+function applyLabelValuePair(state: TailState, label: string, value: string): void {
+  if (IMPULSES_LABEL_RE.test(label)) {
+    state.numImpulses = toNumberOrNull(value);
+  } else if (PEAK_LABEL_RE.test(label)) {
+    state.peakLevel = toNumberOrNull(value);
+  } else {
+    addMetricToChannel(state, { label, value: toMetricValue(value) });
+  }
+}
+
+function startChannel(state: TailState, name: string): void {
+  state.current = { name, metrics: [] };
+  state.channels.push(state.current);
+}
+
+/** Legacy rows end with unlabelled `<num impulses>,<peak level>` columns. */
+function applyBareNumbers(state: TailState): void {
+  const [impulses, peak] = state.bareNumbers;
+  if (state.numImpulses === null && impulses !== undefined) state.numImpulses = toNumberOrNull(impulses);
+  if (state.peakLevel === null && peak !== undefined) state.peakLevel = toNumberOrNull(peak);
+}
+
 /**
  * Parse the variable-length tail of a session row into channels, impulses and peak level.
+ * Cells are consumed as `<label>,<value>` pairs, bare numbers, or channel names.
  */
-function parseRowTail(tail: string[]): Pick<DoseSessionRecord, 'channels' | 'numImpulses' | 'peakLevel' | 'format'> {
-  const cells = [...tail];
-  while (cells.length > 0 && cells.at(-1) === '') cells.pop();
-
-  // Legacy rows start straight in with a metric label followed by its value.
-  const format: DoseRowFormat = cells.length > 0 && !isNumericCell(cells[0]) && isValueCell(cells[1]) ? 'legacy' : 'grouped';
-
-  const channels: DoseChannel[] = [];
-  let current: DoseChannel | undefined;
-  let numImpulses: number | null = null;
-  let peakLevel: number | null = null;
-  const bareNumbers: string[] = [];
+function parseRowTail(tail: string[]): RowTail {
+  const cells = trimTrailingEmptyCells(tail);
+  const state: TailState = { channels: [], numImpulses: null, peakLevel: null, format: detectRowFormat(cells), bareNumbers: [] };
 
   let i = 0;
   while (i < cells.length) {
-    const label = cells[i];
+    const cell = cells[i];
     const next = cells[i + 1];
-    if (!isNumericCell(label) && isValueCell(next)) {
-      const metric: DoseMetric = { label, value: toMetricValue(next) };
-      if (IMPULSES_LABEL_RE.test(label)) {
-        numImpulses = toNumberOrNull(next);
-      } else if (PEAK_LABEL_RE.test(label)) {
-        peakLevel = toNumberOrNull(next);
-      } else if (format === 'legacy') {
-        channels.push({ name: `Channel ${channels.length + 1}`, metrics: [metric] });
-      } else {
-        if (!current) {
-          current = { name: `Channel ${channels.length + 1}`, metrics: [] };
-          channels.push(current);
-        }
-        current.metrics.push(metric);
-      }
+    if (!isNumericCell(cell) && isValueCell(next)) {
+      applyLabelValuePair(state, cell, next);
       i += 2;
-    } else if (isNumericCell(label)) {
-      bareNumbers.push(label);
-      i += 1;
     } else {
-      current = { name: label, metrics: [] };
-      channels.push(current);
+      if (isNumericCell(cell)) state.bareNumbers.push(cell);
+      else startChannel(state, cell);
       i += 1;
     }
   }
+  applyBareNumbers(state);
 
-  // Legacy rows end with unlabelled `<num impulses>,<peak level>` columns.
-  if (bareNumbers.length >= 1 && numImpulses === null) numImpulses = toNumberOrNull(bareNumbers[0]);
-  if (bareNumbers.length >= 2 && peakLevel === null) peakLevel = toNumberOrNull(bareNumbers[1]);
-
+  const { channels, numImpulses, peakLevel, format } = state;
   return { channels, numImpulses, peakLevel, format };
 }
 
