@@ -9,8 +9,6 @@ import { PageModel } from '../../../../models/page/page.service';
 import { StateModel } from '../../../../models/state/state.service';
 import { Logger } from '../../../../services/logger.service';
 import { DevicesService } from '../../../../services/devices/devices.service';
-import { DeviceType } from '../../../../utilities/constants';
-import { IDevice } from '../../../../interfaces/devices/device.interface';
 import { IDeviceResponse } from '../../../../interfaces/devices/device-response.interface';
 
 describe('DuodoseDownloadComponent', () => {
@@ -18,28 +16,28 @@ describe('DuodoseDownloadComponent', () => {
   let fixture: ComponentFixture<DuodoseDownloadComponent>;
   let devicesService: jasmine.SpyObj<DevicesService>;
 
-  const mockDevice = { deviceId: 'DOS-A0000001', type: DeviceType.Duodose } as unknown as IDevice;
+  const mockDeviceId = 'DOS-A0000001';
 
   const directoryResponse = (paths: string[]): IDeviceResponse => ({
-    deviceId: mockDevice.deviceId,
+    deviceId: mockDeviceId,
     msg: ['Success', paths.map(Path => ({ Path, SizeBytes: 0, Attributes: 272 }))],
   });
 
   const longNameResponse = (longName: string): IDeviceResponse => ({
-    deviceId: mockDevice.deviceId,
+    deviceId: mockDeviceId,
     msg: [longName],
   });
 
   beforeEach(async () => {
     devicesService = jasmine.createSpyObj<DevicesService>('DevicesService', [
-      'getDeviceOrDefault',
+      'getDeviceIdOrDefault',
       'requestSdBytesFree',
       'getDirectory',
       'getChaLongName',
       'copyChaFileToLocalStorageAndReadFile',
     ]);
-    devicesService.getDeviceOrDefault.and.resolveTo([mockDevice]);
-    devicesService.requestSdBytesFree.and.resolveTo({ deviceId: mockDevice.deviceId, msg: ['Success', { BytesFree: '1000000' }] });
+    devicesService.getDeviceIdOrDefault.and.resolveTo([mockDeviceId]);
+    devicesService.requestSdBytesFree.and.resolveTo({ deviceId: mockDeviceId, msg: ['Success', { BytesFree: '1000000' }] });
 
     await TestBed.configureTestingModule({
       declarations: [DuodoseDownloadComponent],
@@ -66,13 +64,13 @@ describe('DuodoseDownloadComponent', () => {
 
   it('lists session folders using the directory and long-name device calls, skipping non-session entries', async () => {
     devicesService.getDirectory.and.resolveTo(directoryResponse(['CONFIG', 'SHORT~1']));
-    devicesService.getChaLongName.and.callFake(async (_device: IDevice, path: string) =>
+    devicesService.getChaLongName.and.callFake(async (_deviceId: string, path: string) =>
       path.endsWith('CONFIG') ? longNameResponse('CONFIG') : longNameResponse('A0000001_20260908T144213.000Z_ceareTest')
     );
 
     await component.getDosimeterFiles();
 
-    expect(devicesService.getDirectory).toHaveBeenCalledWith(mockDevice, component.baseDir);
+    expect(devicesService.getDirectory).toHaveBeenCalledWith(mockDeviceId, component.baseDir);
     expect(devicesService.getChaLongName).toHaveBeenCalledTimes(2);
     expect(component.availableFiles.length).toBe(1);
     expect(component.availableFiles[0].deviceName).toBe('A0000001');
@@ -92,7 +90,7 @@ describe('DuodoseDownloadComponent', () => {
 
   it('stops issuing long-name requests once the component is destroyed mid-listing', async () => {
     devicesService.getDirectory.and.resolveTo(directoryResponse(['A0000001_20260908T144213.000Z_first', 'A0000001_20260908T144513.000Z_second']));
-    devicesService.getChaLongName.and.callFake(async (_device: IDevice, path: string) => {
+    devicesService.getChaLongName.and.callFake(async (_deviceId: string, path: string) => {
       // Simulate the user navigating away from the page while the first lookup is in flight.
       if (path.endsWith('first')) {
         component.ngOnDestroy();
@@ -111,6 +109,6 @@ describe('DuodoseDownloadComponent', () => {
 
     await component.getDosimeterFiles();
 
-    expect(devicesService.getDeviceOrDefault).not.toHaveBeenCalled();
+    expect(devicesService.getDeviceIdOrDefault).not.toHaveBeenCalled();
   });
 });

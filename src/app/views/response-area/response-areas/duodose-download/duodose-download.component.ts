@@ -10,7 +10,6 @@ import { Logger } from '../../../../services/logger.service';
 import { DuodoseDownloadInterface, DoseFile } from './duodose-download.interface';
 import { DevicesService } from '../../../../services/devices/devices.service';
 import { DeviceType } from '../../../../utilities/constants';
-import { IDevice } from '../../../../interfaces/devices/device.interface';
 import { isGetDirectoryResponse, isLongNameResponse } from '../../../../guards/type.guard';
 import { DoseSessionRecord, findSessionByStart, parseDuodoseLog } from '../../../../utilities/duodose-log-parser';
 import {
@@ -115,20 +114,20 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
     this.isDosBusy = true;
     this.availableFiles = [];
     try {
-      const dosimeters = await this.devicesService.getDeviceOrDefault(this.tabsintId, [DeviceType.Duodose]);
+      const dosimeterIds = await this.devicesService.getDeviceIdOrDefault(this.tabsintId, [DeviceType.Duodose]);
       if (this.examActive) return;
-      if (dosimeters.length === 0) {
+      if (dosimeterIds.length === 0) {
         this.logger.error('Error with duodose data download: No dosimeter was available.');
         return;
       }
-      if (dosimeters.length >= 2) {
+      if (dosimeterIds.length >= 2) {
         this.logger.error('Error with duodose data download: Multiple devices available and one was not specified.');
         return;
       }
-      this.dosimeter = dosimeters[0];
-      const device = this.dosimeter;
+      this.dosimeterId = dosimeterIds[0];
+      const deviceId = this.dosimeterId;
 
-      const freeSpaceResponse = await this.devicesService.requestSdBytesFree(device);
+      const freeSpaceResponse = await this.devicesService.requestSdBytesFree(deviceId);
       if (this.examActive) return;
       const freeSpace = freeSpaceResponse?.msg?.[1];
       if (typeof freeSpace === 'object' && freeSpace !== null && 'BytesFree' in freeSpace) {
@@ -138,7 +137,7 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
         return;
       }
 
-      this.availableFiles = await this.listSessionFolders(device);
+      this.availableFiles = await this.listSessionFolders(deviceId);
     } catch (error) {
       this.logger.error(`Error with duodose data download listing files: ${JSON.stringify(error)}`);
     } finally {
@@ -150,13 +149,13 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
    * List the session folders on a device, resolving each entry's long file name.
    * Checks `examActive` before each device request so leaving the page stops the loop from
    * issuing further adapter calls once the response area is gone.
-   * @param device The device to list session folders from.
+   * @param deviceId The identifier of the device to list session folders from.
    * @returns The parsed session folders found so far; may be incomplete if the page was left mid-loop.
    */
-  private async listSessionFolders(device: IDevice): Promise<DoseFile[]> {
+  private async listSessionFolders(deviceId: string): Promise<DoseFile[]> {
     const files: DoseFile[] = [];
 
-    const dirResponse = await this.devicesService.getDirectory(device, this.baseDir);
+    const dirResponse = await this.devicesService.getDirectory(deviceId, this.baseDir);
     if (this.examActive) return files;
     if (!isGetDirectoryResponse(dirResponse)) {
       this.logger.error('Error with duodose data download getting directory names.');
@@ -165,7 +164,7 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
 
     for (const entry of dirResponse.msg[1]) {
       if (this.examActive) return files;
-      const longNameResponse = await this.devicesService.getChaLongName(device, this.baseDir + entry.Path);
+      const longNameResponse = await this.devicesService.getChaLongName(deviceId, this.baseDir + entry.Path);
       if (this.examActive) return files;
 
       if (!isLongNameResponse(longNameResponse)) {
@@ -275,7 +274,7 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
     this.resultsValues = this.resultsValuesDefault.slice();
     this.resultsList = [];
 
-    if (this.isDosBusy || !this.dosimeter) return undefined;
+    if (this.isDosBusy || !this.dosimeterId) return undefined;
     const selectedEntries = this.availableFiles.filter(entry => entry.selected);
     if (selectedEntries.length === 0) return undefined;
 
@@ -285,7 +284,7 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
     const fileToRead = `${deviceName}_Log.csv`;
 
     try {
-      const resp = await this.devicesService.copyChaFileToLocalStorageAndReadFile(this.dosimeter, this.baseDir + fileToRead);
+      const resp = await this.devicesService.copyChaFileToLocalStorageAndReadFile(this.dosimeterId, this.baseDir + fileToRead);
       const text = typeof resp?.msg?.[0] === 'string' ? resp.msg[0] : '';
       if (text === '') {
         this.logger.error(`Error reading duodose log ${fileToRead}: empty response.`);

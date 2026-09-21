@@ -634,21 +634,29 @@ export class DevicesService {
 
   /**
    * List files in a directory on a device (DuoDose only?).
-   * @param device The device to list the directory from.
+   * @param deviceId The identifier of the device to list the directory from.
    * @param baseDir The directory to list.
    * @returns The directory listing from the device.
    */
-  async getDirectory(device: IDevice, baseDir: string): Promise<IDeviceResponse | undefined> {
+  async getDirectory(deviceId: string, baseDir: string): Promise<IDeviceResponse | undefined> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device) {
+      return undefined;
+    }
     return this.getManager(device.type).getDirectory?.(device, baseDir);
   }
 
   /**
    * Get the long name of a file on a device from its short name (DuoDose only?).
-   * @param device The device to get the long file name from.
+   * @param deviceId The identifier of the device to get the long file name from.
    * @param shortName The short name of the file.
    * @returns The long name of the file.
    */
-  async getChaLongName(device: IDevice, shortName: string): Promise<IDeviceResponse | undefined> {
+  async getChaLongName(deviceId: string, shortName: string): Promise<IDeviceResponse | undefined> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device) {
+      return undefined;
+    }
     return this.getManager(device.type).getChaLongName?.(device, shortName);
   }
 
