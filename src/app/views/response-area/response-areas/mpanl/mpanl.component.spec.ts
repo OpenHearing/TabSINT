@@ -45,15 +45,17 @@ describe('MpanlComponent', () => {
 
   beforeEach(async () => {
     devicesService = jasmine.createSpyObj<DevicesService>('DevicesService', [
-      'getDeviceOrDefault',
+      'getDeviceIdOrDefault',
+      'getDeviceById',
       'startRecording',
       'stopRecording',
       'getSvantekResult',
     ]);
-    devicesService.getDeviceOrDefault.and.resolveTo([mockDevice]);
+    devicesService.getDeviceIdOrDefault.and.resolveTo([mockDevice.deviceId]);
+    devicesService.getDeviceById.and.resolveTo(mockDevice);
     devicesService.startRecording.and.resolveTo(undefined);
     devicesService.stopRecording.and.resolveTo(undefined);
-    devicesService.getSvantekResult.and.returnValue(mockSvantekResult);
+    devicesService.getSvantekResult.and.resolveTo(mockSvantekResult);
 
     examService = jasmine.createSpyObj<ExamService>('ExamService', ['submit', 'submitDefault']);
 
@@ -118,7 +120,7 @@ describe('MpanlComponent', () => {
   });
 
   it('alerts and stays on the start screen when no Svantek dosimeter is connected', fakeAsync(() => {
-    devicesService.getDeviceOrDefault.and.resolveTo([]);
+    devicesService.getDeviceIdOrDefault.and.resolveTo([]);
     pageModel.updatePage({
       ...pageInterfaceDefaults,
       id: 'mpanl',
@@ -145,13 +147,13 @@ describe('MpanlComponent', () => {
     component.startMeasurement(3000);
     tick();
 
-    expect(devicesService.startRecording).toHaveBeenCalledWith(mockDevice);
+    expect(devicesService.startRecording).toHaveBeenCalledWith(mockDevice.deviceId);
     expect(component.examState).toBe('recording');
 
     tick(3000);
     flush();
 
-    expect(devicesService.stopRecording).toHaveBeenCalledWith(mockDevice);
+    expect(devicesService.stopRecording).toHaveBeenCalledWith(mockDevice.deviceId);
     expect(component.examState).toBe('results');
     expect(component.mpanlResults?.duration).toBe(3000);
     expect(component.mpanlResults?.data.length).toBe(7);

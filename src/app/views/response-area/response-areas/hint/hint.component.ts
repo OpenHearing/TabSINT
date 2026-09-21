@@ -8,7 +8,6 @@ import { ExamService } from '../../../../controllers/exam.service';
 import { DevicesService } from '../../../../services/devices/devices.service';
 import { Logger } from '../../../../services/logger.service';
 import { PageInterface } from '../../../../models/page/page.interface';
-import { IDevice } from '../../../../interfaces/devices/device.interface';
 import { DeviceType } from '../../../../utilities/constants';
 import { getCurrentDatetime } from '../../../../utilities/exam-helper-functions';
 import { isWahtsResultsResponse } from '../../../../guards/type.guard';
@@ -60,7 +59,7 @@ export class HintComponent implements OnInit, OnDestroy {
   autoSubmit = hintSchema.properties.autoSubmit.default;
 
   // Exam UI state
-  device: IDevice | undefined;
+  deviceId: string | undefined;
   listOfWords: string[] = [];
   response: number[] = [];
   wordsDisabled = true;
@@ -125,7 +124,7 @@ export class HintComponent implements OnInit, OnDestroy {
     this.numberOfPresentations = this.examProperties.NumberOfPresentations ?? this.numberOfPresentations;
 
     await this.setupDevice(responseArea);
-    if (!this.device) {
+    if (!this.deviceId) {
       return;
     }
     await this.startExam();
@@ -136,9 +135,8 @@ export class HintComponent implements OnInit, OnDestroy {
    * @param responseArea The HINT response area definition.
    */
   private async setupDevice(responseArea: HintResponseAreaInterface): Promise<void> {
-    const deviceList = await this.devicesService.getDeviceOrDefault(responseArea.tabsintId, this.allowableDevices);
-    this.device = await this.devicesService.confirmSingleDevice(deviceList);
-    if (!this.device) {
+    this.deviceId = await this.devicesService.confirmSingleDeviceId(responseArea.tabsintId, this.allowableDevices);
+    if (!this.deviceId) {
       this.logger.error('HINT exam: no WAHTS device available.');
     }
   }
@@ -147,12 +145,12 @@ export class HintComponent implements OnInit, OnDestroy {
    * Queue the exam on the device and request the first presentation.
    */
   async startExam(): Promise<void> {
-    if (!this.device) {
+    if (!this.deviceId) {
       await this.devicesService.deviceNotFound();
       return;
     }
     // Submit advances each sentence rather than the whole page while the exam runs.
-    this.examService.submit = () => this.processSelectedWords();
+    this.examService.submit = async () => this.processSelectedWords();
 
     // ListNumber 0 (the schema default) means "no list chosen"; pick one client-side for traceability.
     if (!this.examProperties.ListNumber) {
@@ -166,8 +164,8 @@ export class HintComponent implements OnInit, OnDestroy {
     this.presentationCount = 0;
     this.correctPresentations = 0;
 
-    await this.devicesService.abortExams(this.device);
-    await this.devicesService.queueExam(this.device, EXAM_NAME, this.examProperties);
+    await this.devicesService.abortExams(this.deviceId);
+    await this.devicesService.queueExam(this.deviceId, EXAM_NAME, this.examProperties);
     this.examActive = true;
     await this.getPresentationInfo();
   }
@@ -299,11 +297,11 @@ export class HintComponent implements OnInit, OnDestroy {
    * @param wordCount The total number of words in the sentence.
    */
   private async submitWords(correctWords: number, wordCount: number): Promise<void> {
-    if (!this.device) {
+    if (!this.deviceId) {
       return;
     }
     try {
-      await this.devicesService.examSubmission(this.device, { name: SUBMISSION_NAME, CorrectWords: correctWords, WordCount: wordCount });
+      await this.devicesService.examSubmission(this.deviceId, { name: SUBMISSION_NAME, CorrectWords: correctWords, WordCount: wordCount });
       this.resetResults();
       await this.getPresentationInfo();
     } catch (error) {
@@ -375,10 +373,10 @@ export class HintComponent implements OnInit, OnDestroy {
    * @returns The results, or undefined if the response was not usable.
    */
   private async requestHintResults(): Promise<HintDeviceResultsInterface | undefined> {
-    if (!this.device) {
+    if (!this.deviceId) {
       return undefined;
     }
-    const resp = await this.devicesService.requestResults(this.device);
+    const resp = await this.devicesService.requestResults(this.deviceId);
     if (isWahtsResultsResponse(resp)) {
       return resp.msg[1] as HintDeviceResultsInterface;
     }
@@ -392,8 +390,8 @@ export class HintComponent implements OnInit, OnDestroy {
   private stopExam(): void {
     this.examActive = false;
     this.clearTimers();
-    if (this.device) {
-      this.devicesService.abortExams(this.device);
+    if (this.deviceId) {
+      this.devicesService.abortExams(this.deviceId);
     }
   }
 

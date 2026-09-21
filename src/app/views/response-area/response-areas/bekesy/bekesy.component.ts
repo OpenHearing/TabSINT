@@ -72,7 +72,7 @@ export class BekesyComponent implements OnInit, OnDestroy {
   private reversals = -1; // first two does not count
 
   ngOnInit(): void {
-    this.examService.submit = this.submitButton;
+    this.examService.submit = async () => this.submitButton();
     this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type === 'bekesyResponseArea') {
         const updatedResponseArea = updatedPage.responseArea as BekesyResponseAreaInterface;

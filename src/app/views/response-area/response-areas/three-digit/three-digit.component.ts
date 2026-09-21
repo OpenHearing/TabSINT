@@ -8,7 +8,6 @@ import { ExamService } from '../../../../controllers/exam.service';
 import { DevicesService } from '../../../../services/devices/devices.service';
 import { Logger } from '../../../../services/logger.service';
 import { PageInterface } from '../../../../models/page/page.interface';
-import { IDevice } from '../../../../interfaces/devices/device.interface';
 import { DeviceStatus, DeviceType } from '../../../../utilities/constants';
 import { getCurrentDatetime } from '../../../../utilities/exam-helper-functions';
 import { isWahtsResultsResponse } from '../../../../guards/type.guard';
@@ -65,7 +64,7 @@ export class ThreeDigitComponent implements OnInit, OnDestroy {
   nPresentations = examPropSchema.nPresentations.default;
 
   // Exam UI state
-  device: IDevice | undefined;
+  deviceId: string | undefined;
   presentationCount = 0;
   digitsDisabled = true;
   showFeedback = false;
@@ -145,7 +144,7 @@ export class ThreeDigitComponent implements OnInit, OnDestroy {
     this.examProperties.nPresentations = this.nPresentations;
 
     await this.setupDevice(responseArea);
-    if (!this.device) {
+    if (!this.deviceId) {
       return;
     }
     await this.startExam();
@@ -156,9 +155,8 @@ export class ThreeDigitComponent implements OnInit, OnDestroy {
    * @param responseArea The three digit response area definition.
    */
   private async setupDevice(responseArea: ThreeDigitResponseAreaInterface): Promise<void> {
-    const deviceList = await this.devicesService.getDeviceOrDefault(responseArea.tabsintId, this.allowableDevices);
-    this.device = await this.devicesService.confirmSingleDevice(deviceList);
-    if (!this.device) {
+    this.deviceId = await this.devicesService.confirmSingleDeviceId(responseArea.tabsintId, this.allowableDevices);
+    if (!this.deviceId) {
       this.logger.error('Three digit exam: no WAHTS device available.');
     }
   }
@@ -167,13 +165,13 @@ export class ThreeDigitComponent implements OnInit, OnDestroy {
    * Queue the exam on the device and request the first presentation.
    */
   async startExam(): Promise<void> {
-    if (!this.device) {
+    if (!this.deviceId) {
       await this.devicesService.deviceNotFound();
       return;
     }
     this.stateModel.updateState({ isSubmittable: false });
-    await this.devicesService.abortExams(this.device);
-    await this.devicesService.queueExam(this.device, EXAM_NAME, this.examProperties);
+    await this.devicesService.abortExams(this.deviceId);
+    await this.devicesService.queueExam(this.deviceId, EXAM_NAME, this.examProperties);
     this.examActive = true;
     this.resetPresentation();
     await this.getPresentationInfo();
@@ -290,7 +288,7 @@ export class ThreeDigitComponent implements OnInit, OnDestroy {
    * presentation.
    */
   private async submitDigits(): Promise<void> {
-    if (!this.device) {
+    if (!this.deviceId) {
       return;
     }
     const numberCorrect = this.digitCorrect.filter(correct => correct).length;
@@ -312,7 +310,7 @@ export class ThreeDigitComponent implements OnInit, OnDestroy {
     this.resultsModel.updateCurrentPage({ response: { presentations: this.presentations } as ThreeDigitResponseInterface });
 
     try {
-      await this.devicesService.examSubmission(this.device, { name: SUBMISSION_NAME, nCorrect: numberCorrect });
+      await this.devicesService.examSubmission(this.deviceId, { name: SUBMISSION_NAME, nCorrect: numberCorrect });
       this.resetPresentation();
       await this.getPresentationInfo();
     } catch (error) {
@@ -343,10 +341,10 @@ export class ThreeDigitComponent implements OnInit, OnDestroy {
    * @returns The results, or undefined if the response was not usable.
    */
   private async requestThreeDigitResults(): Promise<ThreeDigitDeviceResultsInterface | undefined> {
-    if (!this.device) {
+    if (!this.deviceId) {
       return undefined;
     }
-    const resp = await this.devicesService.requestResults(this.device);
+    const resp = await this.devicesService.requestResults(this.deviceId);
     if (isWahtsResultsResponse(resp)) {
       return resp.msg[1] as ThreeDigitDeviceResultsInterface;
     }
@@ -360,8 +358,8 @@ export class ThreeDigitComponent implements OnInit, OnDestroy {
   private stopExam(): void {
     this.examActive = false;
     this.clearTimers();
-    if (this.device) {
-      this.devicesService.abortExams(this.device);
+    if (this.deviceId) {
+      this.devicesService.abortExams(this.deviceId);
     }
   }
 

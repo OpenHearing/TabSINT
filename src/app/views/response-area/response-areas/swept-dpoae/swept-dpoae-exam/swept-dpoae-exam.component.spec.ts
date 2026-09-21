@@ -23,7 +23,7 @@ describe('SweptDpoaeExamComponent', () => {
   beforeEach(async () => {
     devicesService = jasmine.createSpyObj<DevicesService>('DevicesService', ['abortExams', 'isDeviceMessagePending']);
     devicesService.abortExams.and.resolveTo(undefined);
-    devicesService.isDeviceMessagePending.and.returnValue(false);
+    devicesService.isDeviceMessagePending.and.resolveTo(false);
 
     examService = jasmine.createSpyObj<ExamService>('ExamService', [
       'submit',

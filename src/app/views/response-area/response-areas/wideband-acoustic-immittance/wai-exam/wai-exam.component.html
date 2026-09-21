@@ -2,7 +2,11 @@
   <app-input-parameters *ngSwitchCase="'input-parameters'" instruction="Press submit to start the exam." [parameterMap]="inputParameterMap">
   </app-input-parameters>
 
-  <app-wai-in-progress *ngSwitchCase="'in-progress'" [device]="device" [parameterMap]="inputParameterMap" (WAIResultsEvent)="saveResults($event)">
+  <app-wai-in-progress
+    *ngSwitchCase="'in-progress'"
+    [deviceId]="deviceId!"
+    [parameterMap]="inputParameterMap"
+    (WAIResultsEvent)="saveResults($event)">
   </app-wai-in-progress>
 
   <app-wai-results

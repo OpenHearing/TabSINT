@@ -8,7 +8,6 @@ import { DiskModel } from '../../../../../models/disk/disk.service';
 import { StateModel } from '../../../../../models/state/state.service';
 
 import { AppState, DeviceState } from '../../../../../utilities/constants';
-import { IDuodoseDevice } from '../../../../../interfaces/devices/duodose-device.interface';
 
 @Component({
   selector: 'app-duodose-settings',
@@ -18,7 +17,7 @@ export class DuodoseSettingsComponent implements OnInit, OnDestroy {
   private readonly diskModel = inject(DiskModel);
   private readonly stateModel = inject(StateModel);
 
-  @Input() device!: IDuodoseDevice;
+  @Input() deviceId!: string;
   DeviceState = DeviceState;
 
   disk: DiskInterface;

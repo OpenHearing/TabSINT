@@ -65,6 +65,6 @@ export class DpGramExamComponent extends DpoaeExamBaseComponent<DpGramInterface,
    * frequency loop. This just resolves the device, matching every other DPOAE response area.
    */
   protected async beginExam(): Promise<void> {
-    this.device = await this.resolveDevice();
+    this.deviceId = await this.resolveDevice();
   }
 }

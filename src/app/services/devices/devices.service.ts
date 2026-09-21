@@ -25,7 +25,6 @@ import { DialogDataInterface } from '../../interfaces/dialog-data.interface';
 import { isValidDeviceResponse } from '../../guards/type.guard';
 import { DuodoseManager } from './duodose-manager';
 import { SvantekManager } from './svantek-manager';
-import { ISvantekDevice } from '../../interfaces/devices/svantek-device.interface';
 import { SvantekResultInterface } from '../../interfaces/svantek-result.interface';
 
 @Injectable({
@@ -89,6 +88,25 @@ export class DevicesService {
    */
   private getManager<T extends DeviceType>(type: T): IDeviceManager {
     return this.managerRegistry[type];
+  }
+
+  /**
+   * Get the current device for a given identifier as an observable.
+   * @param deviceId The identifier of the device to resolve.
+   * @returns The current device observable for that identifier, or undefined if it isn't tracked.
+   */
+  getDeviceById$(deviceId: string): Observable<IDevice | undefined> {
+    return this.devices.pipe(map(devices => devices.find(d => d.deviceId === deviceId)));
+  }
+
+  /**
+   * One-shot fetch of the current device for a given identifier.
+   * Do not use this unless an observable will not work.
+   * @param deviceId The identifier of the device to resolve.
+   * @returns The current device for that identifier, or undefined if it isn't tracked.
+   */
+  async getDeviceById(deviceId: string): Promise<IDevice | undefined> {
+    return firstValueFrom(this.getDeviceById$(deviceId));
   }
 
   /**
@@ -166,9 +184,9 @@ export class DevicesService {
               const connectTask = `Connect Device: ${device.tabsintId}`;
               this.tasks.register(connectTask, `Connecting to Device... `);
               try {
-                await this.getManager(deviceType).connect(device);
+                await this.connect(device.deviceId);
                 await this.saveDevice(device);
-                await this.checkForFirmwareUpdate(device);
+                await this.checkForFirmwareUpdate(device.deviceId);
               } catch (err) {
                 this.logger.debug('Device connection failed', err);
                 this.notifications
@@ -189,10 +207,10 @@ export class DevicesService {
 
   /**
    * Open a dialog used for reprogramming firmware on a device.
-   * @param device The device to be reprogrammed.
+   * @param deviceId The identifier of the device to be reprogrammed.
    * @param text Optional content override for the dialog.
    */
-  async reprogramFirmwareDialog(device: IDevice, text: string | undefined = undefined): Promise<void> {
+  async reprogramFirmwareDialog(deviceId: string, text: string | undefined = undefined): Promise<void> {
     const msg: DialogDataInterface = {
       title: 'Confirm Firmware Update',
       content: text ?? 'Are you sure you want to update the firmware?',
@@ -200,11 +218,12 @@ export class DevicesService {
     };
     this.notifications.alert(msg).subscribe(async (result: string) => {
       if (result === 'OK') {
+        const device = await this.getDeviceById(deviceId);
         let completionResponse = 'The device is unavailable to reprogram.';
-        if (device.state === DeviceState.Connected && device.status !== DeviceStatus.Busy) {
-          const response = await this.reprogramFirmware(device);
+        if (device?.state === DeviceState.Connected && device.status !== DeviceStatus.Busy) {
+          const response = await this.reprogramFirmware(deviceId);
           if (isValidDeviceResponse(response)) {
-            const rebootResponse = await this.reboot(device);
+            const rebootResponse = await this.reboot(deviceId);
             if (isValidDeviceResponse(rebootResponse)) {
               completionResponse = 'The device will now reboot. Reconnect the device to verify firmware was updated.';
             } else {
@@ -223,11 +242,12 @@ export class DevicesService {
 
   /**
    * Check if a device message is pending and alert the user if necessary.
-   * @param device Connected device to check for a pending message.
+   * @param deviceId The identifier of the device to check for a pending message.
    * @param alert Whether to push an alert to the user.
    * @returns Whether a message is pending or not.
    */
-  isDeviceMessagePending(device: IDevice | undefined, alert = true): boolean {
+  async isDeviceMessagePending(deviceId: string | undefined, alert = true): Promise<boolean> {
+    const device = deviceId ? await this.getDeviceById(deviceId) : undefined;
     const pendingMsg = device?.status == DeviceStatus.Busy;
     if (pendingMsg && alert) {
       this.notifications
@@ -242,24 +262,21 @@ export class DevicesService {
   }
 
   /**
-   * Get a connected device from the managed devices which has a tabsint identifier matching the provided input.
+   * Get a connected device identifier from the managed devices which has a tabsint identifier matching the provided input.
    * @param tabsintId The tabsint identifier of the device to find or undefined.
    * @param defaultTypes The types to find a default from.
-   * @returns A promise resolving to the found device or first available device. If no devices available returns undefined.
+   * @returns A promise resolving to the found device identifier or first available device identifier. If no devices available returns undefined.
    */
-  async getDeviceOrDefault(tabsintId: string | undefined, defaultTypes: DeviceType[]): Promise<IDevice[]> {
+  async getDeviceIdOrDefault(tabsintId: string | undefined, defaultTypes: DeviceType[]): Promise<string[]> {
     const devices = await firstValueFrom(this.devices);
-    const availableDevices: IDevice[] = [];
     const useDefaults = tabsintId === undefined;
-    const foundDevices = devices.filter(
-      device =>
-        device.state === DeviceState.Connected &&
-        ((useDefaults && defaultTypes.includes(device.type)) || (!useDefaults && tabsintId === device.tabsintId))
-    );
-    foundDevices.forEach(dev => {
-      availableDevices.push(structuredClone(dev));
-    });
-    return availableDevices;
+    return devices
+      .filter(
+        device =>
+          device.state === DeviceState.Connected &&
+          ((useDefaults && defaultTypes.includes(device.type)) || (!useDefaults && tabsintId === device.tabsintId))
+      )
+      .map(device => device.deviceId);
   }
 
   /**
@@ -286,19 +303,24 @@ export class DevicesService {
   }
 
   /**
-   * Produce an error for when multiple devices are found (more than 1).
+   * Resolve the identifier of the single connected device matching a tabsintId or default.
+   * Alerts the user when zero or multiple devices are found.
+   * @param tabsintId The tabsint identifier of the device to find or undefined.
+   * @param defaultTypes The types to find a default from.
+   * @returns The identifier of the resolved device, or undefined if none was found.
    */
-  async confirmSingleDevice(deviceList: IDevice[]): Promise<IDevice | undefined> {
-    if (deviceList.length === 0) {
+  async confirmSingleDeviceId(tabsintId: string | undefined, defaultTypes: DeviceType[]): Promise<string | undefined> {
+    const deviceIds = await this.getDeviceIdOrDefault(tabsintId, defaultTypes);
+    if (deviceIds.length === 0) {
       await this.deviceNotFound();
       this.logger.error('Error setting up exam - no device found.');
-      return;
-    } else if (deviceList.length >= 2) {
+      return undefined;
+    } else if (deviceIds.length >= 2) {
       await this.multipleDevicesFound();
       this.logger.error('Error setting up exam - multiple devices found.');
-      return;
+      return undefined;
     } else {
-      return deviceList[0];
+      return deviceIds[0];
     }
   }
 
@@ -313,12 +335,16 @@ export class DevicesService {
 
   /**
    * Remove a saved device from the disk.
-   * @param device The device to be removed.
+   * @param deviceId The identifier of the device to be removed.
    */
-  async removeSavedDevice(device: IDevice): Promise<void> {
+  async removeSavedDevice(deviceId: string): Promise<void> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device) {
+      return;
+    }
     this.getManager(device.type).removeDevice(device);
     let savedDevices = structuredClone((await firstValueFrom(this.diskModel.diskSubject)).savedDevices);
-    savedDevices = savedDevices.filter(dev => dev.deviceId != device.deviceId);
+    savedDevices = savedDevices.filter(dev => dev.deviceId != deviceId);
     this.diskModel.updateDiskModel({ savedDevices: savedDevices });
   }
 
@@ -375,148 +401,212 @@ export class DevicesService {
 
   /**
    * Set the TabSINT identifier for the provided device.
-   * @param device The device whose matching reference should be updated.
+   * @param deviceId The identifier of the device to update.
    * @param id The new TabSINT identifier for the device.
    */
-  async setTabsintId(device: IDevice, id: string): Promise<void> {
+  async setTabsintId(deviceId: string, id: string): Promise<void> {
     const devices = await firstValueFrom(this.devices);
+    const device = devices.find(dev => dev.deviceId === deviceId);
+    if (!device) {
+      return;
+    }
     if (!devices.some(dev => dev.tabsintId === id)) {
       this.getManager(device.type).setTabsintId(device, id);
       let savedDevices = structuredClone((await firstValueFrom(this.diskModel.diskSubject)).savedDevices);
-      savedDevices = savedDevices.map(dev => (dev.deviceId === device.deviceId ? { ...dev, tabsintId: id } : dev));
+      savedDevices = savedDevices.map(dev => (dev.deviceId === deviceId ? { ...dev, tabsintId: id } : dev));
       this.diskModel.updateDiskModel({ savedDevices: savedDevices });
     }
   }
 
   /**
    * Connect to the device.
-   * @param device The device to be connected to.
+   * @param deviceId The identifier of the device to be connected to.
    */
-  async connect(device: IDevice): Promise<void> {
+  async connect(deviceId: string): Promise<void> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device) {
+      throw new Error(`Connect: no device found for id ${deviceId}`);
+    }
     return this.getManager(device.type).connect(device);
   }
 
   /**
    * Disconnect from the device.
-   * @param device The device to be disconnected from.
+   * @param deviceId The identifier of the device to be disconnected from.
    */
-  async disconnect(device: IDevice): Promise<void> {
+  async disconnect(deviceId: string): Promise<void> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device) {
+      throw new Error(`Disconnect: no device found for id ${deviceId}`);
+    }
     return this.getManager(device.type).disconnect(device);
   }
 
   /**
    * Request a device identifier.
-   * @param device The device to request the identifier from.
+   * @param deviceId The identifier of the device to request the identifier from.
    */
-  async requestId(device: IDevice): Promise<IDeviceResponse | undefined> {
+  async requestId(deviceId: string): Promise<IDeviceResponse | undefined> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device) {
+      return undefined;
+    }
     return this.getManager(device.type).requestId?.(device);
   }
 
   /**
    * Request the status of a device.
-   * @param device The device to request status from.
+   * @param deviceId The identifier of the device to request status from.
    */
-  async requestStatus(device: IDevice): Promise<IDeviceResponse | undefined> {
+  async requestStatus(deviceId: string): Promise<IDeviceResponse | undefined> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device) {
+      return undefined;
+    }
     return this.getManager(device.type).requestStatus?.(device);
   }
 
   /**
    * Request the setting of a device.
-   * @param device The device to request the setting from.
+   * @param deviceId The identifier of the device to request the setting from.
    * @param setting The setting to be requested.
    */
-  async requestSetting(device: IDevice, setting: string): Promise<IDeviceResponse | undefined> {
+  async requestSetting(deviceId: string, setting: string): Promise<IDeviceResponse | undefined> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device) {
+      return undefined;
+    }
     return this.getManager(device.type).requestSetting?.(device, setting);
   }
 
   /**
    * Write the setting of a device.
-   * @param device The device to request the setting from.
+   * @param deviceId The identifier of the device to request the setting from.
    * @param setting The setting to be written.
    * @param value The value of the setting to be written
    */
-  async writeSetting(device: IDevice, setting: string, value: number): Promise<IDeviceResponse | undefined> {
+  async writeSetting(deviceId: string, setting: string, value: number): Promise<IDeviceResponse | undefined> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device) {
+      return undefined;
+    }
     return this.getManager(device.type).writeSetting?.(device, setting, value);
   }
 
   /**
    * Queue an exam for a device.
-   * @param device The device to queue the exam for.
+   * @param deviceId The identifier of the device to queue the exam for.
    * @param examId The identifier of the exam to be queued.
    * @param examProperties Object holding properties related to the exam.
    */
-  async queueExam(device: IDevice, examId: string, examProperties: object): Promise<IDeviceResponse | undefined> {
+  async queueExam(deviceId: string, examId: string, examProperties: object): Promise<IDeviceResponse | undefined> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device) {
+      return undefined;
+    }
     return this.getManager(device.type).queueExam?.(device, examId, examProperties);
   }
 
   /**
    * Submit an exam submission for a device.
-   * @param device The device which the submission will be sent to.
+   * @param deviceId The identifier of the device which the submission will be sent to.
    * @param examProperties Object holding properties related to the exam.
    * @param ignoreErrors A list of keywords for which matching errors will be ignored.
    */
-  async examSubmission(device: IDevice, examProperties: object, ignoreErrors: string[] = []): Promise<IDeviceResponse | undefined> {
+  async examSubmission(deviceId: string, examProperties: object, ignoreErrors: string[] = []): Promise<IDeviceResponse | undefined> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device) {
+      return undefined;
+    }
     return this.getManager(device.type).examSubmission?.(device, examProperties, ignoreErrors);
   }
 
   /**
    * Abort an exam for a device.
-   * @param device The device to abort the exam for.
+   * @param deviceId The identifier of the device to abort the exam for.
    */
-  async abortExams(device: IDevice): Promise<IDeviceResponse | undefined> {
+  async abortExams(deviceId: string): Promise<IDeviceResponse | undefined> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device) {
+      return undefined;
+    }
     return this.getManager(device.type).abortExams?.(device);
   }
 
   /**
    * Request results from an exam for a device.
-   * @param device The device to request exam results from.
+   * @param deviceId The identifier of the device to request exam results from.
    * @param timeoutMs How long to wait for the results response before giving up.
    */
-  async requestResults(device: IDevice, timeoutMs?: number): Promise<IDeviceResponse | undefined> {
+  async requestResults(deviceId: string, timeoutMs?: number): Promise<IDeviceResponse | undefined> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device) {
+      return undefined;
+    }
     return this.getManager(device.type).requestResults?.(device, timeoutMs);
   }
 
   /**
    * Set the state of the software response button for a device.
-   * @param device The device to set the software button state for.
+   * @param deviceId The identifier of the device to set the software button state for.
    * @param state The new state of the software button (0 or 1).
    */
-  async setSoftwareButtonState(device: IDevice, state: number): Promise<IDeviceResponse | undefined> {
+  async setSoftwareButtonState(deviceId: string, state: number): Promise<IDeviceResponse | undefined> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device) {
+      return undefined;
+    }
     return this.getManager(device.type).setSoftwareButtonState?.(device, state);
   }
 
   /**
    * Start playback of masking noise on a device.
-   * @param device The device to start the masking noise on.
+   * @param deviceId The identifier of the device to start the masking noise on.
    * @param maskingNoise The masking noise configuration.
    */
-  async startMaskingNoise(device: IDevice, maskingNoise: MaskingNoise): Promise<IDeviceResponse | undefined> {
+  async startMaskingNoise(deviceId: string, maskingNoise: MaskingNoise): Promise<IDeviceResponse | undefined> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device) {
+      return undefined;
+    }
     return this.getManager(device.type).startMaskingNoise?.(device, maskingNoise);
   }
 
   /**
    * Stop playback of masking noise on a device.
-   * @param device The device to stop the masking noise on.
+   * @param deviceId The identifier of the device to stop the masking noise on.
    */
-  async stopMaskingNoise(device: IDevice): Promise<IDeviceResponse | undefined> {
+  async stopMaskingNoise(deviceId: string): Promise<IDeviceResponse | undefined> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device) {
+      return undefined;
+    }
     return this.getManager(device.type).stopMaskingNoise?.(device);
   }
 
   /**
    * Reprogram the firmware for a device.
-   * @param device The device to reprogram.
+   * @param deviceId The identifier of the device to reprogram.
    * @returns The device response for the reprogram request or undefined.
    */
-  async reprogramFirmware(device: IDevice): Promise<IDeviceResponse | undefined> {
+  async reprogramFirmware(deviceId: string): Promise<IDeviceResponse | undefined> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device) {
+      return undefined;
+    }
     return this.getManager(device.type).reprogramFirmware?.(device);
   }
 
   /**
    * Reboot the device.
-   * @param device The device to reboot.
+   * @param deviceId The identifier of the device to reboot.
    * @returns The device response for the reboot request or undefined.
    */
-  async reboot(device: IDevice): Promise<IDeviceResponse | undefined> {
+  async reboot(deviceId: string): Promise<IDeviceResponse | undefined> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device) {
+      return undefined;
+    }
     return this.getManager(device.type).reboot?.(device);
   }
 
@@ -531,49 +621,66 @@ export class DevicesService {
 
   /**
    * Get the available space for a device (DuoDose only?).
-   * @param device The device to get available remaining space from.
+   * @param deviceId The identifier of the device to get available remaining space from.
    * @returns The amount of space remaining on the device.
    */
-  async requestSdBytesFree(device: IDevice): Promise<IDeviceResponse | undefined> {
+  async requestSdBytesFree(deviceId: string): Promise<IDeviceResponse | undefined> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device) {
+      return undefined;
+    }
     return this.getManager(device.type).requestSdBytesFree?.(device);
   }
 
   /**
    * Get the directory long names from a device (DuoDose only?).
-   * @param device The device to get the directory long names from.
+   * @param deviceId The identifier of the device to get the directory long names from.
    * @param baseDir The dir to get the directory long names from.
    * @returns The directory long names from the device.
    */
-  async getDirectoryLongNames(device: IDevice, baseDir: string): Promise<IDeviceResponse | undefined> {
+  async getDirectoryLongNames(deviceId: string, baseDir: string): Promise<IDeviceResponse | undefined> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device) {
+      return undefined;
+    }
     return this.getManager(device.type).getDirectoryLongNames?.(device, baseDir);
   }
 
   /**
    * Copy file from device onto tablet (DuoDose only?).
-   * @param device The device to copy the file from.
+   * @param deviceId The identifier of the device to copy the file from.
    * @param fileToRead The file to copy.
    * @returns Success or error.
    */
-  async copyChaFileToLocalStorageAndReadFile(device: IDevice, fileToRead: string): Promise<IDeviceResponse | undefined> {
+  async copyChaFileToLocalStorageAndReadFile(deviceId: string, fileToRead: string): Promise<IDeviceResponse | undefined> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device) {
+      return undefined;
+    }
     return this.getManager(device.type).copyChaFileToLocalStorageAndReadFile?.(device, fileToRead);
   }
 
   /**
    * Read the file copied from a device (DuoDose only?).
-   * @param device The device to read the file from.
+   * @param deviceId The identifier of the device to read the file from.
    * @param fileToRead The file to read.
    * @returns The text of the file.
    */
-  async readCopiedChaFile(device: IDevice, fileToRead: string): Promise<IDeviceResponse | undefined> {
+  async readCopiedChaFile(deviceId: string, fileToRead: string): Promise<IDeviceResponse | undefined> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device) {
+      return undefined;
+    }
     return this.getManager(device.type).readCopiedChaFile?.(device, fileToRead);
   }
 
   /**
    * Prompt the user to update firmware on a device if the bundled version differs from the device's version.
-   * @param device The device to check firmware for.
+   * @param deviceId The identifier of the device to check firmware for.
    */
-  async checkForFirmwareUpdate(device: IDevice): Promise<void> {
-    if (device.name.toLowerCase().includes('oaesp')) {
+  async checkForFirmwareUpdate(deviceId: string): Promise<void> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device || device.name.toLowerCase().includes('oaesp')) {
       return;
     }
     const disk = await firstValueFrom(this.diskModel.diskSubject);
@@ -596,7 +703,7 @@ export class DevicesService {
       };
       this.notifications.alert(msg).subscribe(async result => {
         if (result === 'OK') {
-          await this.reprogramFirmwareDialog(device);
+          await this.reprogramFirmwareDialog(deviceId);
         }
       });
     }
@@ -611,7 +718,7 @@ export class DevicesService {
     const toDisconnect = devices.filter(d => d.type === DeviceType.Wahts && (d as IWahtsDevice).connectionType !== connectionType);
     for (const device of toDisconnect) {
       if (device.state !== DeviceState.Disconnected) {
-        await this.disconnect(device);
+        await this.disconnect(device.deviceId);
       }
     }
     this.diskModel.updatePreferences({ wahtsConnectionType: connectionType });
@@ -619,55 +726,80 @@ export class DevicesService {
 
   /**
    * Function to change device values.
-   * @param device The device with property changes to be updated.
+   * @param deviceId The identifier of the device to be updated.
+   * @param connectionType The new connectionType identifier for the device.
    */
-  async updateDeviceConnectionType(device: IDevice, connectionType: BluetoothType): Promise<void> {
+  async updateDeviceConnectionType(deviceId: string, connectionType: BluetoothType): Promise<void> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device) {
+      return;
+    }
     this.getManager(device.type).updateDeviceConnectionType?.(device, connectionType);
     let savedDevices = structuredClone((await firstValueFrom(this.diskModel.diskSubject)).savedDevices);
-    savedDevices = savedDevices.map(dev => (dev.deviceId === device.deviceId ? { ...dev, connectionType } : dev));
+    savedDevices = savedDevices.map(dev => (dev.deviceId === deviceId ? { ...dev, connectionType } : dev));
     this.diskModel.updateDiskModel({ savedDevices });
   }
 
   /**
    * Transfer directory content to a device.
-   * @param device The device to transfer files to.
+   * @param deviceId The identifier of the device to transfer files to.
    * @param localDirectory The directory to transfer files from recursively.
    * @param remoteDirectory The directory to transfer the files to.
    * @returns The device response for the request or undefined.
    */
-  async transferDirectory(device: IDevice, localDirectory: string, remoteDirectory: string): Promise<IDeviceResponse | undefined> {
+  async transferDirectory(deviceId: string, localDirectory: string, remoteDirectory: string): Promise<IDeviceResponse | undefined> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device) {
+      return undefined;
+    }
     return this.getManager(device.type).transferDirectory?.(device, localDirectory, remoteDirectory);
   }
   /**
    * Cancel any ongoing file operation.
-   * @param device The device to cancel the file operation on.
+   * @param deviceId The identifier of the device to cancel the file operation on.
    * @returns The device response for the request or undefined.
    */
-  async cancelFileOperation(device: IDevice): Promise<IDeviceResponse | undefined> {
+  async cancelFileOperation(deviceId: string): Promise<IDeviceResponse | undefined> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device) {
+      return undefined;
+    }
     return this.getManager(device.type).cancelFileOperation?.(device);
   }
 
   /**
    * Start recording from a Svantek dosimeter.
-   * @param device The Svantek device to start recording on.
+   * @param deviceId The identifier of the Svantek device to start recording on.
    */
-  async startRecording(device: ISvantekDevice): Promise<void> {
-    return this.getManager(device.type).startRecording?.(device);
+  async startRecording(deviceId: string): Promise<void> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device) {
+      return;
+    }
+    return this.getManager(DeviceType.Svantek).startRecording?.(device);
   }
 
   /**
    * Stop recording from a Svantek dosimeter.
-   * @param device The Svantek device to stop recording on.
+   * @param deviceId The identifier of the Svantek device to stop recording on.
    */
-  async stopRecording(device: ISvantekDevice): Promise<void> {
-    return this.getManager(device.type).stopRecording?.(device);
+  async stopRecording(deviceId: string): Promise<void> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device) {
+      return;
+    }
+    return this.getManager(DeviceType.Svantek).stopRecording?.(device);
   }
 
   /**
    * Return the latest measurement result captured during the current recording session.
-   * @param device The Svantek device to retrieve the result for.
+   * @param deviceId The identifier of the Svantek device to retrieve the result for.
    */
-  getSvantekResult(device: ISvantekDevice): SvantekResultInterface | undefined {
+  async getSvantekResult(deviceId: string): Promise<SvantekResultInterface | undefined> {
+    const device = await this.getDeviceById(deviceId);
+    if (!device) {
+      return undefined;
+    }
     return (this.managerRegistry[DeviceType.Svantek] as SvantekManager).getSvantekResult(device);
   }
 }

@@ -65,7 +65,7 @@ describe('deviceService', () => {
     expect(diskModel.disk.savedDevices.length).toEqual(1);
     expect(diskModel.disk.savedDevices[0]).toEqual(jasmine.objectContaining(savedDevice));
 
-    await devicesService.removeSavedDevice(device);
+    await devicesService.removeSavedDevice(device.deviceId);
     expect(diskModel.disk.savedDevices).toEqual([]);
   });
 
@@ -75,9 +75,8 @@ describe('deviceService', () => {
     const tympanDevice = new TympanDevice(savedDevice.deviceId, savedDevice.name, savedDevice.tabsintId);
     tympanDevice.state = DeviceState.Connected;
     tympanManager.addDevice(tympanDevice);
-    const deviceList = await devicesService.getDeviceOrDefault(savedDevice.tabsintId, [DeviceType.Tympan]);
-    const device = await devicesService.confirmSingleDevice(deviceList);
-    expect(device?.deviceId).toEqual(savedDevice.deviceId);
+    const deviceId = await devicesService.confirmSingleDeviceId(savedDevice.tabsintId, [DeviceType.Tympan]);
+    expect(deviceId).toEqual(savedDevice.deviceId);
   });
 
   it('getting unconnected device from TabSINT identifier should return empty', async () => {
@@ -85,8 +84,8 @@ describe('deviceService', () => {
     const tympanManager = devicesService.managerRegistry[DeviceType.Tympan];
     const tympanDevice = new TympanDevice(savedDevice.deviceId, savedDevice.name, savedDevice.tabsintId);
     tympanManager.addDevice(tympanDevice);
-    const deviceList = await devicesService.getDeviceOrDefault(savedDevice.tabsintId, [DeviceType.Tympan]);
-    expect(deviceList.length).toBe(0);
+    const deviceIds = await devicesService.getDeviceIdOrDefault(savedDevice.tabsintId, [DeviceType.Tympan]);
+    expect(deviceIds.length).toBe(0);
   });
 
   it('setting TabSINT identifier to available value', async () => {
@@ -100,7 +99,7 @@ describe('deviceService', () => {
 
     const newId = 'New ID';
     if (device) {
-      await devicesService.setTabsintId(device, newId);
+      await devicesService.setTabsintId(device.deviceId, newId);
     }
 
     const updatedDevices = await firstValueFrom(devicesService.devices);
@@ -121,7 +120,7 @@ describe('deviceService', () => {
     expect(device).toBeDefined();
 
     if (device) {
-      await devicesService.setTabsintId(device, takenId);
+      await devicesService.setTabsintId(device.deviceId, takenId);
     }
 
     const updatedDevices = await firstValueFrom(devicesService.devices);
