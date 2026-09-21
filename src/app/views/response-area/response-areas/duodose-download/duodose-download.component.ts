@@ -11,7 +11,7 @@ import { DuodoseDownloadInterface, DoseFile } from './duodose-download.interface
 import { DevicesService } from '../../../../services/devices/devices.service';
 import { DeviceType } from '../../../../utilities/constants';
 import { IDevice } from '../../../../interfaces/devices/device.interface';
-import { isDirectoryLongNamesResponse } from '../../../../guards/type.guard';
+import { isGetDirectoryResponse, isLongNameResponse } from '../../../../guards/type.guard';
 import { DoseSessionRecord, findSessionByStart, parseDuodoseLog } from '../../../../utilities/duodose-log-parser';
 import {
   buildDoseResultsTable,
@@ -73,6 +73,9 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
 
   isDosBusy = true;
 
+  /** Set in ngOnDestroy so in-flight device requests stop issuing further adapter calls once the page is left. */
+  private destroyed = false;
+
   private static readonly SESSION_NAME_RE = /^(?<device>.+?)_(?<datetime>\d{8}T\d{6}\.\d{3}Z)_(?<session>.*)$/;
 
   constructor() {
@@ -101,16 +104,19 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.destroyed = true;
     this.pageSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();
     this.resultsSubscription?.unsubscribe();
   }
 
   async getDosimeterFiles() {
+    if (this.destroyed) return;
     this.isDosBusy = true;
     this.availableFiles = [];
     try {
       const dosimeters = await this.devicesService.getDeviceOrDefault(this.tabsintId, [DeviceType.Duodose]);
+      if (this.destroyed) return;
       if (dosimeters.length === 0) {
         this.logger.error('Error with duodose data download: No dosimeter was available.');
         return;
@@ -120,8 +126,10 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
         return;
       }
       this.dosimeter = dosimeters[0];
+      const device = this.dosimeter;
 
-      const freeSpaceResponse = await this.devicesService.requestSdBytesFree(this.dosimeter);
+      const freeSpaceResponse = await this.devicesService.requestSdBytesFree(device);
+      if (this.destroyed) return;
       const freeSpace = freeSpaceResponse?.msg?.[1];
       if (typeof freeSpace === 'object' && freeSpace !== null && 'BytesFree' in freeSpace) {
         [this.bytesFree, this.bytesFreeUnits] = this.parseFreeSpace(freeSpace.BytesFree as string);
@@ -130,26 +138,52 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
         return;
       }
 
-      const namesResponse = await this.devicesService.getDirectoryLongNames(this.dosimeter, this.baseDir);
-      if (!isDirectoryLongNamesResponse(namesResponse)) {
-        this.logger.error('Error with duodose data download getting directory names.');
-        return;
-      }
-
-      for (const name of namesResponse.msg[1]) {
-        const doseFile = this.parseDoseFileName(name);
-        if (doseFile) {
-          this.availableFiles.push(doseFile);
-        } else {
-          // Not a folder containing data (e.g. CONFIG, the log CSV). Eventually may want to add log file and CONFIG.
-          this.logger.debug(`duodose download, ignoring entry without session data: ${name}`);
-        }
-      }
+      this.availableFiles = await this.listSessionFolders(device);
     } catch (error) {
       this.logger.error(`Error with duodose data download listing files: ${JSON.stringify(error)}`);
     } finally {
       this.isDosBusy = false;
     }
+  }
+
+  /**
+   * List the session folders on a device, resolving each entry's long file name.
+   * Checks `destroyed` before each device request so leaving the page stops the loop from
+   * issuing further adapter calls once the response area is gone.
+   * @param device The device to list session folders from.
+   * @returns The parsed session folders found so far; may be incomplete if the page was left mid-loop.
+   */
+  private async listSessionFolders(device: IDevice): Promise<DoseFile[]> {
+    const files: DoseFile[] = [];
+
+    const dirResponse = await this.devicesService.getDirectory(device, this.baseDir);
+    if (this.destroyed) return files;
+    if (!isGetDirectoryResponse(dirResponse)) {
+      this.logger.error('Error with duodose data download getting directory names.');
+      return files;
+    }
+
+    for (const entry of dirResponse.msg[1]) {
+      if (this.destroyed) return files;
+      const longNameResponse = await this.devicesService.getChaLongName(device, this.baseDir + entry.Path);
+      if (this.destroyed) return files;
+
+      if (!isLongNameResponse(longNameResponse)) {
+        this.logger.debug(`duodose download, unexpected long name response for ${entry.Path}: ${JSON.stringify(longNameResponse)}`);
+        continue;
+      }
+      // Newer firmware lists full names directly and returns an empty long name; fall back to the listed path.
+      const longName = longNameResponse.msg[0] || entry.Path;
+
+      const doseFile = this.parseDoseFileName(longName);
+      if (doseFile) {
+        files.push(doseFile);
+      } else {
+        // Not a folder containing data (e.g. CONFIG, the log CSV). Eventually may want to add log file and CONFIG.
+        this.logger.debug(`duodose download, ignoring entry without session data: ${longName}`);
+      }
+    }
+    return files;
   }
 
   /**

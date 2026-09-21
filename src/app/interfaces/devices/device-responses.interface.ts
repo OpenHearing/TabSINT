@@ -55,13 +55,6 @@ export interface LongNameResponse extends IDeviceResponse {
 }
 
 /**
- * Response to a directory listing resolved to long file names.
- */
-export interface DirectoryLongNamesResponse extends IDeviceResponse {
-  msg: [unknown, string[]];
-}
-
-/**
  * A `requestResults` response from a WAHTS device. The payload at `msg[1]` is an exam-specific
  * results object; the response envelope alone cannot tell which exam produced it, so callers cast
  * `msg[1]` to the concrete exam results interface they expect.

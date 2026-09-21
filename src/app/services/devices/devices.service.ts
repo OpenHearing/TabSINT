@@ -539,13 +539,23 @@ export class DevicesService {
   }
 
   /**
-   * Get the directory long names from a device (DuoDose only?).
-   * @param device The device to get the directory long names from.
-   * @param baseDir The dir to get the directory long names from.
-   * @returns The directory long names from the device.
+   * List files in a directory on a device (DuoDose only?).
+   * @param device The device to list the directory from.
+   * @param baseDir The directory to list.
+   * @returns The directory listing from the device.
    */
-  async getDirectoryLongNames(device: IDevice, baseDir: string): Promise<IDeviceResponse | undefined> {
-    return this.getManager(device.type).getDirectoryLongNames?.(device, baseDir);
+  async getDirectory(device: IDevice, baseDir: string): Promise<IDeviceResponse | undefined> {
+    return this.getManager(device.type).getDirectory?.(device, baseDir);
+  }
+
+  /**
+   * Get the long name of a file on a device from its short name (DuoDose only?).
+   * @param device The device to get the long file name from.
+   * @param shortName The short name of the file.
+   * @returns The long name of the file.
+   */
+  async getChaLongName(device: IDevice, shortName: string): Promise<IDeviceResponse | undefined> {
+    return this.getManager(device.type).getChaLongName?.(device, shortName);
   }
 
   /**

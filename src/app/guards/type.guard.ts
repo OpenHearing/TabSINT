@@ -1,7 +1,6 @@
 import { IDeviceResponse } from '../interfaces/devices/device-response.interface';
 import {
   DirectoryEntryResponse,
-  DirectoryLongNamesResponse,
   FileOperationCompleteResponse,
   FileProgressResponse,
   GetDirectoryResponse,
@@ -110,15 +109,6 @@ export function isWahtsResultsResponse(response?: IDeviceResponse): response is 
 
 export function isLongNameResponse(response?: IDeviceResponse): response is LongNameResponse {
   return isValidDeviceResponse(response) && response.msg.length === 1 && typeof response.msg[0] === 'string';
-}
-
-export function isDirectoryLongNamesResponse(response?: IDeviceResponse): response is DirectoryLongNamesResponse {
-  return (
-    isValidDeviceResponse(response) &&
-    response.msg.length >= 2 &&
-    Array.isArray(response.msg[1]) &&
-    response.msg[1].every(name => typeof name === 'string')
-  );
 }
 
 export function isFileProgressResponse(response?: IDeviceResponse): response is FileProgressResponse {
