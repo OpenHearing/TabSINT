@@ -1,4 +1,4 @@
-import { DoseChannel, DoseMetric, DoseSessionRecord } from './duodose-log-parser';
+import { DoseChannel, DoseMetric, DoseSessionRecord, MetricValue } from './duodose-log-parser';
 
 /**
  * Table of results for one or more DuoDose sessions, in the shape stored on the results page.
@@ -70,14 +70,14 @@ export function formatStartTime(isoStart: string): string {
   return new Date(isoStart).toLocaleString('UTC', { timeZone: 'UTC' });
 }
 
-function formatValue(value: number | string | null | undefined): string {
+function formatValue(value: MetricValue | undefined): string {
   if (value === null || value === undefined) return '';
   return String(value);
 }
 
 /** Labels are shown as the old display did: commas replaced by spaces, e.g. `LAeq 8hr`. */
 export function displayLabel(label: string): string {
-  return label.replace(/,/g, ' ');
+  return label.replaceAll(',', ' ');
 }
 
 /**
@@ -97,7 +97,7 @@ interface DisplayMetric {
   header: string;
   /** Raw metric label, used to choose the combine rule. */
   label: string;
-  value: number | string | null;
+  value: MetricValue;
 }
 
 /**
@@ -122,7 +122,7 @@ export function buildDoseResultsTable(records: DoseSessionRecord[], deviceName: 
   const metricHeaders: string[] = [];
   const labelsByHeader = new Map<string, string>();
   const perSessionMetrics = records.map(record => {
-    const metrics = new Map<string, number | string | null>();
+    const metrics = new Map<string, MetricValue>();
     for (const row of displayMetrics(record)) {
       if (!metricHeaders.includes(row.header)) {
         metricHeaders.push(row.header);
@@ -151,7 +151,7 @@ function combineRecords(
   records: DoseSessionRecord[],
   metricHeaders: string[],
   labelsByHeader: Map<string, string>,
-  perSessionMetrics: Map<string, number | string | null>[],
+  perSessionMetrics: Map<string, MetricValue>[],
   deviceName: string
 ): string[] {
   const durations = records.map(r => r.durationSec);

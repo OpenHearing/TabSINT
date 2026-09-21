@@ -15,11 +15,13 @@
 
 export type DoseRowFormat = 'legacy' | 'grouped';
 
+/** A metric's value: numeric, a pass/fail style string, or null when the device wrote `nan` or nothing. */
+export type MetricValue = number | string | null;
+
 export interface DoseMetric {
   /** Metric label as written by the device, e.g. `LAeq,8hr` or `Dose %`. */
   label: string;
-  /** Numeric value, a pass/fail style string, or null when the device wrote `nan` or nothing. */
-  value: number | string | null;
+  value: MetricValue;
 }
 
 export interface DoseChannel {
@@ -92,7 +94,7 @@ function isValueCell(cell: string | undefined): boolean {
   return cell !== undefined && (isNumericCell(cell) || PASS_FAIL_RE.test(cell));
 }
 
-function toMetricValue(cell: string): number | string | null {
+function toMetricValue(cell: string): MetricValue {
   if (cell === '' || cell.toLowerCase() === 'nan') return null;
   const asNumber = Number(cell);
   return Number.isNaN(asNumber) ? cell : asNumber;
