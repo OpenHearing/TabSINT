@@ -126,13 +126,11 @@ export const DeveloperProtocols: Record<string, ProtocolSchemaInterface> = {
 };
 
 import DevelopCalibration from '../../assets/protocols/develop/calibration.json';
-import TympanExampleCalibration from '../../assets/protocols/tympan-example/calibration.json';
-import WahtsExampleCalibration from '../../assets/protocols/wahts-example/calibration.json';
 import { CalibrationFileInterface } from '../interfaces/calibration-file.interface';
-export const DeveloperProtocolsCalibration: Record<string, CalibrationFileInterface> = {
+export const DeveloperProtocolsCalibration: Record<string, CalibrationFileInterface | undefined> = {
   develop: DevelopCalibration as unknown as CalibrationFileInterface,
-  'tympan-example': TympanExampleCalibration as unknown as CalibrationFileInterface,
-  'wahts-example': WahtsExampleCalibration as unknown as CalibrationFileInterface,
+  'tympan-example': undefined,
+  'wahts-example': undefined,
 };
 
 export const bluetoothTimeout = 5000;
