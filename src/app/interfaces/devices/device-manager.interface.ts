@@ -162,10 +162,16 @@ export interface IDeviceManager {
   requestSdBytesFree?(device: IDevice): Promise<IDeviceResponse | undefined>;
 
   /**
-   * Optional method to get directory long names (DuoDose only?).
-   * @returns The directory long names on the device.
+   * Optional method to list files in a directory on a device (DuoDose only?).
+   * @returns The directory listing from the device.
    */
-  getDirectoryLongNames?(device: IDevice, baseDir: string): Promise<IDeviceResponse | undefined>;
+  getDirectory?(device: IDevice, baseDir: string): Promise<IDeviceResponse | undefined>;
+
+  /**
+   * Optional method to get the long name of a file on a device from its short name (DuoDose only?).
+   * @returns The long name of the file.
+   */
+  getChaLongName?(device: IDevice, shortName: string): Promise<IDeviceResponse | undefined>;
 
   /**
    * Optional method to copy a file off a device onto the tablet (DuoDose only?).

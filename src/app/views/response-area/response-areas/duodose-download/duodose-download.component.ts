@@ -10,6 +10,17 @@ import { Logger } from '../../../../services/logger.service';
 import { DuodoseDownloadInterface, DoseFile } from './duodose-download.interface';
 import { DevicesService } from '../../../../services/devices/devices.service';
 import { DeviceType } from '../../../../utilities/constants';
+import { isGetDirectoryResponse, isLongNameResponse } from '../../../../guards/type.guard';
+import { DoseSessionRecord, findSessionByStart, parseDuodoseLog } from '../../../../utilities/duodose-log-parser';
+import {
+  buildDoseResultsTable,
+  DEVICE_HEADER,
+  DoseResultsTable,
+  DURATION_HEADER,
+  IMPULSES_HEADER,
+  PEAK_HEADER,
+  START_HEADER,
+} from '../../../../utilities/duodose-results';
 
 @Component({
   selector: 'app-duodose-download',
@@ -39,18 +50,17 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
     'Channel 2',
     'Channel 3',
     'Channel 4',
-    'Peak Sounds Pressure Level (dBP)',
-    'Number of Impulses',
-    'Device ID',
-    'Duration',
-    'Start Time',
-    // 'Stop Time'
+    PEAK_HEADER,
+    IMPULSES_HEADER,
+    DEVICE_HEADER,
+    DURATION_HEADER,
+    START_HEADER,
   ];
-  resultsValuesDefault = ['', '', '', '', '', '', '', '', ''];
+  resultsValuesDefault = this.resultsFieldsDefault.map(() => '');
 
   resultsValues = this.resultsValuesDefault.slice();
   resultsFields = this.resultsFieldsDefault.slice();
-  resultsList: any[] = [];
+  resultsList: string[][] = [];
 
   downloadInProgress = false;
   downloadProgressPercent = 100;
@@ -61,6 +71,11 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
   downloadedLogFiles = [];
 
   isDosBusy = true;
+
+  /** Set in ngOnDestroy so in-flight device requests stop issuing further adapter calls once the page is left. */
+  private examActive = false;
+
+  private static readonly SESSION_NAME_RE = /^(?<device>.+?)_(?<datetime>\d{8}T\d{6}\.\d{3}Z)_(?<session>.*)$/;
 
   constructor() {
     this.results = this.resultsModel.getResults();
@@ -88,60 +103,104 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.examActive = true;
     this.pageSubscription?.unsubscribe();
     this.stateSubscription?.unsubscribe();
     this.resultsSubscription?.unsubscribe();
   }
 
   async getDosimeterFiles() {
-    const dosimeterIds = await this.devicesService.getDeviceIdOrDefault(this.tabsintId, [DeviceType.Duodose]);
-
-    if (dosimeterIds.length === 0) {
-      this.logger.error('Error with duodose data download: No dosimeter was available.');
-      return;
-    } else if (dosimeterIds.length >= 2) {
-      this.logger.error('Error with duodose data download: Multiple devices available and one was not specified.');
-      return;
-    } else {
+    if (this.examActive) return;
+    this.isDosBusy = true;
+    this.availableFiles = [];
+    try {
+      const dosimeterIds = await this.devicesService.getDeviceIdOrDefault(this.tabsintId, [DeviceType.Duodose]);
+      if (this.examActive) return;
+      if (dosimeterIds.length === 0) {
+        this.logger.error('Error with duodose data download: No dosimeter was available.');
+        return;
+      }
+      if (dosimeterIds.length >= 2) {
+        this.logger.error('Error with duodose data download: Multiple devices available and one was not specified.');
+        return;
+      }
       this.dosimeterId = dosimeterIds[0];
-    }
+      const deviceId = this.dosimeterId;
 
-    const resp1 = await this.devicesService.requestSdBytesFree(this.dosimeterId);
-    if (resp1?.msg && typeof resp1.msg[1] === 'object' && resp1.msg[1] !== null && 'BytesFree' in resp1.msg[1]) {
-      [this.bytesFree, this.bytesFreeUnits] = this.parseFreeSpace(resp1.msg[1].BytesFree as string);
-    } else {
-      this.logger.error('Error with duodose data download requesting free space.');
-      return;
-    }
-
-    const resp2 = await this.devicesService.getDirectoryLongNames(this.dosimeterId, this.baseDir);
-    if (!(resp2?.msg && typeof resp2.msg[1] === 'object' && resp2.msg[1] !== null)) {
-      this.logger.error('Error with duodose data download getting directory names.');
-      return;
-    }
-
-    for (const value of Object.entries(resp2.msg[1] as any) as any) {
-      const re = /_\d{8}T\d{6}\.\d{3}Z_/;
-      const ok = re.exec(value);
-
-      if (ok) {
-        this.logger.debug('duodose download, regex for filename ok: ' + JSON.stringify(ok));
-        const newFile = {
-          longName: value,
-          selected: false,
-          deviceName: value.slice(0, ok.index),
-          sessionName: value.slice(ok.index + 22),
-          datetime: value.slice(ok.index + 1, ok.index + 21),
-          parsedDatetime: this.parseDatetime(value.slice(ok.index + 1, ok.index + 21)).toLocaleString('UTC', { timeZone: 'UTC' }),
-        };
-        this.availableFiles.push(newFile);
+      const freeSpaceResponse = await this.devicesService.requestSdBytesFree(deviceId);
+      if (this.examActive) return;
+      const freeSpace = freeSpaceResponse?.msg?.[1];
+      if (typeof freeSpace === 'object' && freeSpace !== null && 'BytesFree' in freeSpace) {
+        [this.bytesFree, this.bytesFreeUnits] = this.parseFreeSpace(freeSpace.BytesFree as string);
       } else {
-        this.logger.debug('duodose download, ignoring file/folder that does not contain data');
-        // Not a folder containing data, can be ignored
-        // Eventually will want to add log file and CONFIG
+        this.logger.error('Error with duodose data download requesting free space.');
+        return;
+      }
+
+      this.availableFiles = await this.listSessionFolders(deviceId);
+    } catch (error) {
+      this.logger.error(`Error with duodose data download listing files: ${JSON.stringify(error)}`);
+    } finally {
+      this.isDosBusy = false;
+    }
+  }
+
+  /**
+   * List the session folders on a device, resolving each entry's long file name.
+   * Checks `examActive` before each device request so leaving the page stops the loop from
+   * issuing further adapter calls once the response area is gone.
+   * @param deviceId The identifier of the device to list session folders from.
+   * @returns The parsed session folders found so far; may be incomplete if the page was left mid-loop.
+   */
+  private async listSessionFolders(deviceId: string): Promise<DoseFile[]> {
+    const files: DoseFile[] = [];
+
+    const dirResponse = await this.devicesService.getDirectory(deviceId, this.baseDir);
+    if (this.examActive) return files;
+    if (!isGetDirectoryResponse(dirResponse)) {
+      this.logger.error('Error with duodose data download getting directory names.');
+      return files;
+    }
+
+    for (const entry of dirResponse.msg[1]) {
+      if (this.examActive) return files;
+      const longNameResponse = await this.devicesService.getChaLongName(deviceId, this.baseDir + entry.Path);
+      if (this.examActive) return files;
+
+      if (!isLongNameResponse(longNameResponse)) {
+        this.logger.debug(`duodose download, unexpected long name response for ${entry.Path}: ${JSON.stringify(longNameResponse)}`);
+        continue;
+      }
+      // Newer firmware lists full names directly and returns an empty long name; fall back to the listed path.
+      const longName = longNameResponse.msg[0] || entry.Path;
+
+      const doseFile = this.parseDoseFileName(longName);
+      if (doseFile) {
+        files.push(doseFile);
+      } else {
+        // Not a folder containing data (e.g. CONFIG, the log CSV). Eventually may want to add log file and CONFIG.
+        this.logger.debug(`duodose download, ignoring entry without session data: ${longName}`);
       }
     }
-    this.isDosBusy = false;
+    return files;
+  }
+
+  /**
+   * Parse a session folder name of the form `<device>_<yyyymmddThhmmss.sssZ>_<session>`.
+   * @returns The parsed file, or undefined when the name is not a session folder.
+   */
+  parseDoseFileName(name: string): DoseFile | undefined {
+    const match = DuodoseDownloadComponent.SESSION_NAME_RE.exec(name);
+    if (!match?.groups) return undefined;
+    const { device, datetime, session } = match.groups;
+    return {
+      longName: name,
+      selected: false,
+      deviceName: device,
+      sessionName: session,
+      datetime,
+      parsedDatetime: this.parseDatetime(datetime).toLocaleString('UTC', { timeZone: 'UTC' }),
+    };
   }
 
   parseFreeSpace(byteString: string): [number, string] {
@@ -177,249 +236,75 @@ export class DuodoseDownloadComponent implements OnInit, OnDestroy {
     return pd;
   }
 
+  /**
+   * Show the results for the selected sessions without saving them.
+   */
   async viewDoseData(): Promise<void> {
+    const table = await this.loadSelectedResults();
+    if (table) {
+      this.resultsFields = table.headers;
+      this.resultsList = table.sessions;
+      this.resultsValues = table.combined;
+    }
+  }
+
+  /**
+   * Show the results for the selected sessions and save them to the current page response.
+   */
+  async addDoseDataToResults(): Promise<void> {
+    const table = await this.loadSelectedResults();
+    if (!table) return;
+    this.resultsFields = table.headers;
+    this.resultsList = table.sessions;
+    this.resultsValues = table.combined;
+    this.results.currentPage.response = {
+      headers: table.headers,
+      sessions: table.sessions,
+      combined: table.combined,
+    };
+    this.resultsModel.updateCurrentPage({ response: this.results.currentPage.response });
+  }
+
+  /**
+   * Read the device log and build the results table for the selected sessions.
+   * @returns The table, or undefined when nothing is selected, the device is busy, or the read failed.
+   */
+  private async loadSelectedResults(): Promise<DoseResultsTable | undefined> {
     this.resultsFields = this.resultsFieldsDefault.slice();
     this.resultsValues = this.resultsValuesDefault.slice();
     this.resultsList = [];
 
-    if (this.isDosBusy) return;
-
-    const selectedEntries = Object.values(this.availableFiles).filter(entry => entry.selected);
-    if (selectedEntries.length === 0) return;
+    if (this.isDosBusy || !this.dosimeterId) return undefined;
+    const selectedEntries = this.availableFiles.filter(entry => entry.selected);
+    if (selectedEntries.length === 0) return undefined;
 
     this.isDosBusy = true;
     this.viewingFile = true;
-
-    const fileToRead = `${selectedEntries[0].deviceName}_Log.csv`;
+    const deviceName = selectedEntries[0].deviceName;
+    const fileToRead = `${deviceName}_Log.csv`;
 
     try {
-      let txt = '';
-      const resp = await this.devicesService.copyChaFileToLocalStorageAndReadFile(this.dosimeterId!, this.baseDir + fileToRead);
-      if (resp?.msg) {
-        txt = resp.msg[0] as string;
+      const resp = await this.devicesService.copyChaFileToLocalStorageAndReadFile(this.dosimeterId, this.baseDir + fileToRead);
+      const text = typeof resp?.msg?.[0] === 'string' ? resp.msg[0] : '';
+      if (text === '') {
+        this.logger.error(`Error reading duodose log ${fileToRead}: empty response.`);
+        return undefined;
       }
+      const log = parseDuodoseLog(text);
 
-      const lines = txt.split('\n');
-      const csvCommaInQuotes = /"(.*?)"/;
-
-      for (const [index, entry] of selectedEntries.entries()) {
-        this.resultsList.push(this.resultsValues.slice());
-
-        const matchingLine = lines.find((line: string) => line.includes(this.parseDatetime(entry.datetime).toISOString()));
-        if (!matchingLine) continue;
-
-        const cleanedLine = this.sanitizeCsvLine(matchingLine, csvCommaInQuotes);
-        const row = cleanedLine.split(',');
-
-        this.resultsFields[0] = this.stripQuotes(row[6]);
-        this.resultsList[index][0] = Number.parseFloat(row[7]).toString();
-        this.resultsFields[1] = this.stripQuotes(row[8]);
-        this.resultsList[index][1] = row[9];
-        this.resultsFields[2] = this.stripQuotes(row[10]);
-        this.resultsList[index][2] = row[11];
-        this.resultsFields[3] = this.stripQuotes(row[12]);
-        this.resultsList[index][3] = row[13];
-
-        this.resultsList[index][4] = row[15]; // peak level
-        this.resultsList[index][5] = row[14]; // num impulses
-        this.resultsList[index][6] = selectedEntries[0].deviceName; // device id
-        this.resultsList[index][7] = row[5]; // run time
-        this.resultsList[index][8] = new Date(this.stripQuotes(row[4])).toLocaleString('UTC', { timeZone: 'UTC' }); // start time
-      }
-
-      this.resultsValues = this.combineResults(this.resultsList, this.resultsFields);
-    } catch (error) {
-      this.resultsFields = this.resultsFieldsDefault.slice();
-      this.resultsValues = this.resultsValuesDefault.slice();
-      this.logger.debug(`Error viewing dose data: ${JSON.stringify(error)}`);
-    } finally {
-      this.isDosBusy = false;
-    }
-  }
-
-  private stripQuotes(value: string): string {
-    return value.slice(1, -1);
-  }
-
-  private sanitizeCsvLine(line: string, re: RegExp): string {
-    let result = line;
-    let ind = 0;
-    while (ind < result.length) {
-      const match = re.exec(result.slice(ind));
-      if (match) {
-        if (match[0].includes(',')) {
-          result = this.replaceAt(result, ind + match.index, match[0].replace(',', ' '));
+      const records: DoseSessionRecord[] = [];
+      for (const entry of selectedEntries) {
+        const record = findSessionByStart(log, this.parseDatetime(entry.datetime));
+        if (record) {
+          records.push(record);
+        } else {
+          this.logger.error(`Duodose session ${entry.longName} was not found in ${fileToRead}.`);
         }
-        ind += match.index + match[0].length;
-      } else {
-        break;
       }
-    }
-    return result;
-  }
-
-  replaceAt(string: string, index: number, replacement: string) {
-    return string.substring(0, index) + replacement + string.substring(index + replacement.length);
-  }
-
-  combineResults(arr: any[][], headers: string[]): any[] {
-    const combined: any[] = Array.from(new Array(arr[0].length), () => 0);
-    const durations: number[] = [];
-    const LAeq8hrs: number[] = [];
-    const LAeqSessions: number[] = [];
-    const LCeqSessions: number[] = [];
-    const LZeqSessions: number[] = [];
-
-    const collectValues = (header: string, value: string, j: number) => {
-      const parsedValue = Number.parseFloat(value);
-      const collectors: Record<string, () => void> = {
-        'LAeq 8hr': () => LAeq8hrs.push(parsedValue),
-        'LAeq session': () => LAeqSessions.push(parsedValue),
-        'LCeq session': () => LCeqSessions.push(parsedValue),
-        'LZeq session': () => LZeqSessions.push(parsedValue),
-        'Peak Sounds Pressure Level (dBP)': () => {
-          if (parsedValue > combined[j]) combined[j] = parsedValue;
-        },
-        'Number of Impulses': () => {
-          combined[j] += parsedValue;
-        },
-        'Device ID': () => {
-          combined[j] = value;
-        },
-        Duration: () => durations.push(parsedValue),
-        'Start Time': () => {
-          if (combined[j] === 0 || Date.parse(value) < Date.parse(combined[j])) {
-            combined[j] = value;
-          }
-        },
-      };
-      collectors[header]?.();
-    };
-
-    const assignCombined = (header: string, j: number) => {
-      const totalDuration = durations.reduce((sum, a) => sum + a, 0);
-      const assignments: Record<string, () => void> = {
-        'LAeq 8hr': () => {
-          combined[j] = this.calculateTotalDoseDB(LAeq8hrs);
-        },
-        'LAeq session': () => {
-          combined[j] = this.calculateAverageLevelDB(LAeqSessions, durations);
-        },
-        'LCeq session': () => {
-          combined[j] = this.calculateAverageLevelDB(LCeqSessions, durations);
-        },
-        'LZeq session': () => {
-          combined[j] = this.calculateAverageLevelDB(LZeqSessions, durations);
-        },
-        Duration: () => {
-          combined[j] = this.parseDuration(totalDuration);
-        },
-      };
-      assignments[header]?.();
-    };
-
-    for (const row of arr) {
-      for (const [j, value] of row.entries()) {
-        collectValues(headers[j], value, j);
-      }
-    }
-
-    for (const [j, header] of headers.entries()) {
-      assignCombined(header, j);
-    }
-
-    return combined;
-  }
-
-  calculateTotalDoseDB(L_dB: number[]): number {
-    const session_exposure = L_dB.map(item => 10 ** (item / 10));
-    const total_exposure = session_exposure.reduce((partialSum, a) => partialSum + a, 0);
-    const L_dB_total = 10 * Math.log10(total_exposure);
-    return Math.round((L_dB_total + Number.EPSILON) * 100) / 100;
-  }
-
-  calculateAverageLevelDB(L_dB: number[], dur: number[]): number {
-    const session_exposure = L_dB.map((item, i) => 10 ** (item / 10) * dur[i]);
-    const average_exposure = session_exposure.reduce((partialSum1, a1) => partialSum1 + a1, 0) / dur.reduce((partialSum2, a2) => partialSum2 + a2, 0);
-    const L_dB_total = 10 * Math.log10(average_exposure);
-    return Math.round((L_dB_total + Number.EPSILON) * 100) / 100;
-  }
-
-  parseDuration(duration: number): string {
-    const MINUTE = 60;
-    const HOUR = MINUTE * 60;
-    const DAY = HOUR * 24;
-    const YEAR = DAY * 365;
-
-    const thresholds = [
-      { limit: MINUTE, divisor: 1, unit: 'sec' },
-      { limit: HOUR, divisor: MINUTE, unit: 'min' },
-      { limit: DAY, divisor: HOUR, unit: 'hours' },
-      { limit: YEAR, divisor: DAY, unit: 'days' },
-    ];
-
-    const match = thresholds.find(({ limit }) => duration < limit);
-    if (!match) return '';
-
-    const val = Math.round((duration / match.divisor) * 10) / 10;
-    return `${val} ${match.unit}`;
-  }
-
-  async addDoseDataToResults(): Promise<void> {
-    this.resultsFields = this.resultsFieldsDefault.slice();
-    this.resultsList = [];
-
-    if (this.isDosBusy) return;
-
-    const selectedEntries = Object.values(this.availableFiles).filter(entry => entry.selected);
-    if (selectedEntries.length === 0) return;
-
-    this.isDosBusy = true;
-    this.viewingFile = true;
-
-    const fileToRead = `${selectedEntries[0].deviceName}_Log.csv`;
-
-    try {
-      let txt = '';
-      const resp = await this.devicesService.copyChaFileToLocalStorageAndReadFile(this.dosimeterId!, this.baseDir + fileToRead);
-      if (resp?.msg) {
-        txt = resp.msg[0] as string;
-      }
-
-      const lines = txt.split('\n');
-      const csvCommaInQuotes = /"(.*?)"/;
-
-      for (const [index, entry] of selectedEntries.entries()) {
-        this.resultsList.push(this.resultsValuesDefault.slice());
-
-        const matchingLine = lines.find((line: string) => line.includes(this.parseDatetime(entry.datetime).toISOString()));
-        if (!matchingLine) continue;
-
-        const cleanedLine = this.sanitizeCsvLine(matchingLine, csvCommaInQuotes);
-        const row = cleanedLine.split(',');
-
-        this.resultsFields[0] = this.stripQuotes(row[6]);
-        this.resultsList[index][0] = Number.parseFloat(row[7]).toString();
-        this.resultsFields[1] = this.stripQuotes(row[8]);
-        this.resultsList[index][1] = row[9];
-        this.resultsFields[2] = this.stripQuotes(row[10]);
-        this.resultsList[index][2] = row[11];
-        this.resultsFields[3] = this.stripQuotes(row[12]);
-        this.resultsList[index][3] = row[13];
-
-        this.resultsList[index][4] = row[15]; // peak level
-        this.resultsList[index][5] = row[14]; // num impulses
-        this.resultsList[index][6] = selectedEntries[0].deviceName; // device id
-        this.resultsList[index][7] = row[5]; // run time
-        this.resultsList[index][8] = new Date(this.stripQuotes(row[4])).toLocaleString('UTC', { timeZone: 'UTC' }); // start time
-      }
-
-      this.results.currentPage.response = {
-        headers: this.resultsFields,
-        sessions: this.resultsList,
-        combined: this.combineResults(this.resultsList, this.resultsFields),
-      };
-      this.resultsModel.updateCurrentPage({ response: this.results.currentPage.response });
+      return buildDoseResultsTable(records, deviceName);
+    } catch (error) {
+      this.logger.error(`Error reading duodose data: ${JSON.stringify(error)}`);
+      return undefined;
     } finally {
       this.isDosBusy = false;
     }

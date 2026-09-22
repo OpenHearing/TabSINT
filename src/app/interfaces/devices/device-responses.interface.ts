@@ -47,6 +47,14 @@ export interface GetDirectoryResponse extends IDeviceResponse {
 }
 
 /**
+ * Response to a long file name lookup for a single short name. The payload at `msg[0]` is the
+ * long name, or an empty string when the entry has no separate long name.
+ */
+export interface LongNameResponse extends IDeviceResponse {
+  msg: [string];
+}
+
+/**
  * A `requestResults` response from a WAHTS device. The payload at `msg[1]` is an exam-specific
  * results object; the response envelope alone cannot tell which exam produced it, so callers cast
  * `msg[1]` to the concrete exam results interface they expect.

@@ -13,9 +13,9 @@ import { DiscoveryResponse } from 'tabsintcha';
 import { SavedDevice } from '../../models/disk/disk.interface';
 import { DiskModel } from '../../models/disk/disk.service';
 
-import { DirectoryEntryObject, RequestIdObject, RequestSettingObject, StatusObject } from '../../interfaces/devices/device-responses.interface';
+import { RequestIdObject, RequestSettingObject, StatusObject } from '../../interfaces/devices/device-responses.interface';
 import { MaskingNoise } from '../../views/response-area/response-areas/shared/audiometry/audiometry.interface';
-import { isGetDirectoryResponse, isLongNameResponse, isRequestIdResponse, isRequestSettingResponse, isStatusResponse } from '../../guards/type.guard';
+import { isRequestIdResponse, isRequestSettingResponse, isStatusResponse } from '../../guards/type.guard';
 import { ChaMediaHandler } from './cha-media-handler';
 
 /**
@@ -479,29 +479,25 @@ export abstract class ChaManager implements IDeviceManager {
   }
 
   /**
-   * Request long file names from a directory on a device.
-   * @param device The device to request the long directory names from.
-   * @param baseDir The directory to request long directory names from.
+   * List all files in a directory on a device.
+   * @param device The device to list the directory from.
+   * @param baseDir The directory to list.
    */
-  async getDirectoryLongNames(device: ChaDeviceType, baseDir: string): Promise<IDeviceResponse> {
-    const longNames: string[] = [];
-    let entries: DirectoryEntryObject[] = [];
-    const getDirectoryResponse = await this.adapter.getDirectory(device, baseDir);
-    await this.deviceErrorHandler(getDirectoryResponse);
-    if (isGetDirectoryResponse(getDirectoryResponse)) {
-      entries = getDirectoryResponse['msg'][1];
-    }
+  async getDirectory(device: ChaDeviceType, baseDir: string): Promise<IDeviceResponse> {
+    const response = await this.adapter.getDirectory(device, baseDir);
+    await this.deviceErrorHandler(response);
+    return response;
+  }
 
-    for (const entry of entries) {
-      const longNameResponse = await this.adapter.getChaLongName(device, baseDir + entry.Path);
-      await this.deviceErrorHandler(longNameResponse);
-      if (isLongNameResponse(longNameResponse) && longNameResponse['msg'][0] !== '') {
-        longNames.push(longNameResponse['msg'][0] as string);
-      }
-    }
-
-    const resp = { deviceId: device.deviceId, msg: ['Success', longNames] };
-    return resp;
+  /**
+   * Get the long name of a file on a device from its short name.
+   * @param device The device to get the long file name from.
+   * @param shortName The short name of the file.
+   */
+  async getChaLongName(device: ChaDeviceType, shortName: string): Promise<IDeviceResponse> {
+    const response = await this.adapter.getChaLongName(device, shortName);
+    await this.deviceErrorHandler(response);
+    return response;
   }
 
   /**
