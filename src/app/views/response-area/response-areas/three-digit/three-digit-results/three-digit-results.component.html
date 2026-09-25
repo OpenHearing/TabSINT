@@ -1,0 +1,18 @@
+<div class="three-digit-results">
+  <table class="results-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>{{ "SNR" | transloco }}</th>
+        <th>{{ "Result" | transloco }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let presentation of presentations; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ presentation.currentSNR }}</td>
+        <td>[{{ digitResults(presentation).join(", ") }}]</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

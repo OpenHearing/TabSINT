@@ -117,6 +117,7 @@ import { QrService } from './services/qr.service';
 import { QRCodeModule } from 'angularx-qrcode';
 import { DuodoseDownloadComponent } from './views/response-area/response-areas/duodose-download/duodose-download.component';
 import { ThreeDigitComponent } from './views/response-area/response-areas/three-digit/three-digit.component';
+import { ThreeDigitResultsComponent } from './views/response-area/response-areas/three-digit/three-digit-results/three-digit-results.component';
 import { GapComponent } from './views/response-area/response-areas/gap/gap.component';
 import { TrialProgressionPlotComponent } from './views/response-area/response-areas/shared/trial-progression-plot/trial-progression-plot.component';
 import { HintComponent } from './views/response-area/response-areas/hint/hint.component';
@@ -203,6 +204,7 @@ import { AudiometryCombinedResultsComponent } from './views/response-area/respon
     TabsintConfigComponent,
     BekesyComponent,
     ThreeDigitComponent,
+    ThreeDigitResultsComponent,
     GapComponent,
     TrialProgressionPlotComponent,
     HintComponent,

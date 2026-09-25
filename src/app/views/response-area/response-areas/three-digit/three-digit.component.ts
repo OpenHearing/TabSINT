@@ -71,6 +71,7 @@ export class ThreeDigitComponent implements OnInit, OnDestroy {
   examComplete = false;
   userResponse: string[] = [];
   digitCorrect: boolean[] = [false, false, false];
+  readonly presentations: ThreeDigitPresentationResultInterface[] = [];
 
   // Internal state
   private responseArea: ThreeDigitResponseAreaInterface | undefined;
@@ -89,7 +90,6 @@ export class ThreeDigitComponent implements OnInit, OnDestroy {
     warmupIncorrectStep: examPropSchema.warmupIncorrectStep.default,
     ear: examPropSchema.ear.default,
   };
-  private readonly presentations: ThreeDigitPresentationResultInterface[] = [];
   private currentDigits: string[] = [];
   private currentPresentationId: number | undefined;
   private currentPresentation: string | undefined;
