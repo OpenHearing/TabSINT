@@ -1,0 +1,57 @@
+<div class="hint-results">
+  <p *ngIf="summary?.srt !== undefined" class="hint-srt">{{ "SRT" | transloco }}: {{ summary.srt }}</p>
+
+  <table *ngIf="summary" class="details-table">
+    <tbody>
+      <tr>
+        <th>{{ "Protocol" | transloco }}:</th>
+        <td>{{ summary.protocolName }}</td>
+      </tr>
+      <tr>
+        <th>{{ "Exam Type" | transloco }}:</th>
+        <td>{{ summary.examType }}</td>
+      </tr>
+      <tr>
+        <th>{{ "Direction" | transloco }}:</th>
+        <td>{{ summary.direction }}</td>
+      </tr>
+      <tr>
+        <th>{{ "Scoring" | transloco }}:</th>
+        <td>{{ summary.scoring }}</td>
+      </tr>
+      <tr>
+        <th>{{ "List Number" | transloco }}:</th>
+        <td>{{ summary.listNumber }}</td>
+      </tr>
+      <tr>
+        <th>{{ "Start" | transloco }}:</th>
+        <td>{{ summary.startDateTime | date: "yyyy-M-dd H:mm:ss" }}</td>
+      </tr>
+      <tr>
+        <th>{{ "End" | transloco }}:</th>
+        <td>{{ summary.endDateTime | date: "yyyy-M-dd H:mm:ss" }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <table class="results-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>{{ "SNR" | transloco }}</th>
+        <th>{{ "Score" | transloco }}</th>
+        <th>{{ "Result" | transloco }}</th>
+        <th>{{ "Sentence" | transloco }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let presentation of presentations; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ presentation.snr }}</td>
+        <td>{{ presentation.numberCorrect }}/{{ presentation.wordCount }}</td>
+        <td>[{{ wordResults(presentation).join(", ") }}]</td>
+        <td>{{ presentation.sentence.join(" ") }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

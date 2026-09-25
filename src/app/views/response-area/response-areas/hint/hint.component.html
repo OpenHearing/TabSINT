@@ -1,4 +1,4 @@
-<div class="hint-container">
+<div class="hint-container" *ngIf="!examComplete">
   <p *ngIf="examInstructions" class="hint-instructions">{{ examInstructions | transloco }}</p>
 
   <p class="hint-progress">{{ "Presentation" | transloco }} {{ presentationCount + 1 }} / {{ numberOfPresentations }}</p>
@@ -24,3 +24,5 @@
     </button>
   </div>
 </div>
+
+<app-hint-results *ngIf="examComplete" [presentations]="presentations" [summary]="examSummary"></app-hint-results>

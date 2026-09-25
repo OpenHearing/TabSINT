@@ -120,6 +120,7 @@ import { ThreeDigitComponent } from './views/response-area/response-areas/three-
 import { GapComponent } from './views/response-area/response-areas/gap/gap.component';
 import { TrialProgressionPlotComponent } from './views/response-area/response-areas/shared/trial-progression-plot/trial-progression-plot.component';
 import { HintComponent } from './views/response-area/response-areas/hint/hint.component';
+import { HintResultsComponent } from './views/response-area/response-areas/hint/hint-results/hint-results.component';
 import { HughsonWestlakeComponent } from './views/response-area/response-areas/hughson-westlake/hughson-westlake.component';
 import { BhaftComponent } from './views/response-area/response-areas/bhaft/bhaft.component';
 import { MpanlComponent } from './views/response-area/response-areas/mpanl/mpanl.component';
@@ -205,6 +206,7 @@ import { AudiometryCombinedResultsComponent } from './views/response-area/respon
     GapComponent,
     TrialProgressionPlotComponent,
     HintComponent,
+    HintResultsComponent,
     HughsonWestlakeComponent,
     BhaftComponent,
     MpanlComponent,

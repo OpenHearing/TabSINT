@@ -13,6 +13,8 @@ import { DeviceStatus, DeviceType } from '../../../../utilities/constants';
 import { IDevice } from '../../../../interfaces/devices/device.interface';
 import { pageInterfaceDefaults } from '../../../../utilities/defaults';
 import { ResponseArea } from '../../../../interfaces/page-definition.interface';
+import { ProtocolInterface } from '../../../../models/protocol/protocol.interface';
+import { HintDirection, HintLanguage } from './hint.interface';
 
 describe('HintComponent', () => {
   let component: HintComponent;
@@ -140,7 +142,56 @@ describe('HintComponent', () => {
 
     expect(stateModel.getState().isSubmittable).toBeTrue();
     expect(examService.submitDefault).toHaveBeenCalled();
+    expect(component.examComplete).toBeTrue();
   });
+
+  it('builds the exam summary from the completed device results and active protocol', async () => {
+    component.deviceId = mockDevice.deviceId;
+    devicesService.requestResults.and.resolveTo({ deviceId: mockDevice.deviceId, msg: ['Result', { State: 2, sSRT: -11.5 }] });
+    pageModel.updatePage({
+      ...pageInterfaceDefaults,
+      id: 'hint',
+      responseArea: {
+        type: 'hintResponseArea',
+        examProperties: { Language: HintLanguage.Swahili, Direction: HintDirection.Right, ListNumber: 5 },
+      } as ResponseArea,
+    });
+    const resultsModel = TestBed.inject(ResultsModel);
+    resultsModel.updateCurrentExam({
+      protocol: { title: 'Swahili Noise Right' } as unknown as ProtocolInterface,
+      testDateTime: '2016-06-09T14:30:00.000Z',
+    });
+
+    await component.startExam();
+
+    expect(component.examSummary).toEqual(
+      jasmine.objectContaining({
+        srt: -11.5,
+        protocolName: 'Swahili Noise Right',
+        examType: HintLanguage.Swahili,
+        direction: HintDirection.Right,
+        scoring: 'word',
+        listNumber: 5,
+        startDateTime: '2016-06-09T14:30:00.000Z',
+      })
+    );
+    expect(component.examSummary?.endDateTime).toBeTruthy();
+  });
+
+  it('records the SNR at presentation time alongside each graded sentence', fakeAsync(() => {
+    component.deviceId = mockDevice.deviceId;
+    component.listOfWords = ['the', 'big', 'dog'];
+    component.wordsDisabled = false;
+    (component as unknown as { examActive: boolean }).examActive = true;
+    (component as unknown as { currentSnr: number }).currentSnr = -12;
+    component.response = [0, 2];
+
+    component.processSelectedWords();
+    flush();
+    flushMicrotasks();
+
+    expect(component.presentations[0].snr).toBe(-12);
+  }));
 
   it('advances on completion when the protocol omits autoSubmit', async () => {
     devicesService.requestResults.and.resolveTo({ deviceId: mockDevice.deviceId, msg: ['Result', { State: 2 }] });
