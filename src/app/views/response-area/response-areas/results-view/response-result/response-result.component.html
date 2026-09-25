@@ -1,0 +1,10 @@
+<ng-container [ngSwitch]="result.responseArea">
+  <app-three-digit-results *ngSwitchCase="'threeDigitResponseArea'" [presentations]="threeDigitPresentations"></app-three-digit-results>
+  <app-mrt-results *ngSwitchCase="'mrtResponseArea'" [mrtResults]="mrtResults"></app-mrt-results>
+  <app-hint-results *ngSwitchCase="'hintResponseArea'" [presentations]="hintPresentations" [summary]="hintSummary"></app-hint-results>
+  <app-audiometry-result-viewer *ngSwitchCase="'hughsonWestlakeResponseArea'" [result]="result"></app-audiometry-result-viewer>
+  <app-audiometry-result-viewer *ngSwitchCase="'bhaftResponseArea'" [result]="result"></app-audiometry-result-viewer>
+  <app-audiometry-result-viewer *ngSwitchCase="'bekesyLikeResponseArea'" [result]="result"></app-audiometry-result-viewer>
+  <app-gap-results *ngSwitchCase="'gapResponseArea'" [results]="gapResults"></app-gap-results>
+  <app-generic-result-viewer *ngSwitchDefault [response]="result.response"></app-generic-result-viewer>
+</ng-container>

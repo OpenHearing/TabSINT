@@ -8,8 +8,8 @@ import {
 } from './hughson-westlake.interface';
 import { isWahtsResultsResponse } from '../../../../guards/type.guard';
 import { AudiometryCombinedDatum } from '../shared/audiometry/audiometry.interface';
-import { outputChannelToEarChannel } from '../shared/audiometry/audiometry.utility';
 import { AutomatedAudiometryExamComponentBase } from '../shared/audiometry/automated-audiometry-exam.base';
+import { buildHughsonWestlakeAudiogramDatum } from './hughson-westlake.utility';
 
 const examSchema = hughsonWestlakeSchema.properties;
 const examPropSchema = hughsonWestlakeSchema.properties.examProperties.properties;
@@ -170,16 +170,7 @@ export class HughsonWestlakeComponent extends AutomatedAudiometryExamComponentBa
     examProperties: HughsonWestlakeExamPropertiesInterface,
     results: HughsonWestlakeResultsInterface | undefined
   ): AudiometryCombinedDatum | null {
-    if (examProperties.F === undefined || !results) {
-      return null;
-    }
-    return {
-      frequency: examProperties.F,
-      threshold: Number.isFinite(results.Threshold) ? results.Threshold : null,
-      channel: outputChannelToEarChannel(examProperties.OutputChannel),
-      resultType: String(results.ResultType),
-      masking: false,
-    };
+    return buildHughsonWestlakeAudiogramDatum(examProperties, results);
   }
 
   /**

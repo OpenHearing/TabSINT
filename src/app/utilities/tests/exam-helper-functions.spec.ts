@@ -73,8 +73,8 @@ describe('exam-helper-functions', () => {
       expect(getDefaultResponseRequired('textboxResponseArea')).toBeTrue();
     });
 
-    it('returns false for textboxResponseAreaResultViewer', () => {
-      expect(getDefaultResponseRequired('textboxResponseAreaResultViewer')).toBeFalse();
+    it('returns false for resultsViewResponseArea', () => {
+      expect(getDefaultResponseRequired('resultsViewResponseArea')).toBeFalse();
     });
 
     it('returns true for multipleChoiceResponseArea', () => {

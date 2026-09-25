@@ -5,7 +5,8 @@ import { followOnSchema } from './definitions/follow-on.schema';
 import { setFlagSchema } from './definitions/set-flag.schema';
 import { PageDefinition } from '../app/interfaces/page-definition.interface';
 import { chaWavFilesSchema } from './definitions/cha-wavfile.schema';
-import { textBoxResultViewerSchema, textBoxSchema } from './response-areas/textbox.schema';
+import { textBoxSchema } from './response-areas/textbox.schema';
+import { resultsViewSchema } from './response-areas/results-view.schema';
 import { multipleChoiceSchema } from './response-areas/multiple-choice.schema';
 import { manualAudiometrySchema } from './response-areas/manual-audiometry.schema';
 import { calibrationExamSchema } from './response-areas/calibration-exam.schema';
@@ -110,7 +111,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
       type: 'object',
       oneOf: [
         textBoxSchema,
-        textBoxResultViewerSchema,
+        resultsViewSchema,
         subjectIdSchema,
         checkboxSchema,
         duodoseDownloadSchema,

@@ -12,6 +12,7 @@ import { DeviceType } from '../../../../utilities/constants';
 import { getCurrentDatetime } from '../../../../utilities/exam-helper-functions';
 import { isWahtsResultsResponse } from '../../../../guards/type.guard';
 import { hintSchema } from '../../../../../schema/response-areas/hint.schema';
+import { buildHintExamSummary } from './hint.utility';
 import {
   HintDeviceResultsInterface,
   HintExamPropertiesInterface,
@@ -20,9 +21,6 @@ import {
   HintResponseAreaInterface,
   HintResponseInterface,
 } from './hint.interface';
-
-/** Current scoring method implemented by this exam: every word is graded as a whole. */
-const SCORING_METHOD = 'word';
 
 const EXAM_NAME = 'HINT';
 const SUBMISSION_NAME = 'HINT$Submission';
@@ -335,17 +333,8 @@ export class HintComponent implements OnInit, OnDestroy {
    * @param results The final device results, carrying the computed SRT.
    */
   private buildExamSummary(results: HintDeviceResultsInterface): HintExamSummaryInterface {
-    const protocol = this.resultsModel.getResults().currentExam?.protocol;
-    return {
-      srt: results.sSRT,
-      protocolName: protocol?.title ?? protocol?.name,
-      examType: this.examProperties.Language,
-      direction: this.examProperties.Direction,
-      scoring: SCORING_METHOD,
-      listNumber: this.examProperties.ListNumber,
-      startDateTime: this.resultsModel.getResults().currentExam?.testDateTime,
-      endDateTime: new Date().toJSON(),
-    };
+    const currentExam = this.resultsModel.getResults().currentExam;
+    return buildHintExamSummary(this.examProperties, results, currentExam?.protocol, currentExam?.testDateTime);
   }
 
   /**

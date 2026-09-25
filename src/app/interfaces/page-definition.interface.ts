@@ -1,7 +1,7 @@
 import { CalibrationExamInterface } from '../views/response-area/response-areas/calibration-exam/calibration-exam-component/calibration-exam.interface';
 import { ManualAudiometryInterface } from '../views/response-area/response-areas/manual-audiometry/manual-audiometry.interface';
 import { MultipleChoiceInterface } from '../views/response-area/response-areas/multiple-choice/multiple-choice.interface';
-import { TextBoxResultViewerInterface } from '../views/response-area/response-areas/textbox-result-viewer/textbox-result-viewer.interface';
+import { ResultsViewResponseAreaInterface } from '../views/response-area/response-areas/results-view/results-view.interface';
 import { TextBoxInterface } from '../views/response-area/response-areas/textbox/textbox.interface';
 import { MultipleInputInterface } from '../views/response-area/response-areas/multiple-input/multiple-input.interface';
 import { LikertInterface } from '../views/response-area/response-areas/likert/likert/likert.interface';
@@ -153,7 +153,7 @@ export interface CommonResponseAreaInterface {
 
 export type ResponseArea =
   | TextBoxInterface
-  | TextBoxResultViewerInterface
+  | ResultsViewResponseAreaInterface
   | SubjectIdInterface
   | CheckboxInterface
   | DuodoseDownloadInterface

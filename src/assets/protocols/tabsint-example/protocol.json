@@ -204,7 +204,7 @@
           "title": "Text Box Result Viewer",
           "instructionText": "Page should always be submittable",
           "responseArea": {
-            "type": "textboxResponseAreaResultViewer",
+            "type": "resultsViewResponseArea",
             "pageIdsToDisplay": ["textbox_001", "textbox_002", "textbox_003"]
           }
         },

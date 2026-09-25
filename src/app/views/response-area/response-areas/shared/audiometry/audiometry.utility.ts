@@ -1,5 +1,5 @@
 import { AudiometryResultsInterface, EarChannel } from '../../../../../interfaces/audiometry-results.interface';
-import { AudiometryCombinedDatum, AudiometryOutputChannel } from './audiometry.interface';
+import { AudiometryCombinedDatum, AudiometryExamProperties, AudiometryLevelUnits, AudiometryOutputChannel } from './audiometry.interface';
 
 /**
  * Map a CHA audiometry OutputChannel to the EarChannel expected by audiogram.
@@ -26,6 +26,15 @@ export function outputChannelToEarChannel(outputChannel: AudiometryOutputChannel
     default:
       return EarChannel.Mono;
   }
+}
+
+/**
+ * The level units the combined audiogram should be labeled with, for exam types that report in
+ * whatever level units the page was configured with.
+ * @param examProperties The page's configured exam properties.
+ */
+export function getDefaultLevelUnits(examProperties: Pick<AudiometryExamProperties, 'LevelUnits'>): string {
+  return examProperties.LevelUnits ?? AudiometryLevelUnits.dbHl;
 }
 
 /**

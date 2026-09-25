@@ -1,5 +1,6 @@
 import { CommonResponseAreaInterface } from '../../../../interfaces/page-definition.interface';
 
-export interface TextBoxResultViewerInterface extends CommonResponseAreaInterface {
+export interface ResultsViewResponseAreaInterface extends CommonResponseAreaInterface {
+  type: 'resultsViewResponseArea';
   pageIdsToDisplay: string[];
 }

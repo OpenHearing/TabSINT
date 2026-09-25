@@ -447,7 +447,7 @@
           "title": "Text Box Result Viewer",
           "instructionText": "Page should always be submittable",
           "responseArea": {
-            "type": "textboxResponseAreaResultViewer",
+            "type": "resultsViewResponseArea",
             "pageIdsToDisplay": ["textbox_001", "textbox_002", "textbox_003"]
           }
         },
@@ -568,6 +568,15 @@
             "centerLabelAbove": "Please rate the following:",
             "labels": ["Strongly disagree", "Strongly agree"],
             "questions": [{ "text": "I can hear <b>well</b> in <i>quiet</i> rooms." }, { "text": "I can hear well in <b>noisy</b> rooms." }]
+          }
+        },
+        {
+          "id": "likert_result_viewer",
+          "title": "Likert Result Viewer",
+          "instructionText": "Page should always be submittable. Likert has no dedicated results viewer, so this exercises the generic fallback.",
+          "responseArea": {
+            "type": "resultsViewResponseArea",
+            "pageIdsToDisplay": ["default1", "default2"]
           }
         },
         {
