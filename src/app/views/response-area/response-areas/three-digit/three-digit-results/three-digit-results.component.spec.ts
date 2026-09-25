@@ -3,6 +3,7 @@ import { TranslocoTestingModule } from '@jsverse/transloco';
 
 import { ThreeDigitResultsComponent } from './three-digit-results.component';
 import { ThreeDigitPresentationResultInterface } from '../three-digit.interface';
+import { TrialProgressionPlotComponent } from '../../shared/trial-progression-plot/trial-progression-plot.component';
 
 describe('ThreeDigitResultsComponent', () => {
   let component: ThreeDigitResultsComponent;
@@ -23,7 +24,7 @@ describe('ThreeDigitResultsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ThreeDigitResultsComponent],
+      declarations: [ThreeDigitResultsComponent, TrialProgressionPlotComponent],
       imports: [
         TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
       ],
@@ -48,5 +49,22 @@ describe('ThreeDigitResultsComponent', () => {
     expect(cells[0].textContent?.trim()).toBe('1');
     expect(cells[1].textContent?.trim()).toBe('-9');
     expect(cells[2].textContent?.trim()).toBe('[Y, Y, N]');
+  });
+
+  it('builds SNR-progression plot data with per-point styling and no reference line', () => {
+    expect(component.snrProgressionData).toEqual({
+      y: [-9],
+      pointStyles: ['open'],
+      connectLine: true,
+      referenceLine: undefined,
+      xLabel: 'Presentation #',
+      yLabel: 'SNR (dB)',
+      title: 'SNR Progression',
+    });
+  });
+
+  it('omits the SNR-progression plot when there are no presentations', () => {
+    component.presentations = [];
+    expect(component.snrProgressionData).toBeUndefined();
   });
 });

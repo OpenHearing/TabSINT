@@ -3,6 +3,7 @@ import { TranslocoTestingModule } from '@jsverse/transloco';
 
 import { HintResultsComponent } from './hint-results.component';
 import { HintDirection, HintExamSummaryInterface, HintLanguage, HintPresentationResultInterface } from '../hint.interface';
+import { TrialProgressionPlotComponent } from '../../shared/trial-progression-plot/trial-progression-plot.component';
 
 describe('HintResultsComponent', () => {
   let component: HintResultsComponent;
@@ -35,7 +36,7 @@ describe('HintResultsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [HintResultsComponent],
+      declarations: [HintResultsComponent, TrialProgressionPlotComponent],
       imports: [
         TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
       ],
@@ -63,6 +64,23 @@ describe('HintResultsComponent', () => {
     expect(cells[2].textContent?.trim()).toBe('3/4');
     expect(cells[3].textContent?.trim()).toBe('[N, Y, Y, Y]');
     expect(cells[4].textContent?.trim()).toBe('the big dog ran');
+  });
+
+  it('builds SNR-progression plot data with per-point styling and the SRT as a reference line', () => {
+    expect(component.snrProgressionData).toEqual({
+      y: [-14],
+      pointStyles: ['open'],
+      connectLine: true,
+      referenceLine: -11.5,
+      xLabel: 'Presentation #',
+      yLabel: 'SNR (dB)',
+      title: 'SNR Progression',
+    });
+  });
+
+  it('omits the SNR-progression plot when there are no presentations', () => {
+    component.presentations = [];
+    expect(component.snrProgressionData).toBeUndefined();
   });
 
   it('renders the SRT and exam-level details from the summary', () => {
