@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import { inject, Injectable } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
-import Ajv, { JSONSchemaType } from 'ajv';
+import Ajv, { ValidateFunction } from 'ajv';
 
 import { LoadingProtocolInterface } from '../interfaces/loading-protocol-object.interface';
 import { ProtocolValidationResultInterface } from '../interfaces/protocol-validation-result.interface';
@@ -53,6 +53,13 @@ export class ProtocolService {
 
   diskSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
+
+  // Compiled once per app lifetime instead of once per protocol load: compiling the protocol
+  // schema (recursive, 26-branch oneOf per response area) costs ~270ms regardless of protocol
+  // size, dwarfing the ~1-2ms actual validation call.
+  private readonly ajv = new Ajv({ useDefaults: true, strict: false });
+  private readonly protocolValidator: ValidateFunction<ProtocolSchemaInterface> = this.ajv.compile(protocolSchema);
+  private readonly calibrationValidator: ValidateFunction = this.ajv.compile(calibrationFileSchema);
 
   constructor() {
     this.app = this.appModel.getApp();
@@ -181,14 +188,12 @@ export class ProtocolService {
   }
 
   /**
-   * Validate an object against a provided schema.
+   * Validate an object against a precompiled AJV validator.
    * @param data The data to be validated.
-   * @param schema The schema to validate against.
+   * @param validateAjv The compiled validator to validate against.
    * @returns A validation result containing whether the data is valid and any errors.
    */
-  private validate<T = unknown>(data: object, schema: JSONSchemaType<T>): ProtocolValidationResultInterface {
-    const ajv = new Ajv({ useDefaults: true, strict: false });
-    const validateAjv = ajv.compile(schema);
+  private validate(data: object, validateAjv: ValidateFunction): ProtocolValidationResultInterface {
     const isValid = validateAjv(data);
     this.logger.debug('AJV isValid? ' + isValid);
     this.logger.debug('AJV ERRORS: ' + validateAjv.errors);
@@ -204,10 +209,10 @@ export class ProtocolService {
     if (this.loading.notify) {
       this.tasks.register('Validate Protocol', 'Validating Protocol... This process could take several minutes');
     }
-    const protocolValidationResult = this.validate(this.loading.protocol, protocolSchema);
+    const protocolValidationResult = this.validate(this.loading.protocol, this.protocolValidator);
     let calibrationValidationResult: ProtocolValidationResultInterface = { valid: true, error: null };
     if (this.loading.calibration) {
-      calibrationValidationResult = this.validate(this.loading.calibration, calibrationFileSchema);
+      calibrationValidationResult = this.validate(this.loading.calibration, this.calibrationValidator);
     }
     this.tasks.deregister('Validate Protocol');
     if (!protocolValidationResult.valid || !calibrationValidationResult.valid) {
