@@ -21,6 +21,7 @@ describe('MediaRepositoryService', () => {
   let dialogSpy: jasmine.SpyObj<MatDialog>;
   let notificationsSpy: jasmine.SpyObj<Notifications>;
   let loggerSpy: jasmine.SpyObj<Logger>;
+  let tasksSpy: jasmine.SpyObj<Tasks>;
 
   const config: GitlabConfigInterface = {
     host: 'https://gitlab.com/',
@@ -45,6 +46,7 @@ describe('MediaRepositoryService', () => {
     notificationsSpy = jasmine.createSpyObj('Notifications', ['alert']);
     notificationsSpy.alert.and.returnValue(of('closed'));
     loggerSpy = jasmine.createSpyObj('Logger', ['debug', 'warning', 'error']);
+    tasksSpy = jasmine.createSpyObj('Tasks', ['register', 'deregister']);
 
     TestBed.configureTestingModule({
       providers: [
@@ -53,7 +55,7 @@ describe('MediaRepositoryService', () => {
         { provide: MatDialog, useValue: dialogSpy },
         { provide: Notifications, useValue: notificationsSpy },
         { provide: Logger, useValue: loggerSpy },
-        { provide: Tasks, useValue: jasmine.createSpyObj('Tasks', ['register', 'deregister']) },
+        { provide: Tasks, useValue: tasksSpy },
       ],
     });
 
@@ -103,6 +105,20 @@ describe('MediaRepositoryService', () => {
       gitlabServiceSpy.downloadGitlabRepository.and.resolveTo(undefined);
 
       await expectAsync(service.resolveAndDownload(config, false, DeviceType.Wahts)).toBeRejected();
+    });
+
+    it('forwards the onProgress callback through to downloadGitlabRepository', async () => {
+      const onProgress = jasmine.createSpy('onProgress');
+
+      await service.resolveAndDownload(config, false, DeviceType.Wahts, onProgress);
+
+      expect(gitlabServiceSpy.downloadGitlabRepository).toHaveBeenCalledWith(
+        jasmine.anything(),
+        jasmine.anything(),
+        jasmine.anything(),
+        jasmine.anything(),
+        onProgress
+      );
     });
   });
 
@@ -309,6 +325,19 @@ describe('MediaRepositoryService', () => {
 
       expect(status).toBe(MediaUpdateStatus.Failed);
       expect(loggerSpy.error).toHaveBeenCalled();
+    });
+
+    it('reports download progress on the "Add Common Media" task as bytes arrive', async () => {
+      const bytes = 5 * 1024 * 1024;
+      const contentLength = 10 * 1024 * 1024;
+      gitlabServiceSpy.downloadGitlabRepository.and.callFake(async (_config, _dir, _saveExternal, _tagsOnly, onProgress) => {
+        onProgress?.({ type: 'download', url: 'irrelevant', bytes, contentLength, lengthComputable: true });
+        return 'uri://downloaded';
+      });
+
+      await service.processCommonMedia(config, config.repository);
+
+      expect(tasksSpy.register).toHaveBeenCalledWith('Add Common Media', 'Downloading Media Files (50% — 5.0/10.0 MB)');
     });
   });
 });

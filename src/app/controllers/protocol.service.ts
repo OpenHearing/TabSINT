@@ -27,6 +27,7 @@ import { checkCalibrationFiles, checkControllers, checkUnresolvedFilePaths, prot
 import { processProtocol } from '../utilities/process-protocol.function';
 import { initializeLoadingProtocol } from '../utilities/initialize-loading-protocol';
 import { sanitizeJsonString } from '../utilities/sanitize-json-string.function';
+import { formatCountProgress } from '../utilities/format-count-progress.function';
 
 import { protocolSchema } from '../../schema/protocol.schema';
 import { calibrationFileSchema } from '../../schema/definitions/calibration-file.schema';
@@ -263,7 +264,9 @@ export class ProtocolService {
       this.tasks.register('Initialize Protocol', 'Processing Protocol...');
 
       [this.protocolModel.activeProtocol, this.protocolModel.activeProtocolDictionary, this.protocolModel.activeProtocolFollowOnsDictionary] =
-        await processProtocol(this.loading);
+        await processProtocol(this.loading, (done, total) =>
+          this.tasks.register('Initialize Protocol', formatCountProgress('Processing Protocol...', done, total))
+        );
 
       this.stateModel.updateState({
         examState: ExamState.Ready,

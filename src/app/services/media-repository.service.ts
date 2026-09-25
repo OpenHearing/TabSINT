@@ -2,6 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 
+import { ProgressStatus } from '@capacitor/file-transfer';
+
 import { GitlabConfigInterface } from '../models/disk/disk.interface';
 import { DiskModel } from '../models/disk/disk.service';
 import { MediaReposInterface, MediaRepoTarget, MediaRepoProtocolTarget } from '../interfaces/media-repos.interface';
@@ -11,6 +13,7 @@ import { Logger } from './logger.service';
 import { Tasks } from './tasks.service';
 import { DialogType, MediaUpdateStatus } from '../utilities/constants';
 import { getDateString } from '../utilities/results-helper-functions';
+import { formatDownloadProgress } from '../utilities/format-download-progress.function';
 import { GitlabReferenceDialog } from '../views/gitlab-reference-dialog/gitlab-reference-dialog.component';
 import { MediaConflictDialog } from '../views/media-conflict-dialog/media-conflict-dialog.component';
 
@@ -33,9 +36,15 @@ export class MediaRepositoryService {
    * @param config The configuration used to download the repository.
    * @param tagsOnly Whether only tags should be used or only commits.
    * @param target The target this media repository belongs to.
+   * @param onProgress Optional callback invoked with byte-level progress as the archive downloads.
    * @returns The stored media repository entry.
    */
-  async resolveAndDownload(config: GitlabConfigInterface, tagsOnly: boolean, target: MediaRepoTarget): Promise<MediaReposInterface> {
+  async resolveAndDownload(
+    config: GitlabConfigInterface,
+    tagsOnly: boolean,
+    target: MediaRepoTarget,
+    onProgress?: (status: ProgressStatus) => void
+  ): Promise<MediaReposInterface> {
     const disk = this.diskModel.getDisk();
     const saveExternal = target === MediaRepoProtocolTarget;
 
@@ -43,7 +52,7 @@ export class MediaRepositoryService {
     const relativePath = `gitlab/${safeFolder}`;
     const taggedConfig = structuredClone(config);
     taggedConfig.tag = config.tag ? config.tag : await this.gitlabService.getLatestReference(config, tagsOnly);
-    const directoryUri = await this.gitlabService.downloadGitlabRepository(taggedConfig, relativePath, saveExternal, tagsOnly);
+    const directoryUri = await this.gitlabService.downloadGitlabRepository(taggedConfig, relativePath, saveExternal, tagsOnly, onProgress);
     if (directoryUri === undefined) {
       throw new Error(`Failed to download media repository "${config.repository}".`);
     }
@@ -64,9 +73,15 @@ export class MediaRepositoryService {
    * @param gitlabConfig Config used for the repository.
    * @param target The target this media repository belongs to.
    * @param throwErrors Whether a download failure should propagate to the caller or be logged and surfaced as a non-blocking warning instead.
+   * @param onProgress Optional callback invoked with byte-level progress as the archive downloads.
    * @returns The outcome of the update.
    */
-  async promptAndUpdate(gitlabConfig: GitlabConfigInterface, target: MediaRepoTarget, throwErrors: boolean): Promise<MediaUpdateStatus> {
+  async promptAndUpdate(
+    gitlabConfig: GitlabConfigInterface,
+    target: MediaRepoTarget,
+    throwErrors: boolean,
+    onProgress?: (status: ProgressStatus) => void
+  ): Promise<MediaUpdateStatus> {
     const dialogRef = this.dialog.open(
       GitlabReferenceDialog,
       gitlabConfig ? { data: { title: 'Select GitLab Reference for Common Media' } } : undefined
@@ -82,7 +97,7 @@ export class MediaRepositoryService {
       if (gitlabConfig.tag === latestReference) {
         return MediaUpdateStatus.UpToDate;
       }
-      await this.resolveAndDownload({ ...gitlabConfig, tag: latestReference }, tagsOnly, target);
+      await this.resolveAndDownload({ ...gitlabConfig, tag: latestReference }, tagsOnly, target, onProgress);
       return MediaUpdateStatus.Updated;
     } catch (error) {
       this.logger.error(`Failed to update media repository "${gitlabConfig.repository}"`, error);
@@ -195,7 +210,9 @@ export class MediaRepositoryService {
       }
 
       const mediaConfig: GitlabConfigInterface = { ...gitlabConfig, repository: commonMediaRepository, tag: '' };
-      await this.resolveAndDownload(mediaConfig, tagsOnly, MediaRepoProtocolTarget);
+      await this.resolveAndDownload(mediaConfig, tagsOnly, MediaRepoProtocolTarget, status =>
+        this.tasks.register('Add Common Media', formatDownloadProgress('Downloading Media Files', status))
+      );
       return MediaUpdateStatus.Updated;
     } catch (error) {
       this.logger.error(`Failed to download/update common media repository "${commonMediaRepository}"`, error);

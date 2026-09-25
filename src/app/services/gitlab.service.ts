@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { CapacitorHttp, HttpOptions, HttpResponse } from '@capacitor/core';
-import { FileTransfer } from '@capacitor/file-transfer';
+import { FileTransfer, ProgressStatus } from '@capacitor/file-transfer';
 
 import { GitlabConfigInterface } from '../models/disk/disk.interface';
 import { FileService } from './file.service';
@@ -19,13 +19,15 @@ export class GitlabService {
    * @param localDirectory The local directory to save the repository.
    * @param saveExternal Whether the download should be saved to internal or external storage.
    * @param tagsOnly Whether only tags should be used or only commits.
+   * @param onProgress Optional callback invoked with byte-level progress as the archive downloads.
    * @returns The content URI for the created local directory.
    */
   async downloadGitlabRepository(
     config: GitlabConfigInterface,
     localDirectory: string,
     saveExternal: boolean,
-    tagsOnly: boolean
+    tagsOnly: boolean,
+    onProgress?: (status: ProgressStatus) => void
   ): Promise<string | undefined> {
     let folderUri = undefined;
     const headers = {
@@ -35,9 +37,9 @@ export class GitlabService {
     const ref = config.tag ? config.tag : await this.getLatestReference(config, tagsOnly);
 
     if (saveExternal) {
-      folderUri = await this.downloadAndSaveFilesExternal(projectId, ref, config.host, headers, localDirectory);
+      folderUri = await this.downloadAndSaveFilesExternal(projectId, ref, config.host, headers, localDirectory, onProgress);
     } else {
-      folderUri = await this.downloadAndSaveFilesInternal(projectId, ref, config.host, headers, localDirectory);
+      folderUri = await this.downloadAndSaveFilesInternal(projectId, ref, config.host, headers, localDirectory, onProgress);
     }
     return folderUri;
   }
@@ -105,6 +107,7 @@ export class GitlabService {
    * @param host The host of the Gitlab repository
    * @param headers Authorization headers for the request.
    * @param localDir The local directory to save the repository.
+   * @param onProgress Optional callback invoked with byte-level progress as the archive downloads.
    * @returns The content URI for the created local directory.
    */
   private async downloadAndSaveFilesExternal(
@@ -112,7 +115,8 @@ export class GitlabService {
     ref: string,
     host: string,
     headers: { Authorization: string },
-    localDir: string
+    localDir: string,
+    onProgress?: (status: ProgressStatus) => void
   ): Promise<string | undefined> {
     await this.fileService.deleteDirectory(localDir);
     const fileServiceResult = await this.fileService.createDirectory(localDir);
@@ -123,11 +127,12 @@ export class GitlabService {
 
     // Internal download for the zip file
     const zipResult = await Filesystem.getUri({ path: 'archive.zip', directory: Directory.Data });
-    const downloadResult = await FileTransfer.downloadFile({
-      url: `${host}/api/v4/projects/${projectId}/repository/archive.zip?sha=${ref}`,
-      headers: headers,
-      path: zipResult.uri,
-    });
+    const downloadResult = await this.downloadZip(
+      `${host}/api/v4/projects/${projectId}/repository/archive.zip?sha=${ref}`,
+      headers,
+      zipResult.uri,
+      onProgress
+    );
 
     try {
       const response = await this.fileService.unzip(downloadResult.path as string, fileServiceResult.uri, true);
@@ -150,6 +155,7 @@ export class GitlabService {
    * @param host The host of the Gitlab repository
    * @param headers Authorization headers for the request.
    * @param localDir The local directory to save the repository.
+   * @param onProgress Optional callback invoked with byte-level progress as the archive downloads.
    * @returns The content URI for the created local directory.
    */
   private async downloadAndSaveFilesInternal(
@@ -157,7 +163,8 @@ export class GitlabService {
     ref: string,
     host: string,
     headers: { Authorization: string },
-    localDir: string
+    localDir: string,
+    onProgress?: (status: ProgressStatus) => void
   ): Promise<string | undefined> {
     if (await Filesystem.readdir({ path: localDir, directory: Directory.Data }).catch(() => null)) {
       await Filesystem.rmdir({ path: localDir, directory: Directory.Data, recursive: true });
@@ -167,11 +174,12 @@ export class GitlabService {
 
     // Internal download for the zip file
     const zipResult = await Filesystem.getUri({ path: 'archive.zip', directory: Directory.Data });
-    const downloadResult = await FileTransfer.downloadFile({
-      url: `${host}/api/v4/projects/${projectId}/repository/archive.zip?sha=${ref}`,
-      headers: headers,
-      path: zipResult.uri,
-    });
+    const downloadResult = await this.downloadZip(
+      `${host}/api/v4/projects/${projectId}/repository/archive.zip?sha=${ref}`,
+      headers,
+      zipResult.uri,
+      onProgress
+    );
 
     try {
       const response = await this.fileService.unzip(downloadResult.path as string, fileServiceResult.uri, true);
@@ -184,6 +192,32 @@ export class GitlabService {
     }
 
     return fileServiceResult.uri;
+  }
+
+  /**
+   * Download a file via `FileTransfer`, optionally reporting byte-level progress.
+   * @param url The URL to download from.
+   * @param headers Authorization headers for the request.
+   * @param destUri The local file URI to save the download to.
+   * @param onProgress Optional callback invoked with progress events for this download.
+   * @returns The download result.
+   */
+  private async downloadZip(url: string, headers: { Authorization: string }, destUri: string, onProgress?: (status: ProgressStatus) => void) {
+    if (!onProgress) {
+      return FileTransfer.downloadFile({ url, headers, path: destUri });
+    }
+
+    const listener = (status: ProgressStatus) => {
+      if (status.url === url) {
+        onProgress(status);
+      }
+    };
+    const handle = await FileTransfer.addListener('progress', listener);
+    try {
+      return await FileTransfer.downloadFile({ url, headers, path: destUri, progress: true });
+    } finally {
+      await handle.remove();
+    }
   }
 
   /**

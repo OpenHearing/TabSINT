@@ -196,4 +196,21 @@ describe('processProtocol', () => {
   it('adds video path', () => {
     //unimplemented
   });
+
+  describe('onPageProcessed', () => {
+    it('reports one call per actual page (root pages + subProtocol pages), with a stable total', async () => {
+      const onPageProcessed = jasmine.createSpy('onPageProcessed');
+
+      await processProtocol(loadingProtocol, onPageProcessed);
+
+      // 1 page in the root's MainMenu subProtocol ('choose') + 3 pages in the TextBox subProtocol
+      // (textbox_001/002/003); 'backtomain' is a bare protocol reference, not a page, and the
+      // followOn targets are references too, so neither contributes a call.
+      expect(onPageProcessed).toHaveBeenCalledTimes(4);
+      const doneValues = onPageProcessed.calls.allArgs().map(args => args[0]);
+      const totalValues = onPageProcessed.calls.allArgs().map(args => args[1]);
+      expect(doneValues.sort()).toEqual([1, 2, 3, 4]);
+      expect(totalValues).toEqual([4, 4, 4, 4]);
+    });
+  });
 });
