@@ -1,5 +1,4 @@
 <div *ngFor="let r of matchedResults">
-  // eslint-disable-next-line @angular-eslint/template/elements-content
   <h2 [textContent]="r.page.questionMainText" *ngIf="r.page.questionMainText"></h2>
   <p class="subtext pad-top" *ngIf="r.page.questionSubText">{{ r.page.questionSubText }}</p>
   <p class="instructions" *ngIf="r.page.instructionText">{{ r.page.instructionText }}</p>

@@ -147,6 +147,9 @@
                 "id": "Auto Submit / Response Required"
               },
               {
+                "id": "Results View"
+              },
+              {
                 "id": "End All"
               }
             ]
@@ -396,6 +399,12 @@
               "conditional": "result.response=='Auto Submit / Response Required'",
               "target": {
                 "reference": "submitBehavior"
+              }
+            },
+            {
+              "conditional": "result.response=='Results View'",
+              "target": {
+                "reference": "ResultsViewDemo"
               }
             },
             {
@@ -2289,6 +2298,34 @@
             "type": "textboxResponseArea",
             "rows": 2,
             "responseRequired": false
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "ResultsViewDemo",
+      "pages": [
+        {
+          "id": "results_view_demo",
+          "title": "Results View",
+          "instructionText": "Displays the results of every previously-run demo page whose response-area type has a dedicated results viewer. Run the corresponding demo pages first (Three Digit Test, MRT Exam, HINT, Hughson-Westlake Screener/Threshold, BHAFT, Bekesy Like, GAP) to see real data here; unvisited pages simply show nothing.",
+          "responseArea": {
+            "type": "resultsViewResponseArea",
+            "pageIdsToDisplay": [
+              "threeDigitResponseArea",
+              "MRT",
+              "hintResponseArea",
+              "Hughson-Westlake-Screener",
+              "Hughson-Westlake-Threshold",
+              "Hughson-Westlake-Threshold-2",
+              "BHAFT",
+              "BekesyLike",
+              "gapResponseArea"
+            ]
           }
         },
         {
