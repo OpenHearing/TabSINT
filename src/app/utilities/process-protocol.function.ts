@@ -156,7 +156,7 @@ export async function processProtocol(
         } else if (isPageDefinition(page)) {
           return processPage(page);
         }
-        return undefined;
+        return Promise.resolve();
       })
     );
   }
