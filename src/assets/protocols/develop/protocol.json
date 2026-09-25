@@ -666,6 +666,15 @@
           }
         },
         {
+          "id": "audiometry_001_result_viewer",
+          "title": "Manual Audiometry Result Viewer",
+          "instructionText": "Page should always be submittable. Reviews the combined audiogram from the manual audiometry page above.",
+          "responseArea": {
+            "type": "manualAudiometryResultViewerResponseArea",
+            "pageIdsToDisplay": ["audiometry_001"]
+          }
+        },
+        {
           "id": "backtomain",
           "reference": "MainMenu"
         }
@@ -2312,7 +2321,7 @@
         {
           "id": "results_view_demo",
           "title": "Results View",
-          "instructionText": "Displays the results of every previously-run demo page whose response-area type has a dedicated results viewer. Run the corresponding demo pages first (Three Digit Test, MRT Exam, HINT, Hughson-Westlake Screener/Threshold, BHAFT, Bekesy Like, GAP) to see real data here; unvisited pages simply show nothing.",
+          "instructionText": "Displays the results of every previously-run demo page whose response-area type has a dedicated results viewer. Run the corresponding demo pages first (Three Digit Test, MRT Exam, HINT, Hughson-Westlake Screener/Threshold, BHAFT, Bekesy Like, GAP, Manual Audiometry) to see real data here; unvisited pages simply show nothing.",
           "responseArea": {
             "type": "resultsViewResponseArea",
             "pageIdsToDisplay": [
@@ -2324,7 +2333,8 @@
               "Hughson-Westlake-Threshold-2",
               "BHAFT",
               "BekesyLike",
-              "gapResponseArea"
+              "gapResponseArea",
+              "audiometry_001"
             ]
           }
         },

@@ -10,6 +10,7 @@ const EXPECTED_RESPONSE_AREA_TYPES = [
   'likertResponseArea',
   'multipleInputResponseArea',
   'manualAudiometryResponseArea',
+  'manualAudiometryResultViewerResponseArea',
   'multipleChoiceResponseArea',
   'customResponseArea',
   'calibrationResponseArea',

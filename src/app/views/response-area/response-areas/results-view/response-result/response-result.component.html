@@ -5,6 +5,9 @@
   <app-audiometry-result-viewer *ngSwitchCase="'hughsonWestlakeResponseArea'" [result]="result"></app-audiometry-result-viewer>
   <app-audiometry-result-viewer *ngSwitchCase="'bhaftResponseArea'" [result]="result"></app-audiometry-result-viewer>
   <app-audiometry-result-viewer *ngSwitchCase="'bekesyLikeResponseArea'" [result]="result"></app-audiometry-result-viewer>
+  <app-audiometry-combined-results
+    *ngSwitchCase="'manualAudiometryResponseArea'"
+    [dataStruct]="manualAudiometryData"></app-audiometry-combined-results>
   <app-gap-results *ngSwitchCase="'gapResponseArea'" [results]="gapResults"></app-gap-results>
   <app-generic-result-viewer *ngSwitchDefault [response]="result.response"></app-generic-result-viewer>
 </ng-container>

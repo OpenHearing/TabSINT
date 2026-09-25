@@ -2,6 +2,7 @@ import { Component, Input, inject } from '@angular/core';
 
 import { CurrentResults } from '../../../../../models/results/results.interface';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
+import { AudiometryResultsInterface } from '../../../../../interfaces/audiometry-results.interface';
 import { ThreeDigitPresentationResultInterface, ThreeDigitResponseInterface } from '../../three-digit/three-digit.interface';
 import { MrtResultsInterface, MrtTrialResultInterface } from '../../mrt/mrt-exam/mrt-exam.interface';
 import { gradeMrtExam } from '../../mrt/mrt-exam/mrt-exam.utility';
@@ -52,5 +53,18 @@ export class ResponseResultComponent {
 
   get gapResults(): GapResultsInterface {
     return (this.result.response as GapResultsInterface) ?? {};
+  }
+
+  get manualAudiometryData(): AudiometryResultsInterface {
+    return (
+      (this.result.response as AudiometryResultsInterface) ?? {
+        frequencies: [],
+        thresholds: [],
+        channels: [],
+        resultTypes: [],
+        masking: [],
+        levelUnits: '',
+      }
+    );
   }
 }

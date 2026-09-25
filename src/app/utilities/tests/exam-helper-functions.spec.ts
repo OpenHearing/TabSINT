@@ -77,6 +77,10 @@ describe('exam-helper-functions', () => {
       expect(getDefaultResponseRequired('resultsViewResponseArea')).toBeFalse();
     });
 
+    it('returns false for manualAudiometryResultViewerResponseArea', () => {
+      expect(getDefaultResponseRequired('manualAudiometryResultViewerResponseArea')).toBeFalse();
+    });
+
     it('returns true for multipleChoiceResponseArea', () => {
       expect(getDefaultResponseRequired('multipleChoiceResponseArea')).toBeTrue();
     });

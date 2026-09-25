@@ -1,5 +1,6 @@
 import { CalibrationExamInterface } from '../views/response-area/response-areas/calibration-exam/calibration-exam-component/calibration-exam.interface';
 import { ManualAudiometryInterface } from '../views/response-area/response-areas/manual-audiometry/manual-audiometry.interface';
+import { ManualAudiometryResultViewerInterface } from '../views/response-area/response-areas/manual-audiometry/manual-audiometry-result-viewer/manual-audiometry-result-viewer.interface';
 import { MultipleChoiceInterface } from '../views/response-area/response-areas/multiple-choice/multiple-choice.interface';
 import { ResultsViewResponseAreaInterface } from '../views/response-area/response-areas/results-view/results-view.interface';
 import { TextBoxInterface } from '../views/response-area/response-areas/textbox/textbox.interface';
@@ -160,6 +161,7 @@ export type ResponseArea =
   | ButtonGridInterface
   | MultipleChoiceInterface
   | ManualAudiometryInterface
+  | ManualAudiometryResultViewerInterface
   | CalibrationExamInterface
   | FPLCalibrationExamInterface
   | MultipleInputInterface

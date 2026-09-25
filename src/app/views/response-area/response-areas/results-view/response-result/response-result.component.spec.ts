@@ -52,6 +52,20 @@ describe('ResponseResultComponent', () => {
     expect(fixture.nativeElement.querySelector('app-audiometry-result-viewer')).toBeTruthy();
   });
 
+  it('dispatches manualAudiometryResponseArea to app-audiometry-combined-results, passing the stored response through directly', () => {
+    const data = {
+      frequencies: [1000],
+      thresholds: [20],
+      channels: ['left'],
+      resultTypes: ['Threshold'],
+      masking: [false],
+      levelUnits: 'dB HL',
+    };
+    setResult({ responseArea: 'manualAudiometryResponseArea', response: data, page: {} });
+    expect(fixture.nativeElement.querySelector('app-audiometry-combined-results')).toBeTruthy();
+    expect(component.manualAudiometryData).toEqual(data as never);
+  });
+
   it('dispatches gapResponseArea to app-gap-results', () => {
     setResult({ responseArea: 'gapResponseArea', response: {}, page: {} });
     expect(fixture.nativeElement.querySelector('app-gap-results')).toBeTruthy();
