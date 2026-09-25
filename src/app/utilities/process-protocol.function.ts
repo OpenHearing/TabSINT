@@ -97,9 +97,7 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
   await iterateThroughPages(rootProtocol.pages);
 
   if (_.has(rootProtocol, 'subProtocols')) {
-    for (const obj of rootProtocol.subProtocols!) {
-      await processSubProtocol(obj);
-    }
+    await Promise.all(rootProtocol.subProtocols!.map(obj => processSubProtocol(obj)));
   }
 
   return [rootProtocol, protocolDict, followOnsDict];
@@ -112,23 +110,26 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
     }
 
     if (_.has(subProtocol, 'subProtocols')) {
-      for (const obj of subProtocol.subProtocols!) {
-        await processSubProtocol(obj);
-      }
+      await Promise.all(subProtocol.subProtocols!.map(obj => processSubProtocol(obj)));
     }
   }
 
+  // Pages are independent of each other (each touches only its own PageDefinition object plus
+  // shared error-reporting arrays on rootProtocol, which are order-independent appends), so they
+  // are processed concurrently rather than one at a time. Sequential processing meant a protocol
+  // with N pages paid N times the per-page network/native-bridge latency instead of ~1x.
   async function iterateThroughPages(pages: PageTypes | PageTypes[]) {
     pages = Array.isArray(pages) ? pages : [pages];
-    for (const page of pages) {
-      if (isProtocolSchemaInterface(page)) {
-        await processSubProtocol(page);
-        // } else if (isProtocolReferenceInterface(page)) {
-        // processPage(page as ProtocolReferenceInterface);
-      } else if (isPageDefinition(page)) {
-        await processPage(page);
-      }
-    }
+    await Promise.all(
+      pages.map(page => {
+        if (isProtocolSchemaInterface(page)) {
+          return processSubProtocol(page);
+        } else if (isPageDefinition(page)) {
+          return processPage(page);
+        }
+        return undefined;
+      })
+    );
   }
 
   /**
@@ -199,8 +200,8 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
     for (const followOn of followOns) {
       const id = getId(followOn.target);
       followOnsDict[id] = followOn;
-      await iterateThroughPages(followOn.target);
     }
+    await Promise.all(followOns.map(followOn => iterateThroughPages(followOn.target)));
   }
 
   /**
