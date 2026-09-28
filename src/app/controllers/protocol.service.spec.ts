@@ -9,6 +9,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ProtocolInterface } from '../models/protocol/protocol.interface';
 import { partialMetaDefaults } from '../utilities/defaults';
 import { Component } from '@angular/core';
+import { Tasks } from '../services/tasks.service';
 
 describe('ProtocolService', () => {
   let diskModel: DiskModel;
@@ -102,6 +103,22 @@ describe('ProtocolService', () => {
     expect(protocolService.protocolModel.activeProtocolDictionary).toBeDefined();
     expect(protocolService.protocolModel.activeProtocolFollowOnsDictionary).toBeDefined();
     expect(protocolService.state.examState).toEqual(2);
+  });
+
+  it('reports incremental progress on the "Initialize Protocol" task while processing pages', async () => {
+    const protocolService = TestBed.inject(ProtocolService);
+    const tasks = TestBed.inject(Tasks);
+    const registerSpy = spyOn(tasks, 'register').and.callThrough();
+
+    await protocolService.load(protocolService.disk.availableProtocolsMeta['develop']);
+
+    const processingCalls = registerSpy.calls
+      .allArgs()
+      .filter(([task]) => task === 'Initialize Protocol')
+      .map(([, message]) => message);
+    expect(processingCalls.length).toBeGreaterThan(1);
+    expect(processingCalls[0]).toBe('Initializing Protocol...');
+    expect(processingCalls[processingCalls.length - 1]).toBe('Processing Protocol... (100%)');
   });
 
   it('cannot remove a Developer protocol from TabSINT from the disk model', () => {

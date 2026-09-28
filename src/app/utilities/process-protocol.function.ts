@@ -86,23 +86,50 @@ export async function resolveVideoPath(rawPath: string, context: WavfileResoluti
  * @param loading: LoadingProtocolInterface containing the protocol JSON,
  * its calibration if it exists, its meta data, whether to notify the user about
  * progress, whether to validate the protocol, and whether to overwrite local protocol files
+ * @param onPageProcessed Optional callback invoked each time a page finishes processing, with the
+ * running count and the total number of pages across the whole protocol tree.
  * @returns the active protocol, the stack of pages, a dictionary of all subprotocols,
  * a dictionary of all pages, and a dictionary of all followOns
  */
-export async function processProtocol(loading: LoadingProtocolInterface): Promise<[ProtocolInterface, ProtocolDictionary, FollowOnsDictionary]> {
+export async function processProtocol(
+  loading: LoadingProtocolInterface,
+  onPageProcessed?: (done: number, total: number) => void
+): Promise<[ProtocolInterface, ProtocolDictionary, FollowOnsDictionary]> {
   const rootProtocol = loading.protocol;
   const protocolDict: ProtocolDictionary = {};
   const followOnsDict: FollowOnsDictionary = {};
+  const totalPages = countPages(rootProtocol.pages) + (rootProtocol.subProtocols ?? []).reduce((sum, obj) => sum + countSubProtocolPages(obj), 0);
+  let processedPages = 0;
 
   await iterateThroughPages(rootProtocol.pages);
 
   if (_.has(rootProtocol, 'subProtocols')) {
-    for (const obj of rootProtocol.subProtocols!) {
-      await processSubProtocol(obj);
-    }
+    await Promise.all(rootProtocol.subProtocols!.map(obj => processSubProtocol(obj)));
   }
 
   return [rootProtocol, protocolDict, followOnsDict];
+
+  /** Count the leaf pages `iterateThroughPages` will call `processPage` on, without processing them. */
+  function countPages(pages: PageTypes | PageTypes[]): number {
+    const list = Array.isArray(pages) ? pages : [pages];
+    let count = 0;
+    for (const page of list) {
+      if (isProtocolSchemaInterface(page)) {
+        count += countSubProtocolPages(page);
+      } else if (isPageDefinition(page)) {
+        count += 1;
+        for (const followOn of page.followOns ?? []) {
+          count += countPages(followOn.target);
+        }
+      }
+    }
+    return count;
+  }
+
+  /** Count the leaf pages within a subProtocol and its nested subProtocols. */
+  function countSubProtocolPages(subProtocol: ProtocolSchemaInterface): number {
+    return countPages(subProtocol.pages) + (subProtocol.subProtocols ?? []).reduce((sum, obj) => sum + countSubProtocolPages(obj), 0);
+  }
 
   async function processSubProtocol(subProtocol: ProtocolSchemaInterface) {
     await iterateThroughPages(subProtocol.pages);
@@ -112,23 +139,26 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
     }
 
     if (_.has(subProtocol, 'subProtocols')) {
-      for (const obj of subProtocol.subProtocols!) {
-        await processSubProtocol(obj);
-      }
+      await Promise.all(subProtocol.subProtocols!.map(obj => processSubProtocol(obj)));
     }
   }
 
+  // Pages are independent of each other (each touches only its own PageDefinition object plus
+  // shared error-reporting arrays on rootProtocol, which are order-independent appends), so they
+  // are processed concurrently rather than one at a time. Sequential processing meant a protocol
+  // with N pages paid N times the per-page network/native-bridge latency instead of ~1x.
   async function iterateThroughPages(pages: PageTypes | PageTypes[]) {
     pages = Array.isArray(pages) ? pages : [pages];
-    for (const page of pages) {
-      if (isProtocolSchemaInterface(page)) {
-        await processSubProtocol(page);
-        // } else if (isProtocolReferenceInterface(page)) {
-        // processPage(page as ProtocolReferenceInterface);
-      } else if (isPageDefinition(page)) {
-        await processPage(page);
-      }
-    }
+    await Promise.all(
+      pages.map(page => {
+        if (isProtocolSchemaInterface(page)) {
+          return processSubProtocol(page);
+        } else if (isPageDefinition(page)) {
+          return processPage(page);
+        }
+        return Promise.resolve();
+      })
+    );
   }
 
   /**
@@ -193,14 +223,17 @@ export async function processProtocol(loading: LoadingProtocolInterface): Promis
     if (isProtocolSchemaInterface(page)) {
       await processSubProtocol(page);
     }
+
+    processedPages++;
+    onPageProcessed?.(processedPages, totalPages);
   }
 
   async function processFollowOns(followOns: FollowOnInterface[]) {
     for (const followOn of followOns) {
       const id = getId(followOn.target);
       followOnsDict[id] = followOn;
-      await iterateThroughPages(followOn.target);
     }
+    await Promise.all(followOns.map(followOn => iterateThroughPages(followOn.target)));
   }
 
   /**

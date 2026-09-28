@@ -19,6 +19,7 @@ import { FileService } from '../../services/file.service';
 import { DialogType, MediaUpdateStatus, ProtocolServer } from '../../utilities/constants';
 import { getProtocolMetaData } from '../../utilities/protocol-helper-functions';
 import { partialMetaDefaults } from '../../utilities/defaults';
+import { formatDownloadProgress } from '../../utilities/format-download-progress.function';
 import { GitlabService } from '../../services/gitlab.service';
 import { MediaRepositoryService } from '../../services/media-repository.service';
 import { MediaRepoProtocolTarget, MediaReposInterface } from '../../interfaces/media-repos.interface';
@@ -199,7 +200,9 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
       const localDir = `.tabsint-protocols/${config.repository}`;
       this.tasks.register('Add Gitlab Protocol', 'Downloading Protocol Files');
       const ref = config.tag ? config.tag : await this.gitlabService.getLatestReference(config, useTagsOnly);
-      const folderUri = await this.gitlabService.downloadGitlabRepository(config, localDir, true, useTagsOnly);
+      const folderUri = await this.gitlabService.downloadGitlabRepository(config, localDir, true, useTagsOnly, status =>
+        this.tasks.register('Add Gitlab Protocol', formatDownloadProgress('Downloading Protocol Files', status))
+      );
       let protocolContent = undefined;
       try {
         const fileResponse = await this.fileService.readFile('protocol.json', folderUri);
@@ -395,7 +398,9 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
       if (!protocolUpToDate) {
         const localDir = `.tabsint-protocols/${selectedGitlabConfig.repository}`;
         const newGitlabConfig = { ...selectedGitlabConfig, tag: latestReference };
-        const contentURI = await this.gitlabService.downloadGitlabRepository(newGitlabConfig, localDir, true, useTagsOnly);
+        const contentURI = await this.gitlabService.downloadGitlabRepository(newGitlabConfig, localDir, true, useTagsOnly, status =>
+          this.tasks.register('Update Protocol', formatDownloadProgress('Downloading Protocol Files', status))
+        );
         const fileResponse = await this.fileService.readFile('protocol.json', contentURI);
         const protocolContent = fileResponse?.content ? JSON.parse(fileResponse.content) : undefined;
         activeProtocol = {
@@ -590,7 +595,9 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
       if (!mediaRepo) {
         throw new Error('Unable to find repository to update.');
       }
-      const status = await this.mediaRepositoryService.promptAndUpdate(mediaRepo, MediaRepoProtocolTarget, true);
+      const status = await this.mediaRepositoryService.promptAndUpdate(mediaRepo, MediaRepoProtocolTarget, true, progress =>
+        this.tasks.register('Update Media', formatDownloadProgress(`Downloading updates for ${selectedMedia.repository}`, progress))
+      );
       await this.mediaRepositoryService.notifyStatus(status);
     } catch (error) {
       this.handleGitlabError(error);

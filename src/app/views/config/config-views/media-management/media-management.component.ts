@@ -16,6 +16,7 @@ import { Tasks } from '../../../../services/tasks.service';
 import { Logger } from '../../../../services/logger.service';
 import { isValidDeviceResponse } from '../../../../guards/type.guard';
 import { DialogDataInterface } from '../../../../interfaces/dialog-data.interface';
+import { formatDownloadProgress } from '../../../../utilities/format-download-progress.function';
 import { MatDialog } from '@angular/material/dialog';
 import { GitlabReferenceDialog } from '../../../gitlab-reference-dialog/gitlab-reference-dialog.component';
 
@@ -258,7 +259,9 @@ export class MediaManagementComponent implements OnInit, OnDestroy {
   private async fetchRepository(config: GitlabConfigInterface, tagsOnly: boolean) {
     try {
       this.tasks.register('Add Gitlab Media', 'Downloading Media Files');
-      const mediaRepo = await this.mediaRepositoryService.resolveAndDownload(config, tagsOnly, this.device.type);
+      const mediaRepo = await this.mediaRepositoryService.resolveAndDownload(config, tagsOnly, this.device.type, status =>
+        this.tasks.register('Add Gitlab Media', formatDownloadProgress('Downloading Media Files', status))
+      );
       this.selectedMediaRepo = mediaRepo.repository;
       this.notifications.alert({
         title: 'Success',
