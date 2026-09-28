@@ -427,5 +427,21 @@
   "WAHTS Attenuation (S12.6-2008) (dB SPL)": "WAHTS Attenuation (S12.6-2008) (dB SPL)",
   "Estimated Background Noise Levels Under WAHTS (dB SPL)": "Estimated Background Noise Levels Under WAHTS (dB SPL)",
   "Repeat": "Repeat",
-  "sec. measurement": "sec. measurement"
+  "sec. measurement": "sec. measurement",
+  "Direction": "Direction",
+  "End": "End",
+  "Exam Type": "Exam Type",
+  "Gap Length (ms)": "Gap Length (ms)",
+  "Gap Threshold": "Gap Threshold",
+  "Hit": "Hit",
+  "List Number": "List Number",
+  "Miss": "Miss",
+  "Result": "Result",
+  "Reversal": "Reversal",
+  "Score": "Score",
+  "Scoring": "Scoring",
+  "Sentence": "Sentence",
+  "SNR": "SNR",
+  "SRT": "SRT",
+  "Start": "Start"
 }

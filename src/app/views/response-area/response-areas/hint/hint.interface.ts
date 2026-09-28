@@ -90,6 +90,7 @@ export interface HintPresentationResultInterface {
   wordCount: number;
   correct: boolean;
   responseToCha: number;
+  snr?: number;
 }
 
 /**
@@ -100,4 +101,19 @@ export interface HintResponseInterface {
   presentationCount?: number;
   correctPresentationCount?: number;
   results?: HintDeviceResultsInterface;
+}
+
+/**
+ * Exam-level details shown alongside the per-presentation results table once a HINT exam
+ * completes.
+ */
+export interface HintExamSummaryInterface {
+  srt?: number;
+  protocolName?: string;
+  examType?: HintLanguage;
+  direction?: HintDirection;
+  scoring: string;
+  listNumber?: number;
+  startDateTime?: string;
+  endDateTime?: string;
 }

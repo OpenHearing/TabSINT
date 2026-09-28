@@ -12,9 +12,11 @@ import { DeviceType } from '../../../../utilities/constants';
 import { getCurrentDatetime } from '../../../../utilities/exam-helper-functions';
 import { isWahtsResultsResponse } from '../../../../guards/type.guard';
 import { hintSchema } from '../../../../../schema/response-areas/hint.schema';
+import { buildHintExamSummary } from './hint.utility';
 import {
   HintDeviceResultsInterface,
   HintExamPropertiesInterface,
+  HintExamSummaryInterface,
   HintPresentationResultInterface,
   HintResponseAreaInterface,
   HintResponseInterface,
@@ -64,6 +66,9 @@ export class HintComponent implements OnInit, OnDestroy {
   response: number[] = [];
   wordsDisabled = true;
   presentationCount = 0;
+  examComplete = false;
+  readonly presentations: HintPresentationResultInterface[] = [];
+  examSummary: HintExamSummaryInterface | undefined;
 
   // Internal state
   private responseArea: HintResponseAreaInterface | undefined;
@@ -78,9 +83,9 @@ export class HintComponent implements OnInit, OnDestroy {
     NumberOfPresentations: examPropSchema.NumberOfPresentations.default,
     DisableRepeatFirstUntilCorrect: examPropSchema.DisableRepeatFirstUntilCorrect.default,
   };
-  private readonly presentations: HintPresentationResultInterface[] = [];
   private correctPresentations = 0;
   private currentPresentationId: string | number | undefined;
+  private currentSnr: number | undefined;
   private responseStartTime = '';
   private initialized = false;
   private examActive = false;
@@ -163,6 +168,8 @@ export class HintComponent implements OnInit, OnDestroy {
     this.resetSubmitButton();
     this.presentationCount = 0;
     this.correctPresentations = 0;
+    this.presentations.length = 0;
+    this.examComplete = false;
 
     await this.devicesService.abortExams(this.deviceId);
     await this.devicesService.queueExam(this.deviceId, EXAM_NAME, this.examProperties);
@@ -198,8 +205,10 @@ export class HintComponent implements OnInit, OnDestroy {
         .split(TEMP_SPACER);
       this.wordsDisabled = false;
       this.presentationCount = results.CurrentSentenceIndex ?? this.presentationCount + 1;
+      this.currentSnr = results.CurrentSNR;
     } else if (results.State === ExamProgress.Complete) {
       this.examActive = false;
+      this.examComplete = true;
       this.wordsDisabled = true;
       const response: HintResponseInterface = {
         presentations: this.presentations,
@@ -208,6 +217,7 @@ export class HintComponent implements OnInit, OnDestroy {
         results,
       };
       this.resultsModel.updateCurrentPage({ response });
+      this.examSummary = this.buildExamSummary(results);
       this.examService.submit = this.examService.submitDefault.bind(this.examService);
       this.stateModel.updateState({ isSubmittable: true });
       if (this.autoSubmit) {
@@ -284,6 +294,7 @@ export class HintComponent implements OnInit, OnDestroy {
       wordCount,
       correct: numberCorrect === wordCount,
       responseToCha: correctWords,
+      snr: this.currentSnr,
     };
     this.presentations.push(presentation);
     this.resultsModel.updateCurrentPage({ response: { presentations: this.presentations } as HintResponseInterface });
@@ -315,6 +326,15 @@ export class HintComponent implements OnInit, OnDestroy {
    */
   private resetResults(): void {
     this.responseStartTime = getCurrentDatetime();
+  }
+
+  /**
+   * Build the exam-level details shown alongside the results table once the exam completes.
+   * @param results The final device results, carrying the computed SRT.
+   */
+  private buildExamSummary(results: HintDeviceResultsInterface): HintExamSummaryInterface {
+    const currentExam = this.resultsModel.getResults().currentExam;
+    return buildHintExamSummary(this.examProperties, results, currentExam?.protocol, currentExam?.testDateTime);
   }
 
   /**

@@ -1,9 +1,8 @@
-<div class="three-digit-container">
+<div class="three-digit-container" *ngIf="!examComplete">
   <p *ngIf="examInstructions" class="three-digit-instructions">{{ examInstructions | transloco }}</p>
 
   <div class="three-digit-progress">
-    <p *ngIf="!examComplete">{{ "Presentation" | transloco }} {{ presentationCount }} / {{ nPresentations }}</p>
-    <p *ngIf="examComplete">{{ "Exam Completed" | transloco }}</p>
+    <p>{{ "Presentation" | transloco }} {{ presentationCount }} / {{ nPresentations }}</p>
   </div>
 
   <table class="keypad">
@@ -59,3 +58,5 @@
     </tr>
   </table>
 </div>
+
+<app-three-digit-results *ngIf="examComplete" [presentations]="presentations"></app-three-digit-results>

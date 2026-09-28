@@ -66,7 +66,11 @@ import { ExamFinalizedComponent } from './views/exam-finalized/exam-finalized.co
 import { ResponseAreaComponent } from './views/response-area/response-area.component';
 import { TextboxComponent } from './views/response-area/response-areas/textbox/textbox.component';
 import { QrCodeResponseAreaComponent } from './views/response-area/response-areas/qr-code/qr-code.component';
-import { TextboxResultViewerComponent } from './views/response-area/response-areas/textbox-result-viewer/textbox-result-viewer.component';
+import { ResultsViewComponent } from './views/response-area/response-areas/results-view/results-view.component';
+import { ResponseResultComponent } from './views/response-area/response-areas/results-view/response-result/response-result.component';
+import { GenericResultViewerComponent } from './views/response-area/response-areas/results-view/generic-result-viewer/generic-result-viewer.component';
+import { AudiometryResultViewerComponent } from './views/response-area/response-areas/results-view/audiometry-result-viewer/audiometry-result-viewer.component';
+import { GapResultsComponent } from './views/response-area/response-areas/gap/gap-results/gap-results.component';
 import { MultipleChoiceComponent } from './views/response-area/response-areas/multiple-choice/multiple-choice.component';
 import { SingleResultModalComponent } from './views/single-result-modal/single-result-modal/single-result-modal.component';
 import { CustomResponseAreaComponent } from './views/response-area/response-areas/custom-response-area/custom-response-area.component';
@@ -117,9 +121,11 @@ import { QrService } from './services/qr.service';
 import { QRCodeModule } from 'angularx-qrcode';
 import { DuodoseDownloadComponent } from './views/response-area/response-areas/duodose-download/duodose-download.component';
 import { ThreeDigitComponent } from './views/response-area/response-areas/three-digit/three-digit.component';
+import { ThreeDigitResultsComponent } from './views/response-area/response-areas/three-digit/three-digit-results/three-digit-results.component';
 import { GapComponent } from './views/response-area/response-areas/gap/gap.component';
 import { TrialProgressionPlotComponent } from './views/response-area/response-areas/shared/trial-progression-plot/trial-progression-plot.component';
 import { HintComponent } from './views/response-area/response-areas/hint/hint.component';
+import { HintResultsComponent } from './views/response-area/response-areas/hint/hint-results/hint-results.component';
 import { HughsonWestlakeComponent } from './views/response-area/response-areas/hughson-westlake/hughson-westlake.component';
 import { BhaftComponent } from './views/response-area/response-areas/bhaft/bhaft.component';
 import { MpanlComponent } from './views/response-area/response-areas/mpanl/mpanl.component';
@@ -158,7 +164,11 @@ import { AudiometryCombinedResultsComponent } from './views/response-area/respon
     DuodoseDownloadComponent,
     ButtonGridComponent,
     LikertComponent,
-    TextboxResultViewerComponent,
+    ResultsViewComponent,
+    ResponseResultComponent,
+    GenericResultViewerComponent,
+    AudiometryResultViewerComponent,
+    GapResultsComponent,
     MultipleChoiceComponent,
     ManualAudiometryComponent,
     ManualAudiometryResultViewerComponent,
@@ -202,9 +212,11 @@ import { AudiometryCombinedResultsComponent } from './views/response-area/respon
     TabsintConfigComponent,
     BekesyComponent,
     ThreeDigitComponent,
+    ThreeDigitResultsComponent,
     GapComponent,
     TrialProgressionPlotComponent,
     HintComponent,
+    HintResultsComponent,
     HughsonWestlakeComponent,
     BhaftComponent,
     MpanlComponent,

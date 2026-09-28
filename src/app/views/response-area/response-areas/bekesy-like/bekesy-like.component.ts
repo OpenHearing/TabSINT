@@ -5,8 +5,8 @@ import { BekesyLikeResultsInterface, BekesyLikeExamPropertiesInterface, BekesyLi
 import { isWahtsResultsResponse } from '../../../../guards/type.guard';
 import { AudiometryCombinedDatum } from '../shared/audiometry/audiometry.interface';
 import { TrialPointStyle } from '../shared/trial-progression-plot/trial-progression-plot.interface';
-import { outputChannelToEarChannel } from '../shared/audiometry/audiometry.utility';
 import { AutomatedAudiometryExamComponentBase } from '../shared/audiometry/automated-audiometry-exam.base';
+import { buildBekesyLikeAudiogramDatum } from './bekesy-like.utility';
 
 const examSchema = bekesyLikeSchema.properties;
 const examPropSchema = bekesyLikeSchema.properties.examProperties.properties;
@@ -138,16 +138,7 @@ export class BekesyLikeComponent extends AutomatedAudiometryExamComponentBase<
     examProperties: BekesyLikeExamPropertiesInterface,
     results: BekesyLikeResultsInterface | undefined
   ): AudiometryCombinedDatum | null {
-    if (examProperties.F === undefined || !results) {
-      return null;
-    }
-    return {
-      frequency: examProperties.F,
-      threshold: Number.isFinite(results.Threshold) ? results.Threshold : null,
-      channel: outputChannelToEarChannel(examProperties.OutputChannel),
-      resultType: String(results.ResultType),
-      masking: false,
-    };
+    return buildBekesyLikeAudiogramDatum(examProperties, results);
   }
 
   /**

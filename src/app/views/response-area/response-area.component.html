@@ -1,10 +1,11 @@
 <ng-container *ngIf="renderKey === currentPage._uuid">
   <div [ngSwitch]="currentPage.responseArea?.type">
     <app-textbox-view *ngSwitchCase="'textboxResponseArea'"></app-textbox-view>
-    <app-textbox-result-viewer-view *ngSwitchCase="'textboxResponseAreaResultViewer'"></app-textbox-result-viewer-view>
+    <app-results-view *ngSwitchCase="'resultsViewResponseArea'"></app-results-view>
     <app-likert-view *ngSwitchCase="'likertResponseArea'"></app-likert-view>
     <app-multiple-input-view *ngSwitchCase="'multipleInputResponseArea'"></app-multiple-input-view>
     <app-manual-audiometry-view *ngSwitchCase="'manualAudiometryResponseArea'"></app-manual-audiometry-view>
+    <app-manual-audiometry-result-viewer *ngSwitchCase="'manualAudiometryResultViewerResponseArea'"></app-manual-audiometry-result-viewer>
     <app-multiple-choice-view *ngSwitchCase="'multipleChoiceResponseArea'"></app-multiple-choice-view>
     <app-custom-response-area-view *ngSwitchCase="'customResponseArea'"></app-custom-response-area-view>
     <app-calibration-exam *ngSwitchCase="'calibrationResponseArea'"></app-calibration-exam>

@@ -3,10 +3,10 @@ import { Component } from '@angular/core';
 import { bhaftSchema } from '../../../../../schema/response-areas/bhaft.schema';
 import { BhaftResultsInterface, BhaftExamPropertiesInterface, BhaftResponseAreaInterface } from './bhaft.interface';
 import { isWahtsResultsResponse } from '../../../../guards/type.guard';
-import { AudiometryCombinedDatum, AudiometryLevelUnits } from '../shared/audiometry/audiometry.interface';
+import { AudiometryCombinedDatum } from '../shared/audiometry/audiometry.interface';
 import { TrialPointStyle } from '../shared/trial-progression-plot/trial-progression-plot.interface';
-import { outputChannelToEarChannel } from '../shared/audiometry/audiometry.utility';
 import { AutomatedAudiometryExamComponentBase } from '../shared/audiometry/automated-audiometry-exam.base';
+import { buildBhaftAudiogramDatum, getBhaftLevelUnits } from './bhaft.utility';
 
 const examSchema = bhaftSchema.properties;
 const examPropSchema = bhaftSchema.properties.examProperties.properties;
@@ -85,7 +85,7 @@ export class BhaftComponent extends AutomatedAudiometryExamComponentBase<
    * BHAFT is only ever defined in dB SPL regardless of LevelUnits.
    */
   protected override getLevelUnits(): string {
-    return AudiometryLevelUnits.dbSpl;
+    return getBhaftLevelUnits();
   }
 
   /**
@@ -195,16 +195,7 @@ export class BhaftComponent extends AutomatedAudiometryExamComponentBase<
     examProperties: BhaftExamPropertiesInterface,
     results: BhaftResultsInterface | undefined
   ): AudiometryCombinedDatum | null {
-    if (!results || !Number.isFinite(results.ThresholdFrequency)) {
-      return null;
-    }
-    return {
-      frequency: results.ThresholdFrequency,
-      threshold: Number.isFinite(results.ThresholdLevel) ? results.ThresholdLevel : null,
-      channel: outputChannelToEarChannel(examProperties.OutputChannel),
-      resultType: String(results.ResultType),
-      masking: false,
-    };
+    return buildBhaftAudiogramDatum(examProperties, results);
   }
 
   /**

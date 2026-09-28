@@ -1,0 +1,22 @@
+<div class="gap-results">
+  <p *ngIf="results.GapThreshold !== undefined">{{ "Gap Threshold" | transloco }}: {{ results.GapThreshold }} ms</p>
+
+  <table class="results-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>{{ "Gap Length (ms)" | transloco }}</th>
+        <th>{{ "Result" | transloco }}</th>
+        <th>{{ "Reversal" | transloco }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let trial of trials; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ trial.gapLength }}</td>
+        <td>{{ trial.hit ? ("Hit" | transloco) : ("Miss" | transloco) }}</td>
+        <td>{{ trial.reversal ? "✓" : "" }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

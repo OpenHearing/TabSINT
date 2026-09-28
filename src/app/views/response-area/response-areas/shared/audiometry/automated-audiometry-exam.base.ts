@@ -17,13 +17,12 @@ import {
   AudiometryCombinedDatum,
   AudiometryExamProperties,
   AudiometryHideExamProps,
-  AudiometryLevelUnits,
   AudiometryResponseArea,
   MaskingNoise,
   PlotProperties,
 } from './audiometry.interface';
 import { TrialProgressionPlotDataInterface } from '../trial-progression-plot/trial-progression-plot.interface';
-import { assembleAudiometryResults } from './audiometry.utility';
+import { assembleAudiometryResults, getDefaultLevelUnits } from './audiometry.utility';
 
 export enum ChaExamState {
   Ready = 1,
@@ -500,6 +499,6 @@ export abstract class AutomatedAudiometryExamComponentBase<
    * The level units the combined audiogram should be labeled with.
    */
   protected getLevelUnits(): string {
-    return this.examProperties.LevelUnits ?? AudiometryLevelUnits.dbHl;
+    return getDefaultLevelUnits(this.examProperties);
   }
 }

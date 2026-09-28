@@ -11,6 +11,7 @@ import { PageInterface } from '../../../../../models/page/page.interface';
 import { ButtonTextService } from '../../../../../controllers/button-text.service';
 import { mrtSchema } from '../../../../../../schema/response-areas/mrt.schema';
 import { MrtExamInterface, MrtResultsInterface, MrtTrialInterface, MrtTrialResultInterface } from './mrt-exam.interface';
+import { gradeMrtExam } from './mrt-exam.utility';
 import { StateInterface } from '../../../../../models/state/state.interface';
 import { StateModel } from '../../../../../models/state/state.service';
 import { shuffleArray } from '../../../../../utilities/shuffle-array';
@@ -317,35 +318,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   }
 
   private gradeExam() {
-    // Group the trial list results by their SNR values
-    return Object.values(
-      this.trialListResults.reduce(
-        (acc, trial) => {
-          const snr = trial.SNR;
-          if (!acc[snr]) {
-            // Initialize the group if it doesn't exist
-            acc[snr] = {
-              snr: snr,
-              nbTrials: 0,
-              nbTrialsCorrect: 0,
-              pctCorrect: 0,
-              trialList: [],
-            };
-          }
-
-          // Update the group's statistics
-          acc[snr].trialList.push(trial);
-          acc[snr].nbTrials++;
-          if (trial.isCorrect) {
-            acc[snr].nbTrialsCorrect++;
-          }
-          acc[snr].pctCorrect = parseFloat(((acc[snr].nbTrialsCorrect / acc[snr].nbTrials) * 100).toFixed(1));
-
-          return acc;
-        },
-        {} as Record<number, MrtResultsInterface>
-      )
-    );
+    return gradeMrtExam(this.trialListResults);
   }
 
   private randomizeChoicesWithAnswer(trials: MrtTrialInterface[]): MrtTrialInterface[] {

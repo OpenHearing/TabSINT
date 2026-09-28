@@ -147,6 +147,9 @@
                 "id": "Auto Submit / Response Required"
               },
               {
+                "id": "Results View"
+              },
+              {
                 "id": "End All"
               }
             ]
@@ -399,6 +402,12 @@
               }
             },
             {
+              "conditional": "result.response=='Results View'",
+              "target": {
+                "reference": "ResultsViewDemo"
+              }
+            },
+            {
               "conditional": "result.response=='End All'",
               "target": {
                 "reference": "@END_ALL"
@@ -447,7 +456,7 @@
           "title": "Text Box Result Viewer",
           "instructionText": "Page should always be submittable",
           "responseArea": {
-            "type": "textboxResponseAreaResultViewer",
+            "type": "resultsViewResponseArea",
             "pageIdsToDisplay": ["textbox_001", "textbox_002", "textbox_003"]
           }
         },
@@ -571,6 +580,15 @@
           }
         },
         {
+          "id": "likert_result_viewer",
+          "title": "Likert Result Viewer",
+          "instructionText": "Page should always be submittable. Likert has no dedicated results viewer, so this exercises the generic fallback.",
+          "responseArea": {
+            "type": "resultsViewResponseArea",
+            "pageIdsToDisplay": ["default1", "default2"]
+          }
+        },
+        {
           "id": "backtomain",
           "reference": "MainMenu"
         }
@@ -645,6 +663,15 @@
               "6000": 17.0,
               "8000": 17.5
             }
+          }
+        },
+        {
+          "id": "audiometry_001_result_viewer",
+          "title": "Manual Audiometry Result Viewer",
+          "instructionText": "Page should always be submittable. Reviews the combined audiogram from the manual audiometry page above.",
+          "responseArea": {
+            "type": "manualAudiometryResultViewerResponseArea",
+            "pageIdsToDisplay": ["audiometry_001"]
           }
         },
         {
@@ -2280,6 +2307,35 @@
             "type": "textboxResponseArea",
             "rows": 2,
             "responseRequired": false
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "ResultsViewDemo",
+      "pages": [
+        {
+          "id": "results_view_demo",
+          "title": "Results View",
+          "instructionText": "Displays the results of every previously-run demo page whose response-area type has a dedicated results viewer. Run the corresponding demo pages first (Three Digit Test, MRT Exam, HINT, Hughson-Westlake Screener/Threshold, BHAFT, Bekesy Like, GAP, Manual Audiometry) to see real data here; unvisited pages simply show nothing.",
+          "responseArea": {
+            "type": "resultsViewResponseArea",
+            "pageIdsToDisplay": [
+              "threeDigitResponseArea",
+              "MRT",
+              "hintResponseArea",
+              "Hughson-Westlake-Screener",
+              "Hughson-Westlake-Threshold",
+              "Hughson-Westlake-Threshold-2",
+              "BHAFT",
+              "BekesyLike",
+              "gapResponseArea",
+              "audiometry_001"
+            ]
           }
         },
         {

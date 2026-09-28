@@ -6,10 +6,11 @@ import { DeveloperProtocols } from '../constants';
  */
 const EXPECTED_RESPONSE_AREA_TYPES = [
   'textboxResponseArea',
-  'textboxResponseAreaResultViewer',
+  'resultsViewResponseArea',
   'likertResponseArea',
   'multipleInputResponseArea',
   'manualAudiometryResponseArea',
+  'manualAudiometryResultViewerResponseArea',
   'multipleChoiceResponseArea',
   'customResponseArea',
   'calibrationResponseArea',
