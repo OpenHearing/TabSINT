@@ -67,6 +67,7 @@ describe('ManualAudiometryResultViewerComponent', () => {
       {
         pageId: 'a',
         page: {},
+        responseArea: 'manualAudiometryResponseArea',
         response: {
           frequencies: [1000],
           thresholds: [20],
@@ -79,6 +80,7 @@ describe('ManualAudiometryResultViewerComponent', () => {
       {
         pageId: 'b',
         page: {},
+        responseArea: 'manualAudiometryResponseArea',
         response: {
           frequencies: [2000],
           thresholds: [30],
@@ -110,5 +112,95 @@ describe('ManualAudiometryResultViewerComponent', () => {
     fixture.detectChanges();
     pageModel.updatePage({ responseArea: { type: 'textboxResponseArea' } } as PageInterface);
     expect(component.audiogramData).toBeUndefined();
+  });
+
+  it('skips pages listed in pageIdsToDisplay that are not manualAudiometryResponseArea pages', () => {
+    resultsModel.getResults().currentExam.responses = [
+      {
+        pageId: 'a',
+        page: {},
+        responseArea: 'manualAudiometryResponseArea',
+        response: {
+          frequencies: [1000],
+          thresholds: [20],
+          channels: [EarChannel.Left],
+          resultTypes: ['Threshold'],
+          masking: [false],
+          levelUnits: 'dB HL',
+        },
+      },
+      {
+        pageId: 'b',
+        page: {},
+        responseArea: 'hughsonWestlakeResponseArea',
+        response: {
+          frequencies: [2000],
+          thresholds: [30],
+          channels: [EarChannel.Right],
+          resultTypes: ['Threshold'],
+          masking: [false],
+          levelUnits: 'dB HL',
+        },
+      },
+    ];
+
+    fixture.detectChanges();
+    pageModel.updatePage({
+      responseArea: { type: 'manualAudiometryResultViewerResponseArea', pageIdsToDisplay: ['a', 'b'] },
+    } as PageInterface);
+
+    expect(component.audiogramData).toEqual({
+      frequencies: [1000],
+      thresholds: [20],
+      channels: [EarChannel.Left],
+      resultTypes: ['Threshold'],
+      masking: [false],
+      levelUnits: 'dB HL',
+    });
+  });
+
+  it('skips pages listed in pageIdsToDisplay that report different levelUnits', () => {
+    resultsModel.getResults().currentExam.responses = [
+      {
+        pageId: 'a',
+        page: {},
+        responseArea: 'manualAudiometryResponseArea',
+        response: {
+          frequencies: [1000],
+          thresholds: [20],
+          channels: [EarChannel.Left],
+          resultTypes: ['Threshold'],
+          masking: [false],
+          levelUnits: 'dB HL',
+        },
+      },
+      {
+        pageId: 'b',
+        page: {},
+        responseArea: 'manualAudiometryResponseArea',
+        response: {
+          frequencies: [2000],
+          thresholds: [30],
+          channels: [EarChannel.Right],
+          resultTypes: ['Threshold'],
+          masking: [false],
+          levelUnits: 'dB SPL',
+        },
+      },
+    ];
+
+    fixture.detectChanges();
+    pageModel.updatePage({
+      responseArea: { type: 'manualAudiometryResultViewerResponseArea', pageIdsToDisplay: ['a', 'b'] },
+    } as PageInterface);
+
+    expect(component.audiogramData).toEqual({
+      frequencies: [1000],
+      thresholds: [20],
+      channels: [EarChannel.Left],
+      resultTypes: ['Threshold'],
+      masking: [false],
+      levelUnits: 'dB HL',
+    });
   });
 });

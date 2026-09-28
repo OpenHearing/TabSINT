@@ -427,5 +427,21 @@
   "WAHTS Attenuation (S12.6-2008) (dB SPL)": "WAHTS減衰量 (S12.6-2008) (dB SPL)",
   "Estimated Background Noise Levels Under WAHTS (dB SPL)": "WAHTS装着時の推定背景騒音レベル (dB SPL)",
   "Repeat": "繰り返す",
-  "sec. measurement": "秒測定"
+  "sec. measurement": "秒測定",
+  "Direction": "方向",
+  "End": "終了",
+  "Exam Type": "検査タイプ",
+  "Gap Length (ms)": "ギャップ長 (ms)",
+  "Gap Threshold": "ギャップ閾値",
+  "Hit": "ヒット",
+  "List Number": "リスト番号",
+  "Miss": "ミス",
+  "Result": "結果",
+  "Reversal": "反転",
+  "Score": "スコア",
+  "Scoring": "採点",
+  "Sentence": "文",
+  "SNR": "SNR",
+  "SRT": "SRT",
+  "Start": "開始"
 }

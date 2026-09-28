@@ -427,5 +427,21 @@
   "WAHTS Attenuation (S12.6-2008) (dB SPL)": "Upunguzaji wa WAHTS (S12.6-2008) (dB SPL)",
   "Estimated Background Noise Levels Under WAHTS (dB SPL)": "Makadirio ya Viwango vya Kelele za Mandharinyuma Chini ya WAHTS (dB SPL)",
   "Repeat": "Rudia",
-  "sec. measurement": "sek. ya kipimo"
+  "sec. measurement": "sek. ya kipimo",
+  "Direction": "Mwelekeo",
+  "End": "Mwisho",
+  "Exam Type": "Aina ya Mtihani",
+  "Gap Length (ms)": "Urefu wa Pengo (ms)",
+  "Gap Threshold": "Kiwango cha Pengo",
+  "Hit": "Sahihi",
+  "List Number": "Nambari ya Orodha",
+  "Miss": "Kukosa",
+  "Result": "Matokeo",
+  "Reversal": "Mgeuko",
+  "Score": "Alama",
+  "Scoring": "Upimaji wa Alama",
+  "Sentence": "Sentensi",
+  "SNR": "SNR",
+  "SRT": "SRT",
+  "Start": "Anza"
 }

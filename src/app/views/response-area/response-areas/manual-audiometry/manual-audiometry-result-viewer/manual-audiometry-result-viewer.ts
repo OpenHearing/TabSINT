@@ -5,6 +5,7 @@ import { AudiometryResultsInterface } from '../../../../../interfaces/audiometry
 import { CurrentResults } from '../../../../../models/results/results.interface';
 import { PageInterface } from '../../../../../models/page/page.interface';
 import { ExamService } from '../../../../../controllers/exam.service';
+import { Logger } from '../../../../../services/logger.service';
 import { PageModel } from '../../../../../models/page/page.service';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { ResultType } from '../../../../../utilities/constants';
@@ -34,6 +35,7 @@ const EMPTY_AUDIOGRAM_DATA: AudiometryResultsInterface = {
 })
 export class ManualAudiometryResultViewerComponent implements OnInit, OnDestroy {
   private readonly examService = inject(ExamService);
+  private readonly logger = inject(Logger);
   private readonly pageModel = inject(PageModel);
   private readonly resultsModel = inject(ResultsModel);
 
@@ -70,9 +72,24 @@ export class ManualAudiometryResultViewerComponent implements OnInit, OnDestroy 
   private buildAudiogramData(pageIdsToDisplay: string[]): AudiometryResultsInterface {
     const responses = this.resultsModel.getResults().currentExam.responses as CurrentResults[];
     const matches = responses.filter(response => pageIdsToDisplay.includes(response.pageId));
-    return matches.reduce<AudiometryResultsInterface>((combined, match) => {
+    const manualAudiometryMatches = matches.filter(match => {
+      if (match.responseArea === 'manualAudiometryResponseArea') {
+        return true;
+      }
+      this.logger.warning(
+        `TabSINT skipped page ${match.pageId} while building the combined audiogram: only manualAudiometryResponseArea pages can be combined.`
+      );
+      return false;
+    });
+    return manualAudiometryMatches.reduce<AudiometryResultsInterface>((combined, match) => {
       const data = match.response as AudiometryResultsInterface | undefined;
       if (!data) {
+        return combined;
+      }
+      if (combined.levelUnits && data.levelUnits && data.levelUnits !== combined.levelUnits) {
+        this.logger.warning(
+          `TabSINT skipped page ${match.pageId} while building the combined audiogram: its levelUnits "${data.levelUnits}" does not match the other combined pages' levelUnits "${combined.levelUnits}".`
+        );
         return combined;
       }
       return {

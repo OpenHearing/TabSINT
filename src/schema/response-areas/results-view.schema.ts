@@ -7,7 +7,7 @@ export const resultsViewSchema: JSONSchemaType<ResultsViewResponseAreaInterface>
     enableSkip: { type: 'boolean', nullable: true, default: false },
     responseRequired: { type: 'boolean', nullable: true, default: false },
     type: { type: 'string', enum: ['resultsViewResponseArea'] },
-    pageIdsToDisplay: { type: 'array', items: { type: 'string', default: '' } },
+    pageIdsToDisplay: { type: 'array', items: { type: 'string' } },
   },
   required: ['type', 'pageIdsToDisplay'],
 };
