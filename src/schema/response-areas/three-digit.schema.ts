@@ -18,7 +18,7 @@ export const threeDigitSchema: JSONSchemaType<ThreeDigitResponseAreaInterface> =
       type: 'boolean',
       nullable: true,
       default: false,
-      description: 'Go straight to next page once this page is complete',
+      description: 'Go straight to the next page once the exam is complete. When true, the results page shown at the end of the exam is skipped.',
     },
     autoSubmitPresentation: {
       type: 'boolean',
