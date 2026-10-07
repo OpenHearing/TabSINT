@@ -2291,8 +2291,8 @@
         {
           "id": "submit_text_override",
           "title": "submitText override",
-          "instructionText": "This page sets submitText, so the button below should read \"Finish this section\" instead of Submit. The next page leaves submitText unset and must read Submit again.",
-          "submitText": "Finish this section",
+          "instructionText": "This page sets submitText, so the button below should read \"Finish section\" instead of Submit. The next page leaves submitText unset and must read Submit again.",
+          "submitText": "Finish section",
           "responseArea": {
             "type": "textboxResponseArea",
             "rows": 2,
