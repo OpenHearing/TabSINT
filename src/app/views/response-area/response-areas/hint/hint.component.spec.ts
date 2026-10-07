@@ -193,7 +193,7 @@ describe('HintComponent', () => {
     expect(component.presentations[0].snr).toBe(-12);
   }));
 
-  it('advances on completion when the protocol omits autoSubmit', async () => {
+  it('waits for the user to submit on completion when the protocol omits autoSubmit', async () => {
     devicesService.requestResults.and.resolveTo({ deviceId: mockDevice.deviceId, msg: ['Result', { State: 2 }] });
     pageModel.updatePage({
       ...pageInterfaceDefaults,
@@ -204,23 +204,23 @@ describe('HintComponent', () => {
 
     await component.startExam();
 
-    expect(component.autoSubmit).toBeTrue();
-    expect(examService.submitDefault).toHaveBeenCalled();
+    expect(component.autoSubmit).toBeFalse();
+    expect(stateModel.getState().isSubmittable).toBeTrue();
+    expect(examService.submitDefault).not.toHaveBeenCalled();
   });
 
-  it('waits for the user to submit on completion when autoSubmit is turned off', async () => {
+  it('advances on completion when autoSubmit is turned on', async () => {
     devicesService.requestResults.and.resolveTo({ deviceId: mockDevice.deviceId, msg: ['Result', { State: 2 }] });
     pageModel.updatePage({
       ...pageInterfaceDefaults,
       id: 'hint',
-      responseArea: { type: 'hintResponseArea', autoSubmit: false } as ResponseArea,
+      responseArea: { type: 'hintResponseArea', autoSubmit: true } as ResponseArea,
     });
     component.deviceId = mockDevice.deviceId;
 
     await component.startExam();
 
-    expect(component.autoSubmit).toBeFalse();
-    expect(stateModel.getState().isSubmittable).toBeTrue();
-    expect(examService.submitDefault).not.toHaveBeenCalled();
+    expect(component.autoSubmit).toBeTrue();
+    expect(examService.submitDefault).toHaveBeenCalled();
   });
 });
