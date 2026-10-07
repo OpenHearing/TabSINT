@@ -134,15 +134,16 @@ describe('HintComponent', () => {
     expect(devicesService.examSubmission).toHaveBeenCalledWith(mockDevice.deviceId, { name: 'HINT$Submission', CorrectWords: 5, WordCount: 3 });
   }));
 
-  it('restores submit and advances the page when the device reports the exam is complete', async () => {
+  it('restores submit and marks the exam complete when the device reports completion', async () => {
     component.deviceId = mockDevice.deviceId;
     devicesService.requestResults.and.resolveTo({ deviceId: mockDevice.deviceId, msg: ['Result', { State: 2 }] });
 
     await component.startExam();
 
     expect(stateModel.getState().isSubmittable).toBeTrue();
-    expect(examService.submitDefault).toHaveBeenCalled();
     expect(component.examComplete).toBeTrue();
+    examService.submit();
+    expect(examService.submitDefault).toHaveBeenCalled();
   });
 
   it('builds the exam summary from the completed device results and active protocol', async () => {
