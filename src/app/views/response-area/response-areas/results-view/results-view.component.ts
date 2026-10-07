@@ -9,7 +9,7 @@ import { PageModel } from '../../../../models/page/page.service';
 import { ResultsViewResponseAreaInterface } from './results-view.interface';
 
 @Component({
-  selector: 'app-results-view',
+  selector: 'app-exam-results-viewer',
   templateUrl: './results-view.component.html',
 })
 export class ResultsViewComponent implements OnInit, OnDestroy {
