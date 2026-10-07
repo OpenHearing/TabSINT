@@ -59,7 +59,7 @@ export class CheckboxComponent implements OnInit, OnDestroy {
     });
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe((updatedResults: ResultsInterface) => {
       this.results = updatedResults;
-      if (!Array.isArray(this.results.currentPage.response?.selected)) {
+      if (this.results.currentPage.responseArea === 'checkboxResponseArea' && !Array.isArray(this.results.currentPage.response?.selected)) {
         this.results.currentPage.response = {
           selected: [],
         };
