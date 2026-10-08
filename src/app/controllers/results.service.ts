@@ -111,7 +111,6 @@ export class ResultsService {
       eachCorrect: undefined,
       numberCorrect: undefined,
       numberIncorrect: undefined,
-      isSkipped: false,
       responseArea: currentPage.responseArea ? currentPage.responseArea.type : undefined,
       responseStartTime: new Date().toJSON(),
       page: currentPage,
@@ -157,7 +156,7 @@ export class ResultsService {
   }
 
   /**
-   * Automatically export or upload the just-saved result per the configured server preference,
+   * Automatically export or upload the just-saved result (GitLab protocols upload to GitLab),
    * removing it from the pending results queue on success.
    * @param result Completed exam result that was just saved to SQLite.
    */
@@ -168,7 +167,7 @@ export class ResultsService {
       return;
     }
 
-    if (this.disk.preferences.server === ProtocolServer.Gitlab) {
+    if (result.protocol?.server === ProtocolServer.Gitlab && result.protocol.gitlabConfig) {
       const uploadResult = await this.resultsUploadService.uploadResult(result);
       if (uploadResult.success) {
         await this.sqLite.deleteSingleResult(index);

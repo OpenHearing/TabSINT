@@ -283,10 +283,11 @@ describe('ResultsService (mocked)', () => {
       expect(mockSqLite.deleteSingleResult).toHaveBeenCalledWith(1);
     });
 
-    it('auto-uploads the just-saved result to Gitlab when autoUpload is enabled and server is Gitlab', async () => {
+    it('auto-uploads the just-saved result to Gitlab when autoUpload is enabled and the protocol is from Gitlab', async () => {
       mockDisk.preferences.autoUpload = true;
-      mockDisk.preferences.server = ProtocolServer.Gitlab;
-      const result = makeExamResult();
+      const result = makeExamResult({
+        protocol: makeProtocol({ server: ProtocolServer.Gitlab, gitlabConfig: { host: 'h', token: 't', group: 'g', repository: 'r', tag: '' } }),
+      });
       mockSqLite.getAllResultsRaw.and.resolveTo(['a']);
 
       await service.save(result);
@@ -297,11 +298,14 @@ describe('ResultsService (mocked)', () => {
 
     it('does not delete the result from SQLite when the Gitlab auto-upload fails', async () => {
       mockDisk.preferences.autoUpload = true;
-      mockDisk.preferences.server = ProtocolServer.Gitlab;
       mockResultsUploadService.uploadResult.and.resolveTo({ success: false, message: 'network error' });
       mockSqLite.getAllResultsRaw.and.resolveTo(['a']);
 
-      await service.save(makeExamResult());
+      await service.save(
+        makeExamResult({
+          protocol: makeProtocol({ server: ProtocolServer.Gitlab, gitlabConfig: { host: 'h', token: 't', group: 'g', repository: 'r', tag: '' } }),
+        })
+      );
 
       expect(mockSqLite.deleteSingleResult).not.toHaveBeenCalled();
       expect(mockLogger.error).toHaveBeenCalled();
