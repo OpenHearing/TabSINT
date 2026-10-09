@@ -64,54 +64,56 @@ export class ResultsUploadService {
     return originalString.replace(/\/+$/, '');
   }
 
-  async ensureResultsRepo(gitlabHost: string, gitlabToken: string, gitlabGroup: string): Promise<{ id: number; default_branch: string }> {
-    const groupUrl = `${this.removeTrailingSlashes(gitlabHost)}/api/v4/groups?search=${gitlabGroup}`;
-    const groupOptions = this.gitlabHttpOptions(gitlabToken, groupUrl);
-    const groupResp = await CapacitorHttp.get(groupOptions);
-    if (groupResp.status < 200 || groupResp.status >= 300) {
-      if (groupResp.status === 401) {
-        throw new Error('Unauthorized: Check your GitLab credentials.');
-      }
-      throw new Error(`Failed to fetch group info: ${groupResp.status}`);
+  /**
+   * Throw a descriptive error for a failed GitLab response.
+   *
+   * @param status The HTTP status code of the response.
+   * @param action Description of what was being attempted, e.g. "fetch the results repo".
+   */
+  private throwGitlabError(status: number, action: string): never {
+    if (status === 401) {
+      throw new Error('Unauthorized: Check your GitLab credentials.');
     }
-    const groups = await groupResp.data;
-    const groupObj = groups.find((g: { full_path: string }) => g.full_path === gitlabGroup);
-    if (!groupObj) {
+    if (status === 403) {
+      throw new Error(`TabSINT could not ${action} (403): the GitLab token needs the 'api' scope and Developer access to the group.`);
+    }
+    throw new Error(`TabSINT could not ${action} (${status}).`);
+  }
+
+  /**
+   * Find the 'results' repository in the protocol's group, creating it if it does not exist.
+   *
+   * @param gitlabHost The GitLab host.
+   * @param gitlabToken The token used for authorization.
+   * @param gitlabGroup The group (or subgroup path) containing the protocol repository.
+   * @returns The id and default branch of the results repository.
+   */
+  async ensureResultsRepo(gitlabHost: string, gitlabToken: string, gitlabGroup: string): Promise<{ id: number; default_branch: string }> {
+    const apiUrl = `${this.removeTrailingSlashes(gitlabHost)}/api/v4`;
+    const repoPath = encodeURIComponent(`${gitlabGroup}/results`);
+    const repoResp = await CapacitorHttp.get(this.gitlabHttpOptions(gitlabToken, `${apiUrl}/projects/${repoPath}`));
+    if (repoResp.status >= 200 && repoResp.status < 300) {
+      return repoResp.data;
+    }
+    if (repoResp.status !== 404) {
+      this.throwGitlabError(repoResp.status, 'fetch the results repository');
+    }
+
+    this.logger.debug("No 'results' repo found. Attempting to create...");
+    const groupResp = await CapacitorHttp.get(this.gitlabHttpOptions(gitlabToken, `${apiUrl}/groups/${encodeURIComponent(gitlabGroup)}`));
+    if (groupResp.status === 404) {
       throw new Error(`Group '${gitlabGroup}' not found or no permission to view it.`);
     }
-    const groupId = groupObj.id;
-    const projectsUrl = `${this.removeTrailingSlashes(gitlabHost)}/api/v4/groups/${groupId}/projects?search=results`;
-    const projectsOptions = this.gitlabHttpOptions(gitlabToken, projectsUrl);
-    const projectsResp = await CapacitorHttp.get(projectsOptions);
-    if (projectsResp.status < 200 || projectsResp.status >= 300) {
-      if (groupResp.status === 401) {
-        throw new Error('Unauthorized: Check your GitLab credentials.');
-      }
-      throw new Error(`Failed to fetch group projects: ${projectsResp.status}`);
+    if (groupResp.status < 200 || groupResp.status >= 300) {
+      this.throwGitlabError(groupResp.status, `fetch group '${gitlabGroup}'`);
     }
-    const projects = await projectsResp.data;
-    let resultsRepo = projects.find((p: { name: string }) => p.name === 'results');
-    if (!resultsRepo) {
-      this.logger.debug("No 'results' repo found. Attempting to create...");
-      const createProjectBody = {
-        name: 'results',
-        path: 'results',
-        namespace_id: groupId,
-        visibility: 'private',
-      };
-      const createProjectsUrl = `${this.removeTrailingSlashes(gitlabHost)}/api/v4/projects`;
-      const createProjectOptions = this.gitlabHttpOptions(gitlabToken, createProjectsUrl, JSON.stringify(createProjectBody));
-      const createProjResp = await CapacitorHttp.post(createProjectOptions);
-      if (createProjResp.status < 200 || createProjResp.status >= 300) {
-        if (groupResp.status === 401) {
-          throw new Error('Unauthorized: Check your GitLab credentials.');
-        }
-        throw new Error(`Failed to create 'results' project: ${createProjResp.status}`);
-      }
-      resultsRepo = await createProjResp.data;
+
+    const createProjectBody = { name: 'results', path: 'results', namespace_id: groupResp.data.id, visibility: 'private' };
+    const createProjResp = await CapacitorHttp.post(this.gitlabHttpOptions(gitlabToken, `${apiUrl}/projects`, JSON.stringify(createProjectBody)));
+    if (createProjResp.status < 200 || createProjResp.status >= 300) {
+      this.throwGitlabError(createProjResp.status, "create the 'results' repository");
     }
-    this.logger.debug('results repo found and returning its id and default branch');
-    return resultsRepo;
+    return createProjResp.data;
   }
 
   async uploadResult(singleExamResult: ExamResults): Promise<{ success: boolean; message: string }> {
@@ -127,7 +129,6 @@ export class ResultsUploadService {
       const gitlabHost = protocol.gitlabConfig?.host;
       const gitlabToken = protocol.gitlabConfig?.token;
       const gitlabGroup = protocol.gitlabConfig?.group;
-      this.logger.debug(`${gitlabHost} ${gitlabToken} ${gitlabGroup}`);
 
       const resultsRepoResponse = await this.ensureResultsRepo(gitlabHost, gitlabToken, gitlabGroup);
       const resultsRepoId = resultsRepoResponse.id;
@@ -221,10 +222,7 @@ export class ResultsUploadService {
     };
     const resp = await CapacitorHttp.post(this.gitlabHttpOptions(gitlabToken, fileUrl, JSON.stringify(body)));
     if (resp.status < 200 || resp.status >= 300) {
-      if (resp.status === 401) {
-        throw new Error('Unauthorized: Check your GitLab credentials.');
-      }
-      throw new Error(`Failed to create file in results repo: ${resp.status}`);
+      this.throwGitlabError(resp.status, 'create the file in the results repository');
     }
   }
 }
