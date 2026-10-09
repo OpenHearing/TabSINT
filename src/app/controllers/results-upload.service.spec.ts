@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-import { CapacitorHttp } from '@capacitor/core';
 import { Subject } from 'rxjs';
 
 import { DiskModel } from '../models/disk/disk.service';
@@ -25,8 +24,15 @@ describe('ResultsUploadService.ensureResultsRepo', () => {
       ],
     });
     service = TestBed.inject(ResultsUploadService);
-    getSpy = spyOn(CapacitorHttp, 'get');
-    postSpy = spyOn(CapacitorHttp, 'post');
+    getSpy = jasmine.createSpy('get');
+    postSpy = jasmine.createSpy('post');
+    // CapacitorHttp is a plugin proxy that can't be spied on, so stub the fetch its web implementation uses.
+    spyOn(window, 'fetch').and.callFake(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = input.toString();
+      const isPost = init?.method?.toUpperCase() === 'POST';
+      const { status, data } = await (isPost ? postSpy({ url, data: init?.body }) : getSpy({ url }));
+      return new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json' } });
+    });
   });
 
   it('returns the existing results repo looked up by path, including for subgroups', async () => {
