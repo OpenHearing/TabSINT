@@ -2,8 +2,7 @@
   "title": "Development Protocol",
   "subtitle": "Developer testing of open-tabsint responseArea's.",
   "instructionText": "instructionText goes here",
-  "hideProgressBar": true,
-  "navMenu":[
+  "navMenu": [
     {
       "text": "Back to Main Menu",
       "target": {
@@ -14,68 +13,170 @@
   ],
   "pages": [
     {
-      "protocolId":"MainMenu",
-      "title":"Main Menu",
-      "pages":[
+      "protocolId": "MainMenu",
+      "title": "Main Menu",
+      "pages": [
         {
-          "id":"choose",
-          "title":"Response Area Testing",
-          "questionMainText":"Please select a response area to test:",
-          "responseArea":{
-            "type":"multipleChoiceResponseArea",
-            "choices":[
+          "id": "choose",
+          "title": "Response Area Testing",
+          "questionMainText": "Please select a response area to test:",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "choices": [
               {
-                "id":"Text Box"
+                "id": "Text Box"
               },
               {
-                "id":"LikeRT"
+                "id": "LikeRT"
               },
               {
-                "id":"Multiple Input"
+                "id": "Multiple Input"
               },
               {
-                "id":"Manual Audiometry"
+                "id": "Manual Audiometry"
               },
               {
                 "id": "Calibration Exam"
               },
               {
-                "id": "Swept DPOAE Exam"
+                "id": "FPL Calibration Exam"
               },
               {
-                "id": "WAI Exam"
+                "id": "Swept DPOAE Exam (SPL)"
+              },
+              {
+                "id": "Swept DPOAE Exam (FPL)"
+              },
+              {
+                "id": "DP-gram Exam"
+              },
+              {
+                "id": "WAI Exam (SPL)"
+              },
+              {
+                "id": "WAI Exam (FPL)"
               },
               {
                 "id": "MRT Exam"
               },
               {
-                "id":"End All"
+                "id": "MEMR Exam (Within Block)"
+              },
+              {
+                "id": "MEMR Exam (Between Blocks)"
+              },
+              {
+                "id": "Subject ID"
+              },
+              {
+                "id": "Checkbox"
+              },
+              {
+                "id": "Button Grid"
+              },
+              {
+                "id": "Image"
+              },
+              {
+                "id": "Multiple Choice"
+              },
+              {
+                "id": "Advanced Protocol Logic"
+              },
+              {
+                "id": "Custom Response Area"
+              },
+              {
+                "id": "Scan QR Code"
+              },
+              {
+                "id": "Dosimetry"
+              },
+              {
+                "id": "Svantek"
+              },
+              {
+                "id": "Duodose Data Download"
+              },
+              {
+                "id": "Bekesy"
+              },
+              {
+                "id": "Three Digit Test"
+              },
+              {
+                "id": "GAP"
+              },
+              {
+                "id": "HINT"
+              },
+              {
+                "id": "Hughson-Westlake Screener"
+              },
+              {
+                "id": "Hughson-Westlake Threshold"
+              },
+              {
+                "id": "BHAFT"
+              },
+              {
+                "id": "Bekesy Like"
+              },
+              {
+                "id": "CHA Wav Test"
+              },
+              {
+                "id": "MPANL"
+              },
+              {
+                "id": "Yes/No"
+              },
+              {
+                "id": "Integer"
+              },
+              {
+                "id": "Video"
+              },
+              {
+                "id": "Help Text Example"
+              },
+              {
+                "id": "Skip Page"
+              },
+              {
+                "id": "Auto Submit / Response Required"
+              },
+              {
+                "id": "Results View"
+              },
+              {
+                "id": "End All"
               }
             ]
           },
-          "followOns":[
+          "followOns": [
             {
-              "conditional":"result.response=='Text Box'",
-              "target":{
-                "reference":"TextBox"
+              "conditional": "result.response=='Text Box'",
+              "target": {
+                "reference": "TextBox"
               }
             },
             {
-              "conditional":"result.response=='LikeRT'",
-              "target":{
-                "reference":"LikeRT"
+              "conditional": "result.response=='LikeRT'",
+              "target": {
+                "reference": "LikeRT"
               }
             },
             {
-              "conditional":"result.response=='Multiple Input'",
-              "target":{
-                "reference":"MultipleInput"
+              "conditional": "result.response=='Multiple Input'",
+              "target": {
+                "reference": "MultipleInput"
               }
             },
             {
-              "conditional":"result.response=='Manual Audiometry'",
-              "target":{
-                "reference":"ManualAudiometry"
+              "conditional": "result.response=='Manual Audiometry'",
+              "target": {
+                "reference": "ManualAudiometry"
               }
             },
             {
@@ -85,15 +186,39 @@
               }
             },
             {
-              "conditional": "result.response=='Swept DPOAE Exam'",
+              "conditional": "result.response=='FPL Calibration Exam'",
               "target": {
-                "reference": "SweptDpoaeExam"
+                "reference": "FPLCalibrationExam"
               }
             },
             {
-              "conditional": "result.response=='WAI Exam'",
+              "conditional": "result.response=='Swept DPOAE Exam (SPL)'",
               "target": {
-                "reference": "WAIExam"
+                "reference": "SweptDpoaeExamSPL"
+              }
+            },
+            {
+              "conditional": "result.response=='Swept DPOAE Exam (FPL)'",
+              "target": {
+                "reference": "SweptDpoaeExamFPL"
+              }
+            },
+            {
+              "conditional": "result.response=='DP-gram Exam'",
+              "target": {
+                "reference": "DpGramExam"
+              }
+            },
+            {
+              "conditional": "result.response=='WAI Exam (SPL)'",
+              "target": {
+                "reference": "WAIExamSPL"
+              }
+            },
+            {
+              "conditional": "result.response=='WAI Exam (FPL)'",
+              "target": {
+                "reference": "WAIExamFPL"
               }
             },
             {
@@ -103,9 +228,189 @@
               }
             },
             {
-              "conditional":"result.response=='End All'",
-              "target":{
-                "reference":"@END_ALL"
+              "conditional": "result.response=='MEMR Exam (Within Block)'",
+              "target": {
+                "reference": "MEMRExamWithinBlock"
+              }
+            },
+            {
+              "conditional": "result.response=='MEMR Exam (Between Blocks)'",
+              "target": {
+                "reference": "MEMRExamBetweenBlocks"
+              }
+            },
+            {
+              "conditional": "result.response=='Subject ID'",
+              "target": {
+                "reference": "subjectId"
+              }
+            },
+            {
+              "conditional": "result.response=='Checkbox'",
+              "target": {
+                "reference": "checkbox"
+              }
+            },
+            {
+              "conditional": "result.response=='Button Grid'",
+              "target": {
+                "reference": "buttonGrid"
+              }
+            },
+            {
+              "conditional": "result.response=='Image'",
+              "target": {
+                "reference": "image"
+              }
+            },
+            {
+              "conditional": "result.response=='Multiple Choice'",
+              "target": {
+                "reference": "multipleChoice"
+              }
+            },
+            {
+              "conditional": "result.response=='Advanced Protocol Logic'",
+              "target": {
+                "reference": "advancedProtocolLogic"
+              }
+            },
+            {
+              "conditional": "result.response=='Custom Response Area'",
+              "target": {
+                "reference": "customResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='Scan QR Code'",
+              "target": {
+                "reference": "qrCodeResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='Dosimetry'",
+              "target": {
+                "reference": "dosimetryResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='Svantek'",
+              "target": {
+                "reference": "textBoxResponseAreaWithSvantek"
+              }
+            },
+            {
+              "conditional": "result.response=='Duodose Data Download'",
+              "target": {
+                "reference": "duodoseDownloadResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='Bekesy'",
+              "target": {
+                "reference": "bekesyResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='Three Digit Test'",
+              "target": {
+                "reference": "threeDigitResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='GAP'",
+              "target": {
+                "reference": "gapResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='HINT'",
+              "target": {
+                "reference": "hintResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='Hughson-Westlake Screener'",
+              "target": {
+                "reference": "hughsonWestlakeScreenerResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='Hughson-Westlake Threshold'",
+              "target": {
+                "reference": "hughsonWestlakeThresholdResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='BHAFT'",
+              "target": {
+                "reference": "bhaftResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='Bekesy Like'",
+              "target": {
+                "reference": "bekesyLikeResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='CHA Wav Test'",
+              "target": {
+                "reference": "PlayChaWavTest"
+              }
+            },
+            {
+              "conditional": "result.response=='MPANL'",
+              "target": {
+                "reference": "mpanlResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='Yes/No'",
+              "target": {
+                "reference": "Yes/No"
+              }
+            },
+            {
+              "conditional": "result.response=='Integer'",
+              "target": {
+                "reference": "Integer"
+              }
+            },
+            {
+              "conditional": "result.response=='Video'",
+              "target": {
+                "reference": "videoDemo"
+              }
+            },
+            {
+              "conditional": "result.response=='Help Text Example'",
+              "target": {
+                "reference": "helpTextExample"
+              }
+            },
+            {
+              "conditional": "result.response=='Skip Page'",
+              "target": {
+                "reference": "skipDemo"
+              }
+            },
+            {
+              "conditional": "result.response=='Auto Submit / Response Required'",
+              "target": {
+                "reference": "submitBehavior"
+              }
+            },
+            {
+              "conditional": "result.response=='Results View'",
+              "target": {
+                "reference": "ResultsViewDemo"
+              }
+            },
+            {
+              "conditional": "result.response=='End All'",
+              "target": {
+                "reference": "@END_ALL"
               }
             }
           ]
@@ -113,10 +418,10 @@
       ]
     }
   ],
-  "subProtocols":[
+  "subProtocols": [
     {
       "protocolId": "TextBox",
-      "pages":[
+      "pages": [
         {
           "id": "textbox_001",
           "title": "Text Box",
@@ -133,7 +438,6 @@
           "instructionText": "Page should only be submittable when there is a response",
           "responseArea": {
             "type": "textboxResponseArea",
-            "exportToCSV": true,
             "rows": 3,
             "responseRequired": true
           }
@@ -144,7 +448,7 @@
           "instructionText": "Page should only be submittable when there is a response",
           "responseArea": {
             "type": "textboxResponseArea",
-            "exportToCSV": true
+            "responseRequired": true
           }
         },
         {
@@ -152,13 +456,13 @@
           "title": "Text Box Result Viewer",
           "instructionText": "Page should always be submittable",
           "responseArea": {
-            "type": "textboxResponseAreaResultViewer",
-            "pageIdsToDisplay": ["textbox_001", "textbox_002","textbox_003"]
+            "type": "resultsViewResponseArea",
+            "pageIdsToDisplay": ["textbox_001", "textbox_002", "textbox_003"]
           }
         },
         {
           "id": "backtomain",
-          "reference":"MainMenu"
+          "reference": "MainMenu"
         }
       ]
     },
@@ -166,55 +470,127 @@
       "protocolId": "LikeRT",
       "pages": [
         {
-          "id": "default",
-          "instructionText":"Page should only be submittable when there is a response",
+          "id": "default1",
+          "instructionText": "Page should only be submittable when there is a response",
           "responseArea": {
             "type": "likertResponseArea",
+            "responseRequired": true,
             "levels": 5,
             "useEmoticons": true,
             "labels": ["Not at all", "Perfectly"],
-            "questions": [
-              "Question 1",
-              "Question 2",
-              "Question 3",
-              "Question 4"
-            ]
+            "questions": ["Question 1", "Question 2", "Question 3", "Question 4"]
           }
         },
         {
-          "id": "default",
-          "instructionText":"Page should only be submittable when there is a response",
+          "id": "default2",
+          "instructionText": "Page should only be submittable when there is a response",
           "responseArea": {
             "type": "likertResponseArea",
+            "responseRequired": true,
             "levels": 5,
             "useSlider": true,
             "naBox": true,
             "labels": ["Not at all", "Perfectly"],
-            "questions": [
-              "Question 1",
-              "Question 2"
-            ]
+            "questions": ["Question 1", "Question 2"]
           }
         },
         {
-          "id": "default",
-          "instructionText":"Page should always be submittable",
+          "id": "default3",
+          "instructionText": "Page should always be submittable",
           "responseArea": {
             "type": "likertResponseArea",
             "responseRequired": false,
             "levels": 5,
             "naBox": true,
             "labels": ["Not at all", "Perfectly"],
+            "questions": ["Question 1", "Question 2", "Question 3"]
+          }
+        },
+        {
+          "id": "default4",
+          "instructionText": "Page should autoSubmit",
+          "responseArea": {
+            "type": "likertResponseArea",
+            "responseRequired": false,
+            "autoSubmit": true,
+            "levels": 5,
+            "naBox": true,
+            "labels": ["Not at all", "Perfectly"],
+            "questions": ["Question"]
+          }
+        },
+        {
+          "id": "tfi_style",
+          "instructionText": "Over the PAST WEEK... (dual labels + per-question overrides + radio buttons)",
+          "responseArea": {
+            "type": "likertResponseArea",
+            "responseRequired": true,
+            "levels": 11,
+            "useRadioButtons": true,
+            "specifiers": [
+              { "level": 0, "label": "Never aware", "position": "above" },
+              { "level": 10, "label": "Always aware", "position": "above" },
+              { "level": 0, "label": "0%", "position": "below" },
+              { "level": 5, "label": "50%", "position": "below" },
+              { "level": 10, "label": "100%", "position": "below" }
+            ],
             "questions": [
-              "Question 1",
-              "Question 2",
-              "Question 3"
+              { "text": "What percentage of your time awake were you consciously AWARE OF your tinnitus?" },
+              {
+                "text": "How STRONG or LOUD was your tinnitus?",
+                "specifiers": [
+                  { "level": 0, "label": "Not at all", "position": "above" },
+                  { "level": 10, "label": "Extremely", "position": "above" }
+                ]
+              }
             ]
           }
         },
         {
+          "id": "labels_and_specifiers",
+          "instructionText": "labels + specifiers together: numbers below (labels), descriptors above (specifiers), wider verticalSpacing",
+          "responseArea": {
+            "type": "likertResponseArea",
+            "responseRequired": true,
+            "levels": 11,
+            "questionFontSize": 24,
+            "useRadioButtons": true,
+            "verticalSpacing": 40,
+            "labels": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+            "position": "below",
+            "specifiers": [
+              { "level": 0, "label": "No, Not a problem", "position": "above" },
+              { "level": 10, "label": "Yes, a very big problem", "position": "above" }
+            ],
+            "questions": ["Tinnitus kept me from sleeping.", "Tinnitus kept me from concentrating."]
+          }
+        },
+        {
+          "id": "rich_formatting",
+          "instructionText": "HTML text, custom font sizes, and centered labels",
+          "responseArea": {
+            "type": "likertResponseArea",
+            "responseRequired": false,
+            "levels": 5,
+            "questionFontSize": 24,
+            "labelFontSize": 16,
+            "centerLabelAbove": "Please rate the following:",
+            "labels": ["Strongly disagree", "Strongly agree"],
+            "questions": [{ "text": "I can hear <b>well</b> in <i>quiet</i> rooms." }, { "text": "I can hear well in <b>noisy</b> rooms." }]
+          }
+        },
+        {
+          "id": "likert_result_viewer",
+          "title": "Likert Result Viewer",
+          "instructionText": "Page should always be submittable. Likert has no dedicated results viewer, so this exercises the generic fallback.",
+          "responseArea": {
+            "type": "resultsViewResponseArea",
+            "pageIdsToDisplay": ["default1", "default2"]
+          }
+        },
+        {
           "id": "backtomain",
-          "reference":"MainMenu"
+          "reference": "MainMenu"
         }
       ]
     },
@@ -227,6 +603,7 @@
           "instructionText": "Page should only be submittable when there is a response for what you ate for breakfast.",
           "responseArea": {
             "type": "multipleInputResponseArea",
+            "responseRequired": true,
             "review": true,
             "inputList": [
               {
@@ -241,10 +618,7 @@
               {
                 "text": "Have you ever had a ruptured eardrum? ",
                 "inputType": "dropdown",
-                "options": [
-                  "yes",
-                  "no"
-                ]
+                "options": ["yes", "no"]
               },
               {
                 "text": "Patient Date of Birth",
@@ -256,7 +630,7 @@
               },
               {
                 "inputType": "multi-dropdown",
-                "options": ["a","b","c"],
+                "options": ["a", "b", "c"],
                 "text": "Multi-dropdown Input"
               }
             ]
@@ -264,38 +638,45 @@
         },
         {
           "id": "backtomain",
-          "reference":"MainMenu"
+          "reference": "MainMenu"
         }
       ]
     },
     {
       "protocolId": "ManualAudiometry",
-      "pages":[
+      "pages": [
         {
           "id": "audiometry_001",
           "title": "Manual Audiometry Test",
           "instructionText": "Test manual audiometry response area",
           "responseArea": {
             "type": "manualAudiometryResponseArea",
-            "tabsintId": "1",
-            "maxOutputLevel": 110,
-            "minOutputLevel": -10,
-            "targetLevel": 50,
-            "levelUnits": "dB HL",
-            "frequencies": [500, 1000, 2000, 4000, 8000],
-            "adjustments": [15, -18, 5, 3],
+            "frequencies": [500, 1000, 2000, 3000, 4000, 6000, 8000],
+            "adjustmentStepSize": 2,
+            "incrementRatioMultiplier": 2,
             "retspls": {
               "500": 11.0,
               "1000": 5.5,
               "2000": 4.5,
+              "3000": 2.5,
               "4000": 9.5,
+              "6000": 17.0,
               "8000": 17.5
             }
           }
         },
         {
+          "id": "audiometry_001_result_viewer",
+          "title": "Manual Audiometry Result Viewer",
+          "instructionText": "Page should always be submittable. Reviews the combined audiogram from the manual audiometry page above.",
+          "responseArea": {
+            "type": "manualAudiometryResultViewerResponseArea",
+            "pageIdsToDisplay": ["audiometry_001"]
+          }
+        },
+        {
           "id": "backtomain",
-          "reference":"MainMenu"
+          "reference": "MainMenu"
         }
       ]
     },
@@ -305,7 +686,7 @@
         {
           "id": "calibration_001",
           "title": "Calibration Exam",
-          "enableBackButton" :true,
+          "enableBackButton": true,
           "responseArea": {
             "type": "calibrationResponseArea",
             "frequencies": [500, 1000],
@@ -320,13 +701,20 @@
       ]
     },
     {
-      "protocolId": "SweptDpoaeExam",
+      "protocolId": "FPLCalibrationExam",
       "pages": [
         {
-          "id": "swept_oae_001",
-          "title": "Swept DPOAE",
+          "id": "fpl_calibration_001",
+          "title": "FPL Calibration Exam",
+          "enableBackButton": true,
           "responseArea": {
-            "type": "sweptDPOAEResponseArea"
+            "type": "fplCalibrationResponseArea",
+            "outputChannels": ["HPL1", "HPR1"],
+            "fStart": 390,
+            "fEnd": 16500,
+            "sweepDuration": 10.806,
+            "numFrequencies": 64,
+            "windowDuration": 0.0427
           }
         },
         {
@@ -336,15 +724,164 @@
       ]
     },
     {
-      "protocolId": "WAIExam",
+      "protocolId": "SweptDpoaeExamSPL",
+      "pages": [
+        {
+          "id": "swept_oae_001",
+          "title": "Swept DPOAE (SPL)",
+          "responseArea": {
+            "type": "sweptDPOAEResponseArea",
+            "normativeDataPath": "swept-dpoae-normative-data-human.xlsx",
+            "outputChannel1": "HPL1",
+            "outputChannel2": "HPR1",
+            "inputChannel": "EPSHIELD_LEFT_PDM_MIC1",
+            "l1": 75,
+            "l2": 65,
+            "f2Start": 1500,
+            "f2End": 8000,
+            "frequencyRatio": 1.22,
+            "sweepDuration": 10.0,
+            "windowDuration": 0.1,
+            "sweepType": "log",
+            "minSweeps": 16,
+            "maxSweeps": 24,
+            "numFrequencies": 64,
+            "noiseFloorThreshold": -10,
+            "outputRawMeasurements": false,
+            "outputCalibrationType": "SPL"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "SweptDpoaeExamFPL",
+      "pages": [
+        {
+          "id": "swept_oae_002",
+          "title": "Swept DPOAE (FPL)",
+          "responseArea": {
+            "type": "sweptDPOAEResponseArea",
+            "normativeDataPath": "swept-dpoae-normative-data-human.xlsx",
+            "outputChannel1": "HPL1",
+            "outputChannel2": "HPR1",
+            "inputChannel": "EPSHIELD_LEFT_PDM_MIC1",
+            "l1": 75,
+            "l2": 65,
+            "f2Start": 1500,
+            "f2End": 8000,
+            "frequencyRatio": 1.22,
+            "sweepDuration": 10.0,
+            "windowDuration": 0.1,
+            "sweepType": "log",
+            "minSweeps": 16,
+            "maxSweeps": 50,
+            "numFrequencies": 64,
+            "noiseFloorThreshold": -10,
+            "outputRawMeasurements": false,
+            "outputCalibrationType": "FPL"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "DpGramExam",
+      "pages": [
+        {
+          "id": "dp_gram_001",
+          "title": "DP-gram (Left)",
+          "responseArea": {
+            "type": "dpGramResponseArea",
+            "normativeDataPath": "swept-dpoae-normative-data-human.xlsx",
+            "outputChannel1": "HPL1",
+            "outputChannel2": "HPR1",
+            "inputChannel": "EPSHIELD_LEFT_PDM_MIC1",
+            "l1": 75,
+            "l2": 65,
+            "f2": [1500, 2000, 3000, 4000, 6000],
+            "ratio": 1.22,
+            "noiseFloorThreshold": -10,
+            "outputRawMeasurements": false,
+            "outputCalibrationType": "SPL",
+            "ear": "left"
+          }
+        },
+        {
+          "id": "dp_gram_002",
+          "title": "DP-gram (Right)",
+          "responseArea": {
+            "type": "dpGramResponseArea",
+            "normativeDataPath": "swept-dpoae-normative-data-human.xlsx",
+            "outputChannel1": "HPL1",
+            "outputChannel2": "HPR1",
+            "inputChannel": "EPSHIELD_LEFT_PDM_MIC1",
+            "l1": 75,
+            "l2": 65,
+            "f2": [1500, 2000, 3000, 4000, 6000],
+            "ratio": 1.22,
+            "noiseFloorThreshold": -10,
+            "outputRawMeasurements": false,
+            "outputCalibrationType": "SPL",
+            "ear": "right"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "WAIExamSPL",
       "pages": [
         {
           "id": "wai_001",
-          "title": "Wideband Acoustic Immittance (WAI)",
+          "title": "Wideband Acoustic Immittance (WAI) - SPL",
           "responseArea": {
             "type": "WAIResponseArea",
             "fStart": 500,
-            "fEnd": 4000
+            "fEnd": 4000,
+            "normativeAbsorbanceDataPath": "wai-normative-absorbance-data-human.xlsx",
+            "outputCalibrationType": "SPL",
+            "outputChannel": "HPL1",
+            "numFrequencies": 128,
+            "numSweeps": 5,
+            "windowDuration": 0.1,
+            "sweepDuration": 6.0,
+            "inputChannels": ["EPSHIELD_RIGHT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2", "EPSHIELD_LEFT_PDM_MIC1"]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "WAIExamFPL",
+      "pages": [
+        {
+          "id": "wai_002",
+          "title": "Wideband Acoustic Immittance (WAI) - FPL",
+          "responseArea": {
+            "type": "WAIResponseArea",
+            "fStart": 500,
+            "fEnd": 4000,
+            "normativeAbsorbanceDataPath": "wai-normative-absorbance-data-human.xlsx",
+            "outputCalibrationType": "FPL",
+            "outputChannel": "HPL1",
+            "numFrequencies": 128,
+            "numSweeps": 5,
+            "windowDuration": 0.1,
+            "sweepDuration": 6.0,
+            "inputChannels": ["EPSHIELD_RIGHT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2", "EPSHIELD_LEFT_PDM_MIC1"]
           }
         },
         {
@@ -362,6 +899,1443 @@
           "responseArea": {
             "type": "mrtResponseArea",
             "examDefinitionFilename": "mrt-exam-definition.csv"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "MEMRExamWithinBlock",
+      "pages": [
+        {
+          "id": "MEMR",
+          "title": "MEMR Exam (Within Block)",
+          "responseArea": {
+            "type": "memrResponseArea",
+            "autoSubmit": false,
+            "soundFileName": "/PurdueMEMR/MEMR_Sinc16_2ch.wav",
+            "recordFileFolder": "MEMR_REC_WITHIN",
+            "nRepeats": 5,
+            "useMetaRMS": true,
+            "elicitorLevelChange": "Within Block",
+            "elicitorLevelArray": [70.0, 74.0, 78.0, 82.0, 86.0],
+            "probeStimulusLevel": 70,
+            "submissionIntervalMs": 500,
+            "probeOutputChannel": ["FPL/HPR1"],
+            "elicitorOutputChannel": ["FPL/HPL1"],
+            "recordChannels": ["FPL/HPR1", "EPSHIELD_LEFT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2", "EPSHIELD_RIGHT_PDM_MIC1"],
+            "bleDelayPerTrial": 4000
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "MEMRExamBetweenBlocks",
+      "pages": [
+        {
+          "id": "MEMR",
+          "title": "MEMR Exam (Between Blocks)",
+          "responseArea": {
+            "type": "memrResponseArea",
+            "autoSubmit": false,
+            "soundFileName": "/PurdueMEMR/MEMR_Sinc16_2ch.wav",
+            "recordFileFolder": "MEMR_REC_BETWEEN",
+            "nRepeats": 5,
+            "useMetaRMS": true,
+            "elicitorLevelChange": "Between Blocks",
+            "elicitorLevelArray": [70.0, 74.0, 78.0, 82.0, 86.0],
+            "probeStimulusLevel": 70,
+            "submissionIntervalMs": 500,
+            "probeOutputChannel": ["FPL/HPR1"],
+            "elicitorOutputChannel": ["FPL/HPL1"],
+            "recordChannels": ["FPL/HPR1", "EPSHIELD_LEFT_PDM_MIC1", "EPSHIELD_LEFT_PDM_MIC2", "EPSHIELD_RIGHT_PDM_MIC1"],
+            "bleDelayPerTrial": 4000
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "subjectId",
+      "pages": [
+        {
+          "id": "subjectId",
+          "title": "Subject ID",
+          "responseArea": {
+            "type": "subjectIdResponseArea"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "advancedProtocolLogic",
+      "pages": [
+        {
+          "id": "advancedProtocolLogic_001",
+          "title": "Page 1",
+          "instructionText": "After submitting this page, it should skip the next one if you have entered text",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "advancedProtocolLogic_002",
+          "title": "Page 2",
+          "instructionText": "This page should have been skipped if you entered text in the previous page",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": false
+          },
+          "skipIf": "result.response.length > 0"
+        },
+        {
+          "id": "advancedProtocolLogic_003",
+          "title": "Page 3",
+          "instructionText": "You are now on page 3",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "advancedProtocolLogic_004",
+          "title": "Page 4",
+          "instructionText": "This page is repeatable up to a maximum of three times",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "choices": [
+              {
+                "id": "Repeat"
+              },
+              {
+                "id": "Do not repeat"
+              }
+            ]
+          },
+          "repeatPage": {
+            "nRepeats": 1,
+            "repeatIf": "result.response==='Repeat'"
+          }
+        },
+        {
+          "id": "advancedProtocolLogic_005",
+          "title": "Page 5",
+          "instructionText": "This page can set testFlag",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "choices": [
+              {
+                "id": "Set testFlag"
+              },
+              {
+                "id": "Do not set testFlag"
+              }
+            ]
+          },
+          "setFlags": [
+            {
+              "id": "testFlag",
+              "conditional": "result.response==='Set testFlag'"
+            }
+          ]
+        },
+        {
+          "id": "advancedProtocolLogic_006",
+          "title": "Page 6",
+          "instructionText": "This page can set integer flag",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "choices": [
+              {
+                "id": "Set integerFlag"
+              },
+              {
+                "id": "Do not set integerFlag"
+              }
+            ]
+          },
+          "setFlags": [
+            {
+              "id": "integerFlag",
+              "conditional": "result.response==='Set integerFlag'",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "advancedProtocolLogic_007",
+          "title": "Page 7",
+          "instructionText": "If flags were set on the last page, testFlag should be logged as 'True'",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": false
+          },
+          "preProcessFunction": {
+            "filepath": "customPreprocess.js",
+            "function": "testPreprocess"
+          }
+        },
+        {
+          "id": "advancedProtocolLogic_008",
+          "title": "Page 8",
+          "instructionText": "This instruction text and the response area below should be overridden by a preprocess function",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 1,
+            "responseRequired": false
+          },
+          "preProcessFunction": {
+            "filepath": "customPreprocessOverride.js",
+            "function": "overridePreprocessExample"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "checkbox",
+      "pages": [
+        {
+          "id": "checkbox1",
+          "title": "Checkbox without grading",
+          "responseArea": {
+            "type": "checkboxResponseArea",
+            "choices": [
+              {
+                "id": "Red"
+              },
+              {
+                "id": "Blue"
+              },
+              {
+                "id": "Green"
+              }
+            ],
+            "other": "Some other color"
+          }
+        },
+        {
+          "id": "checkbox2",
+          "title": "Checkbox with markCorrect",
+          "responseArea": {
+            "type": "checkboxResponseArea",
+            "buttonScheme": "markCorrect",
+            "choices": [
+              {
+                "id": "One",
+                "correct": true
+              },
+              {
+                "id": "Two"
+              },
+              {
+                "id": "Three"
+              }
+            ]
+          }
+        },
+        {
+          "id": "checkbox3",
+          "title": "Checkbox with markIncorrect",
+          "responseArea": {
+            "type": "checkboxResponseArea",
+            "buttonScheme": "markIncorrect",
+            "choices": [
+              {
+                "id": "One",
+                "correct": true
+              },
+              {
+                "id": "Two"
+              },
+              {
+                "id": "Three"
+              }
+            ]
+          }
+        },
+        {
+          "id": "checkbox4",
+          "title": "Checkbox with gradeResponse",
+          "responseArea": {
+            "type": "checkboxResponseArea",
+            "feedback": "gradeResponse",
+            "choices": [
+              {
+                "id": "One",
+                "correct": true
+              },
+              {
+                "id": "Two"
+              },
+              {
+                "id": "Three"
+              }
+            ]
+          }
+        },
+        {
+          "id": "checkbox5",
+          "title": "Checkbox with showCorrect",
+          "responseArea": {
+            "type": "checkboxResponseArea",
+            "feedback": "showCorrect",
+            "choices": [
+              {
+                "id": "One"
+              },
+              {
+                "id": "Two",
+                "correct": true
+              },
+              {
+                "id": "Three"
+              }
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "buttonGrid",
+      "pages": [
+        {
+          "id": "buttonGrid1",
+          "title": "Button Grid",
+          "responseArea": {
+            "type": "buttonGridResponseArea",
+            "rows": [
+              {
+                "choices": [
+                  {
+                    "id": "One",
+                    "correct": true
+                  },
+                  {
+                    "id": "Two"
+                  },
+                  {
+                    "id": "Three"
+                  }
+                ]
+              },
+              {
+                "choices": [
+                  {
+                    "id": "Four"
+                  },
+                  {
+                    "id": "Five"
+                  },
+                  {
+                    "id": "Six"
+                  }
+                ]
+              },
+              {
+                "choices": [
+                  {
+                    "id": "Seven"
+                  },
+                  {
+                    "id": "Eight"
+                  },
+                  {
+                    "id": "Nine"
+                  }
+                ]
+              }
+            ],
+            "verticalSpacing": 50,
+            "delayEnable": 3000
+          }
+        },
+        {
+          "id": "buttonGrid2",
+          "title": "Button Grid with grade response",
+          "responseArea": {
+            "type": "buttonGridResponseArea",
+            "feedback": "gradeResponse",
+            "rows": [
+              {
+                "choices": [
+                  {
+                    "id": "1",
+                    "correct": true
+                  },
+                  {
+                    "id": "2"
+                  },
+                  {
+                    "id": "3"
+                  }
+                ]
+              },
+              {
+                "choices": [
+                  {
+                    "id": "4"
+                  },
+                  {
+                    "id": "5"
+                  },
+                  {
+                    "id": "6"
+                  }
+                ]
+              },
+              {
+                "choices": [
+                  {
+                    "id": "7"
+                  },
+                  {
+                    "id": "8"
+                  },
+                  {
+                    "id": "9"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "multipleChoice",
+      "pages": [
+        {
+          "id": "multipleChoice_001",
+          "title": "Multiple Choice delayEnable testing",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "choices": [
+              {
+                "id": "one"
+              },
+              {
+                "id": "two"
+              }
+            ],
+            "verticalSpacing": 50,
+            "delayEnable": 1000
+          }
+        },
+        {
+          "id": "multipleChoice_002",
+          "title": "Multiple Choice feedback testing",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "feedback": "gradeResponse",
+            "choices": [
+              {
+                "id": "one",
+                "correct": true
+              },
+              {
+                "id": "two"
+              }
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "image",
+      "pages": [
+        {
+          "id": "image",
+          "title": "Image",
+          "image": {
+            "path": "tabsint.png"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "customResponseArea",
+      "pages": [
+        {
+          "id": "customResponseArea",
+          "title": "Basic Button Results Test",
+          "questionPreMainText": "Example of questionPreMainText",
+          "questionMainText": "Example of questionMainText",
+          "questionSubText": "Example of questionSubText",
+          "instructionText": "Example of instructionText",
+          "helpText": "Example of helpText",
+          "responseArea": {
+            "type": "customResponseArea",
+            "htmlFilePath": "custom-response-areas/html_basic_example.html",
+            "jsFilePath": "custom-response-areas/js_basic_example.js"
+          }
+        },
+        {
+          "id": "customResponseArea2",
+          "title": "Multi Page Example",
+          "responseArea": {
+            "type": "customResponseArea",
+            "htmlFilePath": "custom-response-areas/html_multi_example.html",
+            "jsFilePath": "custom-response-areas/js_multi_example.js"
+          }
+        },
+        {
+          "id": "customResponseArea3",
+          "title": "Reading and Writing Files Example",
+          "responseArea": {
+            "type": "customResponseArea",
+            "htmlFilePath": "custom-response-areas/html_file_example.html",
+            "jsFilePath": "custom-response-areas/js_file_example.js"
+          }
+        },
+        {
+          "id": "customResponseArea4",
+          "title": "Page and Disk Variables",
+          "responseArea": {
+            "type": "customResponseArea",
+            "htmlFilePath": "custom-response-areas/html_disk_example.html",
+            "jsFilePath": "custom-response-areas/js_disk_example.js"
+          }
+        },
+        {
+          "id": "customResponseArea5",
+          "title": "Results and JS Variable Display",
+          "responseArea": {
+            "type": "customResponseArea",
+            "htmlFilePath": "custom-response-areas/html_results_example.html",
+            "jsFilePath": "custom-response-areas/js_results_example.js"
+          }
+        },
+        {
+          "id": "customResponseArea6",
+          "title": "TabSINT Globals",
+          "instructionText": "Custom JS reaches TabSINT through globalThis.tabsint. This page also has enableSkip set, so Skip should leave it even while the custom JS holds Submit disabled.",
+          "responseArea": {
+            "type": "customResponseArea",
+            "enableSkip": true,
+            "htmlFilePath": "custom-response-areas/html_globals_example.html",
+            "jsFilePath": "custom-response-areas/js_globals_example.js"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "qrCodeResponseArea",
+      "pages": [
+        {
+          "id": "qrCodeResponseArea",
+          "title": "QR Code Scanning",
+          "questionMainText": "Example of scanning a QR Code",
+          "questionSubText": "Scan a QR code",
+          "responseArea": {
+            "type": "qrCodeResponseArea",
+            "scope": "page"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "dosimetryResponseArea",
+      "pages": [
+        {
+          "id": "dosimetryResponseArea",
+          "title": "Dosimetry testing",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": false
+          },
+          "dosimetry": {}
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "textBoxResponseAreaWithSvantek",
+      "pages": [
+        {
+          "id": "textBoxResponseAreaWithSvantek",
+          "title": "Svantek testing",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": false
+          },
+          "svantek": true
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "duodoseDownloadResponseArea",
+      "pages": [
+        {
+          "id": "duodoseDownloadResponseArea",
+          "title": "Duodose Data Download",
+          "responseArea": {
+            "type": "duodoseDownloadResponseArea",
+            "test": "test",
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "bekesyResponseArea",
+      "pages": [
+        {
+          "id": "bekesyResponseArea",
+          "title": "Bekesy",
+          "wavfiles": [
+            {
+              "weighting": "A",
+              "path": "Background sounds inside crowded cafeteria _AOS01244.wav",
+              "targetSPL": 65
+            }
+          ],
+          "responseArea": {
+            "type": "bekesyResponseArea",
+            "numberReversals": 6,
+            "startSPL": 65,
+            "minTargetLevel": 40,
+            "maxTargetLevel": 75,
+            "timeout": 30,
+            "levelRate": 2,
+            "isSubmittable": true
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "threeDigitResponseArea",
+      "pages": [
+        {
+          "id": "threeDigitResponseArea",
+          "title": "Three Digit Test",
+          "questionMainText": "Three Digit Test",
+          "instructionText": "Enter the three digits you hear.",
+          "responseArea": {
+            "type": "threeDigitResponseArea",
+            "examInstructions": "Enter the three digits you hear",
+            "feedback": true,
+            "examProperties": {
+              "nPresentations": 5,
+              "correctStep": -4,
+              "fixedLevel": 50
+            }
+          }
+        }
+      ]
+    },
+    {
+      "protocolId": "gapResponseArea",
+      "pages": [
+        {
+          "id": "gapResponseArea",
+          "title": "GAP",
+          "questionMainText": "Gap Detection Test",
+          "responseArea": {
+            "type": "gapResponseArea",
+            "training": true,
+            "examInstructions": "Select a gap length to run a training trial, then press 'Begin Exam' to run the full test.",
+            "trainingAllowableGapLengths": [40, 20, 12, 6, 0],
+            "examProperties": {
+              "Channel": 0,
+              "TimePres": 4000,
+              "LNoise": 65,
+              "UseSoftwareButton": 1,
+              "NReversals": 8,
+              "NReversalsCalc": 4
+            }
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "hintResponseArea",
+      "pages": [
+        {
+          "id": "hintResponseArea",
+          "title": "HINT",
+          "questionMainText": "Hearing In Noise Test",
+          "responseArea": {
+            "type": "hintResponseArea",
+            "examInstructions": "Select all the words that the subject heard correctly.",
+            "examProperties": {
+              "Direction": "front",
+              "ListNumber": 2,
+              "NumberOfPresentations": 4
+            }
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "hughsonWestlakeScreenerResponseArea",
+      "pages": [
+        {
+          "id": "Hughson-Westlake-Screener",
+          "title": "Hughson-Westlake Screener",
+          "questionMainText": "Automated Hearing Screener",
+          "responseArea": {
+            "type": "hughsonWestlakeResponseArea",
+            "hideExamProperties": "during",
+            "autoBegin": true,
+            "repeatIfFailedOnce": true,
+            "getNotesIfFailedTwice": true,
+            "showMessageIfNoResponse": true,
+            "examInstructions": "Use the button to complete the exam.",
+            "resultMainText": "Screener complete.",
+            "resultSubText": "Press submit to continue.",
+            "examProperties": {
+              "Screener": true,
+              "TonePulseNumber": 3,
+              "PresentationMax": 5,
+              "NumCorrectReq": 3,
+              "LevelUnits": "dB HL",
+              "Lstart": 25,
+              "F": 1000,
+              "OutputChannel": "HPL0",
+              "UseSoftwareButton": true,
+              "PollingOffset": 1000,
+              "MinISI": 1000,
+              "MaxISI": 3000
+            },
+            "maskingNoise": {
+              "Type": "white",
+              "Level": [30, 30]
+            }
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "hughsonWestlakeThresholdResponseArea",
+      "pages": [
+        {
+          "id": "Hughson-Westlake-Threshold",
+          "title": "Hughson-Westlake Threshold",
+          "questionMainText": "Automated Threshold Audiometry",
+          "responseArea": {
+            "type": "hughsonWestlakeResponseArea",
+            "hideExamProperties": "during",
+            "autoBegin": true,
+            "repeatIfFailedOnce": true,
+            "getNotesIfFailedTwice": true,
+            "showMessageIfNoResponse": true,
+            "examInstructions": "Use the button to complete the exam.",
+            "resultMainText": "Automated threshold search complete.",
+            "resultSubText": "Press submit to continue.",
+            "examProperties": {
+              "Screener": false,
+              "TonePulseNumber": 3,
+              "LevelUnits": "dB HL",
+              "Lstart": 25,
+              "F": 1000,
+              "OutputChannel": "HPL0",
+              "UseSoftwareButton": true,
+              "PollingOffset": 1000,
+              "MinISI": 1000,
+              "MaxISI": 3000
+            },
+            "plotProperties": {
+              "displayLevelProgression": true
+            },
+            "maskingNoise": {
+              "Type": "white",
+              "Level": [30, 30]
+            }
+          }
+        },
+        {
+          "id": "Hughson-Westlake-Threshold-2",
+          "title": "Hughson-Westlake Threshold",
+          "questionMainText": "Automated Threshold Audiometry",
+          "responseArea": {
+            "type": "hughsonWestlakeResponseArea",
+            "hideExamProperties": "during",
+            "autoBegin": true,
+            "repeatIfFailedOnce": true,
+            "getNotesIfFailedTwice": true,
+            "showMessageIfNoResponse": true,
+            "examInstructions": "Use the button to complete the exam.",
+            "resultMainText": "Automated threshold search complete.",
+            "resultSubText": "Press submit to continue.",
+            "examProperties": {
+              "Screener": false,
+              "TonePulseNumber": 3,
+              "LevelUnits": "dB HL",
+              "Lstart": 25,
+              "F": 2000,
+              "OutputChannel": "HPR0",
+              "UseSoftwareButton": true,
+              "PollingOffset": 1000,
+              "MinISI": 1000,
+              "MaxISI": 3000
+            },
+            "plotProperties": {
+              "displayLevelProgression": true,
+              "displayAudiogram": ["Hughson-Westlake-Threshold", "Hughson-Westlake-Threshold-2"]
+            },
+            "maskingNoise": {
+              "Type": "white",
+              "Level": [30, 30]
+            }
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "bhaftResponseArea",
+      "pages": [
+        {
+          "id": "BHAFT",
+          "title": "Bekesy Highest Audible Frequency Threshold",
+          "questionMainText": "Automated Highest Audible Frequency Search",
+          "responseArea": {
+            "type": "bhaftResponseArea",
+            "hideExamProperties": "during",
+            "autoBegin": false,
+            "repeatIfFailedOnce": true,
+            "getNotesIfFailedTwice": true,
+            "showMessageIfNoResponse": true,
+            "examInstructions": "Press and hold the button whenever you believe you hear the sound and release the button when you can no longer hear the sound.",
+            "resultMainText": "Automated frequency threshold search complete.",
+            "resultSubText": "Press submit to continue.",
+            "examProperties": {
+              "Fstart": 8000,
+              "MaximumOutputFrequency": 16000,
+              "Level": 80,
+              "ReversalDiscard": 2,
+              "ReversalKeep": 6,
+              "IncrementStartMultiplierFrequency": 2,
+              "IncrementNominalFrequency": 0.08333,
+              "IncrementStartMultiplierLevel": 2,
+              "IncrementNominalLevel": 4,
+              "SemiAutomaticMode": false,
+              "LevelUnits": "dB SPL",
+              "OutputChannel": "HPL0",
+              "UseSoftwareButton": true,
+              "PresentationMax": 100,
+              "BypassCalibrationLimit": true
+            },
+            "plotProperties": {
+              "displayFrequencyProgression": true,
+              "displayLevelProgression": true
+            },
+            "maskingNoise": {
+              "Type": "white",
+              "Level": [30, 30]
+            }
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "bekesyLikeResponseArea",
+      "pages": [
+        {
+          "id": "BekesyLike",
+          "title": "Bekesy Like",
+          "questionMainText": "Automated Level Threshold Search",
+          "responseArea": {
+            "type": "bekesyLikeResponseArea",
+            "hideExamProperties": "during",
+            "autoBegin": false,
+            "repeatIfFailedOnce": true,
+            "getNotesIfFailedTwice": true,
+            "showMessageIfNoResponse": true,
+            "examInstructions": "Press and hold the button whenever you believe you hear the sound and release the button when you can no longer hear the sound.",
+            "resultMainText": "Automated level threshold search complete.",
+            "resultSubText": "Press submit to continue.",
+            "examProperties": {
+              "F": 1000,
+              "Lstart": 40,
+              "ReversalDiscard": 2,
+              "ReversalKeep": 6,
+              "IncrementStart": 4,
+              "IncrementNominal": 2,
+              "LevelUnits": "dB HL",
+              "OutputChannel": "HPL0",
+              "UseSoftwareButton": true,
+              "PresentationMax": 100,
+              "BypassCalibrationLimit": true
+            },
+            "plotProperties": {
+              "displayLevelProgression": true
+            },
+            "maskingNoise": {
+              "Type": "white",
+              "Level": [30, 30]
+            }
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "PlayChaWavTest",
+      "pages": [
+        {
+          "id": "chaWavMultiChoice",
+          "title": "Cha Wav Test",
+          "questionMainText": "This page plays a wav file stored on the CHA",
+          "chaWavFiles": {
+            "wavfiles": [
+              {
+                "path": "C:HINT/LIST1/TIS003.WAV",
+                "Leq": [0, 0, 0, 0]
+              },
+              {
+                "path": "C:HINT/LIST1/TIS004.WAV",
+                "Leq": [50, 0, 0, 0]
+              }
+            ]
+          },
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "choices": [
+              {
+                "id": "A",
+                "text": "Big dogs can be dangerous"
+              },
+              {
+                "id": "B",
+                "text": "Her shoes were very dirty"
+              },
+              {
+                "id": "C",
+                "text": "Two Sentences"
+              },
+              {
+                "id": "D",
+                "text": "Nothing or Something Else"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "protocolId": "@PARTIAL",
+      "pages": [
+        {
+          "id": "partial_test",
+          "instructionText": "This should only be shown if a partial exam is submitted.",
+          "responseArea": {
+            "type": "likertResponseArea",
+            "responseRequired": false,
+            "levels": 5,
+            "naBox": true,
+            "labels": ["Not at all", "Perfectly"],
+            "questions": ["Question 1", "Question 2", "Question 3"]
+          }
+        }
+      ]
+    },
+    {
+      "protocolId": "mpanlResponseArea",
+      "pages": [
+        {
+          "id": "mpanl_001",
+          "title": "MPANL",
+          "instructionText": "Measures Maximum Permissible Ambient Noise Levels with a Svantek dosimeter, reported under WAHTS headset attenuation.",
+          "responseArea": {
+            "type": "mpanlResponseArea"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "Yes/No",
+      "pages": [
+        {
+          "id": "yes_no",
+          "title": "Yes/No",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "inputList": [
+              {
+                "text": "Answer yes or no to this question",
+                "inputType": "dropdown",
+                "options": ["yes", "no"]
+              }
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "Integer",
+      "pages": [
+        {
+          "id": "integer",
+          "title": "Integer",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "inputList": [
+              {
+                "text": "Here you can input an integer",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "videoDemo",
+      "pages": [
+        {
+          "id": "video_001",
+          "title": "Video",
+          "instructionText": "Plays a page-level video attachment.",
+          "video": {
+            "path": "example_video.mp4",
+            "width": "100%",
+            "autoplay": false,
+            "noSkip": false
+          },
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "helpTextExample",
+      "pages": [
+        {
+          "id": "help_text_001",
+          "title": "Help Text Example",
+          "instructionText": "Tap the Help button below to see this page's help text.",
+          "helpText": "This is the help text for this page. It is shown in a popup when the Help button is tapped, and is greyed out when a page has no help text defined.",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "skipDemo",
+      "pages": [
+        {
+          "id": "skip_001",
+          "title": "Skip with a required response",
+          "instructionText": "Submit stays disabled until text is entered, but Skip is always enabled. Skipping saves this page with isSkipped set to true and no response.",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": true,
+            "enableSkip": true
+          }
+        },
+        {
+          "id": "skip_002",
+          "title": "Skip past a graded response area",
+          "instructionText": "Choosing an answer holds the graded colors on screen for about 1.25 seconds before advancing. Skip must advance immediately instead, bypassing that delay.",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "enableSkip": true,
+            "autoSubmit": false,
+            "feedback": "gradeResponse",
+            "choices": [
+              {
+                "id": "Correct answer",
+                "correct": true
+              },
+              {
+                "id": "Wrong answer"
+              }
+            ]
+          }
+        },
+        {
+          "id": "skip_003",
+          "title": "Skip button disabled",
+          "instructionText": "enableSkip is not set on this page, so no Skip button should appear unless both Admin Mode and Admin Skip Mode are checked in the TabSINT configuration.",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "skip_004",
+          "title": "Skip instead of following a branch",
+          "instructionText": "Answering sends you to the branch page. Skipping records no response, so no followOn conditional matches and the exam continues straight to the next page here.",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "enableSkip": true,
+            "choices": [
+              {
+                "id": "Go to the branch page"
+              }
+            ]
+          },
+          "followOns": [
+            {
+              "conditional": "result.response=='Go to the branch page'",
+              "target": {
+                "reference": "skipDemoBranch"
+              }
+            }
+          ]
+        },
+        {
+          "id": "skip_005",
+          "title": "End of the skip examples",
+          "instructionText": "The branch page above is shown only when the previous page was answered, never when it was skipped.",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 2,
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "skipDemoBranch",
+      "pages": [
+        {
+          "id": "skip_branch_001",
+          "title": "Branch page",
+          "instructionText": "You reached this page through a followOn, which means the previous page was answered rather than skipped.",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 2,
+            "responseRequired": false
+          }
+        }
+      ]
+    },
+    {
+      "protocolId": "submitBehavior",
+      "pages": [
+        {
+          "id": "autosubmit_mc_default",
+          "title": "Multiple choice, autoSubmit not set",
+          "instructionText": "autoSubmit defaults to true, so tapping a choice should advance to the next page without pressing Submit.",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "choices": [
+              {
+                "id": "Advance now"
+              },
+              {
+                "id": "Advance now as well"
+              }
+            ]
+          }
+        },
+        {
+          "id": "autosubmit_mc_off",
+          "title": "Multiple choice, autoSubmit false",
+          "instructionText": "With autoSubmit false the selection is kept on screen and can be changed. Only Submit advances the page.",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "autoSubmit": false,
+            "choices": [
+              {
+                "id": "First choice"
+              },
+              {
+                "id": "Second choice"
+              },
+              {
+                "id": "Third choice"
+              }
+            ]
+          }
+        },
+        {
+          "id": "autosubmit_mc_other",
+          "title": "Multiple choice, autoSubmit with other",
+          "instructionText": "Tapping a listed choice advances immediately, but tapping Other must stay on the page so the free text can be typed first.",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "autoSubmit": true,
+            "other": "Something else",
+            "choices": [
+              {
+                "id": "Listed choice"
+              },
+              {
+                "id": "Another listed choice"
+              }
+            ]
+          }
+        },
+        {
+          "id": "autosubmit_grid_off",
+          "title": "Button grid, autoSubmit false",
+          "instructionText": "With autoSubmit false several buttons can be selected and deselected, and the page advances only on Submit.",
+          "responseArea": {
+            "type": "buttonGridResponseArea",
+            "autoSubmit": false,
+            "verticalSpacing": 20,
+            "rows": [
+              {
+                "choices": [
+                  {
+                    "id": "One"
+                  },
+                  {
+                    "id": "Two"
+                  },
+                  {
+                    "id": "Three"
+                  }
+                ]
+              },
+              {
+                "choices": [
+                  {
+                    "id": "Four"
+                  },
+                  {
+                    "id": "Five"
+                  },
+                  {
+                    "id": "Six"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "autosubmit_grid_feedback",
+          "title": "Button grid, autoSubmit with feedback",
+          "instructionText": "autoSubmit defaults to true here. Tapping a button should color it green or red for about 1.25 seconds before the page advances.",
+          "responseArea": {
+            "type": "buttonGridResponseArea",
+            "feedback": "gradeResponse",
+            "rows": [
+              {
+                "choices": [
+                  {
+                    "id": "Correct",
+                    "correct": true
+                  },
+                  {
+                    "id": "Incorrect"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "required_default",
+          "title": "responseRequired not set",
+          "instructionText": "The textbox schema defaults responseRequired to true, so Submit should stay disabled until something is typed.",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3
+          }
+        },
+        {
+          "id": "required_false",
+          "title": "responseRequired false",
+          "instructionText": "Submit should be enabled as soon as the page opens, with or without an answer.",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "autosubmitdelay_short",
+          "title": "autoSubmitDelay of 3 seconds",
+          "instructionText": "Do not touch anything. This page submits itself three seconds after it opens.",
+          "autoSubmitDelay": 3000,
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 2,
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "autosubmitdelay_long",
+          "title": "autoSubmitDelay of 10 seconds",
+          "instructionText": "Press Submit right away. The pending ten second timer must be cancelled so that it cannot submit the following page.",
+          "autoSubmitDelay": 10000,
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 2,
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "autosubmitdelay_after",
+          "title": "No autoSubmitDelay",
+          "instructionText": "This page has no autoSubmitDelay. It must stay on screen until Submit is pressed, including when the previous page was submitted early.",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 2,
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "submit_text_override",
+          "title": "submitText override",
+          "instructionText": "This page sets submitText, so the button below should read \"Finish section\" instead of Submit. The next page leaves submitText unset and must read Submit again.",
+          "submitText": "Finish section",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 2,
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "submit_text_default",
+          "title": "submitText not set",
+          "instructionText": "No submitText here. The button must be back to the translated default Submit label, not the previous page's text.",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 2,
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "ResultsViewDemo",
+      "pages": [
+        {
+          "id": "results_view_demo",
+          "title": "Results View",
+          "instructionText": "Displays the results of every previously-run demo page whose response-area type has a dedicated results viewer. Run the corresponding demo pages first (Three Digit Test, MRT Exam, HINT, Hughson-Westlake Screener/Threshold, BHAFT, Bekesy Like, GAP, Manual Audiometry) to see real data here; unvisited pages simply show nothing.",
+          "responseArea": {
+            "type": "resultsViewResponseArea",
+            "pageIdsToDisplay": [
+              "threeDigitResponseArea",
+              "MRT",
+              "hintResponseArea",
+              "Hughson-Westlake-Screener",
+              "Hughson-Westlake-Threshold",
+              "Hughson-Westlake-Threshold-2",
+              "BHAFT",
+              "BekesyLike",
+              "gapResponseArea",
+              "audiometry_001"
+            ]
           }
         },
         {

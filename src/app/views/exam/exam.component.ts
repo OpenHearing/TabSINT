@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, inject } from '@angular/core';
 import { Keyboard } from '@capacitor/keyboard';
 import { PluginListenerHandle } from '@capacitor/core';
 import { Subscription } from 'rxjs';
@@ -11,17 +11,22 @@ import { AppState, ExamState } from '../../utilities/constants';
 import { PageInterface } from '../../models/page/page.interface';
 import { PageModel } from '../../models/page/page.service';
 import { ButtonTextService } from '../../controllers/button-text.service';
+import { ProtocolModel } from '../../models/protocol/protocol-model.service';
+import { getDefaultEnableSkip } from '../../utilities/exam-helper-functions';
 
 @Component({
-  selector: 'exam-view',
+  selector: 'app-exam-view',
   templateUrl: './exam.component.html',
-  styleUrl: './exam.component.css'
+  styleUrl: './exam.component.css',
 })
-
-export class ExamComponent implements OnInit, OnDestroy  {
+export class ExamComponent implements OnInit, OnDestroy {
   // Controller varialbles
   buttonText: string = 'Submit';
   isKeyboardVisible = false;
+  showProgressBar: boolean = false;
+  // Resolved per page: ajv does not apply defaults inside the responseArea oneOf, so the schema
+  // default has to be read here when the protocol omits enableSkip.
+  private enableSkip = false;
 
   // Models
   disk: DiskInterface;
@@ -32,18 +37,20 @@ export class ExamComponent implements OnInit, OnDestroy  {
   // Subscriptions
   diskSubscription: Subscription | undefined;
   pageSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
   buttonTextSubscription: Subscription | undefined;
   private keyboardShowListener?: PluginListenerHandle;
   private keyboardHideListener?: PluginListenerHandle;
 
-  constructor (
-    private readonly cdr: ChangeDetectorRef,
-    private readonly examService: ExamService,
-    private readonly diskModel: DiskModel,
-    private readonly stateModel: StateModel,
-    private readonly pageModel: PageModel,
-    private readonly buttonTextService: ButtonTextService
-  ) {
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly examService = inject(ExamService);
+  private readonly diskModel = inject(DiskModel);
+  private readonly stateModel = inject(StateModel);
+  private readonly pageModel = inject(PageModel);
+  private readonly protocolModel = inject(ProtocolModel);
+  private readonly buttonTextService = inject(ButtonTextService);
+
+  constructor() {
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();
     this.currentPage = this.pageModel.getPage();
@@ -51,29 +58,46 @@ export class ExamComponent implements OnInit, OnDestroy  {
 
   ngOnInit(): void {
     this.initializeKeyboardListeners();
-    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
       this.disk = updatedDisk;
     });
-    this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
+    this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       this.currentPage = updatedPage;
+      const responseArea = updatedPage.responseArea;
+      this.enableSkip = responseArea ? (responseArea.enableSkip ?? getDefaultEnableSkip(responseArea.type)) : false;
+    });
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
+      this.state = updatedState;
     });
     this.examService.switchToExamView();
-    this.state.appState = AppState.Exam;
+    this.stateModel.updateState({ appState: AppState.Exam });
     this.buttonTextSubscription = this.buttonTextService.buttonText$.subscribe((newText: string) => {
       this.buttonText = newText;
+    });
+    this.protocolModel.getProtocolModel().activeProtocolStack.latestProtocolObservable.subscribe(latestStackItem => {
+      this.showProgressBar = latestStackItem?.showProgressBar ?? this.showProgressBar;
     });
   }
 
   ngOnDestroy(): void {
+    this.stateModel.updateState({ appState: AppState.null });
     this.removeKeyboardListeners();
     this.diskSubscription?.unsubscribe();
     this.pageSubscription?.unsubscribe();
-    this.state.appState = AppState.null;
     this.buttonTextSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
   }
 
-  begin() {
-    this.examService.begin();
+  get showSkipButton(): boolean {
+    return (this.disk.preferences.debugMode && this.disk.preferences.adminSkipMode) || this.enableSkip;
+  }
+
+  isString(data: unknown): boolean {
+    return typeof data === 'string';
+  }
+
+  async begin() {
+    await this.examService.begin();
   }
 
   submit() {
@@ -99,12 +123,12 @@ export class ExamComponent implements OnInit, OnDestroy  {
   private async initializeKeyboardListeners() {
     this.keyboardShowListener = await Keyboard.addListener('keyboardWillShow', () => {
       this.isKeyboardVisible = true;
-      this.cdr.detectChanges(); 
+      this.cdr.detectChanges();
     });
 
     this.keyboardHideListener = await Keyboard.addListener('keyboardWillHide', () => {
       this.isKeyboardVisible = false;
-      this.cdr.detectChanges(); 
+      this.cdr.detectChanges();
     });
   }
 

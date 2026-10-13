@@ -8,10 +8,9 @@ describe('CalibrationResultsViewerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CalibrationResultsViewerComponent]
-    })
-    .compileComponents();
-    
+      declarations: [CalibrationResultsViewerComponent],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(CalibrationResultsViewerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

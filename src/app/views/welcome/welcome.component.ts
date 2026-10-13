@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -12,49 +12,59 @@ import { StateModel } from '../../models/state/state.service';
 import { AppState } from '../../utilities/constants';
 import { StateInterface } from '../../models/state/state.interface';
 import { AdminService } from '../../controllers/admin.service';
+import { Tasks } from '../../services/tasks.service';
+import { QrScanService } from '../../services/qr-scan.service';
 
 @Component({
   selector: 'app-welcome',
   templateUrl: './welcome.component.html',
-  styleUrl: './welcome.component.css'
+  styleUrl: './welcome.component.css',
 })
-export class WelcomeComponent {
+export class WelcomeComponent implements OnInit, OnDestroy {
+  private readonly appModel = inject(AppModel);
+  private readonly dialog = inject(MatDialog);
+  private readonly diskModel = inject(DiskModel);
+  private readonly stateModel = inject(StateModel);
+  private readonly router = inject(Router);
+  private readonly tasks = inject(Tasks);
+  readonly adminService = inject(AdminService);
+  private readonly qrScanService = inject(QrScanService);
+
   disk: DiskInterface;
-  diskSubscription: Subscription | undefined;
   app: AppInterface;
   state: StateInterface;
 
-  constructor(
-    private readonly appModel: AppModel,
-    private readonly dialog: MatDialog,
-    private readonly diskModel: DiskModel,
-    private readonly stateModel: StateModel,
-    private readonly router: Router,
-    public adminService: AdminService
-  ) {
+  diskSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
+
+  constructor() {
     this.disk = this.diskModel.getDisk();
     this.app = this.appModel.getApp();
     this.state = this.stateModel.getState();
   }
 
-  ngOnInit() {
-    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
-        this.disk = updatedDisk;
-    })    
-    this.state.appState = AppState.Welcome;
+  ngOnInit(): void {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+    });
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
+      this.state = updatedState;
+    });
+    this.stateModel.updateState({ appState: AppState.Welcome });
+    this.tasks.hide();
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
+    this.stateModel.updateState({ appState: AppState.null });
+    this.tasks.unhide();
     this.diskSubscription?.unsubscribe();
-    this.state.appState = AppState.null;
+    this.stateSubscription?.unsubscribe();
   }
 
-  // TODO: Replace this variable with a model?
-  config:any = {};
-
-
-  scanQrCodeandAutoConfig() {
-    console.log("scanQrCodeandAutoConfig() called from welcome.component.ts");
+  /**
+   * Scan the configuration QR code and adjust the preferences.
+   */
+  async qrScanHandler() {
+    this.qrScanService.scanAndAutoConfig();
   }
-
 }

@@ -1,0 +1,23 @@
+# Compiled output
+build/
+dist/
+
+# Node
+/node_modules
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Miscellaneous
+/.angular/cache
+/coverage
+
+# Generated Files
+copyright-year.md
+tabsintfs/README.md
+tabsintcha/README.md
+tabsintaudio/README.md

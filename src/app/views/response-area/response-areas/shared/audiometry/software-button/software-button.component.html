@@ -1,0 +1,11 @@
+<button
+  type="button"
+  class="software-button"
+  [class.software-button-pressed]="pressed"
+  [disabled]="disabled"
+  (touchstart)="onPressStart()"
+  (touchend)="onPressEnd()"
+  (mousedown)="onPressStart()"
+  (mouseup)="onPressEnd()">
+  {{ displayText | transloco }}
+</button>

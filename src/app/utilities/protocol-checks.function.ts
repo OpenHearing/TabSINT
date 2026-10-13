@@ -1,27 +1,52 @@
-import { ProtocolErrorInterface } from "../interfaces/protocol-error.interface";
-import { ProtocolInterface } from "../models/protocol/protocol.interface";
+import { ProtocolErrorInterface } from '../interfaces/protocol-error.interface';
+import { ProtocolInterface } from '../models/protocol/protocol.interface';
+import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
+import { PageTypes } from '../types/custom-types';
+import { isPageDefinition, isProtocolSchemaInterface } from '../guards/type.guard';
 
-export function checkCalibrationFiles(activeProtocol: ProtocolInterface): string | void {
-    let msg;
-    const missingWavCalListLength = activeProtocol._missingWavCalList!.length;
-    const missingCommonWavCalListLength= activeProtocol._missingCommonWavCalList!.length;
+/**
+ * Determine whether a protocol references any audio content, so calibration.json
+ * only needs to be read for protocols that actually require it.
+ * @param protocol The raw, unprocessed protocol (or subProtocol) to check.
+ */
+export function protocolHasWavFiles(protocol: ProtocolSchemaInterface): boolean {
+  return pagesHaveWavFiles(protocol.pages) || (protocol.subProtocols ?? []).some(protocolHasWavFiles);
+}
 
-    if (areThereMissingCommonOrWavCal(missingWavCalListLength, missingCommonWavCalListLength)) {
-      if (areThereMissingCommonAndWavCal(missingWavCalListLength, missingCommonWavCalListLength)) {
-          msg =
-          "Missing calibration(s) for wav files(s): " +
-          missingWavCalListLength +
-          ", and common media wav file(s): " +
-          missingCommonWavCalListLength +
-          ".";
-      } else if (areThereMissingWavCal(missingWavCalListLength)) {
-          msg = "Missing calibration(s) for wav files(s): " + missingWavCalListLength + ".";
-      } else if (areThereMissingCommonWavCal(missingCommonWavCalListLength)) {
-          msg = "Missing common media wav file(s): " + missingCommonWavCalListLength + ".";
-      }
+function pagesHaveWavFiles(pages: PageTypes | PageTypes[]): boolean {
+  const pageArray = Array.isArray(pages) ? pages : [pages];
+  return pageArray.some(page => {
+    if (isProtocolSchemaInterface(page)) {
+      return protocolHasWavFiles(page);
     }
+    if (isPageDefinition(page)) {
+      return (page.wavfiles?.length ?? 0) > 0 || page.chaWavFiles !== undefined;
+    }
+    return false;
+  });
+}
 
-    return msg;
+export function checkCalibrationFiles(activeProtocol: ProtocolInterface): string | undefined {
+  let msg = undefined;
+  const missingWavCalListLength = activeProtocol._missingWavCalList!.length;
+  const missingCommonWavCalListLength = activeProtocol._missingCommonWavCalList!.length;
+
+  if (areThereMissingCommonOrWavCal(missingWavCalListLength, missingCommonWavCalListLength)) {
+    if (areThereMissingCommonAndWavCal(missingWavCalListLength, missingCommonWavCalListLength)) {
+      msg =
+        'Missing calibration(s) for wav files(s): ' +
+        missingWavCalListLength +
+        ', and common media wav file(s): ' +
+        missingCommonWavCalListLength +
+        '.';
+    } else if (areThereMissingWavCal(missingWavCalListLength)) {
+      msg = 'Missing calibration(s) for wav files(s): ' + missingWavCalListLength + '.';
+    } else if (areThereMissingCommonWavCal(missingCommonWavCalListLength)) {
+      msg = 'Missing common media wav file(s): ' + missingCommonWavCalListLength + '.';
+    }
+  }
+
+  return msg;
 }
 
 function areThereMissingCommonOrWavCal(missingWavCalList: number, missingCommonWavCalList: number): boolean {
@@ -40,60 +65,40 @@ function areThereMissingCommonWavCal(missingCommonWavCalList: number): boolean {
   return missingCommonWavCalList > 0;
 }
 
-export function checkPreProcessFunctions(activeProtocol: ProtocolInterface): Array<ProtocolErrorInterface> {
-    let errors = [];
-    let msg;
-    if (
-        (activeProtocol._missingPreProcessFunctionList!.length > 0 || activeProtocol._missingControllerList!.length > 0) &&
-        true // !activeProtocol!.js
-      ) {
-        msg =
-          'The protocol uses custom functions that should be found in a customJs.js file, but the protocol does not have a "js" field pointing to this file.  Please make sure the file exists and is referenced properly.';
-        errors.push({
-          type: "Protocol",
-          error: msg
-        });
-      }
+export function checkControllers(activeProtocol: ProtocolInterface): ProtocolErrorInterface[] {
+  const errors = [];
+  let msg;
 
-      if (activeProtocol._missingPreProcessFunctionList!.length > 0) {
-        msg =
-          "The protocol references the following undefined pre-process functions: " +
-          activeProtocol._missingPreProcessFunctionList +
-          ".  Please make sure each function is defined properly in the customJs.js file.";
-        activeProtocol.errors!.push({
-          type: "Protocol",
-          error: msg
-        });
-      }
+  if (activeProtocol._missingControllerList!.length > 0) {
+    msg =
+      'The protocol contains custom html pages that reference the following undefined controllers: ' +
+      activeProtocol._missingControllerList +
+      '.  Please make sure each controller is defined properly in the customJs.js file.';
+    errors.push({
+      type: 'Protocol',
+      error: msg,
+    });
+  }
 
-      return errors;
+  return errors;
 }
 
-export function checkControllers(activeProtocol: ProtocolInterface): Array<ProtocolErrorInterface> {
-    let errors = [];
-    let msg;
+/**
+ * Check for unresolved file paths in the provided protocol.
+ * @param activeProtocol The protocol to check for unresolved file paths.
+ * @returns An array of protocol errors based on unresolved file paths.
+ */
+export function checkUnresolvedFilePaths(activeProtocol: ProtocolInterface): ProtocolErrorInterface[] {
+  const errors = [];
+  const unresolvedFilePathLength = activeProtocol._unresolvedFilePathList?.length ?? 0;
 
-    if (activeProtocol._missingControllerList!.length > 0) {
-        msg =
-          "The protocol contains custom html pages that reference the following undefined controllers: " +
-          activeProtocol._missingControllerList +
-          ".  Please make sure each controller is defined properly in the customJs.js file.";
-        errors.push({
-          type: "Protocol",
-          error: msg
-        });
-      }
+  if (unresolvedFilePathLength > 0) {
+    const msg = 'Unable to resolve the file path(s) for the following file(s): ' + activeProtocol._unresolvedFilePathList;
+    errors.push({
+      type: 'Protocol',
+      error: msg,
+    });
+  }
 
-      if (activeProtocol._missingHtmlList!.length > 0) {
-        msg =
-          "The protocol references the following html pages that could not be loaded:  " +
-          activeProtocol._missingHtmlList +
-          ".  Please make sure each html page exists and is referenced properly.";
-        errors.push({
-          type: "Protocol",
-          error: msg
-        });
-      }
-
-      return errors;
+  return errors;
 }

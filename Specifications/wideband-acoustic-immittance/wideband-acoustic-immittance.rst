@@ -27,14 +27,14 @@ Related internal documents
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-This software specification relates to the `firmware specification [link tbd] <>`_.
+This software specification relates to the `Firmware Specifications <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/wai.rst?ref_type=heads>`_.
 
 
 
 Algorithm
 --------------
 
-See `firmware specification [link tbd] <>`_.
+See `Firmware Specifications <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/wai.rst?ref_type=heads>`_.
 
 Implementation
 --------------
@@ -147,15 +147,15 @@ Data
      - Test Case
      - Acceptance
      - Verified
-   * - The exam must return all fields defined in `firmware specification [link tbd] <>`_. 
+   * - The exam must return all fields defined in `Firmware Specifications <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/wai.rst?ref_type=heads>`_.
      - Start a WAI exam and complete the exam successfully. 
-     - Verify the exam returns all result fields defined in `firmware specification [link tbd] <>`_ with appropriate values.
+     - Verify the exam returns all result fields defined in `Firmware Specifications <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/wai.rst?ref_type=heads>`_. with appropriate values.
      - 
-   * - The exam must display all `WAIResults` fields defined  in `firmware specification [link tbd] <>`_.
+   * - The exam must display all `WAIResults` fields defined  in `Firmware Specifications <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/wai.rst?ref_type=heads>`_.
      - Start a WAI exam, complete the exam. 
      - Verify that all results are accurately displayed.
      - 
-   * - The exam must export all `WAIResults` fields defined in `firmware specification [link tbd] <>`_.
+   * - The exam must export all `WAIResults` fields defined in `Firmware Specifications <https://code.crearecomputing.com/hearingproducts/open-hearing-group/open-hearing-firmware/-/blob/main/Specifications/wai.rst?ref_type=heads>`_.
      - Submit the exam and export results.
      - Verify that all results are accurately exported.
      - 

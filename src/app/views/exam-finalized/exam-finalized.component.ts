@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { ExamResults, ResultsInterface } from '../../models/results/results.interface';
@@ -10,11 +10,15 @@ import { DiskModel } from '../../models/disk/disk.service';
 import { ProtocolModel } from '../../models/protocol/protocol-model.service';
 
 @Component({
-  selector: 'exam-finalized-view',
+  selector: 'app-exam-finalized-view',
   templateUrl: './exam-finalized.component.html',
   styleUrl: './exam-finalized.component.css',
 })
-export class ExamFinalizedComponent {
+export class ExamFinalizedComponent implements OnInit, OnDestroy {
+  private readonly diskModel = inject(DiskModel);
+  private readonly protocolModel = inject(ProtocolModel);
+  private readonly resultsModel = inject(ResultsModel);
+
   results: ResultsInterface;
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
@@ -22,11 +26,7 @@ export class ExamFinalizedComponent {
   title?: string;
   currentExam: ExamResults;
 
-  constructor(
-    private readonly diskModel: DiskModel, 
-    private readonly protocolModel: ProtocolModel,
-    private readonly resultsModel: ResultsModel
-  ) { 
+  constructor() {
     this.results = this.resultsModel.getResults();
     this.disk = this.diskModel.getDisk();
     this.protocol = this.protocolModel.getProtocolModel();
@@ -35,13 +35,13 @@ export class ExamFinalizedComponent {
     this.currentExam = this.results.currentExam;
   }
 
-  ngOnInit() {
-    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
-        this.disk = updatedDisk;
-    })    
+  ngOnInit(): void {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+    });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
   }
 
@@ -51,5 +51,4 @@ export class ExamFinalizedComponent {
     }
     return '';
   }
-
 }

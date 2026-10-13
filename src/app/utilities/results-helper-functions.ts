@@ -1,28 +1,30 @@
+import { IDevice } from '../interfaces/devices/device.interface';
+
 /**
  * Generate a standardized filename across results
- * @summary Create filename by concatenating resultFilename (if available in protocol, 
+ * @summary Create filename by concatenating resultFilename (if available in protocol,
  * otherwise use device UUID), date, and suffix if used.
  * @param  result - result.currentExam object. If no result object provided, then it will use the currentPage datetime
  * @param  suffix - optional suffix to append
  * @return string: filename
  */
 export function constructFilename(deviceShortUuid: string, resultFilename?: string, testDateTime?: string, suffix?: string) {
-    let filename, dateTime;
+  let filename, dateTime;
 
-    dateTime = getDateString(testDateTime);
+  dateTime = getDateString(testDateTime);
 
-    if (resultFilename) {
-        filename = resultFilename + "." + dateTime;
-    } else {
-        filename = deviceShortUuid + "." + dateTime;
-    }
+  if (resultFilename) {
+    filename = resultFilename + '.' + dateTime;
+  } else {
+    filename = deviceShortUuid + '.' + dateTime;
+  }
 
-    if (suffix) {
-        filename = filename + suffix;
-    }
+  if (suffix) {
+    filename = filename + suffix;
+  }
 
-    return filename;
-};
+  return filename;
+}
 
 /**
  * Convience method to getDateString
@@ -31,7 +33,23 @@ export function constructFilename(deviceShortUuid: string, resultFilename?: stri
  * @return dateString
  */
 export function getDateString(testDateTime?: string) {
-    let dateString = testDateTime ?? new Date().toJSON();
-    dateString = dateString.replace(":","-").replace(":","-").split(".")[0];
-    return dateString;
+  let dateString = testDateTime ?? new Date().toJSON();
+  dateString = dateString.replace(':', '-').replace(':', '-').split('.')[0];
+  return dateString;
+}
+
+/**
+ * Convert the device data into a partial for user display.
+ * Only exposes device information which the user is allowed to see.
+ * @param device The device to be converted for display.
+ * @returns The user displayable device partial.
+ */
+export function displayableDevice(device: IDevice): Partial<IDevice> {
+  return {
+    deviceId: device.deviceId,
+    name: device.name,
+    type: device.type,
+    tabsintId: device.tabsintId,
+    metadata: device.metadata,
+  };
 }

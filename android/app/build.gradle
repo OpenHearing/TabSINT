@@ -1,31 +1,56 @@
 apply plugin: 'com.android.application'
 
+import groovy.json.JsonSlurper
+
+// Setup versioning for builds
+def packageJsonFile = file("../../package.json")
+def versionCodeFile = file("../../src/version.json")
+def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
+def versionCodeJson = new JsonSlurper().parseText(versionCodeFile.text)
+def appVersionName = packageJson.version 
+def appVersionCode = Integer.parseInt(versionCodeJson.version_code)
+
 android {
-    namespace "com.creare.tabsint"
-    compileSdk rootProject.ext.compileSdkVersion
+    namespace = "com.creare.tabsint"
+    compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.creare.tabsint"
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        applicationId = "com.creare.tabsint"
+        minSdkVersion = rootProject.ext.minSdkVersion
+        targetSdkVersion = rootProject.ext.targetSdkVersion
+        versionCode = appVersionCode
+        versionName = appVersionName
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
-            ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+            ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+    signingConfigs {
+        release {
+            def keystorePath = System.getenv("ANDROID_KEYSTORE_PATH")
+            if (keystorePath && file(keystorePath).exists()) {
+                storeFile = file(keystorePath)
+                storePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("ANDROID_KEY_ALIAS")
+                keyPassword = System.getenv("ANDROID_KEY_PASSWORD")
+            }
         }
     }
     buildTypes {
+        debug {
+            // Uses default debug keystore automatically
+        }
         release {
-            minifyEnabled false
+            signingConfig = signingConfigs.release
+            minifyEnabled = false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
     lintOptions {
-      checkAllWarnings false
-      ignoreWarnings true       
-      quiet true                
+      checkAllWarnings = false
+      ignoreWarnings = true       
+      quiet = true                
     }
 }
 

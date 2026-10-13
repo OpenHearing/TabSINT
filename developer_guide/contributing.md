@@ -1,6 +1,6 @@
-# Contributing 
- 
-Thank you for considering contributing to the TabSINT project. 
+# Contributing
+
+Thank you for considering contributing to the TabSINT project.
 
 Please read the contributing guidelines below.
 
@@ -24,7 +24,7 @@ Be respectful and follow the guidelines here as well as the general guidelines f
 
 ### Pull Request Guidelines
 
-If you have forked the TabSINT repository and implemented changes that you would like to see incorporated, you can create a pull request.  When in doubt, keep your requests small - do not bundle more than one *feature* or *bug fix* per request. Doing so makes it very hard to accept it if one of the fixes has issues.
+If you have forked the TabSINT repository and implemented changes that you would like to see incorporated, you can create a pull request. When in doubt, keep your requests small - do not bundle more than one _feature_ or _bug fix_ per request. Doing so makes it very hard to accept it if one of the fixes has issues.
 
 It's always better to create two smaller merge requests than one big one.
 
@@ -36,7 +36,6 @@ Please read [conventions](conventions.md) and follow the style guide.
 
 By contributing your code to the `OpenHearing/TabSINT` Repository, you agree to license your contribution under the [Apache2 License](LICENSE).
 
-
 [PREVIOUS: Conventions](conventions.md)
 
-[NEXT: Back to index](developer-guide-index.md)
+[NEXT: Migration Guide](migration-guide.md)

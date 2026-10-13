@@ -1,0 +1,889 @@
+{
+  "title": "TabSINT Example Protocol",
+  "subtitle": "Every device-agnostic TabSINT response area and platform feature (questionnaires, branching logic, media).",
+  "instructionText": "instructionText goes here",
+  "navMenu": [
+    {
+      "text": "Back to Main Menu",
+      "target": {
+        "reference": "MainMenu"
+      },
+      "returnHereAfterward": false
+    }
+  ],
+  "pages": [
+    {
+      "protocolId": "MainMenu",
+      "title": "Main Menu",
+      "pages": [
+        {
+          "id": "choose",
+          "title": "Response Area Testing",
+          "questionMainText": "Please select a response area to test:",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "choices": [
+              {
+                "id": "Text Box"
+              },
+              {
+                "id": "LikeRT"
+              },
+              {
+                "id": "Multiple Input"
+              },
+              {
+                "id": "Yes/No"
+              },
+              {
+                "id": "Integer"
+              },
+              {
+                "id": "Subject ID"
+              },
+              {
+                "id": "Checkbox"
+              },
+              {
+                "id": "Button Grid"
+              },
+              {
+                "id": "Image"
+              },
+              {
+                "id": "Advanced Protocol Logic"
+              },
+              {
+                "id": "Custom Response Area"
+              },
+              {
+                "id": "Scan QR Code"
+              },
+              {
+                "id": "Multiple Choice"
+              },
+              {
+                "id": "Video"
+              },
+              {
+                "id": "End All"
+              }
+            ]
+          },
+          "followOns": [
+            {
+              "conditional": "result.response=='Text Box'",
+              "target": {
+                "reference": "TextBox"
+              }
+            },
+            {
+              "conditional": "result.response=='LikeRT'",
+              "target": {
+                "reference": "LikeRT"
+              }
+            },
+            {
+              "conditional": "result.response=='Multiple Input'",
+              "target": {
+                "reference": "MultipleInput"
+              }
+            },
+            {
+              "conditional": "result.response=='Yes/No'",
+              "target": {
+                "reference": "Yes/No"
+              }
+            },
+            {
+              "conditional": "result.response=='Integer'",
+              "target": {
+                "reference": "Integer"
+              }
+            },
+            {
+              "conditional": "result.response=='Subject ID'",
+              "target": {
+                "reference": "subjectId"
+              }
+            },
+            {
+              "conditional": "result.response=='Checkbox'",
+              "target": {
+                "reference": "checkbox"
+              }
+            },
+            {
+              "conditional": "result.response=='Button Grid'",
+              "target": {
+                "reference": "buttonGrid"
+              }
+            },
+            {
+              "conditional": "result.response=='Image'",
+              "target": {
+                "reference": "image"
+              }
+            },
+            {
+              "conditional": "result.response=='Advanced Protocol Logic'",
+              "target": {
+                "reference": "advancedProtocolLogic"
+              }
+            },
+            {
+              "conditional": "result.response=='Custom Response Area'",
+              "target": {
+                "reference": "customResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='End All'",
+              "target": {
+                "reference": "@END_ALL"
+              }
+            },
+            {
+              "conditional": "result.response=='Scan QR Code'",
+              "target": {
+                "reference": "qrCodeResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='Multiple Choice'",
+              "target": {
+                "reference": "multipleChoice"
+              }
+            },
+            {
+              "conditional": "result.response=='Video'",
+              "target": {
+                "reference": "videoDemo"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "subProtocols": [
+    {
+      "protocolId": "TextBox",
+      "pages": [
+        {
+          "id": "textbox_001",
+          "title": "Text Box",
+          "instructionText": "Page should always be submittable",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 5,
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "textbox_002",
+          "title": "Text Box",
+          "instructionText": "Page should only be submittable when there is a response",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": true
+          }
+        },
+        {
+          "id": "textbox_003",
+          "title": "Text Box",
+          "instructionText": "Page should only be submittable when there is a response",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "responseRequired": true
+          }
+        },
+        {
+          "id": "textbox_001_result_viewer",
+          "title": "Text Box Result Viewer",
+          "instructionText": "Page should always be submittable",
+          "responseArea": {
+            "type": "resultsViewResponseArea",
+            "pageIdsToDisplay": ["textbox_001", "textbox_002", "textbox_003"]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "LikeRT",
+      "pages": [
+        {
+          "id": "default",
+          "instructionText": "Page should only be submittable when there is a response",
+          "responseArea": {
+            "type": "likertResponseArea",
+            "responseRequired": true,
+            "levels": 5,
+            "useEmoticons": true,
+            "labels": ["Not at all", "Perfectly"],
+            "questions": ["Question 1", "Question 2", "Question 3", "Question 4"]
+          }
+        },
+        {
+          "id": "default",
+          "instructionText": "Page should only be submittable when there is a response",
+          "responseArea": {
+            "type": "likertResponseArea",
+            "responseRequired": true,
+            "levels": 5,
+            "useSlider": true,
+            "naBox": true,
+            "labels": ["Not at all", "Perfectly"],
+            "questions": ["Question 1", "Question 2"]
+          }
+        },
+        {
+          "id": "default",
+          "instructionText": "Page should always be submittable",
+          "responseArea": {
+            "type": "likertResponseArea",
+            "responseRequired": false,
+            "levels": 5,
+            "naBox": true,
+            "labels": ["Not at all", "Perfectly"],
+            "questions": ["Question 1", "Question 2", "Question 3"]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "MultipleInput",
+      "pages": [
+        {
+          "id": "ARDC_Survey_1",
+          "title": "ARDC Surveys",
+          "instructionText": "Page should only be submittable when there is a response for what you ate for breakfast.",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "responseRequired": true,
+            "review": true,
+            "inputList": [
+              {
+                "text": "What did you eat for breakfast today?",
+                "inputType": "text",
+                "required": true
+              },
+              {
+                "text": "How many ear tubes?",
+                "inputType": "number"
+              },
+              {
+                "text": "Have you ever had a ruptured eardrum? ",
+                "inputType": "dropdown",
+                "options": ["yes", "no"]
+              },
+              {
+                "text": "Patient Date of Birth",
+                "inputType": "date",
+                "required": false,
+                "dateProperties": {
+                  "maxDate": "today"
+                }
+              },
+              {
+                "inputType": "multi-dropdown",
+                "options": ["a", "b", "c"],
+                "text": "Multi-dropdown Input"
+              }
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "Yes/No",
+      "pages": [
+        {
+          "id": "yes_no",
+          "title": "Yes/No",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "inputList": [
+              {
+                "text": "Answer yes or no to this question",
+                "inputType": "dropdown",
+                "options": ["yes", "no"]
+              }
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "Integer",
+      "pages": [
+        {
+          "id": "integer",
+          "title": "Integer",
+          "responseArea": {
+            "type": "multipleInputResponseArea",
+            "inputList": [
+              {
+                "text": "Here you can input an integer",
+                "inputType": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "subjectId",
+      "pages": [
+        {
+          "id": "subjectId",
+          "title": "Subject ID",
+          "responseArea": {
+            "type": "subjectIdResponseArea"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "advancedProtocolLogic",
+      "pages": [
+        {
+          "id": "advancedProtocolLogic_001",
+          "title": "Page 1",
+          "instructionText": "After submitting this page, it should skip the next one if you have entered text",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "advancedProtocolLogic_002",
+          "title": "Page 2",
+          "instructionText": "This page should have been skipped if you entered text in the previous page",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": false
+          },
+          "skipIf": "result.response.length > 0"
+        },
+        {
+          "id": "advancedProtocolLogic_003",
+          "title": "Page 3",
+          "instructionText": "You are now on page 3",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "advancedProtocolLogic_004",
+          "title": "Page 4",
+          "instructionText": "This page is repeatable up to a maximum of three times",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "choices": [
+              {
+                "id": "Repeat"
+              },
+              {
+                "id": "Do not repeat"
+              }
+            ]
+          },
+          "repeatPage": {
+            "nRepeats": 1,
+            "repeatIf": "result.response==='Repeat'"
+          }
+        },
+        {
+          "id": "advancedProtocolLogic_005",
+          "title": "Page 5",
+          "instructionText": "This page can set testFlag",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "choices": [
+              {
+                "id": "Set testFlag"
+              },
+              {
+                "id": "Do not set testFlag"
+              }
+            ]
+          },
+          "setFlags": [
+            {
+              "id": "testFlag",
+              "conditional": "result.response==='Set testFlag'"
+            }
+          ]
+        },
+        {
+          "id": "advancedProtocolLogic_006",
+          "title": "Page 3",
+          "instructionText": "If flags were set on the last page, something should be logged",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": false
+          },
+          "preProcessFunction": {
+            "filepath": "customPreprocess.js",
+            "function": "testPreprocess"
+          }
+        },
+        {
+          "id": "advancedProtocolLogic_007",
+          "title": "Page 7",
+          "instructionText": "This page sets a custom progress bar value",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": false
+          },
+          "progressBarVal": 90
+        },
+        {
+          "id": "advancedProtocolLogic_008",
+          "title": "Page 8",
+          "instructionText": "This page has its own nav menu entry that returns here afterward",
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": false
+          },
+          "navMenu": [
+            {
+              "text": "Back to Main Menu",
+              "target": {
+                "reference": "MainMenu"
+              },
+              "returnHereAfterward": false
+            },
+            {
+              "text": "Jump to Text Box demo and return",
+              "target": {
+                "reference": "TextBox"
+              },
+              "returnHereAfterward": true
+            }
+          ]
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "customResponseArea",
+      "pages": [
+        {
+          "id": "customResponseArea",
+          "title": "Basic Button Results Test",
+          "questionPreMainText": "Example of questionPreMainText",
+          "questionMainText": "Example of questionMainText",
+          "questionSubText": "Example of questionSubText",
+          "instructionText": "Example of instructionText",
+          "helpText": "Example of helpText",
+          "isAutoSubmit": false,
+          "responseArea": {
+            "type": "customResponseArea",
+            "htmlFilePath": "custom-response-areas/html_basic_example.html",
+            "jsFilePath": "custom-response-areas/js_basic_example.js"
+          }
+        },
+        {
+          "id": "customResponseArea2",
+          "title": "Multi Page Example",
+          "isAutoSubmit": false,
+          "responseArea": {
+            "type": "customResponseArea",
+            "htmlFilePath": "custom-response-areas/html_multi_example.html",
+            "jsFilePath": "custom-response-areas/js_multi_example.js"
+          }
+        },
+        {
+          "id": "customResponseArea3",
+          "title": "Reading and Writing Files Example",
+          "isAutoSubmit": false,
+          "responseArea": {
+            "type": "customResponseArea",
+            "htmlFilePath": "custom-response-areas/html_file_example.html",
+            "jsFilePath": "custom-response-areas/js_file_example.js"
+          }
+        },
+        {
+          "id": "customResponseArea4",
+          "title": "Page and Disk Variables",
+          "isAutoSubmit": false,
+          "responseArea": {
+            "type": "customResponseArea",
+            "htmlFilePath": "custom-response-areas/html_disk_example.html",
+            "jsFilePath": "custom-response-areas/js_disk_example.js"
+          }
+        },
+        {
+          "id": "customResponseArea5",
+          "title": "Results and JS Variable Display",
+          "responseArea": {
+            "type": "customResponseArea",
+            "htmlFilePath": "custom-response-areas/html_results_example.html",
+            "jsFilePath": "custom-response-areas/js_results_example.js"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "checkbox",
+      "pages": [
+        {
+          "id": "checkbox1",
+          "title": "Checkbox without grading",
+          "responseArea": {
+            "type": "checkboxResponseArea",
+            "choices": [
+              {
+                "id": "Red"
+              },
+              {
+                "id": "Blue"
+              },
+              {
+                "id": "Green"
+              }
+            ],
+            "other": "Some other color"
+          }
+        },
+        {
+          "id": "checkbox2",
+          "title": "Checkbox with markCorrect",
+          "responseArea": {
+            "type": "checkboxResponseArea",
+            "buttonScheme": "markCorrect",
+            "choices": [
+              {
+                "id": "One",
+                "correct": true
+              },
+              {
+                "id": "Two"
+              },
+              {
+                "id": "Three"
+              }
+            ]
+          }
+        },
+        {
+          "id": "checkbox3",
+          "title": "Checkbox with markIncorrect",
+          "responseArea": {
+            "type": "checkboxResponseArea",
+            "buttonScheme": "markIncorrect",
+            "choices": [
+              {
+                "id": "One",
+                "correct": true
+              },
+              {
+                "id": "Two"
+              },
+              {
+                "id": "Three"
+              }
+            ]
+          }
+        },
+        {
+          "id": "checkbox4",
+          "title": "Checkbox with gradeResponse",
+          "responseArea": {
+            "type": "checkboxResponseArea",
+            "feedback": "gradeResponse",
+            "choices": [
+              {
+                "id": "One",
+                "correct": true
+              },
+              {
+                "id": "Two"
+              },
+              {
+                "id": "Three"
+              }
+            ]
+          }
+        },
+        {
+          "id": "checkbox5",
+          "title": "Checkbox with showCorrect",
+          "responseArea": {
+            "type": "checkboxResponseArea",
+            "feedback": "showCorrect",
+            "choices": [
+              {
+                "id": "One"
+              },
+              {
+                "id": "Two",
+                "correct": true
+              },
+              {
+                "id": "Three"
+              }
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "buttonGrid",
+      "pages": [
+        {
+          "id": "buttonGrid1",
+          "title": "Button Grid",
+          "responseArea": {
+            "type": "buttonGridResponseArea",
+            "rows": [
+              {
+                "choices": [
+                  {
+                    "id": "One",
+                    "correct": true
+                  },
+                  {
+                    "id": "Two"
+                  },
+                  {
+                    "id": "Three"
+                  }
+                ]
+              },
+              {
+                "choices": [
+                  {
+                    "id": "Four"
+                  },
+                  {
+                    "id": "Five"
+                  },
+                  {
+                    "id": "Six"
+                  }
+                ]
+              },
+              {
+                "choices": [
+                  {
+                    "id": "Seven"
+                  },
+                  {
+                    "id": "Eight"
+                  },
+                  {
+                    "id": "Nine"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "buttonGrid2",
+          "title": "Button Grid with grade response",
+          "responseArea": {
+            "type": "buttonGridResponseArea",
+            "feedback": "gradeResponse",
+            "rows": [
+              {
+                "choices": [
+                  {
+                    "id": "1",
+                    "correct": true
+                  },
+                  {
+                    "id": "2"
+                  },
+                  {
+                    "id": "3"
+                  }
+                ]
+              },
+              {
+                "choices": [
+                  {
+                    "id": "4"
+                  },
+                  {
+                    "id": "5"
+                  },
+                  {
+                    "id": "6"
+                  }
+                ]
+              },
+              {
+                "choices": [
+                  {
+                    "id": "7"
+                  },
+                  {
+                    "id": "8"
+                  },
+                  {
+                    "id": "9"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "image",
+      "pages": [
+        {
+          "id": "image",
+          "title": "Image",
+          "image": {
+            "path": "tabsint.png"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "qrCodeResponseArea",
+      "pages": [
+        {
+          "id": "qrCodeResponseArea",
+          "title": "QR Code Scanning",
+          "questionMainText": "Example of scanning a QR Code",
+          "questionSubText": "Scan a QR code",
+          "isAutoSubmit": false,
+          "responseArea": {
+            "type": "qrCodeResponseArea",
+            "scope": "page"
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "multipleChoice",
+      "pages": [
+        {
+          "id": "multipleChoice_001",
+          "title": "Multiple Choice delayEnable testing",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "choices": [
+              {
+                "id": "one"
+              },
+              {
+                "id": "two"
+              }
+            ],
+            "verticalSpacing": 50,
+            "delayEnable": 1000
+          }
+        },
+        {
+          "id": "multipleChoice_002",
+          "title": "Multiple Choice feedback testing",
+          "responseArea": {
+            "type": "multipleChoiceResponseArea",
+            "feedback": "gradeResponse",
+            "choices": [
+              {
+                "id": "one",
+                "correct": true
+              },
+              {
+                "id": "two"
+              }
+            ]
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
+      "protocolId": "videoDemo",
+      "pages": [
+        {
+          "id": "video_001",
+          "title": "Video",
+          "instructionText": "Plays a page-level video attachment.",
+          "video": {
+            "path": "example_video.mp4",
+            "width": "100%",
+            "autoplay": false,
+            "noSkip": false
+          },
+          "responseArea": {
+            "type": "textboxResponseArea",
+            "rows": 3,
+            "responseRequired": false
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    }
+  ]
+}

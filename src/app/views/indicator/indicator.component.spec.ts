@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 
 import { IndicatorComponent } from './indicator.component';
 import { MatMenuModule } from '@angular/material/menu';
@@ -11,17 +11,12 @@ describe('IndicatorComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [IndicatorComponent],
-      imports: [MatMenuModule,
-        TranslateModule.forRoot({
-                  loader: {
-                    provide: TranslateLoader,
-                    useClass: TranslateFakeLoader
-                  }
-                })],
-      providers: [TranslateService, TranslateStore]
-    })
-    .compileComponents();
-    
+      imports: [
+        MatMenuModule,
+        TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
+      ],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(IndicatorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

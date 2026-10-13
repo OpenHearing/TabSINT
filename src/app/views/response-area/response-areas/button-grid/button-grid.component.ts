@@ -1,0 +1,144 @@
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { ResultsInterface } from '../../../../models/results/results.interface';
+import { PageInterface } from '../../../../models/page/page.interface';
+import { ButtonGridInterface } from './button-grid.interface';
+import { ResultsModel } from '../../../../models/results/results-model.service';
+import { PageModel } from '../../../../models/page/page.service';
+import { buttonGridSchema } from '../../../../../schema/response-areas/button-grid.schema';
+import { StateInterface } from '../../../../models/state/state.interface';
+import { StateModel } from '../../../../models/state/state.service';
+import { ExamService } from '../../../../controllers/exam.service';
+import { ChoiceInterface } from '../../../../interfaces/choice.interface';
+import { RowInterface } from '../../../../interfaces/row.interface';
+import { choiceSchema } from '../../../../../schema/definitions/choice.schema';
+import { choiceBtnClassHelper } from '../../../../utilities/response-area-helper-functions';
+
+@Component({
+  selector: 'app-button-grid',
+  templateUrl: './button-grid.component.html',
+  styleUrl: './button-grid.component.css',
+})
+export class ButtonGridComponent implements OnInit, OnDestroy {
+  private readonly examService = inject(ExamService);
+  private readonly resultsModel = inject(ResultsModel);
+  private readonly pageModel = inject(PageModel);
+  private readonly stateModel = inject(StateModel);
+
+  results: ResultsInterface;
+  state: StateInterface;
+  rows: RowInterface[] = buttonGridSchema.properties.rows.default;
+  feedback: string = buttonGridSchema.properties.feedback.default;
+  verticalSpacing: number = buttonGridSchema.properties.verticalSpacing.default;
+  horizontalSpacing: number = buttonGridSchema.properties.horizontalSpacing.default;
+  delayEnable: number = buttonGridSchema.properties.delayEnable.default;
+  autoSubmit: boolean = buttonGridSchema.properties.autoSubmit.default;
+  choices: ChoiceInterface[] = [];
+  disableButtons = true;
+  paddingBottom: string = '1px';
+  paddingLeft: string = '1px';
+  paddingRight: string = '1px';
+
+  pageSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
+  resultsSubscription: Subscription | undefined;
+
+  constructor() {
+    this.results = this.resultsModel.getResults();
+    this.state = this.stateModel.getState();
+  }
+
+  ngOnInit(): void {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe((updatedState: StateInterface) => {
+      this.state = updatedState;
+    });
+    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe((updatedResults: ResultsInterface) => {
+      this.results = updatedResults;
+      if (this.results.currentPage.responseArea === 'buttonGridResponseArea' && !Array.isArray(this.results.currentPage.response?.selected)) {
+        this.results.currentPage.response = {
+          selected: [],
+        };
+      }
+    });
+    this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
+      if (updatedPage?.responseArea?.type === 'buttonGridResponseArea') {
+        const updatedButtonGridResponseArea = updatedPage.responseArea as ButtonGridInterface;
+        if (updatedButtonGridResponseArea) {
+          this.rows = updatedButtonGridResponseArea.rows;
+          // Fill in defaults for choices of each row
+          this.choices = [];
+          this.rows.forEach(row => {
+            row.choices.forEach(choice => {
+              choice.text = choice.text ?? String(choice.id);
+              choice.correct = choice.correct ?? choiceSchema.properties.correct.default;
+              choice.disable = choice.disable ?? choiceSchema.properties.disable.default;
+              choice.textColor = choice.textColor ?? choiceSchema.properties.textColor.default;
+              choice.backgroundColor = choice.backgroundColor ?? choiceSchema.properties.backgroundColor.default;
+              choice.fontSize = choice.fontSize ?? choiceSchema.properties.fontSize.default;
+              this.choices.push(choice);
+            });
+          });
+          this.feedback = updatedButtonGridResponseArea.feedback ?? buttonGridSchema.properties.feedback.default;
+          this.verticalSpacing = updatedButtonGridResponseArea.verticalSpacing ?? buttonGridSchema.properties.verticalSpacing.default;
+          this.horizontalSpacing = updatedButtonGridResponseArea.horizontalSpacing ?? buttonGridSchema.properties.horizontalSpacing.default;
+          this.delayEnable = updatedButtonGridResponseArea.delayEnable ?? buttonGridSchema.properties.delayEnable.default;
+          this.autoSubmit = updatedButtonGridResponseArea.autoSubmit ?? buttonGridSchema.properties.autoSubmit.default;
+
+          this.paddingBottom = this.verticalSpacing.toString() + 'px';
+          this.paddingLeft = (this.horizontalSpacing / 2).toString() + 'px';
+          this.paddingRight = (this.horizontalSpacing / 2).toString() + 'px';
+
+          setTimeout(() => {
+            this.disableButtons = false;
+          }, this.delayEnable);
+
+          // delay 100ms to allow results and exam defaults to be set before we override them
+          setTimeout(() => {
+            (this.results.currentPage.page.responseArea as ButtonGridInterface).choices = this.choices;
+            // Hold the graded buttons on screen before advancing, if feedback is present
+            if (this.feedback) {
+              this.examService.delaySubmitForFeedback();
+            }
+          }, 100);
+        }
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.pageSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
+    this.resultsSubscription?.unsubscribe();
+  }
+
+  choiceSelected(id: string | number) {
+    // Remove element if already selected, else add element to selected
+    if (this.results.currentPage.response.selected.includes(id)) {
+      const index = this.results.currentPage.response.selected.indexOf(id);
+      if (index > -1) {
+        this.results.currentPage.response.selected.splice(index, 1);
+      }
+    } else {
+      this.results.currentPage.response.selected.push(id);
+    }
+    this.resultsModel.updateCurrentPage({ response: this.results.currentPage.response });
+    // Set page submittable
+    if (this.results.currentPage.response.selected.length > 0) {
+      this.stateModel.updateState({ doesResponseExist: true });
+    } else {
+      this.stateModel.updateState({ doesResponseExist: false });
+    }
+    this.stateModel.setPageSubmittable();
+    if (this.autoSubmit) {
+      this.examService.submit();
+    }
+  }
+
+  buttonGridBtnClass(choice: ChoiceInterface) {
+    const options = {
+      feedback: this.examService.isShowingFeedback ? this.feedback : undefined,
+      disableButton: this.disableButtons,
+    };
+    return choiceBtnClassHelper(choice, this.results.currentPage.response, options);
+  }
+}

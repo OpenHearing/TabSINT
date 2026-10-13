@@ -1,0 +1,44 @@
+<div [ngSwitch]="currentStep">
+  <app-input-parameters *ngSwitchCase="'input-parameters'" instruction="Press submit to start the exam." [parameterMap]="inputParameterMap">
+  </app-input-parameters>
+  <app-dp-gram-in-progress
+    *ngSwitchCase="'in-progress'"
+    [deviceId]="deviceId!"
+    [xScale]="xScale"
+    [yScale]="yScale"
+    [width]="width"
+    [height]="height"
+    [xTicks]="xTicks"
+    [margin]="margin"
+    [f2]="f2"
+    [outputChannel1]="outputChannel1"
+    [outputChannel2]="outputChannel2"
+    [inputChannel]="inputChannel"
+    [outputCalibrationType]="outputCalibrationType"
+    [ratio]="ratio"
+    [windowDuration]="windowDuration"
+    [minTestAverages]="minTestAverages"
+    [maxTestAverages]="maxTestAverages"
+    [l1]="l1"
+    [l2]="l2"
+    [noiseFloorThreshold]="noiseFloorThreshold"
+    [SNRThreshold]="SNRThreshold"
+    [outputRawMeasurements]="outputRawMeasurements"
+    [recordFileFolder]="recordFileFolder"
+    [normativeData]="normativeData"
+    [ear]="ear"
+    (resultsEvent)="saveResults($event)">
+  </app-dp-gram-in-progress>
+
+  <app-dp-gram-results
+    *ngSwitchCase="'results'"
+    [xScale]="xScale"
+    [width]="width"
+    [height]="height"
+    [xTicks]="xTicks"
+    [margin]="margin"
+    [results]="examResults"
+    [normativeData]="normativeData"
+    [ear]="ear">
+  </app-dp-gram-results>
+</div>

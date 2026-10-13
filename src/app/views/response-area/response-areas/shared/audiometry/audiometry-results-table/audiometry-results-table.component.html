@@ -1,0 +1,25 @@
+<div class="audiometry-results-table-container" *ngIf="channelGroups.length">
+  <div class="channel-table" *ngFor="let group of channelGroups" [ngStyle]="{ 'background-color': formatChannelColor(group.channel) }">
+    <h3 class="channel-title">{{ formatChannelName(group.channel) | transloco }}</h3>
+    <table class="results-table">
+      <thead>
+        <tr>
+          <th>{{ "Frequency (Hz)" | transloco }}</th>
+          <th *ngFor="let row of group.rows">{{ row.frequency }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{ "Threshold" | transloco }} ({{ dataStruct.levelUnits }})</td>
+          <td *ngFor="let row of group.rows">{{ formatThreshold(row.threshold, row.resultType) }}</td>
+        </tr>
+        <tr *ngIf="group.hasMasking">
+          <td>{{ "Masked" | transloco }}</td>
+          <td *ngFor="let row of group.rows">{{ row.masking ? ("Yes" | transloco) : ("No" | transloco) }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<app-audiometry-legend *ngIf="showLegend && channelGroups.length"></app-audiometry-legend>

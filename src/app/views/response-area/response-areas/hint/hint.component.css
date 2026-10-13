@@ -1,0 +1,41 @@
+.hint-container {
+  width: 100%;
+}
+
+.hint-instructions {
+  text-align: center;
+}
+
+.hint-progress {
+  text-align: center;
+}
+
+.hint-words {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  max-width: 650px;
+  margin: 1.25rem auto 2rem;
+}
+
+.hint-word-btn {
+  padding: 10px 15px;
+}
+
+.hint-word-btn.active {
+  background-color: #4cae4c;
+  color: #fff;
+  border-color: #4cae4c;
+}
+
+.hint-actions {
+  display: flex;
+  gap: 1rem;
+  max-width: 450px;
+  margin: 0 auto;
+}
+
+.hint-actions .btn {
+  flex: 1;
+}

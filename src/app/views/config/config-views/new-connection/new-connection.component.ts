@@ -1,51 +1,72 @@
-import { Component } from '@angular/core';
-import { AvailableConnectableDevices } from '../../../../utilities/constants';
-import { DevicesInterface } from '../../../../models/devices/devices.interface';
-import { DevicesModel } from '../../../../models/devices/devices-model.service';
-import { NewConnectedDevice } from '../../../../interfaces/connected-device.interface';
-import { StateInterface } from '../../../../models/state/state.interface';
-import { StateModel } from '../../../../models/state/state.service';
-import { DevicesService } from '../../../../controllers/devices.service';
+import { Component, inject } from '@angular/core';
+import { DevicesService } from '../../../../services/devices/devices.service';
+import { Subscription } from 'rxjs/internal/Subscription';
+import { IDevice } from '../../../../interfaces/devices/device.interface';
+import { DeviceState, DeviceType, DialogType } from '../../../../utilities/constants';
+import { map, Observable } from 'rxjs';
+import { Notifications } from '../../../../services/notifications.service';
 
 @Component({
-  selector: 'new-connection',
-  templateUrl: './new-connection.component.html'
+  selector: 'app-new-connection',
+  templateUrl: './new-connection.component.html',
 })
-
 export class NewConnectionComponent {
-  state: StateInterface
-  devices: DevicesInterface;
-  newConnectedDevice: NewConnectedDevice;
-  deviceTypes = AvailableConnectableDevices;
-  maxConnectedDevices: number = 1;
+  private readonly devicesService = inject(DevicesService);
+  private readonly notifications = inject(Notifications);
 
-  constructor(
-    private readonly deviceModel: DevicesModel, 
-    private readonly devicesService: DevicesService, 
-    private readonly stateModel: StateModel
-  ) {
-    this.devices = this.deviceModel.getDevices();
-    this.state = this.stateModel.getState();
-    this.newConnectedDevice = {"type":"Select One"};
+  deviceTypes = Object.values(DeviceType);
+  connectedDevices: Observable<IDevice[]>;
+  maxConnectedDevices = 3;
+  newDeviceConnection: boolean = false;
+  newConnectionType: DeviceType | undefined;
+  stateSubscription: Subscription | undefined;
+  devicesSubscription: Subscription | undefined;
+
+  constructor() {
+    this.connectedDevices = this.devicesService.devices.pipe(
+      map(devices => devices.filter((device: IDevice) => device.state !== DeviceState.Discovery))
+    );
   }
 
-  changeDeviceType(type:string) {
-    this.newConnectedDevice.type = type;
+  changeDeviceType(type: DeviceType) {
+    this.newConnectionType = type;
+  }
+
+  async selectAndScan(type: DeviceType) {
+    this.changeDeviceType(type);
+    await this.scanAndConnect();
   }
 
   addNewConnection(): void {
-    this.state.newDeviceConnection = true;
+    this.newDeviceConnection = true;
   }
 
   async scanAndConnect() {
-    await this.devicesService.scan(this.newConnectedDevice);
-    this.state.newDeviceConnection = false;
-    this.newConnectedDevice = {"type":"Select One"};
+    if (this.newConnectionType) {
+      try {
+        await this.devicesService.startDeviceSearch(this.newConnectionType);
+        await this.devicesService.deviceConnectionDialog(this.newConnectionType);
+      } catch {
+        this.notifications
+          .alert({
+            title: 'Search Failed',
+            content: 'Unable to start a device search.',
+            type: DialogType.Alert,
+          })
+          .subscribe();
+      } finally {
+        try {
+          await this.devicesService.stopDeviceSearch(this.newConnectionType);
+        } finally {
+          this.newDeviceConnection = false;
+          this.newConnectionType = undefined;
+        }
+      }
+    }
   }
 
   cancel() {
-    this.state.newDeviceConnection = false;
-    this.newConnectedDevice = {"type":"Select One"};
+    this.newDeviceConnection = false;
+    this.newConnectionType = undefined;
   }
-
 }

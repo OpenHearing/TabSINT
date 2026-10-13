@@ -1,99 +1,128 @@
-import { Component,ChangeDetectorRef  } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
-
-import { TabsintFs } from 'tabsintfs';
+import { TranslocoService } from '@jsverse/transloco';
+import { firstValueFrom, Subscription } from 'rxjs';
 
 import { DiskInterface } from '../../../../models/disk/disk.interface';
 import { StateInterface } from '../../../../models/state/state.interface';
 import { VersionInterface } from '../../../../models/version/version.interface';
 
 import { DiskModel } from '../../../../models/disk/disk.service';
-import { Logger } from '../../../../utilities/logger.service';
+import { Logger } from '../../../../services/logger.service';
 import { VersionModel } from '../../../../models/version/version.service';
-import { ConfigService } from '../../../../controllers/config.service';
 import { StateModel } from '../../../../models/state/state.service';
 
-import { AppState } from '../../../../utilities/constants';
+import { AppState, DeviceState, DeviceType, DialogType, Headset } from '../../../../utilities/constants';
 import { ChangePinComponent } from '../../../change-pin/change-pin.component';
 import { ChangeMaxLogLengthComponent } from '../../../change-max-log-length/change-max-log-length.component';
+import { QrService } from '../../../../services/qr.service';
+import { FileService } from '../../../../services/file.service';
+import { TabsintFs } from 'tabsintfs';
+import { Notifications } from '../../../../services/notifications.service';
+import { AudioService } from '../../../../services/audio.service';
+import { DialogDataInterface } from '../../../../interfaces/dialog-data.interface';
+import { DevicesService } from '../../../../services/devices/devices.service';
+import { IDevice } from '../../../../interfaces/devices/device.interface';
 
 @Component({
-  selector: 'tabsint-config-view',
+  selector: 'app-tabsint-config-view',
   templateUrl: './tabsint-config.component.html',
-  styleUrl: './tabsint-config.component.css'
+  styleUrl: './tabsint-config.component.css',
 })
-export class TabsintConfigComponent {
+export class TabsintConfigComponent implements OnInit, OnDestroy {
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly diskModel = inject(DiskModel);
+  private readonly logger = inject(Logger);
+  private readonly dialog = inject(MatDialog);
+  private readonly stateModel = inject(StateModel);
+  private readonly transloco = inject(TranslocoService);
+  private readonly versionModel = inject(VersionModel);
+  private readonly qrService = inject(QrService);
+  private readonly fileService = inject(FileService);
+  private readonly notifications = inject(Notifications);
+  private readonly audioService = inject(AudioService);
+  private readonly devicesService = inject(DevicesService);
+
   disk: DiskInterface;
-  diskSubscription: Subscription | undefined;
   state: StateInterface;
   version!: VersionInterface;
+  headsets = Object.values(Headset);
+  headset = Headset.None;
+  qrPreferencesString?: string = undefined;
+  displayPreferencesQrCode: boolean = false;
+  connectedDeviceTypes = new Set<DeviceType>();
 
-  constructor(
-    public configService: ConfigService,
-    private readonly cdr: ChangeDetectorRef,
-    private readonly diskModel: DiskModel,
-    private readonly logger: Logger,
-    private readonly dialog: MatDialog,
-    private readonly stateModel: StateModel,
-    private readonly translate: TranslateService,
-    private readonly versionModel: VersionModel,
-  ) {
+  @ViewChild('qrCanvas', { read: ElementRef })
+  qrCanvas!: ElementRef;
+
+  diskSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
+  devicesSubscription: Subscription | undefined;
+
+  constructor() {
     this.state = this.stateModel.getState();
     this.disk = this.diskModel.getDisk();
   }
 
-  async ngOnInit(): Promise<void> {
-    this.version = await this.versionModel.getVersion();
-    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
-        this.disk = updatedDisk;
-    })
-    this.state.appState  = AppState.Admin;
+  ngOnInit(): void {
+    this.asyncNgOnInit();
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+      this.qrPreferencesString = JSON.stringify(this.disk.preferences);
+    });
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
+      this.state = updatedState;
+    });
+    this.devicesSubscription = this.devicesService.devices.subscribe((devices: IDevice[]) => {
+      this.connectedDeviceTypes = new Set(devices.filter(device => device.state === DeviceState.Connected).map(device => device.type));
+    });
+    this.stateModel.updateState({ appState: AppState.Admin });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
+    this.devicesSubscription?.unsubscribe();
   }
 
-  // VARIABLES - SHOULD BE MOVED?
+  /**
+   * Function to be called by ngOnIit to handle any asynchronous operations.
+   */
+  private async asyncNgOnInit(): Promise<void> {
+    this.version = await this.versionModel.getVersion();
+  }
 
-  // headsets: Array<string> = [
-  //   "None",
-  //   "HDA200",
-  //   "VicFirth",
-  //   "VicFirthS2",
-  //   "WAHTS",
-  //   "EPHD1",
-  //   "Audiometer"
-  // ];
-
-  // languages: Array<string> = [
-  //   this.translate.instant("English"),
-  //   this.translate.instant("Japanese"),
-  //   this.translate.instant("French"),
-  //   this.translate.instant("Spanish"),
-  // ];
-
-  // resultsModeOptions = ResultsMode;
-
+  readonly languages: { code: string; label: string }[] = [
+    { code: 'en', label: 'English' },
+    { code: 'fr', label: 'French' },
+    { code: 'ja', label: 'Japanese' },
+    { code: 'es', label: 'Spanish' },
+    { code: 'sw', label: 'Swahili' },
+  ];
 
   // Functions
 
-  // changeHeadset(headset: string) {
-  //   this.diskModel.updateDiskModel("headset", headset);
-  //   this.logger.debug("Headset changed to: " + headset);
-  // }
+  /**
+   * Change the default headset for the application.
+   * @param headset The new headset enumeration value to be stored.
+   */
+  changeHeadset(headset: Headset) {
+    this.headset = headset;
+    this.logger.debug('Headset changed to: ' + headset);
+  }
 
-  // changeLanguage(language: string) {
-  //   // need to update the language here
-  //   this.diskModel.updateDiskModel("language", language);
-  //   this.translate.setDefaultLang(language);
-  //   this.logger.debug("Language changed to: "+language);
-  // }
+  get currentLanguageLabel() {
+    return this.languages.find(l => l.code === this.disk.preferences.language)?.label ?? 'English';
+  }
+
+  changeLanguage(code: string) {
+    this.diskModel.updatePreferences({ language: code });
+    this.transloco.setActiveLang(code);
+    this.logger.debug('Language changed to: ' + code);
+  }
 
   // changeResultsMode(resultsMode: ResultsMode) {
-  //   this.diskModel.updateDiskModel("resultsMode", resultsMode);
+  //   this.diskModel.updatePreferences({resultsMode: resultsMode});
   //   this.logger.debug("ResultsMode changed to: "+JSON.stringify(resultsMode));
   // }
 
@@ -106,29 +135,173 @@ export class TabsintConfigComponent {
   }
 
   toggleAutoUpload() {
-    this.diskModel.updateDiskModel('autoUpload', this.diskModel.disk.autoUpload == undefined || !this.diskModel.disk.autoUpload);
+    this.diskModel.updatePreferences({ autoUpload: this.disk.preferences.autoUpload == undefined || !this.disk.preferences.autoUpload });
   }
 
   toggleDebugMode() {
-    this.diskModel.updateDiskModel('debugMode',!this.diskModel.disk.debugMode);
+    this.diskModel.updatePreferences({ debugMode: !this.disk.preferences.debugMode });
+  }
+
+  toggleAdminSkipMode() {
+    this.diskModel.updatePreferences({ adminSkipMode: !this.disk.preferences.adminSkipMode });
+  }
+
+  get isTympanConnected(): boolean {
+    return this.connectedDeviceTypes.has(DeviceType.Tympan);
+  }
+
+  get isWahtsConnected(): boolean {
+    return this.connectedDeviceTypes.has(DeviceType.Wahts);
+  }
+
+  get isDuodoseConnected(): boolean {
+    return this.connectedDeviceTypes.has(DeviceType.Duodose);
+  }
+
+  get isSvantekConnected(): boolean {
+    return this.connectedDeviceTypes.has(DeviceType.Svantek);
+  }
+
+  toggleShowTympanPanel() {
+    if (this.isTympanConnected) {
+      return;
+    }
+    this.diskModel.updatePreferences({ showTympanPanel: !(this.disk.preferences.showTympanPanel ?? true) });
+  }
+
+  toggleShowWahtsPanel() {
+    if (this.isWahtsConnected) {
+      return;
+    }
+    this.diskModel.updatePreferences({ showWahtsPanel: !(this.disk.preferences.showWahtsPanel ?? true) });
+  }
+
+  toggleShowDuodosePanel() {
+    if (this.isDuodoseConnected) {
+      return;
+    }
+    this.diskModel.updatePreferences({ showDuodosePanel: !(this.disk.preferences.showDuodosePanel ?? true) });
+  }
+
+  toggleShowSvantekPanel() {
+    if (this.isSvantekConnected) {
+      return;
+    }
+    this.diskModel.updatePreferences({ showSvantekPanel: !(this.disk.preferences.showSvantekPanel ?? true) });
   }
 
   toggleDisableLogs() {
-      this.diskModel.updateDiskModel('disableLogs', !this.disk.disableLogs);
+    this.diskModel.updatePreferences({ disableLogs: !this.disk.preferences.disableLogs });
   }
 
-  gainReset() {
-    console.log("gainReset pressed");
+  /**
+   * Toggle the setting for automatic system volume control.
+   * Show an alert only for disabling automatic volume control.
+   * @param event The click event.
+   */
+  async toggleDisableVolume(event: Event) {
+    const checkbox = event.target as HTMLInputElement;
+    if (this.disk.preferences.disableVolume) {
+      this.diskModel.updatePreferences({ disableVolume: !this.disk.preferences.disableVolume });
+    } else {
+      const msg: DialogDataInterface = {
+        title: 'Disable Automatic Volume Control',
+        content: `
+            Are you sure you want to disable Automatic Volume Control within TabSINT?
+            This feature is essential to providing calibrated audio during tests.
+            `,
+        type: DialogType.Confirm,
+      };
+      const result = await firstValueFrom(this.notifications.alert(msg));
+      if (result === 'OK') {
+        this.diskModel.updatePreferences({ disableVolume: !this.disk.preferences.disableVolume });
+        this.logger.debug('Automatic Volume control is now disabled.');
+      } else {
+        // Reset checkbox checked state for since we are aren't changing the value
+        checkbox.checked = this.disk.preferences.disableVolume;
+      }
+    }
   }
 
-  async changeLocalResultsDir(){
+  /**
+   * Update the tablet gain preference.
+   * @param gain The new tablet gain value.
+   */
+  updateTabletGain(gain: number | string) {
+    const gainNumber = Number(gain);
+    if (Number.isNaN(gainNumber)) {
+      this.logger.debug('Invalid user tablet gain value entered.');
+    } else {
+      this.diskModel.updatePreferences({ tabletGain: gainNumber });
+    }
+  }
 
+  /**
+   * Negate the current user defined tablet gain if available.
+   */
+  negateTabletGain() {
+    const currentUserGain = this.disk.preferences.tabletGain;
+    if (currentUserGain === undefined) {
+      this.logger.debug('Cannot negate undefined user tablet gain.');
+    } else {
+      this.diskModel.updatePreferences({ tabletGain: -currentUserGain });
+    }
+  }
+
+  /**
+   * Reset the tablet gain value to be undefined.
+   */
+  resetTabletGain() {
+    this.diskModel.updatePreferences({ tabletGain: undefined });
+  }
+
+  /**
+   * Reset the preferences to the default values.
+   */
+  resetConfig() {
+    this.diskModel.resetPreferences();
+  }
+
+  /**
+   * Save the preference QR code to the device and display the QR Code.
+   */
+  async generatePreferencesQrCode() {
+    const outputDirectory = 'tabsint-configuration';
+    const date = new Date().toISOString().replace(':', '_').replace(':', '-').split('.')[0];
+    const filename = `${date}-qrcode.png`;
+
+    const qrPreferencesUrl = this.qrCanvas.nativeElement.querySelector('canvas').toDataURL('image/png');
+    const dataBlob = this.qrService.urlToBlob(qrPreferencesUrl);
+    let fileResponse = undefined;
+
+    if (dataBlob) {
+      fileResponse = await this.fileService.writeBinaryFile(`${outputDirectory}/${filename}`, dataBlob);
+    }
+    if (fileResponse) {
+      this.displayPreferencesQrCode = true;
+      this.notifications.alert({
+        title: 'QR Code',
+        content: `Current TabSINT configuration saved as QR Code on your tablet: ${outputDirectory}/${filename}`,
+        type: DialogType.Alert,
+      });
+    } else {
+      this.displayPreferencesQrCode = false;
+      this.notifications.alert({
+        title: 'QR Code',
+        content: 'Failed to save the QR code.',
+        type: DialogType.Alert,
+      });
+      this.logger.error('Saving QR Code failed.');
+    }
+  }
+
+  async changeLocalResultsDir() {
     try {
       const result = await TabsintFs.chooseFolder();
-      let servers = this.disk.servers;
+      const servers = this.disk.preferences.servers;
       servers.localServer.resultsDir = result.name;
       servers.localServer.resultsDirUri = result.uri;
-      this.diskModel.updateDiskModel('servers', servers);
+      this.diskModel.updatePreferences({ servers: servers });
     } catch (error) {
       this.logger.debug('Error choosing folder:' + error);
     }
@@ -136,67 +309,90 @@ export class TabsintConfigComponent {
     this.cdr.detectChanges();
   }
 
+  /**
+   * Play the 1KHz 94dB wav file from the admin panel.
+   */
+  async play1kHz94dB() {
+    await this.audioService.play1kHz94dB(this.headset);
+  }
+
+  /**
+   * Play the comp audio wav file from the admin panel.
+   */
+  async playCompAudio() {
+    await this.audioService.playCompAudio();
+  }
+
+  /**
+   * Play the comp audio linear wav file from the admin panel.
+   */
+  async playCompAudioLinear() {
+    await this.audioService.playCompAudioLinear();
+  }
+
   // Popovers
 
-  headsetPopover = this.translate.instant(
-    "Select the default headset used to administer hearing tests. " +
-    "This selection is overridden by the <code>headset</code> parameter in protocols. <br /><br /> If the protocol does not specify a <code>headset</code>, " +
-    "this value must match the value in the protocol's <code>calibration.json</code> file."
-  );
+  get headsetPopover() {
+    return this.transloco.translate('Select Headset Popover');
+  }
 
-  // languagePopover = this.translate.instant(
-  //   "Select preferred language for the application. This language will be used where supported. Otherwise, English will be used. Note this cannot change any text configured in protocols."
-  // );
+  get languagePopover() {
+    return this.transloco.translate('Select Language Help');
+  }
 
-  adminPopover = this.translate.instant(
-    "Includes additional configuration options, displays expandable <b>debug</b> menus showing program state at the bottom of exam pages, and suppresses Admin Password prompts"
-  );
+  get adminPopover() {
+    return this.transloco.translate('Admin Mode Popover');
+  }
 
-  adminPinPopover = this.translate.instant(
-    "Change the Admin PIN to any numerical value.  This PIN is required to switch to Admin View and to reset exams when Admin Mode is off."
-  );
+  get adminSkipModePopover() {
+    return this.transloco.translate('Admin Skip Mode Popover');
+  }
 
-  disableLogsPopover = this.translate.instant(
-    "Disable log messages from being stored and uploaded. <br /><br />Logs are useful for investigating software bugs, but may introduce privacy concerns. Disable logging anytime sensitive data is being collected."
-  );
+  get adminPinPopover() {
+    return this.transloco.translate('Admin PIN Popover');
+  }
 
-  setMaxLogRowsPopover = this.translate.instant(
-    "Set the maximum number of log records to be saved. This will prevent the logs from consuming too much memory."
-  );
+  get disableLogsPopover() {
+    return this.transloco.translate('Disable Logs Popover');
+  }
 
-  // disableVolumePopover = this.translate.instant(
-  //   "This option will disable TabSINT from setting the volume to 100% on every page. This feature is essential to the functionality of TabSINT while playing calibrated audio through the speaker.<br /><br />" +
-  //   "Check this box if you would like to set the volume of the app manually using the buttons on the side of the device. <br /><br />In almost all cases, this box should remain unchecked."
-  // );
+  get setMaxLogRowsPopover() {
+    return this.transloco.translate('Set the maximum number of log records to be saved. This will prevent the logs from consuming too much memory.');
+  }
 
-  // adminSkipModePopover = this.translate.instant(
-  //   "This option will enable skipping on every page of an Exam. This feature is should only be enabled while developing or debugging, and may cause issues with some protocols."
-  // );
+  get qrCodePopover() {
+    return this.transloco.translate('QR Code Help');
+  }
 
-  // requireEncryptedResultsPopover = this.translate.instant(
-  //   "This option requires that the protocol contains a private RSA key for encrypting output results."
-  // );
+  get resetConfigurationPopover() {
+    return this.transloco.translate('Reset TabSINT configuration to the default configuration. All manual changes will be removed.');
+  }
 
-  // recordTestLocationPopover = this.translate.instant(
-  //   "This option will record the test location (latitude, longitude) in the results. The test location is only recorded when the test first starts." +
-  //   "<br /><br />TabSINT will request permission to access the device location when this option is enabled. The device's location services must be turned for the location to be successfully stored."
-  // );
+  get automaticallyOutputResultsPopover() {
+    return this.transloco.translate('Automatically Output Test Results Popover');
+  }
 
-  // qrCodePopover = this.translate.instant(
-  //   "Generate a QR Code containing all the current configuration settings. Select the local directory to save the QR Code for future use."
-  // );
+  get disableVolumePopover() {
+    return this.transloco.translate('Automatic Volume Control Popover');
+  }
 
-  // resetConfigurationPopover = this.translate.instant(
-  //   "Reset TabSINT configuration to the default configuration. All manual changes will be removed."
-  // );
+  get showTympanPopover() {
+    return this.transloco.translate('Show Tympan Popover');
+  }
 
-  automaticallyOutputResultsPopover = this.translate.instant(
-    "Automatically upload or export the result when a test is finished. The result will be uploaded or exported on the <b>Exam Complete</b> page. <br /><br /> Once the result is uploaded to a server or exported to a local file, it will be removed from TabSINT."
-  );
+  get showWahtsPopover() {
+    return this.transloco.translate('Show WAHTS Popover');
+  }
 
-  // gainPopover = this.translate.instant(
-  //   "Apply a special gain in dB to the audio level output through TabSINT. " +
-  //   "This can be used to calibrate the audio jack output to a specified level for all audio played through the tablet."
-  // );
+  get showDuodosePopover() {
+    return this.transloco.translate('Show Duodose Popover');
+  }
 
+  get showSvantekPopover() {
+    return this.transloco.translate('Show Svantek Popover');
+  }
+
+  get gainPopover() {
+    return this.transloco.translate('Tablet Gain Popover');
+  }
 }

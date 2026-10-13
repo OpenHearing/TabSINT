@@ -1,0 +1,62 @@
+<div class="hw-container">
+  <!-- Properties: shown depending on the exam hide properties flag and current exam state. -->
+  <div *ngIf="showProperties">
+    <app-audiometry-properties
+      [level]="examProperties.Lstart"
+      levelLabel="Level"
+      [levelUnits]="examProperties.LevelUnits"
+      [frequency]="examProperties.F"
+      frequencyUnits="Hz"
+      [ear]="examProperties.OutputChannel">
+    </app-audiometry-properties>
+  </div>
+
+  <!-- Landing page: shown until the subject presses begin. -->
+  <div *ngIf="state === ResponseAreaState.Start" class="hw-start">
+    <p *ngIf="retryMessage">{{ retryMessage | transloco }}</p>
+    <button class="btn btn-default" type="button" (click)="beginExam()">
+      {{ "Begin" | transloco }}
+    </button>
+  </div>
+
+  <!-- Running exam: shows the software response button while the device runs the exam. -->
+  <div *ngIf="state === ResponseAreaState.Exam" class="hw-exam">
+    <p class="instructions" *ngIf="examInstructions">{{ examInstructions | transloco }}</p>
+    <div *ngIf="useSoftwareButton" class="hw-button-row">
+      <app-software-button
+        [mode]="'tap'"
+        buttonText="Tap this button when you hear a set of sounds"
+        buttonPressedText="Tap this button when you hear a set of sounds"
+        (pressStart)="onPressStart()">
+      </app-software-button>
+    </div>
+  </div>
+
+  <!-- Results: shown once the device reports the exam is complete. -->
+  <div *ngIf="state === ResponseAreaState.Results" class="hw-results">
+    <ng-container *ngIf="noResponseMessage; else hwNormalResults">
+      <div>{{ noResponseMessage | transloco }}</div>
+    </ng-container>
+    <ng-template #hwNormalResults>
+      <div>{{ resultMainText | transloco }}</div>
+      <div *ngIf="resultSubText">{{ resultSubText | transloco }}</div>
+    </ng-template>
+    <ng-container *ngIf="results && !examProperties.Screener">
+      <div *ngIf="results.ResultType === 'Threshold'" class="hw-response">
+        {{ "Threshold:" | transloco }} {{ round(results.Threshold, 2) }} {{ examProperties.LevelUnits }}
+      </div>
+      <div *ngIf="results.ResultType !== 'Threshold'">
+        <i>{{ "Test Unsuccessful" | transloco }}</i
+        ><br />{{ results.ResultType }}
+      </div>
+      <app-trial-progression-plot *ngIf="levelProgressionData" [data]="levelProgressionData"></app-trial-progression-plot>
+      <app-audiometry-combined-results *ngIf="combinedAudiogramData" [dataStruct]="combinedAudiogramData"></app-audiometry-combined-results>
+    </ng-container>
+  </div>
+
+  <!-- Notes: shown after the exam has failed twice in a row and getNotesIfFailedTwice is set. -->
+  <div *ngIf="state === ResponseAreaState.Notes" class="hw-notes">
+    <p>{{ "Audiometry Administrator Notes Message" | transloco }}</p>
+    <textarea class="hw-notes-input" [(ngModel)]="adminNotes"></textarea>
+  </div>
+</div>

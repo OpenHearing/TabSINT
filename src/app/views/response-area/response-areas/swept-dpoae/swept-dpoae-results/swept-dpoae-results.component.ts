@@ -1,183 +1,62 @@
-import { AfterViewInit, Component, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import * as d3 from 'd3';
+import { DpoaeResultsBaseComponent } from '../../shared/dpoae/dpoae-results-base.component';
 import { SweptDpoaeResultsInterface } from '../swept-dpoae-exam/swept-dpoae-exam.interface';
-import { createLegend, createOAEResultsChartSvg } from '../../../../../utilities/d3-plot-functions';
+import { DPOAE_LEGEND_DATA, DPOAE_SERIES_STYLE, DPOAE_Y_AXIS_DOMAIN } from '../../shared/dpoae/dpoae-common.interface';
+import { appendNormativeDataBand, createLegend, createOAEResultsChartSvg, plotDpoaeSeries } from '../../../../../utilities/d3-plot-functions';
 
 @Component({
-  selector: 'swept-dpoae-results',
+  selector: 'app-swept-dpoae-results',
   templateUrl: './swept-dpoae-results.component.html',
-  styleUrl: './swept-dpoae-results.component.css'
+  styleUrl: './swept-dpoae-results.component.css',
 })
-export class SweptDpoaeResultsComponent implements AfterViewInit {
-  @Input() sweptDPOAEResults!: SweptDpoaeResultsInterface;
+export class SweptDpoaeResultsComponent extends DpoaeResultsBaseComponent<SweptDpoaeResultsInterface> {
   @Input() f2Start!: number;
   @Input() f2End!: number;
   @Input() xScale!: d3.ScaleLogarithmic<number, number, never>;
-  @Input() width!: number;
-  @Input() height!: number;
   @Input() xTicks!: number[];
-  @Input() margin!: { top: number, right: number, bottom: number, left: number };
-  
-  svg: d3.Selection<SVGGElement, unknown, HTMLElement, any> | undefined;
 
-  ngAfterViewInit(): void {
-    this.svg = this.createResultsPlot();
-  }
+  protected createResultsPlot() {
+    const series = this.plottableSeries(this.results);
 
-  private createResultsPlot() {
-    // TODO: Do I need to filter data? Probably not after I get real firmware.
-    const filteredData = this.filterSweptDpoaeResults(this.sweptDPOAEResults);
+    const [yClampMin, yClampMax] = DPOAE_Y_AXIS_DOMAIN;
+    const yScale = d3.scaleLinear().domain(DPOAE_Y_AXIS_DOMAIN).range([this.height, 0]);
 
-    const yScale = d3.scaleLinear()
-      .domain([
-        d3.min(
-         [...filteredData.DpLow.Amplitude, ...filteredData.DpLow.NoiseFloor, ...filteredData.F1.Amplitude, ...filteredData.F2.Amplitude]) as number, 
-        d3.max(
-          [...filteredData.DpLow.Amplitude, ...filteredData.DpLow.NoiseFloor, ...filteredData.F1.Amplitude, ...filteredData.F2.Amplitude]) as number]
-      ).range([this.height, 0]);
-
-    let svg = d3.select('#dpoae-results-plot')
+    let svg = d3
+      .select('#dpoae-results-plot')
       .append('svg')
-          .attr('width', this.width + this.margin.left + this.margin.right)
-          .attr('height', this.height + this.margin.top + this.margin.bottom)
-          .append('g')
-          .attr('transform', `translate(${this.margin.left},${this.margin.top})`);;
-    
+      .attr('width', this.width + this.margin.left + this.margin.right)
+      .attr('height', this.height + this.margin.top + this.margin.bottom)
+      .append('g')
+      .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
+
     svg = createOAEResultsChartSvg(svg, this.width, this.height, this.xTicks, this.xScale, yScale);
 
-    // Plot DpLow Amplitude (blue line)
-    svg.selectAll('.dot')
-      .data(filteredData.DpLow.Frequency)
-      .enter()
-      .append('circle')
-      .attr('cx', (d, i) => this.xScale(filteredData.DpLow.Frequency[i]))
-      .attr('cy', (d, i) => yScale(filteredData.DpLow.Amplitude[i]))
-      .attr('r', 4)
-      .style('fill', 'none')
-      .style('stroke', 'blue')
-      .style('stroke-width', 2);
+    appendNormativeDataBand(svg, this.width, this.height, this.normativeData, this.xScale, yScale, yClampMin, yClampMax);
 
-    // Plot Noise Floor (dashed red line)
-    svg.selectAll('.dot')
-      .data(filteredData.DpLow.Frequency)
-      .enter()
-      .append('circle')
-      .attr('cx', (d, i) => this.xScale(filteredData.DpLow.Frequency[i]))
-      .attr('cy', (d, i) => yScale(filteredData.DpLow.NoiseFloor[i]))
-      .attr('r', 4)
-      .style('fill', 'none')
-      .style('stroke', 'red')
-      .style("stroke-dasharray", "1,3")
-      .style('stroke-width', 2);
+    // Plot each series indexed by the nominal F2 test frequency (rather than each series' own
+    // measured frequency) so the four lines share a common x-axis position per test point.
+    const f2Freq = series.f2Freq;
+    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, series.F1, { ...DPOAE_SERIES_STYLE.F1, yClampMin, yClampMax });
+    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, series.F2, { ...DPOAE_SERIES_STYLE.F2, yClampMin, yClampMax });
+    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, series.DpLow, { ...DPOAE_SERIES_STYLE.DpLow, yClampMin, yClampMax });
+    plotDpoaeSeries(svg, this.xScale, yScale, f2Freq, series.NoiseFloor, { ...DPOAE_SERIES_STYLE.NoiseFloor, yClampMin, yClampMax });
 
-    // Plot F2 (violet line)
-    svg.selectAll('.dot')
-      .data(filteredData.F2.Frequency)
-      .enter()
-      .append('circle')
-      .attr('cx', (d, i) => this.xScale(filteredData.F2.Frequency[i]))
-      .attr('cy', (d, i) => yScale(filteredData.F2.Amplitude[i]))
-      .attr('r', 4)
-      .style('fill', 'none')
-      .style('stroke', '#9400d3')
-      .style('stroke-width', 2);
-
-    // PlotF1 (yellow line)
-    svg.selectAll('.dot')
-      .data(filteredData.F1.Frequency)
-      .enter()
-      .append('circle')
-      .attr('cx', (d, i) => this.xScale(filteredData.F1.Frequency[i]))
-      .attr('cy', (d, i) => yScale(filteredData.F1.Amplitude[i]))
-      .attr('r', 4)
-      .style('fill', 'none')
-      .style('stroke', '#ffc107')
-      .style('stroke-width', 2);
-
-    // Define the line generator
-    const line = d3.line<{ frequency: number; amplitude: number }>()
-      .x(d => this.xScale(d.frequency)) // Map x values
-      .y(d => yScale(d.amplitude)) // Map y values
-      .curve(d3.curveLinear); // smoothing
-
-    const lineData = filteredData.DpLow.Frequency.map((frequency, i) => ({
-      frequency,
-      amplitude: filteredData.DpLow.Amplitude[i],
-    }));
-
-    // Append the line path
-    svg.append('path')
-      .datum(lineData) // Bind data
-      .attr('fill', 'none') // Ensure no area is filled
-      .attr('stroke', 'blue') // Set line color
-      .attr('stroke-width', 2) // Set line thickness
-      .attr('d', line); // Call the line generator
-
-    // Define the legend data
-    const legendData = [
-      { label: 'DPOAE', color: 'blue', line: 'solid' },
-      { label: 'NF', color: 'red', line:  'dashed' },
-      { label: 'F2', color: '#9400d3',line:  'solid' },
-      { label: 'F1', color: '#ffc107', line:  'solid' }
-    ];
-
-    createLegend(svg, legendData, this.width, 85);
+    createLegend(svg, DPOAE_LEGEND_DATA, this.width, 85);
     return svg;
   }
 
-  private filterSweptDpoaeResults(
-    data: SweptDpoaeResultsInterface
-  ): {
-    DpLow: { Frequency: number[]; Amplitude: number[]; NoiseFloor: number[] };
-    F2: { Frequency: number[]; Amplitude: number[] };
-    F1: { Frequency: number[]; Amplitude: number[] };
-  } {
-    // Initialize filtered data
-    const filteredData = {
-      DpLow: {
-        Frequency: [],
-        Amplitude: [],
-        NoiseFloor: [],
-      },
-      F2: {
-        Frequency: [],
-        Amplitude: [],
-      },
-      F1: {
-        Frequency: [],
-        Amplitude: [],
-      },
+  /**
+   * Reduce the device results to the four amplitude series the plot draws, defaulting any series
+   * the device omitted to an empty array.
+   */
+  private plottableSeries(data: SweptDpoaeResultsInterface) {
+    return {
+      f2Freq: data.F2?.Frequency ?? [],
+      F1: data.F1?.Amplitude ?? [],
+      F2: data.F2?.Amplitude ?? [],
+      DpLow: data.DpLow?.Amplitude ?? [],
+      NoiseFloor: data.DpLow?.NoiseFloor ?? [],
     };
-  
-    // Helper function to filter and populate
-    const filterAndPush = (
-      source: { Frequency: number[]; Amplitude: number[]; NoiseFloor?: number[] },
-      target: { Frequency: number[]; Amplitude: number[]; NoiseFloor?: number[] }
-    ) => {
-      for (let i = 0; i < source.Frequency.length; i++) {
-        const freq = source.Frequency[i];
-        if (freq >= this.f2Start && freq <= this.f2End) {
-          target.Frequency.push(freq);
-          target.Amplitude.push(source.Amplitude[i]);
-          if (source.NoiseFloor && target.NoiseFloor) {
-            target.NoiseFloor.push(source.NoiseFloor[i]);
-          }
-        }
-      }
-    }
-  
-    if (data.DpLow) {
-      filterAndPush(data.DpLow, filteredData.DpLow);
-    }
-  
-    if (data.F2) {
-      filterAndPush(data.F2, filteredData.F2);
-    }
-  
-    if (data.F1) {
-      filterAndPush(data.F1, filteredData.F1);
-    }
-  
-    return filteredData;
   }
 }

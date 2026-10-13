@@ -1,0 +1,85 @@
+<div class="row pad-top">
+  <div class="col-3">
+    <label for="repository">{{ "Repository:" | transloco }}</label>
+  </div>
+  <div class="col-6">
+    <input id="repository" type="text" class="form-control" [placeholder]="repository.placeholder" [(ngModel)]="repository.value" />
+  </div>
+  <div class="col-1">
+    <i [matMenuTriggerFor]="repositoryHelpMenu" class="ion-help-circled"></i>
+  </div>
+  <mat-menu #repositoryHelpMenu="matMenu">
+    <button mat-menu-item>
+      <div [innerHTML]="repository.popover"></div>
+    </button>
+  </mat-menu>
+</div>
+<div class="row pad-top">
+  <div class="col-3">
+    <label for="tag">{{ "Tag:" | transloco }}</label>
+  </div>
+  <div class="col-6">
+    <input id="version" type="text" class="form-control" [placeholder]="tag.placeholder" [(ngModel)]="tag.value" />
+  </div>
+  <div class="col-1">
+    <i [matMenuTriggerFor]="versionHelpMenu" class="ion-help-circled"></i>
+  </div>
+  <mat-menu #versionHelpMenu="matMenu">
+    <button mat-menu-item>
+      <div [innerHTML]="tag.popover"></div>
+    </button>
+  </mat-menu>
+</div>
+<div class="row pad-top">
+  <div class="col-3">
+    <label for="host">{{ "Host:" | transloco }}</label>
+  </div>
+  <div class="col-6">
+    <input id="host" type="text" class="form-control" [placeholder]="host.placeholder" [(ngModel)]="host.value" />
+  </div>
+  <div class="col-1">
+    <i [matMenuTriggerFor]="hostHelpMenu" class="ion-help-circled"></i>
+  </div>
+  <mat-menu #hostHelpMenu="matMenu">
+    <button mat-menu-item>
+      <div [innerHTML]="host.popover"></div>
+    </button>
+  </mat-menu>
+</div>
+<div class="row pad-top">
+  <div class="col-3">
+    <label for="token">{{ "Token:" | transloco }}</label>
+  </div>
+  <div class="col-6">
+    <input id="token" type="text" class="form-control" [placeholder]="token.placeholder" [(ngModel)]="token.value" />
+  </div>
+  <div class="col-1">
+    <i [matMenuTriggerFor]="tokenHelpMenu" class="ion-help-circled"></i>
+  </div>
+  <mat-menu #tokenHelpMenu="matMenu">
+    <button mat-menu-item>
+      <div [innerHTML]="token.popover"></div>
+    </button>
+  </mat-menu>
+</div>
+<div class="row pad-top">
+  <div class="col-3">
+    <label for="group">{{ "Group:" | transloco }}</label>
+  </div>
+  <div class="col-6">
+    <input id="group" type="text" class="form-control" [placeholder]="group.placeholder" [(ngModel)]="group.value" />
+  </div>
+  <div class="col-1">
+    <i [matMenuTriggerFor]="groupHelpMenu" class="ion-help-circled"></i>
+  </div>
+  <mat-menu #groupHelpMenu="matMenu">
+    <button mat-menu-item>
+      <div [innerHTML]="group.popover"></div>
+    </button>
+  </mat-menu>
+</div>
+<div class="row pad-top">
+  <div class="col-5">
+    <button class="btn btn-default btn-block" (click)="validateAndEmit()"><i class="ion-plus-round"></i>{{ "Add" | transloco }}</button>
+  </div>
+</div>

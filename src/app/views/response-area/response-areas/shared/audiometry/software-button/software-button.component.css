@@ -1,0 +1,25 @@
+.software-button {
+  display: inline-block;
+  min-width: 400px;
+  min-height: 80px;
+  padding: 10px 20px;
+  font-size: 1.25rem;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background: var(--color-danger);
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.software-button-pressed {
+  background: #f5f5f5;
+  color: #000;
+}
+
+.software-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

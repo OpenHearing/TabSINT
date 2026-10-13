@@ -1,0 +1,59 @@
+.gap-container {
+  width: 100%;
+}
+
+.gap-canvas {
+  width: 90%;
+  display: block;
+  margin: 0 auto 1.5rem;
+}
+
+.gap-button-row {
+  display: flex;
+  justify-content: center;
+  padding-top: 1rem;
+}
+
+.gap-response-btn {
+  width: 100%;
+  min-height: 120px;
+  font-size: 1.5rem;
+  color: #fff;
+  background-color: var(--color-danger);
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.25);
+}
+
+.gap-response-btn:active {
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+  transform: translateY(2px);
+}
+
+.gap-response-btn.button-pressed {
+  background-color: #4cae4c;
+  color: white;
+}
+
+.gap-response-btn:disabled {
+  opacity: 0.5;
+}
+
+.gap-training-row {
+  padding-top: 1rem;
+}
+
+.gap-lengths-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.gap-length-btn {
+  min-width: 60px;
+}
+
+.gap-results {
+  padding-top: 1rem;
+}

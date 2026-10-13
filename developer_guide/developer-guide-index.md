@@ -1,6 +1,6 @@
 # Developer Guide
 
-We welcome contributions and feedback from the community to help improve the software.  Please review the following resources:
+We welcome contributions and feedback from the community to help improve the software. Please review the following resources:
 
 - [Development Environment](developer-environment.md)
 - [Building and Running](building-running.md)
@@ -8,7 +8,11 @@ We welcome contributions and feedback from the community to help improve the sof
 - [Repository Organization](organization.md)
 - [Conventions](conventions.md)
 - [Contributing Guidelines](contributing.md)
-
+- [Migration Guide from TabSINT Classic](migration-guide.md)
+- [Common Response Area Parameters](response-area-parameters.md)
+- [CustomJS Guide](custom-js.md)
+- [Result Encryption](encryption.md)
+- [Translations](translations.md)
 
 [NEXT: Development Environment](developer-environment.md)
 

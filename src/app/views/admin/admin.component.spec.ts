@@ -1,5 +1,6 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 
 import { AdminComponent } from './admin.component';
 import { HeaderComponent } from '../header/header.component';
@@ -13,9 +14,7 @@ import { SoftwareConfigComponent } from '../config/config-views/software-config/
 import { LogConfigComponent } from '../config/config-views/log-config/log-config.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
-import { DeviceConfigComponent } from '../config/config-views/device-config/device-config.component';
-import { NewConnectionComponent } from '../config/config-views/new-connection/new-connection.component';
-import { ConnectedDevicesComponent } from '../config/config-views/connected-devices/connected-devices.component';
+import { QRCodeModule } from 'angularx-qrcode';
 
 describe('AdminComponent', () => {
   let component: AdminComponent;
@@ -24,34 +23,26 @@ describe('AdminComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [
-        AdminComponent, 
-        HeaderComponent, 
-        IndicatorComponent, 
-        ConfigComponent, 
+        AdminComponent,
+        HeaderComponent,
+        IndicatorComponent,
+        ConfigComponent,
         TabsintConfigComponent,
         SoftwareConfigComponent,
         LogConfigComponent,
-        DeviceConfigComponent,
-        NewConnectionComponent,
-        ConnectedDevicesComponent
       ],
+      schemas: [NO_ERRORS_SCHEMA],
       imports: [
         FormsModule,
-        NgbModule, 
-        MatMenuModule, 
+        NgbModule,
+        MatMenuModule,
         MatExpansionModule,
         BrowserAnimationsModule,
-        TranslateModule.forRoot({
-                  loader: {
-                    provide: TranslateLoader,
-                    useClass: TranslateFakeLoader
-                  }
-                })
+        QRCodeModule,
+        TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
       ],
-      providers: [TranslateService, TranslateStore]
-    })
-    .compileComponents();
-    
+    }).compileComponents();
+
     fixture = TestBed.createComponent(AdminComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

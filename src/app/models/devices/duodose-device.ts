@@ -1,0 +1,19 @@
+import { IChaDeviceMetadata } from '../../interfaces/devices/cha-device-metadata';
+import { DeviceType } from '../../utilities/constants';
+import { ChaDevice } from './cha-device';
+
+/**
+ * DuoDose implementation of the device interface.
+ */
+export class DuodoseDevice extends ChaDevice {
+  declare metadata: IChaDeviceMetadata;
+  /**
+   * Initialize the device with the needed properties.
+   * @param deviceId The identifier for the device.
+   * @param name The friendly name for the device.
+   * @param tabsintId The TabSINT identifier for the device. If not provided, should match the device identifier.
+   */
+  constructor(deviceId: string, name: string, tabsintId?: string) {
+    super(DeviceType.Duodose, deviceId, name, tabsintId);
+  }
+}

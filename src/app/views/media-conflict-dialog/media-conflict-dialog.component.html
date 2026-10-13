@@ -1,0 +1,10 @@
+<h2 mat-dialog-title>{{ "Media Repository Already Exists" | transloco }}</h2>
+
+<mat-dialog-content>
+  <div>{{ messageKey | transloco: messageParams }}</div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-button (click)="skip()">{{ "Skip" | transloco }}</button>
+  <button mat-button (click)="override()" cdkFocusInitial>{{ "Override" | transloco }}</button>
+</mat-dialog-actions>

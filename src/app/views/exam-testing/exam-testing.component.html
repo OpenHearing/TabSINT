@@ -1,12 +1,29 @@
 <div>
-    <h1 *ngIf="examType !== 'manualAudiometryResponseArea'">
-        {{ title}}
-    </h1>
-    <h2 *ngIf="questionMainText" [ngClass]="examTestingTitleClass">
-        {{questionMainText}}
-    </h2>
-    <p class="subtext pad-top" *ngIf="questionSubText && examType !== 'manualAudiometryResponseArea'"><span [textContent]="questionSubText" id="subtext-testing"></span></p>
-    <p class="instructions" *ngIf="instructionText && examType !== 'manualAudiometryResponseArea'"><span [textContent]="instructionText" id="instructions-testing"></span></p>
+  <h1 *ngIf="examType !== 'manualAudiometryResponseArea'" [innerHtml]="title"></h1>
+  <h2 style="font-size: 1em" *ngIf="questionPreMainText" [ngClass]="questionPreMainTextClass" [innerHtml]="questionPreMainText"></h2>
+  <h2 *ngIf="questionMainText" [ngClass]="questionMainTextClass" [innerHtml]="questionMainText"></h2>
+  <p class="subtext pad-top" *ngIf="questionSubText && examType !== 'manualAudiometryResponseArea'">
+    <span [innerHtml]="questionSubText" id="subtext-testing"></span>
+  </p>
+  <p class="instructions" *ngIf="instructionText && examType !== 'manualAudiometryResponseArea'">
+    <span [innerHtml]="instructionText" id="instructions-testing"></span>
+  </p>
 
-    <response-area></response-area>
+  <!-- Images -->
+  <div class="multimedia" *ngIf="imageBytes.length > 0" [style.width]="imageWidth">
+    <img [src]="imageBytes" class="img-responsive" alt="" style="margin: 0 auto; max-height: 40vh" />
+  </div>
+
+  <!-- Video -->
+  <div class="multimedia" *ngIf="videoSrc.length > 0" [style.width]="videoWidth">
+    <video
+      [src]="videoSrc"
+      [autoplay]="videoAutoplay"
+      (ended)="onVideoEnded()"
+      controls
+      class="img-responsive"
+      style="margin: 0 auto; max-height: 40vh; width: 100%"></video>
+  </div>
+
+  <app-response-area></app-response-area>
 </div>

@@ -1,60 +1,94 @@
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ExamService } from '../../controllers/exam.service';
-import { WINDOW } from '../../utilities/window';
 import { Subscription } from 'rxjs';
 import { PageInterface } from '../../models/page/page.interface';
 import { PageModel } from '../../models/page/page.service';
+import { StateModel } from '../../models/state/state.service';
 
 @Component({
-  selector: 'exam-testing-view',
+  selector: 'app-exam-testing-view',
   templateUrl: './exam-testing.component.html',
-  styleUrl: './exam-testing.component.css'
+  styleUrl: './exam-testing.component.css',
 })
 export class ExamTestingComponent implements OnInit, OnDestroy {
+  private readonly examService = inject(ExamService);
+  private readonly pageModel = inject(PageModel);
+  private readonly stateModel = inject(StateModel);
+
   pageSubscription: Subscription | undefined;
-  examTestingTitleClass?: object;
+  questionPreMainTextClass?: object;
+  questionMainTextClass?: object;
   title?: string;
+  questionPreMainText?: string;
   questionMainText?: string;
   questionSubText?: string;
   instructionText?: string;
   examType?: string;
-
-  constructor(
-    private readonly examService: ExamService,
-    private readonly pageModel: PageModel,
-    @Inject(WINDOW) private readonly window: Window
-  ) {  }
+  imageBytes: string = '';
+  imageWidth: string = '100%';
+  videoSrc: string = '';
+  videoWidth: string = '100%';
+  videoAutoplay: boolean = false;
+  videoNoSkip: boolean = false;
 
   ngOnInit(): void {
-    this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
+    this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       this.title = updatedPage?.title;
-      this.examTestingTitleClass = this.shrinkTitleIfTooLong(updatedPage?.questionMainText);
+      this.questionPreMainTextClass = this.shrinkTitleIfTooLong(updatedPage?.questionPreMainText);
+      this.questionMainTextClass = this.shrinkTitleIfTooLong(updatedPage?.questionMainText);
+      this.questionPreMainText = updatedPage?.questionPreMainText;
       this.questionMainText = updatedPage?.questionMainText;
       this.questionSubText = updatedPage?.questionSubText;
       this.instructionText = updatedPage?.instructionText;
       this.examType = updatedPage?.responseArea?.type;
+      if (updatedPage?.image) {
+        this.imageBytes = updatedPage.image.b64!;
+        this.imageWidth = updatedPage.image?.width ?? this.imageWidth;
+      } else {
+        this.imageBytes = '';
+        this.imageWidth = '100%';
+      }
+      if (updatedPage?.video?._resolvedPath) {
+        this.videoSrc = updatedPage.video._resolvedPath;
+        this.videoWidth = updatedPage.video.width ?? '100%';
+        this.videoAutoplay = updatedPage.video.autoplay ?? false;
+        this.videoNoSkip = updatedPage.video.noSkip ?? false;
+        if (this.videoNoSkip) {
+          this.stateModel.updateState({ isSubmittable: false });
+        }
+      } else {
+        this.videoSrc = '';
+        this.videoWidth = '100%';
+        this.videoAutoplay = false;
+        this.videoNoSkip = false;
+      }
     });
+    this.examService.restartActivePage();
   }
 
   ngOnDestroy(): void {
+    this.examService.cancelBackgroundProcesses();
     this.pageSubscription?.unsubscribe();
   }
 
-  shrinkTitleIfTooLong(questionMainText: string | undefined) {
-    let styleObject = {"medium":false,"long":false};
-    if (!questionMainText) {
-      // will use default styling, no additions necessary
-    } 
-    else if ( ((questionMainText.length >= 38) && (questionMainText.length < 48)) ) {
-      styleObject.medium = true;
-    } else if (questionMainText.length > 42) {
-      styleObject["long"] = true;
+  /**
+   * Re-enable the submit button once a `noSkip` video finishes playing.
+   */
+  onVideoEnded(): void {
+    if (this.videoNoSkip) {
+      this.stateModel.updateState({ isSubmittable: true });
     }
-    return styleObject
   }
 
-  startExam() {
-    this.examService.finishActivateMedia();
+  shrinkTitleIfTooLong(text: string | undefined) {
+    const styleObject = { medium: false, long: false };
+    if (!text) {
+      // will use default styling, no additions necessary
+    } else if (text.length >= 38 && text.length < 48) {
+      styleObject.medium = true;
+    } else if (text.length > 42) {
+      styleObject['long'] = true;
+    }
+    return styleObject;
   }
-
 }

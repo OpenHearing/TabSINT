@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ChangePinComponent } from '../views/change-pin/change-pin.component';
@@ -7,37 +7,38 @@ import { Subscription } from 'rxjs';
 import { DiskInterface } from '../models/disk/disk.interface';
 
 @Injectable({
-    providedIn: 'root',
+  providedIn: 'root',
 })
+export class AdminService implements OnDestroy {
+  private readonly dialog = inject(MatDialog);
+  private readonly router = inject(Router);
+  private readonly diskModel = inject(DiskModel);
 
-export class AdminService {
-    disk: DiskInterface;
-    diskSubscription: Subscription | undefined;
-    constructor(
-        private readonly dialog: MatDialog, private readonly router: Router,
-        private readonly diskModel: DiskModel,
-    ) {
-        this.disk = this.diskModel.getDisk();
-        this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
-            this.disk = updatedDisk;
-        });
-    }
+  disk: DiskInterface;
+  diskSubscription: Subscription | undefined;
 
-    ngOnDestroy() {
-        this.diskSubscription?.unsubscribe();
-    }
-    
-    onAdminViewClick(): void {
-        if (!this.disk.debugMode) {
-          const dialogRef = this.dialog.open(ChangePinComponent);
-          dialogRef.componentInstance.setValidationMode(true);
-          dialogRef.componentInstance.pinValidated.subscribe((isValid: boolean) => {
-            if (isValid) {
-              this.router.navigate(['/admin']);
-            }
-          });
-        } else {
+  constructor() {
+    this.disk = this.diskModel.getDisk();
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.diskSubscription?.unsubscribe();
+  }
+
+  onAdminViewClick(): void {
+    if (this.disk.preferences.debugMode) {
+      this.router.navigate(['/admin']);
+    } else {
+      const dialogRef = this.dialog.open(ChangePinComponent);
+      dialogRef.componentInstance.setValidationMode(true);
+      dialogRef.componentInstance.pinValidated.subscribe((isValid: boolean) => {
+        if (isValid) {
           this.router.navigate(['/admin']);
         }
-      }
+      });
+    }
+  }
 }

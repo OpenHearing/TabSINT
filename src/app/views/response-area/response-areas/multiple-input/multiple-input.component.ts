@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { PageModel } from '../../../../models/page/page.service';
 import { Subscription } from 'rxjs';
 import { PageInterface } from '../../../../models/page/page.interface';
@@ -10,41 +10,51 @@ import { StateInterface } from '../../../../models/state/state.interface';
 import { multipleInputSchema } from '../../../../../schema/response-areas/multiple-input.schema';
 
 @Component({
-  selector: 'multiple-input-view',
+  selector: 'app-multiple-input-view',
   templateUrl: './multiple-input.component.html',
-  styleUrl: './multiple-input.component.css'
+  styleUrl: './multiple-input.component.css',
 })
-export class MultipleInputComponent  implements OnInit {
+export class MultipleInputComponent implements OnInit, OnDestroy {
+  private readonly resultsModel = inject(ResultsModel);
+  private readonly pageModel = inject(PageModel);
+  private readonly stateModel = inject(StateModel);
+
   results: ResultsInterface;
   state: StateInterface;
 
   // Configuration variables
   today: string = new Date().toISOString().slice(0, 10);
   reviewDisabled: boolean = false;
-  multiDropdownModel: { [key: number]: any[] } = {};
-  multiDropdownJson: { [key: number]: any[] } = [];
+  multiDropdownModel: Record<number, any[]> = {};
+  multiDropdownJson: Record<number, any[]> = [];
   verticalSpacing: number = multipleInputSchema.properties.verticalSpacing.default;
   textAlign: string = multipleInputSchema.properties.textAlign.default;
   review: boolean = multipleInputSchema.properties.review.default;
-  inputList: InputListItem[] = [{
-    text: 'default text'
-  }];
+  inputList: InputListItem[] = [
+    {
+      text: 'default text',
+    },
+  ];
 
   pageSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
+  resultsSubscription: Subscription | undefined;
 
-  constructor (
-    private readonly pageModel: PageModel,
-    private readonly resultsModel: ResultsModel,
-    private readonly stateModel: StateModel
-  ) {
+  constructor() {
     this.results = this.resultsModel.getResults();
     this.state = this.stateModel.getState();
   }
 
-  ngOnInit() {
-    this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
+  ngOnInit(): void {
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
+      this.state = updatedState;
+    });
+    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
+      this.results = updatedResults;
+    });
+    this.pageSubscription = this.pageModel.currentPageObservable.subscribe((updatedPage: PageInterface) => {
       if (updatedPage?.responseArea?.type == 'multipleInputResponseArea') {
-        let updatedMultipleInputResponseArea = updatedPage.responseArea as MultipleInputInterface;
+        const updatedMultipleInputResponseArea = updatedPage.responseArea as MultipleInputInterface;
         if (updatedMultipleInputResponseArea) {
           this.initializeConfigurationVariables(updatedMultipleInputResponseArea);
           this.updateSubmittableLogic();
@@ -56,8 +66,10 @@ export class MultipleInputComponent  implements OnInit {
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.pageSubscription?.unsubscribe();
+    this.resultsSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
   }
 
   enableReview(status: boolean): void {
@@ -65,22 +77,21 @@ export class MultipleInputComponent  implements OnInit {
   }
 
   selectResponse(i: number, option: any): void {
-    this.results.currentPage.response[i] = option;
+    this.resultsModel.updateCurrentPageResponseElement(i, option);
     this.updateSubmittableLogic();
   }
 
   selectMultiResponse(i: number): void {
     const multiResp = this.multiDropdownModel[i];
-    this.results.currentPage.response[i] = multiResp;
+    this.resultsModel.updateCurrentPageResponseElement(i, multiResp);
     this.updateSubmittableLogic();
   }
 
   updateSubmittableLogic(): void {
     const isSubmittable = this.inputList.every(
-      (item: any, idx: number) =>
-        !item.required || this.isDefined(item, this.results.currentPage.response[idx])
+      (item: any, idx: number) => !item.required || this.isDefined(item, this.results.currentPage.response[idx])
     );
-    this.state.isSubmittable = isSubmittable;
+    this.stateModel.updateState({ isSubmittable: isSubmittable });
   }
 
   isDefined(item: any, val: any): boolean {
@@ -92,23 +103,23 @@ export class MultipleInputComponent  implements OnInit {
 
   isWideDropdown(options: any[]): boolean {
     return options.some(option => option.length > 20);
-  }  
+  }
 
   isWideMultiDropdown(options: any[]): boolean {
     return options.some(option => option.label.length > 20);
-  }  
+  }
 
-  private initializeConfigurationVariables(updatedMultipleInputResponseArea: MultipleInputInterface) {    
+  private initializeConfigurationVariables(updatedMultipleInputResponseArea: MultipleInputInterface) {
     this.verticalSpacing = updatedMultipleInputResponseArea.verticalSpacing ?? multipleInputSchema.properties.verticalSpacing.default;
     this.textAlign = updatedMultipleInputResponseArea.textAlign ?? multipleInputSchema.properties.textAlign.default;
     this.review = updatedMultipleInputResponseArea.review ?? multipleInputSchema.properties.review.default;
     this.inputList = updatedMultipleInputResponseArea.inputList.map((item: any) => {
       return {
-        ...item, 
-        required: item.required ?? multipleInputSchema.properties.inputList.items.properties.required.default
+        ...item,
+        required: item.required ?? multipleInputSchema.properties.inputList.items.properties.required.default,
       };
     });
-    
+
     // Initialize multi-dropdown data
     updatedMultipleInputResponseArea.inputList.forEach((item: any, index: number) => {
       if (item.inputType === 'multi-dropdown') {
@@ -122,15 +133,14 @@ export class MultipleInputComponent  implements OnInit {
   }
 
   private initializeReponses(updatedMultipleInputResponseArea: MultipleInputInterface) {
-    this.results.currentPage.response = updatedMultipleInputResponseArea.inputList.map(
-      (item: any) => {
+    this.resultsModel.updateCurrentPage({
+      response: updatedMultipleInputResponseArea.inputList.map((item: any) => {
         if (item.inputType === 'date' && item.dateProperties.default === 'today') {
           return this.today;
         } else {
           return item.value;
         }
-      }
-    );
+      }),
+    });
   }
-
 }

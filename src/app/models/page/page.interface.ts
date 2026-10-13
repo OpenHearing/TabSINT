@@ -1,16 +1,15 @@
-import { PageDefinition } from "../../interfaces/page-definition.interface";
+import { PageDefinition } from '../../interfaces/page-definition.interface';
 
 export interface PageInterface extends PageDefinition {
-    exportToCSV?: boolean;
-    name?: string;
-    filename?: string;
-    units?: string;
-    example?: number;
-    other?: Array<string>;
-    dict?: object;
-    isSubmittable?: boolean;
-    canGoBack?: boolean;
-    subtitle?: string,
-    loadingRequired?: boolean;
-    loadingActive?: boolean;
+  _uuid: string;
+  name?: string;
+  filename?: string;
+  units?: string;
+  example?: number;
+  other?: string[];
+  dict?: object;
+  isSubmittable?: boolean;
+  canGoBack?: boolean;
+  loadingRequired?: boolean;
+  loadingActive?: boolean;
 }

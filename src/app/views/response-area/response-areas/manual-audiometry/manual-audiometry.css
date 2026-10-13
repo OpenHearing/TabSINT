@@ -6,7 +6,6 @@
   align-items: flex-start;
   font-family: Arial, sans-serif;
   position: relative;
-  top: -10vh;
 }
 
 .graphs-container {
@@ -43,13 +42,14 @@
   margin-bottom: 20px;
 }
 
-.response-buttons, .ear-buttons {
+.response-buttons,
+.ear-buttons {
   display: flex;
   gap: 10px;
-  margin-top: 10vh;
 }
 
-.response-btn, .ear-btn {
+.response-btn,
+.ear-btn {
   width: 160px;
   padding: 10px;
   font-size: 14px;
@@ -59,8 +59,22 @@
   background-color: #f0f0f0;
 }
 
+.ear-submit-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 10vh;
+  position: relative;
+}
+
 .response-btn.record-threshold {
   background-color: #007bff;
+  color: white;
+}
+
+.response-btn.no-response {
+  background-color: #e0e0e0;
   color: white;
 }
 
@@ -145,13 +159,18 @@
   font-size: 18px;
   font-weight: bold;
   color: #007bff;
+  transition: all 0.1s ease-in-out;
 }
 
-.play-btn:hover {
-  background-color: #f0f0f0;
+.button-pressed {
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+  transform: scale(0.95);
+  transition: all 0.1s ease-in-out;
 }
 
-.tone-display, .frequency-display, .masking-display {
+.tone-display,
+.frequency-display,
+.masking-display {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -159,13 +178,17 @@
   margin-top: 12px;
 }
 
-.tone-value, .frequency-value, .masking-value {
+.tone-value,
+.frequency-value,
+.masking-value {
   font-size: 30px;
   font-weight: bold;
   color: #333;
 }
 
-.tone-label, .frequency-label, .masking-label {
+.tone-label,
+.frequency-label,
+.masking-label {
   font-size: 12px;
   color: #666;
 }
@@ -181,20 +204,19 @@
   text-align: center;
 }
 
-
 .control-box.disabled {
   pointer-events: none;
   opacity: 0.6;
   background-color: #f0f0f0;
 }
 
-.control-box.disabled .adjust-btn, 
+.control-box.disabled .adjust-btn,
 .control-box.disabled .play-btn {
   background-color: #ccc;
   color: #888;
   cursor: not-allowed;
 }
- 
+
 .response-panel-vertical {
   display: flex;
   flex-direction: column;
@@ -220,6 +242,15 @@
   background-color: #e0e0e0;
 }
 
+.response-panel-vertical .response-btn.no-response {
+  background-color: #888;
+  color: white;
+}
+.response-panel-vertical .response-btn.no-response:disabled {
+  background-color: #e0e0e0;
+  color: white;
+}
+
 .response-panel-vertical .response-btn.record-threshold {
   background-color: #007bff;
   color: white;
@@ -238,7 +269,7 @@
   background-color: #a71d2a;
 }
 
-.response-panel-vertical .response-btn.submit-results {
+.response-btn.submit-results {
   background-color: #28a745;
   color: white;
   font-size: 14px;
@@ -246,8 +277,12 @@
   border-radius: 5px;
   border: none;
   cursor: pointer;
+  width: 160px;
+  height: auto;
+  position: absolute;
+  right: 0;
 }
 
-.response-panel-vertical .response-btn.submit-results:hover {
+.response-btn.submit-results:hover {
   background-color: #218838;
 }

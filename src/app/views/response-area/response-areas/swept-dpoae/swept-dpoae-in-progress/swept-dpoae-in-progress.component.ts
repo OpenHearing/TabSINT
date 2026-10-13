@@ -1,201 +1,103 @@
-import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import * as d3 from 'd3';
-import { BehaviorSubject, Subscription } from 'rxjs';
 
-import { DevicesService } from '../../../../../controllers/devices.service';
-import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
-import { StateModel } from '../../../../../models/state/state.service';
-import { StateInterface } from '../../../../../models/state/state.interface';
+import { DpoaeInProgressBaseComponent } from '../../shared/dpoae/dpoae-in-progress-base.component';
 import { DPOAEDataInterface, SweptDpoaeResultsInterface } from '../swept-dpoae-exam/swept-dpoae-exam.interface';
-import { Logger } from '../../../../../utilities/logger.service';
-import { createLegend, createOAEResultsChartSvg } from '../../../../../utilities/d3-plot-functions';
+import { DPOAE_LEGEND_DATA, DPOAE_SERIES_STYLE, DPOAE_Y_AXIS_DOMAIN } from '../../shared/dpoae/dpoae-common.interface';
+import { appendNormativeDataBand, createLegend, createOAEResultsChartSvg, plotDpoaeSeries } from '../../../../../utilities/d3-plot-functions';
 import { sweptDpoaeSchema } from '../../../../../../schema/response-areas/swept-dpoae.schema';
 
 @Component({
-  selector: 'swept-dpoae-in-progress',
+  selector: 'app-swept-dpoae-in-progress',
   templateUrl: './swept-dpoae-in-progress.component.html',
-  styleUrl: './swept-dpoae-in-progress.component.css'
+  styleUrl: './swept-dpoae-in-progress.component.css',
 })
-export class SweptDpoaeInProgressComponent implements OnInit, OnDestroy, AfterViewInit {
-  @Input() device: ConnectedDevice | undefined;
+export class SweptDpoaeInProgressComponent extends DpoaeInProgressBaseComponent<SweptDpoaeResultsInterface> {
+  protected readonly examLabel = 'Swept DPOAE';
+
   @Input() f2Start: number = sweptDpoaeSchema.properties.f2Start.default;
   @Input() f2End: number = sweptDpoaeSchema.properties.f2End.default;
   @Input() xScale!: d3.ScaleLogarithmic<number, number, never>;
-  @Input() yScale!: d3.ScaleLinear<number, number, never>;
-  @Input() width!: number;
-  @Input() height!: number;
-  @Input() xTicks!: number[];
-  @Input() margin!: { top: number, right: number, bottom: number, left: number };
-  @Output() sweptDPOAEResultsEvent = new EventEmitter<SweptDpoaeResultsInterface>();
 
-  state: StateInterface;
-  inProgressResults: SweptDpoaeResultsInterface = {
-    State: 'READY',
-    PctComplete: 0
-  };
-  inProgressResultsSubject = new BehaviorSubject<SweptDpoaeResultsInterface>(this.inProgressResults);
-  inProgressResultsSubscription: Subscription | undefined;
-  svg!: d3.Selection<SVGGElement, unknown, HTMLElement, any>;
-  shouldAbort: boolean = false;
-  isRequestingResults: boolean = false;
-  instructions: string = "Exam in progress please wait.";
-
-  constructor(
-    private readonly changeDetectorRef: ChangeDetectorRef,
-    private readonly devicesService: DevicesService,
-    private readonly logger: Logger, 
-    private readonly stateModel: StateModel,
-  ) {
-    this.state = this.stateModel.getState();
-    this.state.isSubmittable = false;
-  }
-
-  async ngOnInit(): Promise<void> {
-    this.requestResults();
-    this.inProgressResultsSubscription = this.inProgressResultsSubject.subscribe((updatedResults: SweptDpoaeResultsInterface) => {
-      if (updatedResults.DpLow) {
-        this.updatePlot(updatedResults.DpLow);
-      }
-      this.inProgressResults = updatedResults;
-      this.inProgressResults.PctComplete = Math.round(this.inProgressResults.PctComplete);
-    });
-  }
-
-  ngAfterViewInit(): void {
-    this.svg = this.createProgressPlot();
-  }
-
-  ngOnDestroy(): void {
-    this.state.isSubmittable = true;
-  }
-
-  async abort() {
-    this.waitForRequestResultsDone();
-    this.updateInstructions();
-    await this.devicesService.abortExams(this.device!);
-    this.updateStateOnAbort();
-    this.sweptDPOAEResultsEvent.emit(this.inProgressResults);
-  }
-
-  private async requestResults() {
-    const pollResults = async () => {
-      if (this.shouldAbort) return;
-  
-      this.isRequestingResults = true;  
-      let resp = await this.devicesService.requestResults(this.device!, 300000);  
-      this.isRequestingResults = false;
-  
-      if (this.shouldAbort) return;
-  
-      if (this.doesRespContainResults(resp)) {
-        this.inProgressResultsSubject.next(resp![1]);
-        if (this.inProgressResults.State === 'DONE') {
-          this.state.isSubmittable = true;
-          this.sweptDPOAEResultsEvent.emit(resp![1]);
-          this.instructions = "Exam complete, press 'Next' to continue."
-          this.changeDetectorRef.detectChanges();
-          return;
-        }
-      } else {
-        this.logger.debug('Swept DPOAE in-progress component. Request results did not return expected results. It may be too early to receive results.');
-      }
-  
-      setTimeout(pollResults, 1000);
-    };
-  
-    pollResults();
-  }
-
-  private doesRespContainResults(resp: any[] | undefined) {
-    return resp !== undefined && 
-           resp.length > 1 && 
-           resp[1] !== 'ERROR' && 
-           resp[2] !== 'timeout' &&
-           resp[1] !== 'OK';
-  }
-
-  private createProgressPlot() {
-    let svg = d3.select('#dpoae-in-progress-plot')
+  protected createProgressPlot(yScale: d3.ScaleLinear<number, number, never>) {
+    const plot = d3.select('#dpoae-in-progress-plot');
+    plot.select('svg').remove(); // Remove existing svg in case of update
+    let svg = plot
       .append('svg')
       .attr('width', this.width + this.margin.left + this.margin.right)
       .attr('height', this.height + this.margin.top + this.margin.bottom)
       .append('g')
-      .attr('transform', `translate(${this.margin.left},${this.margin.top})`);;
-    
-    svg = createOAEResultsChartSvg(svg, this.width, this.height, this.xTicks, this.xScale, this.yScale);
+      .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
 
-    const legendData = [
-      { label: 'DPOAE', color: 'blue', symbol: 'circle' },
-      { label: 'NF', color: 'red', symbol: 'X' }
-    ];
+    svg = createOAEResultsChartSvg(svg, this.width, this.height, this.xTicks, this.xScale, yScale);
 
-    createLegend(svg, legendData, this.width, 85);
+    appendNormativeDataBand(svg, this.width, this.height, this.normativeData, this.xScale, yScale, DPOAE_Y_AXIS_DOMAIN[0], DPOAE_Y_AXIS_DOMAIN[1]);
+
+    createLegend(svg, DPOAE_LEGEND_DATA, this.width, 85);
 
     return svg;
-    
   }
 
-  private updatePlot(data: DPOAEDataInterface) {
-    // TODO: May not need to filter data after we get real firmware
-    const filteredData = this.filterData(data);
-
-    // Plot DpLow Amplitude / DPOAE (blue open circles)
-    this.svg.selectAll('.dot')
-      .data(filteredData.Frequency)
-      .enter()
-      .append('circle')
-      .attr('cx', (d, i) => this.xScale(filteredData.Frequency[i]))
-      .attr('cy', (d, i) => this.yScale(filteredData.Amplitude[i]))
-      .attr('r', 4)
-      .style('fill', 'none')
-      .style('stroke', 'blue')
-      .style('stroke-width', 2);
-
-    // Plot DpLow NoiseFloor (red X)
-    this.svg.selectAll('.cross')
-      .data(filteredData.Frequency)
-      .enter()
-      .append('text')
-      .attr('x', (d, i) => this.xScale(filteredData.Frequency[i]))
-      .attr('y', (d, i) => this.yScale(filteredData.NoiseFloor[i]))
-      .attr('text-anchor', 'middle')
-      .attr('alignment-baseline', 'middle')
-      .style('fill', 'red')
-      .style('font-size', '10px')
-      .style('font-weight', 'bold')
-      .text('X');
-
+  protected onResultsUpdate(results: SweptDpoaeResultsInterface): void {
+    if (results.DpLow && results.F2) {
+      this.updatePlot(results.DpLow, results.F2, results.F1);
+    }
   }
 
-  private filterData(data: DPOAEDataInterface) {
-    const validIndices = data.Frequency
-      .map((freq, index) => (freq >= this.f2Start && freq <= this.f2End ? index : -1))
-      .filter(index => index !== -1);
-  
-    return {
-      Frequency: validIndices.map(index => data.Frequency[index]),
-      Amplitude: validIndices.map(index => data.Amplitude[index]),
-      Phase: validIndices.map(index => data.Phase[index]),
-      NoiseFloor: validIndices.map(index => data.NoiseFloor![index]),
+  private updatePlot(dpLowData: DPOAEDataInterface, f2Data: DPOAEDataInterface, f1Data?: DPOAEDataInterface) {
+    const filteredData = this.filterData(dpLowData, f2Data, f1Data);
+    const [yClampMin, yClampMax] = DPOAE_Y_AXIS_DOMAIN;
+
+    this.svg = this.createProgressPlot(this.yScale);
+
+    plotDpoaeSeries(this.svg, this.xScale, this.yScale, filteredData['F2Frequency'], filteredData['Amplitude'], {
+      ...DPOAE_SERIES_STYLE.DpLow,
+      yClampMin,
+      yClampMax,
+    });
+    plotDpoaeSeries(this.svg, this.xScale, this.yScale, filteredData['F2Frequency'], filteredData['NoiseFloor'], {
+      ...DPOAE_SERIES_STYLE.NoiseFloor,
+      yClampMin,
+      yClampMax,
+    });
+    plotDpoaeSeries(this.svg, this.xScale, this.yScale, filteredData['F2Frequency'], filteredData['F2Amplitude'], {
+      ...DPOAE_SERIES_STYLE.F2,
+      yClampMin,
+      yClampMax,
+    });
+    if (filteredData['F1Amplitude'].length) {
+      plotDpoaeSeries(this.svg, this.xScale, this.yScale, filteredData['F2Frequency'], filteredData['F1Amplitude'], {
+        ...DPOAE_SERIES_STYLE.F1,
+        yClampMin,
+        yClampMax,
+      });
+    }
+  }
+
+  /**
+   * F1 and F2 are indexed by their own nominal F2 test frequency (not each series' own measured
+   * frequency), matching SweptDpoaeResultsComponent, so all four lines share a common x-axis
+   * position per completed test point.
+   */
+  private filterData(dpLowData: DPOAEDataInterface, f2Data: DPOAEDataInterface, f1Data?: DPOAEDataInterface) {
+    const filteredData: Record<string, number[]> = {
+      F2Frequency: [],
+      Amplitude: [],
+      NoiseFloor: [],
+      F2Amplitude: [],
+      F1Amplitude: [],
     };
+    for (let i = 0; i < dpLowData.Frequency.length; i++) {
+      filteredData['F2Frequency'].push(f2Data.Frequency[i]);
+      filteredData['Amplitude'].push(dpLowData.Amplitude[i]);
+      if (dpLowData.NoiseFloor) {
+        filteredData['NoiseFloor'].push(dpLowData.NoiseFloor[i]);
+      }
+      filteredData['F2Amplitude'].push(f2Data.Amplitude[i]);
+      if (f1Data) {
+        filteredData['F1Amplitude'].push(f1Data.Amplitude[i]);
+      }
+    }
+    return filteredData;
   }
-
-  
-  private async waitForRequestResultsDone() {
-    this.shouldAbort = true;
-    while (this.isRequestingResults) {
-      await new Promise((resolve) => setTimeout(resolve, 10));
-    }  
-  }
-
-  private updateInstructions() {
-    this.instructions = "Exam aborted, press 'Next' to continue.";
-    this.changeDetectorRef.detectChanges();
-  }
-
-  private updateStateOnAbort() {
-    this.state.isSubmittable = true;
-    this.inProgressResults.State = 'ABORTED';
-  }
-
 }

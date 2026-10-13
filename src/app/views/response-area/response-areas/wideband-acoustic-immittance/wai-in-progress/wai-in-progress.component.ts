@@ -1,55 +1,51 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output, inject } from '@angular/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
-import { DevicesService } from '../../../../../controllers/devices.service';
-import { ConnectedDevice } from '../../../../../interfaces/connected-device.interface';
+import { DevicesService } from '../../../../../services/devices/devices.service';
 import { StateModel } from '../../../../../models/state/state.service';
 import { StateInterface } from '../../../../../models/state/state.interface';
 import { WAIResultsInterface } from '../wai-exam/wai-exam.interface';
-import { Logger } from '../../../../../utilities/logger.service';
+import { Logger } from '../../../../../services/logger.service';
+import { IDeviceResponse } from '../../../../../interfaces/devices/device-response.interface';
 
 @Component({
-  selector: 'wai-in-progress',
+  selector: 'app-wai-in-progress',
   templateUrl: './wai-in-progress.component.html',
-  styleUrl: './wai-in-progress.component.css'
+  styleUrl: './wai-in-progress.component.css',
 })
 export class WAIInProgressComponent implements OnInit, OnDestroy {
-  @Input() device: ConnectedDevice | undefined;
-  @Input() fStart!: number;
-  @Input() fEnd!: number;
-  @Input() sweepDuration!: number;
-  @Input() sweepType!: string;
-  @Input() level!: number;
-  @Input() numSweeps!: number;
-  @Input() windowDuration!: number;
-  @Input() numFrequencies!: number;
-  @Input() filename!: string;
-  @Input() outputRawMeasurements!: boolean;
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
+  private readonly devicesService = inject(DevicesService);
+  private readonly logger = inject(Logger);
+  private readonly stateModel = inject(StateModel);
+
+  @Input() deviceId!: string;
+  @Input() parameterMap!: Map<string, string>;
   @Output() WAIResultsEvent = new EventEmitter<WAIResultsInterface>();
 
   state: StateInterface;
   inProgressResults: WAIResultsInterface = {
     State: 'READY',
-    PctComplete: 0
+    PctComplete: 0,
   };
   inProgressResultsSubject = new BehaviorSubject<WAIResultsInterface>(this.inProgressResults);
-  inProgressResultsSubscription: Subscription | undefined;
   shouldAbort: boolean = false;
   isRequestingResults: boolean = false;
-  instructions: string = "Exam in progress please wait.";
+  instructions: string = 'Exam in progress please wait.';
 
-  constructor(
-    private readonly changeDetectorRef: ChangeDetectorRef,
-    private readonly devicesService: DevicesService,
-    private readonly logger: Logger, 
-    private readonly stateModel: StateModel,
-  ) {
+  inProgressResultsSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
+
+  constructor() {
     this.state = this.stateModel.getState();
-    this.state.isSubmittable = false;
+    this.stateModel.updateState({ isSubmittable: false });
   }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.requestResults();
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
+      this.state = updatedState;
+    });
     this.inProgressResultsSubscription = this.inProgressResultsSubject.subscribe((updatedResults: WAIResultsInterface) => {
       this.inProgressResults = updatedResults;
       this.inProgressResults.PctComplete = Math.round(this.inProgressResults.PctComplete);
@@ -57,13 +53,18 @@ export class WAIInProgressComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.state.isSubmittable = true;
+    this.stateModel.updateState({ isSubmittable: true });
+    this.shouldAbort = true;
+    this.inProgressResultsSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
   }
 
   async abort() {
-    this.waitForRequestResultsDone();
-    this.updateInstructions();
-    await this.devicesService.abortExams(this.device!);
+    this.shouldAbort = true;
+    this.updateInstructionsAfterAbortButtonPressed();
+    await this.waitForRequestResultsDone();
+    await this.devicesService.abortExams(this.deviceId);
+    this.updateInstructionsAfterAbortComplete();
     this.updateStateOnAbort();
     this.WAIResultsEvent.emit(this.inProgressResults);
   }
@@ -71,55 +72,63 @@ export class WAIInProgressComponent implements OnInit, OnDestroy {
   private async requestResults() {
     const pollResults = async () => {
       if (this.shouldAbort) return;
-  
-      this.isRequestingResults = true;  
-      let resp = await this.devicesService.requestResults(this.device!, 300000);
+
+      this.isRequestingResults = true;
+      const resp = await this.devicesService.requestResults(this.deviceId);
       this.isRequestingResults = false;
-  
+
       if (this.shouldAbort) return;
-  
+
       if (this.doesRespContainResults(resp)) {
-        this.inProgressResultsSubject.next(resp![1]);
+        this.inProgressResultsSubject.next(resp?.msg[1] as WAIResultsInterface);
         if (this.inProgressResults.State === 'DONE') {
-          this.state.isSubmittable = true;
-          this.WAIResultsEvent.emit(resp![1]);
-          this.instructions = "Exam complete, press 'Next' to continue."
+          this.stateModel.updateState({ isSubmittable: true });
+          this.WAIResultsEvent.emit(resp?.msg[1] as WAIResultsInterface);
+          this.instructions = "Exam complete, press 'Next' to continue.";
           this.changeDetectorRef.detectChanges();
           return;
         }
       } else {
         this.logger.debug('WAI in-progress component. Request results did not return expected results. It may be too early to receive results.');
       }
-  
+
       setTimeout(pollResults, 1000);
     };
-  
+
     pollResults();
   }
 
-  private doesRespContainResults(resp: any[] | undefined) {
-    return resp !== undefined && 
-           resp.length > 1 && 
-           resp[1] !== 'ERROR' && 
-           resp[2] !== 'timeout' &&
-           resp[1] !== 'OK';
-  }
-  
-  private async waitForRequestResultsDone() {
-    this.shouldAbort = true;
-    while (this.isRequestingResults) {
-      await new Promise((resolve) => setTimeout(resolve, 10));
-    }  
+  private doesRespContainResults(resp: IDeviceResponse | undefined) {
+    return (
+      resp?.msg !== undefined &&
+      resp.msg.length > 1 &&
+      resp.msg[1] !== 'ERROR' &&
+      resp.msg[2] !== 'timeout' &&
+      resp.msg[2] !== 'byte timeout' &&
+      resp.msg[1] !== 'OK'
+    );
   }
 
-  private updateInstructions() {
+  private async waitForRequestResultsDone() {
+    while (this.isRequestingResults) {
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
+  }
+
+  private updateInstructionsAfterAbortButtonPressed() {
+    this.instructions =
+      'Abort pressed, please wait while exam is aborted. This may take several minutes, but the data collected so far will be saved.';
+    this.changeDetectorRef.detectChanges();
+  }
+
+  private updateInstructionsAfterAbortComplete() {
     this.instructions = "Exam aborted, press 'Next' to continue.";
     this.changeDetectorRef.detectChanges();
   }
 
   private updateStateOnAbort() {
-    this.state.isSubmittable = true;
+    this.stateModel.updateState({ isSubmittable: true });
     this.inProgressResults.State = 'ABORTED';
+    this.shouldAbort = false;
   }
-
 }

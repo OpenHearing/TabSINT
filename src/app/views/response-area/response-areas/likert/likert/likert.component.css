@@ -1,7 +1,20 @@
 /* General Styling */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .likert-container {
   text-align: center;
-  margin: 20px 0;
+  /* Bottom margin (inter-question spacing) is set from `verticalSpacing` in the template. */
+  margin-top: 20px;
 }
 
 .question {
@@ -12,35 +25,40 @@
   font-style: normal;
 }
 
-/* Labels */
+/* Labels — only the non-empty ones are rendered. Each label's flex-grow share (computed in
+   computeLabelSlots()) is the number of "level-widths" it should occupy, sized to reach halfway
+   to its nearest labeled neighbor (or the row edge) — this keeps it aligned with its own level's
+   button while giving it room to wrap. Gap must match .likert-options' gap exactly so the two
+   rows' column math lines up when every level is labeled. */
 .likert-labels {
   display: flex;
-  justify-content: space-between;
+  gap: 10px;
   width: 100%;
   font-weight: bold;
   font-size: 1.2rem;
-  flex-grow: 1
 }
 
-.likert-label-above {
-  padding: 0 10px;
+.likert-label {
+  flex: 0 1 0;
+  min-width: 0;
+  line-height: 1.1;
 }
 
-.likert-label-below {
-  padding: 0 10px 50px 10px;
+/* Give wrapped (multi-line) label text clearance from the scale below it */
+.likert-labels-top {
+  margin-bottom: 8px;
 }
 
-.align-left {
-  text-align: left;
-  flex-grow: 1;
-}
-.align-right {
-  text-align: right;
-  flex-grow: 1;
+.likert-labels-bottom {
+  margin-top: 0;
 }
 
-.center-align {
+/* Center label spanning the whole scale */
+.likert-center-label {
   text-align: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin: 4px 0;
 }
 
 /* Slider */
@@ -140,12 +158,19 @@
 
 .likert-option {
   cursor: pointer;
-  border: none;
+  border: 2px solid transparent;
   background: none;
   font-size: 1.3rem;
-  padding: 10px;
-  flex-grow: 1;
-  transition: transform 0.2s ease, background-color 0.2s ease;
+  padding: 4px 10px;
+  flex: 1 1 0;
+  min-width: 0;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .likert-option:hover {
@@ -159,6 +184,22 @@
   border: 2px solid black; /* Add black border when selected */
   border-radius: 5px; /* Optional: Make the border rounded */
 }
+
+/* Radio-button appearance */
+.radio-circle {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border: 2px solid #333;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+.likert-option.selected .radio-circle {
+  background: #333;
+  box-shadow: inset 0 0 0 3px #fff;
+}
+
 /* Not Applicable Checkbox */
 .likert-footer {
   text-align: right;

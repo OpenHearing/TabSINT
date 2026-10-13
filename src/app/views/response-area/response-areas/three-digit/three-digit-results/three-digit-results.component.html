@@ -1,0 +1,20 @@
+<div class="three-digit-results">
+  <app-trial-progression-plot *ngIf="snrProgressionData" [data]="snrProgressionData"></app-trial-progression-plot>
+
+  <table class="results-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>{{ "SNR" | transloco }}</th>
+        <th>{{ "Result" | transloco }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let presentation of presentations; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ presentation.currentSNR }}</td>
+        <td>[{{ digitResults(presentation).join(", ") }}]</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

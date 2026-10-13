@@ -9,7 +9,8 @@
   border: 1px solid #ced4da;
   height: 50vh;
   max-height: 50vh;
-  overflow-y: auto; 
+  overflow-y: auto;
+  scroll-behavior: smooth;
 }
 
 .log-entry {

@@ -1,0 +1,28 @@
+# Compiled output
+/dist
+/tmp
+/out-tsc
+/bazel-out
+!/build/.npmkeep
+version.json
+
+# Node
+/node_modules
+npm-debug.log
+yarn-error.log
+
+# Miscellaneous
+/.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
+android/keystore.properties
+*.keystore
+keystore.base64
+
+# System files
+.DS_Store
+Thumbs.db

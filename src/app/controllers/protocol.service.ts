@@ -1,9 +1,8 @@
 import * as _ from 'lodash';
-import { Injectable } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { inject, Injectable } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
-import Ajv from 'ajv';
-const ajv = new Ajv({useDefaults: true, strict: false})
+import Ajv, { ValidateFunction } from 'ajv';
 
 import { LoadingProtocolInterface } from '../interfaces/loading-protocol-object.interface';
 import { ProtocolValidationResultInterface } from '../interfaces/protocol-validation-result.interface';
@@ -18,276 +17,341 @@ import { DiskModel } from '../models/disk/disk.service';
 import { ProtocolModel } from '../models/protocol/protocol-model.service';
 import { AppModel } from '../models/app/app.service';
 import { StateModel } from '../models/state/state.service';
-import { FileService } from '../utilities/file.service';
-import { ExamState, DeveloperProtocols, DeveloperProtocolsCalibration, DialogType, ProtocolServer} from '../utilities/constants';
-import { Logger } from '../utilities/logger.service';
-import { Tasks } from '../utilities/tasks.service';
-import { Notifications } from '../utilities/notifications.service';
+import { FileService } from '../services/file.service';
+import { ExamState, DeveloperProtocols, DeveloperProtocolsCalibration, DialogType, ProtocolServer } from '../utilities/constants';
+import { Logger } from '../services/logger.service';
+import { Tasks } from '../services/tasks.service';
+import { Notifications } from '../services/notifications.service';
 import { loadingProtocolDefaults } from '../utilities/defaults';
-import { checkCalibrationFiles, checkControllers, checkPreProcessFunctions } from '../utilities/protocol-checks.function';
+import { checkCalibrationFiles, checkControllers, checkUnresolvedFilePaths, protocolHasWavFiles } from '../utilities/protocol-checks.function';
 import { processProtocol } from '../utilities/process-protocol.function';
 import { initializeLoadingProtocol } from '../utilities/initialize-loading-protocol';
+import { sanitizeJsonString } from '../utilities/sanitize-json-string.function';
+import { formatCountProgress } from '../utilities/format-count-progress.function';
 
 import { protocolSchema } from '../../schema/protocol.schema';
+import { calibrationFileSchema } from '../../schema/definitions/calibration-file.schema';
 
 @Injectable({
-    providedIn: 'root',
+  providedIn: 'root',
 })
-
 export class ProtocolService {
-    app: AppInterface;
-    disk: DiskInterface;
-    diskSubscription: Subscription | undefined;
-    loading: LoadingProtocolInterface;
-    protocolModel: ProtocolModelInterface;
-    state: StateInterface;
+  private readonly appModel = inject(AppModel);
+  private readonly diskModel = inject(DiskModel);
+  private readonly fileService = inject(FileService);
+  private readonly logger = inject(Logger);
+  private readonly notifications = inject(Notifications);
+  private readonly protocolM = inject(ProtocolModel);
+  private readonly stateModel = inject(StateModel);
+  private readonly transloco = inject(TranslocoService);
+  private readonly tasks = inject(Tasks);
 
-    constructor(
-        private readonly appModel: AppModel,
-        private readonly diskModel: DiskModel,
-        private readonly fileService: FileService,
-        private readonly logger:Logger,
-        private readonly notifications: Notifications,
-        private readonly protocolM: ProtocolModel,
-        private readonly stateModel: StateModel,
-        private readonly translate: TranslateService,
-        private readonly tasks: Tasks,
-    ) {
-        this.app = this.appModel.getApp();
-        this.protocolModel = this.protocolM.getProtocolModel();
-        this.state = this.stateModel.getState();
-        this.disk = this.diskModel.getDisk();
-        this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
-            this.disk = updatedDisk;
-        })    
-        this.loading = loadingProtocolDefaults(this.disk);
+  app: AppInterface;
+  disk: DiskInterface;
+  loading: LoadingProtocolInterface;
+  protocolModel: ProtocolModelInterface;
+  state: StateInterface;
+
+  diskSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
+
+  // Compiled once per app lifetime instead of once per protocol load: compiling the protocol
+  // schema (recursive, 26-branch oneOf per response area) costs ~270ms regardless of protocol
+  // size, dwarfing the ~1-2ms actual validation call.
+  private readonly ajv = new Ajv({ useDefaults: true, strict: false });
+  private readonly protocolValidator: ValidateFunction<ProtocolSchemaInterface> = this.ajv.compile(protocolSchema);
+  private readonly calibrationValidator: ValidateFunction = this.ajv.compile(calibrationFileSchema);
+
+  constructor() {
+    this.app = this.appModel.getApp();
+    this.protocolModel = this.protocolM.getProtocolModel();
+    this.state = this.stateModel.getState();
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
+      this.state = updatedState;
+    });
+    this.disk = this.diskModel.getDisk();
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+    });
+    this.loading = loadingProtocolDefaults(this.disk);
+  }
+
+  /** Load all protocol files onto the protocolModel.activeProtocol object.
+   * @summary Read and process protocol files
+   * including custom protocol files, validate the protocol against the schema.
+   * Handle load errors.
+   * @models protocol, disk
+   * @param meta meta data for the protocol to load,
+   * @param notify whether to use task banners to notify user about progress. Default: false.
+   */
+  async load(meta: ProtocolMetaInterface, notify: boolean = false): Promise<boolean> {
+    this.loading.meta = meta;
+    this.loading.notify = notify;
+    this.tasks.register('Load Protocol', 'Load Protocol');
+    try {
+      const loadError = await this.loadFiles();
+      const allErrors = loadError === undefined ? [] : [loadError];
+      if (loadError === undefined) {
+        await this.setCalibration();
+        await this.initializeProtocol();
+        await this.validateIfCalledFor();
+        const protocolErrors = this.checkProtocolErrors();
+        allErrors.push(...(protocolErrors ?? []));
+      }
+      if (allErrors.length > 0) {
+        if (loadError !== undefined || this.disk.preferences.validateProtocols) {
+          this.notifyProtocolLoadError(allErrors);
+          this.protocolModel.activeProtocol = undefined;
+          return false;
+        } else {
+          this.notifyProtocolLoadWarning(allErrors);
+          return true;
+        }
+      } else {
+        this.notifyProtocolLoadSuccess();
+        return true;
+      }
+    } catch (error: unknown) {
+      const err = error instanceof Error ? error.message : error;
+      this.protocolModel.activeProtocol = undefined;
+      this.logger.error(`Could not load protocol. ${err}`);
+      this.notifications
+        .alert({
+          title: 'Alert',
+          content: 'Could not load protocol. See logs for more information.',
+          type: DialogType.Alert,
+        })
+        .subscribe();
+      return false;
+    } finally {
+      this.tasks.deregister('Load Protocol');
+    }
+  }
+
+  /**
+   * Removes a protocol from TabSINT from the disk model
+   * @summary Check if the protocol to delete exists or is an admin or developer protocol.
+   * Removes it from the protocol model.
+   * @models protocol, app, disk
+   * @param p protocol to delete
+   */
+  delete(p: ProtocolMetaInterface): void {
+    if (p.server === ProtocolServer.Developer) {
+      this.logger.error('Trying to delete developer protocol ' + p.name + ', but this is not allowed');
+      return;
     }
 
-    /** Load all protocol files onto the protocolModel.activeProtocol object.
-     * @summary Read and process protocol files 
-     * including custom protocol files, validate the protocol against the schema.
-     * Handle load errors.
-     * @models protocol, disk
-     * @param meta meta data for the protocol to load,
-     * @param notify whether to use task banners to notify user about progress. Default: false.
-    */
-    async load(
-        meta: ProtocolMetaInterface,
-        notify: boolean = false
-    ) {
-        this.loading.meta = meta;
-        this.loading.notify = notify;
-
-        try {
-            await this.loadFiles();
-            this.setCalibration();
-            this.initializeProtocol();
-            let validationError = await this.validateIfCalledFor();
-                // .then(loadCustomJs)
-                // .then(validateCustomJsIfCalledFor)
-            this.handleLoadErrors(validationError);
-        } catch(e) {
-            this.tasks.deregister("updating protocol");
-            this.logger.error("Could not load protocol.  " + JSON.stringify(e));
-            this.notifications.alert({
-                title: "Alert",
-                content: "Could not load protocol.",
-                type: DialogType.Alert
-            }).subscribe();
-        }
-    };
-
-    /**
-     * Removes a protocol from TabSINT from the disk model
-     * @summary Check if the protocol to delete exists or is an admin or developer protocol.
-     * Removes it from the protocol model.
-     * @models protocol, app, disk
-     * @param p protocol to delete
-     */
-    delete(p: ProtocolMetaInterface): void {
-        if (p.server === ProtocolServer.Developer) {
-            this.logger.error("Trying to delete developer protocol " + p.name + ", but this is not allowed");
-            return;
-        }
-
-        try {
-            let availProtocols = this.disk.availableProtocolsMeta;
-            delete availProtocols[p.name];
-            let updatedAvailableProtocolsMeta = availProtocols;
-            this.diskModel.updateDiskModel('availableProtocolsMeta', updatedAvailableProtocolsMeta);
-        } catch (error) {
-            this.logger.error("Error trying to delete files: " + error);
-        }
-    };
-
-    private async loadFiles() {
-        try {
-            let protocol;
-            let finalProtocol: ProtocolSchemaInterface;
-
-            if (this.loading.meta.server == ProtocolServer.Developer) {
-                protocol = DeveloperProtocols[this.loading.meta.name];
-                finalProtocol = protocol;
-            } else {
-                const response = await this.fileService.readFile("protocol.json", this.loading.meta.contentURI);
-                protocol = response?.content!;
-                finalProtocol = JSON.parse(protocol);
-            }
-
-            if (!_.isUndefined(protocol)) {
-                this.loading.protocol = {...this.loading.meta, ...finalProtocol };
-                this.diskModel.updateDiskModel('activeProtocolMeta', this.loading.meta);
-            } else {
-                this.notifyProtocolDidntLoadProperly();
-            }
-
-        } catch(err) {
-            this.logger.error("Error while loading files: " + err);
-        }
+    try {
+      const availProtocols = this.disk.availableProtocolsMeta;
+      delete availProtocols[p.name];
+      const updatedAvailableProtocolsMeta = availProtocols;
+      this.diskModel.updateDiskModel({ availableProtocolsMeta: updatedAvailableProtocolsMeta });
+    } catch (error) {
+      this.logger.error('Error trying to delete files: ' + error);
     }
+  }
 
-    private async validate() {
-        const validate = ajv.compile(protocolSchema);
-        const isValid = validate(this.loading.protocol);
-        this.logger.debug('AJV isValid? ' + isValid);
-        this.logger.debug('AJV ERRORS: ' + validate.errors);
-        let ret: ProtocolValidationResultInterface = {
-            valid: isValid,
-            error: validate.errors
+  private async loadFiles(): Promise<ProtocolErrorInterface | undefined> {
+    let loadError: ProtocolErrorInterface | undefined = undefined;
+    try {
+      this.tasks.register('Load Files', 'Loading Files...');
+      let protocol;
+      let finalProtocol: ProtocolSchemaInterface;
+
+      if (this.loading.meta.server == ProtocolServer.Developer) {
+        protocol = DeveloperProtocols[this.loading.meta.name];
+        finalProtocol = protocol;
+      } else {
+        const response = await this.fileService.readFile('protocol.json', this.loading.meta.contentURI);
+        protocol = response?.content;
+        finalProtocol = protocol ? JSON.parse(sanitizeJsonString(protocol)) : undefined;
+      }
+
+      if (!_.isUndefined(protocol)) {
+        this.loading.protocol = { ...this.loading.meta, ...finalProtocol };
+        this.diskModel.updateDiskModel({ activeProtocolMeta: this.loading.meta });
+      } else {
+        loadError = {
+          type: 'Load Files',
+          error: 'Failed to parse protocol.json',
         };
-        return ret;
+      }
+    } catch (err) {
+      loadError = {
+        type: 'Load Files',
+        error: JSON.stringify(err),
+      };
+      this.logger.error('Error while loading files: ' + err);
+    } finally {
+      this.tasks.deregister('Load Files');
+    }
+    return loadError;
+  }
+
+  /**
+   * Validate an object against a precompiled AJV validator.
+   * @param data The data to be validated.
+   * @param validateAjv The compiled validator to validate against.
+   * @returns A validation result containing whether the data is valid and any errors.
+   */
+  private validate(data: object, validateAjv: ValidateFunction): ProtocolValidationResultInterface {
+    const isValid = validateAjv(data);
+    this.logger.debug('AJV isValid? ' + isValid);
+    this.logger.debug('AJV ERRORS: ' + validateAjv.errors);
+    const ret: ProtocolValidationResultInterface = {
+      valid: isValid,
+      error: validateAjv.errors,
+    };
+    return ret;
+  }
+
+  private async validateIfCalledFor() {
+    if (!this.disk.preferences.validateProtocols) return undefined;
+    if (this.loading.notify) {
+      this.tasks.register('Validate Protocol', 'Validating Protocol... This process could take several minutes');
+    }
+    const protocolValidationResult = this.validate(this.loading.protocol, this.protocolValidator);
+    let calibrationValidationResult: ProtocolValidationResultInterface = { valid: true, error: null };
+    if (this.loading.calibration) {
+      calibrationValidationResult = this.validate(this.loading.calibration, this.calibrationValidator);
+    }
+    this.tasks.deregister('Validate Protocol');
+    if (!protocolValidationResult.valid || !calibrationValidationResult.valid) {
+      const protocolErrors = JSON.stringify(protocolValidationResult.error) ?? '';
+      const calibrationErrors = JSON.stringify(calibrationValidationResult.error) ?? '';
+      const errorType =
+        (protocolErrors ? 'Protocol Schema' : '') +
+        (protocolErrors && calibrationErrors ? ' and ' : '') +
+        (calibrationErrors ? 'Calibration Schema' : '');
+      const error: ProtocolErrorInterface = {
+        type: errorType,
+        error: protocolErrors + calibrationErrors,
+      };
+      this.logger.error('validateIfCalledFor failed with error: ' + error.error);
+      this.protocolModel.activeProtocol!.errors!.push(error);
+    }
+  }
+
+  private checkProtocolErrors(): ProtocolErrorInterface[] | undefined {
+    this.tasks.register('Handle Load Errors', 'Checking Protocol Files...');
+    const msg = checkCalibrationFiles(this.protocolModel.activeProtocol!);
+    if (typeof msg === 'string') {
+      this.logger.debug(msg);
+      this.protocolModel.activeProtocol!.errors!.push({
+        type: 'Calibration',
+        error: msg,
+      });
+    } else {
+      this.logger.debug('All calibration files found.');
     }
 
-    private async validateIfCalledFor() {
-        if (this.loading.notify) {
-            this.tasks.register("updating protocol", "Validating Protocol... This process could take several minutes");
-        }
+    checkControllers(this.protocolModel.activeProtocol!).forEach((e: ProtocolErrorInterface) => {
+      this.protocolModel.activeProtocol!.errors!.push(e);
+    });
 
-        if (this.disk.validateProtocols) {
-            let validationResult = await this.validate();
-            if (validationResult.valid) {
-                return;
-            } else {
-                let error: ProtocolErrorInterface = {
-                    type: "Protocol Schema",
-                    error: JSON.stringify(validationResult.error)
-                };
-                this.logger.error("validateIfCalledFor failed with error: " + error.error);
-                return error;
-            }
-        } else {
-            return;
-        }
+    checkUnresolvedFilePaths(this.protocolModel.activeProtocol!).forEach((e: ProtocolErrorInterface) => {
+      this.protocolModel.activeProtocol!.errors!.push(e);
+    });
+
+    this.tasks.deregister('Handle Load Errors');
+    return this.protocolModel.activeProtocol?.errors ?? [];
+  }
+
+  private async initializeProtocol() {
+    try {
+      this.tasks.register('Initialize Protocol', 'Initializing Protocol...');
+      this.loading = await initializeLoadingProtocol(this.loading, this.logger, this.transloco, this.disk, this.fileService);
+      this.tasks.register('Initialize Protocol', 'Processing Protocol...');
+
+      [this.protocolModel.activeProtocol, this.protocolModel.activeProtocolDictionary, this.protocolModel.activeProtocolFollowOnsDictionary] =
+        await processProtocol(this.loading, (done, total) =>
+          this.tasks.register('Initialize Protocol', formatCountProgress('Processing Protocol...', done, total))
+        );
+
+      this.stateModel.updateState({
+        examState: ExamState.Ready,
+      });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new Error(`Failed to initialize protocol: ${error.message}`);
+      } else {
+        throw new Error(`Failed to initialize protocol: ${error}`);
+      }
+    } finally {
+      this.tasks.deregister('Initialize Protocol');
     }
+  }
 
-    private handleLoadErrors(validationError?: ProtocolErrorInterface) {
+  private async setCalibration() {
+    this.loading.calibration = undefined;
+    if (!protocolHasWavFiles(this.loading.protocol)) return;
 
-        if (!_.isUndefined(validationError)) this.protocolModel.activeProtocol!.errors!.push(validationError);
+    let calibration;
+    if (this.loading.meta.server === ProtocolServer.Developer) {
+      calibration = DeveloperProtocolsCalibration[this.loading.meta.name];
+      this.loading.calibration = calibration;
+    } else {
+      // The loaded calibration file is validated as necessary in validateIfCalledFor
+      const calibrationFile = await this.fileService.readFile('calibration.json', this.loading.meta.contentURI);
+      calibration = calibrationFile?.content;
+      this.loading.calibration = calibration ? JSON.parse(sanitizeJsonString(calibration)) : undefined;
+    }
+  }
 
-        this.tasks.register("updating protocol", "Checking Protocol Files...");
-        let msg = checkCalibrationFiles(this.protocolModel.activeProtocol!);
-        if (typeof msg === "string") {
-            this.logger.debug(msg);
-            this.protocolModel.activeProtocol!.errors!.push({
-                type: "Calibration",
-                error: msg
-            });
-        } else {
-            this.logger.debug("All calibration files found.");
-        }
-
-        checkPreProcessFunctions(this.protocolModel.activeProtocol!).forEach((e: ProtocolErrorInterface) => {
-            this.protocolModel.activeProtocol!.errors!.push(e);
+  private notifyProtocolLoadSuccess() {
+    if (this.loading.notify) {
+      const msg = 'Successfully loaded protocol: ' + this.loading.meta.name;
+      this.notifications
+        .alert({
+          title: 'Alert',
+          content: msg,
+          type: DialogType.Alert,
         })
+        .subscribe();
+    }
+  }
 
-        checkControllers(this.protocolModel.activeProtocol!).forEach((e: ProtocolErrorInterface) => {
-            this.protocolModel.activeProtocol!.errors!.push(e);
+  private notifyProtocolLoadError(errors: ProtocolErrorInterface[]) {
+    if (this.disk.audhere) {
+      this.notifications
+        .alert({
+          title: 'Alert',
+          content: this.transloco.translate('The protocol specified is not available, please see the administrator.'),
+          type: DialogType.Alert,
         })
+        .subscribe();
+    } else {
+      let msg = 'The protocol contains the following errors and will not be loaded.' + ' \n\n';
 
-        if (this.protocolModel.activeProtocol!.errors!.length > 0) {
-            msg ="The protocol contains the following errors and may not function properly." + " \n\n";
-            for (let err of this.protocolModel.activeProtocol!.errors!) {
-                msg += err.type + ":\n";
-                msg += " - " + err.error + "\n";
-            }
-            this.logger.error(" Protocol contains the following errors: " + JSON.stringify(this.protocolModel.activeProtocol!.errors));
-            this.notifications.alert({
-                title: "Alert",
-                content: msg,
-                type: DialogType.Alert
-            }).subscribe();
-        } else if (this.loading.notify) {
-            msg = "Successfully loaded protocol: " +
-                this.loading.meta.name;
-            this.notifications.alert({
-                title: "Alert",
-                content: msg,
-                type: DialogType.Alert
-            }).subscribe();
-        }
-        this.tasks.deregister("updating protocol");
+      for (const err of errors) {
+        msg += err.type + ':\n';
+        msg += ' - ' + err.error + '\n';
+      }
+
+      this.logger.error('Protocol contains the following errors: ' + JSON.stringify(errors));
+      this.notifications
+        .alert({
+          title: 'Alert',
+          content: msg,
+          type: DialogType.Alert,
+        })
+        .subscribe();
     }
+  }
 
-    private initializeProtocol() {
-        this.tasks.register("updating protocol", "Initializing Protocol...");
-        this.loading = initializeLoadingProtocol(
-            this.loading,
-            this.logger,
-            this.translate,
-            this.disk,
-            this.fileService);
-        this.tasks.register("updating protocol", "Processing Protocol...");
-
-        [this.protocolModel.activeProtocol,
-            this.protocolModel.activeProtocolDictionary,
-            this.protocolModel.activeProtocolFollowOnsDictionary
-        ] = processProtocol(this.loading);
-
-        if (this.protocolModel.activeProtocol && "key" in this.protocolModel.activeProtocol) {
-            if (this.protocolModel.activeProtocol.key !== undefined) {
-                this.protocolModel.activeProtocol.publicKey = decodeURI(this.protocolModel.activeProtocol.key);
-            }
-        }
-
-        this.diskModel.updateDiskModel('headset', this.protocolModel.activeProtocol.headset ?? "None");
-
-        if (this.loading.protocol._requiresCha) {
-            this.logger.debug("This exam requires the CHA, attempting to connect...");
-        // setTimeout(cha.connect, 1000);
-        }
-
-        this.state.examIndex = 0;
-        this.state.examState = ExamState.Ready;
+  private notifyProtocolLoadWarning(errors: ProtocolErrorInterface[]) {
+    let msg = 'The protocol contains the following errors and may not function properly.' + ' \n\n';
+    for (const err of errors) {
+      msg += err.type + ':\n';
+      msg += ' - ' + err.error + '\n';
     }
-
-    private async setCalibration() {
-        this.loading.calibration = undefined;
-        let calibration;
-        if (this.loading.meta.server === ProtocolServer.Developer) {
-            calibration = DeveloperProtocolsCalibration[this.loading.meta.name];
-        } else {
-            calibration = await this.fileService.readFile(this.loading.meta.contentURI + "/calibration.json");
-        }
-        if (calibration) {
-            this.loading.calibration = JSON.parse(calibration);
-        }
-
-    }
-
-    private notifyProtocolDidntLoadProperly() {
-        this.logger.error("Protocol did not load properly");
-        if (this.disk.audhere) {
-          this.notifications.alert({
-            title: "Alert",
-            content:  this.translate.instant("The protocol specified is not available, please see the administrator."),
-            type: DialogType.Alert
-            }).subscribe();
-        } else {
-          this.notifications.alert({
-            title: "Alert",
-            content:  this.translate.instant("Protocol did not load properly. Please validate your protocol before trying to load again."),
-            type: DialogType.Alert
-            }).subscribe();
-        }
-    }
+    this.logger.error('Protocol contains the following errors: ' + JSON.stringify(errors));
+    this.notifications
+      .alert({
+        title: 'Alert',
+        content: msg,
+        type: DialogType.Alert,
+      })
+      .subscribe();
+  }
 }

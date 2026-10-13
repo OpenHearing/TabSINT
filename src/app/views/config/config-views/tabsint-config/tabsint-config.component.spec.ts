@@ -1,10 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 
 import { TabsintConfigComponent } from './tabsint-config.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
+import { QRCodeModule } from 'angularx-qrcode';
 
 describe('TabsintConfigComponent', () => {
   let component: TabsintConfigComponent;
@@ -14,19 +15,14 @@ describe('TabsintConfigComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [TabsintConfigComponent],
       imports: [
-        MatMenuModule, 
+        MatMenuModule,
         NgbModule,
         FormsModule,
-        TranslateModule.forRoot({
-                  loader: {
-                    provide: TranslateLoader,
-                    useClass: TranslateFakeLoader
-                  }
-                })],
-      providers: [TranslateService, TranslateStore]
-    })
-    .compileComponents();
-    
+        QRCodeModule,
+        TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
+      ],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(TabsintConfigComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

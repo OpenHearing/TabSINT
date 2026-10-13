@@ -1,0 +1,60 @@
+<table style="width: 100%">
+  <th style="text-align: left">CHA Demo Commands</th>
+  <tr>
+    <td><input type="button" value="Check Permissions" (click)="checkPermissions()" /></td>
+    <td><input type="button" value="Request Permissions" (click)="requestPermissions()" /></td>
+  </tr>
+  <tr>
+    <td><input type="button" value="Get BT State" (click)="getBluetoothState()" /></td>
+    <td><input type="button" value="Enable BT" (click)="enableBluetooth()" /></td>
+  </tr>
+  <tr>
+    <td><input type="button" value="Discover BTLE CHA" (click)="discovery('BLUETOOTH_LE')" /></td>
+    <td><input type="button" value="Cancel Discovery" (click)="cancelDiscovery()" /></td>
+  </tr>
+  <tr>
+    <td><input type="button" value="Connect to CHA" (click)="connect()" /></td>
+    <td><input type="button" value="Disconnect from CHA" (click)="disconnect()" /></td>
+  </tr>
+  <tr>
+    <td><input type="button" value="Request ID" (click)="requestId()" /></td>
+    <td><input type="button" value="Request Probe ID" (click)="requestProbeId()" /></td>
+    <td><input type="button" value="Request Status" (click)="requestStatus()" /></td>
+  </tr>
+  <tr>
+    <td><input type="button" value="Queue Bekesy" (click)="queueBekesy()" /></td>
+    <td><input type="button" value="Queue Hughson-Westlake" (click)="queueHw()" /></td>
+  </tr>
+  <tr>
+    <td><input type="button" value="Queue B.F." (click)="queueBekesyFrequency()" /></td>
+  </tr>
+  <tr>
+    <td><input type="button" value="Request Results" (click)="requestResults()" /></td>
+    <td><input type="button" value="Abort Exams" (click)="abortExams()" /></td>
+  </tr>
+  <tr>
+    <td><input type="button" value="Toggle Software Button" (click)="toggleSoftwareButton()" /></td>
+  </tr>
+  <tr>
+    <td><input type="button" value="Start File Write" (click)="startFileWrite()" /></td>
+  </tr>
+  <tr>
+    <td><input type="button" value="Reprogram" (click)="reprogram()" /></td>
+    <td><input type="button" value="Reboot" (click)="reboot()" /></td>
+  </tr>
+  <tr>
+    <td><input type="button" value="Get A2DP" (click)="getA2dp()" /></td>
+    <td><input type="button" value="Connect A2DP" (click)="connectA2dp()" /></td>
+    <td><input type="button" value="Disconnect A2DP" (click)="disconnectA2dp()" /></td>
+  </tr>
+  <tr>
+    <td><input type="button" value="NF Start" (click)="noiseFeatureStart()" /></td>
+    <td><input type="button" value="NF Pause" (click)="noiseFeaturePause()" /></td>
+    <td><input type="button" value="NF Resume" (click)="noiseFeatureResume()" /></td>
+  </tr>
+  <tr>
+    <td><input type="button" value="NF Stop" (click)="noiseFeatureStop()" /></td>
+    <td><input type="button" value="NF CLU" (click)="noiseFeatureIncreaseLevel()" /></td>
+    <td><input type="button" value="NF CLD" (click)="noiseFeatureDecreaseLevel()" /></td>
+  </tr>
+</table>

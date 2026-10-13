@@ -1,49 +1,49 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 
 import { DiskInterface } from '../../models/disk/disk.interface';
-import { Logger } from '../../utilities/logger.service';
+import { Logger } from '../../services/logger.service';
 import { DiskModel } from '../../models/disk/disk.service';
 
 @Component({
-  selector: 'change-max-log-length-view',
+  selector: 'app-change-max-log-length-view',
   standalone: true,
   templateUrl: './change-max-log-length.component.html',
   styleUrl: './change-max-log-length.component.css',
-  imports: [FormsModule, TranslateModule]
+  imports: [FormsModule, TranslocoPipe],
 })
-export class ChangeMaxLogLengthComponent {
+export class ChangeMaxLogLengthComponent implements OnInit, OnDestroy {
+  private readonly logger = inject(Logger);
+  private readonly dialog = inject(MatDialog);
+  private readonly diskModel = inject(DiskModel);
+
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
   maxLogLength: number | undefined;
 
-  constructor(
-    private readonly logger: Logger, 
-    private readonly dialog: MatDialog, 
-    private readonly diskModel: DiskModel
-  ) {
+  constructor() {
     this.disk = this.diskModel.getDisk();
-    this.maxLogLength = this.disk.maxLogRows; // Initialize with the current max log length
+    this.maxLogLength = this.disk.preferences.maxLogRows; // Initialize with the current max log length
   }
 
-  ngOnInit() {
-    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
-        this.disk = updatedDisk;
-    })    
+  ngOnInit(): void {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+    });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
   }
 
   save(maxLogLength: number | undefined) {
     if (maxLogLength != undefined) {
-      this.logger.debug("Max log length changed to: " + maxLogLength);
-      this.disk.maxLogRows = maxLogLength;
-      this.diskModel.updateDiskModel('maxLogRows', maxLogLength);
+      this.logger.debug('Max log length changed to: ' + maxLogLength);
+      this.disk.preferences.maxLogRows = maxLogLength;
+      this.diskModel.updatePreferences({ maxLogRows: maxLogLength });
     }
     this.dialog.closeAll();
   }
@@ -51,5 +51,4 @@ export class ChangeMaxLogLengthComponent {
   cancel() {
     this.dialog.closeAll();
   }
-  
 }

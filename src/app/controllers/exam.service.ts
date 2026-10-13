@@ -1,323 +1,1068 @@
-import { Injectable } from '@angular/core';
-import { Subscription } from 'rxjs';
-
-import { isPageDefinition, isProtocolReferenceInterface, isProtocolSchemaInterface } from '../guards/type.guard';
+import { Injectable, inject } from '@angular/core';
+import { combineLatest, firstValueFrom, interval, Subscription } from 'rxjs';
+import {
+  isChoiceResponseArea,
+  isPageDefinition,
+  isProtocolReferenceInterface,
+  isProtocolSchemaInterface,
+  isProtocolStarted,
+  isStatusResponse,
+} from '../guards/type.guard';
 import { PageTypes } from '../types/custom-types';
-
-import { FollowOnInterface} from '../interfaces/page-definition.interface';
-import { ResultsInterface } from '../models/results/results.interface';
+import {
+  ChaWavfilesInterface,
+  FollowOnInterface,
+  PageDefinition,
+  PageWavfileInterface,
+  ProtocolReferenceInterface,
+} from '../interfaces/page-definition.interface';
+import { CurrentResults, ResultsInterface } from '../models/results/results.interface';
 import { StateInterface } from '../models/state/state.interface';
 import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
 import { PageInterface } from '../models/page/page.interface';
-
 import { ResultsService } from './results.service';
 import { ResultsModel } from '../models/results/results-model.service';
 import { StateModel } from '../models/state/state.service';
 import { ProtocolModel } from '../models/protocol/protocol-model.service';
 import { PageModel } from '../models/page/page.service';
-
-import { DialogType, ExamState } from '../utilities/constants';
-import { Notifications } from '../utilities/notifications.service';
-import { Logger } from '../utilities/logger.service';
-import { calculateElapsedTime, checkForSpecialReference, getDefaultResponseRequired } from '../utilities/exam-helper-functions';
+import { WINDOW } from '../utilities/window';
+import { FileService } from '../services/file.service';
+import { DiskModel } from '../models/disk/disk.service';
+import { DialogType, ExamState, AppState, DeviceType, DeviceState } from '../utilities/constants';
+import { Notifications } from '../services/notifications.service';
+import { Logger } from '../services/logger.service';
+import {
+  calculateElapsedTime,
+  checkForSpecialReference,
+  findResponseAreaSchema,
+  getDefaultResponseRequired,
+} from '../utilities/exam-helper-functions';
+import { includesOrEquals } from '../utilities/response-area-helper-functions';
+import { ProtocolStackItem } from '../models/protocol/protocol-stack';
+import { ChoiceInterface } from '../interfaces/choice.interface';
+import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
+import { DevicesService } from '../services/devices/devices.service';
+import { IDeviceResponse } from '../interfaces/devices/device-response.interface';
+import { DosimeterResultsInterface } from '../interfaces/dosimeter-results.interface';
+import { pageSchema } from '../../schema/page.schema';
+import { AudioService } from '../services/audio.service';
+import { Tasks } from '../services/tasks.service';
+import { resolveVideoPath, resolveWavfilePath, WavfileResolutionContext } from '../utilities/process-protocol.function';
 
 @Injectable({
-    providedIn: 'root',
+  providedIn: 'root',
 })
-
 export class ExamService {
-    protocol: ProtocolModelInterface;
-    results: ResultsInterface;
-    state: StateInterface;
-    currentPage: PageInterface;
-    pageSubscription: Subscription | undefined;
+  private readonly logger = inject(Logger);
+  private readonly resultsService = inject(ResultsService);
+  private readonly resultsModel = inject(ResultsModel);
+  private readonly pageModel = inject(PageModel);
+  private readonly protocolModel = inject(ProtocolModel);
+  private readonly stateModel = inject(StateModel);
+  private readonly notifications = inject(Notifications);
+  private readonly window = inject(WINDOW);
+  private readonly fileService = inject(FileService);
+  private readonly diskModel = inject(DiskModel);
+  private readonly devicesService = inject(DevicesService);
+  private readonly audioService = inject(AudioService);
+  private readonly tasks = inject(Tasks);
 
-    constructor (
-        private readonly logger: Logger,
-        private readonly resultsService: ResultsService,
-        private readonly resultsModel: ResultsModel,
-        private readonly pageModel: PageModel,
-        private readonly protocolM: ProtocolModel,
-        private readonly stateModel: StateModel,
-        private readonly notifications: Notifications
-    ) {
-        this.results = this.resultsModel.getResults();
-        this.currentPage = this.pageModel.getPage();
-        this.pageSubscription = this.pageModel.currentPageSubject.subscribe( (updatedPage: PageInterface) => {
-            this.currentPage = updatedPage;
+  protocol: ProtocolModelInterface;
+  results: ResultsInterface;
+  state: StateInterface;
+
+  /** True while a feedback-delayed submit is counting down, so response areas can show feedback. */
+  isShowingFeedback = false;
+  private static readonly feedbackDelayMs = 1250;
+
+  pageSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
+  resultsSubscription: Subscription | undefined;
+
+  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
+  dosimeterResultsPoll: { [name: string]: ReturnType<typeof setInterval> } = {};
+  private activeWavfileDevice: string | undefined = undefined;
+  private activeSvantekDeviceId: string | undefined = undefined;
+  private svantekResultPoll: ReturnType<typeof setInterval> | undefined = undefined;
+  private autoSubmitTimer: ReturnType<typeof setTimeout> | undefined = undefined;
+  private svantekWarned = false;
+  private dosimeterWarned = false;
+
+  constructor() {
+    this.results = this.resultsModel.getResults();
+    this.state = this.stateModel.getState();
+    this.protocol = this.protocolModel.getProtocolModel();
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
+      this.state = updatedState;
+    });
+    this.resultsSubscription = this.resultsModel.resultsSubject.subscribe(updatedResults => {
+      this.results = updatedResults;
+    });
+    combineLatest([this.protocolModel.getProtocolModel().activeProtocolStack.latestProtocolObservable, interval(1000)]).subscribe(
+      ([latestStackItem]) => {
+        this.updateExamProgress(latestStackItem);
+      }
+    );
+  }
+
+  /** Switches to exam view.
+   * @summary Can be called from any other TabSINT view. If protocol stack is not empty, the exam
+   * will proceed where it left off. Otherwise examState gets changed to Ready.
+   */
+  switchToExamView() {
+    if (this.protocol.activeProtocol === undefined) {
+      if (this.tasks.isOngoing('Load Protocol')) {
+        this.notifications
+          .alert({
+            title: 'Alert',
+            content: 'Protocol is still loading. Please wait for loading to complete before proceeding.',
+            type: DialogType.Alert,
+          })
+          .subscribe();
+      } else {
+        this.notifications
+          .alert({
+            title: 'Alert',
+            content: 'No protocol has been loaded. Please scan your QR Code or navigate to the Admin View and load a protocol.',
+            type: DialogType.Alert,
+          })
+          .subscribe();
+      }
+      return;
+    }
+
+    if (!this.protocol.activeProtocolStack.peek()) {
+      this.stateModel.updateState({ examState: ExamState.Ready });
+    }
+  }
+
+  /** Begins TabSINT exam.
+   * @summary Adds pages to protocolStack and changes examState to Testing.
+   * @models protocol, state
+   */
+  async begin() {
+    this.resetProtocolStack();
+    this.svantekWarned = false;
+    this.dosimeterWarned = false;
+    this.resultsService.initializeExamResults();
+    this.stateModel.updateState({ examState: ExamState.Testing });
+    this.protocol.activeProtocolStack.addProtocol(this.protocol.activeProtocol!);
+    this.audioService.setSystemVolume(1);
+    await this.advancePage();
+  }
+
+  /** Default submit function for exam pages.
+   * @summary Appends current page results to current exam results, calls advancePage(), and resets.
+   * @models results, state
+   */
+  async submitDefault() {
+    this.gradeResponses();
+    this.resultsService.pushResults(this.results.currentPage);
+    this.setFlags(this.results.currentPage);
+    await this.advancePage();
+  }
+
+  /** Submit function for exam pages. Can be overwritten by exams.
+   * @models results, state
+   */
+  async submit(): Promise<void> {
+    await this.submitDefault();
+  }
+
+  /** Overwrite submit with one that leaves feedback on screen before advancing.
+   * @summary Raises isShowingFeedback, waits feedbackDelayMs, then restores and calls submitDefault.
+   */
+  delaySubmitForFeedback() {
+    this.submit = async () => {
+      this.isShowingFeedback = true;
+      setTimeout(() => {
+        this.submit = () => this.submitDefault();
+        this.submit();
+        this.isShowingFeedback = false;
+      }, ExamService.feedbackDelayMs);
+    };
+  }
+
+  gradeResponsesDefault() {
+    this.results.currentPage.correct = undefined;
+    if (isChoiceResponseArea(this.results.currentPage?.page?.responseArea)) {
+      const choices: ChoiceInterface[] | undefined = this.results.currentPage.page.responseArea.choices;
+      if (choices) {
+        choices.forEach((choice: ChoiceInterface) => {
+          if (choice?.correct && includesOrEquals(this.results.currentPage.response.selected, choice.id)) {
+            this.results.currentPage.correct = true;
+          }
+          if (choice?.correct && this.results.currentPage.correct === undefined) {
+            this.results.currentPage.correct = false;
+          }
         });
-        this.state = this.stateModel.getState();
-        this.protocol = this.protocolM.getProtocolModel();
+      }
     }
+  }
 
-    /** Switches to exam view.
-     * @summary Can be called from any other TabSINT view. If pageModel.stack is not empty, the exam
-     * will proceed where it left off. Otherwise examState gets changed to Ready.
-    */
-    switchToExamView() {
-        if (this.protocol.activeProtocol == undefined) {
-            this.notifications.alert({
-                title: "Alert",
-                content: "No protocol has been loaded. Please scan your QR Code or navigate to the Admin View and load a protocol.",
-                type: DialogType.Alert
-            }).subscribe();
-            return
-        }
+  gradeResponses() {
+    this.gradeResponsesDefault();
+  }
 
-        if (this.pageModel.stack.length == 0) {
-            this.state.examState = ExamState.Ready;
-        }
+  /** Default skip function for exam pages.
+   * @summary Flags the page result as skipped, drops any response area submit override, and submits.
+   * @models results, state
+   */
+  skipDefault() {
+    this.logger.debug('Skipping page');
+    this.resultsModel.updateCurrentPage({ isSkipped: true });
+    // A skipped page submits regardless of whether its response requirement was met, and must
+    // bypass any submit a response area installed (for example one that demands notes first).
+    this.stateModel.updateState({ isSubmittable: true });
+    this.submit = () => this.submitDefault();
+    void this.submitDefault();
+  }
+
+  /** Skip function for exam pages. Can be overwritten by exams.
+   * @models results, state
+   */
+  skip() {
+    this.skipDefault();
+  }
+
+  async backDefault(): Promise<void> {
+    // noop
+  }
+
+  async back(): Promise<void> {
+    // used/overwritten by calibration-exam
+  }
+
+  /**
+   * Default reset function for exam pages.
+   */
+  async resetDefault(): Promise<void> {
+    this.stateModel.updateState({ examState: ExamState.Ready });
+    this.resetProtocolStack();
+  }
+
+  async reset(): Promise<void> {
+    await this.resetDefault();
+  }
+
+  /**
+   * Default submit partial function for exam pages.
+   */
+  async submitPartialDefault(): Promise<void> {
+    this.gradeResponses();
+    this.resultsService.pushResults(this.results.currentPage);
+    this.setFlags(this.results.currentPage);
+    this.resultsModel.updateCurrentExam({ partialresults: true });
+    this.resetProtocolStack();
+    if (this.protocol.activeProtocolDictionary!['@PARTIAL'] === undefined) {
+      this.endExam();
+    } else {
+      await this.navigateToTarget('@PARTIAL');
     }
+  }
 
-    /** Begins TabSINT exam.
-     * @summary Adds pages to protocolStack and changes examState to Testing.
-     * @models protocol, state
-    */
-    async begin() {     
-        this.resetProtocolStack();   
-        this.addPagesToStack(this.protocol.activeProtocol?.pages!, 0);
-        this.resultsService.initializeExamResults();
-        this.startPage();
-        this.state.examState = ExamState.Testing;
+  async submitPartial(): Promise<void> {
+    await this.submitPartialDefault();
+  }
+
+  /**
+   * Default navigate to target function, which navigates to the specified subprotocol.
+   * @param subProtocolID The sub protocol page identifier.
+   */
+  async navigateToTargetDefault(subProtocolID: string): Promise<void> {
+    const referenceProtocol = this.protocol.activeProtocolDictionary![subProtocolID];
+    this.protocol.activeProtocolStack.addProtocol(referenceProtocol);
+    this.stateModel.updateState({ examState: ExamState.Testing });
+    await this.advancePage();
+  }
+
+  /**
+   * Navigate to target function. Can be overwritten by exams.
+   * @param subProtocolID The sub protocol page identifier.
+   */
+  async navigateToTarget(subProtocolID: string): Promise<void> {
+    await this.navigateToTargetDefault(subProtocolID);
+  }
+
+  /**
+   * Restart the active page by decrementing the current page index and re-advancing.
+   */
+  async restartActivePage() {
+    const currentProtocol = this.protocol.activeProtocolStack.peek();
+    const currentPageIndex = currentProtocol?.pageIndex;
+    if (currentPageIndex === undefined) {
+      this.logger.debug('Failed to reset active page, no active page available.');
+    } else {
+      this.protocol.activeProtocolStack.updateCurrentProtocol({ pageIndex: Math.max(currentPageIndex - 1, -1) });
+      await this.advancePage();
     }
+  }
 
-    /** Default submit function for exam pages.
-     * @summary Appends current page results to current exam results, calls advancePage(), and resets.
-     * @models results, state
-    */
-    submitDefault() {
-        this.resultsService.pushResults(this.results.currentPage);
-        this.advancePage();
+  /**
+   * Cancel background processes which are related to an active exam.
+   */
+  cancelBackgroundProcesses() {
+    this.stopDosimetry();
+    this.stopSvantek();
+    this.stopChaWavfiles();
+    this.audioService.stopAudio();
+  }
 
-        this.submit = this.submitDefault;        
-
-        this.logger.debug("this.results.currentExam: "+JSON.stringify(this.results.currentExam));
+  /** Checks if a page response is required.
+   * @summary Checks if a page response is required and returns a boolean
+   * @returns boolean if page response is required
+   */
+  isPageResponseRequired(page: PageInterface): boolean {
+    if (page?.responseArea) {
+      const responseType = page.responseArea.type;
+      if (!findResponseAreaSchema(responseType)) {
+        this.logger.error(`TabSINT does not recognize the response area type "${responseType}" on page "${page.id}".`);
+      }
+      return page.responseArea.responseRequired ?? getDefaultResponseRequired(responseType);
     }
+    return false;
+  }
 
-    /** Submit function for exam pages. Can be overwritten by exams.
-     * @models results, state
-    */
-    submit() {
-        this.submitDefault();
-    }    
-
-    skip() {
-        console.log("ExamService skip() called");
-    }
-
-    back() {
-        console.log("ExamService back() called");
-    }
-
-    reset() {
-        this.state.examState = ExamState.Ready;
-    }
-
-    submitPartial() {
-        this.submitDefault();
-        this.endExam();
-    }
-
-    navigateToTarget(subProtocolID: string) {
-        // TODO: returnHereAfterward NOT IMPLEMENTED
-        this.currentPage.followOns = [{
-            conditional: "true",
-            target: {reference: subProtocolID}
-        }];
-        this.state.examState = ExamState.Testing;
-        this.submitDefault();
-    }
-
-    /** Checks if a page response is required.
-     * @summary Checks if a page response is required and returns a boolean
-     * @returns boolean if page response is required
-    */
-    isPageResponseRequired(): boolean {
-        if (this.currentPage.responseArea) {
-            let responseRequired = this.currentPage.responseArea.responseRequired;    
-            if (responseRequired === undefined) {
-                const responseType = this.currentPage.responseArea.type;
-                responseRequired = getDefaultResponseRequired(responseType);
-            }    
-            return responseRequired;
-        }
-        return false;
-    }
-
-    /** Advance to next page in the exam
-     * @summary Increments the exam page index. Advances to next page in protocolStack. If there is no next page it will
-     * search for a followOn. The protocolStack will be updated.
-     * @models state
-    */
-    private advancePage() {
-        let nextExamIndex = this.state.examIndex + 1;
-        this.setFlags();
-        let pageList = this.getPagesFromAdvancedLogic();
-        if (pageList!=undefined) {
-            if (pageList.length>0) {
-                this.addPagesToStack(pageList, nextExamIndex);
-            }
-            // make sure there are more pages, if not end the exam
-            if (this.pageModel.stack.length > nextExamIndex) {
-                this.state.examIndex = nextExamIndex;
-                this.startPage();
-            } else {
-                this.endExam();
-            }
-            
-        }  
-    }
-
-    /** Grabs all pages necessary from advanced logic (skips, repeats, followOns, preprocess)
-     * @summary The exam will proceed to the correct page.
-     * @models page
-    */
-    private getPagesFromAdvancedLogic() {
-        let pageList: (PageTypes)[] = [];
-        if (this.currentPage.skipIf) { 
-            this.logger.debug("skipIf is not yet supported");
-            // push pages to list if needed
-        } 
-        if (this.currentPage.repeatPage) {
-            this.logger.debug("repeatPage is not yet supported");
-            // push pages to list if needed
-        } 
-        if (this.currentPage.followOns) { 
-            let nextID = this.findFollowOn();
-            if (nextID != undefined) {
-                if (checkForSpecialReference(nextID)) {
-                    this.handleSpecialReferences(nextID);
-                    return undefined
-                } else {
-                    (this.protocolM.protocolModel.activeProtocolDictionary![nextID].pages).forEach( 
-                        (page: PageTypes) => { 
-                            pageList.push(page);
-                    });
-                }
-            }
-        } 
-        if (this.currentPage.preProcessFunction) { 
-            this.logger.debug("preProcessFunction is not yet supported");
-            // push pages to list if needed and/or run preprocess function
-        }
-        return pageList
-    }
-
-    /** Checks for flags and sets them
-     * @summary TBD.
-    */
-    private setFlags() {
-        // This function will check if flags need to be set and then set them accordingly.
-    }
-
-    /** Handles special references
-     * @summary Handles the special references
-    */
-    private handleSpecialReferences(id:string | undefined) {
-        if (id === "@PARTIAL") {
-            this.endExam();
-            this.logger.debug("@PARTIAL not implemented, instead using @END_ALL");
-        } else if (id === "@END_ALL") {
-            this.endExam();
-            return;
-        }
-    }
-
-    /** Proceed to next page in the exam
-     * @summary The exam will proceed
-     * to the correct page.
-     * @models state
-    */
-    private startPage() {
-        this.pageModel.currentPageSubject.next(this.pageModel.stack[this.state.examIndex]);
-        this.resultsService.initializePageResults(this.currentPage);
-        this.state.doesResponseExist = false;
-        this.state.isResponseRequired = this.isPageResponseRequired();
-        this.stateModel.setPageSubmittable();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    /** Parse page objects and add them to the pageModel.stack.
-     * @summary Adds pages to pageModel.stack. This will parse any page with a reference and put the 
-     * correct pages in place.
-     * @models state, protocol, page
-     * @param pages list of page objects
-    */
-    private addPagesToStack(
-        pages: (PageTypes)[], 
-        index:number
-    ) {
-        let extraPages: (PageTypes)[];
-        pages.forEach( (page: PageTypes)=> {
-            if (isProtocolReferenceInterface(page)) {
-                extraPages = this.protocolM.protocolModel.activeProtocolDictionary![page?.reference].pages;
-                this.addPagesToStack(extraPages, index+1);
-            } else if (isProtocolSchemaInterface(page)) {
-                extraPages = page.pages;
-                this.addPagesToStack(extraPages,index+1)
-            } else if (isPageDefinition(page)) {
-                this.pageModel.stack.splice(index, 0, page);
-                index = index + 1;
-            }
+  /** Grabs all pages necessary from advanced logic (skips, repeats, followOns, preprocess)
+   * @summary The exam will proceed to the correct page.
+   * @models page
+   */
+  private getPagesFromAdvancedLogic(page: PageDefinition): PageTypes[] {
+    const pageList: PageTypes[] = [];
+    if (page.repeatPage) {
+      const repeatedPages = this.handleRepeats(page);
+      if (repeatedPages !== undefined) {
+        repeatedPages.forEach(repeatedPage => {
+          pageList.push(repeatedPage);
         });
+      }
+    }
+    if (page.followOns) {
+      const nextID = this.findFollowOn(page);
+      if (nextID != undefined) {
+        if (checkForSpecialReference(nextID) || nextID in this.protocol.activeProtocolDictionary!) {
+          const followOnReference: ProtocolReferenceInterface = {
+            reference: nextID,
+          };
+          pageList.push(followOnReference);
+        } else {
+          this.notifications
+            .alert({
+              title: 'Alert',
+              content: `FollowOn target ${nextID} not found. Please check your protocol.`,
+              type: DialogType.Alert,
+            })
+            .subscribe();
+        }
+      }
+    }
+    return pageList;
+  }
+
+  /** Checks for flags and sets them
+   * @summary TBD.
+   */
+  private setFlags(pageResult: CurrentResults) {
+    const page = pageResult.page;
+    if (page.setFlags) {
+      page.setFlags.forEach(flags => {
+        if (this.conditionalEvaluator(flags.conditional)) {
+          this.results.currentExam.flags[flags.id] = flags.value ?? true;
+          this.logger.debug('Flag set: ' + flags.id);
+        }
+      });
+    }
+  }
+
+  /**
+   * Runs a page's preprocess function, if any, and awaits its completion. A preprocess function
+   * may be declared `async` (e.g. to mutate `window.tabsint.page.wavfiles[i].path` after an
+   * awaited lookup); ordinary synchronous preprocess functions resolve with no added delay. Any
+   * wavfile/video path a preprocess function assigns is re-resolved automatically afterward by
+   * `resolvePageMediaPaths` — a preprocess function only ever needs to set `wavfile.path`/`video.path`.
+   */
+  private async handlePreProcessFunctions(page: PageDefinition): Promise<void> {
+    if (page.preProcessFunction) {
+      this.window.tabsint = {
+        logger: this.logger,
+        examService: this,
+        fileService: this.fileService,
+        resultsService: this.resultsService,
+        stateModel: this.stateModel,
+        diskModel: this.diskModel,
+        resultsModel: this.resultsModel,
+        pageModel: this.pageModel,
+        protocolModel: this.protocolModel,
+        page,
+      };
+
+      await eval(page.preProcessFunction.js! + '\n' + page.preProcessFunction.function + '()');
+    }
+  }
+
+  /**
+   * Re-resolves `_resolvedPath` (the on-device path playback actually reads) for every wavfile
+   * and the video on a page, using their raw `path`/`useCommonRepo`. Called after preprocess so
+   * that a preprocess function which reassigns `wavfile.path`/`video.path` doesn't need to know
+   * about `_resolvedPath` or call a resolver itself. Covers anything resolvable from the active
+   * protocol's media-source configuration (common repo, Developer assets, or contentURI) — not
+   * just wavfiles.
+   */
+  private async resolvePageMediaPaths(page: PageDefinition): Promise<void> {
+    const context: WavfileResolutionContext = {
+      commonRepoPath: this.protocol.activeProtocol?.commonRepo?.path,
+      server: this.protocol.activeProtocol?.server,
+      metaPath: this.protocol.activeProtocol?.path,
+      contentURI: this.protocol.activeProtocol?.contentURI,
+    };
+    await Promise.all([
+      ...(page.wavfiles ?? []).map(async wavfile => {
+        wavfile._resolvedPath = await resolveWavfilePath(wavfile.path, wavfile.useCommonRepo, context);
+      }),
+      ...(page.video
+        ? [
+            (async () => {
+              page.video!._resolvedPath = await resolveVideoPath(page.video!.path, context);
+            })(),
+          ]
+        : []),
+    ]);
+  }
+
+  /** Handles special references
+   * @summary Handles the special references
+   */
+  private handleSpecialReferences(id: string | undefined) {
+    if (id === '@PARTIAL') {
+      this.submitPartial();
+    } else if (id === '@END_ALL') {
+      this.endExam();
+      return;
+    }
+  }
+
+  private resetFunctionsToDefaults() {
+    this.isShowingFeedback = false;
+    this.reset = this.resetDefault;
+    this.submit = this.submitDefault;
+    this.submitPartial = this.submitPartialDefault;
+    this.navigateToTarget = this.navigateToTargetDefault;
+    this.gradeResponses = this.gradeResponsesDefault;
+    this.skip = this.skipDefault;
+    this.back = this.backDefault;
+  }
+
+  /**
+   * Proceed to next page in the exam with handling of pre-processing and post-processing.
+   */
+  private async advancePage() {
+    // Reset everything to defaults on the start of each new page
+    this.resetFunctionsToDefaults();
+    this.cancelBackgroundProcesses();
+
+    const currentProtocol = this.protocol.activeProtocolStack.peek();
+    if (currentProtocol === undefined) {
+      this.endExam();
+      return;
     }
 
-    /** Finds followOn from current page.
-     * @summary Finds and returns the followOn ID from a page specified from a response.
-     * @models state, results
-     * @returns followOn ID: string or undefined
-    */
-    private findFollowOn() {
-        let id: string | undefined = undefined;
-        this.currentPage.followOns?.forEach((followOn: FollowOnInterface) => {
-            // backward compatibility
-            if (followOn.conditional.split("==")[0] == "result.response") {
-                followOn.conditional = followOn.conditional.replace("result.response","this.results.currentPage.response");
-            }
+    // Follow ons should be added for the previous page before iterating to a new page
+    let pageIndex = currentProtocol.pageIndex;
+    let pageQueue = currentProtocol.pageQueue;
+    pageQueue = this.addFollowOns(pageQueue, pageIndex);
+    this.protocol.activeProtocolStack.updateCurrentProtocol({ pageQueue: pageQueue });
 
-            if (eval(followOn.conditional)) {
-                // TODO: handle if target is protocol or page
-                if (isProtocolReferenceInterface(followOn.target)) {
-                    id = followOn.target.reference;                
-                }
-            }
-        });
-        return id;
+    pageIndex = pageIndex + 1;
+    this.protocol.activeProtocolStack.updateCurrentProtocol({ pageIndex: pageIndex });
+
+    // A protocol should be removed from the stack if all of its pages have been completed or it has timed out
+    if (pageIndex >= pageQueue.length || this.hasProtocolTimedOut(currentProtocol, pageIndex)) {
+      if (pageIndex < pageQueue.length) {
+        this.handleProtocolTimeout(currentProtocol, pageIndex);
+      }
+      this.protocol.activeProtocolStack.pop();
+      await this.advancePage();
+      return;
     }
 
-    /** Resets the protocol stack and exam index.
-     * @summary Resets the protocol stack to an empty array and the exam index to 0.
-    */
-    private resetProtocolStack() {
-        this.pageModel.stack = [];
-        this.state.examIndex = 0;
+    const page: PageTypes = pageQueue[pageIndex];
+    if (isProtocolReferenceInterface(page)) {
+      await this.handleProtocolReference(page);
+    } else if (isProtocolSchemaInterface(page)) {
+      await this.handleProtocolSchema(page);
+    } else if (page.skipIf && this.conditionalEvaluator(page.skipIf)) {
+      await this.advancePage();
+    } else {
+      await this.initializeCurrentPage(page);
+    }
+  }
+
+  /** Finds followOn from current page.
+   * @summary Finds and returns the followOn ID from a page specified from a response. Every
+   * followOn is evaluated, so when several conditionals match, the last one listed wins.
+   * @models state, results
+   * @returns followOn ID: string or undefined
+   */
+  private findFollowOn(page: PageDefinition) {
+    let id: string | undefined = undefined;
+    page.followOns?.forEach((followOn: FollowOnInterface) => {
+      // backward compatibility
+      if (followOn.conditional && this.conditionalEvaluator(followOn.conditional)) {
+        id = followOn.target.reference;
+      }
+    });
+    return id;
+  }
+
+  private handleRepeats(page: PageDefinition) {
+    let repeatedPages: PageTypes[] | undefined;
+    // repeat if repeatIf not present or it evaluates to true
+    if (page.repeatPage!.repeatIf === undefined || (page.repeatPage!.repeatIf && this.conditionalEvaluator(page.repeatPage!.repeatIf))) {
+      // determine number of times page has been repeated
+      repeatedPages = [];
+      let currentRepeatCount = 0;
+      if (page.id.includes('_repeated_')) {
+        currentRepeatCount = Number(page.id.split('_repeated_')[page.id.split('_repeated_').length - 1]);
+      }
+      // determine number of repititions
+      const numRepititions = Number(page.repeatPage!.nRepeats);
+      // create desired number of repeated pages
+      for (let i = currentRepeatCount + 1; i < Math.min(numRepititions + currentRepeatCount + 1, 4); i++) {
+        const repeatedPage: PageDefinition = structuredClone(page);
+        if (i > 1) {
+          repeatedPage.id = repeatedPage.id.replace('_repeated_' + String(i - 1), '_repeated_' + String(i));
+        } else {
+          repeatedPage.id = repeatedPage.id + '_repeated_' + String(i);
+        }
+        repeatedPages?.push(repeatedPage);
+      }
+    }
+    return repeatedPages;
+  }
+
+  /** Handles and evaluates the logic from a protocol conditional.
+   * @summary Handles and evaluates the logic from a protocol conditional.
+   */
+  private conditionalEvaluator(conditional: string) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const response = this.results.currentPage.response?.selected ?? this.results.currentPage.response;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const flags = this.resultsModel.getResults().currentExam.flags;
+
+    conditional = conditional.replaceAll(/\bflags\b/g, 'flags');
+    conditional = conditional.replaceAll(/\bresult\.response(?:\.selected)?\b/g, 'response');
+    return eval(conditional);
+  }
+
+  /** Resets the protocol stack and exam index.
+   * @summary Resets the protocol stack to an empty array and the exam index to 0.
+   */
+  private resetProtocolStack() {
+    this.cancelBackgroundProcesses();
+    this.protocol.activeProtocolStack.clear();
+  }
+
+  /**
+   * End Exam
+   * @summary Save current exam results, set exam state, and scroll page back to top.
+   * @models state
+   */
+  private endExam() {
+    this.cancelAutoSubmitDelay();
+    this.resultsModel.updateCurrentExam({ elapsedTime: calculateElapsedTime(this.results.currentExam.testDateTime!) });
+    this.resultsService.save(this.results.currentExam);
+    this.stateModel.updateState({ examState: ExamState.Finalized });
+    this.resetProtocolStack();
+    this.window.scrollTo(0, 0);
+  }
+
+  switchToAdminView() {
+    this.stateModel.updateState({ appState: AppState.Admin });
+  }
+
+  /**
+   * Activate media for a page, currently supports activation for audio only.
+   * @param page The page for media activation.
+   */
+  async activateMedia(page: PageDefinition) {
+    this.stopChaWavfiles();
+    this.audioService.stopAudio();
+    if (page.wavfiles) {
+      const startDelayTime = page.wavfileStartDelayTime ? page.wavfileStartDelayTime : pageSchema.properties.wavfileStartDelayTime.default;
+      await this.playWavFile(page.wavfiles, startDelayTime);
+    }
+    if (page.chaWavFiles) {
+      await this.playChaWavFile(page.chaWavFiles);
+    }
+  }
+
+  /**
+   * Show the current page's help text, if any, in an alert dialog.
+   */
+  help() {
+    const helpText = this.pageModel.getPage().helpText;
+    if (helpText) {
+      this.notifications.alert({ title: 'Help', content: helpText, type: DialogType.Alert }).subscribe();
+    }
+  }
+
+  /**
+   * Determine the current exam progress based on the page index in the page stack.
+   * The active page is included in the progress count.
+   *
+   * @returns The progress percentage as a number from 0 to 100 or the user defined number/string.
+   */
+  updateExamProgress(protocol: ProtocolStackItem | undefined) {
+    let progress: string | number = 0;
+
+    if (!isProtocolStarted(protocol)) {
+      this.stateModel.updateState({ examProgress: progress });
+      return;
     }
 
-    /**
-     * End Exam
-     * @summary Save current exam results, set exam state, and scroll page back to top.
-     * @models state
-     */
-    private endExam() {
-        this.results.currentExam.elapsedTime = calculateElapsedTime(this.results.currentExam.testDateTime!);
-        this.resultsService.save(this.results.currentExam);
-        this.state.examState = ExamState.Finalized;
-        this.resetProtocolStack();
-        window.scrollTo(0, 0);
+    // Filter any subprotocols at the end of a protocol as these will not contribute to the visible progress bar
+    const filteredQueue: PageTypes[] = structuredClone(protocol.pageQueue);
+    for (let index = protocol.pageQueue.length - 1; index > protocol.pageIndex; index--) {
+      if (isPageDefinition(protocol.pageQueue[index])) {
+        break;
+      } else {
+        filteredQueue.pop();
+      }
     }
 
-    // Ignore the below functions for now
+    const activePage = protocol.pageQueue[protocol.pageIndex];
+    const pageCount = filteredQueue.length;
+    const maxPages = protocol.maxPages;
+    const maxSeconds = protocol.maxSeconds;
 
-    switchToAdminView() {
-        console.log("ExamService switchToAdminView() called");
+    if (isPageDefinition(activePage) && activePage.progressBarVal) {
+      progress = activePage.progressBarVal;
+    } else {
+      const maxPageProgress = (protocol.pageIndex + 1) / maxPages;
+      const maxTimeProgress = Math.floor((Date.now() - protocol.startTime.getTime()) / 1000) / maxSeconds;
+      const defaultPageProgress = (protocol.pageIndex + 1) / pageCount;
+      const maxProgress = Math.max(maxPageProgress, maxTimeProgress, defaultPageProgress);
+      progress = Math.min(Math.max(maxProgress, 0), 1) * 100;
     }
+    this.stateModel.updateState({ examProgress: progress });
+  }
 
-    finishActivateMedia() {
-        console.log("ExamService finishActivateMedia() called");
+  /**
+   * Checks whether a protocol has exceeded its timeout, based on pages completed or elapsed time.
+   * @param protocol The protocol stack item to check.
+   * @param pagesDone The number of pages completed so far in this protocol.
+   * @returns True if the protocol's nMaxPages or nMaxSeconds timeout has been reached.
+   */
+  private hasProtocolTimedOut(protocol: ProtocolStackItem, pagesDone: number): boolean {
+    const elapsedSeconds = (Date.now() - protocol.startTime.getTime()) / 1000;
+    return pagesDone >= protocol.maxPages || elapsedSeconds >= protocol.maxSeconds;
+  }
+
+  /**
+   * Logs and, if configured, alerts the user that a protocol has timed out.
+   * @param protocol The protocol stack item that timed out.
+   * @param pagesDone The number of pages completed so far in this protocol.
+   */
+  private handleProtocolTimeout(protocol: ProtocolStackItem, pagesDone: number) {
+    this.logger.debug(`Protocol ${protocol.protocolId} timed out after ${pagesDone} pages.`);
+    if (protocol.showAlert) {
+      this.notifications
+        .alert({
+          title: 'Alert',
+          content: `This (sub)exam has timed out after ${pagesDone} pages.`,
+          type: DialogType.Alert,
+        })
+        .subscribe();
     }
+  }
 
-    help() {
-        console.log("ExamService help() called");
+  /**
+   * Initializes the provided page and set it as the current page.
+   * @param pageDef The new page to initialize.
+   */
+  private async initializeCurrentPage(pageDef: PageDefinition): Promise<void> {
+    this.cancelAutoSubmitDelay();
+    // Clone so a preprocess function's overrides (via window.tabsint.page) apply only to this
+    // render and never mutate the canonical page stored in the protocol's page queue.
+    const page = { ...pageDef, _uuid: crypto.randomUUID() };
+    const pageForRender = structuredClone(page);
+
+    await this.handlePreProcessFunctions(pageForRender);
+    await this.resolvePageMediaPaths(pageForRender);
+
+    this.pageModel.updatePage(pageForRender);
+    this.stateModel.updateState({
+      doesResponseExist: false,
+      isResponseRequired: this.isPageResponseRequired(pageForRender),
+    });
+    this.stateModel.setPageSubmittable();
+    this.resultsService.initializePageResults(pageForRender);
+    this.window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.activateDosimeters(pageForRender);
+    this.activateSvantek(pageForRender);
+    this.activateMedia(pageForRender);
+    this.handleAutoSubmitDelay(pageForRender);
+  }
+
+  /**
+   * Add follow ons to a page queue based on the current index.
+   * @param pageQueue The page queue to update.
+   * @param pageIndex The index of the current page.
+   * @returns The updated page queue.
+   */
+  private addFollowOns(pageQueue: PageTypes[], pageIndex: number) {
+    const page = pageQueue[pageIndex];
+    const advancedPagesCopy = page !== undefined && isPageDefinition(page) ? structuredClone(this.getPagesFromAdvancedLogic(page)) : [];
+    if (advancedPagesCopy.length > 0) {
+      pageQueue = [...pageQueue.slice(0, pageIndex + 1), ...advancedPagesCopy, ...pageQueue.slice(pageIndex + 1)];
     }
+    return pageQueue;
+  }
 
+  /**
+   * Handle navigation for pages which are protocol references.
+   * @param page The page to use for navigation.
+   */
+  private async handleProtocolReference(page: ProtocolReferenceInterface) {
+    if (page.skipIf && this.conditionalEvaluator(page.skipIf)) {
+      await this.advancePage();
+    } else if (checkForSpecialReference(page.reference)) {
+      this.handleSpecialReferences(page.reference);
+    } else {
+      const referenceProtocol = this.protocol.activeProtocolDictionary![page?.reference];
+      this.protocol.activeProtocolStack.addProtocol(referenceProtocol);
+      await this.advancePage();
+    }
+  }
+
+  /**
+   * Handle navigation for pages which are protocol schema.
+   * @param page The page to use for navigation.
+   */
+  private async handleProtocolSchema(page: ProtocolSchemaInterface) {
+    this.protocol.activeProtocolStack.addProtocol(page);
+    await this.advancePage();
+  }
+
+  /**
+   * Handle autoSubmitDelay if called for.
+   * @param page The page to use for navigation.
+   */
+  private handleAutoSubmitDelay(page: PageDefinition) {
+    if (page?.autoSubmitDelay) {
+      this.autoSubmitTimer = setTimeout(() => {
+        this.autoSubmitTimer = undefined;
+        this.submit();
+      }, page.autoSubmitDelay);
+    }
+  }
+
+  /**
+   * Cancel a pending autoSubmitDelay timer so it cannot submit a page the exam has already left.
+   * Idempotent - safe to call when no timer is pending.
+   */
+  private cancelAutoSubmitDelay() {
+    if (this.autoSubmitTimer === undefined) {
+      return;
+    }
+    clearTimeout(this.autoSubmitTimer);
+    this.autoSubmitTimer = undefined;
+  }
+
+  /**
+   * Activate dosimeters if called for. If dosimetry is called for and none are specified with a tabsintID
+   * then all currently connected dosimeters will be triggered. Otherwise, only the dosimeters specified
+   * with a tabsintID will be be triggered. If dosimetry is called for and not available, and error will
+   * be logged but tabsint will proceed without a device error.
+   * @param page The page to use for navigation.
+   */
+  private async activateDosimeters(page: PageDefinition) {
+    let tabsintIds: string[];
+    if (page?.dosimetry === undefined) {
+      return;
+    } else if (page.dosimetry.tabsintId === undefined) {
+      const devices = await firstValueFrom(this.devicesService.devices);
+      tabsintIds = devices
+        .filter(device => device.state === DeviceState.Connected && device.type === DeviceType.Duodose)
+        .map(device => device.tabsintId);
+    } else {
+      tabsintIds = page.dosimetry.tabsintId;
+    }
+    if (tabsintIds.length === 0) {
+      this.logger.error('Failed to start dosimetry: No dosimeter was available.');
+      return;
+    }
+    this.logger.debug('Starting Dosimetry');
+    this.resultsModel.updateCurrentPage({ dosimetry: [], response: [] });
+    for (const tabsintId of tabsintIds) {
+      await this.startDosimeterRecording(tabsintId);
+    }
+  }
+
+  /**
+   * Resolve the dosimeter for a tabsintId, queue the recording exam on it, and begin polling it
+   * for results. A dosimeter that can't be resolved or fails to start is reported but does not
+   * block exam progression.
+   * @param tabsintId The TabSINT identifier of the dosimeter to start recording on.
+   */
+  private async startDosimeterRecording(tabsintId: string) {
+    const deviceIds = await this.devicesService.getDeviceIdOrDefault(tabsintId, []);
+    if (deviceIds.length !== 1) {
+      this.logger.error(`Failed to start dosimetry on ${tabsintId}: no dosimeter was available.`);
+      return;
+    }
+    const deviceId = deviceIds[0];
+    await this.devicesService.abortExams(deviceId);
+    const queueResp = await this.devicesService.queueExam(deviceId, 'DosimeterRecord', {});
+    if (queueResp === undefined || queueResp.msg[1] === 'ERROR') {
+      this.reportDosimeterFailure(tabsintId, queueResp);
+      return;
+    }
+    this.dosimeterResultsPoll[tabsintId] = setInterval(this.pollForDosimeterResults.bind(this), 500, deviceId, tabsintId);
+  }
+
+  /**
+   * Log a dosimeter that failed to start recording, and alert the user once per exam.
+   * @param tabsintId The TabSINT identifier of the dosimeter which failed to start.
+   * @param queueResp The response returned by queueExam, if any.
+   */
+  private reportDosimeterFailure(tabsintId: string, queueResp: IDeviceResponse | undefined) {
+    const reason = queueResp === undefined ? 'the device does not support dosimetry recording' : JSON.stringify(queueResp.msg);
+    this.logger.error(`Failed to start dosimetry on ${tabsintId}: ${reason}`);
+    if (this.dosimeterWarned) {
+      return;
+    }
+    this.notifications
+      .alert({
+        title: 'Alert',
+        content: 'TabSINT could not start recording on a dosimeter, no dosimetry data will be collected for it.',
+        type: DialogType.Alert,
+      })
+      .subscribe();
+    this.dosimeterWarned = true;
+  }
+
+  /**
+   * Start recording from a Svantek dosimeter if the page has svantek: true.
+   * Warns once per exam if no Svantek is connected but does not block exam progression.
+   * @param page The page being initialized.
+   */
+  private async activateSvantek(page: PageDefinition) {
+    this.resultsModel.updateCurrentPage({ svantek: undefined });
+    if (!page.svantek) {
+      return;
+    }
+    const deviceIds = await this.devicesService.getDeviceIdOrDefault(undefined, [DeviceType.Svantek]);
+    if (deviceIds.length === 0) {
+      this.logger.warning('A Svantek dosimeter is not connected, no Svantek data will be collected.');
+      if (!this.svantekWarned) {
+        this.notifications
+          .alert({
+            title: 'Alert',
+            content: 'A Svantek dosimeter is not connected, no Svantek data will be collected.',
+            type: DialogType.Alert,
+          })
+          .subscribe();
+        this.svantekWarned = true;
+      }
+      return;
+    }
+    this.activeSvantekDeviceId = deviceIds[0];
+    try {
+      await this.devicesService.startRecording(this.activeSvantekDeviceId);
+      this.svantekResultPoll = setInterval(async () => {
+        const result = await this.devicesService.getSvantekResult(this.activeSvantekDeviceId!);
+        if (result) {
+          this.resultsModel.updateCurrentPage({ svantek: result });
+        }
+      }, 500);
+    } catch (err) {
+      this.logger.error('Failed to start Svantek recording', err);
+      this.activeSvantekDeviceId = undefined;
+    }
+  }
+
+  /**
+   * Stop the active Svantek recording and capture the latest measurement into currentPage results.
+   * Idempotent — safe to call when no Svantek recording is active.
+   */
+  stopSvantek() {
+    if (!this.activeSvantekDeviceId) {
+      return;
+    }
+    if (this.svantekResultPoll !== undefined) {
+      clearInterval(this.svantekResultPoll);
+      this.svantekResultPoll = undefined;
+    }
+    this.devicesService.stopRecording(this.activeSvantekDeviceId).catch(err => {
+      this.logger.error('Failed to stop Svantek recording', err);
+    });
+    this.activeSvantekDeviceId = undefined;
+  }
+
+  /**
+   * Stop polling results for all dosimeters.
+   */
+  async stopDosimetry() {
+    const dosimetryTabsintIds = Object.keys(this.dosimeterResultsPoll);
+    for (const tabsintId of dosimetryTabsintIds) {
+      this.logger.debug('Stopping dosimetry for: ' + tabsintId);
+      clearInterval(this.dosimeterResultsPoll[tabsintId]);
+      delete this.dosimeterResultsPoll[tabsintId];
+      const deviceIds = await this.devicesService.getDeviceIdOrDefault(tabsintId, []);
+      if (deviceIds.length === 1) {
+        await this.devicesService.abortExams(deviceIds[0]);
+      } else {
+        this.logger.debug('Failed to find device to abort dosimetry exam: ' + tabsintId);
+      }
+    }
+  }
+
+  /**
+   * Stop all running wavfiles on a CHA device.
+   */
+  async stopChaWavfiles() {
+    if (this.activeWavfileDevice) {
+      const device = (await firstValueFrom(this.devicesService.devices)).find(device => device.deviceId === this.activeWavfileDevice);
+      if (device?.state === DeviceState.Connected) {
+        const response = await this.devicesService.requestStatus(device.deviceId);
+        // Cancel any ongoing exams for the active wav file device
+        if (isStatusResponse(response) && response.msg[1].state === 2) {
+          this.devicesService.abortExams(device.deviceId);
+        }
+      }
+      this.activeWavfileDevice = undefined;
+    }
+  }
+
+  /**
+   * Polling function to get results from dosimeter.
+   * @param deviceId The identifier of the dosimeter to get results from.
+   * @param tabsintId The TabSINT identifier of the dosimeter, used for logging.
+   */
+  async pollForDosimeterResults(deviceId: string, tabsintId: string) {
+    try {
+      const resp = await this.devicesService.requestResults(deviceId);
+      const res = resp?.msg[1] as any;
+      const time = new Date().toJSON();
+      const dosimeterResults: DosimeterResultsInterface = {
+        time: time,
+        status: res.State,
+        Leq: undefined,
+        Frequencies: [
+          20, 25, 31.5, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500, 3150, 4000, 5000, 6300, 8000,
+          10000,
+        ],
+        LeqA: res.Channel_2,
+        LeqB: res.Channel_3,
+        LeqC: res.Channel_4,
+      };
+      this.resultsModel.pushDosimeterData(structuredClone(dosimeterResults));
+    } catch {
+      this.logger.debug('Failed requesting results during dosimetry for device: ' + tabsintId);
+    }
+  }
+
+  /**
+   * Play CHA wav files on a device.
+   * @param chaWavfiles The CHA wav file object containing playback information.
+   */
+  async playChaWavFile(chaWavfiles: ChaWavfilesInterface) {
+    const allowableDevices = [DeviceType.Wahts];
+    const deviceId = await this.devicesService.confirmSingleDeviceId(chaWavfiles.tabsintId, allowableDevices);
+    if (!deviceId) {
+      this.logger.error('Error playing CHA files, check the provided wav files and connected device.');
+      return;
+    }
+    try {
+      const status = await this.devicesService.requestStatus(deviceId);
+      if (isStatusResponse(status)) {
+        if (status.msg[1].state === 2) {
+          this.logger.warning('CHA exam is still running while user queues an exam. Aborting exams...');
+          await this.devicesService.abortExams(deviceId);
+        } else if (status.msg[1].state !== 1) {
+          this.logger.error('Unexpected device status, CHA wav files will not be played.');
+          return;
+        }
+      } else {
+        this.logger.error('Invalid device response, CHA wav files will not be played.');
+        return;
+      }
+
+      let playSoundProperties: Record<string, unknown> = {
+        UseMetaRMS: chaWavfiles.UseMetaRMS ?? chaWavfiles.useMetaRMS ?? false,
+        SoundFileName: this.prefixSoundFilePath(chaWavfiles.wavfiles[0].SoundFileName ?? chaWavfiles.wavfiles[0].path),
+        Leq: this.resizeLeq(chaWavfiles.wavfiles[0].Leq),
+      };
+      if (chaWavfiles.wavfiles.length > 1) {
+        playSoundProperties = {
+          ...playSoundProperties,
+          SecondSoundFileName: this.prefixSoundFilePath(chaWavfiles.wavfiles[1].SoundFileName ?? chaWavfiles.wavfiles[1].path),
+          SecondLeq: this.resizeLeq(chaWavfiles.wavfiles[1].Leq),
+        };
+      }
+      await this.devicesService.queueExam(deviceId, 'PlaySound', playSoundProperties);
+      this.activeWavfileDevice = deviceId;
+    } catch (err) {
+      this.activeWavfileDevice = undefined;
+      this.logger.error('Failed to play CHA wav files', err);
+      this.notifications
+        .alert({
+          title: 'Alert',
+          content: 'Failed to play CHA wav files, check logging for more information.',
+          type: DialogType.Alert,
+        })
+        .subscribe();
+    }
+  }
+
+  /**
+   * Play wav files on a device.
+   * @param wavfiles The wav file objects containing playback information.
+   * @param startDelayMs The time to delay the initial play by in milliseconds.
+   */
+  async playWavFile(wavfiles: PageWavfileInterface[], startDelayMs: number) {
+    try {
+      await Promise.all(
+        wavfiles.map(async wavfile => {
+          await this.audioService.playWav(wavfile, startDelayMs);
+        })
+      );
+    } catch (err) {
+      this.logger.error('Failed to play wav files', err);
+      this.notifications
+        .alert({
+          title: 'Alert',
+          content: 'Failed to play wav files, check logging for more information.',
+          type: DialogType.Alert,
+        })
+        .subscribe();
+    }
+  }
+
+  /**
+   * Prefix a file path with the proper user directory.
+   * @param fileName The file path to prefix.
+   * @returns The prefixed path or an empty string if input is empty.
+   */
+  private prefixSoundFilePath(fileName: string): string {
+    if (!fileName) {
+      return String();
+    }
+    let prefixedFileName = fileName;
+    if (!prefixedFileName.startsWith('C:')) {
+      prefixedFileName = 'C:USER/' + prefixedFileName;
+    }
+    return prefixedFileName;
+  }
+
+  /**
+   * Resize an Leq array to a default size using zero fills.
+   * @param arr The array to resize.
+   * @param size The output size of the array.
+   * @returns The resized array filled with extra zeros.
+   */
+  private resizeLeq(arr: number[] | undefined = [72, 72, 0, 0], size: number = 4): number[] {
+    return (arr ?? []).slice(0, size).concat(new Array(Math.max(0, size - (arr ?? []).length)).fill(0));
+  }
 }

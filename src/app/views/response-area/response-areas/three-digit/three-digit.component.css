@@ -1,0 +1,42 @@
+.three-digit-container {
+  width: 100%;
+}
+
+.three-digit-instructions {
+  text-align: center;
+}
+
+.three-digit-progress {
+  text-align: center;
+}
+
+.keypad {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0.5rem;
+}
+
+.keypad td {
+  text-align: center;
+}
+
+.keypad .btn {
+  width: 100%;
+  min-height: 60px;
+  font-size: 1.5rem;
+}
+
+.three-digit-row td div {
+  min-height: 2.5rem;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.three-digit-response-incorrect {
+  color: #000;
+}
+
+.three-digit-response-correct {
+  color: #4cae4c;
+}

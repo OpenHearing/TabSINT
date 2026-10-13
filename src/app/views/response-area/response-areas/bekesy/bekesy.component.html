@@ -1,0 +1,10 @@
+<div class="bekesy-button-row" [ngStyle]="{ 'text-align': bekesyResponseParameter.buttonAlign }">
+  <app-software-button
+    [mode]="'hold'"
+    [buttonText]="buttonText"
+    [buttonPressedText]="bekesyResponseParameter.buttonPressedText"
+    [disabled]="examComplete"
+    (pressStart)="touchstartFun()"
+    (pressEnd)="touchendFun()">
+  </app-software-button>
+</div>

@@ -1,0 +1,14 @@
+<ng-container [ngSwitch]="kind">
+  <table *ngSwitchCase="'object'" class="results-table">
+    <tbody>
+      <tr *ngFor="let entry of entries">
+        <th>{{ entry[0] }}</th>
+        <td><app-generic-result-viewer [response]="entry[1]"></app-generic-result-viewer></td>
+      </tr>
+    </tbody>
+  </table>
+  <ul *ngSwitchCase="'array'">
+    <li *ngFor="let item of asArray"><app-generic-result-viewer [response]="item"></app-generic-result-viewer></li>
+  </ul>
+  <span *ngSwitchDefault>{{ response }}</span>
+</ng-container>

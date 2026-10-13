@@ -1,55 +1,53 @@
 <a href="#maincontent" class="skip-to-content">Skip to main content</a>
-<header-view></header-view>
+<app-header-view></app-header-view>
 
 <!-- Body -->
 <main id="maincontent">
+  <div class="questionbox admin-page">
+    <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
+      <li [ngbNavItem]="1">
+        <button ngbNavLink>{{ "Protocols" | transloco }}</button>
+        <ng-template ngbNavContent>
+          <p>
+            <app-protocols-view></app-protocols-view>
+          </p>
+        </ng-template>
+      </li>
+      <li [ngbNavItem]="2">
+        <button ngbNavLink>{{ "Devices" | transloco }}</button>
+        <ng-template ngbNavContent>
+          <p>
+            <app-devices-view></app-devices-view>
+          </p>
+        </ng-template>
+      </li>
+      <li [ngbNavItem]="3">
+        <button ngbNavLink>{{ "Results" | transloco }}</button>
+        <ng-template ngbNavContent>
+          <p>
+            <app-results-view></app-results-view>
+          </p>
+        </ng-template>
+      </li>
+      <li [ngbNavItem]="4">
+        <button routerLink="/exam" ngbNavLink>{{ "Exam View" | transloco }}</button>
+        <ng-template ngbNavContent>
+          <p></p>
+        </ng-template>
+      </li>
+      <li [ngbNavItem]="5">
+        <button ngbNavLink>{{ "Settings" | transloco }}</button>
+        <ng-template ngbNavContent>
+          <p>
+            <app-config-view></app-config-view>
+          </p>
+        </ng-template>
+      </li>
+    </ul>
 
-    <div class="questionbox admin-page">
+    <div [ngbNavOutlet]="nav" class="mt-2"></div>
 
-      <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
-        <li [ngbNavItem]="1">
-          <button ngbNavLink>Setup</button>
-          <ng-template ngbNavContent>
-            <p>
-              <config-view></config-view>
-            </p>
-          </ng-template>
-        </li>
-        <li [ngbNavItem]="2">
-          <button ngbNavLink>Protocols</button>
-          <ng-template ngbNavContent>
-            <p>
-              <protocols-view></protocols-view>
-            </p>
-          </ng-template>
-        </li>
-        <li [ngbNavItem]="3">
-          <button ngbNavLink>Results</button>
-          <ng-template ngbNavContent>
-            <p>
-              <results-view></results-view>
-            </p>
-          </ng-template>
-        </li>
-        <li [ngbNavItem]="4">
-          <button routerLink="/exam" ngbNavLink>Exam View</button>
-          <ng-template ngbNavContent>
-            <p>
-              <!-- <exam-view></exam-view> -->
-            </p>
-          </ng-template>
-        </li>
-      </ul>
-      
-      <div [ngbNavOutlet]="nav" class="mt-2"></div>
-
-      <!-- add space for keyboard -->
-      <div class="keyboard-spacer"></div>
-    
-    </div>
-
+    <!-- add space for keyboard -->
+    <div class="keyboard-spacer"></div>
+  </div>
 </main>
-
-<!-- Active Task Footer -->
-<!-- <active-tasks></active-tasks> -->
-

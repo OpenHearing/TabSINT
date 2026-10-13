@@ -1,72 +1,90 @@
-import { Component } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { TranslateService } from '@ngx-translate/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { map, Observable, Subscription } from 'rxjs';
+import { TranslocoService } from '@jsverse/transloco';
 
 import { DiskInterface } from '../../models/disk/disk.interface';
 import { StateInterface } from '../../models/state/state.interface';
-import { DevicesInterface } from '../../models/devices/devices.interface';
 
 import { DiskModel } from '../../models/disk/disk.service';
 import { StateModel } from '../../models/state/state.service';
-import { DevicesModel } from '../../models/devices/devices-model.service';
 
-import { DeviceState, SvantekState } from '../../utilities/constants';
+import { DeviceState, DeviceType } from '../../utilities/constants';
+import { DevicesService } from '../../services/devices/devices.service';
 
 @Component({
-  selector: 'indicator-view',
+  selector: 'app-indicator-view',
   templateUrl: './indicator.component.html',
-  styleUrl: './indicator.component.css'
+  styleUrl: './indicator.component.css',
 })
-export class IndicatorComponent {
-  disk: DiskInterface;  
-  diskSubscription: Subscription | undefined;
-  state: StateInterface;
-  devices: DevicesInterface;
-  SvantekState = SvantekState;
-  DeviceState = DeviceState;
+export class IndicatorComponent implements OnInit, OnDestroy {
+  private readonly devicesService = inject(DevicesService);
+  private readonly diskModel = inject(DiskModel);
+  private readonly stateModel = inject(StateModel);
+  private readonly transloco = inject(TranslocoService);
 
-  constructor(
-    private readonly deviceModel: DevicesModel,
-    private readonly diskModel: DiskModel, 
-    private readonly stateModel: StateModel,
-    private readonly translate: TranslateService,
-  ) { 
+  disk: DiskInterface;
+  diskSubscription: Subscription | undefined;
+  stateSubscription: Subscription | undefined;
+  devicesSubscription: Subscription | undefined;
+  state: StateInterface;
+  hasConnectedTympan: Observable<boolean>;
+  hasConnectedWahts: Observable<boolean>;
+  hasConnectedDuodose: Observable<boolean>;
+  hasConnectedSvantek: Observable<boolean>;
+
+  constructor() {
     this.disk = this.diskModel.getDisk();
     this.state = this.stateModel.getState();
-    this.devices = this.deviceModel.getDevices();
+    this.hasConnectedTympan = this.devicesService.devices.pipe(
+      map(devices => devices.some(device => device.type === DeviceType.Tympan && device.state === DeviceState.Connected))
+    );
+    this.hasConnectedWahts = this.devicesService.devices.pipe(
+      map(devices => devices.some(device => device.type === DeviceType.Wahts && device.state === DeviceState.Connected))
+    );
+    this.hasConnectedDuodose = this.devicesService.devices.pipe(
+      map(devices => devices.some(device => device.type === DeviceType.Duodose && device.state === DeviceState.Connected))
+    );
+    this.hasConnectedSvantek = this.devicesService.devices.pipe(
+      map(devices => devices.some(device => device.type === DeviceType.Svantek && device.state === DeviceState.Connected))
+    );
   }
 
-  ngOnInit() {
-    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
-        this.disk = updatedDisk;
-    })    
+  ngOnInit(): void {
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+    });
+    this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
+      this.state = updatedState;
+    });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
+    this.stateSubscription?.unsubscribe();
   }
 
-  WiFiNotConnectedPopover = this.translate.instant(
-    "WiFi Not Connected"
-  );
-
-  WiFiConnectedPopover = this.translate.instant(
-    "WiFi Connected"
-  );
-
-  BluetoothConnectedPopover = this.translate.instant(
-    "Bluetooth Connected"
-  );
-
-  TympanConnectedPopover = this.translate.instant(
-    "Tympan Connected"
-  );
-
-  DosimeterConnectedPopover = this.translate.instant(
-    "Dosimeter Connected"
-  );
-
-  StreamingConnectionPopover = this.translate.instant(
-    "Streaming Connection Established"
-  );
+  get WiFiNotConnectedPopover() {
+    return this.transloco.translate('WiFi Not Connected');
+  }
+  get WiFiConnectedPopover() {
+    return this.transloco.translate('WiFi Connected');
+  }
+  get BluetoothConnectedPopover() {
+    return this.transloco.translate('Bluetooth Connected');
+  }
+  get TympanConnectedPopover() {
+    return this.transloco.translate('Tympan Connected');
+  }
+  get WahtsConnectedPopover() {
+    return this.transloco.translate('WAHTS Connected');
+  }
+  get DuodoseConnectedPopover() {
+    return this.transloco.translate('DuoDose Connected');
+  }
+  get DosimeterConnectedPopover() {
+    return this.transloco.translate('Dosimeter Connected');
+  }
+  get StreamingConnectionPopover() {
+    return this.transloco.translate('Streaming Connection Established');
+  }
 }

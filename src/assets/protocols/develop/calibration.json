@@ -1,0 +1,19 @@
+{
+  "headset": "VicFirth",
+  "tablet": "Nexus 7",
+  "calibrationPySVNRevision": "unavailable",
+  "calibrationPyManualReleaseDate": 20150702,
+  "audioProfileVersion": "30-Mar-2015 14:40:31",
+  "Background sounds inside crowded cafeteria _AOS01244.wav": {
+    "refType": "arbitrary",
+    "RMSC": 0.06749857115910148,
+    "calibrationFilter": "full",
+    "wavRMSC": 0.1197166893251347,
+    "wavRMSA": 0.09302469275515826,
+    "RMSA": 0.05244911030269619,
+    "wavRMSZ": 0.17912773297583512,
+    "RMSZ": 0.10099565982818604,
+    "normFactor": 1.7736181265667008,
+    "scaleFactor": 0.6002726824369483
+  }
+}

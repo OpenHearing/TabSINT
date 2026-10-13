@@ -1,6 +1,8 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { ExamResponse } from '../calibration-exam-component/calibration-exam.interface';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
+import { IDevice } from '../../../../../interfaces/devices/device.interface';
+import { DeviceStatus } from '../../../../../utilities/constants';
 
 interface CalibrationResults {
   leftEar: any;
@@ -10,21 +12,22 @@ interface CalibrationResults {
 @Component({
   selector: 'app-calibration-results-viewer',
   templateUrl: './calibration-results-viewer.component.html',
-  styleUrls: ['./calibration-results-viewer.component.css']
+  styleUrls: ['./calibration-results-viewer.component.css'],
 })
 export class CalibrationResultsViewerComponent implements OnInit {
-  @Output() entryClicked = new EventEmitter<{ frequency: string; ear: string }>();
+  private readonly resultsModel = inject(ResultsModel);
+
+  @Input() device: IDevice | undefined;
+  @Output() entryClicked = new EventEmitter<{ frequency: string; ear: string; step: string }>();
+  DeviceStatus = DeviceStatus;
   results: CalibrationResults | undefined;
 
-  constructor(private readonly resultsModel: ResultsModel) { }
-
   ngOnInit(): void {
-    const calibrationResult = this.resultsModel.getResults().currentExam.responses
-      .filter((response: ExamResponse) => response.responseArea === 'calibrationExam');
-    console.log(this.resultsModel.getResults().currentExam.responses)
-    console.log(calibrationResult);
+    const calibrationResult = this.resultsModel
+      .getResults()
+      .currentExam.responses.filter((response: ExamResponse) => response.responseArea === 'calibrationExam');
     if (calibrationResult.length > 0) {
-      this.results = JSON.parse(calibrationResult[calibrationResult.length-1].response) as CalibrationResults;
+      this.results = JSON.parse(calibrationResult[calibrationResult.length - 1].response) as CalibrationResults;
     }
     calibrationResult.pop();
   }
@@ -33,9 +36,7 @@ export class CalibrationResultsViewerComponent implements OnInit {
     return Object.keys(obj);
   }
 
-  navigateToCalibration(ear: string, frequency: string): void {
-    console.log(`Frequency is = ${frequency} and ear is = ${ear}`);
-    this.entryClicked.emit({ ear, frequency });
+  navigateToStep(ear: string, frequency: string, step: string): void {
+    this.entryClicked.emit({ ear, frequency, step });
   }
-
 }

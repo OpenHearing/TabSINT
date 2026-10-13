@@ -1,0 +1,180 @@
+import { Directory, Filesystem } from '@capacitor/filesystem';
+import { Buffer } from 'buffer'; //NOSONAR - browser polyfill, not the node builtin
+import { firstValueFrom } from 'rxjs';
+import { WahtsDevice } from '../../models/devices/wahts-device';
+import { SavedDevice } from '../../models/disk/disk.interface';
+import { ChaManager } from './cha-manager';
+import { ChaDeviceType, DeviceState } from '../../utilities/constants';
+import { DiscoveryResponse } from 'tabsintcha';
+import { FirmwareAsset } from '../../interfaces/firmware-asset.interface';
+import { IDeviceResponse } from '../../interfaces/devices/device-response.interface';
+import { StatusObject } from '../../interfaces/devices/device-responses.interface';
+import { isFileProgressResponse } from '../../guards/type.guard';
+import { calculateCRC32 } from '../../utilities/checksums';
+
+/**
+ * WAHTS implementation of the CHA device manager.
+ */
+export class WahtsManager extends ChaManager {
+  /**
+   * Information related to the application held firmware.
+   */
+  private firmwareAsset: FirmwareAsset | undefined = undefined;
+
+  /**
+   * Binary firmware file name.
+   */
+  private readonly BINARY_FIRMWARE_FILENAME = 'CHA_firmware.dat';
+
+  /**
+   * Assets path to the binary firmware file.
+   */
+  private readonly BINARY_FIRMWARE_PATH = `assets/firmware/${this.BINARY_FIRMWARE_FILENAME}`;
+
+  /**
+   * Assets path to the metadata firmware file.
+   */
+  private readonly METADATA_FIRMWARE_PATH = 'assets/firmware/CHA_firmware.json';
+
+  /**
+   * Create a new device from a saved device.
+   * @param savedDevice The saved device to create a device for.
+   * @returns The created device.
+   */
+  override createDevice(savedDevice: SavedDevice): WahtsDevice {
+    const device = new WahtsDevice(savedDevice.deviceId, savedDevice.name, savedDevice.tabsintId);
+    device.connectionType = (savedDevice as WahtsDevice).connectionType;
+    return device;
+  }
+
+  /**
+   * Start a device search to retrieve available devices for the specified device type.
+   * The search is limited to the user-specified connection type (BluetoothType).
+   * @param deviceType The type of device the search should be started for.
+   */
+  override async startDeviceSearch(): Promise<void> {
+    try {
+      const connectionType = (await firstValueFrom(this.diskModel.diskSubject)).preferences.wahtsConnectionType;
+      const connectionTypeKey = this.getConnectionKey(connectionType);
+      this.discoveryListener = (response: DiscoveryResponse) => {
+        const newDevice = new WahtsDevice(response.name, response.name);
+        newDevice.connectionType = connectionType;
+        newDevice.state = DeviceState.Discovery;
+        if (!newDevice.name.includes('DOS')) {
+          this.addDevice(newDevice);
+        }
+      };
+      await this.adapter.startSearch(connectionTypeKey, response => this.discoveryListener?.(response));
+    } catch (error) {
+      throw new Error('Error starting BLE scan: ' + JSON.stringify(error));
+    }
+  }
+
+  /**
+   * Update the battery level information for a device with request status information.
+   * @param device The device to update.
+   * @param statusResponse Request Status information.
+   */
+  override updateBatteryInformation(device: ChaDeviceType, statusResponse: StatusObject) {
+    let batteryLevel: number;
+    const minBatteryVoltage = 3.4;
+    const maxBatteryVoltage = 4;
+    const diff = maxBatteryVoltage - minBatteryVoltage;
+    if (statusResponse.vBattery >= maxBatteryVoltage) {
+      batteryLevel = 100;
+    } else if (statusResponse.vBattery < maxBatteryVoltage && statusResponse.vBattery > minBatteryVoltage) {
+      batteryLevel = Math.round(((statusResponse.vBattery - minBatteryVoltage) / diff) * 100);
+    } else {
+      batteryLevel = 1;
+    }
+    device.metadata.batteryLevel = batteryLevel;
+    this.updateDevice(device);
+  }
+
+  /**
+   * Reprogram a device.
+   * @param device The device to reprogram.
+   * @returns The device response for the reprogram request.
+   */
+  async reprogramFirmware(device: WahtsDevice): Promise<IDeviceResponse> {
+    const firmwareTask = `Transfer Firmware: ${device.deviceId}`;
+    this.tasks.register(firmwareTask, 'Transferring Firmware to the Device...');
+    const firmwareErrorResponse = { deviceId: device.deviceId, msg: ['Error', 'Failed to create firmware asset'] };
+    const progressCallback = (progress: IDeviceResponse) => {
+      if (isFileProgressResponse(progress)) {
+        this.tasks.register(firmwareTask, `Transferring Firmware: ${progress.msg[1].BytesTransferred}/${progress.msg[1].TotalBytes} bytes`);
+      } else {
+        this.tasks.register(firmwareTask, `Transferring Firmware to the Device...`);
+      }
+    };
+    try {
+      if (!this.firmwareAsset) {
+        this.firmwareAsset = await this.loadFirmwareAsset();
+        if (!this.firmwareAsset) {
+          this.tasks.deregister(firmwareTask);
+          await this.deviceErrorHandler(firmwareErrorResponse);
+          return firmwareErrorResponse;
+        }
+      }
+      const response = await this.adapter.reprogramFirmware(device, this.firmwareAsset, progressCallback);
+      this.tasks.deregister(firmwareTask);
+      await this.deviceErrorHandler(response);
+      return response;
+    } catch (error) {
+      this.logger.error('Error while reprogramming firmware: ' + error);
+      this.tasks.deregister(firmwareTask);
+      await this.deviceErrorHandler(firmwareErrorResponse);
+      return firmwareErrorResponse;
+    }
+  }
+
+  /**
+   * Get firmware information for the available application firmware.
+   * @returns The firmware asset provided by the application for the managed device type or undefined.
+   */
+  async getApplicationFirmware(): Promise<FirmwareAsset | undefined> {
+    this.firmwareAsset ??= await this.loadFirmwareAsset();
+    return this.firmwareAsset;
+  }
+
+  /**
+   * Load a firmware asset and create the firmware file in an accessible location for the CHA plugin.
+   * @returns The created firmware asset or undefined.
+   */
+  private async loadFirmwareAsset(): Promise<FirmwareAsset | undefined> {
+    const firmwareResponse = await fetch(this.BINARY_FIRMWARE_PATH);
+    const metadataResponse = await fetch(this.METADATA_FIRMWARE_PATH);
+
+    if (!firmwareResponse.ok || !metadataResponse.ok) {
+      this.logger.error('Failed to read firmware files');
+      return undefined;
+    }
+
+    const buffer = await firmwareResponse.arrayBuffer();
+    const metadataJSON = await metadataResponse.json();
+
+    const base64Data = Buffer.from(buffer).toString('base64');
+    const checksum = calculateCRC32(new Uint8Array(buffer));
+
+    const writeResponse = await Filesystem.writeFile({
+      path: this.BINARY_FIRMWARE_FILENAME,
+      data: base64Data,
+      directory: Directory.Data,
+    });
+
+    if (!writeResponse.uri || !metadataJSON.tag || !metadataJSON.time) {
+      this.logger.error('Failed to generate the firmware asset');
+      return undefined;
+    }
+    // Make the path accessible via Java
+    const updatedFilePath = writeResponse.uri.replace('file://', '');
+
+    return {
+      fileName: this.BINARY_FIRMWARE_FILENAME,
+      filePath: updatedFilePath,
+      version: String(metadataJSON.tag),
+      buildDatetime: String(metadataJSON.time),
+      checksum: checksum,
+    };
+  }
+}

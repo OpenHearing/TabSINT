@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms'
+import { FormsModule } from '@angular/forms';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatIconModule } from '@angular/material/icon';
@@ -17,13 +17,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-// import ngx-translate and the http loader
-import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { HttpClient, HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http';
+import { provideTransloco, TranslocoModule, TranslocoPipe } from '@jsverse/transloco';
+import { HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http';
+import { TranslocoHttpLoader } from './transloco-loader';
 
 // Views
 import { ConfigComponent } from './views/config/config.component';
+import { DevicesComponent } from './views/devices/devices.component';
 import { WelcomeComponent } from './views/welcome/welcome.component';
 import { AdminComponent } from './views/admin/admin.component';
 import { ProtocolsComponent } from './views/protocols/protocols.component';
@@ -32,32 +32,28 @@ import { HeaderComponent } from './views/header/header.component';
 import { ExamComponent } from './views/exam/exam.component';
 import { IndicatorComponent } from './views/indicator/indicator.component';
 import { NotificationsComponent } from './views/notifications/notifications.component';
+import { GitlabFormComponent } from './views/gitlab-form/gitlab-form.component';
 
 // Models
 import { AppModel } from './models/app/app.service';
-import { DevicesModel } from './models/devices/devices-model.service';
 import { DiskModel } from './models/disk/disk.service';
 import { ProtocolModel } from './models/protocol/protocol-model.service';
 import { ResultsModel } from './models/results/results-model.service';
 import { StateModel } from './models/state/state.service';
 
 // Utilities
-import { Notifications } from './utilities/notifications.service';
-import { SqLite } from './utilities/sqLite.service';
-import { Logger } from './utilities/logger.service';
-import { Paths } from './utilities/paths.service';
-import { DeviceUtil } from './utilities/device-utility';
+import { Notifications } from './services/notifications.service';
+import { SqLite } from './services/sqLite.service';
+import { Logger } from './services/logger.service';
+import { Paths } from './services/paths.service';
 
 // Controllers
-import { FileService } from './utilities/file.service';
-import { ConfigService } from './controllers/config.service';
+import { FileService } from './services/file.service';
 import { VersionModel } from './models/version/version.service';
 import { ProtocolService } from './controllers/protocol.service';
 import { LocalServerService } from './controllers/local-server.service';
 import { ResultsService } from './controllers/results.service';
 import { ExamService } from './controllers/exam.service';
-import { TympanWrap } from './utilities/tympan-wrap.service';
-import { TympanService } from './controllers/devices/tympan.service';
 import { AdminService } from './controllers/admin.service';
 import { TabsintConfigComponent } from './views/config/config-views/tabsint-config/tabsint-config.component';
 import { SoftwareConfigComponent } from './views/config/config-views/software-config/software-config.component';
@@ -69,48 +65,83 @@ import { ExamTestingComponent } from './views/exam-testing/exam-testing.componen
 import { ExamFinalizedComponent } from './views/exam-finalized/exam-finalized.component';
 import { ResponseAreaComponent } from './views/response-area/response-area.component';
 import { TextboxComponent } from './views/response-area/response-areas/textbox/textbox.component';
-import { TextboxResultViewerComponent } from './views/response-area/response-areas/textbox-result-viewer/textbox-result-viewer.component';
+import { QrCodeResponseAreaComponent } from './views/response-area/response-areas/qr-code/qr-code.component';
+import { ResultsViewComponent } from './views/response-area/response-areas/results-view/results-view.component';
+import { ResponseResultComponent } from './views/response-area/response-areas/results-view/response-result/response-result.component';
+import { GenericResultViewerComponent } from './views/response-area/response-areas/results-view/generic-result-viewer/generic-result-viewer.component';
+import { AudiometryResultViewerComponent } from './views/response-area/response-areas/results-view/audiometry-result-viewer/audiometry-result-viewer.component';
+import { GapResultsComponent } from './views/response-area/response-areas/gap/gap-results/gap-results.component';
 import { MultipleChoiceComponent } from './views/response-area/response-areas/multiple-choice/multiple-choice.component';
 import { SingleResultModalComponent } from './views/single-result-modal/single-result-modal/single-result-modal.component';
-import { ExternalResponseAreaComponent } from './views/response-area/response-areas/external-response-area/external-response-area.component';
+import { CustomResponseAreaComponent } from './views/response-area/response-areas/custom-response-area/custom-response-area.component';
 import { TasksBannerComponent } from './views/tasks-banner/tasks-banner.component';
 import { ManualAudiometryComponent } from './views/response-area/response-areas/manual-audiometry/manual-audiometry';
-import { DeviceConfigComponent } from './views/config/config-views/device-config/device-config.component';
-import { DeviceInfoComponent } from './views/config/config-views/device-info/device-info.component';
-import { ConnectedDevicesComponent } from './views/config/config-views/connected-devices/connected-devices.component';
+import { DevicePanelComponent } from './views/devices/device-views/device-panel/device-panel.component';
+import { DeviceCardComponent } from './views/devices/device-views/device-card/device-card.component';
+import { WahtsAdvancedSettingsComponent } from './views/devices/device-views/wahts/wahts-advanced-settings/wahts-advanced-settings.component';
+import { ChaSettingsComponent } from './views/devices/device-views/cha-settings/cha-settings.component';
+import { WahtsSettingsComponent } from './views/devices/device-views/wahts/wahts-settings/wahts-settings.component';
+import { DuodoseAdvancedSettingsComponent } from './views/devices/device-views/duodose/duodose-advanced-settings/duodose-advanced-settings.component';
+import { DuodoseSettingsComponent } from './views/devices/device-views/duodose/duodose-settings/duodose-settings.component';
+import { TympanSettingsComponent } from './views/devices/device-views/tympan/tympan-settings.component';
 import { NewConnectionComponent } from './views/config/config-views/new-connection/new-connection.component';
+import { MediaManagementComponent } from './views/config/config-views/media-management/media-management.component';
 import { CalibrationExamComponent } from './views/response-area/response-areas/calibration-exam/calibration-exam-component/calibration-exam.component';
 import { CalibrationScreenComponent } from './views/response-area/response-areas/calibration-exam/calibration-screen/calibration-screen.component';
-import { MeasurementScreenComponent } from './views/response-area/response-areas/calibration-exam/measurement-screen/measurement-screen.component';
 import { MaxOutputScreenComponent } from './views/response-area/response-areas/calibration-exam/max-output-screen/max-output-screen.component';
-import { DevicesService } from './controllers/devices.service';
+import { FPLCalibrationExamComponent } from './views/response-area/response-areas/fpl-calibration-exam/fpl-calibration-exam-component/fpl-calibration-exam.component';
+import { FPLCalibrationScreenComponent } from './views/response-area/response-areas/fpl-calibration-exam/fpl-calibration-screen/fpl-calibration-screen.component';
+import { DevicesService } from './services/devices/devices.service';
 import { CalibrationResultsViewerComponent } from './views/response-area/response-areas/calibration-exam/calibration-results-viewer/calibration-results-viewer.component';
 import { ManualAudiometryResultViewerComponent } from './views/response-area/response-areas/manual-audiometry/manual-audiometry-result-viewer/manual-audiometry-result-viewer';
-import { AudiogramComponent } from './views/audiogram/audiogram.component';
+import { AudiogramComponent } from './views/response-area/response-areas/shared/audiogram/audiogram.component';
 import { ExamDeviceErrorComponent } from './views/exam-device-error/exam-device-error.component';
 import { MultipleInputComponent } from './views/response-area/response-areas/multiple-input/multiple-input.component';
 import { LikertComponent } from './views/response-area/response-areas/likert/likert/likert.component';
 import { SweptDpoaeExamComponent } from './views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/swept-dpoae-exam.component';
-import { SweptDpoaeInputParametersComponent } from './views/response-area/response-areas/swept-dpoae/swept-dpoae-input-parameters/swept-dpoae-input-parameters.component';
 import { SweptDpoaeInProgressComponent } from './views/response-area/response-areas/swept-dpoae/swept-dpoae-in-progress/swept-dpoae-in-progress.component';
 import { SweptDpoaeResultsComponent } from './views/response-area/response-areas/swept-dpoae/swept-dpoae-results/swept-dpoae-results.component';
+import { DpGramExamComponent } from './views/response-area/response-areas/dp-gram/dp-gram-exam/dp-gram-exam.component';
+import { DpGramInProgressComponent } from './views/response-area/response-areas/dp-gram/dp-gram-in-progress/dp-gram-in-progress.component';
+import { DpGramResultsComponent } from './views/response-area/response-areas/dp-gram/dp-gram-results/dp-gram-results.component';
 import { WAIExamComponent } from './views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.component';
 import { WAIInProgressComponent } from './views/response-area/response-areas/wideband-acoustic-immittance/wai-in-progress/wai-in-progress.component';
-import { WAIInputParametersComponent } from './views/response-area/response-areas/wideband-acoustic-immittance/wai-input-parameters/wai-input-parameters.component';
 import { WAIResultsComponent } from './views/response-area/response-areas/wideband-acoustic-immittance/wai-results/wai-results.component';
 import { BuildDetailsComponent } from './views/build-details/build-details.component';
 import { MrtExamComponent } from './views/response-area/response-areas/mrt/mrt-exam/mrt-exam.component';
 import { MrtResultsComponent } from './views/response-area/response-areas/mrt/mrt-results/mrt-results.component';
+import { MemrExamComponent } from './views/response-area/response-areas/memr/memr-exam/memr-exam.component';
+import { InputParametersComponent } from './views/response-area/response-areas/shared/input-parameters/input-parameters.component';
+import { NetworkService } from './controllers/network.service';
+import { SubjectIdComponent } from './views/response-area/response-areas/subject-id/subject-id.component';
+import { CheckboxComponent } from './views/response-area/response-areas/checkbox/checkbox.component';
+import { ButtonGridComponent } from './views/response-area/response-areas/button-grid/button-grid.component';
+import { BekesyComponent } from './views/response-area/response-areas/bekesy/bekesy.component';
+import { QrService } from './services/qr.service';
+import { QRCodeModule } from 'angularx-qrcode';
+import { DuodoseDownloadComponent } from './views/response-area/response-areas/duodose-download/duodose-download.component';
+import { ThreeDigitComponent } from './views/response-area/response-areas/three-digit/three-digit.component';
+import { ThreeDigitResultsComponent } from './views/response-area/response-areas/three-digit/three-digit-results/three-digit-results.component';
+import { GapComponent } from './views/response-area/response-areas/gap/gap.component';
+import { TrialProgressionPlotComponent } from './views/response-area/response-areas/shared/trial-progression-plot/trial-progression-plot.component';
+import { HintComponent } from './views/response-area/response-areas/hint/hint.component';
+import { HintResultsComponent } from './views/response-area/response-areas/hint/hint-results/hint-results.component';
+import { HughsonWestlakeComponent } from './views/response-area/response-areas/hughson-westlake/hughson-westlake.component';
+import { BhaftComponent } from './views/response-area/response-areas/bhaft/bhaft.component';
+import { MpanlComponent } from './views/response-area/response-areas/mpanl/mpanl.component';
+import { BekesyLikeComponent } from './views/response-area/response-areas/bekesy-like/bekesy-like.component';
+import { SoftwareButtonComponent } from './views/response-area/response-areas/shared/audiometry/software-button/software-button.component';
+import { AudiometryResultsTableComponent } from './views/response-area/response-areas/shared/audiometry/audiometry-results-table/audiometry-results-table.component';
+import { AudiometryPropertiesComponent } from './views/response-area/response-areas/shared/audiometry/audiometry-properties/audiometry-properties.component';
+import { AudiometryLegendComponent } from './views/response-area/response-areas/shared/audiometry/audiometry-legend/audiometry-legend.component';
+import { AudiometryCombinedResultsComponent } from './views/response-area/response-areas/shared/audiometry/audiometry-combined-results/audiometry-combined-results.component';
 
-// required for AOT compilation
-export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
-  return new TranslateHttpLoader(http);
-}
 @NgModule({
   declarations: [
     AppComponent,
     WelcomeComponent,
     ConfigComponent,
+    DevicesComponent,
     AdminComponent,
     ProtocolsComponent,
     ResultsComponent,
@@ -118,7 +149,6 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     ExamComponent,
     IndicatorComponent,
     NotificationsComponent,
-    TabsintConfigComponent,
     SoftwareConfigComponent,
     LogConfigComponent,
     DebugComponent,
@@ -128,38 +158,75 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     ExamFinalizedComponent,
     ResponseAreaComponent,
     TextboxComponent,
+    QrCodeResponseAreaComponent,
+    SubjectIdComponent,
+    CheckboxComponent,
+    DuodoseDownloadComponent,
+    ButtonGridComponent,
     LikertComponent,
-    TextboxResultViewerComponent,
+    ResultsViewComponent,
+    ResponseResultComponent,
+    GenericResultViewerComponent,
+    AudiometryResultViewerComponent,
+    GapResultsComponent,
     MultipleChoiceComponent,
     ManualAudiometryComponent,
     ManualAudiometryResultViewerComponent,
     SingleResultModalComponent,
-    ExternalResponseAreaComponent,
+    CustomResponseAreaComponent,
     TasksBannerComponent,
-    DeviceConfigComponent,
-    DeviceInfoComponent,
-    ConnectedDevicesComponent,
+    DevicePanelComponent,
+    DeviceCardComponent,
+    WahtsAdvancedSettingsComponent,
+    ChaSettingsComponent,
+    WahtsSettingsComponent,
+    DuodoseAdvancedSettingsComponent,
+    DuodoseSettingsComponent,
+    TympanSettingsComponent,
     NewConnectionComponent,
+    MediaManagementComponent,
     AudiogramComponent,
     CalibrationExamComponent,
     CalibrationScreenComponent,
-    MeasurementScreenComponent,
     MaxOutputScreenComponent,
+    FPLCalibrationExamComponent,
+    FPLCalibrationScreenComponent,
     CalibrationResultsViewerComponent,
     ExamDeviceErrorComponent,
     MultipleInputComponent,
     LikertComponent,
     SweptDpoaeExamComponent,
-    SweptDpoaeInputParametersComponent,
     SweptDpoaeInProgressComponent,
     SweptDpoaeResultsComponent,
+    DpGramExamComponent,
+    DpGramInProgressComponent,
+    DpGramResultsComponent,
     WAIExamComponent,
-    WAIInputParametersComponent,
     WAIInProgressComponent,
     WAIResultsComponent,
     BuildDetailsComponent,
     MrtExamComponent,
-    MrtResultsComponent
+    MrtResultsComponent,
+    MemrExamComponent,
+    InputParametersComponent,
+    TabsintConfigComponent,
+    BekesyComponent,
+    ThreeDigitComponent,
+    ThreeDigitResultsComponent,
+    GapComponent,
+    TrialProgressionPlotComponent,
+    HintComponent,
+    HintResultsComponent,
+    HughsonWestlakeComponent,
+    BhaftComponent,
+    MpanlComponent,
+    BekesyLikeComponent,
+    GitlabFormComponent,
+    SoftwareButtonComponent,
+    AudiometryResultsTableComponent,
+    AudiometryPropertiesComponent,
+    AudiometryLegendComponent,
+    AudiometryCombinedResultsComponent,
   ],
   imports: [
     BrowserModule,
@@ -181,19 +248,14 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     MatSelectModule,
     NgbModule,
     NgxJsonViewerModule,
-    TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: HttpLoaderFactory,
-        deps: [HttpClient]
-      }
-    })
+    TranslocoModule,
+    TranslocoPipe,
+    QRCodeModule,
   ],
   providers: [
     provideClientHydration(),
     provideHttpClient(withFetch()),
     AppModel,
-    DevicesModel,
     DiskModel,
     ProtocolModel,
     ResultsModel,
@@ -202,21 +264,31 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     Notifications,
     Logger,
     Paths,
-    DeviceUtil,
     FileService,
-    ConfigService,
     VersionModel,
     ProtocolService,
     LocalServerService,
     ResultsService,
     ExamService,
     AdminService,
-    TranslateService,
-    TympanWrap,
-    TympanService,
-    DevicesService
+    provideTransloco({
+      config: {
+        availableLangs: ['en', 'fr', 'ja', 'es', 'sw'],
+        defaultLang: 'en',
+        fallbackLang: 'en',
+        reRenderOnLangChange: true,
+        prodMode: false,
+        missingHandler: {
+          logMissingKey: false,
+        },
+      },
+      loader: TranslocoHttpLoader,
+    }),
+    DevicesService,
+    NetworkService,
+    QrService,
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class AppModule { }
+export class AppModule {}

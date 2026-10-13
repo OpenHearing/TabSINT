@@ -1,146 +1,122 @@
 <a href="#maincontent" class="skip-to-content">Skip to main content</a>
-<header-view></header-view>
+<app-header-view></app-header-view>
 
 <!-- Body -->
 <main id="maincontent">
   <div class="has-header">
-
     <div class="questionbox exam-page">
-
       <div class="question">
-  
         <!-- Change which template we show based on what "mode" the exam is in. -->
         <div [ngSwitch]="state.examState">
           <div *ngSwitchCase="ExamState.Ready">
-            <exam-ready-view></exam-ready-view>
+            <app-exam-ready-view></app-exam-ready-view>
           </div>
           <div *ngSwitchCase="ExamState.NotReady">
-            <exam-not-ready-view></exam-not-ready-view>
+            <app-exam-not-ready-view></app-exam-not-ready-view>
           </div>
           <div *ngSwitchCase="ExamState.DeviceError">
-            <exam-device-error-view></exam-device-error-view>
+            <app-exam-device-error-view></app-exam-device-error-view>
           </div>
           <div *ngSwitchCase="ExamState.Testing">
-            <exam-testing-view></exam-testing-view>
+            <app-exam-testing-view></app-exam-testing-view>
           </div>
           <div *ngSwitchCase="ExamState.Finalized">
-            <exam-finalized-view></exam-finalized-view>
+            <app-exam-finalized-view></app-exam-finalized-view>
           </div>
         </div>
 
-      <!-- Debugging display. -->
-      <debug-view></debug-view>
+        <!-- Debugging display. -->
+        <app-debug-view></app-debug-view>
 
-      <!-- add space for keyboard -->
-      <div class="keyboard-spacer"></div>
-  
+        <!-- add space for keyboard -->
+        <div class="keyboard-spacer"></div>
       </div>
     </div>
-
   </div>
 </main>
 
 <!-- Footer (incl. buttons) -->
-<nav  [class.hidden]="isKeyboardVisible" class="navbar-fixed-bottom exam-footer">
-    <div class="container-fluid">
-      <div class="row response-buttons" *ngIf="state.examState===ExamState.Ready">
-        <div class="col-6">
-          <button id="help-btn" type="button"
-                  class="btn btn-block btn-lg btn-default btn-centered"
-                  [ngClass]="currentPage.helpText ? '' : 'disabled custom-disabled'"
-                  (click)="help()">
-            <span class="ion-help-circled"></span> {{'Help'|translate}}
-          </button>
-        </div>
-        <div class="col-6">
-          <button id="begin-btn" type="button"
-                  class="btn btn-block btn-lg btn-primary btn-centered"
-                  (click)="begin()"
-                  *ngIf="state.examState===ExamState.Ready">
-            {{'Begin'|translate}}
-          </button>
-        </div>
+<nav [class.hidden]="isKeyboardVisible" class="navbar-fixed-bottom exam-footer">
+  <div class="container-fluid">
+    <div class="row response-buttons" *ngIf="state.examState === ExamState.Ready">
+      <div class="col-6">
+        <ng-container *ngTemplateOutlet="helpButton"></ng-container>
       </div>
-      <div *ngIf="state.examState===ExamState.Testing && (currentPage?.responseArea?.type!=='manualAudiometryResponseArea')">
-        <div class="row response-buttons" *ngIf="(disk.debugMode && disk.adminSkipMode) || currentPage?.responseArea?.enableSkip">
-          <div class="col-4">
-            <button id="help-btn" type="button"
-                    class="btn btn-block btn-lg btn-default btn-centered"
-                    [ngClass]="currentPage.helpText ? '' : 'disabled custom-disabled'"
-                    *ngIf="!currentPage?.enableBackButton"
-                    (click)="help()">
-              <span class="ion-help-circled"></span> {{'Help'|translate}}
-            </button>
-            <button id="back-btn" type="button"
-                class="btn btn-block btn-lg btn-default btn-centered"
-                [ngClass]="state.canGoBack() ? '' : 'disabled custom-disabled'"
-                *ngIf="!!currentPage?.enableBackButton"
-                (click)="back()">
-              <span class="ion-arrow-left"></span> {{'Back'|translate}}
-            </button>
-          </div>
-          <div class="col-4">
-            <button id="submit-btn" type="button"
-                    class="btn btn-block btn-lg btn-primary btn-centered"
-                    (click)="skip()">
-              <span class="ion-arrow-right"></span> {{'Skip'|translate}}
-            </button>
-          </div>
-          <div class="col-4">
-            <button id="submit-btn" type="button"
-                    class="btn btn-block btn-lg btn-primary btn-centered"
-                    [ngClass]="state.isSubmittable ? '' : 'disabled custom-disabled'"
-                    [disabled]= "!state.isSubmittable"
-                    (click)="submit()">
-                <div *ngIf="currentPage?.submitText"> {{currentPage.submitText}}</div>
-                <div *ngIf="currentPage?.submitText===undefined"> {{buttonText || 'Submit' | translate}}</div>
-            </button>
-          </div>
-        </div>
-        <div class="row response-buttons" *ngIf="!((disk.debugMode && disk.adminSkipMode) || currentPage?.responseArea?.enableSkip)">
-          <div class="col-6">
-            <button id="help-btn" type="button"
-                    class="btn btn-block btn-lg btn-default btn-centered"
-                    [ngClass]="currentPage.helpText ? '' : 'disabled custom-disabled'"
-                    *ngIf="!currentPage?.enableBackButton"
-                    (click)="help()">
-              <span class="ion-help-circled"></span> {{'Help'|translate}}
-            </button>
-            <button id="back-btn" type="button"
-                class="btn btn-block btn-lg btn-default btn-centered"
-                *ngIf="!!currentPage?.enableBackButton"
-                (click)="back()">
-              <span class="ion-arrow-left"></span> {{'Back'|translate}}
-            </button>
-          </div>
-          <div class="col-6">
-            <button id="submit-btn" type="button"
-                    class="btn btn-block btn-lg btn-primary btn-centered"
-                    [ngClass]="state.isSubmittable ? '' : 'disabled custom-disabled'"
-                    [disabled]= "!state.isSubmittable"
-                    (click)="submit()">
-                <div *ngIf="currentPage?.submitText"> {{currentPage.submitText}}</div>
-                <div *ngIf="currentPage?.submitText===undefined"> {{buttonText || 'Submit'| translate}}</div>
-            </button>
-          </div>
-        </div>
-      </div>
-      <div class="row response-buttons" *ngIf="state.examState===ExamState.Finalized">
-        <div class="col-6">
-          <button id="help-btn" type="button"
-                  class="btn btn-block btn-lg btn-default btn-centered"
-                  [ngClass]="currentPage.helpText ? '' : 'disabled custom-disabled'"
-                  (click)="help()">
-            <span class="ion-help-circled"></span> {{'Help'|translate}}
-          </button>
-        </div>
-        <div class="col-6">
-          <button id="reset-btn" type="button"
-                  class="btn btn-block btn-lg btn-success btn-centered"
-                  (click)="reset()"> {{'New Exam'|translate}}
-          </button>
-        </div>
+      <div class="col-6">
+        <button id="begin-btn" type="button" class="btn btn-block btn-lg btn-primary btn-centered" (click)="begin()">
+          {{ "Begin" | transloco }}
+        </button>
       </div>
     </div>
-  </nav>
-  
+    <div
+      class="row response-buttons"
+      *ngIf="state.examState === ExamState.Testing && currentPage.responseArea?.type !== 'manualAudiometryResponseArea'">
+      <div [ngClass]="showSkipButton ? 'col-4' : 'col-6'">
+        <ng-container *ngTemplateOutlet="currentPage.enableBackButton ? backButton : helpButton"></ng-container>
+      </div>
+      <div class="col-4" *ngIf="showSkipButton">
+        <button id="skip-btn" type="button" class="btn btn-block btn-lg btn-primary btn-centered" (click)="skip()">
+          <span class="ion-arrow-right"></span> {{ "Skip" | transloco }}
+        </button>
+      </div>
+      <div [ngClass]="showSkipButton ? 'col-4' : 'col-6'">
+        <ng-container *ngTemplateOutlet="submitButton"></ng-container>
+      </div>
+    </div>
+    <div class="row response-buttons" *ngIf="state.examState === ExamState.Finalized">
+      <div class="col-6">
+        <ng-container *ngTemplateOutlet="helpButton"></ng-container>
+      </div>
+      <div class="col-6">
+        <button id="reset-btn" type="button" class="btn btn-block btn-lg btn-success btn-centered" (click)="reset()">
+          {{ "New Exam" | transloco }}
+        </button>
+      </div>
+    </div>
+    <div
+      class="row response-buttons"
+      style="margin-top: 30px"
+      *ngIf="showProgressBar && state.examState !== ExamState.Ready && state.examState !== ExamState.Finalized">
+      <mat-progress-bar mode="determinate" *ngIf="!isString(state.examProgress)" [value]="state.examProgress"></mat-progress-bar>
+      <div *ngIf="isString(state.examProgress)" class="progress-words">
+        {{ state.examProgress }}
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Shared footer buttons. Rendered through ngTemplateOutlet so each id appears exactly once. -->
+<ng-template #helpButton>
+  <button
+    id="help-btn"
+    type="button"
+    class="btn btn-block btn-lg btn-default btn-centered"
+    [ngClass]="currentPage.helpText ? '' : 'disabled custom-disabled'"
+    (click)="help()">
+    <span class="ion-help-circled"></span> {{ "Help" | transloco }}
+  </button>
+</ng-template>
+
+<ng-template #backButton>
+  <button
+    id="back-btn"
+    type="button"
+    class="btn btn-block btn-lg btn-default btn-centered"
+    [ngClass]="state.canGoBack() ? '' : 'disabled custom-disabled'"
+    (click)="back()">
+    <span class="ion-arrow-left"></span> {{ "Back" | transloco }}
+  </button>
+</ng-template>
+
+<ng-template #submitButton>
+  <button
+    id="submit-btn"
+    type="button"
+    class="btn btn-block btn-lg btn-primary btn-centered"
+    [ngClass]="state.isSubmittable ? '' : 'disabled custom-disabled'"
+    [disabled]="!state.isSubmittable"
+    (click)="submit()">
+    <div *ngIf="currentPage.submitText">{{ currentPage.submitText }}</div>
+    <div *ngIf="!currentPage.submitText">{{ buttonText || "Submit" | transloco }}</div>
+  </button>
+</ng-template>

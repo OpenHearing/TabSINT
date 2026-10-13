@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 
@@ -6,72 +6,77 @@ import { DiskInterface } from '../../../models/disk/disk.interface';
 import { ExamResults } from '../../../models/results/results.interface';
 import { DiskModel } from '../../../models/disk/disk.service';
 import { ResultsService } from '../../../controllers/results.service';
-import { SqLite } from '../../../utilities/sqLite.service';
-import { Notifications } from '../../../utilities/notifications.service';
-import { Logger } from '../../../utilities/logger.service';
-import { DialogType} from '../../../utilities/constants';
+import { Notifications } from '../../../services/notifications.service';
+import { Logger } from '../../../services/logger.service';
+import { DialogType } from '../../../utilities/constants';
 import { ResultsUploadService } from '../../../controllers/results-upload.service';
+import { DialogDataInterface } from '../../../interfaces/dialog-data.interface';
 
 @Component({
   selector: 'app-single-result-modal',
   templateUrl: './single-result-modal.component.html',
-  styleUrl: './single-result-modal.component.css'
+  styleUrl: './single-result-modal.component.css',
 })
-export class SingleResultModalComponent {
+export class SingleResultModalComponent implements OnInit, OnDestroy {
+  readonly dialog = inject(MatDialog);
+  readonly diskModel = inject(DiskModel);
+  readonly resultsService = inject(ResultsService);
+  private readonly resultsUploadService = inject(ResultsUploadService);
+  private readonly notifications = inject(Notifications);
+  private readonly logger = inject(Logger);
+  readonly index = inject<number>(MAT_DIALOG_DATA);
+
   singleExamResult?: ExamResults;
   disk: DiskInterface;
   diskSubscription: Subscription | undefined;
 
-  constructor(
-    public dialog: MatDialog, 
-    public diskModel: DiskModel,
-    public resultsService: ResultsService,
-    public sqLite: SqLite,
-    private readonly resultsUploadService: ResultsUploadService,
-    private readonly notifications: Notifications,
-    private readonly logger: Logger,
-    @Inject(MAT_DIALOG_DATA) public index: number,
-  ) { 
-    this.disk = diskModel.getDisk();
+  constructor() {
+    this.disk = this.diskModel.getDisk();
   }
 
-  async ngOnInit() {    
-    this.diskSubscription = this.diskModel.diskSubject.subscribe( (updatedDisk: DiskInterface) => {
-        this.disk = updatedDisk;
-    })    
-    this.singleExamResult = JSON.parse(await this.sqLite.getSingleResult(this.index));
+  ngOnInit(): void {
+    this.asyncNgOnInit();
+    this.diskSubscription = this.diskModel.diskSubject.subscribe((updatedDisk: DiskInterface) => {
+      this.disk = updatedDisk;
+    });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.diskSubscription?.unsubscribe();
+  }
+
+  /**
+   * Function to be called by ngOnIit to handle any asynchronous operations.
+   */
+  private async asyncNgOnInit(): Promise<void> {
+    this.singleExamResult = (await this.resultsService.getSingleResult(this.index)) ?? undefined;
   }
 
   async upload() {
     const result = await this.resultsUploadService.uploadResult(this.singleExamResult!);
 
     if (result.success) {
-      this.logger.debug(result.message);
       this.delete();
       this.notifications.alert({
-        title: "Success",
-        content: result.message || "Result uploaded to GitLab.",
-        type: DialogType.Confirm
+        title: 'Success',
+        content: result.message || 'Result uploaded to GitLab.',
+        type: DialogType.Confirm,
       });
     } else {
-        if (result.message.includes("Unauthorized")) {
-          this.notifications.alert({
-              title: "Unauthorized",
-              content: "Check your GitLab credentials.",
-              type: DialogType.Alert
-          });
+      if (result.message.includes('Unauthorized')) {
+        this.notifications.alert({
+          title: 'Unauthorized',
+          content: 'Check your GitLab credentials.',
+          type: DialogType.Alert,
+        });
       } else {
-          this.notifications.alert({
-              title: "Upload Error",
-              content: result.message || "Something went wrong uploading the result.",
-              type: DialogType.Alert
-          });
+        this.notifications.alert({
+          title: 'Upload Error',
+          content: result.message || 'Something went wrong uploading the result.',
+          type: DialogType.Alert,
+        });
       }
-      this.logger.error(result.message);
+      this.logger.error('Error uploading to Gitlab: ' + result.message);
     }
   }
 
@@ -81,6 +86,22 @@ export class SingleResultModalComponent {
   async export() {
     await this.resultsService.exportSingleResult(this.index);
     this.close();
+  }
+
+  /**
+   * Prompt for confirmation, then delete single exam result from tabsint.
+   */
+  confirmDelete() {
+    const msg: DialogDataInterface = {
+      title: 'Confirm',
+      content: 'Are you sure you want to delete this result?',
+      type: DialogType.Confirm,
+    };
+    this.notifications.alert(msg).subscribe(result => {
+      if (result === 'OK') {
+        this.delete();
+      }
+    });
   }
 
   /**
@@ -98,6 +119,4 @@ export class SingleResultModalComponent {
   close() {
     this.dialog.closeAll();
   }
-
-
 }

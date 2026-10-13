@@ -1,108 +1,183 @@
-import { CalibrationExamInterface } from "../views/response-area/response-areas/calibration-exam/calibration-exam-component/calibration-exam.interface";
-import { PageTypes } from "../types/custom-types";
-import { ManualAudiometryInterface } from "../views/response-area/response-areas/manual-audiometry/manual-audiometry.interface";
-import { MultipleChoiceInterface } from "../views/response-area/response-areas/multiple-choice/multiple-choice.interface";
-import { TextBoxResultViewerInterface } from "../views/response-area/response-areas/textbox-result-viewer/textbox-result-viewer.interface";
-import { TextBoxInterface } from "../views/response-area/response-areas/textbox/textbox.interface";
-import { MultipleInputInterface } from "../views/response-area/response-areas/multiple-input/multiple-input.interface";
-import { LikertInterface } from "../views/response-area/response-areas/likert/likert/likert.interface";
-import { SweptDpoaeInterface } from "../views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/swept-dpoae-exam.interface";
-import { WAIInterface } from "../views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.interface";
-import { MrtExamInterface } from "../views/response-area/response-areas/mrt/mrt-exam/mrt-exam.interface";
+import { CalibrationExamInterface } from '../views/response-area/response-areas/calibration-exam/calibration-exam-component/calibration-exam.interface';
+import { ManualAudiometryInterface } from '../views/response-area/response-areas/manual-audiometry/manual-audiometry.interface';
+import { ManualAudiometryResultViewerInterface } from '../views/response-area/response-areas/manual-audiometry/manual-audiometry-result-viewer/manual-audiometry-result-viewer.interface';
+import { MultipleChoiceInterface } from '../views/response-area/response-areas/multiple-choice/multiple-choice.interface';
+import { ResultsViewResponseAreaInterface } from '../views/response-area/response-areas/results-view/results-view.interface';
+import { TextBoxInterface } from '../views/response-area/response-areas/textbox/textbox.interface';
+import { MultipleInputInterface } from '../views/response-area/response-areas/multiple-input/multiple-input.interface';
+import { LikertInterface } from '../views/response-area/response-areas/likert/likert/likert.interface';
+import { SweptDpoaeInterface } from '../views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/swept-dpoae-exam.interface';
+import { DpGramInterface } from '../views/response-area/response-areas/dp-gram/dp-gram-exam/dp-gram-exam.interface';
+import { WAIInterface } from '../views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.interface';
+import { MrtExamInterface } from '../views/response-area/response-areas/mrt/mrt-exam/mrt-exam.interface';
+import { MemrExamInterface } from '../views/response-area/response-areas/memr/memr-exam/memr-exam.interface';
+import { FPLCalibrationExamInterface } from '../views/response-area/response-areas/fpl-calibration-exam/fpl-calibration-exam-component/fpl-calibration-exam.interface';
+import { CustomResponseAreaInterface } from '../views/response-area/response-areas/custom-response-area/custom-response-area.interface';
+import { SubjectIdInterface } from '../views/response-area/response-areas/subject-id/subject-id.interface';
+import { CheckboxInterface } from '../views/response-area/response-areas/checkbox/checkbox.interface';
+import { PreProcessFunctionInterface } from './preProcessFunction.interface';
+import { Headset, PlaybackMethod, Tablet, WavfileWeighting } from '../utilities/constants';
+import { ButtonGridInterface } from '../views/response-area/response-areas/button-grid/button-grid.interface';
+import { QrCodeResponseAreaInterface } from '../views/response-area/response-areas/qr-code/qr-code.interface';
+import { DuodoseDownloadInterface } from '../views/response-area/response-areas/duodose-download/duodose-download.interface';
+import { BekesyResponseAreaInterface } from '../views/response-area/response-areas/bekesy/bekesy.interface';
+import { ThreeDigitResponseAreaInterface } from '../views/response-area/response-areas/three-digit/three-digit.interface';
+import { HintResponseAreaInterface } from '../views/response-area/response-areas/hint/hint.interface';
+import { GapResponseAreaInterface } from '../views/response-area/response-areas/gap/gap.interface';
+import { HughsonWestlakeResponseAreaInterface } from '../views/response-area/response-areas/hughson-westlake/hughson-westlake.interface';
+import { BhaftResponseAreaInterface } from '../views/response-area/response-areas/bhaft/bhaft.interface';
+import { MpanlResponseAreaInterface } from '../views/response-area/response-areas/mpanl/mpanl.interface';
+import { BekesyLikeResponseAreaInterface } from '../views/response-area/response-areas/bekesy-like/bekesy-like.interface';
+import { CalibrationFileWavProperties } from './calibration-file.interface';
 
 export interface PageDefinition {
-    id: string;
-    headset?: "VicFirth" | "Vic Firth S2" | "HDA200" | "WAHTS" | "Audiometer" | "EPHD1";
-    skipIf?: string;
-    hideProgressBar?: boolean;
-    autoSubmitDelay?: number;
-    enableBackButton?: boolean;
-    navMenu?: NavMenuInterface[];
-    title?: string;
-    questionMainText?: string;
-    questionSubText?: string;
-    instructionText?: string;
-    helpText?: string;
-    repeatPage?: RepeatPageInterface;
-    preProcessFunction?: string;
-    wavfileStartDelayTime?: number;
-    wavfiles?: WavfileInterface[];
-    chaWavFiles?: ChaWavfileInterface[];
-    chaStream?: boolean;
-    image?: ImageInterface;
-    video?: VideoInterface;
-    responseArea?: ResponseArea;
-    submitText?: string;
-    followOns?: FollowOnInterface[];
-    setFlags?: SetFlagInterface[];
+  id: string;
+  skipIf?: string;
+  autoSubmitDelay?: number;
+  enableBackButton?: boolean;
+  navMenu?: NavMenuInterface[];
+  title?: string;
+  subtitle?: string;
+  questionPreMainText?: string;
+  questionMainText?: string;
+  questionSubText?: string;
+  instructionText?: string;
+  helpText?: string;
+  repeatPage?: RepeatPageInterface;
+  preProcessFunction?: PreProcessFunctionInterface;
+  wavfileStartDelayTime?: number;
+  wavfiles?: PageWavfileInterface[];
+  chaWavFiles?: ChaWavfilesInterface;
+  image?: ImageInterface;
+  video?: VideoInterface;
+  responseArea?: ResponseArea;
+  submitText?: string;
+  followOns?: FollowOnInterface[];
+  setFlags?: SetFlagInterface[];
+  progressBarVal?: number | string;
+  dosimetry?: DosimetryInterface;
+  svantek?: boolean;
 }
 
 export interface NavMenuInterface {
-    text: string;
-    target: PageDefinition | ProtocolReferenceInterface;
-    returnHereAfterward: boolean;
+  text: string;
+  target: PageDefinition | ProtocolReferenceInterface;
+  returnHereAfterward: boolean;
 }
 
 export interface RepeatPageInterface {
-    nRepeats: number;
-    repeatIf?: string;
+  nRepeats: number;
+  repeatIf?: string;
 }
 
-export interface WavfileInterface {
-    cal: object;
-    useCommonRepo?: boolean;
+export interface PageWavfileCalInterface extends CalibrationFileWavProperties {
+  /**
+   * Tablet version for the calibration.
+   */
+  _tablet?: Tablet;
+
+  /**
+   * Headset version for the calibration.
+   */
+  _headset?: Headset;
+}
+
+export interface PageWavfileInterface {
+  path: string;
+  cal?: PageWavfileCalInterface;
+  useCommonRepo?: boolean;
+  playbackMethod?: PlaybackMethod;
+  targetSPL?: number | string;
+  weighting?: WavfileWeighting;
+  startTime?: number;
+  endTime?: number;
+  _resolvedPath?: string;
+  _tabletGain?: number;
+}
+
+export interface ChaWavfilesInterface {
+  tabsintId?: string;
+  wavfiles: {
     path: string;
-    playbackMethod?: "arbitrary" | "as-recorded";
-    targetSPL?: number | string;
-    weighting?: "A" | "C" | "Z";
-    startTime?: number;
-    endTime?: number;
-}
-
-export interface ChaWavfileInterface {
     Leq?: number[];
-    path: string;
     SoundFileName?: string;
-    useMetaRMS?: boolean;
-    UseMetaRMS?: boolean; // Alternate key
+  }[];
+  useMetaRMS?: boolean;
+  UseMetaRMS?: boolean; // Alternate key
 }
 
 export interface ImageInterface {
-    path: string;
-    width?: string;
+  path: string;
+  width?: string;
+  b64?: string;
 }
 
 export interface VideoInterface {
-    path: string;
-    width?: string;
-    autoplay?: boolean;
-    noSkip?: boolean;
+  path: string;
+  width?: string;
+  autoplay?: boolean;
+  noSkip?: boolean;
+  _resolvedPath?: string;
+}
+
+export interface DosimetryInterface {
+  tabsintId?: string[];
 }
 
 export interface FollowOnInterface {
-    conditional: string;
-    target: PageTypes;
+  conditional: string;
+
+  /**
+   * The sub-protocol or page to queue when the conditional matches. Only protocol references are
+   * supported; inline pages and inline sub-protocols are rejected by the schema.
+   */
+  target: ProtocolReferenceInterface;
 }
 
 export interface ProtocolReferenceInterface {
-    id?: string;
-    reference: string;
-    skipIf?: string;
+  id?: string;
+  reference: string;
+  skipIf?: string;
 }
 
 export interface SetFlagInterface {
-    id: string;
-    conditional: string;
+  id: string;
+  conditional: string;
+  value?: boolean | number | string;
 }
 
 export interface CommonResponseAreaInterface {
-    enableSkip?: boolean;
-    type: string;
-    responseRequired?: boolean;
+  enableSkip?: boolean;
+  type: string;
+  responseRequired?: boolean;
 }
 
 export type ResponseArea =
-    TextBoxInterface | TextBoxResultViewerInterface |
-    MultipleChoiceInterface | ManualAudiometryInterface | CalibrationExamInterface |
-    MultipleInputInterface | LikertInterface | SweptDpoaeInterface | WAIInterface |
-    MrtExamInterface
+  | TextBoxInterface
+  | ResultsViewResponseAreaInterface
+  | SubjectIdInterface
+  | CheckboxInterface
+  | DuodoseDownloadInterface
+  | ButtonGridInterface
+  | MultipleChoiceInterface
+  | ManualAudiometryInterface
+  | ManualAudiometryResultViewerInterface
+  | CalibrationExamInterface
+  | FPLCalibrationExamInterface
+  | MultipleInputInterface
+  | LikertInterface
+  | SweptDpoaeInterface
+  | DpGramInterface
+  | WAIInterface
+  | MrtExamInterface
+  | MemrExamInterface
+  | CustomResponseAreaInterface
+  | QrCodeResponseAreaInterface
+  | BekesyResponseAreaInterface
+  | ThreeDigitResponseAreaInterface
+  | HintResponseAreaInterface
+  | GapResponseAreaInterface
+  | HughsonWestlakeResponseAreaInterface
+  | BhaftResponseAreaInterface
+  | MpanlResponseAreaInterface
+  | BekesyLikeResponseAreaInterface;

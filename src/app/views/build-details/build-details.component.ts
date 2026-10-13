@@ -1,20 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { VersionModel } from '../../models/version/version.service';
 import { VersionInterface } from '../../models/version/version.interface';
-import { Logger } from '../../utilities/logger.service';
+import { Logger } from '../../services/logger.service';
 
 @Component({
-  selector: 'build-details',
+  selector: 'app-build-details',
   templateUrl: './build-details.component.html',
-  styleUrl: './build-details.component.css'
+  styleUrl: './build-details.component.css',
 })
 export class BuildDetailsComponent implements OnInit {
-  version: VersionInterface | undefined;
+  private readonly versionModel = inject(VersionModel);
+  private readonly logger = inject(Logger);
 
-  constructor(
-    private readonly versionModel: VersionModel, 
-    private readonly logger: Logger
-  ) {  }
+  version: VersionInterface | undefined;
 
   ngOnInit(): void {
     this.initializeVersion();
@@ -24,8 +22,7 @@ export class BuildDetailsComponent implements OnInit {
     try {
       this.version = await this.versionModel.getVersion();
     } catch (error) {
-      this.logger.error("" + error);
+      this.logger.error(JSON.stringify(error));
     }
   }
-
 }

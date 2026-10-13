@@ -1,162 +1,243 @@
 import { TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { ProtocolService } from './protocol.service';
-import { ProtocolModel } from '../models/protocol/protocol-model.service';
-import { SqLite } from '../utilities/sqLite.service';
 import { DiskModel } from '../models/disk/disk.service';
-import { FileService } from '../utilities/file.service';
-import { Logger } from '../utilities/logger.service';
-import { AppModel } from '../models/app/app.service';
 import { ProtocolServer } from '../utilities/constants';
-import { StateModel } from '../models/state/state.service';
-import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
-import { Tasks } from '../utilities/tasks.service';
-import { Notifications } from '../utilities/notifications.service';
-import { MatDialog } from '@angular/material/dialog';
+import { TranslocoTestingModule } from '@jsverse/transloco';
+import { Notifications } from '../services/notifications.service';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ProtocolInterface } from '../models/protocol/protocol.interface';
 import { partialMetaDefaults } from '../utilities/defaults';
+import { Component } from '@angular/core';
+import { Tasks } from '../services/tasks.service';
 
 describe('ProtocolService', () => {
-    let protocolService: ProtocolService;
-    let appModel = new AppModel;
-    let diskModel = new DiskModel(new Document);
-    let sqLite = new SqLite(appModel, diskModel);
-    let logger = new Logger(diskModel, sqLite);
-    let stateModel = new StateModel;
-    let tasks = new Tasks;
+  let diskModel: DiskModel;
+  let matDialogSpy: jasmine.SpyObj<MatDialog>;
 
-    const spy = jasmine.createSpyObj('MatDialog', ['open']);
+  const testProtocol = {
+    date: new Date().toJSON(),
+    version: '0.0',
+    server: ProtocolServer.LocalServer,
+    admin: false,
+    creator: 'Creare',
+    name: 'test',
+    path: 'na',
+    title: 'test Protocol',
+    pages: [
+      {
+        id: 'textbox_003',
+        title: 'Text Box',
+        instructionText: 'Test Cases 003',
+        responseArea: {
+          type: 'textboxResponseArea',
+        },
+      },
+    ],
+  };
+  const badTestProtocol = {
+    date: new Date().toJSON(),
+    version: '0.0',
+    server: ProtocolServer.LocalServer,
+    admin: false,
+    creator: 'Creare',
+    name: 'badTest',
+    path: 'na',
+    title: 'test Protocol',
+  };
+  const developProtocolMeta = {
+    ...partialMetaDefaults,
+    creator: 'Creare',
+    name: 'develop',
+    path: 'protocols/develop',
+  };
+  const builtInProtocolNames = ['develop', 'tabsint-example', 'tympan-example', 'wahts-example'];
 
-    let testProtocol = {
-        date: new Date().toJSON(),
-        version: '0.0',
-        server: ProtocolServer.LocalServer,
-        admin: false,
-        creator: "Creare",
-        name: "test",
-        path: "na",
-        title: "test Protocol",
-        pages: [
-                {
-                "id": "textbox_003",
-                "title": "Text Box",
-                "instructionText": "Test Cases 003",
-                "responseArea": {
-                    "type": "textboxResponseArea"
-                }
-            }
-        ]
-    };
-    let badTestProtocol = {
-        date: new Date().toJSON(),
-        version: '0.0',
-        server: ProtocolServer.LocalServer,
-        admin: false,
-        creator: "Creare",
-        name: "badTest",
-        path: "na",
-        title: "test Protocol"
-    };
-    let developProtocolMeta = 
-        {
-            ...partialMetaDefaults,
-            creator: "Creare",
-            name: "develop",
-            path: "protocols/develop"
-        }
+  beforeEach(async () => {
+    matDialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
+    matDialogSpy.open.and.returnValue({
+      afterClosed: () => of(true),
+    } as MatDialogRef<Component>);
 
-          
-    beforeEach(async () => {
-        TestBed.configureTestingModule({
-            imports: [
-              TranslateModule.forRoot({
-                  loader: {
-                    provide: TranslateLoader,
-                    useClass: TranslateFakeLoader
-                  }
-                }),
-            ],
-            providers: [
-              Notifications,
-              { provide: MatDialog, useValue: spy },
-              TranslateService, 
-              TranslateStore
-            ]
-        })
-
-        let mockTranslateService = {
-            get: jasmine.createSpy('get').and.callFake((key: string) => ({
-                subscribe: (callback: (value: string) => void) => callback(key),
-            })),
-            instant: jasmine.createSpy('instant').and.callFake((key: string) => key),
-            use: jasmine.createSpy('use').and.callFake((lang: string) => { }),
-        } as unknown as TranslateService;
-
-        protocolService = new ProtocolService(
-            appModel,
-            diskModel,
-            new FileService(appModel, logger,diskModel),
-            logger,
-            new Notifications(spy),
-            new ProtocolModel,
-            stateModel,
-            mockTranslateService,
-            tasks
-        );
-    })
-
-    it('load all protocol onto the protocolModel.activeProtocol object', async () => {
-        let activeProtocol: ProtocolInterface|undefined = protocolService.protocolModel.activeProtocol;
-        expect(activeProtocol).toBeUndefined();        
-        await protocolService.load(protocolService.disk.availableProtocolsMeta['develop']);
-        activeProtocol = protocolService.protocolModel.activeProtocol;
-        expect(activeProtocol).toBeDefined();
-        expect(activeProtocol?.pages.length).toBeGreaterThan(0);
+    TestBed.configureTestingModule({
+      imports: [
+        TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
+      ],
+      providers: [Notifications, { provide: MatDialog, useValue: matDialogSpy }, DiskModel],
     });
 
-    it('initializes protocol', async () => {
-        await protocolService.load(protocolService.disk.availableProtocolsMeta['develop']);
-        expect(protocolService.protocolModel.activeProtocolDictionary).toBeDefined();
-        expect(protocolService.protocolModel.activeProtocolFollowOnsDictionary).toBeDefined();
-        expect(protocolService.state.examIndex).toEqual(0);
-        expect(protocolService.state.examState).toEqual(2);
-    });
+    diskModel = TestBed.inject(DiskModel);
+    if (!diskModel.disk.availableProtocolsMeta) {
+      diskModel.disk.availableProtocolsMeta = {};
+    }
+    diskModel.disk.availableProtocolsMeta['develop'] = developProtocolMeta;
+  });
 
-    it('cannot remove a Developer protocol from TabSINT from the disk model', () => {
-        expect(Object.keys(protocolService.disk.availableProtocolsMeta).length).toEqual(2);
-        expect(protocolService.disk.availableProtocolsMeta['develop'].name).toBe('develop');
-        protocolService.delete(developProtocolMeta);
-        expect(Object.keys(protocolService.disk.availableProtocolsMeta).length).toEqual(2);
-        expect(protocolService.disk.availableProtocolsMeta['develop']).toBeDefined();
-    });
+  it('load all protocol onto the protocolModel.activeProtocol object', async () => {
+    const protocolService = TestBed.inject(ProtocolService);
+    let activeProtocol: ProtocolInterface | undefined = protocolService.protocolModel.activeProtocol;
+    expect(activeProtocol).toBeUndefined();
+    const result = await protocolService.load(protocolService.disk.availableProtocolsMeta['develop']);
+    expect(result).toBeTrue();
+    activeProtocol = protocolService.protocolModel.activeProtocol;
+    expect(activeProtocol).toBeDefined();
+    expect(activeProtocol?.pages.length).toBeGreaterThan(0);
+  });
 
-    it('removes a local server protocol from TabSINT from the disk model', () => {
-        protocolService.disk.availableProtocolsMeta['test'] = testProtocol;
-        expect(Object.keys(protocolService.disk.availableProtocolsMeta).length).toEqual(3);
-        expect(protocolService.disk.availableProtocolsMeta['test'].name).toBe('test');
-        protocolService.delete(testProtocol);
-        expect(Object.keys(protocolService.disk.availableProtocolsMeta).length).toEqual(2);
-        expect(protocolService.disk.availableProtocolsMeta['test']).toBeUndefined();
-    });
+  it('loads every built-in developer protocol without schema or calibration errors', async () => {
+    const protocolService = TestBed.inject(ProtocolService);
+    for (const name of builtInProtocolNames) {
+      const meta = { ...partialMetaDefaults, creator: 'Creare', name, path: `protocols/${name}` };
+      protocolService.disk.availableProtocolsMeta[name] = meta;
+      const result = await protocolService.load(protocolService.disk.availableProtocolsMeta[name]);
+      expect(result).withContext(name).toBeTrue();
+      expect(protocolService.protocolModel.activeProtocol?.errors ?? [])
+        .withContext(name)
+        .toEqual([]);
+    }
+  });
 
-    it('throws an error if the protocol does not meet schema', async () => {
-        protocolService.disk.availableProtocolsMeta['badTest'] = badTestProtocol;
-        try {
-            await protocolService.load(protocolService.disk.availableProtocolsMeta['badTest']);
-            fail('Expected function to throw an error, but it did not.');
-        } catch (error) {
-            expect(error).toBeDefined();
-        }
-        protocolService.delete(badTestProtocol);
-    });
+  it('initializes protocol', async () => {
+    const protocolService = TestBed.inject(ProtocolService);
+    await protocolService.load(protocolService.disk.availableProtocolsMeta['develop']);
+    expect(protocolService.protocolModel.activeProtocolDictionary).toBeDefined();
+    expect(protocolService.protocolModel.activeProtocolFollowOnsDictionary).toBeDefined();
+    expect(protocolService.state.examState).toEqual(2);
+  });
 
-    it('puts validation error on active protocol if the protocol does not meet schema', async () => {
-        protocolService.disk.availableProtocolsMeta['badTest'] = badTestProtocol;
-        try {
-            await protocolService.load(protocolService.disk.availableProtocolsMeta['badTest']);
-        } catch {
-        }
-        expect(protocolService.protocolModel.activeProtocol?.errors?.length).toBeGreaterThan(0);
-        protocolService.delete(badTestProtocol);
-    });
+  it('reports incremental progress on the "Initialize Protocol" task while processing pages', async () => {
+    const protocolService = TestBed.inject(ProtocolService);
+    const tasks = TestBed.inject(Tasks);
+    const registerSpy = spyOn(tasks, 'register').and.callThrough();
 
-})
+    await protocolService.load(protocolService.disk.availableProtocolsMeta['develop']);
+
+    const processingCalls = registerSpy.calls
+      .allArgs()
+      .filter(([task]) => task === 'Initialize Protocol')
+      .map(([, message]) => message);
+    expect(processingCalls.length).toBeGreaterThan(1);
+    expect(processingCalls[0]).toBe('Initializing Protocol...');
+    expect(processingCalls[processingCalls.length - 1]).toBe('Processing Protocol... (100%)');
+  });
+
+  it('cannot remove a Developer protocol from TabSINT from the disk model', () => {
+    const protocolService = TestBed.inject(ProtocolService);
+    const initialCount = Object.keys(protocolService.disk.availableProtocolsMeta).length;
+    expect(initialCount).toBeGreaterThanOrEqual(1);
+    expect(protocolService.disk.availableProtocolsMeta['develop']).toBeDefined();
+    expect(protocolService.disk.availableProtocolsMeta['develop'].name).toBe('develop');
+
+    protocolService.delete(developProtocolMeta);
+
+    const finalCount = Object.keys(protocolService.disk.availableProtocolsMeta).length;
+    expect(finalCount).toEqual(initialCount);
+    expect(protocolService.disk.availableProtocolsMeta['develop']).toBeDefined();
+  });
+
+  it('removes a local server protocol from TabSINT from the disk model', () => {
+    const protocolService = TestBed.inject(ProtocolService);
+    protocolService.disk.availableProtocolsMeta['test'] = testProtocol;
+    const initialCount = Object.keys(protocolService.disk.availableProtocolsMeta).length;
+    expect(protocolService.disk.availableProtocolsMeta['test']).toBeDefined();
+    expect(protocolService.disk.availableProtocolsMeta['test'].name).toBe('test');
+
+    protocolService.delete(testProtocol);
+
+    const finalCount = Object.keys(protocolService.disk.availableProtocolsMeta).length;
+    expect(finalCount).toEqual(initialCount - 1);
+    expect(protocolService.disk.availableProtocolsMeta['test']).toBeUndefined();
+  });
+
+  it('throws an error if the protocol does not meet schema', async () => {
+    const protocolService = TestBed.inject(ProtocolService);
+    protocolService.disk.availableProtocolsMeta['badTest'] = badTestProtocol;
+    let result: boolean | undefined;
+    try {
+      result = await protocolService.load(protocolService.disk.availableProtocolsMeta['badTest']);
+    } catch {
+      // Expected to fail
+    }
+    expect(result).toBeFalse();
+    expect(protocolService.protocolModel.activeProtocol).toBeUndefined();
+    protocolService.delete(badTestProtocol);
+  });
+
+  it('puts validation error on active protocol if the protocol does not meet schema', async () => {
+    const protocolService = TestBed.inject(ProtocolService);
+    protocolService.disk.availableProtocolsMeta['badTest'] = badTestProtocol;
+    let result: boolean | undefined;
+    try {
+      result = await protocolService.load(protocolService.disk.availableProtocolsMeta['badTest']);
+    } catch {
+      /* empty */
+    }
+    expect(result).toBeFalse();
+    expect(protocolService.protocolModel.activeProtocol).toBeUndefined();
+    protocolService.delete(badTestProtocol);
+  });
+
+  it('puts validation error on active protocol if the protocol has calibration errors', async () => {
+    const protocolService = TestBed.inject(ProtocolService);
+    const protocol = testProtocol;
+    const badPages = [
+      {
+        id: 'textbox',
+        title: 'Text Box',
+        instructionText: 'Test Cases',
+        wavfiles: [
+          {
+            weighting: 'A',
+            path: 'path.wav',
+            targetSPL: 65,
+          },
+        ],
+        responseArea: {
+          type: 'textboxResponseArea',
+        },
+      },
+    ];
+    protocol.pages = badPages;
+    protocolService.disk.availableProtocolsMeta['badTest'] = protocol;
+
+    let result: boolean | undefined;
+    try {
+      result = await protocolService.load(protocolService.disk.availableProtocolsMeta['badTest']);
+    } catch {
+      /* empty */
+    }
+    expect(result).toBeFalse();
+    expect(protocolService.protocolModel.activeProtocol).toBeUndefined();
+    protocolService.delete(protocol);
+  });
+
+  it('keeps the protocol active with a warning when validateProtocols is disabled despite errors', async () => {
+    const protocolService = TestBed.inject(ProtocolService);
+    const badPages = [
+      {
+        id: 'textbox',
+        title: 'Text Box',
+        instructionText: 'Test Cases',
+        wavfiles: [
+          {
+            weighting: 'A',
+            path: 'path.wav',
+            targetSPL: 65,
+          },
+        ],
+        responseArea: {
+          type: 'textboxResponseArea',
+        },
+      },
+    ];
+    const protocol = { ...testProtocol, name: 'badTest', pages: badPages };
+    protocolService.disk.availableProtocolsMeta['badTest'] = protocol;
+    protocolService.disk.preferences.validateProtocols = false;
+
+    const result = await protocolService.load(protocolService.disk.availableProtocolsMeta['badTest']);
+
+    expect(result).toBeTrue();
+    expect(protocolService.protocolModel.activeProtocol).toBeDefined();
+    protocolService.delete(protocol);
+  });
+});

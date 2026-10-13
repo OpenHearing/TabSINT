@@ -1,119 +1,319 @@
-import _ from "lodash";
-import { ProtocolSchemaInterface } from "../interfaces/protocol-schema.interface";
-import { ProtocolInterface } from "../models/protocol/protocol.interface";
-import { FollowOnInterface, PageDefinition } from "../interfaces/page-definition.interface";
-import { LoadingProtocolInterface } from "../interfaces/loading-protocol-object.interface";
-import { ProtocolDictionary } from "../interfaces/protocol-dictionary";
-import { FollowOnsDictionary } from "../interfaces/follow-ons-dictionary";
-import { isPageDefinition, isProtocolReferenceInterface, isProtocolSchemaInterface } from "../guards/type.guard";
-import { PageTypes } from "../types/custom-types";
-import { loadMrtExamCsv } from "./load-mrt-exam-csv";
-import { MrtExamInterface } from "../views/response-area/response-areas/mrt/mrt-exam/mrt-exam.interface";
+import _ from 'lodash';
+import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
+import { ProtocolInterface } from '../models/protocol/protocol.interface';
+import { FollowOnInterface, PageDefinition } from '../interfaces/page-definition.interface';
+import { LoadingProtocolInterface } from '../interfaces/loading-protocol-object.interface';
+import { ProtocolDictionary } from '../interfaces/protocol-dictionary';
+import { FollowOnsDictionary } from '../interfaces/follow-ons-dictionary';
+import { isPageDefinition, isProtocolReferenceInterface, isProtocolSchemaInterface } from '../guards/type.guard';
+import { PageTypes } from '../types/custom-types';
+import { loadMrtExamCsv } from './load-mrt-exam-csv';
+import { loadDPOAENormativeData, loadWAINormativeData } from './load-normative-data-xlsx';
+import { MrtExamInterface } from '../views/response-area/response-areas/mrt/mrt-exam/mrt-exam.interface';
+import { WAIInterface } from '../views/response-area/response-areas/wideband-acoustic-immittance/wai-exam/wai-exam.interface';
+import { SweptDpoaeInterface } from '../views/response-area/response-areas/swept-dpoae/swept-dpoae-exam/swept-dpoae-exam.interface';
+import { DpGramInterface } from '../views/response-area/response-areas/dp-gram/dp-gram-exam/dp-gram-exam.interface';
+import { CustomResponseAreaInterface } from '../views/response-area/response-areas/custom-response-area/custom-response-area.interface';
+import { ProtocolServer } from './constants';
+import { TabsintFs } from 'tabsintfs';
+import { loadCustomJS, loadFile } from './load-custom-js';
+import { CalibrationFileWavProperties } from '../interfaces/calibration-file.interface';
+
+/** Media-source configuration needed to resolve a wavfile's raw protocol-relative path to an on-device path. */
+export interface WavfileResolutionContext {
+  commonRepoPath?: string;
+  server?: ProtocolServer;
+  metaPath?: string;
+  contentURI?: string | null;
+}
+
+async function resolveFilePath(rootUri: string, filePath: string): Promise<string | undefined> {
+  return (await TabsintFs.getFileContentURI({ rootUri: rootUri, filePath: filePath }).catch(() => undefined))?.contentUri;
+}
+
+/**
+ * Resolve the on-device path for a wavfile's raw protocol-relative path, given the protocol's
+ * media-source configuration. Used both when a protocol is first loaded and, via
+ * `ExamService.resolvePageMediaPaths`, after a preprocess function reassigns `wavfile.path` at
+ * runtime. On a Developer server this resolves to a `public/assets/...` path, because wavfiles
+ * are handed off to the native/Java audio player, which reads from a different root than the web
+ * view's asset serving (see `assetPathExists` usage in `updatePageWavProperties` for the
+ * corresponding web-accessible path used to validate the file exists).
+ * @param rawPath The wavfile's protocol-relative path (i.e. `wavfile.path`).
+ * @param useCommonRepo Whether this wavfile is sourced from the protocol's common media repo.
+ * @param context The active protocol's media-source configuration.
+ * @returns The resolved path, or undefined if it could not be resolved.
+ */
+export async function resolveWavfilePath(
+  rawPath: string,
+  useCommonRepo: boolean | undefined,
+  context: WavfileResolutionContext
+): Promise<string | undefined> {
+  if (useCommonRepo) {
+    return context.commonRepoPath ? await resolveFilePath(context.commonRepoPath, rawPath) : undefined;
+  } else if (context.server === ProtocolServer.Developer) {
+    return 'public/assets/' + context.metaPath! + '/' + rawPath;
+  } else if (context.contentURI) {
+    return await resolveFilePath(context.contentURI, rawPath);
+  }
+  return undefined;
+}
+
+/**
+ * Resolve the on-device path for a video's raw protocol-relative path, given the protocol's
+ * media-source configuration. Used both when a protocol is first loaded and, via
+ * `ExamService.resolvePageMediaPaths`, after a preprocess function reassigns `video.path` at
+ * runtime. Unlike `resolveWavfilePath`, a Developer-server video resolves to a plain
+ * `assets/...` path (no `public/` prefix) since videos are played directly by the web view rather
+ * than handed off to a native player, and there's no common-repo concept for video.
+ * @param rawPath The video's protocol-relative path (i.e. `video.path`).
+ * @param context The active protocol's media-source configuration.
+ * @returns The resolved path, or undefined if it could not be resolved.
+ */
+export async function resolveVideoPath(rawPath: string, context: WavfileResolutionContext): Promise<string | undefined> {
+  if (context.server === ProtocolServer.Developer) {
+    return 'assets/' + context.metaPath! + '/' + rawPath;
+  } else if (context.contentURI) {
+    return await resolveFilePath(context.contentURI, rawPath);
+  }
+  return undefined;
+}
 
 /**
  * Adds variables to the active protocol and generates a stack of pages.
- * @summary Loops through each page and subprotocol, adds variables to the 
+ * @summary Loops through each page and subprotocol, adds variables to the
  * active protocol based on parameters on each page, and creates a page stack.
- * @param loading: LoadingProtocolInterface containing the protocol JSON, 
+ * @param loading: LoadingProtocolInterface containing the protocol JSON,
  * its calibration if it exists, its meta data, whether to notify the user about
  * progress, whether to validate the protocol, and whether to overwrite local protocol files
+ * @param onPageProcessed Optional callback invoked each time a page finishes processing, with the
+ * running count and the total number of pages across the whole protocol tree.
  * @returns the active protocol, the stack of pages, a dictionary of all subprotocols,
  * a dictionary of all pages, and a dictionary of all followOns
  */
-export function processProtocol(loading: LoadingProtocolInterface):
-  [ProtocolInterface, ProtocolDictionary, FollowOnsDictionary]
-{
-  let rootProtocol = loading.protocol;
-  let calibration = loading.calibration;
-  let protocolDict: ProtocolDictionary = {};
-  let followOnsDict: FollowOnsDictionary = {};
-  let prefix = loading.meta.path!;
+export async function processProtocol(
+  loading: LoadingProtocolInterface,
+  onPageProcessed?: (done: number, total: number) => void
+): Promise<[ProtocolInterface, ProtocolDictionary, FollowOnsDictionary]> {
+  const rootProtocol = loading.protocol;
+  const protocolDict: ProtocolDictionary = {};
+  const followOnsDict: FollowOnsDictionary = {};
+  const totalPages = countPages(rootProtocol.pages) + (rootProtocol.subProtocols ?? []).reduce((sum, obj) => sum + countSubProtocolPages(obj), 0);
+  let processedPages = 0;
 
-  iterateThroughPages(rootProtocol.pages);
+  await iterateThroughPages(rootProtocol.pages);
 
-  if (_.has(rootProtocol, "subProtocols")) {
-    _.forEach(rootProtocol.subProtocols, (obj) => {
-      processSubProtocol(obj);
-    });
+  if (_.has(rootProtocol, 'subProtocols')) {
+    await Promise.all(rootProtocol.subProtocols!.map(obj => processSubProtocol(obj)));
   }
-  
+
   return [rootProtocol, protocolDict, followOnsDict];
 
-  function processSubProtocol(
-    subProtocol: ProtocolSchemaInterface
-  ) {
+  /** Count the leaf pages `iterateThroughPages` will call `processPage` on, without processing them. */
+  function countPages(pages: PageTypes | PageTypes[]): number {
+    const list = Array.isArray(pages) ? pages : [pages];
+    let count = 0;
+    for (const page of list) {
+      if (isProtocolSchemaInterface(page)) {
+        count += countSubProtocolPages(page);
+      } else if (isPageDefinition(page)) {
+        count += 1;
+        for (const followOn of page.followOns ?? []) {
+          count += countPages(followOn.target);
+        }
+      }
+    }
+    return count;
+  }
 
-    iterateThroughPages(subProtocol.pages);
+  /** Count the leaf pages within a subProtocol and its nested subProtocols. */
+  function countSubProtocolPages(subProtocol: ProtocolSchemaInterface): number {
+    return countPages(subProtocol.pages) + (subProtocol.subProtocols ?? []).reduce((sum, obj) => sum + countSubProtocolPages(obj), 0);
+  }
 
-    if (_.has(subProtocol, "protocolId")) {
+  async function processSubProtocol(subProtocol: ProtocolSchemaInterface) {
+    await iterateThroughPages(subProtocol.pages);
+
+    if (_.has(subProtocol, 'protocolId')) {
       protocolDict[subProtocol.protocolId!] = subProtocol;
     }
 
-    if (_.has(subProtocol, "subProtocols")) {
-      _.forEach(subProtocol.subProtocols, (obj) => {
-        processSubProtocol(obj);
-      });
+    if (_.has(subProtocol, 'subProtocols')) {
+      await Promise.all(subProtocol.subProtocols!.map(obj => processSubProtocol(obj)));
     }
   }
 
-  function iterateThroughPages(pages: PageTypes | (PageTypes)[]) {
-    _.forEach(pages, (page) => {
-      if (isProtocolSchemaInterface(page)) {
-        processSubProtocol(page as ProtocolSchemaInterface);
-      // } else if (isProtocolReferenceInterface(page)) {
-      //   processPage(page as ProtocolReferenceInterface);
-      } else if (isPageDefinition(page)) {
-        processPage(page as PageDefinition);
-      }
-    });  
+  // Pages are independent of each other (each touches only its own PageDefinition object plus
+  // shared error-reporting arrays on rootProtocol, which are order-independent appends), so they
+  // are processed concurrently rather than one at a time. Sequential processing meant a protocol
+  // with N pages paid N times the per-page network/native-bridge latency instead of ~1x.
+  async function iterateThroughPages(pages: PageTypes | PageTypes[]) {
+    pages = Array.isArray(pages) ? pages : [pages];
+    await Promise.all(
+      pages.map(page => {
+        if (isProtocolSchemaInterface(page)) {
+          return processSubProtocol(page);
+        } else if (isPageDefinition(page)) {
+          return processPage(page);
+        }
+        return Promise.resolve();
+      })
+    );
   }
 
-  async function processPage(
-      page: PageDefinition
-    ) {
+  /**
+   * Check whether an asset exists.
+   * @param assetPath The path to check.
+   * @returns True if the asset exists, False otherwise.
+   */
+  async function assetPathExists(assetPath: string): Promise<boolean> {
+    return await fetch(assetPath, { method: 'HEAD' })
+      .then(response => response.ok)
+      .catch(() => false);
+  }
 
+  async function processPage(page: PageDefinition) {
     if (page.preProcessFunction) {
-      rootProtocol._preProcessFunctionList!.push(page.preProcessFunction);
+      page.preProcessFunction.js = await loadFile(page.preProcessFunction.filepath, loading.meta);
     }
 
-    if (page.wavfiles) {
-      _.forEach(page.wavfiles, (wavfile) => {
-        //TODO: deal with calibration and common repo
-      });
-    }
+    await updatePageWavProperties(page);
+    await updatePageVideoProperties(page);
 
     if (isPageDefinition(page) && page.image) {
-      page.image.path = prefix + page.image.path;
-    }
-
-    if (page.video) {
-      page.video.path = prefix + page.video.path;
+      page.image.b64 = await readImageFileAsBytes(loading, page.image.path);
     }
 
     if (page.responseArea) {
-      // TODO: deal with specific response area processing here
-      if (page.responseArea.type === "mrtResponseArea") {
-        const responseArea = page.responseArea as MrtExamInterface;
-        page.responseArea = await loadMrtExamCsv(responseArea, loading.meta);
+      switch (page.responseArea.type) {
+        case 'mrtResponseArea': {
+          const responseArea = page.responseArea as MrtExamInterface;
+          page.responseArea = await loadMrtExamCsv(responseArea, loading.meta);
+          break;
+        }
+        case 'WAIResponseArea': {
+          const responseArea = page.responseArea as WAIInterface;
+          page.responseArea = await loadWAINormativeData(responseArea, loading.meta);
+          break;
+        }
+        case 'sweptDPOAEResponseArea': {
+          const responseArea = page.responseArea as SweptDpoaeInterface;
+          page.responseArea = await loadDPOAENormativeData(responseArea, loading.meta);
+          break;
+        }
+        case 'dpGramResponseArea': {
+          const responseArea = page.responseArea as DpGramInterface;
+          page.responseArea = await loadDPOAENormativeData(responseArea, loading.meta);
+          break;
+        }
+        case 'customResponseArea': {
+          const responseArea = page.responseArea as CustomResponseAreaInterface;
+          page.responseArea = await loadCustomJS(responseArea, loading.meta);
+          break;
+        }
+        default:
+          break;
       }
     }
 
-    if (_.has(page, "followOns")) {
-      processFollowOns(page.followOns!);
+    if (_.has(page, 'followOns')) {
+      await processFollowOns(page.followOns!);
     }
-
 
     if (isProtocolSchemaInterface(page)) {
-      processSubProtocol(page);
+      await processSubProtocol(page);
     }
+
+    processedPages++;
+    onPageProcessed?.(processedPages, totalPages);
   }
 
-  function processFollowOns(followOns: FollowOnInterface[]) {
-    _.forEach(followOns, (followOn) => {
-      let id = getId(followOn.target);
+  async function processFollowOns(followOns: FollowOnInterface[]) {
+    for (const followOn of followOns) {
+      const id = getId(followOn.target);
       followOnsDict[id] = followOn;
-      iterateThroughPages(followOn.target);
-    });
+    }
+    await Promise.all(followOns.map(followOn => iterateThroughPages(followOn.target)));
+  }
+
+  /**
+   * Process the data from a calibration file add properties to the wav file object held in the page.
+   * @param page The page with wav files to be processed and updated.
+   */
+  async function updatePageWavProperties(page: PageDefinition): Promise<void> {
+    for (const wavfile of page.wavfiles ?? []) {
+      // Determine if a common calibration is available or if a custom calibration is available
+      const missingCommonMediaRepo = !rootProtocol.commonRepo || !rootProtocol.cCommon;
+      const missingCommonWavCalList = missingCommonMediaRepo || !rootProtocol.cCommon?.[wavfile.path];
+
+      // Update the page wav files with calibration data if possible, otherwise update error messaging
+      if (wavfile.useCommonRepo) {
+        if (!missingCommonMediaRepo && !missingCommonWavCalList) {
+          const wavProperties = rootProtocol.cCommon?.[wavfile.path] as CalibrationFileWavProperties;
+          wavfile.cal = wavProperties;
+          rootProtocol._missingCommonMediaRepo = missingCommonMediaRepo;
+        } else if (missingCommonWavCalList) {
+          rootProtocol._missingCommonWavCalList?.push(wavfile.path);
+        }
+        rootProtocol._missingCommonMediaRepo = missingCommonMediaRepo;
+      } else if (loading.calibration) {
+        const wavCalibrationProperties = loading.calibration[wavfile.path] as CalibrationFileWavProperties;
+        wavfile.cal = { ...wavCalibrationProperties, _tablet: loading.calibration?.tablet, _headset: loading.calibration?.headset };
+      } else {
+        rootProtocol._missingWavCalList?.push(wavfile.path);
+      }
+    }
+
+    const resolutionContext: WavfileResolutionContext = {
+      commonRepoPath: rootProtocol.commonRepo?.path,
+      server: loading.meta.server,
+      metaPath: loading.meta.path,
+      contentURI: loading.meta.contentURI,
+    };
+
+    await Promise.all(
+      (page.wavfiles ?? []).map(async wavfile => {
+        if (wavfile.useCommonRepo) {
+          if (rootProtocol.commonRepo?.path) {
+            wavfile._resolvedPath = await resolveWavfilePath(wavfile.path, true, resolutionContext);
+            if (wavfile._resolvedPath === undefined) {
+              rootProtocol._unresolvedFilePathList?.push(wavfile.path);
+            }
+          }
+        } else if (loading.meta.server == ProtocolServer.Developer) {
+          wavfile._resolvedPath = await resolveWavfilePath(wavfile.path, false, resolutionContext);
+          // The asset path check needs to check a different path than the resolved path, as the resolved path is for Java use.
+          if (!(await assetPathExists('assets/' + loading.meta.path! + '/' + wavfile.path))) {
+            rootProtocol._unresolvedFilePathList?.push(wavfile.path);
+          }
+        } else if (loading.meta.contentURI) {
+          wavfile._resolvedPath = await resolveWavfilePath(wavfile.path, false, resolutionContext);
+          if (wavfile._resolvedPath === undefined) {
+            rootProtocol._unresolvedFilePathList?.push(wavfile.path);
+          }
+        }
+      })
+    );
+  }
+
+  /**
+   * Update the page video properties with resolved paths.
+   * @param page The page with video to be processed and updated.
+   */
+  async function updatePageVideoProperties(page: PageDefinition): Promise<void> {
+    if (page.video) {
+      page.video._resolvedPath = await resolveVideoPath(page.video.path, {
+        server: loading.meta.server,
+        metaPath: loading.meta.path,
+        contentURI: loading.meta.contentURI,
+      });
+      const isUnresolved =
+        page.video._resolvedPath === undefined ||
+        (loading.meta.server == ProtocolServer.Developer && !(await assetPathExists(page.video._resolvedPath)));
+      if (isUnresolved) {
+        rootProtocol._unresolvedFilePathList?.push(page.video.path);
+      }
+    }
   }
 
   function getId(target: PageTypes): string {
@@ -128,4 +328,32 @@ export function processProtocol(loading: LoadingProtocolInterface):
     }
   }
 
+  async function readImageFileAsBytes(loading: LoadingProtocolInterface, imagePath: string): Promise<string | undefined> {
+    let imageBytes: string | undefined;
+    if (loading.meta.server == ProtocolServer.Developer) {
+      const resp = await fetch('assets/' + loading.meta.path + '/' + imagePath);
+      if (!resp.ok) {
+        throw new Error(`Failed to fetch the file: ${resp.statusText}`);
+      }
+      const blob = await resp.blob();
+      imageBytes = await blobToBase64DataURL(blob);
+    } else if (loading.meta.server === ProtocolServer.LocalServer || loading.meta.server === ProtocolServer.Gitlab) {
+      const resp = await TabsintFs.readFile({ rootUri: loading.meta.contentURI, filePath: imagePath, asBase64: true });
+      imageBytes = 'data:' + resp.mimeType + ';base64,' + resp.content;
+    }
+    return imageBytes;
+  }
+
+  async function blobToBase64DataURL(blob: Blob): Promise<string | undefined> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        resolve(reader.result as string);
+      };
+      reader.onerror = () => {
+        reject(new Error(`Failed to read the file: ${reader.error?.message ?? 'unknown error'}`));
+      };
+      reader.readAsDataURL(blob);
+    });
+  }
 }
