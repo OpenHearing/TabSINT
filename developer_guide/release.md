@@ -23,17 +23,18 @@ This procedure releases an APK/AAB for Android usage.
     - If you start your own release branch, you will tag the release on the master branch when you are done
     - Confirm that all unit tests are passing and code is linted
 3.  Increase the semantic version number manually in `package.json`. This should be the same as the release tag, except without the `v` prefix (this is just a tag convention).
-4.  Edit the [Changelog](https://GitHub.com/OpenHearing/TabSINT/blob/main/Changelog.md) to describe the changes in this release.
-5.  Commit all the changed files to the release branch. This will start the GitLab pipeline and generate a beta release for testing.
-6.  Test the beta release
+4.  Run `npm run run.build`. This will increase the version number in `version.json` to match `package.json`.
+5.  Edit the [Changelog](https://GitHub.com/OpenHearing/TabSINT/blob/main/Changelog.md) to describe the changes in this release.
+6.  Commit all the changed files to the release branch. This will start the GitLab pipeline and generate a beta release for testing.
+7.  Test the beta release
     - Download and install the output .apk from the CI job.
     - Write up a specific test plan based on the Changelog.
-7.  Merge the release branch back into the `master` branch. Tag the master branch with the release tag/version in `package.json`, prefixed by a `v` (i.e. `v1.1.0`)
+8.  Merge the release branch back into the `master` branch. Tag the master branch with the release tag/version in `package.json`, prefixed by a `v` (i.e. `v1.1.0`)
     - Once tagged, the GitLab pipeline will run with the release stage included. This will create a release APK/AAB and will show two manual steps to archive and release the tagged application on GitLab.
     - Note: If the release requires a specific tag/version of SVN code, the pipeline should be run manually and the tag should be provided as an input before running the pipeline.
-8.  Run the manual archive and release actions in the pipeline. This will push the zip file containing the APK/AAB to the GitLab Package Registry and Release pages of GitLab and GitHub.
-9.  Make sure also to merge the changes back into the `develop` branch to avoid regression.
-10. Run the publish process below.
+9.  Run the manual archive and release actions in the pipeline. This will push the zip file containing the APK/AAB to the GitLab Package Registry and Release pages of GitLab and GitHub.
+10. Make sure also to merge the changes back into the `develop` branch to avoid regression.
+11. Run the publish process below.
 
 ## Publish
 
