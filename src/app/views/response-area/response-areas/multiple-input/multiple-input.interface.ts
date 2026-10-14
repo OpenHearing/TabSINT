@@ -18,6 +18,7 @@ export interface InputListItem {
     default?: 'none' | 'today'; // Initialize date with 'today', or leave empty
   };
   notes?: string;
+  value?: string | number; // Fallback initial value; date inputs with dateProperties.default 'today' use today's date instead
 }
 
 export interface MultiDropdownOption {
