@@ -16,7 +16,7 @@
     <div class="row" *ngIf="otherSelected">
       <textarea
         #otherResponse
-        [(ngModel)]="results.currentPage.response.other"
+        [(ngModel)]="response.other"
         (ngModelChange)="onResponseChange()"
         (keydown.enter)="onEnter()"
         rows="5"

@@ -27,8 +27,9 @@ export class CalibrationResultsViewerComponent implements OnInit {
     const calibrationResult = this.resultsModel
       .getResults()
       .currentExam.responses.filter((response: CurrentResults) => response.responseArea === 'calibrationExam');
-    if (calibrationResult.length > 0) {
-      this.results = JSON.parse(calibrationResult[calibrationResult.length - 1].response) as CalibrationResults;
+    const latestResponse = calibrationResult.at(-1)?.response;
+    if (typeof latestResponse === 'string') {
+      this.results = JSON.parse(latestResponse) as CalibrationResults;
     }
     calibrationResult.pop();
   }

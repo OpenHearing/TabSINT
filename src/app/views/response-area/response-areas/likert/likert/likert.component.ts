@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { PageModel } from '../../../../../models/page/page.service';
 import { ResultsInterface } from '../../../../../models/results/results.interface';
-import { LikertInterface, LikertQuestion, LikertSpecifier } from './likert.interface';
+import { LikertInterface, LikertQuestion, LikertResponseInterface, LikertSpecifier } from './likert.interface';
 import { PageInterface } from '../../../../../models/page/page.interface';
 import { likertSchema } from '../../../../../../schema/response-areas/likert.schema';
 import { StateModel } from '../../../../../models/state/state.service';
@@ -45,7 +45,7 @@ export class LikertComponent implements OnInit, OnDestroy {
   private readonly pageModel = inject(PageModel);
   private readonly stateModel = inject(StateModel);
   private readonly examService = inject(ExamService);
-  @Output() responseChange = new EventEmitter<number>();
+  @Output() responseChange = new EventEmitter<LikertResponseInterface>();
 
   likertExamProperties: LikertInterface = {
     type: likertSchema.properties.type.default,
@@ -71,6 +71,11 @@ export class LikertComponent implements OnInit, OnDestroy {
   stateSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
   private autoSubmitTimeout: ReturnType<typeof setTimeout> | undefined;
+
+  /** The current page's response, as written by this response area (selected level per question). */
+  get response(): LikertResponseInterface {
+    return this.results.currentPage.response as LikertResponseInterface;
+  }
 
   constructor() {
     this.results = this.resultsModel.getResults();
@@ -106,7 +111,7 @@ export class LikertComponent implements OnInit, OnDestroy {
     this.resultsModel.updateCurrentPageResponseElement(questionIndex, levelIndex);
     this.stateModel.updateState({ doesResponseExist: this.allQuestionsAnswered() });
     this.stateModel.setPageSubmittable();
-    this.responseChange.emit(this.results.currentPage.response);
+    this.responseChange.emit(this.response);
     if (this.likertExamProperties.autoSubmit && this.allQuestionsAnswered()) {
       // Defer so Angular renders this question's selection before the page advances --
       // otherwise, when this click is the one that completes the page, submit()/advancePage()

@@ -25,3 +25,6 @@ export interface MultiDropdownOption {
   id: number;
   label: string;
 }
+
+/** Response for the multiple input response area: one value per input, in inputList order. */
+export type MultipleInputResponseInterface = (string | number | string[] | undefined)[];

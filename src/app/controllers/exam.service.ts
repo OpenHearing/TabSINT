@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { combineLatest, firstValueFrom, interval, Subscription } from 'rxjs';
 import {
+  isChoiceResponse,
   isChoiceResponseArea,
   isPageDefinition,
   isProtocolReferenceInterface,
@@ -186,9 +187,10 @@ export class ExamService {
     this.results.currentPage.correct = undefined;
     if (isChoiceResponseArea(this.results.currentPage?.page?.responseArea)) {
       const choices: ChoiceInterface[] | undefined = this.results.currentPage.page.responseArea.choices;
+      const response = this.results.currentPage.response;
       if (choices) {
         choices.forEach((choice: ChoiceInterface) => {
-          if (choice?.correct && includesOrEquals(this.results.currentPage.response.selected, choice.id)) {
+          if (choice?.correct && isChoiceResponse(response) && includesOrEquals(response.selected, choice.id)) {
             this.results.currentPage.correct = true;
           }
           if (choice?.correct && this.results.currentPage.correct === undefined) {
@@ -543,8 +545,9 @@ export class ExamService {
    * @summary Handles and evaluates the logic from a protocol conditional.
    */
   private conditionalEvaluator(conditional: string) {
+    const currentResponse = this.results.currentPage.response;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const response = this.results.currentPage.response?.selected ?? this.results.currentPage.response;
+    const response = (isChoiceResponse(currentResponse) ? currentResponse.selected : undefined) ?? currentResponse;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const flags = this.resultsModel.getResults().currentExam.flags;
 

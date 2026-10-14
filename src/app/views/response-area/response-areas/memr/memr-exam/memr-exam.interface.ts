@@ -75,6 +75,9 @@ export interface MemrExamSubmissionInterface {
  * @field RecordedLevel_LeqdBSPL Equivalent sound levels of each output channel for the last completed trial.
  * @field RecordedLevel_dBP Peak sound level of each output channel for the last completed trial.
  */
+/** Response for the MEMR response area: the results of each completed exam, undefined if results were never received. */
+export type MemrResponseInterface = (MemrResultsInterface | undefined)[];
+
 export interface MemrResultsInterface {
   State: string;
   TrialsCompleted: number;

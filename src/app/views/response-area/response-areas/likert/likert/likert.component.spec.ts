@@ -1,6 +1,7 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 import { LikertComponent } from './likert.component';
+import { LikertResponseInterface } from './likert.interface';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { PageModel } from '../../../../../models/page/page.service';
 import { StateModel } from '../../../../../models/state/state.service';
@@ -75,8 +76,8 @@ describe('LikertComponent', () => {
     spyOn(component.responseChange, 'emit');
     resultsModel.resultsModel.currentPage.response = [0];
     component.onResponseChange(0, 2);
-    expect(resultsModel.resultsModel.currentPage.response[0]).toEqual(2);
-    expect(component.responseChange.emit).toHaveBeenCalledWith(resultsModel.resultsModel.currentPage.response);
+    expect((resultsModel.resultsModel.currentPage.response as LikertResponseInterface)[0]).toEqual(2);
+    expect(component.responseChange.emit).toHaveBeenCalledWith(resultsModel.resultsModel.currentPage.response as LikertResponseInterface);
   });
 
   it('should defer autoSubmit so the completing answer renders before the page advances', fakeAsync(() => {
