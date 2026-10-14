@@ -225,7 +225,7 @@ export abstract class AutomatedAudiometryExamComponentBase<
     }
     const results = await this.requestExamResults(this.finalResultsTimeoutMs);
     if (results) {
-      this.postProcessResults(results);
+      this.postProcessResults?.(results);
     } else {
       this.logger.error(`${this.examLabel}: exam completed but no final results were returned.`);
     }
@@ -483,9 +483,7 @@ export abstract class AutomatedAudiometryExamComponentBase<
    * Hughson-Westlake overrides this, to remap its screener ResultType to pass/fail vocabulary.
    * @param results The final results returned by the device.
    */
-  protected postProcessResults(_results: TResults): void {
-    // No-op by default.
-  }
+  protected postProcessResults?(results: TResults): void;
 
   /**
    * Whether a combined audiogram should be built at all for the current result - overridden by

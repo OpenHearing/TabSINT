@@ -15,6 +15,7 @@ export interface InputListItem {
   dateProperties?: {
     maxDate?: string; // ISO formatted string YYYY-MM-DD or 'today'
     minDate?: string; // ISO formatted string YYYY-MM-DD or 'today'
+    default?: 'none' | 'today'; // Initialize date with 'today', or leave empty
   };
   notes?: string;
 }

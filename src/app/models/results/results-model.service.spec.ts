@@ -31,8 +31,8 @@ describe('ResultsModel', () => {
   });
 
   it('pushResponse appends to responses array', () => {
-    resultsModel.pushResponse({ value: 1 });
-    resultsModel.pushResponse({ value: 2 });
+    resultsModel.pushResponse({ pageId: 'page1', response: 1, page: {} });
+    resultsModel.pushResponse({ pageId: 'page2', response: 2, page: {} });
     expect(resultsModel.getResults().currentExam.responses.length).toBe(2);
   });
 
