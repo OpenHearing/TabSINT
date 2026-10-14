@@ -1,12 +1,12 @@
 import { Component, OnInit, OnDestroy, ViewChild, EventEmitter, Output, inject } from '@angular/core';
 import { PageModel } from '../../../../../models/page/page.service';
 import { Subscription } from 'rxjs';
-import { CalibrationExamInterface, CalibrationNavigationEntry, EarData, ExamResponse } from './calibration-exam.interface';
+import { CalibrationExamInterface, CalibrationNavigationEntry, EarData } from './calibration-exam.interface';
 import { PageInterface } from '../../../../../models/page/page.interface';
 import { DevicesService } from '../../../../../services/devices/devices.service';
 import { Logger } from '../../../../../services/logger.service';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
-import { ResultsInterface } from '../../../../../models/results/results.interface';
+import { CurrentResults, ResultsInterface } from '../../../../../models/results/results.interface';
 import { ExamService } from '../../../../../controllers/exam.service';
 import { MaxOutputScreenComponent } from '../max-output-screen/max-output-screen.component';
 import { ButtonTextService } from '../../../../../controllers/button-text.service';
@@ -479,10 +479,11 @@ export class CalibrationExamComponent implements OnInit, OnDestroy {
       leftEar: this.leftEarData,
       rightEar: this.rightEarData,
     };
-    const newResponse: ExamResponse = {
+    const newResponse: CurrentResults = {
       pageId: 'calibration-results',
       response: JSON.stringify(calibrationResults),
       responseArea: 'calibrationExam',
+      page: {},
     };
 
     this.results.currentExam.responses.push(newResponse);

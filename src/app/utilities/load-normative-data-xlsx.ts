@@ -12,7 +12,7 @@ import { SweptDpoaeInterface } from '../views/response-area/response-areas/swept
  * @param actualHeaders The headers read from the file
  * @param expectedPositions The expected headers which align with data properties
  */
-function validateHeaders(actualHeaders: string[], expectedPositions: Record<string, number>) {
+function validateHeaders(actualHeaders: unknown[], expectedPositions: Record<string, number>) {
   for (const [expectedHeader, expectedIndex] of Object.entries(expectedPositions)) {
     if (actualHeaders[expectedIndex] !== expectedHeader) {
       throw new Error(
@@ -37,8 +37,8 @@ async function parseXlsxBuffer(xlsxFileContent: ArrayBuffer): Promise<NormativeD
   const worksheetName: string = workbook.SheetNames[0];
   const workSheet: XLSX.WorkSheet = workbook.Sheets[worksheetName];
   // Convert to data array
-  const lines: any[][] = XLSX.utils.sheet_to_json(workSheet, { header: 1 });
-  const headerIndex = lines.findIndex(line => line[0].startsWith('X'));
+  const lines = XLSX.utils.sheet_to_json<unknown[]>(workSheet, { header: 1 });
+  const headerIndex = lines.findIndex(line => String(line[0]).startsWith('X'));
   const header = lines[headerIndex];
   const expectedHeaderPositions: Record<string, number> = {
     X: 0,
@@ -47,12 +47,12 @@ async function parseXlsxBuffer(xlsxFileContent: ArrayBuffer): Promise<NormativeD
   };
   validateHeaders(header, expectedHeaderPositions);
 
-  lines.slice(headerIndex + 1).forEach((line: any[]) => {
+  lines.slice(headerIndex + 1).forEach((line: unknown[]) => {
     if (line.length >= 3) {
       dataList.push({
-        x: Number.parseFloat(line[0]),
-        yMin: Number.parseFloat(line[1]),
-        yMax: Number.parseFloat(line[2]),
+        x: Number.parseFloat(String(line[0])),
+        yMin: Number.parseFloat(String(line[1])),
+        yMax: Number.parseFloat(String(line[2])),
       });
     }
   });

@@ -69,6 +69,7 @@ export const multipleInputSchema: JSONSchemaType<MultipleInputInterface> = {
               default: {
                 type: 'string',
                 enum: ['none', 'today'],
+                nullable: true,
                 default: 'none',
                 description: "Initialize date with 'default' date",
               },

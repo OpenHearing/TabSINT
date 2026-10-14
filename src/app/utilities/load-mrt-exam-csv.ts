@@ -9,9 +9,9 @@ import {
 } from '../views/response-area/response-areas/mrt/mrt-exam/mrt-exam.interface';
 import { ProtocolServer } from './constants';
 
-function parseCSVAsync(csvString: string) {
+function parseCSVAsync(csvString: string): Promise<unknown[][]> {
   return new Promise((resolve, reject) => {
-    Papa.parse(csvString, {
+    Papa.parse<unknown[]>(csvString, {
       header: false,
       dynamicTyping: true,
       complete: results => {
@@ -24,7 +24,7 @@ function parseCSVAsync(csvString: string) {
   });
 }
 
-function validateHeaders(actualHeaders: string[], expectedPositions: Record<string, number>) {
+function validateHeaders(actualHeaders: unknown[], expectedPositions: Record<string, number>) {
   for (const [expectedHeader, expectedIndex] of Object.entries(expectedPositions)) {
     if (actualHeaders[expectedIndex] !== expectedHeader) {
       throw new Error(
@@ -33,14 +33,27 @@ function validateHeaders(actualHeaders: string[], expectedPositions: Record<stri
     }
   }
 }
-function processOutputChannelValue(value: string): string | string[] {
-  if (value.includes(',')) {
-    return value.split(',').map(item => item.trim());
+function processOutputChannelValue(value: unknown): string | string[] {
+  if (Array.isArray(value)) {
+    return value.map(String);
   }
-  return value;
+  const text = String(value);
+  if (text.includes(',')) {
+    return text.split(',').map(item => item.trim());
+  }
+  return text;
 }
 
-function getValueByKey(lines: any[][], key: string): any {
+/**
+ * Convert a CSV cell to a number, keeping cells that were already parsed as numbers.
+ * @param cell The CSV cell value.
+ * @returns The numeric value, or NaN when the cell is not numeric.
+ */
+function cellToNumber(cell: unknown): number {
+  return typeof cell === 'number' ? cell : Number.parseFloat(String(cell));
+}
+
+function getValueByKey(lines: unknown[][], key: string): unknown {
   const line = lines.find(subArray => subArray[0] === key);
   if (!line) return undefined;
   const values = line.slice(1).filter(value => value !== null);
@@ -51,15 +64,14 @@ function getValueByKey(lines: any[][], key: string): any {
 
 async function parseCsvString(csvFileContent: string): Promise<MrtExamDefinitionInterface> {
   const trialList: MrtTrialInterface[] = [];
-  const lines: any[][] = (await parseCSVAsync(csvFileContent)) as any[][];
+  const lines = await parseCSVAsync(csvFileContent);
 
-  const outputChannel = getValueByKey(lines, 'OUTPUT CHANNELS')
-    ? processOutputChannelValue(getValueByKey(lines, 'OUTPUT CHANNELS'))
-    : mrtSchema.properties.outputChannel.default;
-  const randomizeTrials = getValueByKey(lines, 'RANDOMIZE TRIALS') ?? mrtSchema.properties.randomizeTrials.default;
-  const randomizeChoices = getValueByKey(lines, 'RANDOMIZE CHOICES') ?? mrtSchema.properties.randomizeChoices.default;
+  const outputChannelValue = getValueByKey(lines, 'OUTPUT CHANNELS');
+  const outputChannel = outputChannelValue ? processOutputChannelValue(outputChannelValue) : mrtSchema.properties.outputChannel.default;
+  const randomizeTrials = Boolean(getValueByKey(lines, 'RANDOMIZE TRIALS') ?? mrtSchema.properties.randomizeTrials.default);
+  const randomizeChoices = Boolean(getValueByKey(lines, 'RANDOMIZE CHOICES') ?? mrtSchema.properties.randomizeChoices.default);
 
-  const trialsIndex = lines.findIndex(line => line[0].startsWith('{TRIALS')) + 1;
+  const trialsIndex = lines.findIndex(line => String(line[0]).startsWith('{TRIALS')) + 1;
   const header = lines[trialsIndex];
   const expectedHeaderPositions: Record<string, number> = {
     FILENAME: 1,
@@ -73,15 +85,15 @@ async function parseCsvString(csvFileContent: string): Promise<MrtExamDefinition
   for (const line of lines.slice(trialsIndex + 1)) {
     if (line.length >= 6) {
       trialList.push({
-        filename: line[1].trim(),
+        filename: String(line[1]).trim(),
         leveldBSpl: await parseLeveldBSpl(line),
-        useMeta: line[3],
-        choices: line[4]
+        useMeta: Boolean(line[3]),
+        choices: String(line[4])
           .trim()
           .split(',')
           .map((choice: string) => choice.trim()),
-        answer: line[5],
-        SNR: line[6],
+        answer: cellToNumber(line[5]),
+        SNR: cellToNumber(line[6]),
       });
     }
   }
@@ -89,14 +101,15 @@ async function parseCsvString(csvFileContent: string): Promise<MrtExamDefinition
   return { trialList, outputChannel, randomizeTrials, randomizeChoices };
 }
 
-async function parseLeveldBSpl(line: any[]) {
-  let level: number[];
-  try {
-    level = typeof line[2] === 'number' ? [line[2]] : [Number.parseInt(line[2].split(',')[0]), Number.parseInt(line[2].split(',')[1])];
-  } catch {
-    throw new Error('Failed to parse leveldBSpl from MRT csv');
+async function parseLeveldBSpl(line: unknown[]) {
+  const cell = line[2];
+  if (typeof cell === 'number') {
+    return [cell];
   }
-  return level;
+  if (typeof cell === 'string') {
+    return [Number.parseInt(cell.split(',')[0]), Number.parseInt(cell.split(',')[1])];
+  }
+  throw new Error('Failed to parse leveldBSpl from MRT csv');
 }
 
 export async function loadMrtExamCsv(responseArea: MrtExamInterface, meta: ProtocolMetaInterface): Promise<MrtExamInterface> {

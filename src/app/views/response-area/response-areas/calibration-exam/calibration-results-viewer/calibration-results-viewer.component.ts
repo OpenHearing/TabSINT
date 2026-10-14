@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
-import { EarData, ExamResponse } from '../calibration-exam-component/calibration-exam.interface';
+import { EarData } from '../calibration-exam-component/calibration-exam.interface';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
+import { CurrentResults } from '../../../../../models/results/results.interface';
 import { IDevice } from '../../../../../interfaces/devices/device.interface';
 import { DeviceStatus } from '../../../../../utilities/constants';
 
@@ -25,7 +26,7 @@ export class CalibrationResultsViewerComponent implements OnInit {
   ngOnInit(): void {
     const calibrationResult = this.resultsModel
       .getResults()
-      .currentExam.responses.filter((response: ExamResponse) => response.responseArea === 'calibrationExam');
+      .currentExam.responses.filter((response: CurrentResults) => response.responseArea === 'calibrationExam');
     if (calibrationResult.length > 0) {
       this.results = JSON.parse(calibrationResult[calibrationResult.length - 1].response) as CalibrationResults;
     }
