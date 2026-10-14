@@ -2,7 +2,7 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { PageModel } from '../../../../models/page/page.service';
 import { Subscription } from 'rxjs';
 import { PageInterface } from '../../../../models/page/page.interface';
-import { InputListItem, MultiDropdownOption, MultipleInputInterface } from './multiple-input.interface';
+import { InputListItem, MultiDropdownOption, MultipleInputInterface, MultipleInputResponseInterface } from './multiple-input.interface';
 import { ResultsModel } from '../../../../models/results/results-model.service';
 import { ResultsInterface } from '../../../../models/results/results.interface';
 import { StateModel } from '../../../../models/state/state.service';
@@ -39,6 +39,11 @@ export class MultipleInputComponent implements OnInit, OnDestroy {
   pageSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
+
+  /** The current page's response, as written by this response area (one value per input). */
+  get response(): MultipleInputResponseInterface {
+    return this.results.currentPage.response as MultipleInputResponseInterface;
+  }
 
   constructor() {
     this.results = this.resultsModel.getResults();
@@ -88,9 +93,7 @@ export class MultipleInputComponent implements OnInit, OnDestroy {
   }
 
   updateSubmittableLogic(): void {
-    const isSubmittable = this.inputList.every(
-      (item: InputListItem, idx: number) => !item.required || this.isDefined(item, this.results.currentPage.response[idx])
-    );
+    const isSubmittable = this.inputList.every((item: InputListItem, idx: number) => !item.required || this.isDefined(item, this.response[idx]));
     this.stateModel.updateState({ isSubmittable: isSubmittable });
   }
 

@@ -16,7 +16,7 @@ export interface ResultsInterface {
 
 export interface CurrentResults {
   pageId: string;
-  response?: any;
+  response?: unknown;
   correct?: boolean;
   eachCorrect?: boolean[];
   numberCorrect?: number;

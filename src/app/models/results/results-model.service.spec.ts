@@ -40,7 +40,7 @@ describe('ResultsModel', () => {
     it('updates the element at the given index when response is an array', () => {
       resultsModel.updateCurrentPage({ response: ['a', 'b', 'c'] });
       resultsModel.updateCurrentPageResponseElement(1, 'updated');
-      expect(resultsModel.getResults().currentPage.response[1]).toBe('updated');
+      expect((resultsModel.getResults().currentPage.response as string[])[1]).toBe('updated');
     });
 
     it('logs a warning when response is not an array', () => {

@@ -70,6 +70,11 @@ export class MrtExamComponent implements OnInit, OnDestroy {
   resultsSubscription: Subscription | undefined;
   deviceSubscription: Subscription | undefined;
 
+  /** The current page's response, as written by this response area (completed trial results). */
+  get response(): MrtTrialResultInterface[] {
+    return this.results.currentPage.response as MrtTrialResultInterface[];
+  }
+
   constructor() {
     this.state = this.stateModel.getState();
     this.results = this.resultsModel.getResults();
@@ -146,7 +151,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
       case 'Exam': {
         this.stateModel.updateState({ isSubmittable: false });
         this.saveResponse();
-        const nbTrialsCompleted = this.results.currentPage.response.length;
+        const nbTrialsCompleted = this.response.length;
         if (this.trialList.length > 0) {
           this.pctComplete = (nbTrialsCompleted / this.nbTrials) * 100;
           this.currentTrial = this.trialList.shift()!;

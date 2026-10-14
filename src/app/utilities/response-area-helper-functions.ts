@@ -1,7 +1,7 @@
 import { ChoiceButtonClassOptionsInterface, ChoiceInterface, ChoiceResponseInterface } from '../interfaces/choice.interface';
 
-export function includesOrEquals(item: string[] | string | number, arg: string | number): boolean {
-  if (item === undefined) {
+export function includesOrEquals(item: ChoiceResponseInterface['selected'] | undefined, arg: string | number): boolean {
+  if (item === undefined || item === null) {
     return false;
   } else if (Array.isArray(item)) {
     return item.length === 0 ? false : item.map(String).includes(String(arg));
