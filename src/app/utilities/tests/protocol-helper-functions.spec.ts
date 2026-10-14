@@ -41,7 +41,6 @@ describe('getProtocolMetaData', () => {
     const meta = getProtocolMetaData(protocol);
     expect(meta.name).toBe('Meta Test');
     expect(meta.version).toBe('2.0');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect((meta as any).pages).toBeUndefined();
+    expect('pages' in meta).toBeFalse();
   });
 });
