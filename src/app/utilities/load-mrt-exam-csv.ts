@@ -2,7 +2,11 @@ import * as Papa from 'papaparse';
 import { TabsintFs } from 'tabsintfs';
 import { mrtSchema } from '../../schema/response-areas/mrt.schema';
 import { ProtocolMetaInterface } from '../models/protocol/protocol.interface';
-import { MrtExamInterface, MrtTrialInterface } from '../views/response-area/response-areas/mrt/mrt-exam/mrt-exam.interface';
+import {
+  MrtExamDefinitionInterface,
+  MrtExamInterface,
+  MrtTrialInterface,
+} from '../views/response-area/response-areas/mrt/mrt-exam/mrt-exam.interface';
 import { ProtocolServer } from './constants';
 
 function parseCSVAsync(csvString: string) {
@@ -45,7 +49,7 @@ function getValueByKey(lines: any[][], key: string): any {
   return undefined;
 }
 
-async function parseCsvString(csvFileContent: string): Promise<any> {
+async function parseCsvString(csvFileContent: string): Promise<MrtExamDefinitionInterface> {
   const trialList: MrtTrialInterface[] = [];
   const lines: any[][] = (await parseCSVAsync(csvFileContent)) as any[][];
 

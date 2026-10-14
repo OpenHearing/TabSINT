@@ -57,7 +57,7 @@ eslint_check:
     - npm ci
     - mkdir -p reports
     - bash -o pipefail -c 'npm run lint 2>&1 | tee reports/eslint-report.txt'
-  allow_failure: true
+  allow_failure: false
   artifacts:
     paths:
       - reports/eslint-report.txt

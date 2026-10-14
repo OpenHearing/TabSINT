@@ -1,5 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { KeyValue } from '@angular/common';
 
 /**
  * Component for displaying parameters to the user in a tabulated format.
@@ -16,7 +15,7 @@ export class InputParametersComponent {
   @Input() parameterMap!: Map<string, string>;
 
   /** Used to preserve original order of map. */
-  originalOrder = (a: KeyValue<string, string>, b: KeyValue<string, string>): number => {
+  originalOrder = (): number => {
     return 0;
   };
 }

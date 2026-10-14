@@ -2,7 +2,7 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { PageModel } from '../../../../models/page/page.service';
 import { Subscription } from 'rxjs';
 import { PageInterface } from '../../../../models/page/page.interface';
-import { InputListItem, MultipleInputInterface } from './multiple-input.interface';
+import { InputListItem, MultiDropdownOption, MultipleInputInterface } from './multiple-input.interface';
 import { ResultsModel } from '../../../../models/results/results-model.service';
 import { ResultsInterface } from '../../../../models/results/results.interface';
 import { StateModel } from '../../../../models/state/state.service';
@@ -25,8 +25,8 @@ export class MultipleInputComponent implements OnInit, OnDestroy {
   // Configuration variables
   today: string = new Date().toISOString().slice(0, 10);
   reviewDisabled: boolean = false;
-  multiDropdownModel: Record<number, any[]> = {};
-  multiDropdownJson: Record<number, any[]> = [];
+  multiDropdownModel: Record<number, string[]> = {};
+  multiDropdownJson: Record<number, MultiDropdownOption[]> = [];
   verticalSpacing: number = multipleInputSchema.properties.verticalSpacing.default;
   textAlign: string = multipleInputSchema.properties.textAlign.default;
   review: boolean = multipleInputSchema.properties.review.default;
@@ -76,7 +76,7 @@ export class MultipleInputComponent implements OnInit, OnDestroy {
     this.reviewDisabled = status;
   }
 
-  selectResponse(i: number, option: any): void {
+  selectResponse(i: number, option: unknown): void {
     this.resultsModel.updateCurrentPageResponseElement(i, option);
     this.updateSubmittableLogic();
   }
@@ -89,23 +89,23 @@ export class MultipleInputComponent implements OnInit, OnDestroy {
 
   updateSubmittableLogic(): void {
     const isSubmittable = this.inputList.every(
-      (item: any, idx: number) => !item.required || this.isDefined(item, this.results.currentPage.response[idx])
+      (item: InputListItem, idx: number) => !item.required || this.isDefined(item, this.results.currentPage.response[idx])
     );
     this.stateModel.updateState({ isSubmittable: isSubmittable });
   }
 
-  isDefined(item: any, val: any): boolean {
-    if (['text', 'number'].includes(item.inputType)) {
+  isDefined(item: InputListItem, val: unknown): boolean {
+    if (['text', 'number'].includes(item.inputType ?? '')) {
       return val !== '' && val !== null && val !== undefined;
     }
     return val !== undefined;
   }
 
-  isWideDropdown(options: any[]): boolean {
+  isWideDropdown(options: string[]): boolean {
     return options.some(option => option.length > 20);
   }
 
-  isWideMultiDropdown(options: any[]): boolean {
+  isWideMultiDropdown(options: MultiDropdownOption[]): boolean {
     return options.some(option => option.label.length > 20);
   }
 
@@ -113,7 +113,7 @@ export class MultipleInputComponent implements OnInit, OnDestroy {
     this.verticalSpacing = updatedMultipleInputResponseArea.verticalSpacing ?? multipleInputSchema.properties.verticalSpacing.default;
     this.textAlign = updatedMultipleInputResponseArea.textAlign ?? multipleInputSchema.properties.textAlign.default;
     this.review = updatedMultipleInputResponseArea.review ?? multipleInputSchema.properties.review.default;
-    this.inputList = updatedMultipleInputResponseArea.inputList.map((item: any) => {
+    this.inputList = updatedMultipleInputResponseArea.inputList.map((item: InputListItem) => {
       return {
         ...item,
         required: item.required ?? multipleInputSchema.properties.inputList.items.properties.required.default,
@@ -121,9 +121,9 @@ export class MultipleInputComponent implements OnInit, OnDestroy {
     });
 
     // Initialize multi-dropdown data
-    updatedMultipleInputResponseArea.inputList.forEach((item: any, index: number) => {
+    updatedMultipleInputResponseArea.inputList.forEach((item: InputListItem, index: number) => {
       if (item.inputType === 'multi-dropdown') {
-        this.multiDropdownJson[index] = item.options.map((option: any, i: number) => ({
+        this.multiDropdownJson[index] = (item.options ?? []).map((option: string, i: number) => ({
           id: i,
           label: option,
         }));

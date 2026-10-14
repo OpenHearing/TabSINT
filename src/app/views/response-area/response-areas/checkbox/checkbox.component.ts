@@ -107,7 +107,7 @@ export class CheckboxComponent implements OnInit, OnDestroy {
     const eachCorrect: boolean[] = [];
     let questionContainsCorrect = false;
 
-    const choices: ChoiceInterface[] = (this.results.currentPage?.page?.responseArea as any).choices;
+    const choices: ChoiceInterface[] = (this.results.currentPage?.page?.responseArea as CheckboxInterface).choices;
     choices.forEach((choice: ChoiceInterface) => {
       if (choice?.correct) {
         questionContainsCorrect = true;

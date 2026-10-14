@@ -1,12 +1,12 @@
 import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
-import { ExamResponse } from '../calibration-exam-component/calibration-exam.interface';
+import { EarData, ExamResponse } from '../calibration-exam-component/calibration-exam.interface';
 import { ResultsModel } from '../../../../../models/results/results-model.service';
 import { IDevice } from '../../../../../interfaces/devices/device.interface';
 import { DeviceStatus } from '../../../../../utilities/constants';
 
 interface CalibrationResults {
-  leftEar: any;
-  rightEar: any;
+  leftEar: Record<string, EarData>;
+  rightEar: Record<string, EarData>;
 }
 
 @Component({
@@ -32,7 +32,7 @@ export class CalibrationResultsViewerComponent implements OnInit {
     calibrationResult.pop();
   }
 
-  getKeys(obj: CalibrationResults): string[] {
+  getKeys(obj: Record<string, EarData>): string[] {
     return Object.keys(obj);
   }
 
