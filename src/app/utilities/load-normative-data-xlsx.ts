@@ -47,7 +47,7 @@ async function parseXlsxBuffer(xlsxFileContent: ArrayBuffer): Promise<NormativeD
   };
   validateHeaders(header, expectedHeaderPositions);
 
-  lines.slice(headerIndex + 1).forEach((line: any[], idx: number) => {
+  lines.slice(headerIndex + 1).forEach((line: any[]) => {
     if (line.length >= 3) {
       dataList.push({
         x: Number.parseFloat(line[0]),

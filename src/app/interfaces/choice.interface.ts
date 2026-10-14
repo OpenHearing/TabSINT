@@ -7,3 +7,13 @@ export interface ChoiceInterface {
   backgroundColor?: string;
   fontSize?: string;
 }
+
+export interface ChoiceResponseInterface {
+  selected: string[] | string | number;
+}
+
+export interface ChoiceButtonClassOptionsInterface {
+  buttonScheme?: string;
+  feedback?: string;
+  disableButton?: boolean;
+}

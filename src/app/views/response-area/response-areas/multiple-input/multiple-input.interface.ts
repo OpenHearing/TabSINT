@@ -18,3 +18,8 @@ export interface InputListItem {
   };
   notes?: string;
 }
+
+export interface MultiDropdownOption {
+  id: number;
+  label: string;
+}

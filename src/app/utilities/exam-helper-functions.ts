@@ -1,5 +1,6 @@
 import { JSONSchemaType } from 'ajv';
 import { pageSchema } from '../../schema/page.schema';
+import { CommonResponseAreaInterface } from '../interfaces/page-definition.interface';
 
 export function checkIfCanGoBack() {
   // unimplemented
@@ -29,7 +30,7 @@ export function calculateElapsedTime(startTimeString: string) {
  * @returns the matching branch schema, or undefined when the type is not registered
  */
 export function findResponseAreaSchema(responseType: string) {
-  return pageSchema.properties.responseArea.oneOf.find((responseAreaType: JSONSchemaType<any>) => {
+  return pageSchema.properties.responseArea.oneOf.find((responseAreaType: JSONSchemaType<CommonResponseAreaInterface>) => {
     return responseAreaType.properties.type.enum.includes(responseType);
   });
 }

@@ -1,4 +1,4 @@
-import { ChoiceInterface } from '../interfaces/choice.interface';
+import { ChoiceButtonClassOptionsInterface, ChoiceInterface, ChoiceResponseInterface } from '../interfaces/choice.interface';
 
 export function includesOrEquals(item: string[] | string | number, arg: string | number): boolean {
   if (item === undefined) {
@@ -10,7 +10,7 @@ export function includesOrEquals(item: string[] | string | number, arg: string |
   }
 }
 
-export function choiceBtnClassHelper(choice: ChoiceInterface, response: any, options: any = undefined) {
+export function choiceBtnClassHelper(choice: ChoiceInterface, response: ChoiceResponseInterface, options?: ChoiceButtonClassOptionsInterface) {
   let btnClass = 'btn btn-block ';
   if (options?.buttonScheme === 'markIncorrect') {
     if (options?.disableButton) {

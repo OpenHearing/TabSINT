@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { ExamResults, ResultsInterface } from '../../models/results/results.interface';
+import { CurrentResults, ExamResults, ResultsInterface } from '../../models/results/results.interface';
 import { ProtocolModelInterface } from '../../models/protocol/protocol.interface';
 import { DiskInterface } from '../../models/disk/disk.interface';
 
@@ -45,7 +45,7 @@ export class ExamFinalizedComponent implements OnInit, OnDestroy {
     this.diskSubscription?.unsubscribe();
   }
 
-  truncatedResponse(resp: any) {
+  truncatedResponse(resp: CurrentResults) {
     if (typeof resp.response === 'string') {
       return resp.response.substr(0, 25);
     }

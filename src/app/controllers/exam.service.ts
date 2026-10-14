@@ -43,7 +43,7 @@ import { ChoiceInterface } from '../interfaces/choice.interface';
 import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
 import { DevicesService } from '../services/devices/devices.service';
 import { IDeviceResponse } from '../interfaces/devices/device-response.interface';
-import { DosimeterResultsInterface } from '../interfaces/dosimeter-results.interface';
+import { DosimeterDeviceResultsInterface, DosimeterResultsInterface } from '../interfaces/dosimeter-results.interface';
 import { pageSchema } from '../../schema/page.schema';
 import { AudioService } from '../services/audio.service';
 import { Tasks } from '../services/tasks.service';
@@ -943,7 +943,7 @@ export class ExamService {
   async pollForDosimeterResults(deviceId: string, tabsintId: string) {
     try {
       const resp = await this.devicesService.requestResults(deviceId);
-      const res = resp?.msg[1] as any;
+      const res = resp?.msg[1] as DosimeterDeviceResultsInterface;
       const time = new Date().toJSON();
       const dosimeterResults: DosimeterResultsInterface = {
         time: time,
