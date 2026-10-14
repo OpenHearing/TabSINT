@@ -7,7 +7,7 @@
     <span *ngIf="isValidationMode">{{ "Please enter your PIN:" | transloco }}</span>
     <span *ngIf="!isValidationMode">{{ "Please enter a new numerical PIN:" | transloco }}</span>
   </label>
-  <input id="pin" type="number" [(ngModel)]="pin" pattern="[0-9]*" autofocus="true" />
+  <input id="pin" type="number" [(ngModel)]="pin" pattern="[0-9]*" />
 </div>
 <br />
 <div class="modal-footer">
