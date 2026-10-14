@@ -134,8 +134,8 @@ export class MultipleInputComponent implements OnInit, OnDestroy {
 
   private initializeReponses(updatedMultipleInputResponseArea: MultipleInputInterface) {
     this.resultsModel.updateCurrentPage({
-      response: updatedMultipleInputResponseArea.inputList.map((item: any) => {
-        if (item.inputType === 'date' && item.dateProperties.default === 'today') {
+      response: updatedMultipleInputResponseArea.inputList.map((item: InputListItem) => {
+        if (item.inputType === 'date' && item.dateProperties?.default === 'today') {
           return this.today;
         } else {
           return item.value;
