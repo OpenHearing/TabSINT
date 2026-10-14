@@ -23,7 +23,7 @@ This procedure releases an APK/AAB for Android usage.
     - If you start your own release branch, you will tag the release on the master branch when you are done
     - Confirm that all unit tests are passing and code is linted
 3.  Increase the semantic version number manually in `package.json`. This should be the same as the release tag, except without the `v` prefix (this is just a tag convention).
-4.  Run `npm run run.build`. This will increase the version number in `version.json` to match `package.json`.
+4.  Run `npm install`. This will increase the version number in `version.json` to match `package.json` and update `package-lock.json` with latest version and dependencies.
 5.  Edit the [Changelog](https://GitHub.com/OpenHearing/TabSINT/blob/main/Changelog.md) to describe the changes in this release.
 6.  Commit all the changed files to the release branch. This will start the GitLab pipeline and generate a beta release for testing.
 7.  Test the beta release
