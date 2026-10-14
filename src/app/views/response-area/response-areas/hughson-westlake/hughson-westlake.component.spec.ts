@@ -183,8 +183,7 @@ describe('HughsonWestlakeComponent', () => {
     tick();
     fixture.detectChanges();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).fetchAndFinishExam();
+    component['fetchAndFinishExam']();
 
     tick();
     fixture.detectChanges();
@@ -217,8 +216,7 @@ describe('HughsonWestlakeComponent', () => {
     };
     component.plotProperties.displayLevelProgression = true;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).buildProgressionPlots(results);
+    component['buildProgressionPlots'](results);
     const data = component.levelProgressionData!;
 
     expect(data.pointStyles).toEqual(['filled', 'filled', 'open', 'highlight', 'highlight']);
@@ -244,8 +242,7 @@ describe('HughsonWestlakeComponent', () => {
     };
     component.plotProperties.displayLevelProgression = true;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).buildProgressionPlots(results);
+    component['buildProgressionPlots'](results);
     const data = component.levelProgressionData!;
 
     expect(data.pointStyles).toEqual(['filled', 'filled', 'filled', 'filled', 'open']);
@@ -261,12 +258,9 @@ describe('HughsonWestlakeComponent', () => {
     const failResults = { ResultType: 'Failed to Converge' } as HughsonWestlakeResultsInterface;
     const unusedResults = { ResultType: 'Hearing Potentially Outside Measurable Range' } as HughsonWestlakeResultsInterface;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).postProcessResults(passResults);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).postProcessResults(failResults);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).postProcessResults(unusedResults);
+    component['postProcessResults'](passResults);
+    component['postProcessResults'](failResults);
+    component['postProcessResults'](unusedResults);
 
     expect(passResults.ResultType).toBe('Pass');
     expect(failResults.ResultType).toBe('Fail');
@@ -276,8 +270,7 @@ describe('HughsonWestlakeComponent', () => {
   it('does not remap ResultType when Screener is not configured', () => {
     const results = { ResultType: 'Threshold' } as HughsonWestlakeResultsInterface;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).postProcessResults(results);
+    component['postProcessResults'](results);
 
     expect(results.ResultType).toBe('Threshold');
   });
@@ -297,8 +290,7 @@ describe('HughsonWestlakeComponent', () => {
     tick();
     fixture.detectChanges();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).fetchAndFinishExam();
+    component['fetchAndFinishExam']();
     tick();
     fixture.detectChanges();
 
@@ -323,8 +315,7 @@ describe('HughsonWestlakeComponent', () => {
     tick();
     fixture.detectChanges();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).fetchAndFinishExam();
+    component['fetchAndFinishExam']();
     tick();
     fixture.detectChanges();
 

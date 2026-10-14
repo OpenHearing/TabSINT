@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { TestBed } from '@angular/core/testing';
 import { ResultsService } from './results.service';
 import { ResultsInterface, ExamResults } from '../models/results/results.interface';
@@ -20,6 +19,7 @@ import { ProtocolServer } from '../utilities/constants';
 import { DiskInterface } from '../models/disk/disk.interface';
 import { ProtocolInterface } from '../models/protocol/protocol.interface';
 import { PageInterface } from '../models/page/page.interface';
+import { VersionInterface } from '../models/version/version.interface';
 
 describe('ResultsService', () => {
   beforeEach(async () => {
@@ -121,7 +121,7 @@ const makeExamResult = (overrides: Partial<ExamResults> = {}): ExamResults =>
     partialresults: false,
     elapsedTime: '00:01:00',
     exportLocation: ProtocolServer.LocalServer,
-    softwareVersion: {} as any,
+    softwareVersion: {} as VersionInterface,
     tabletLocation: {},
     calibrationVersion: {},
     flags: {},
@@ -151,7 +151,7 @@ describe('ResultsService (mocked)', () => {
     protocolStack.addProtocol(protocol);
 
     mockResultsState = {
-      currentPage: { pageId: '', page: {} as any },
+      currentPage: { pageId: '', page: {} },
       currentExam: {
         testDateTime: undefined,
         protocol,
@@ -159,7 +159,7 @@ describe('ResultsService (mocked)', () => {
         partialresults: false,
         elapsedTime: undefined,
         exportLocation: ProtocolServer.LocalServer,
-        softwareVersion: {} as any,
+        softwareVersion: {} as VersionInterface,
         tabletLocation: {},
         calibrationVersion: {},
         flags: {},
@@ -203,9 +203,10 @@ describe('ResultsService (mocked)', () => {
 
     mockVersionModel = { version: {} };
 
-    mockDevicesService = jasmine.createSpyObj('DevicesService', ['getDeviceIdOrDefault', 'abortExams', 'queueExam', 'requestResults']);
-    (mockDevicesService as any).hostMetadata = of({ uuid: 'device-uuid-123456' });
-    (mockDevicesService as any).devices = of([]);
+    mockDevicesService = jasmine.createSpyObj('DevicesService', ['getDeviceIdOrDefault', 'abortExams', 'queueExam', 'requestResults'], {
+      hostMetadata: of({ uuid: 'device-uuid-123456' }),
+      devices: of([]),
+    });
 
     mockEncrypt = jasmine.createSpyObj('EncryptResultsService', ['encryptForStorage', 'decryptFromStorage', 'encryptForUpload']);
 

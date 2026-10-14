@@ -79,8 +79,7 @@ export class ExamService {
   stateSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
 
-  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
-  dosimeterResultsPoll: { [name: string]: ReturnType<typeof setInterval> } = {};
+  dosimeterResultsPoll: Record<string, ReturnType<typeof setInterval>> = {};
   private activeWavfileDevice: string | undefined = undefined;
   private activeSvantekDeviceId: string | undefined = undefined;
   private svantekResultPoll: ReturnType<typeof setInterval> | undefined = undefined;

@@ -192,8 +192,7 @@ describe('BhaftComponent', () => {
     tick();
     fixture.detectChanges();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).fetchAndFinishExam();
+    component['fetchAndFinishExam']();
 
     tick();
     fixture.detectChanges();
@@ -215,8 +214,7 @@ describe('BhaftComponent', () => {
 
   it("forwards a press to the device and does not auto-release (hold mode, unlike Hughson-Westlake's tap)", async () => {
     component.deviceId = mockDevice.deviceId;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).examActive = true;
+    component['examActive'] = true;
 
     await component.onPressStart();
 
@@ -226,8 +224,7 @@ describe('BhaftComponent', () => {
 
   it('forwards a release to the device only when the button is released', async () => {
     component.deviceId = mockDevice.deviceId;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).examActive = true;
+    component['examActive'] = true;
 
     await component.onPressEnd();
 
@@ -244,8 +241,7 @@ describe('BhaftComponent', () => {
     };
     component.plotProperties.displayFrequencyProgression = true;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).buildProgressionPlots(results);
+    component['buildProgressionPlots'](results);
     const data = component.frequencyProgressionData!;
 
     expect(data.pointStyles).toEqual(['filled', 'filled', 'open', 'open', 'filled', 'filled']);
@@ -268,8 +264,7 @@ describe('BhaftComponent', () => {
     };
     component.plotProperties.displayFrequencyProgression = true;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).buildProgressionPlots(results);
+    component['buildProgressionPlots'](results);
     const data = component.frequencyProgressionData!;
 
     expect(data.referenceLine).toBeUndefined();
@@ -277,8 +272,7 @@ describe('BhaftComponent', () => {
   });
 
   it('classifyHitOrMiss: FLFT phase (frequency varying) — filled for a hit (frequency rises), open for a miss (frequency falls)', () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const classify = (frequencies: number[], levels: number[]) => (component as any).classifyHitOrMiss(frequencies, levels);
+    const classify = (frequencies: number[], levels: number[]) => component['classifyHitOrMiss'](frequencies, levels);
     const flatLevels = [0, 0, 0, 0, 0, 0]; // irrelevant while frequency is doing the moving
 
     expect(classify([10, 12, 15, 13, 11, 14], flatLevels)).toEqual(['filled', 'filled', 'open', 'open', 'filled', 'filled']);
@@ -288,8 +282,7 @@ describe('BhaftComponent', () => {
   });
 
   it('classifyHitOrMiss: falls back to level once frequency hits the ceiling and holds flat (FFLT phase) — filled for a hit (level falls), open for a miss (level rises)', () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const classify = (frequencies: number[], levels: number[]) => (component as any).classifyHitOrMiss(frequencies, levels);
+    const classify = (frequencies: number[], levels: number[]) => component['classifyHitOrMiss'](frequencies, levels);
 
     // Presentations 0-1: FLFT, frequency climbing on hits. Presentation 2 hits the ceiling
     // (10000) and stays there for the rest — from here, level is what's actually moving: it falls
@@ -315,8 +308,7 @@ describe('BhaftComponent', () => {
     tick();
     fixture.detectChanges();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).fetchAndFinishExam();
+    component['fetchAndFinishExam']();
     tick();
     fixture.detectChanges();
 
@@ -340,11 +332,9 @@ describe('BhaftComponent', () => {
     tick();
     fixture.detectChanges();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).fetchAndFinishExam();
+    component['fetchAndFinishExam']();
     tick();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).fetchAndFinishExam();
+    component['fetchAndFinishExam']();
     tick();
     fixture.detectChanges();
 
@@ -368,8 +358,7 @@ describe('BhaftComponent', () => {
     tick();
     fixture.detectChanges();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).fetchAndFinishExam();
+    component['fetchAndFinishExam']();
     tick();
     fixture.detectChanges();
 
@@ -393,8 +382,7 @@ describe('BhaftComponent', () => {
     tick();
     fixture.detectChanges();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).fetchAndFinishExam();
+    component['fetchAndFinishExam']();
     tick();
     fixture.detectChanges();
 
@@ -419,8 +407,7 @@ describe('BhaftComponent', () => {
     tick();
     fixture.detectChanges();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).fetchAndFinishExam();
+    component['fetchAndFinishExam']();
     tick();
     fixture.detectChanges();
 
