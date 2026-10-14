@@ -15,11 +15,11 @@
 
     <div class="row" *ngIf="otherSelected">
       <textarea
+        #otherResponse
         [(ngModel)]="results.currentPage.response.other"
         (ngModelChange)="onResponseChange()"
         (keydown.enter)="onEnter()"
         rows="5"
-        autofocus="true"
         maxlength="5000">
       </textarea>
     </div>

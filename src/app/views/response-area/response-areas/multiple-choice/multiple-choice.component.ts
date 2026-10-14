@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import * as _ from 'lodash';
 
 import { ResultsInterface } from '../../../../models/results/results.interface';
@@ -34,6 +34,12 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
   results: ResultsInterface;
   state: StateInterface;
   protocol: ProtocolModelInterface;
+
+  @ViewChild('otherResponse')
+  set otherResponse(textarea: ElementRef<HTMLTextAreaElement> | undefined) {
+    // Fires when the "Other" textarea enters the DOM; move the cursor into it
+    textarea?.nativeElement.focus();
+  }
 
   pageSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
