@@ -1,53 +1,27 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TranslocoTestingModule } from '@jsverse/transloco';
-
 import { GapResultsComponent } from './gap-results.component';
-import { GapResultsInterface } from '../gap.interface';
 
 describe('GapResultsComponent', () => {
-  let component: GapResultsComponent;
-  let fixture: ComponentFixture<GapResultsComponent>;
+  it('builds plot data from the stored gap results, highlighting reversals', () => {
+    const component = new GapResultsComponent();
+    component.results = {
+      GapThreshold: 12,
+      GapLengthArray: [5, 10, 20],
+      ReversalUsedForThresholdArray: [false, true, false],
+    };
 
-  const results: GapResultsInterface = {
-    GapThreshold: 12,
-    GapLengthArray: [5, 10, 20],
-    HitOrMissArray: [true, false, true],
-    ReversalUsedForThresholdArray: [false, true, false],
-  };
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [GapResultsComponent],
-      imports: [
-        TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
-      ],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(GapResultsComponent);
-    component = fixture.componentInstance;
-    component.results = results;
-    fixture.detectChanges();
+    expect(component.plotData.y).toEqual([5, 10, 20]);
+    expect(component.plotData.pointStyles).toEqual(['filled', 'highlight', 'filled']);
+    expect(component.plotData.referenceLine).toBe(12);
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('zips the parallel gap/hit/reversal arrays into one row per trial', () => {
-    expect(component.trials).toEqual([
-      { gapLength: 5, hit: true, reversal: false },
-      { gapLength: 10, hit: false, reversal: true },
-      { gapLength: 20, hit: true, reversal: false },
-    ]);
-  });
-
-  it('renders a row per trial', () => {
-    const rows = fixture.nativeElement.querySelectorAll('.results-table tbody tr');
-    expect(rows.length).toBe(3);
-  });
-
-  it('treats missing hit/reversal arrays as all-false', () => {
+  it('returns the same plot data object until the results change', () => {
+    const component = new GapResultsComponent();
     component.results = { GapLengthArray: [5] };
-    expect(component.trials).toEqual([{ gapLength: 5, hit: false, reversal: false }]);
+    const first = component.plotData;
+
+    expect(component.plotData).toBe(first);
+
+    component.results = { GapLengthArray: [5, 6] };
+    expect(component.plotData).not.toBe(first);
   });
 });

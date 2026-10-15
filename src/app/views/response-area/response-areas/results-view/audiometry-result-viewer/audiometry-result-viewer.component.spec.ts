@@ -18,6 +18,7 @@ describe('AudiometryResultViewerComponent', () => {
       page: { responseArea: { type: 'hughsonWestlakeResponseArea', examProperties: { F: 1000, OutputChannel: AudiometryOutputChannel.HPR0 } } },
     } as unknown as CurrentResults;
 
+    component.ngOnChanges();
     expect(component.dataStruct).toEqual({
       frequencies: [1000],
       thresholds: [20],
@@ -36,6 +37,7 @@ describe('AudiometryResultViewerComponent', () => {
       page: { responseArea: { type: 'bhaftResponseArea', examProperties: { OutputChannel: AudiometryOutputChannel.HPL0 } } },
     } as unknown as CurrentResults;
 
+    component.ngOnChanges();
     expect(component.dataStruct).toEqual({
       frequencies: [4000],
       thresholds: [40],
@@ -49,6 +51,7 @@ describe('AudiometryResultViewerComponent', () => {
   it('returns an empty combined audiogram for an unrecognized responseArea', () => {
     component.result = { pageId: 'x', responseArea: 'somethingElse', response: {}, page: {} } as unknown as CurrentResults;
 
+    component.ngOnChanges();
     expect(component.dataStruct).toEqual({
       frequencies: [],
       thresholds: [],
@@ -57,5 +60,28 @@ describe('AudiometryResultViewerComponent', () => {
       masking: [],
       levelUnits: '',
     });
+  });
+
+  it('treats a Hughson-Westlake screener as pass/fail parameters rather than an audiogram', () => {
+    component.result = {
+      pageId: 'hw_screener',
+      responseArea: 'hughsonWestlakeResponseArea',
+      response: { ResultType: 'Pass' },
+      page: { responseArea: { type: 'hughsonWestlakeResponseArea', examProperties: { Screener: true, F: 1000, Lstart: 25 } } },
+    } as unknown as CurrentResults;
+
+    expect(component.screenerProperties?.Lstart).toBe(25);
+    expect(component.screenerOutcome).toBe('Pass');
+  });
+
+  it('does not treat a non-screener Hughson-Westlake result as a screener', () => {
+    component.result = {
+      pageId: 'hw_1',
+      responseArea: 'hughsonWestlakeResponseArea',
+      response: { ResultType: 'Threshold' },
+      page: { responseArea: { type: 'hughsonWestlakeResponseArea', examProperties: { F: 1000 } } },
+    } as unknown as CurrentResults;
+
+    expect(component.screenerProperties).toBeUndefined();
   });
 });

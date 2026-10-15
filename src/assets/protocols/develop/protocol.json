@@ -2319,6 +2319,16 @@
       "protocolId": "ResultsViewDemo",
       "pages": [
         {
+          "id": "seed_mock_results",
+          "title": "Seed Mock Results",
+          "instructionText": "Optional, no device needed: injects mock BHAFT, Bekesy Like, Hughson-Westlake, GAP and MRT results so the next page has data. Skip it if you ran the real exams.",
+          "responseArea": {
+            "type": "customResponseArea",
+            "htmlFilePath": "custom-response-areas/html_seed_mock_results.html",
+            "jsFilePath": "custom-response-areas/js_seed_mock_results.js"
+          }
+        },
+        {
           "id": "results_view_demo",
           "title": "Results View",
           "instructionText": "Displays the results of every previously-run demo page whose response-area type has a dedicated results viewer. Run the corresponding demo pages first (Three Digit Test, MRT Exam, HINT, Hughson-Westlake Screener/Threshold, BHAFT, Bekesy Like, GAP, Manual Audiometry) to see real data here; unvisited pages simply show nothing.",
