@@ -89,7 +89,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
       .map(([key, value]) => ({ key, value }));
   }
 
-  trackByIndex(index: number, item: unknown): number {
+  trackByIndex(index: number): number {
     return index;
   }
 
@@ -503,7 +503,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
     const availableMetaProtocols = this.disk.availableProtocolsMeta;
 
     // Check if a protocol with this name already exists
-    const existingProtocolEntry = Object.entries(availableMetaProtocols).find(([key, p]) => p.name === protocolMetaData.name);
+    const existingProtocolEntry = Object.entries(availableMetaProtocols).find(([, p]) => p.name === protocolMetaData.name);
 
     if (existingProtocolEntry) {
       const [, existingProtocol] = existingProtocolEntry;

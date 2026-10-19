@@ -16,7 +16,7 @@ export interface ResultsInterface {
 
 export interface CurrentResults {
   pageId: string;
-  response?: any;
+  response?: unknown;
   correct?: boolean;
   eachCorrect?: boolean[];
   numberCorrect?: number;
@@ -35,7 +35,7 @@ export interface ExamResults {
   testDateTime?: string;
   elapsedTime?: string;
   exportLocation?: ProtocolServer;
-  responses: any;
+  responses: CurrentResults[];
   partialresults?: boolean;
   softwareVersion: VersionInterface;
   tabletLocation: {

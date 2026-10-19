@@ -9,7 +9,6 @@ import { Tasks } from '../tasks.service';
 import { Logger } from '../logger.service';
 import { inject, NgZone } from '@angular/core';
 import { SavedDevice } from '../../models/disk/disk.interface';
-import { ISvantekDevice } from '../../interfaces/devices/svantek-device.interface';
 import { SvantekResultInterface } from '../../interfaces/svantek-result.interface';
 import { IDevice } from '../../interfaces/devices/device.interface';
 

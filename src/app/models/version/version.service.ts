@@ -34,7 +34,7 @@ export class VersionModel {
         this.version = versionData.default as VersionInterface;
         this.logger.debug('Version Object processed --- ' + JSON.stringify(this.version));
       }
-    } catch (error) {
+    } catch {
       this.logger.error('version.json file not found or failed to load. Returning empty object --- ' + JSON.stringify(this.version));
     }
   }

@@ -135,7 +135,7 @@ export class AudiogramComponent implements OnInit, OnChanges {
     const xAxisMinor = d3.axisTop(xScale).tickFormat(d3.format(',.0f')).tickValues(xTicksMinor).tickSize(3);
     const yAxis = d3.axisLeft(yScale).tickValues(yTicks).tickSize(10);
 
-    const colorMap = (d: any) => this.channelColor(d.channel);
+    const colorMap = (d: AudiogramDatumNoNullInterface) => this.channelColor(d.channel);
     const strokeWidthMap = () => 2;
 
     // Base symbol shapes per ASHA audiogram convention, centered at the origin.
@@ -168,7 +168,7 @@ export class AudiogramComponent implements OnInit, OnChanges {
     const SOUTHWEST = 135;
     const SOUTH = 90;
 
-    const symbolMap = (d: any): string => {
+    const symbolMap = (d: AudiogramDatumNoNullInterface): string => {
       const base = baseSymbol(d.channel, d.masking);
       if (d.resultType !== ResultType.Beyond) {
         return base;
@@ -276,12 +276,7 @@ export class AudiogramComponent implements OnInit, OnChanges {
         return `translate(${x},${y})`;
       });
 
-    nodes
-      .append('path')
-      .attr('d', (d: any) => symbolMap(d))
-      .attr('stroke', colorMap)
-      .attr('fill', 'none')
-      .attr('stroke-width', strokeWidthMap);
+    nodes.append('path').attr('d', symbolMap).attr('stroke', colorMap).attr('fill', 'none').attr('stroke-width', strokeWidthMap);
 
     data.sort((a, b) => a.channel.localeCompare(b.channel) || a.frequency - b.frequency);
 

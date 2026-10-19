@@ -62,7 +62,7 @@ export class ResultsModel {
     this.resultsSubject.next(this.resultsModel);
   }
 
-  pushResponse(response: unknown): void {
+  pushResponse(response: CurrentResults): void {
     this.resultsModel.currentExam.responses.push(response);
     this.resultsSubject.next(this.resultsModel);
   }

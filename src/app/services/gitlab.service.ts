@@ -70,7 +70,7 @@ export class GitlabService {
    * @param tagsOnly Whether only tags should be used or only commits.
    * @returns The response data if successful.
    */
-  async fetchLatestGitlabFile(gitlabConfig: GitlabConfigInterface, relativeFilePath: string, tagsOnly: boolean): Promise<any> {
+  async fetchLatestGitlabFile(gitlabConfig: GitlabConfigInterface, relativeFilePath: string, tagsOnly: boolean): Promise<unknown> {
     const headers = {
       Authorization: `Bearer ${gitlabConfig.token}`,
     };

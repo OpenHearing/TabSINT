@@ -292,8 +292,8 @@ export abstract class ChaManager implements IDeviceManager {
    * @param ignoreErrors A list of keywords for which matching errors will be ignored.
    */
   async examSubmission(device: ChaDeviceType, examProperties: object, ignoreErrors: string[]): Promise<IDeviceResponse> {
-    const response = await this.adapter.examSubmission(device, examProperties, ignoreErrors);
-    await this.deviceErrorHandler(response);
+    const response = await this.adapter.examSubmission(device, examProperties);
+    await this.deviceErrorHandler(response, ignoreErrors);
     return response;
   }
 

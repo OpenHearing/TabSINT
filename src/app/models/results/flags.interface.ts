@@ -1,1 +1,1 @@
-export type FlagsInterface = Record<string, any>;
+export type FlagsInterface = Record<string, boolean | number | string>;
