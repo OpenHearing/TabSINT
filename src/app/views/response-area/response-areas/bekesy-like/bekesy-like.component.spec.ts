@@ -198,8 +198,7 @@ describe('BekesyLikeComponent', () => {
     tick();
     fixture.detectChanges();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).fetchAndFinishExam();
+    component['fetchAndFinishExam']();
 
     tick();
     fixture.detectChanges();
@@ -221,8 +220,7 @@ describe('BekesyLikeComponent', () => {
 
   it('forwards a press to the device and does not auto-release (hold mode)', async () => {
     component.deviceId = mockDevice.deviceId;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).examActive = true;
+    component['examActive'] = true;
 
     await component.onPressStart();
 
@@ -232,8 +230,7 @@ describe('BekesyLikeComponent', () => {
 
   it('forwards a release to the device only when the button is released', async () => {
     component.deviceId = mockDevice.deviceId;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).examActive = true;
+    component['examActive'] = true;
 
     await component.onPressEnd();
 
@@ -241,8 +238,7 @@ describe('BekesyLikeComponent', () => {
   });
 
   it('classifyLevelDirection: a level decrease into the next presentation is a hit (filled), an increase is a miss (open)', () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const classify = (levels: number[]) => (component as any).classifyLevelDirection(levels);
+    const classify = (levels: number[]) => component['classifyLevelDirection'](levels);
 
     expect(classify([40, 38, 35, 37, 39, 36])).toEqual(['filled', 'filled', 'open', 'open', 'filled', 'filled']);
     expect(classify([40, 44])).toEqual(['open', 'open']);
@@ -262,8 +258,7 @@ describe('BekesyLikeComponent', () => {
     };
     component.plotProperties.displayLevelProgression = true;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).buildProgressionPlots(results);
+    component['buildProgressionPlots'](results);
     const data = component.levelProgressionData!;
 
     expect(data.pointStyles).toEqual(['open', 'filled', 'filled', 'open', 'filled', 'filled']);
@@ -287,8 +282,7 @@ describe('BekesyLikeComponent', () => {
     };
     component.plotProperties.displayLevelProgression = true;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).buildProgressionPlots(results);
+    component['buildProgressionPlots'](results);
     const data = component.levelProgressionData!;
 
     expect(data.referenceLine).toBeUndefined();
@@ -310,8 +304,7 @@ describe('BekesyLikeComponent', () => {
     tick();
     fixture.detectChanges();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).fetchAndFinishExam();
+    component['fetchAndFinishExam']();
     tick();
     fixture.detectChanges();
 
@@ -335,11 +328,9 @@ describe('BekesyLikeComponent', () => {
     tick();
     fixture.detectChanges();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).fetchAndFinishExam();
+    component['fetchAndFinishExam']();
     tick();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).fetchAndFinishExam();
+    component['fetchAndFinishExam']();
     tick();
     fixture.detectChanges();
 
@@ -363,8 +354,7 @@ describe('BekesyLikeComponent', () => {
     tick();
     fixture.detectChanges();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).fetchAndFinishExam();
+    component['fetchAndFinishExam']();
     tick();
     fixture.detectChanges();
 
@@ -392,8 +382,7 @@ describe('BekesyLikeComponent', () => {
     tick();
     fixture.detectChanges();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).fetchAndFinishExam();
+    component['fetchAndFinishExam']();
     tick();
     fixture.detectChanges();
 
@@ -426,8 +415,7 @@ describe('BekesyLikeComponent', () => {
     tick();
     fixture.detectChanges();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component as any).fetchAndFinishExam();
+    component['fetchAndFinishExam']();
     tick();
     fixture.detectChanges();
 

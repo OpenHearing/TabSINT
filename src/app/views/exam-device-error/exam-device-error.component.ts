@@ -15,7 +15,7 @@ export class ExamDeviceErrorComponent implements OnInit, OnDestroy {
   private readonly logger = inject(Logger);
 
   state: StateInterface;
-  deviceErrors: any[] = [];
+  deviceErrors: string[] = [];
   stateSubscription: Subscription | undefined;
 
   constructor() {
@@ -23,7 +23,7 @@ export class ExamDeviceErrorComponent implements OnInit, OnDestroy {
     this.stateSubscription = this.stateModel.stateSubject.subscribe(updatedState => {
       this.state = updatedState;
     });
-    this.state.deviceError?.slice(2).forEach((err: string | number) => {
+    this.state.deviceError?.slice(2).forEach((err: unknown) => {
       if (typeof err === 'string') {
         this.deviceErrors.push(err);
       }

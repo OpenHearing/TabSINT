@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import * as _ from 'lodash';
 
 import { ResultsInterface } from '../../../../models/results/results.interface';
@@ -8,7 +8,7 @@ import { StateInterface } from '../../../../models/state/state.interface';
 import { StateModel } from '../../../../models/state/state.service';
 import { ProtocolModel } from '../../../../models/protocol/protocol-model.service';
 import { MultipleChoiceInterface } from './multiple-choice.interface';
-import { ChoiceInterface } from '../../../../interfaces/choice.interface';
+import { ChoiceInterface, SingleSelectChoiceResponseInterface } from '../../../../interfaces/choice.interface';
 import { Subscription } from 'rxjs';
 import { PageInterface } from '../../../../models/page/page.interface';
 import { PageModel } from '../../../../models/page/page.service';
@@ -35,9 +35,20 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
   state: StateInterface;
   protocol: ProtocolModelInterface;
 
+  @ViewChild('otherResponse')
+  set otherResponse(textarea: ElementRef<HTMLTextAreaElement> | undefined) {
+    // Fires when the "Other" textarea enters the DOM; move the cursor into it
+    textarea?.nativeElement.focus();
+  }
+
   pageSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
+
+  /** The current page's response, as written by this response area (single selected choice id). */
+  get response(): SingleSelectChoiceResponseInterface {
+    return this.results.currentPage.response as SingleSelectChoiceResponseInterface;
+  }
 
   constructor() {
     this.results = this.resultsModel.getResults();
@@ -142,8 +153,8 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
     if (isOther !== this.otherSelected) {
       this.toggleOther();
     }
-    this.results.currentPage.response.selected = id;
-    this.resultsModel.updateCurrentPage({ response: this.results.currentPage.response });
+    this.response.selected = id;
+    this.resultsModel.updateCurrentPage({ response: this.response });
     this.stateModel.updateState({ doesResponseExist: true });
     this.stateModel.setPageSubmittable();
     if (this.autoSubmit && this.state.isSubmittable && !isOther) {
@@ -155,13 +166,13 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
     this.otherSelected = !this.otherSelected;
     // Clear the other field if it was toggled off
     if (!this.otherSelected) {
-      this.results.currentPage.response.other = '';
+      this.response.other = '';
     }
   }
 
   onResponseChange() {
-    this.stateModel.updateState({ doesResponseExist: this.results.currentPage.response.other !== '' });
-    this.resultsModel.updateCurrentPage({ response: this.results.currentPage.response });
+    this.stateModel.updateState({ doesResponseExist: this.response.other !== '' });
+    this.resultsModel.updateCurrentPage({ response: this.response });
   }
 
   onEnter() {
@@ -173,6 +184,6 @@ export class MultipleChoiceComponent implements OnInit, OnDestroy {
       feedback: this.examService.isShowingFeedback ? this.feedback : undefined,
       disableButton: this.disableButtons,
     };
-    return choiceBtnClassHelper(choice, this.results.currentPage.response, options);
+    return choiceBtnClassHelper(choice, this.response, options);
   }
 }

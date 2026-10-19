@@ -37,3 +37,10 @@ export interface MrtResultsInterface {
   pctCorrect: number;
   trialList: MrtTrialResultInterface[];
 }
+
+export interface MrtExamDefinitionInterface {
+  trialList: MrtTrialInterface[];
+  outputChannel: string[] | string;
+  randomizeTrials: boolean;
+  randomizeChoices: boolean;
+}

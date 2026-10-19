@@ -12,7 +12,13 @@ import { ResultsInterface } from '../../../../../models/results/results.interfac
 import { PageInterface } from '../../../../../models/page/page.interface';
 import { IDevice } from '../../../../../interfaces/devices/device.interface';
 import { DialogDataInterface } from '../../../../../interfaces/dialog-data.interface';
-import { MemrExamInterface, MemrQueueExamInterface, MemrExamSubmissionInterface, MemrResultsInterface } from './memr-exam.interface';
+import {
+  MemrExamInterface,
+  MemrQueueExamInterface,
+  MemrExamSubmissionInterface,
+  MemrResponseInterface,
+  MemrResultsInterface,
+} from './memr-exam.interface';
 import { StateInterface } from '../../../../../models/state/state.interface';
 import { StateModel } from '../../../../../models/state/state.service';
 import { memrSchema } from '../../../../../../schema/response-areas/memr.schema';
@@ -84,6 +90,11 @@ export class MemrExamComponent implements OnInit, OnDestroy {
   stateSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
   deviceSubscription: Subscription | undefined;
+
+  /** The current page's response, as written by this response area (results of each completed exam). */
+  get response(): MemrResponseInterface {
+    return this.results.currentPage.response as MemrResponseInterface;
+  }
 
   constructor() {
     this.state = this.stateModel.getState();
@@ -454,7 +465,7 @@ export class MemrExamComponent implements OnInit, OnDestroy {
    * Save the results for the current exam.
    */
   private saveResults(): void {
-    this.results.currentPage.response.push(this.memrResults);
+    this.response.push(this.memrResults);
   }
 
   /**

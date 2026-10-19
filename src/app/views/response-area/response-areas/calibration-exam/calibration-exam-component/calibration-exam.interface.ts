@@ -20,12 +20,6 @@ export interface EarData {
   maxOutput: string | number;
 }
 
-export interface ExamResponse {
-  pageId: string;
-  response: string;
-  responseArea: string;
-}
-
 export interface CalibrationNavigationEntry {
   step: string;
   frequencyIndex: number;

@@ -4,7 +4,7 @@ export interface StateInterface {
   appState: AppState;
   protocolState: ProtocolState;
   examState: ExamState;
-  deviceError: any[];
+  deviceError: unknown[];
   doesResponseExist: boolean;
   isResponseRequired: boolean;
   isSubmittable: boolean;

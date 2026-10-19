@@ -36,7 +36,7 @@ export abstract class DpoaeInProgressBaseComponent<TResults extends DpoaeResults
   inProgressResults: TResults;
   inProgressResultsSubject: BehaviorSubject<TResults>;
   inProgressResultsSubscription: Subscription | undefined;
-  svg!: d3.Selection<SVGGElement, unknown, HTMLElement, any>;
+  svg!: d3.Selection<SVGGElement, unknown, HTMLElement, unknown>;
   shouldAbort: boolean = false;
   isRequestingResults: boolean = false;
   instructions: string = 'Exam in progress please wait.';
@@ -167,6 +167,6 @@ export abstract class DpoaeInProgressBaseComponent<TResults extends DpoaeResults
     this.shouldAbort = false;
   }
 
-  protected abstract createProgressPlot(yScale: d3.ScaleLinear<number, number, never>): d3.Selection<SVGGElement, unknown, HTMLElement, any>;
+  protected abstract createProgressPlot(yScale: d3.ScaleLinear<number, number, never>): d3.Selection<SVGGElement, unknown, HTMLElement, unknown>;
   protected abstract onResultsUpdate(results: TResults): void;
 }

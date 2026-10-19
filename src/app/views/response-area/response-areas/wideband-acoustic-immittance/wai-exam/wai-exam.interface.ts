@@ -59,13 +59,13 @@ export interface WAIResultsInterface {
   ImpedancePhase?: number[];
   Absorbance?: number[];
   PowerReflectance?: number[]; // not provided by firmware, calculated in tabsint (1-Absorbance)
-  Raw?: any;
+  Raw?: unknown;
   // below are likely temporary
-  A0_real?: any;
-  A0_imag?: any;
-  B0_real?: any;
-  B0_imag?: any;
-  LSF_result?: any;
+  A0_real?: unknown;
+  A0_imag?: unknown;
+  B0_real?: unknown;
+  B0_imag?: unknown;
+  LSF_result?: unknown;
 }
 
 export interface WAIResultsPlotInterface {

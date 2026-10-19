@@ -83,7 +83,7 @@ describe('DiskModel', () => {
         admin: true,
         contentURI: 'test',
       },
-      responses: [1, 2, 3],
+      responses: [{ pageId: 'page1', page: {} }],
       softwareVersion: {
         tabsint: '',
         date: '',

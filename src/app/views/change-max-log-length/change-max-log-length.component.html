@@ -1,7 +1,7 @@
 <div class="modal-header">{{ "Change Max Log Length" | transloco }}</div>
 <div class="modal-body">
   <label for="pin">{{ "Please enter a new max log length:" | transloco }}</label>
-  <input id="maxLogLength" type="number" [(ngModel)]="maxLogLength" min="1" step="1" autofocus="true" /><br /><br />
+  <input id="maxLogLength" type="number" [(ngModel)]="maxLogLength" min="1" step="1" /><br /><br />
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-primary btn-block" (click)="save(maxLogLength)">{{ "Save" | transloco }}</button>
