@@ -22,7 +22,7 @@ async function incrementRev() {
   const baseVersion = 'v' + packageJson.version;
   let revNumber;
   const previousRevNumber = versionJson.rev.match(/v\d+\.\d+\.\d+-(\d+)-/)[1];
-  if (packageJson.version !== versionJson.tabsint) {
+  if (packageJson.version !== versionJson.tabsint.split('-')[0]) {
     revNumber = '1';
   } else if (previousRevNumber) {
     revNumber = (parseInt(previousRevNumber, 10) + 1).toString();
@@ -39,7 +39,8 @@ function getNodeVersion() {
 
 async function generateVersionJson() {
   const updatedRev = await incrementRev();
-  const suffix = process.argv.slice(2) ? '-' + process.argv.slice(2) : '';
+  const args = process.argv.slice(2);
+  const suffix = args.length ? '-' + args.join('-') : '';
   const newVersionJson = {
     tabsint: packageJson.version + suffix,
     date: new Date().toISOString(),

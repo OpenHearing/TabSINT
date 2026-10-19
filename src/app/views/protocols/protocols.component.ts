@@ -491,7 +491,11 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
    * @returns whether protocol is active: boolean
    */
   private isActive(p: ProtocolMetaInterface | undefined): boolean {
-    return (this.protocolModel?.activeProtocol?.name == p?.name && this.protocolModel?.activeProtocol?.path == p?.path) || false;
+    const activeProtocol = this.protocolModel?.activeProtocol;
+    if (!p || !activeProtocol) {
+      return false;
+    }
+    return activeProtocol.name === p.name && activeProtocol.path === p.path;
   }
 
   private async updateDiskModel(protocol: ProtocolInterface): Promise<boolean> {
