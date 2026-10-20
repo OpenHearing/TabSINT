@@ -211,8 +211,7 @@ export class MrtExamComponent implements OnInit, OnDestroy {
 
   async replayTrial() {
     await this.waitForReadyState();
-    this.currentStep = 'Ready';
-    this.nextStep();
+    await this.playTrial(this.currentTrial);
   }
 
   getButtonClass(index: number): string {
