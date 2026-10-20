@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { ResultsInterface } from '../../../../models/results/results.interface';
@@ -27,6 +27,12 @@ export class TextboxComponent implements OnInit, OnDestroy {
   results: ResultsInterface;
   state: StateInterface;
   rows: number;
+
+  @ViewChild('textResponse')
+  set textResponse(textarea: ElementRef<HTMLTextAreaElement> | undefined) {
+    // Fires when the textarea enters the DOM; move the cursor into it
+    textarea?.nativeElement.focus();
+  }
 
   pageSubscription: Subscription | undefined;
   stateSubscription: Subscription | undefined;

@@ -9,9 +9,8 @@ import { IDevice } from '../interfaces/devices/device.interface';
  * @return string: filename
  */
 export function constructFilename(deviceShortUuid: string, resultFilename?: string, testDateTime?: string, suffix?: string) {
-  let filename, dateTime;
-
-  dateTime = getDateString(testDateTime);
+  let filename;
+  const dateTime = getDateString(testDateTime);
 
   if (resultFilename) {
     filename = resultFilename + '.' + dateTime;

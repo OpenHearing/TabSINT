@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { QrService } from './qr.service';
 import { Logger } from './logger.service';
+import { preferencesSchema } from '../../schema/definitions/preferences.schema';
 
 describe('QrService', () => {
   let qrService: QrService;
@@ -53,9 +54,7 @@ describe('QrService', () => {
     it('returns undefined and logs an error when the scanner throws', async () => {
       spyOn((await import('@capacitor/barcode-scanner')).CapacitorBarcodeScanner, 'scanBarcode').and.rejectWith(new Error('scanner unavailable'));
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const schema = { type: 'object', properties: {}, required: [] } as any;
-      const result = await qrService.validatedScan(schema);
+      const result = await qrService.validatedScan(preferencesSchema);
       expect(result).toBeUndefined();
       expect(mockLogger.error).toHaveBeenCalled();
     });

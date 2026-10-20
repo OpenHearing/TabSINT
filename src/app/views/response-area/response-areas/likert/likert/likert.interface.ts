@@ -24,6 +24,9 @@ export interface LikertQuestion {
   useEmoticons?: boolean;
 }
 
+/** Response for the likert response area: the selected level for each question, null until answered. */
+export type LikertResponseInterface = (number | string | null)[];
+
 export interface LikertInterface extends CommonResponseAreaInterface {
   type: 'likertResponseArea';
   useEmoticons?: boolean;

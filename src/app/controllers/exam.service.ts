@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { combineLatest, firstValueFrom, interval, Subscription } from 'rxjs';
 import {
+  isChoiceResponse,
   isChoiceResponseArea,
   isPageDefinition,
   isProtocolReferenceInterface,
@@ -43,7 +44,7 @@ import { ChoiceInterface } from '../interfaces/choice.interface';
 import { ProtocolSchemaInterface } from '../interfaces/protocol-schema.interface';
 import { DevicesService } from '../services/devices/devices.service';
 import { IDeviceResponse } from '../interfaces/devices/device-response.interface';
-import { DosimeterResultsInterface } from '../interfaces/dosimeter-results.interface';
+import { DosimeterDeviceResultsInterface, DosimeterResultsInterface } from '../interfaces/dosimeter-results.interface';
 import { pageSchema } from '../../schema/page.schema';
 import { AudioService } from '../services/audio.service';
 import { Tasks } from '../services/tasks.service';
@@ -79,8 +80,7 @@ export class ExamService {
   stateSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
 
-  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
-  dosimeterResultsPoll: { [name: string]: ReturnType<typeof setInterval> } = {};
+  dosimeterResultsPoll: Record<string, ReturnType<typeof setInterval>> = {};
   private activeWavfileDevice: string | undefined = undefined;
   private activeSvantekDeviceId: string | undefined = undefined;
   private svantekResultPoll: ReturnType<typeof setInterval> | undefined = undefined;
@@ -187,9 +187,10 @@ export class ExamService {
     this.results.currentPage.correct = undefined;
     if (isChoiceResponseArea(this.results.currentPage?.page?.responseArea)) {
       const choices: ChoiceInterface[] | undefined = this.results.currentPage.page.responseArea.choices;
+      const response = this.results.currentPage.response;
       if (choices) {
         choices.forEach((choice: ChoiceInterface) => {
-          if (choice?.correct && includesOrEquals(this.results.currentPage.response.selected, choice.id)) {
+          if (choice?.correct && isChoiceResponse(response) && includesOrEquals(response.selected, choice.id)) {
             this.results.currentPage.correct = true;
           }
           if (choice?.correct && this.results.currentPage.correct === undefined) {
@@ -544,8 +545,9 @@ export class ExamService {
    * @summary Handles and evaluates the logic from a protocol conditional.
    */
   private conditionalEvaluator(conditional: string) {
+    const currentResponse = this.results.currentPage.response;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const response = this.results.currentPage.response?.selected ?? this.results.currentPage.response;
+    const response = (isChoiceResponse(currentResponse) ? currentResponse.selected : undefined) ?? currentResponse;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const flags = this.resultsModel.getResults().currentExam.flags;
 
@@ -943,7 +945,7 @@ export class ExamService {
   async pollForDosimeterResults(deviceId: string, tabsintId: string) {
     try {
       const resp = await this.devicesService.requestResults(deviceId);
-      const res = resp?.msg[1] as any;
+      const res = resp?.msg[1] as DosimeterDeviceResultsInterface;
       const time = new Date().toJSON();
       const dosimeterResults: DosimeterResultsInterface = {
         time: time,

@@ -9,7 +9,8 @@ import { checkboxSchema } from '../../../../../schema/response-areas/checkbox.sc
 import { StateInterface } from '../../../../models/state/state.interface';
 import { StateModel } from '../../../../models/state/state.service';
 import { ExamService } from '../../../../controllers/exam.service';
-import { ChoiceInterface } from '../../../../interfaces/choice.interface';
+import { isChoiceResponse } from '../../../../guards/type.guard';
+import { ChoiceInterface, MultiSelectChoiceResponseInterface } from '../../../../interfaces/choice.interface';
 import { Logger } from '../../../../services/logger.service';
 import { choiceBtnClassHelper } from '../../../../utilities/response-area-helper-functions';
 
@@ -44,6 +45,11 @@ export class CheckboxComponent implements OnInit, OnDestroy {
   stateSubscription: Subscription | undefined;
   resultsSubscription: Subscription | undefined;
 
+  /** The current page's response, as written by this response area (list of selected choice ids). */
+  get response(): MultiSelectChoiceResponseInterface {
+    return this.results.currentPage.response as MultiSelectChoiceResponseInterface;
+  }
+
   constructor() {
     this.results = this.resultsModel.getResults();
     this.state = this.stateModel.getState();
@@ -59,7 +65,10 @@ export class CheckboxComponent implements OnInit, OnDestroy {
     });
     this.resultsSubscription = this.resultsModel.resultsSubject.subscribe((updatedResults: ResultsInterface) => {
       this.results = updatedResults;
-      if (this.results.currentPage.responseArea === 'checkboxResponseArea' && !Array.isArray(this.results.currentPage.response?.selected)) {
+      if (
+        this.results.currentPage.responseArea === 'checkboxResponseArea' &&
+        !(isChoiceResponse(this.results.currentPage.response) && Array.isArray(this.results.currentPage.response.selected))
+      ) {
         this.results.currentPage.response = {
           selected: [],
         };
@@ -107,13 +116,13 @@ export class CheckboxComponent implements OnInit, OnDestroy {
     const eachCorrect: boolean[] = [];
     let questionContainsCorrect = false;
 
-    const choices: ChoiceInterface[] = (this.results.currentPage?.page?.responseArea as any).choices;
+    const choices: ChoiceInterface[] = (this.results.currentPage?.page?.responseArea as CheckboxInterface).choices;
     choices.forEach((choice: ChoiceInterface) => {
       if (choice?.correct) {
         questionContainsCorrect = true;
-        eachCorrect.push(this.results.currentPage.response.selected.includes(choice.id));
+        eachCorrect.push(this.response.selected.includes(choice.id));
       } else {
-        eachCorrect.push(!this.results.currentPage.response.selected.includes(choice.id));
+        eachCorrect.push(!this.response.selected.includes(choice.id));
       }
     });
     if (questionContainsCorrect) {
@@ -143,8 +152,8 @@ export class CheckboxComponent implements OnInit, OnDestroy {
   }
 
   onResponseChange() {
-    this.stateModel.updateState({ doesResponseExist: this.results.currentPage.response.other !== '' });
-    this.resultsModel.updateCurrentPage({ response: this.results.currentPage.response });
+    this.stateModel.updateState({ doesResponseExist: this.response.other !== '' });
+    this.resultsModel.updateCurrentPage({ response: this.response });
   }
 
   choiceSelected(id: string | number) {
@@ -153,17 +162,17 @@ export class CheckboxComponent implements OnInit, OnDestroy {
       this.toggleOther();
     }
     // Remove element if already selected, else add element to selected
-    if (this.results.currentPage.response.selected.includes(id)) {
-      const index = this.results.currentPage.response.selected.indexOf(id);
+    if (this.response.selected.includes(id)) {
+      const index = this.response.selected.indexOf(id);
       if (index > -1) {
-        this.results.currentPage.response.selected.splice(index, 1);
+        this.response.selected.splice(index, 1);
       }
     } else {
-      this.results.currentPage.response.selected.push(id);
+      this.response.selected.push(id);
     }
-    this.resultsModel.updateCurrentPage({ response: this.results.currentPage.response });
+    this.resultsModel.updateCurrentPage({ response: this.response });
     // Set page submittable
-    if (this.results.currentPage.response.selected.length > 0) {
+    if (this.response.selected.length > 0) {
       this.stateModel.updateState({ doesResponseExist: true });
     } else {
       this.stateModel.updateState({ doesResponseExist: false });
@@ -175,7 +184,7 @@ export class CheckboxComponent implements OnInit, OnDestroy {
     this.otherSelected = !this.otherSelected;
     // Clear the other field if it was toggled off
     if (!this.otherSelected) {
-      this.results.currentPage.response.other = '';
+      this.response.other = '';
     }
   }
 
@@ -188,6 +197,6 @@ export class CheckboxComponent implements OnInit, OnDestroy {
       buttonScheme: this.buttonScheme,
       feedback: this.examService.isShowingFeedback ? this.feedback : undefined,
     };
-    return choiceBtnClassHelper(choice, this.results.currentPage.response, options);
+    return choiceBtnClassHelper(choice, this.response, options);
   }
 }

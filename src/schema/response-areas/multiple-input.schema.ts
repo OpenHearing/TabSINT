@@ -69,6 +69,7 @@ export const multipleInputSchema: JSONSchemaType<MultipleInputInterface> = {
               default: {
                 type: 'string',
                 enum: ['none', 'today'],
+                nullable: true,
                 default: 'none',
                 description: "Initialize date with 'default' date",
               },
@@ -79,6 +80,12 @@ export const multipleInputSchema: JSONSchemaType<MultipleInputInterface> = {
             type: 'string',
             nullable: true,
             description: 'Text to add below the input item as additional instructions',
+          },
+          value: {
+            type: ['string', 'number'],
+            nullable: true,
+            description:
+              "Fallback initial value used to pre-fill the input's response. Ignored for date inputs when `dateProperties.default` is 'today', which takes precedence.",
           },
         },
         required: ['text'],

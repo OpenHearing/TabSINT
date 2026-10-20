@@ -11,7 +11,7 @@ export interface LegendItemInterface {
 }
 
 export function createOAEResultsChartSvg(
-  svg: d3.Selection<SVGGElement, unknown, HTMLElement, any>,
+  svg: d3.Selection<SVGGElement, unknown, HTMLElement, unknown>,
   chartWidth: number,
   chartHeight: number,
   xTicks: number[],
@@ -197,7 +197,7 @@ export function createWAIResultsChartSvg(plotData: WAIResultsPlotInterface) {
 }
 
 export function createLegend(
-  svg: d3.Selection<SVGGElement, unknown, HTMLElement, any>,
+  svg: d3.Selection<SVGGElement, unknown, HTMLElement, unknown>,
   legendData: LegendItemInterface[],
   chartWidth: number,
   legendWidth: number
@@ -347,7 +347,7 @@ export interface DpoaeSeriesStyle {
  * @param style Line/marker color and shape, dash style, and y-clamp bounds
  */
 export function plotDpoaeSeries(
-  svg: d3.Selection<SVGGElement, unknown, HTMLElement, any>,
+  svg: d3.Selection<SVGGElement, unknown, HTMLElement, unknown>,
   xScale: d3.ScaleLogarithmic<number, number, never>,
   yScale: d3.ScaleLinear<number, number, never>,
   xValues: number[],
@@ -413,7 +413,7 @@ export function plotDpoaeSeries(
  * @param yClampMax Optional maximum y value to clamp the band below
  */
 export function appendNormativeDataBand(
-  svg: d3.Selection<SVGGElement, unknown, HTMLElement, any>,
+  svg: d3.Selection<SVGGElement, unknown, HTMLElement, unknown>,
   width: number,
   height: number,
   normativeData: NormativeDataInterface[],

@@ -264,8 +264,8 @@ export class TympanManager implements IDeviceManager {
    * @param ignoreErrors A list of keywords for which matching errors will be ignored.
    */
   async examSubmission(device: TympanDevice, examProperties: object, ignoreErrors: string[]): Promise<IDeviceResponse> {
-    const response = await this.tympanAdapter.examSubmission(device, examProperties, ignoreErrors);
-    await this.deviceErrorHandler(response);
+    const response = await this.tympanAdapter.examSubmission(device, examProperties);
+    await this.deviceErrorHandler(response, ignoreErrors);
     return response;
   }
 
