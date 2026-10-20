@@ -1,4 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ResponseResultComponent } from './response-result.component';
@@ -11,6 +12,9 @@ describe('ResponseResultComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ResponseResultComponent],
+      imports: [
+        TranslocoTestingModule.forRoot({ langs: { en: {} }, translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }, preloadLangs: true }),
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
 
@@ -38,6 +42,7 @@ describe('ResponseResultComponent', () => {
       page: {},
     });
     expect(fixture.nativeElement.querySelector('app-mrt-results')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('h3')?.textContent).toContain('MRT');
     expect(component.mrtResults).toEqual([{ snr: -5, nbTrials: 2, nbTrialsCorrect: 1, pctCorrect: 50, trialList: jasmine.any(Array) }]);
   });
 

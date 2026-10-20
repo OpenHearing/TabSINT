@@ -11,6 +11,7 @@ import { PageInterface } from '../../../../models/page/page.interface';
 import { DeviceType } from '../../../../utilities/constants';
 import { gapSchema } from '../../../../../schema/response-areas/gap.schema';
 import { GapExamPropertiesInterface, GapResponseAreaInterface, GapResultsInterface } from './gap.interface';
+import { buildGapProgressionData } from './gap.utility';
 import { isGapResults, isStatusResponse } from '../../../../guards/type.guard';
 import { TrialProgressionPlotDataInterface } from '../shared/trial-progression-plot/trial-progression-plot.interface';
 
@@ -184,7 +185,7 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param results The final results returned by the device.
    */
   private finishFullExam(results: GapResultsInterface): void {
-    this.gapResultsData = this.createGapData(results);
+    this.gapResultsData = buildGapProgressionData(results);
     this.showResults = true;
     this.gapState = 'results';
     this.resultsModel.updateCurrentPage({ response: results });
@@ -506,26 +507,6 @@ export class GapComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   // ======= Canvas / plot helpers =======
-
-  /**
-   * Build the data structure consumed by the trial-progression plot.
-   * @param results The final results returned by the device.
-   */
-  private createGapData(results: GapResultsInterface): TrialProgressionPlotDataInterface {
-    const gapLengths = results.GapLengthArray ?? [];
-    const reversals = results.ReversalUsedForThresholdArray ?? [];
-    const maxLength = gapLengths.reduce((max, value) => Math.max(value, max), 0);
-    const gapThreshold = results.GapThreshold && !Number.isNaN(results.GapThreshold) ? results.GapThreshold : 0;
-    return {
-      y: gapLengths,
-      pointStyles: gapLengths.map((_length, i) => (reversals[i] ? 'highlight' : 'filled')),
-      maxY: maxLength === 0 ? 200 : maxLength + 10,
-      referenceLine: gapThreshold,
-      xLabel: 'Presentation #',
-      yLabel: 'Gap Length (ms)',
-      title: 'Gap Detection Results',
-    };
-  }
 
   /**
    * Guarantee the feedback frame is visible at the end of a trial. If the animation never
