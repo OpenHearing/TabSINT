@@ -1,7 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 
+import { DiskInterface } from '../models/disk/disk.interface';
 import { DiskModel } from '../models/disk/disk.service';
+import { ExamResults } from '../models/results/results.interface';
 import { Logger } from '../services/logger.service';
 import { EncryptResultsService } from '../utilities/encrypt-results.service';
 import { ResultsUploadService } from './results-upload.service';
@@ -71,5 +73,38 @@ describe('ResultsUploadService.ensureResultsRepo', () => {
     getSpy.and.returnValue(resp(403));
 
     await expectAsync(service.ensureResultsRepo('https://gl.test', 'tok', 'g')).toBeRejectedWithError(/'api' scope/);
+  });
+
+  describe('uploadResult', () => {
+    const result = {
+      testDateTime: '2024-01-01T00:00:00.000Z',
+      protocol: { name: 'p', gitlabConfig: { host: 'https://gl.test', group: 'g', repository: 'r', tag: '' } },
+      responses: [],
+    } as unknown as ExamResults;
+
+    it('uses the gitlab token from the protocol stored on the device', async () => {
+      service.disk = {
+        uploadSummary: [],
+        availableProtocolsMeta: { p: { gitlabConfig: { token: 'glpat-SECRET' } } },
+      } as unknown as DiskInterface;
+      getSpy.and.returnValue(resp(200, { id: 7, default_branch: 'main' }));
+      postSpy.and.returnValue(resp(201));
+
+      const outcome = await service.uploadResult(result);
+
+      expect(outcome.success).toBeTrue();
+      const headers = (window.fetch as jasmine.Spy).calls.mostRecent().args[1].headers;
+      expect(JSON.stringify(headers)).toContain('glpat-SECRET');
+      expect(postSpy.calls.mostRecent().args[0].data).not.toContain('glpat-SECRET');
+    });
+
+    it('fails when the protocol is no longer stored on the device', async () => {
+      service.disk = { uploadSummary: [], availableProtocolsMeta: {} } as unknown as DiskInterface;
+
+      const outcome = await service.uploadResult(result);
+
+      expect(outcome.success).toBeFalse();
+      expect(getSpy).not.toHaveBeenCalled();
+    });
   });
 });
