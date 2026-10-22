@@ -5,13 +5,14 @@ import { Subscription } from 'rxjs';
 import { ResultsInterface, ExamResults, CurrentResults } from '../models/results/results.interface';
 import { ProtocolModelInterface } from '../models/protocol/protocol.interface';
 import { PageInterface } from '../models/page/page.interface';
-import { DiskInterface } from '../models/disk/disk.interface';
+import { DiskInterface, GitlabConfigInterface } from '../models/disk/disk.interface';
 import { VersionInterface } from '../models/version/version.interface';
 
 import { ResultsModel } from '../models/results/results-model.service';
 import { DiskModel } from '../models/disk/disk.service';
 import { ProtocolModel } from '../models/protocol/protocol-model.service';
 import { constructFilename, displayableDevice } from '../utilities/results-helper-functions';
+import { redactSecrets } from '../utilities/protocol-helper-functions';
 import { FileService } from '../services/file.service';
 import { Logger } from '../services/logger.service';
 import { SqLite } from '../services/sqLite.service';
@@ -77,10 +78,16 @@ export class ResultsService {
    * @models results, protocol, disk
    */
   initializeExamResults() {
+    // Never include the gitlab token in results
+    const protocol = structuredClone(this.protocol.activeProtocol!);
+    if (protocol.gitlabConfig) {
+      // Reassign in place so gitlabConfig keeps its original key position
+      protocol.gitlabConfig = redactSecrets(protocol.gitlabConfig) as GitlabConfigInterface;
+    }
     const currentExam: ExamResults = {
       testDateTime: new Date().toJSON(),
       elapsedTime: undefined,
-      protocol: _.cloneDeep(this.protocol.activeProtocol!),
+      protocol: protocol,
       responses: [],
       softwareVersion: this.version,
       hostMetadata: this.hostMetadata,

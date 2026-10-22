@@ -45,6 +45,21 @@ describe('ResultsService', () => {
     expect(returnedResults.currentExam.protocol.name).toBe('develop');
   });
 
+  it('does not include the gitlab token in exam results', () => {
+    const resultsService = TestBed.inject(ResultsService);
+    const gitlabConfig = { host: 'h', token: 'glpat-SECRET', group: 'g', repository: 'r', tag: '' };
+    resultsService.protocol.activeProtocol = {
+      ...resultsService.disk.availableProtocolsMeta['develop'],
+      ...DeveloperProtocols['develop'],
+      gitlabConfig,
+    };
+    resultsService.initializeExamResults();
+    expect(JSON.stringify(resultsService.results.currentExam)).not.toContain('glpat-SECRET');
+    expect(resultsService.results.currentExam.protocol.gitlabConfig).toEqual(jasmine.objectContaining({ host: 'h', group: 'g', repository: 'r' }));
+    expect(resultsService.protocol.activeProtocol.gitlabConfig!.token).toBe('glpat-SECRET');
+    expect(Object.keys(resultsService.results.currentExam.protocol)).toEqual(Object.keys(resultsService.protocol.activeProtocol));
+  });
+
   it('initializes page results', () => {
     const resultsService = TestBed.inject(ResultsService);
     const returnedResults: ResultsInterface = resultsService.results;

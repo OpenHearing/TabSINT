@@ -17,7 +17,7 @@ import { Notifications } from '../../services/notifications.service';
 import { Tasks } from '../../services/tasks.service';
 import { FileService } from '../../services/file.service';
 import { DialogType, MediaUpdateStatus, ProtocolServer } from '../../utilities/constants';
-import { getProtocolMetaData } from '../../utilities/protocol-helper-functions';
+import { getProtocolMetaData, redactSecrets } from '../../utilities/protocol-helper-functions';
 import { partialMetaDefaults } from '../../utilities/defaults';
 import { formatDownloadProgress } from '../../utilities/format-download-progress.function';
 import { GitlabService } from '../../services/gitlab.service';
@@ -386,7 +386,7 @@ export class ProtocolsComponent implements OnInit, OnDestroy {
         throw new Error('GitLab configuration is missing for the selected protocol.');
       }
       this.logger.debug('Printing selected protocols gitlab configuration');
-      this.logger.debug(JSON.stringify(selectedGitlabConfig));
+      this.logger.debug(JSON.stringify(redactSecrets(selectedGitlabConfig)));
       if (!selectedGitlabConfig.host || !selectedGitlabConfig.token || !selectedGitlabConfig.group || !selectedGitlabConfig.repository) {
         throw new Error('Missing required GitLab configuration. Please specify a GitLab host, token, group, and repository.');
       }
