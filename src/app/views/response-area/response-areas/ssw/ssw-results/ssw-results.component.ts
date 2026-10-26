@@ -22,6 +22,6 @@ export class SswResultsComponent {
    * @param presentation The graded presentation.
    */
   wordResults(presentation: SswPresentationResultInterface): string[] {
-    return presentation.response.map(order => (order !== 0 ? 'Y' : 'N'));
+    return presentation.response.map(order => (order === 0 ? 'N' : 'Y'));
   }
 }
