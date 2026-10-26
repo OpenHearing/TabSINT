@@ -14,6 +14,7 @@ import {
 } from '../../hint/hint.interface';
 import { buildHintExamSummary } from '../../hint/hint.utility';
 import { GapResultsInterface } from '../../gap/gap.interface';
+import { SswPresentationResultInterface, SswResponseInterface } from '../../ssw/ssw.interface';
 
 /**
  * Dispatches a single stored page result to the viewer for its responseArea type, falling back to
@@ -49,6 +50,10 @@ export class ResponseResultComponent {
     const examProperties = (this.result.page?.responseArea as HintResponseAreaInterface)?.examProperties ?? {};
     const currentExam = this.resultsModel.getResults().currentExam;
     return buildHintExamSummary(examProperties, response.results, currentExam?.protocol, currentExam?.testDateTime);
+  }
+
+  get sswPresentations(): SswPresentationResultInterface[] {
+    return (this.result.response as SswResponseInterface)?.presentations ?? [];
   }
 
   get gapResults(): GapResultsInterface {

@@ -1,0 +1,28 @@
+<div class="ssw-results">
+  <p class="ssw-score">{{ "Correct Presentations" | transloco }}: {{ correctPresentationCount }}/{{ presentations.length }}</p>
+
+  <table class="results-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>{{ "First Ear" | transloco }}</th>
+        <th>{{ "Words" | transloco }}</th>
+        <th>{{ "Order" | transloco }}</th>
+        <th>{{ "Score" | transloco }}</th>
+        <th>{{ "Result" | transloco }}</th>
+        <th>{{ "Comments" | transloco }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let presentation of presentations; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ presentation.firstEar }}</td>
+        <td>{{ presentation.words.join(" ") }}</td>
+        <td>[{{ presentation.response.join(", ") }}]</td>
+        <td>{{ presentation.numberCorrect }}/{{ presentation.wordCount }}</td>
+        <td>[{{ wordResults(presentation).join(", ") }}]</td>
+        <td>{{ presentation.notes }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

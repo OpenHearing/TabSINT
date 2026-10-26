@@ -111,6 +111,9 @@
                 "id": "HINT"
               },
               {
+                "id": "SSW"
+              },
+              {
                 "id": "Hughson-Westlake Screener"
               },
               {
@@ -327,6 +330,12 @@
               "conditional": "result.response=='HINT'",
               "target": {
                 "reference": "hintResponseArea"
+              }
+            },
+            {
+              "conditional": "result.response=='SSW'",
+              "target": {
+                "reference": "sswResponseArea"
               }
             },
             {
@@ -1639,6 +1648,29 @@
       ]
     },
     {
+      "protocolId": "sswResponseArea",
+      "pages": [
+        {
+          "id": "sswResponseArea",
+          "title": "SSW",
+          "questionMainText": "Staggered Spondaic Word Test",
+          "instructionText": "Listen carefully, then select the order in which the subject repeated each word. Mark missed words Incorrect.",
+          "responseArea": {
+            "type": "sswResponseArea",
+            "examInstructions": "Select the order in which the subject repeated each word.",
+            "examProperties": {
+              "language": "practice",
+              "nPresentations": 4
+            }
+          }
+        },
+        {
+          "id": "backtomain",
+          "reference": "MainMenu"
+        }
+      ]
+    },
+    {
       "protocolId": "hughsonWestlakeScreenerResponseArea",
       "pages": [
         {
@@ -2321,13 +2353,14 @@
         {
           "id": "results_view_demo",
           "title": "Results View",
-          "instructionText": "Displays the results of every previously-run demo page whose response-area type has a dedicated results viewer. Run the corresponding demo pages first (Three Digit Test, MRT Exam, HINT, Hughson-Westlake Screener/Threshold, BHAFT, Bekesy Like, GAP, Manual Audiometry) to see real data here; unvisited pages simply show nothing.",
+          "instructionText": "Displays the results of every previously-run demo page whose response-area type has a dedicated results viewer. Run the corresponding demo pages first (Three Digit Test, MRT Exam, HINT, SSW, Hughson-Westlake Screener/Threshold, BHAFT, Bekesy Like, GAP, Manual Audiometry) to see real data here; unvisited pages simply show nothing.",
           "responseArea": {
             "type": "resultsViewResponseArea",
             "pageIdsToDisplay": [
               "threeDigitResponseArea",
               "MRT",
               "hintResponseArea",
+              "sswResponseArea",
               "Hughson-Westlake-Screener",
               "Hughson-Westlake-Threshold",
               "Hughson-Westlake-Threshold-2",

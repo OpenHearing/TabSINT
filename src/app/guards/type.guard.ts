@@ -65,6 +65,10 @@ export function isHintResponseArea(page: PageInterface): boolean {
   return page?.responseArea?.type === 'hintResponseArea';
 }
 
+export function isSswResponseArea(page: PageInterface): boolean {
+  return page?.responseArea?.type === 'sswResponseArea';
+}
+
 export function isHughsonWestlakeResponseArea(page: PageInterface): boolean {
   return page?.responseArea?.type === 'hughsonWestlakeResponseArea';
 }
