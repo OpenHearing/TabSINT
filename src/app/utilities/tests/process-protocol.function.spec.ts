@@ -1,5 +1,7 @@
 import { TestBed } from '@angular/core/testing';
-import { processProtocol } from '../process-protocol.function';
+import { processProtocol, resolveVideoPath } from '../process-protocol.function';
+import { TabsintFsWeb } from 'tabsintfs/dist/esm/web';
+import { Capacitor } from '@capacitor/core';
 import { LoadingProtocolInterface } from '../../interfaces/loading-protocol-object.interface';
 import { ProtocolServer } from '../constants';
 import { ProtocolInterface } from '../../models/protocol/protocol.interface';
@@ -193,8 +195,40 @@ describe('processProtocol', () => {
     //unimplemented
   });
 
-  it('adds video path', () => {
-    //unimplemented
+  describe('resolveVideoPath', () => {
+    it('resolves a Developer-server video to a web-view asset path', async () => {
+      const resolved = await resolveVideoPath('intro.mp4', { server: ProtocolServer.Developer, metaPath: 'protocols/develop' });
+
+      expect(resolved).toBe('assets/protocols/develop/intro.mp4');
+    });
+
+    it('converts a content:// URI from a GitLab or local-folder protocol into a URL the web view can load', async () => {
+      const contentUri = 'content://com.android.externalstorage.documents/tree/primary%3Atabsint/document/primary%3Atabsint%2Fintro.mp4';
+      spyOn(TabsintFsWeb.prototype, 'getFileContentURI').and.resolveTo({ contentUri });
+      spyOn(Capacitor, 'convertFileSrc').and.callFake(path => 'https://localhost/_capacitor_content_/' + path.replace('content://', ''));
+
+      const resolved = await resolveVideoPath('intro.mp4', { server: ProtocolServer.Gitlab, contentURI: 'content://root' });
+
+      expect(TabsintFsWeb.prototype.getFileContentURI).toHaveBeenCalledWith({ rootUri: 'content://root', filePath: 'intro.mp4' });
+      expect(Capacitor.convertFileSrc).toHaveBeenCalledWith(contentUri);
+      expect(resolved).toBe('https://localhost/_capacitor_content_/' + contentUri.replace('content://', ''));
+    });
+
+    it('returns undefined when the video file cannot be found in the protocol folder', async () => {
+      spyOn(TabsintFsWeb.prototype, 'getFileContentURI').and.rejectWith(new Error('File not found or is not a regular file'));
+      spyOn(Capacitor, 'convertFileSrc').and.callThrough();
+
+      const resolved = await resolveVideoPath('missing.mp4', { server: ProtocolServer.Gitlab, contentURI: 'content://root' });
+
+      expect(resolved).toBeUndefined();
+      expect(Capacitor.convertFileSrc).not.toHaveBeenCalled();
+    });
+
+    it('returns undefined when there is no media source to resolve against', async () => {
+      const resolved = await resolveVideoPath('intro.mp4', { server: ProtocolServer.Gitlab, contentURI: null });
+
+      expect(resolved).toBeUndefined();
+    });
   });
 
   describe('onPageProcessed', () => {
