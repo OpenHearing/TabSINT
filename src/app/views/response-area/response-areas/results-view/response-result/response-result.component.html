@@ -5,6 +5,7 @@
     <app-mrt-results [mrtResults]="mrtResults"></app-mrt-results>
   </ng-container>
   <app-hint-results *ngSwitchCase="'hintResponseArea'" [presentations]="hintPresentations" [summary]="hintSummary"></app-hint-results>
+  <app-ssw-results *ngSwitchCase="'sswResponseArea'" [presentations]="sswPresentations"></app-ssw-results>
   <app-audiometry-result-viewer *ngSwitchCase="'hughsonWestlakeResponseArea'" [result]="result"></app-audiometry-result-viewer>
   <app-audiometry-result-viewer *ngSwitchCase="'bhaftResponseArea'" [result]="result"></app-audiometry-result-viewer>
   <app-audiometry-result-viewer *ngSwitchCase="'bekesyLikeResponseArea'" [result]="result"></app-audiometry-result-viewer>

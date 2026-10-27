@@ -1,0 +1,71 @@
+.ssw-container {
+  width: 100%;
+}
+
+.ssw-instructions {
+  text-align: center;
+}
+
+.ssw-progress {
+  text-align: right;
+}
+
+.ssw-words {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  max-width: 650px;
+  margin: 1.25rem auto 2rem;
+  text-align: center;
+}
+
+.ssw-word {
+  flex: 1;
+  min-width: 0;
+}
+
+.ssw-word-label {
+  padding-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.ssw-order {
+  display: flex;
+  gap: 4px;
+  padding-top: 4px;
+}
+
+.ssw-order-btn {
+  flex: 1;
+  min-width: 24px;
+  padding: 4px;
+  overflow: hidden;
+}
+
+.ssw-order-btn.active {
+  background-color: #e6e6e6;
+  border-color: #adadad;
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+
+.ssw-actions {
+  display: flex;
+  gap: 1rem;
+  max-width: 450px;
+  margin: 0 auto 2rem;
+}
+
+.ssw-actions .btn {
+  flex: 1;
+}
+
+.ssw-notes {
+  max-width: 450px;
+  margin: 0 auto 2rem;
+  text-align: left;
+}
+
+.ssw-notes-input {
+  width: 100%;
+  margin-top: 0.5rem;
+}

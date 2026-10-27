@@ -52,6 +52,12 @@ describe('ResponseResultComponent', () => {
     expect(component.hintSummary).toBeUndefined();
   });
 
+  it('dispatches sswResponseArea to app-ssw-results', () => {
+    setResult({ responseArea: 'sswResponseArea', response: { presentations: [] }, page: {} });
+    expect(fixture.nativeElement.querySelector('app-ssw-results')).toBeTruthy();
+    expect(component.sswPresentations).toEqual([]);
+  });
+
   it('dispatches the audiometry family to app-audiometry-result-viewer', () => {
     setResult({ responseArea: 'bhaftResponseArea', response: {}, page: {} });
     expect(fixture.nativeElement.querySelector('app-audiometry-result-viewer')).toBeTruthy();
