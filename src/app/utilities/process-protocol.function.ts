@@ -16,6 +16,7 @@ import { DpGramInterface } from '../views/response-area/response-areas/dp-gram/d
 import { CustomResponseAreaInterface } from '../views/response-area/response-areas/custom-response-area/custom-response-area.interface';
 import { ProtocolServer } from './constants';
 import { TabsintFs } from 'tabsintfs';
+import { Capacitor } from '@capacitor/core';
 import { loadCustomJS, loadFile } from './load-custom-js';
 import { CalibrationFileWavProperties } from '../interfaces/calibration-file.interface';
 
@@ -65,16 +66,20 @@ export async function resolveWavfilePath(
  * `ExamService.resolvePageMediaPaths`, after a preprocess function reassigns `video.path` at
  * runtime. Unlike `resolveWavfilePath`, a Developer-server video resolves to a plain
  * `assets/...` path (no `public/` prefix) since videos are played directly by the web view rather
- * than handed off to a native player, and there's no common-repo concept for video.
+ * than handed off to a native player, and there's no common-repo concept for video. A video sourced
+ * from a GitLab or local-folder protocol resolves to a native `content://` URI, which the web view
+ * cannot load directly, so it is passed through `Capacitor.convertFileSrc` to obtain a URL the
+ * Capacitor local server will serve (`https://localhost/_capacitor_content_/...`).
  * @param rawPath The video's protocol-relative path (i.e. `video.path`).
  * @param context The active protocol's media-source configuration.
- * @returns The resolved path, or undefined if it could not be resolved.
+ * @returns The resolved, web-view-loadable path, or undefined if it could not be resolved.
  */
 export async function resolveVideoPath(rawPath: string, context: WavfileResolutionContext): Promise<string | undefined> {
   if (context.server === ProtocolServer.Developer) {
     return 'assets/' + context.metaPath! + '/' + rawPath;
   } else if (context.contentURI) {
-    return await resolveFilePath(context.contentURI, rawPath);
+    const contentUri = await resolveFilePath(context.contentURI, rawPath);
+    return contentUri === undefined ? undefined : Capacitor.convertFileSrc(contentUri);
   }
   return undefined;
 }
