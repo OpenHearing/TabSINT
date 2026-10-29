@@ -1,6 +1,20 @@
 Changelog
 =========
 
+v6.1.0
+------
+
+Features
+
+- New exam: CHA SSW
+
+Bug Fixes
+
+- Fixed video playback in protocols loaded from GitLab or a local folder
+- Fixed MRT trial replay changing the exam state
+- Fixed results views for GAP, BHAFT, Bekesy, and MRT
+- Remove GitLab token from results
+
 v6.0.0
 ------
 
