@@ -123,11 +123,14 @@ export class ResultsUploadService {
       }
 
       const protocol = singleExamResult.protocol;
-      if (!protocol.gitlabConfig?.host || !protocol.gitlabConfig?.token || !protocol.gitlabConfig?.group) {
+
+      // Results do not contain the gitlab token, so retrieve the token from the stored protocol
+      const gitlabToken = this.disk.availableProtocolsMeta[protocol.name]?.gitlabConfig?.token;
+
+      if (!protocol.gitlabConfig?.host || !gitlabToken || !protocol.gitlabConfig?.group) {
         throw new Error('Missing required GitLab configuration. Please specify a gitlab host, token, group and repository');
       }
       const gitlabHost = protocol.gitlabConfig?.host;
-      const gitlabToken = protocol.gitlabConfig?.token;
       const gitlabGroup = protocol.gitlabConfig?.group;
 
       const resultsRepoResponse = await this.ensureResultsRepo(gitlabHost, gitlabToken, gitlabGroup);

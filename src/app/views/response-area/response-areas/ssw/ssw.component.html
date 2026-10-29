@@ -1,0 +1,56 @@
+<div class="ssw-container" *ngIf="!examComplete">
+  <p *ngIf="examInstructions" class="ssw-instructions">{{ examInstructions | transloco }}</p>
+
+  <p class="ssw-progress">
+    {{ "Presentation" | transloco }} #{{ presentationCount }}/{{ numberOfPresentations }}
+    <br />
+    {{ (isRightEarFirst ? "Right-Ear First" : "Left-Ear First") | transloco }}
+  </p>
+
+  <div class="ssw-words">
+    <div class="ssw-word" *ngFor="let word of listOfWords; let wordIndex = index">
+      <div class="ssw-word-label">{{ word }}</div>
+      <button
+        *ngIf="isCorrect(wordIndex)"
+        type="button"
+        class="btn btn-success btn-block"
+        [disabled]="wordsDisabled"
+        (click)="removeOrderAtIndex(wordIndex)">
+        {{ "Correct" | transloco }}
+      </button>
+      <button
+        *ngIf="!isCorrect(wordIndex)"
+        type="button"
+        class="btn btn-danger btn-block"
+        [disabled]="wordsDisabled"
+        (click)="setOrderAtIndex(wordIndex, wordIndex + 1)">
+        {{ "Incorrect" | transloco }}
+      </button>
+      <div class="ssw-order">
+        <button
+          *ngFor="let orderValue of orderValues"
+          type="button"
+          class="btn btn-default ssw-order-btn"
+          [class.active]="hasOrder(wordIndex, orderValue)"
+          [disabled]="wordsDisabled"
+          (click)="hasOrder(wordIndex, orderValue) ? removeOrderAtIndex(wordIndex) : setOrderAtIndex(wordIndex, orderValue)">
+          {{ orderValue }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="ssw-actions">
+    <button type="button" class="btn btn-default btn-block" [disabled]="wordsDisabled" (click)="selectAll()">{{ "All" | transloco }} (+)</button>
+    <button type="button" class="btn btn-default btn-block" [disabled]="wordsDisabled" (click)="clearSelection()">
+      {{ "None" | transloco }} (-)
+    </button>
+  </div>
+
+  <div class="ssw-notes">
+    <label for="ssw-notes-input">{{ "Comments" | transloco }}</label>
+    <textarea id="ssw-notes-input" class="ssw-notes-input" rows="6" maxlength="250" [(ngModel)]="notes"></textarea>
+  </div>
+</div>
+
+<app-ssw-results *ngIf="examComplete" [presentations]="presentations"></app-ssw-results>

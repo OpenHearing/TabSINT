@@ -9,3 +9,10 @@ export interface DosimeterResultsInterface {
 }
 
 export type DosimetryResultsInterface = DosimeterResultsInterface[];
+
+export interface DosimeterDeviceResultsInterface {
+  State: string;
+  Channel_2: unknown;
+  Channel_3: unknown;
+  Channel_4: unknown;
+}

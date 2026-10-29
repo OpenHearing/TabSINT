@@ -57,7 +57,7 @@
       <button
         *ngFor="let level of [].constructor(question.levels); let levelIndex = index"
         class="likert-option"
-        [ngClass]="{ selected: results.currentPage.response[questionIndex] === levelIndex }"
+        [ngClass]="{ selected: response[questionIndex] === levelIndex }"
         (click)="onResponseChange(questionIndex, levelIndex)">
         <span *ngIf="question.useEmoticons">{{ emoticons[levelIndex % emoticons.length] }}</span>
         <span *ngIf="!question.useEmoticons && useRadioButtons" class="radio-circle"></span>

@@ -1,1 +1,14 @@
-<app-audiometry-combined-results [dataStruct]="dataStruct"></app-audiometry-combined-results>
+<ng-container *ngIf="screenerProperties as props; else audiogram">
+  <app-audiometry-properties
+    [level]="props.Lstart"
+    levelLabel="Level"
+    [levelUnits]="props.LevelUnits"
+    [frequency]="props.F"
+    frequencyUnits="Hz"
+    [ear]="props.OutputChannel">
+  </app-audiometry-properties>
+  <div class="hw-response">{{ "Screener result:" | transloco }} {{ screenerOutcome | transloco }}</div>
+</ng-container>
+<ng-template #audiogram>
+  <app-audiometry-combined-results [dataStruct]="dataStruct"></app-audiometry-combined-results>
+</ng-template>

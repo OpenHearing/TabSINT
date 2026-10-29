@@ -1,7 +1,11 @@
 <ng-container [ngSwitch]="result.responseArea">
   <app-three-digit-results *ngSwitchCase="'threeDigitResponseArea'" [presentations]="threeDigitPresentations"></app-three-digit-results>
-  <app-mrt-results *ngSwitchCase="'mrtResponseArea'" [mrtResults]="mrtResults"></app-mrt-results>
+  <ng-container *ngSwitchCase="'mrtResponseArea'">
+    <h3>{{ "Modified Rhyme Test (MRT)" | transloco }}</h3>
+    <app-mrt-results [mrtResults]="mrtResults"></app-mrt-results>
+  </ng-container>
   <app-hint-results *ngSwitchCase="'hintResponseArea'" [presentations]="hintPresentations" [summary]="hintSummary"></app-hint-results>
+  <app-ssw-results *ngSwitchCase="'sswResponseArea'" [presentations]="sswPresentations"></app-ssw-results>
   <app-audiometry-result-viewer *ngSwitchCase="'hughsonWestlakeResponseArea'" [result]="result"></app-audiometry-result-viewer>
   <app-audiometry-result-viewer *ngSwitchCase="'bhaftResponseArea'" [result]="result"></app-audiometry-result-viewer>
   <app-audiometry-result-viewer *ngSwitchCase="'bekesyLikeResponseArea'" [result]="result"></app-audiometry-result-viewer>

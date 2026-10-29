@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { TestBed } from '@angular/core/testing';
 import { ResultsService } from './results.service';
 import { ResultsInterface, ExamResults } from '../models/results/results.interface';
@@ -20,6 +19,7 @@ import { ProtocolServer } from '../utilities/constants';
 import { DiskInterface } from '../models/disk/disk.interface';
 import { ProtocolInterface } from '../models/protocol/protocol.interface';
 import { PageInterface } from '../models/page/page.interface';
+import { VersionInterface } from '../models/version/version.interface';
 
 describe('ResultsService', () => {
   beforeEach(async () => {
@@ -43,6 +43,21 @@ describe('ResultsService', () => {
     resultsService.initializeExamResults();
     expect(returnedResults.currentExam.testDateTime).toBeDefined();
     expect(returnedResults.currentExam.protocol.name).toBe('develop');
+  });
+
+  it('does not include the gitlab token in exam results', () => {
+    const resultsService = TestBed.inject(ResultsService);
+    const gitlabConfig = { host: 'h', token: 'glpat-SECRET', group: 'g', repository: 'r', tag: '' };
+    resultsService.protocol.activeProtocol = {
+      ...resultsService.disk.availableProtocolsMeta['develop'],
+      ...DeveloperProtocols['develop'],
+      gitlabConfig,
+    };
+    resultsService.initializeExamResults();
+    expect(JSON.stringify(resultsService.results.currentExam)).not.toContain('glpat-SECRET');
+    expect(resultsService.results.currentExam.protocol.gitlabConfig).toEqual(jasmine.objectContaining({ host: 'h', group: 'g', repository: 'r' }));
+    expect(resultsService.protocol.activeProtocol.gitlabConfig!.token).toBe('glpat-SECRET');
+    expect(Object.keys(resultsService.results.currentExam.protocol)).toEqual(Object.keys(resultsService.protocol.activeProtocol));
   });
 
   it('initializes page results', () => {
@@ -121,7 +136,7 @@ const makeExamResult = (overrides: Partial<ExamResults> = {}): ExamResults =>
     partialresults: false,
     elapsedTime: '00:01:00',
     exportLocation: ProtocolServer.LocalServer,
-    softwareVersion: {} as any,
+    softwareVersion: {} as VersionInterface,
     tabletLocation: {},
     calibrationVersion: {},
     flags: {},
@@ -151,7 +166,7 @@ describe('ResultsService (mocked)', () => {
     protocolStack.addProtocol(protocol);
 
     mockResultsState = {
-      currentPage: { pageId: '', page: {} as any },
+      currentPage: { pageId: '', page: {} },
       currentExam: {
         testDateTime: undefined,
         protocol,
@@ -159,7 +174,7 @@ describe('ResultsService (mocked)', () => {
         partialresults: false,
         elapsedTime: undefined,
         exportLocation: ProtocolServer.LocalServer,
-        softwareVersion: {} as any,
+        softwareVersion: {} as VersionInterface,
         tabletLocation: {},
         calibrationVersion: {},
         flags: {},
@@ -203,9 +218,10 @@ describe('ResultsService (mocked)', () => {
 
     mockVersionModel = { version: {} };
 
-    mockDevicesService = jasmine.createSpyObj('DevicesService', ['getDeviceIdOrDefault', 'abortExams', 'queueExam', 'requestResults']);
-    (mockDevicesService as any).hostMetadata = of({ uuid: 'device-uuid-123456' });
-    (mockDevicesService as any).devices = of([]);
+    mockDevicesService = jasmine.createSpyObj('DevicesService', ['getDeviceIdOrDefault', 'abortExams', 'queueExam', 'requestResults'], {
+      hostMetadata: of({ uuid: 'device-uuid-123456' }),
+      devices: of([]),
+    });
 
     mockEncrypt = jasmine.createSpyObj('EncryptResultsService', ['encryptForStorage', 'decryptFromStorage', 'encryptForUpload']);
 

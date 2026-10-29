@@ -44,9 +44,8 @@ export interface IDeviceAdapter {
    * Optional method to submit an exam submission for a device.
    * @param device The device which the submission will be sent to.
    * @param examProperties Object holding properties related to the exam.
-   * @param ignoreErrors A list of keywords for which matching errors will be ignored.
    */
-  examSubmission?(device: IDevice, examProperties: object, ignoreErrors: string[]): Promise<IDeviceResponse>;
+  examSubmission?(device: IDevice, examProperties: object): Promise<IDeviceResponse>;
 
   /**
    * Optional method to abort an exam for a device.

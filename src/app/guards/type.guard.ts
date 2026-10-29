@@ -1,3 +1,4 @@
+import { ChoiceResponseInterface } from '../interfaces/choice.interface';
 import { IDeviceResponse } from '../interfaces/devices/device-response.interface';
 import {
   DirectoryEntryResponse,
@@ -22,6 +23,10 @@ import { MultipleChoiceInterface } from '../views/response-area/response-areas/m
 
 export function isChoiceResponseArea(responseArea?: ResponseArea): responseArea is ButtonGridInterface | MultipleChoiceInterface | CheckboxInterface {
   return (responseArea as CheckboxInterface)?.choices !== undefined;
+}
+
+export function isChoiceResponse(response: unknown): response is ChoiceResponseInterface {
+  return typeof response === 'object' && response !== null && 'selected' in response;
 }
 
 export function isGapResults(value: unknown): value is GapResultsInterface {
@@ -58,6 +63,10 @@ export function isGapResponseArea(page: PageInterface): boolean {
 
 export function isHintResponseArea(page: PageInterface): boolean {
   return page?.responseArea?.type === 'hintResponseArea';
+}
+
+export function isSswResponseArea(page: PageInterface): boolean {
+  return page?.responseArea?.type === 'sswResponseArea';
 }
 
 export function isHughsonWestlakeResponseArea(page: PageInterface): boolean {

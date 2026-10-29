@@ -28,6 +28,7 @@ import { duodoseDownloadSchema } from './response-areas/duodose-download.schema'
 import { bekesyResponseAreaSchema } from './response-areas/bekesy.schema';
 import { threeDigitSchema } from './response-areas/three-digit.schema';
 import { hintSchema } from './response-areas/hint.schema';
+import { sswSchema } from './response-areas/ssw.schema';
 import { gapSchema } from './response-areas/gap.schema';
 import { hughsonWestlakeSchema } from './response-areas/hughson-westlake.schema';
 import { bhaftSchema } from './response-areas/bhaft.schema';
@@ -134,6 +135,7 @@ export const pageSchema: JSONSchemaType<PageDefinition> = {
         bekesyResponseAreaSchema,
         threeDigitSchema,
         hintSchema,
+        sswSchema,
         gapSchema,
         hughsonWestlakeSchema,
         bhaftSchema,

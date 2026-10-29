@@ -1,4 +1,4 @@
-import { findDuplicateProtocols, getProtocolMetaData } from '../protocol-helper-functions';
+import { findDuplicateProtocols, getProtocolMetaData, redactSecrets } from '../protocol-helper-functions';
 import { ProtocolInterface } from '../../models/protocol/protocol.interface';
 import { ProtocolServer } from '../constants';
 
@@ -41,7 +41,14 @@ describe('getProtocolMetaData', () => {
     const meta = getProtocolMetaData(protocol);
     expect(meta.name).toBe('Meta Test');
     expect(meta.version).toBe('2.0');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect((meta as any).pages).toBeUndefined();
+    expect('pages' in meta).toBeFalse();
+  });
+});
+
+describe('redactSecrets', () => {
+  it('removes the token without mutating the input', () => {
+    const gitlabConfig = { host: 'h', token: 'glpat-SECRET', group: 'g', repository: 'r', tag: 't' };
+    expect(redactSecrets(gitlabConfig)).toEqual({ host: 'h', group: 'g', repository: 'r', tag: 't' });
+    expect(gitlabConfig.token).toBe('glpat-SECRET');
   });
 });

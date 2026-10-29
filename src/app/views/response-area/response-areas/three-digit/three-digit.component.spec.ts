@@ -3,6 +3,7 @@ import { TranslocoTestingModule } from '@jsverse/transloco';
 import { FormsModule } from '@angular/forms';
 
 import { ThreeDigitComponent } from './three-digit.component';
+import { ThreeDigitResponseInterface } from './three-digit.interface';
 import { PageModel } from '../../../../models/page/page.service';
 import { ResultsModel } from '../../../../models/results/results-model.service';
 import { StateModel } from '../../../../models/state/state.service';
@@ -157,7 +158,7 @@ describe('ThreeDigitComponent', () => {
     expect(component.examComplete).toBeTrue();
     expect(stateModel.getState().isSubmittable).toBeTrue();
     expect(examService.submitDefault).toHaveBeenCalled();
-    expect(resultsModel.getResults().currentPage.response.results).toEqual(jasmine.objectContaining(finalResults));
+    expect((resultsModel.getResults().currentPage.response as ThreeDigitResponseInterface).results).toEqual(jasmine.objectContaining(finalResults));
   });
 
   it('records the per-presentation SNR and masker with the graded response', fakeAsync(() => {
@@ -182,7 +183,7 @@ describe('ThreeDigitComponent', () => {
     flush();
     flushMicrotasks();
 
-    const firstPresentation = resultsModel.getResults().currentPage.response.presentations[0];
+    const firstPresentation = (resultsModel.getResults().currentPage.response as ThreeDigitResponseInterface).presentations[0];
     expect(firstPresentation).toEqual(
       jasmine.objectContaining({ currentSNR: -4, currentMasker: 'positivePhase', currentPresentation: 'P1.wav', correct: true })
     );

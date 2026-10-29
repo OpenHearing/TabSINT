@@ -16,11 +16,11 @@ export abstract class DpoaeResultsBaseComponent<TResults extends DpoaeResultsCom
   @Input() margin!: { top: number; right: number; bottom: number; left: number };
   @Input() normativeData!: NormativeDataInterface[];
 
-  svg: d3.Selection<SVGGElement, unknown, HTMLElement, any> | undefined;
+  svg: d3.Selection<SVGGElement, unknown, HTMLElement, unknown> | undefined;
 
   ngAfterViewInit(): void {
     this.svg = this.createResultsPlot();
   }
 
-  protected abstract createResultsPlot(): d3.Selection<SVGGElement, unknown, HTMLElement, any>;
+  protected abstract createResultsPlot(): d3.Selection<SVGGElement, unknown, HTMLElement, unknown>;
 }

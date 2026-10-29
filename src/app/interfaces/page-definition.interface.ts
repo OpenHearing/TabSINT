@@ -23,6 +23,7 @@ import { DuodoseDownloadInterface } from '../views/response-area/response-areas/
 import { BekesyResponseAreaInterface } from '../views/response-area/response-areas/bekesy/bekesy.interface';
 import { ThreeDigitResponseAreaInterface } from '../views/response-area/response-areas/three-digit/three-digit.interface';
 import { HintResponseAreaInterface } from '../views/response-area/response-areas/hint/hint.interface';
+import { SswResponseAreaInterface } from '../views/response-area/response-areas/ssw/ssw.interface';
 import { GapResponseAreaInterface } from '../views/response-area/response-areas/gap/gap.interface';
 import { HughsonWestlakeResponseAreaInterface } from '../views/response-area/response-areas/hughson-westlake/hughson-westlake.interface';
 import { BhaftResponseAreaInterface } from '../views/response-area/response-areas/bhaft/bhaft.interface';
@@ -176,6 +177,7 @@ export type ResponseArea =
   | BekesyResponseAreaInterface
   | ThreeDigitResponseAreaInterface
   | HintResponseAreaInterface
+  | SswResponseAreaInterface
   | GapResponseAreaInterface
   | HughsonWestlakeResponseAreaInterface
   | BhaftResponseAreaInterface
