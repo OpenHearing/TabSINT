@@ -15,18 +15,25 @@ function generate_impulse_noise_csv(sessionFile, outputDir)
 %                         non-empty bin (140-150, 150-160, 160-170).
 %                         When a bin holds more than one event, Peak Sound
 %                         Pressure Level is the bin center (145 / 155 / 165),
-%                         Event Date is the 1-hour window the events fall in
-%                         (a "start to end" range), and Analysis Description is
+%                         the row's timestamp is the start of the 1-hour window
+%                         the events fall in, and Analysis Description is
 %                         populated. When a bin holds exactly one event, Peak
 %                         Sound Pressure Level is that event's actual level,
-%                         Event Date is that event's actual timestamp, and
-%                         Analysis Description is blank. Number Of Events =
+%                         the row's timestamp is that event's actual timestamp,
+%                         and Analysis Description is blank. Number Of Events =
 %                         count in the bin. Empty bins produce no row.
 %
 %     * Peak >= 170 dB -> ONE row per event. Peak Sound Pressure Level is the
-%                         event's actual value, Event Date is the event's actual
-%                         timestamp, Number Of Events = 1, and Analysis
-%                         Description is left blank.
+%                         event's actual value, the row's timestamp is the
+%                         event's actual timestamp, Number Of Events = 1, and
+%                         Analysis Description is left blank.
+%
+%   Each row's timestamp (UTC, from the session file) is written as:
+%     Event Date = yyyy/MM/dd
+%     Sync Date  = yyyy/MM/dd
+%     Sync Time  = HHmmssSSS   (hours, minutes, seconds, milliseconds)
+%   For a multi-event bin, the timestamp is the start of the 1-hour window and
+%   Sync Time is the window as a range: "HHmmssSSS to HHmmssSSS".
 %
 %     * No peaks -> no data rows (header-only file).
 %
@@ -34,15 +41,24 @@ function generate_impulse_noise_csv(sessionFile, outputDir)
 %   "Start DateTime:"), so a session longer than 1 hour produces a fresh set of
 %   bin rows for each hour that contains impulses.
 %
-%   Sync Date is left blank. Constant fields (always the same):
+%   Constant fields (always the same):
+%     Recorder Unique ID SN   = None
 %     Recorder Manufacturer   = Creare
 %     Recorder Model          = DuoDose
+%     Calibrator Unique ID SN = None
 %     Calibrator Manufacturer = Creare
+%     Calibrator Model        = None
+%     Microphone Unique ID SN = None
 %     Microphone Manufacturer = Creare
+%     Microphone Diameter     = None
 %     Sampling Rate           = 96000
 %     Analysis Description    = "If number of events is greater than 1, then the
-%                                events are within 5dB of the peak and the event
-%                                date is a 1 hour period when the events happened."
+%                                events are within 5dB of the peak and the sync
+%                                time is the 1 hour period when the events
+%                                happened."
+%
+%   Microphone Model is the first channel name on the session's
+%   "Input Channels:" line (e.g. "Dose High-SPL Mic"), or None if absent.
 
     if nargin < 2 || isempty(outputDir)
         outputDir = pwd;
@@ -75,9 +91,11 @@ function c = config()
     c.SAMPLING_RATE    = 96000;
     c.MANUFACTURER     = 'Creare';
     c.RECORDER_MODEL   = 'DuoDose';
+    c.NONE             = 'None';       % value for fields with no information
     c.ANALYSIS_NOTE    = ['If number of events is greater than 1, then the ' ...
-                          'events are within 5dB of the peak and the event ' ...
-                          'date is a 1 hour period when the events happened.'];
+                          'events are within 5dB of the peak and the sync ' ...
+                          'time is the 1 hour period when the events ' ...
+                          'happened.'];
 end
 
 
@@ -89,7 +107,10 @@ function session = parseSessionData(sessionFile)
 %
 %   Returns:
 %     session.times     : cell array (parallel to peaks) of the verbatim ISO
-%                         timestamp of each impulse, used for per-row Event Date.
+%                         timestamp of each impulse, used for per-row Event Date
+%                         and Sync Date/Time.
+%     session.micModel  : first channel name from "Input Channels:" with the
+%                         trailing "(date)" removed, or '' if not present.
 %     session.startDn   : session start datenum, for 1-hour window bounds.
 %     session.peaks     : numeric vector of per-impulse peak levels (dB). Each
 %                         1-second row contributes one entry per impulse
@@ -109,9 +130,16 @@ function session = parseSessionData(sessionFile)
     lines = readFileLines(sessionFile);
 
     startDt = '';
+    micModel = '';
     headerIdx = 0;
     for i = 1:numel(lines)
         ln = lines{i};
+        if startsWith(strtrim(ln), 'Input Channels:')
+            parts = strsplit(ln, ',');
+            if numel(parts) >= 2
+                micModel = strtrim(regexprep(parts{2}, '\(.*\)', ''));
+            end
+        end
         if startsWith(strtrim(ln), 'Start DateTime:')
             parts = strsplit(ln, ',');
             if numel(parts) >= 2
@@ -176,15 +204,21 @@ function session = parseSessionData(sessionFile)
     session.hourIdx = hourIdx;
     session.times   = times(:);   % verbatim ISO timestamp per impulse
     session.startDn = startDn;    % session start, for 1-hour window bounds
+    session.micModel = micModel;
     session.leq8hr  = '';   % comes from a separate file; blank for now
 end
 
 
 function dn = isoToDatenum(s)
-%ISOTODATENUM  Parse "yyyy-mm-ddTHH:MM:SS(.fff)(Z)" to a MATLAB datenum.
+%ISOTODATENUM  Parse "yyyy-mm-ddTHH:MM:SS(.fff)(Z)" to a MATLAB datenum,
+%   keeping milliseconds when present.
     s = strtrim(s);
     s = strrep(s, '"', '');   % remove any surrounding quotes
     dn = datenum(s(1:19), 'yyyy-mm-ddTHH:MM:SS');
+    ms = regexp(s, '^.{19}\.(\d+)', 'tokens', 'once');
+    if ~isempty(ms)
+        dn = dn + str2double(['0.' ms{1}]) / 86400;
+    end
 end
 
 
@@ -226,8 +260,8 @@ function rows = buildImpulseRows(session)
             nUnbinned, c.BIN_EDGES(1));
     end
 
-    rows = struct('peakSPL', {}, 'numEvents', {}, 'eventDate', {}, ...
-                  'analysisDesc', {});
+    rows = struct('peakSPL', {}, 'numEvents', {}, 'eventDn', {}, ...
+                  'eventEndDn', {}, 'analysisDesc', {});
 
     % The 140-170 bins reset every 1-hour window, so process each hour that
     % contains impulses in chronological order. Within a window: emit the
@@ -249,13 +283,15 @@ function rows = buildImpulseRows(session)
             r.numEvents = count;
             if count > 1
                 r.peakSPL      = c.BIN_CENTERS(k);          % bin center
-                r.eventDate    = hourWindowRange(startDn, hr);  % 1-hour period
+                r.eventDn      = startDn + hr/24;       % 1-hour window start
+                r.eventEndDn   = startDn + (hr+1)/24;   % 1-hour window end
                 r.analysisDesc = c.ANALYSIS_NOTE;
             else
                 vals           = hp(inBin);
                 ts             = htimes(inBin);
                 r.peakSPL      = vals(1);    % single peak: actual level
-                r.eventDate    = ts{1};      % single peak: actual timestamp
+                r.eventDn      = isoToDatenum(ts{1});  % single peak: actual time
+                r.eventEndDn   = [];
                 r.analysisDesc = '';
             end
             rows(end+1) = r; %#ok<AGROW>
@@ -268,7 +304,8 @@ function rows = buildImpulseRows(session)
         for k = 1:numel(aboveSel)
             r.peakSPL      = hp(aboveSel(k));
             r.numEvents    = 1;
-            r.eventDate    = htimes{aboveSel(k)};   % actual timestamp
+            r.eventDn      = isoToDatenum(htimes{aboveSel(k)});  % actual time
+            r.eventEndDn   = [];
             r.analysisDesc = '';
             rows(end+1) = r; %#ok<AGROW>
         end
@@ -276,16 +313,17 @@ function rows = buildImpulseRows(session)
 end
 
 
-function s = hourWindowRange(startDn, hr)
-%HOURWINDOWRANGE  ISO "start to end" string for the hr-th 1-hour window.
-    winStart = startDn + hr/24;
-    winEnd   = startDn + (hr+1)/24;
-    s = [datenumToIso(winStart) ' to ' datenumToIso(winEnd)];
+function s = formatDate(dn)
+%FORMATDATE  yyyy/MM/dd, used for Event Date and Sync Date.
+    s = datestr(dn, 'yyyy/mm/dd');
 end
 
 
-function s = datenumToIso(dn)
-    s = [datestr(dn, 'yyyy-mm-ddTHH:MM:SS') 'Z'];
+function s = formatTime(dn)
+%FORMATTIME  HHmmssSSS (hours, minutes, seconds, milliseconds), for Sync Time.
+%   Rounds to the nearest millisecond first so the date and time agree.
+    dn = round(dn * 86400000) / 86400000;
+    s = datestr(dn, 'HHMMSSFFF');
 end
 
 
@@ -320,23 +358,43 @@ function writeDoehrsCsv(outFile, rows, session)
     iAnalys  = col('Analysis Description');
     iEvtDate = col('Event Date');
     iLeq8    = col('Leq 8hr');
+    iSyncDt  = col('Sync Date');
+    iSyncTm  = col('Sync Time');
+    noneCols = cellfun(col, {'Recorder Unique ID SN', ...
+        'Calibrator Unique ID SN', 'Calibrator Model', ...
+        'Microphone Unique ID SN', 'Microphone Diameter'});
+    iMicMdl  = col('Microphone Model');
 
-    % Leq 8hr comes from a separate file; Sync Date is left blank. Event Date
-    % is per-row (a single timestamp, or a 1-hour range for multi-event bins).
+    % Leq 8hr comes from a separate file. Event Date / Sync Date / Sync Time
+    % are per-row (an event's timestamp, or for multi-event bins the start
+    % date of the 1-hour window and a "start to end" Sync Time range).
     if isfield(session, 'leq8hr') && ~isempty(session.leq8hr)
         leqStr = num2str(session.leq8hr);
     else
         leqStr = '';
     end
+    if isfield(session, 'micModel') && ~isempty(session.micModel)
+        micModel = session.micModel;
+    else
+        micModel = c.NONE;
+    end
 
     for i = 1:numel(rows)
         cells = repmat({''}, 1, nCols);
+        cells(noneCols) = {c.NONE};
         cells{iRecMfr} = c.MANUFACTURER;
         cells{iRecMdl} = c.RECORDER_MODEL;
         cells{iCalMfr} = c.MANUFACTURER;
         cells{iMicMfr} = c.MANUFACTURER;
+        cells{iMicMdl} = micModel;
         cells{iSamp}   = num2str(c.SAMPLING_RATE);
-        cells{iEvtDate} = rows(i).eventDate; 
+        cells{iEvtDate} = formatDate(rows(i).eventDn);
+        cells{iSyncDt}  = formatDate(rows(i).eventDn);
+        cells{iSyncTm}  = formatTime(rows(i).eventDn);
+        if ~isempty(rows(i).eventEndDn)
+            cells{iSyncTm} = [cells{iSyncTm} ' to ' ...
+                              formatTime(rows(i).eventEndDn)];
+        end
         cells{iLeq8}    = leqStr;
         cells{iPeak}    = num2str(rows(i).peakSPL);
         cells{iNumEvt}  = num2str(rows(i).numEvents);
