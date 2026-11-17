@@ -31,9 +31,10 @@ function generate_impulse_noise_csv(sessionFile, outputDir)
 %   Each row's timestamp (UTC, from the session file) is written as:
 %     Event Date = yyyy/MM/dd
 %     Sync Date  = yyyy/MM/dd
-%     Sync Time  = HHmmssSSS   (hours, minutes, seconds, milliseconds)
+%     Sync Time  = HH:mm:ss.SSSZ   (e.g. 16:35:40.640Z)
 %   For a multi-event bin, the timestamp is the start of the 1-hour window and
-%   Sync Time is the window as a range: "HHmmssSSS to HHmmssSSS".
+%   Sync Time is the window as a range: "HH:mm:ssZ to HH:mm:ssZ"
+%   (e.g. 16:11:30Z to 17:11:30Z).
 %
 %     * No peaks -> no data rows (header-only file).
 %
@@ -49,16 +50,14 @@ function generate_impulse_noise_csv(sessionFile, outputDir)
 %     Calibrator Manufacturer = Creare
 %     Calibrator Model        = None
 %     Microphone Unique ID SN = None
-%     Microphone Manufacturer = Creare
-%     Microphone Diameter     = None
+%     Microphone Manufacturer = GRAS Sound & Vibration
+%     Microphone Model        = 48LA
+%     Microphone Diameter     = 1/4 inch
 %     Sampling Rate           = 96000
 %     Analysis Description    = "If number of events is greater than 1, then the
 %                                events are within 5dB of the peak and the sync
 %                                time is the 1 hour period when the events
 %                                happened."
-%
-%   Microphone Model is the first channel name on the session's
-%   "Input Channels:" line (e.g. "Dose High-SPL Mic"), or None if absent.
 
     if nargin < 2 || isempty(outputDir)
         outputDir = pwd;
@@ -91,7 +90,10 @@ function c = config()
     c.SAMPLING_RATE    = 96000;
     c.MANUFACTURER     = 'Creare';
     c.RECORDER_MODEL   = 'DuoDose';
-    c.NONE             = 'None';       % value for fields with no information
+    c.MIC_MANUFACTURER = 'GRAS Sound & Vibration';
+    c.MIC_MODEL        = '48LA';
+    c.MIC_DIAMETER     = '1/4 inch';
+    c.NONE            = 'None';       % value for fields with no information
     c.ANALYSIS_NOTE    = ['If number of events is greater than 1, then the ' ...
                           'events are within 5dB of the peak and the sync ' ...
                           'time is the 1 hour period when the events ' ...
@@ -109,8 +111,6 @@ function session = parseSessionData(sessionFile)
 %     session.times     : cell array (parallel to peaks) of the verbatim ISO
 %                         timestamp of each impulse, used for per-row Event Date
 %                         and Sync Date/Time.
-%     session.micModel  : first channel name from "Input Channels:" with the
-%                         trailing "(date)" removed, or '' if not present.
 %     session.startDn   : session start datenum, for 1-hour window bounds.
 %     session.peaks     : numeric vector of per-impulse peak levels (dB). Each
 %                         1-second row contributes one entry per impulse
@@ -130,16 +130,9 @@ function session = parseSessionData(sessionFile)
     lines = readFileLines(sessionFile);
 
     startDt = '';
-    micModel = '';
     headerIdx = 0;
     for i = 1:numel(lines)
         ln = lines{i};
-        if startsWith(strtrim(ln), 'Input Channels:')
-            parts = strsplit(ln, ',');
-            if numel(parts) >= 2
-                micModel = strtrim(regexprep(parts{2}, '\(.*\)', ''));
-            end
-        end
         if startsWith(strtrim(ln), 'Start DateTime:')
             parts = strsplit(ln, ',');
             if numel(parts) >= 2
@@ -204,7 +197,6 @@ function session = parseSessionData(sessionFile)
     session.hourIdx = hourIdx;
     session.times   = times(:);   % verbatim ISO timestamp per impulse
     session.startDn = startDn;    % session start, for 1-hour window bounds
-    session.micModel = micModel;
     session.leq8hr  = '';   % comes from a separate file; blank for now
 end
 
@@ -319,11 +311,13 @@ function s = formatDate(dn)
 end
 
 
-function s = formatTime(dn)
-%FORMATTIME  HHmmssSSS (hours, minutes, seconds, milliseconds), for Sync Time.
+function s = formatTime(dn, fmt)
+%FORMATTIME  UTC time of day for Sync Time, e.g. "16:35:40.640Z" with
+%   fmt 'HH:MM:SS.FFF', or "16:11:30Z" with fmt 'HH:MM:SS'. The trailing Z
+%   also keeps Excel from converting the value to a number/time.
 %   Rounds to the nearest millisecond first so the date and time agree.
     dn = round(dn * 86400000) / 86400000;
-    s = datestr(dn, 'HHMMSSFFF');
+    s = [datestr(dn, fmt) 'Z'];
 end
 
 
@@ -362,8 +356,9 @@ function writeDoehrsCsv(outFile, rows, session)
     iSyncTm  = col('Sync Time');
     noneCols = cellfun(col, {'Recorder Unique ID SN', ...
         'Calibrator Unique ID SN', 'Calibrator Model', ...
-        'Microphone Unique ID SN', 'Microphone Diameter'});
+        'Microphone Unique ID SN'});
     iMicMdl  = col('Microphone Model');
+    iMicDia  = col('Microphone Diameter');
 
     % Leq 8hr comes from a separate file. Event Date / Sync Date / Sync Time
     % are per-row (an event's timestamp, or for multi-event bins the start
@@ -373,11 +368,6 @@ function writeDoehrsCsv(outFile, rows, session)
     else
         leqStr = '';
     end
-    if isfield(session, 'micModel') && ~isempty(session.micModel)
-        micModel = session.micModel;
-    else
-        micModel = c.NONE;
-    end
 
     for i = 1:numel(rows)
         cells = repmat({''}, 1, nCols);
@@ -385,15 +375,17 @@ function writeDoehrsCsv(outFile, rows, session)
         cells{iRecMfr} = c.MANUFACTURER;
         cells{iRecMdl} = c.RECORDER_MODEL;
         cells{iCalMfr} = c.MANUFACTURER;
-        cells{iMicMfr} = c.MANUFACTURER;
-        cells{iMicMdl} = micModel;
+        cells{iMicMfr} = c.MIC_MANUFACTURER;
+        cells{iMicMdl} = c.MIC_MODEL;
+        cells{iMicDia} = c.MIC_DIAMETER;
         cells{iSamp}   = num2str(c.SAMPLING_RATE);
         cells{iEvtDate} = formatDate(rows(i).eventDn);
         cells{iSyncDt}  = formatDate(rows(i).eventDn);
-        cells{iSyncTm}  = formatTime(rows(i).eventDn);
-        if ~isempty(rows(i).eventEndDn)
-            cells{iSyncTm} = [cells{iSyncTm} ' to ' ...
-                              formatTime(rows(i).eventEndDn)];
+        if isempty(rows(i).eventEndDn)
+            cells{iSyncTm} = formatTime(rows(i).eventDn, 'HH:MM:SS.FFF');
+        else
+            cells{iSyncTm} = [formatTime(rows(i).eventDn, 'HH:MM:SS') ...
+                ' to ' formatTime(rows(i).eventEndDn, 'HH:MM:SS')];
         end
         cells{iLeq8}    = leqStr;
         cells{iPeak}    = num2str(rows(i).peakSPL);
